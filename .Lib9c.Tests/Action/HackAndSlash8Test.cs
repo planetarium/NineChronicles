@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class HackAndSlashTest
+    public class HackAndSlash8Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -42,7 +42,7 @@ namespace Lib9c.Tests.Action
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public HackAndSlashTest()
+        public HackAndSlash8Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -98,17 +98,17 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 2, 10, false, false, true)]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 2, 10, false, true, true)]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, 1, true, false, true)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, 1, false, false, true)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, 1, true, false, true)]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, 1, false, false, false)]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, 1, false, true, false)]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, 1, true, false, false)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, 1, false, false, false)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, 1, true, false, false)]
-        public void Execute(int avatarLevel, int worldId, int stageId, int playCount, bool backward, bool isLock, bool isClearedBefore)
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false, true)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, true, true)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, true, false, true)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, false, false, true)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, false, true)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false, false)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, true, false)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, true, false, false)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, false, false, false)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, false, false)]
+        public void Execute(int avatarLevel, int worldId, int stageId, bool backward, bool isLock, bool isClearedBefore)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -119,7 +119,6 @@ namespace Lib9c.Tests.Action
             previousAvatarState.level = avatarLevel;
             var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
             clearedStageId = isClearedBefore ? Math.Max(clearedStageId, stageId - 1) : stageId - 1;
-            clearedStageId = playCount > 1 ? clearedStageId + 1 : clearedStageId;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
@@ -216,14 +215,13 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
             }
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = costumes,
                 equipments = equipments,
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
-                playCount = playCount,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -244,6 +242,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(!isLock, nextAvatarState.inventory.Equipments.OfType<Weapon>().Any(w => w.equipped));
 
             var value = nextState.GetState(_rankingMapAddress);
+
             if (!isClearedBefore)
             {
                 var rankingMapState = new RankingMapState((Dictionary)value);
@@ -254,9 +253,8 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(4, 200, 1)]
-        [InlineData(4, 200, 2)]
-        public void Execute_With_UpdateQuestList(int worldId, int stageId, int playCount)
+        [InlineData(4, 200)]
+        public void Execute_With_UpdateQuestList(int worldId, int stageId)
         {
             var state = _initialState;
 
@@ -306,14 +304,13 @@ namespace Lib9c.Tests.Action
             Assert.Equal(2, avatarState.inventory.Items.Count);
 
             // HackAndSlash
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = equipments.Select(e => e.NonFungibleId).ToList(),
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
-                playCount = playCount,
                 avatarAddress = avatarState.address,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -380,14 +377,13 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.SerializeV2());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -443,14 +439,13 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(_inventoryAddress, previousAvatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = equipments,
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 1,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -469,14 +464,13 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidRankingMapAddress()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 1,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = default,
             };
@@ -499,14 +493,13 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_Throw_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 1,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
             };
 
@@ -533,14 +526,13 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByWorld()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 100,
                 stageId = 1,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -560,14 +552,13 @@ namespace Lib9c.Tests.Action
         [InlineData(51)]
         public void ExecuteThrowSheetRowColumnException(int stageId)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = stageId,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -585,14 +576,13 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByStage()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 1,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -613,14 +603,13 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedAddWorldException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 1,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -649,14 +638,13 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidWorldException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 2,
                 stageId = 51,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -676,14 +664,13 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 3,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -718,14 +705,13 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageExceptionUnlockedWorld()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 2,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -756,7 +742,7 @@ namespace Lib9c.Tests.Action
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
             avatarState.inventory.AddItem(equipment);
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>()
@@ -766,7 +752,6 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 1,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -805,7 +790,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             state = state.SetState(_inventoryAddress, avatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>
@@ -815,7 +800,6 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 1,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -838,14 +822,13 @@ namespace Lib9c.Tests.Action
                 actionPoint = 0,
             };
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 1,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -863,204 +846,16 @@ namespace Lib9c.Tests.Action
             SerializeException<NotEnoughActionPointException>(exec);
         }
 
-        [Theory]
-        [InlineData(true, 1, 15, 100)]
-        [InlineData(true, 2, 55, 100)]
-        [InlineData(true, 3, 111, 100)]
-        [InlineData(true, 4, 189, 100)]
-        [InlineData(false, 1, 15, 100)]
-        [InlineData(false, 2, 55, 100)]
-        [InlineData(false, 3, 111, 100)]
-        [InlineData(false, 4, 189, 100)]
-        public void CheckRewardItems(bool backward, int worldId, int stageId, int playCount)
-        {
-            Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
-            Assert.True(stageId >= worldRow.StageBegin);
-            Assert.True(stageId <= worldRow.StageEnd);
-            Assert.True(_tableSheets.StageSheet.TryGetValue(stageId, out var stageRow));
-
-            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
-            previousAvatarState.actionPoint = 999999;
-            previousAvatarState.level = 400;
-            var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
-            clearedStageId = stageId;
-            previousAvatarState.worldInformation = new WorldInformation(
-                0,
-                _tableSheets.WorldSheet,
-                clearedStageId);
-
-            var costumes = new List<Guid>();
-            var random = new TestRandom();
-            var costumeId = _tableSheets
-                .CostumeItemSheet
-                .Values
-                .First(r => r.ItemSubType == ItemSubType.FullCostume)
-                .Id;
-
-            var costume = (Costume)ItemFactory.CreateItem(
-                _tableSheets.ItemSheet[costumeId], random);
-            previousAvatarState.inventory.AddItem(costume);
-            costumes.Add(costume.ItemId);
-
-            List<Guid> equipments = new List<Guid>();
-
-            var weaponId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Weapon)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
-
-            var weapon = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[weaponId],
-                    random)
-                as Equipment;
-            equipments.Add(weapon.ItemId);
-            OrderLock? orderLock = null;
-            previousAvatarState.inventory.AddItem(weapon, iLock: orderLock);
-
-            var armorId = _tableSheets
-            .EquipmentItemSheet
-            .Values
-            .Where(r => r.ItemSubType == ItemSubType.Armor)
-            .OrderBy(r => r.Stat.ValueAsInt)
-            .Last()
-            .Id;
-
-            var armor = ItemFactory.CreateItem(
-                _tableSheets.EquipmentItemSheet[armorId],
-                random)
-                as Equipment;
-            equipments.Add(armor.ItemId);
-            previousAvatarState.inventory.AddItem(armor);
-
-            var beltId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Belt)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
-
-            var belt = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[beltId],
-                    random)
-                as Equipment;
-            equipments.Add(belt.ItemId);
-            previousAvatarState.inventory.AddItem(belt);
-
-            var necklaceId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Necklace)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
-
-            var necklace = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[necklaceId],
-                    random)
-                as Equipment;
-            equipments.Add(necklace.ItemId);
-            previousAvatarState.inventory.AddItem(necklace);
-
-            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
-            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
-            var result = new CombinationConsumable5.ResultModel
-            {
-                id = default,
-                gold = 0,
-                actionPoint = 0,
-                recipeId = 1,
-                materials = new Dictionary<Material, int>(),
-                itemUsable = mailEquipment,
-            };
-            for (var i = 0; i < 100; i++)
-            {
-                var mail = new CombinationMail(result, i, default, 0);
-                previousAvatarState.Update(mail);
-            }
-
-            IAccountStateDelta state;
-            if (backward)
-            {
-                state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
-            }
-            else
-            {
-                state = _initialState
-                    .SetState(_avatarAddress, previousAvatarState.SerializeV2())
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
-            }
-
-            var action = new HackAndSlash
-            {
-                costumes = costumes,
-                equipments = equipments,
-                foods = new List<Guid>(),
-                worldId = worldId,
-                stageId = stageId,
-                playCount = playCount,
-                avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
-            };
-
-            var nextState = action.Execute(new ActionContext
-            {
-                PreviousStates = state,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-                Rehearsal = false,
-                BlockIndex = 1,
-            });
-
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-            Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
-            Assert.Equal(30, nextAvatarState.mailBox.Count);
-
-            var rewardItem = nextAvatarState.inventory.Items.Where(
-                x => x.item.ItemSubType != ItemSubType.FoodMaterial &&
-                     x.item is IFungibleItem ownedFungibleItem &&
-                     x.item.Id != 400000 && x.item.Id != 500000);
-
-            Assert.Equal(stageRow.Rewards.Count(), rewardItem.Count());
-
-            var worldQuestSheet = state.GetSheet<WorldQuestSheet>();
-            var questRow = worldQuestSheet.OrderedList.FirstOrDefault(e => e.Goal == stageId);
-            var questRewardSheet = state.GetSheet<QuestRewardSheet>();
-            var rewardIds = questRewardSheet.First(x => x.Key == questRow.QuestRewardId).Value.RewardIds;
-            var questItemRewardSheet = state.GetSheet<QuestItemRewardSheet>();
-            var materialItemSheet = state.GetSheet<MaterialItemSheet>();
-            var sortedMaterialItemSheet = materialItemSheet
-                .Where(x => x.Value.ItemSubType == ItemSubType.EquipmentMaterial &&
-                           x.Value.ItemSubType == ItemSubType.MonsterPart);
-            var sortedQuestItemRewardSheet = questItemRewardSheet
-                .Where(x => sortedMaterialItemSheet.Any(y => y.Value.ItemId.Equals(x.Value.ItemId)));
-            var questSum = sortedQuestItemRewardSheet != null && sortedQuestItemRewardSheet.Any() ?
-                rewardIds.Sum(x => sortedQuestItemRewardSheet.First(y => y.Value.Id == x).Value.Count) : 0;
-
-            var min = stageRow.Rewards.OrderBy(x => x.Min).First().Min;
-            var max = stageRow.Rewards.OrderBy(x => x.Max).First().Max;
-            var totalMin = (min * playCount * stageRow.DropItemMin) + questSum;
-            var totalMax = (max * playCount * stageRow.DropItemMax) + questSum;
-            var totalCount = rewardItem.Sum(x => x.count);
-            Assert.InRange(totalCount, totalMin, totalMax);
-        }
-
         [Fact]
         public void Rehearsal()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 1,
-                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
