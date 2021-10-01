@@ -136,8 +136,9 @@ namespace Nekoyume.UI.Module
             {
                 SharedModel.ResetItems(inventoryState);
                 _onResetItems.OnNext(this);
-                SortedData(_grade, _elemental);
+                SortedData(_grade, _elemental, jumpToFirst: false);
             }).AddTo(_disposablesAtOnEnable);
+            SortedData(_grade, _elemental, jumpToFirst: true);
         }
 
         private void OnDisable()
@@ -155,7 +156,7 @@ namespace Nekoyume.UI.Module
             SharedModel = null;
         }
 
-        private void SortedData(Grade grade, Elemental elemental)
+        private void SortedData(Grade grade, Elemental elemental, bool jumpToFirst = true)
         {
             IEnumerable<InventoryItem> result = SharedModel.Equipments[_itemSubType];
             if (grade != Grade.All)
@@ -169,7 +170,8 @@ namespace Nekoyume.UI.Module
                 var value = (int) elemental - 1;
                 result = result.Where(x => (int)x.ItemBase.Value.ElementalType == value);
             }
-            scroll.UpdateData(result, true);
+
+            scroll.UpdateData(result, jumpToFirst);
         }
 
         private void SubscribeState(ItemSubType type)
