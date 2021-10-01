@@ -29,6 +29,7 @@ using Libplanet.Tx;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -212,14 +213,6 @@ namespace Nekoyume.BlockChain
             catch (InvalidGenesisBlockException)
             {
                 Widget.Find<SystemPopup>().ShowAndQuit("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
-            }
-
-            if (blocks?.GetState(AuthorizedMinersState.Address) is Dictionary asm)
-            {
-                if (policy is BlockPolicy bp)
-                {
-                    bp.AuthorizedMinersState = new AuthorizedMinersState(asm);
-                }
             }
 
 #if BLOCK_LOG_USE
