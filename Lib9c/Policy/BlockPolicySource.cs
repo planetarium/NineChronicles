@@ -111,7 +111,7 @@ namespace Nekoyume.BlockChain.Policy
             PermissionedMiningPolicy? permissionedMiningPolicy)
         {
 #if UNITY_EDITOR
-            return new Lib9c.DebugPolicy();
+            return new DebugPolicy();
 #else
             return new BlockPolicy(
                 new RewardGold(),
