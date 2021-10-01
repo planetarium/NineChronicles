@@ -19,6 +19,7 @@ using Libplanet.Crypto;
 using Libplanet.Tx;
 using MagicOnion.Client;
 using Nekoyume.Action;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;

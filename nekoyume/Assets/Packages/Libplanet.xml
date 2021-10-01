@@ -2603,7 +2603,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Int64,System.Int32,System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0},Libplanet.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.BlockPolicyViolationException},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Blocks.HashAlgorithmGetter,System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0},Libplanet.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.BlockPolicyViolationException},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Blocks.HashAlgorithmGetter,System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32})">
             <summary>
             <para>
             Creates a default <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> instance.
@@ -2617,13 +2617,16 @@
             every <see cref="T:Libplanet.Blocks.Block`1"/>.  Set to <c>null</c> by default, which results
             in no additional execution other than those included in <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </param>
-            <param name="blockInterval">Configures <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>.
-            Set to <c>5</c> seconds by default.
+            <param name="blockInterval">Goes to <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>.
+            Set to <see cref="F:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.DefaultTargetBlockInterval"/>
+            by default.
             </param>
-            <param name="minimumDifficulty">Configures
-            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>. 1024 by default.</param>
-            <param name="difficultyBoundDivisor">Configures
-            <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>. 128 by default.</param>
+            <param name="difficultyStability">Goes to <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyStability"/>.
+            Set to <see cref="F:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.DefaultDifficultyStability"/>
+            by default.</param>
+            <param name="minimumDifficulty">Goes to <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>.
+            Set to <see cref="F:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.DefaultMinimumDifficulty"/>
+            by default.</param>
             <param name="validateNextBlockTx">The predicate that determines if
             a <see cref="T:Libplanet.Tx.Transaction`1"/> follows the policy.  Set to a constant function of
             <c>null</c> by default.</param>
@@ -2657,12 +2660,23 @@
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval">
             <summary>
-            An appropriate interval between consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s.
-            It is usually from 20 to 30 seconds.
-            <para>If a previous interval took longer than this
-            <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(Libplanet.Blockchain.BlockChain{`0})"/> method
-            raises the <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>.  If it took shorter
-            than this <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/> is dropped.</para>
+            Targeted time interval between two consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s.
+            See the corresponding parameter description for
+            <see cref="M:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.BaseAlgorithm(Libplanet.Blockchain.BlockChain{`0},System.TimeSpan,System.Int64,System.Int64)"/> for full detail.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyStability">
+            <summary>
+            Stability of a series of difficulties for a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            See the corresponding parameter description for
+            <see cref="M:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.BaseAlgorithm(Libplanet.Blockchain.BlockChain{`0},System.TimeSpan,System.Int64,System.Int64)"/> for full detail.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty">
+            <summary>
+            Minimum difficulty for a <see cref="T:Libplanet.Blocks.Block`1"/>.  See the corresponding
+            parameter description for <see cref="M:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.BaseAlgorithm(Libplanet.Blockchain.BlockChain{`0},System.TimeSpan,System.Int64,System.Int64)"/> for
+            full detail.
             </summary>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.CanonicalChainComparer">
@@ -2691,6 +2705,51 @@
         </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxTransactionsPerSignerPerBlock(System.Int64)">
             <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.BaseAlgorithm(Libplanet.Blockchain.BlockChain{`0},System.TimeSpan,System.Int64,System.Int64)">
+            <summary>
+            An Ethereum based difficulty adjustment algorithm.
+            </summary>
+            <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance
+            to calculate the next difficulty from.</param>
+            <param name="targetBlockInterval">The base block interval this difficulty adjustment
+            algorithm targets.  In reality, the algorithm does not actually target the given
+            <see cref="T:System.TimeSpan"/>.  Assuming stable hash rate, the actual average of
+            block intervals comes out to be about <c>targetBaseInterval * 1.4</c>.</param>
+            <param name="difficultystability">Determines how stable difficulty should be over time.
+            </param>
+            <param name="minimumDifficulty">The lower bound on the difficulty.  This is ignored
+            for genesis blocks.</param>
+            <returns>The next target difficulty of a <see cref="T:Libplanet.Blocks.Block`1"/> that gets
+            appended to <paramref name="blockChain"/>.</returns>
+            <exception cref="T:System.IndexOutOfRangeException">When the number of blocks
+            in <see cref="T:Libplanet.Blockchain.BlockChain`1"/> is negative.</exception>
+            <remarks>
+            It is strongly recommended to use the factory version <see cref="M:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.AlgorithmFactory(System.TimeSpan,System.Int64,System.Int64)"/>
+            to get a working difficulty adjustment algorithm.
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.AlgorithmFactory(System.TimeSpan,System.Int64,System.Int64)">
+            <summary>
+            Does sanity checks and binds arguments to the <see cref="M:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.BaseAlgorithm(Libplanet.Blockchain.BlockChain{`0},System.TimeSpan,System.Int64,System.Int64)"/> based
+            difficulty adjustment algorithm.
+            </summary>
+            <param name="targetBlockInterval">The base block interval this difficulty adjustment
+            algorithm targets.  In reality, the algorithm does not actually target the given
+            <see cref="T:System.TimeSpan"/>.  Assuming stable hash rate, the actual average of
+            block intervals comes out to be about <c>targetBaseInterval * 1.4</c>.
+            If ommited, set to <see cref="F:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.DefaultTargetBlockInterval"/> by default.
+            </param>
+            <param name="difficultyStability">Determines how stable difficulty should be over time.
+            If ommited, set to <see cref="F:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.DefaultDifficultyStability"/> by default.
+            </param>
+            <param name="minimumDifficulty">The lower bound on the difficulty.</param>
+            <returns>The next target difficulty of a <see cref="T:Libplanet.Blocks.Block`1"/> that gets
+            appended to some <See cref="T:Libplanet.Blockchain.BlockChain`1"/>.  If ommited, set to
+            <see cref="F:Libplanet.Blockchain.Policies.DifficultyAdjustment`1.DefaultMinimumDifficulty"/> by default.</returns>
+            <returns>A difficulty adjustment algorithm with bound constants provided.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">If any of the arguments fail to
+            satisfy the necessary constraints for the formula to work.</exception>
         </member>
         <member name="T:Libplanet.Blockchain.Policies.IBlockPolicy`1">
             <summary>
