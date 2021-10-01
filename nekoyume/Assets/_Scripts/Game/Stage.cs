@@ -90,9 +90,7 @@ namespace Nekoyume.Game
         public bool IsExitReserved { get; set; }
         public bool IsRepeatStage { get; set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
-
-
-
+        public int PlayCount { get; set; }
 
         public Vector3 SelectPositionBegin(int index) =>
             new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
@@ -598,7 +596,7 @@ namespace Nekoyume.Game
                 }
             }
 
-            Widget.Find<BattleResult>().Show(_battleResultModel);
+            Widget.Find<BattleResult>().Show(_battleResultModel, PlayCount > 1);
 
             yield return null;
 
@@ -697,7 +695,9 @@ namespace Nekoyume.Game
                     isTutorial = true;
                 }
 
-                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial);
+                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial, PlayCount * Game.instance
+                    .TableSheets.StageSheet.Values.FirstOrDefault(i =>
+                        i.Id == Widget.Find<WorldMap>().SelectedStageId).CostAP);
                 var stageSheet = Game.instance.TableSheets.StageSheet;
                 if (stageSheet.TryGetValue(stageId, out var row))
                 {

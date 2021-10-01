@@ -132,6 +132,8 @@ namespace Nekoyume.UI
 
         private BattleWin03VFX _battleWin03VFX;
 
+        private BattleWin04VFX _battleWin04VFX;
+
         private Coroutine _coUpdateBottomText;
 
         private readonly WaitForSeconds _battleWinVFXYield = new WaitForSeconds(0.2f);
@@ -233,7 +235,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void Show(Model model)
+        public void Show(Model model, bool isBoosted)
         {
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
@@ -254,7 +256,7 @@ namespace Nekoyume.UI
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
 
-            UpdateView();
+            UpdateView(isBoosted);
             HelpPopup.HelpMe(100006, true);
         }
 
@@ -271,12 +273,12 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        private void UpdateView()
+        private void UpdateView(bool isBoosted)
         {
             switch (SharedModel.State)
             {
                 case BattleLog.Result.Win:
-                    StartCoroutine(CoUpdateViewAsVictory());
+                    StartCoroutine(CoUpdateViewAsVictory(isBoosted));
                     break;
                 case BattleLog.Result.Lose:
                     UpdateViewAsDefeat(SharedModel.State);
@@ -284,7 +286,7 @@ namespace Nekoyume.UI
                 case BattleLog.Result.TimeOver:
                     if (SharedModel.ClearedWaveNumber > 0)
                     {
-                        StartCoroutine(CoUpdateViewAsVictory());
+                        StartCoroutine(CoUpdateViewAsVictory(isBoosted));
                     }
                     else
                     {
@@ -296,13 +298,14 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator CoUpdateViewAsVictory()
+        private IEnumerator CoUpdateViewAsVictory(bool isBoosted)
         {
             AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-            StartCoroutine(EmitBattleWinVFX());
+            StartCoroutine(EmitBattleWinVFX(isBoosted));
 
             victoryImageContainer.SetActive(true);
-            _victoryImageAnimator.SetInteger("ClearedWave", SharedModel.ClearedWaveNumber);
+            _victoryImageAnimator.SetInteger("ClearedWave",
+                isBoosted ? 4 : SharedModel.ClearedWaveNumber);
 
             defeatImageContainer.SetActive(false);
             topArea.SetActive(true);
@@ -314,10 +317,20 @@ namespace Nekoyume.UI
             yield return StartCoroutine(CoUpdateRewards());
         }
 
-        private IEnumerator EmitBattleWinVFX()
+        private IEnumerator EmitBattleWinVFX(bool isBoosted)
         {
             yield return _battleWinVFXYield;
             AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
+
+            if (isBoosted)
+            {
+                _battleWin04VFX =
+                    VFXController.instance.CreateAndChase<BattleWin04VFX>(
+                        ActionCamera.instance.transform,
+                        VfxBattleWinOffset);
+                yield break;
+            }
+
             switch (SharedModel.ClearedWaveNumber)
             {
                 case 1:
@@ -538,7 +551,8 @@ namespace Nekoyume.UI
                         player.Equipments,
                         new List<Consumable>(),
                         SharedModel.WorldID,
-                        SharedModel.StageID + 1)
+                        SharedModel.StageID + 1,
+                        1)
                     .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
                     .Subscribe();
             }
@@ -604,7 +618,8 @@ namespace Nekoyume.UI
                         player.Equipments,
                         new List<Consumable>(),
                         SharedModel.WorldID,
-                        SharedModel.StageID)
+                        SharedModel.StageID,
+                        1)
                     .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
                     .Subscribe();
             }
@@ -699,6 +714,12 @@ namespace Nekoyume.UI
             {
                 _battleWin03VFX.Stop();
                 _battleWin03VFX = null;
+            }
+
+            if (_battleWin04VFX)
+            {
+                _battleWin04VFX.Stop();
+                _battleWin04VFX = null;
             }
 
             foreach (var reward in rewardsArea.rewards)

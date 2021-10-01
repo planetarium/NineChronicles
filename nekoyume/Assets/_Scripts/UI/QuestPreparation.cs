@@ -83,7 +83,7 @@ namespace Nekoyume.UI
         private Transform buttonStarImageTransform = null;
 
         [SerializeField]
-        private Toggle repeatToggle;
+        private Toggle repeatToggle; // It is not currently in use
 
         [SerializeField, Range(.5f, 3.0f)]
         private float animationTime = 1f;
@@ -97,6 +97,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject coverToBlockClick = null;
+
+        [SerializeField]
+        private Button boostPopupButton;
 
         private Stage _stage;
         private Game.Character.Player _player;
@@ -189,6 +192,34 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             questButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLinePopup.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                .AddTo(gameObject);
+
+            boostPopupButton.OnClickAsObservable()
+                .Where(_ => Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value) && EnoughToPlay)
+                .Subscribe(_ =>
+                {
+                    var costumes = _player.Costumes;
+                    var equipments = equipmentSlots
+                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                        .Select(slot => (Equipment)slot.Item)
+                        .ToList();
+
+                    var consumables = consumableSlots
+                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                        .Select(slot => (Consumable)slot.Item)
+                        .ToList();
+
+                    _stage.IsExitReserved = false;
+                    _stage.IsRepeatStage = false;
+                    _stage.foodCount = consumables.Count;
+                    ActionRenderHandler.Instance.Pending = true;
+
+                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables);
+                });
+            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
                     OneLinePopup.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
@@ -806,13 +837,16 @@ namespace Nekoyume.UI
             _stage.IsRepeatStage = repeat;
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
+
+            var playCount = 1; //int.Parse(boostTestInputField.text);
             Game.Game.instance.ActionManager
                 .HackAndSlash(
                     costumes,
                     equipments,
                     consumables,
                     _worldId,
-                    _stageId.Value
+                    _stageId.Value,
+                    playCount
                 )
                 .Subscribe(
                     _ =>
@@ -893,7 +927,7 @@ namespace Nekoyume.UI
                 tableSheets.GetStageSimulatorSheets(),
                 tableSheets.CostumeStatSheet
             );
-            simulator.Simulate();
+            simulator.Simulate(1);
             GoToStage(simulator.Log);
         }
     }

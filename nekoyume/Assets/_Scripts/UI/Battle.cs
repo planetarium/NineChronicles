@@ -1,24 +1,49 @@
+using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class Battle : Widget
     {
-        [SerializeField] private StageTitle stageTitle = null;
-        [SerializeField] private GuidedQuest guidedQuest = null;
-        [SerializeField] private BossStatus bossStatus = null;
-        [SerializeField] private Toggle repeatToggle = null;
-        [SerializeField] private Toggle exitToggle = null;
-        [SerializeField] private HelpButton helpButton = null;
-        [SerializeField] private BossStatus enemyPlayerStatus = null;
-        [SerializeField] private StageProgressBar stageProgressBar = null;
-        [SerializeField] private ComboText comboText = null;
+        [SerializeField]
+        private StageTitle stageTitle = null;
+
+        [SerializeField]
+        private GuidedQuest guidedQuest = null;
+
+        [SerializeField]
+        private BossStatus bossStatus = null;
+
+        [SerializeField]
+        private Toggle repeatToggle = null;
+
+        [SerializeField]
+        private Toggle exitToggle = null;
+
+        [SerializeField]
+        private HelpButton helpButton = null;
+
+        [SerializeField]
+        private BossStatus enemyPlayerStatus = null;
+
+        [SerializeField]
+        private StageProgressBar stageProgressBar = null;
+
+        [SerializeField]
+        private ComboText comboText = null;
+
+        [SerializeField]
+        private GameObject boostEffectObject = null;
+
+        [SerializeField]
+        private TMP_Text boostCountText;
 
         public BossStatus BossStatus => bossStatus;
         public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
@@ -93,7 +118,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        public void Show(int stageId, bool isRepeat, bool isExitReserved, bool isTutorial)
+        public void Show(int stageId, bool isRepeat, bool isExitReserved, bool isTutorial, int boostCost)
         {
             if (isTutorial)
             {
@@ -114,10 +139,14 @@ namespace Nekoyume.UI
             comboText.Close();
 
             exitToggle.isOn = isExitReserved;
-            repeatToggle.isOn = isExitReserved ? false : isRepeat;
+            //repeatToggle.isOn = isExitReserved ? false : isRepeat;
             helpButton.gameObject.SetActive(true);
-            repeatToggle.gameObject.SetActive(true);
+            //repeatToggle.gameObject.SetActive(true);
+            boostEffectObject.SetActive(boostCost > Game.Game.instance
+                .TableSheets.StageSheet.Values.FirstOrDefault(i =>
+                    i.Id == Find<WorldMap>().SelectedStageId).CostAP);
             exitToggle.gameObject.SetActive(true);
+            boostCountText.text = $"<sprite name=UI_main_icon_star><size=75%>{boostCost}</size>";
         }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)

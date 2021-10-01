@@ -122,7 +122,7 @@ namespace Nekoyume.UI
             ActionCamera.instance.ChaseX(player.transform);
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
-                .HackAndSlash(player, worldId, stageId)
+                .HackAndSlash(player, worldId, stageId, 1)
                 .Subscribe(_ =>
                 {
                     LocalLayerModifier.ModifyAvatarActionPoint(
