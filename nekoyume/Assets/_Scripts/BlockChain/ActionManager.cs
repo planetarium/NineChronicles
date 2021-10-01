@@ -151,6 +151,13 @@ namespace Nekoyume.BlockChain
             int stageId,
             int playCount)
         {
+            Mixpanel.Track("Unity/HackAndSlash", new Value()
+            {
+                ["WorldId"] = worldId,
+                ["StageId"] = stageId,
+                ["PlayCount"] = playCount,
+            });
+
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes ??= new List<Costume>();
             equipments ??= new List<Equipment>();
