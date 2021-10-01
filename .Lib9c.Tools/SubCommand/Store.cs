@@ -1,10 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using Cocona;
-using Libplanet;
-using Libplanet.Blocks;
 using Libplanet.RocksDBStore;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -28,17 +25,17 @@ namespace Lib9c.Tools.SubCommand
         {
             if (!skipCopy)
             {
-                Console.WriteLine("Copy Start!");
+                Console.WriteLine("Copy Start!");                
                 DirectoryCopy(originRootPath, distRootPath, true);
                 Directory.Delete(Path.Combine(distRootPath, "tx"), true);
                 Directory.Delete(Path.Combine(distRootPath, "block"), true);
-                Console.WriteLine("Copy Success!");
+                Console.WriteLine("Copy Success!");                
             }
             else
             {
-                Console.WriteLine("Skip copy");
+                Console.WriteLine("Skip copy");                
             }
-
+            
             var originStore = new MonoRocksDBStore(originRootPath);
             var distStore = new RocksDBStore(distRootPath);
 
@@ -50,14 +47,10 @@ namespace Lib9c.Tools.SubCommand
                     originStore.IterateBlockHashes().Select((value, i) => new {i, value}))
                 {
                     Console.WriteLine($"block progress: {item.i}/{totalLength}");
-                    Block<NCAction> block = originStore.GetBlock<NCAction>(
-                        _ => HashAlgorithmType.Of<SHA256>(),  // thunk getter
-                        item.value
-                    );
-                    distStore.PutBlock(block);
+                    distStore.PutBlock(originStore.GetBlock<NCAction>(item.value));
                 }
 
-                Console.WriteLine("Finish migrate block.");
+                Console.WriteLine("Finish migrate block.");                
             }
 
             totalLength = originStore.CountTransactions();
@@ -74,13 +67,13 @@ namespace Lib9c.Tools.SubCommand
 
                 Console.WriteLine("Finish migrate transaction.");
             }
-
+           
             originStore.Dispose();
             distStore.Dispose();
-
+            
             Console.WriteLine("Migration Success!");
         }
-
+        
         private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
         {
             // Get the subdirectories for the specified directory.
@@ -94,9 +87,9 @@ namespace Lib9c.Tools.SubCommand
             }
 
             DirectoryInfo[] dirs = dir.GetDirectories();
-
-            // If the destination directory doesn't exist, create it.
-            Directory.CreateDirectory(destDirName);
+        
+            // If the destination directory doesn't exist, create it.       
+            Directory.CreateDirectory(destDirName);        
 
             // Get the files in the directory and copy them to the new location.
             FileInfo[] files = dir.GetFiles();

@@ -24,7 +24,7 @@ namespace Lib9c.Tests
         public async Task Proof()
         {
             using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
             var blockPolicySource = new BlockPolicySource(Logger.None);
             var genesis = BlockChain<NCAction>.MakeGenesisBlock(HashAlgorithmType.Of<SHA256>());
             var blockChain = new BlockChain<NCAction>(

@@ -28,11 +28,8 @@ namespace Lib9c.Tools.SubCommand
             [Argument("GENESIS-BLOCK", Description = "A genesis block containing InitializeStates.")] string genesisBlock
         )
         {
-            byte[] genesisBytes = File.ReadAllBytes(genesisBlock);
-            var genesisDict = (Bencodex.Types.Dictionary)_codec.Decode(genesisBytes);
-            IReadOnlyList<Transaction<NCAction>> genesisTxs =
-                BlockMarshaler.UnmarshalBlockTransactions<NCAction>(genesisDict);
-            var initStates = (InitializeStates)genesisTxs.Single().Actions.Single().InnerAction;
+            Block<NCAction> genesis = Block<NCAction>.Deserialize(File.ReadAllBytes(genesisBlock));
+            var initStates = (InitializeStates)genesis.Transactions.Single().Actions.Single().InnerAction;
             Currency currency = new GoldCurrencyState(initStates.GoldCurrency).Currency;
 
             var action = new TransferAsset(
@@ -48,7 +45,7 @@ namespace Lib9c.Tools.SubCommand
                     action.PlainValue
                 }
             );
-
+            
             byte[] raw = _codec.Encode(bencoded);
             Console.Write(ByteUtil.Hex(raw));
         }
@@ -72,11 +69,11 @@ namespace Lib9c.Tools.SubCommand
                     {
                         a = File.ReadAllText(a);
                     }
-
+                    
                     var bencoded = (List)_codec.Decode(ByteUtil.ParseHex(a));
                     string type = (Text) bencoded[0];
                     Dictionary plainValue = (Dictionary)bencoded[1];
-
+                    
                     ActionBase action = null;
                     action = type switch
                     {
