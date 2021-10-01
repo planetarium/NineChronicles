@@ -1,5 +1,3 @@
-using Bencodex;
-using Bencodex.Types;
 using Cocona;
 using Libplanet;
 using Libplanet.Action;
@@ -18,8 +16,6 @@ namespace Lib9c.Tools.SubCommand
 {
     public class Genesis
     {
-        private static readonly Codec Codec = new Codec();
-
         [Command(Description = "Create a new genesis block.")]
         public void Create(
             [Option("private-key", new[]{ 'p' }, Description = "Hex encoded private key for gensis block")]
@@ -78,8 +74,7 @@ namespace Lib9c.Tools.SubCommand
 
         private static void ExportBlock(Block<PolymorphicAction<ActionBase>> block, string path)
         {
-            Bencodex.Types.Dictionary dict = block.MarshalBlock();
-            byte[] encoded = Codec.Encode(dict);
+            byte[] encoded = block.Serialize();
             File.WriteAllBytes(path, encoded);
         }
 
