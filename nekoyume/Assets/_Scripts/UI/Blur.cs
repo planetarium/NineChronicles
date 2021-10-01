@@ -1,14 +1,21 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using UniRx;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Blur : MonoBehaviour
     {
-        private static readonly int RadiusPropertyID = Shader.PropertyToID("_Radius");
-        private static readonly int ScreenWidthPropertyID = Shader.PropertyToID("_ScreenWidth");
+        private static readonly int SizePropertyID = Shader.PropertyToID("_Size");
+
+        private static readonly List<Blur> _blurs = new List<Blur>();
+        private static readonly Subject<Unit> _onBlurAdded = new Subject<Unit>();
+        private static readonly Subject<Unit> _onBlurRemoved = new Subject<Unit>();
 
         public Image image;
         public Button button;
@@ -16,28 +23,79 @@ namespace Nekoyume.UI
 
         private Material _glassOriginal;
         private Material _glass;
-        private float _originalBlurRadius;
+        private float _originalBlurSize;
+
+        private readonly List<IDisposable> _disposablesAtEnable = new List<IDisposable>();
 
         #region override
 
-        protected void Awake()
+        private void Awake()
         {
-            FindGlassMaterial(gameObject);
+            if (!image ||
+                !image.material ||
+                !image.material.shader.name.Equals("Custom/TintedUIBlur"))
+            {
+                return;
+            }
+
+            _glassOriginal = image.material;
+            _originalBlurSize = _glassOriginal.GetFloat(SizePropertyID);
+            _glass = image.material = new Material(_glassOriginal);
+
             button.OnClickAsObservable()
                 .Subscribe(_ => onClick?.Invoke())
                 .AddTo(gameObject);
         }
 
+        private void OnEnable()
+        {
+            _blurs.Add(this);
+            _onBlurAdded.OnNext(Unit.Default);
+            _onBlurAdded.Subscribe(_ => image.enabled = false).AddTo(_disposablesAtEnable);
+            _onBlurRemoved.Subscribe(_ =>
+            {
+                var lastBlur = _blurs.LastOrDefault();
+                if (lastBlur &&
+                    lastBlur == this &&
+                    !image.enabled)
+                {
+                    image.enabled = true;
+                }
+            }).AddTo(_disposablesAtEnable);
+        }
+
+        private void OnDisable()
+        {
+            _disposablesAtEnable.DisposeAllAndClear();
+            var lastBlur = _blurs.LastOrDefault();
+            if (lastBlur)
+            {
+                _blurs.Remove(lastBlur);
+                _onBlurRemoved.OnNext(Unit.Default);
+                if (lastBlur != this)
+                {
+                    Debug.LogWarning("Last Blur object not equals to this object.");
+                }
+            }
+
+            if (!_glass)
+            {
+                return;
+            }
+
+            _glass.SetFloat(SizePropertyID, _originalBlurSize);
+        }
+
         public virtual void Show(float time = 0.33f)
         {
             gameObject.SetActive(true);
-            StartBlur(_originalBlurRadius, time);
+            StartBlur(_originalBlurSize, time);
         }
 
-        public virtual void Show(float radius, float time = 0.33f)
+        public virtual void Show(float size, float time = 0.33f)
         {
             gameObject.SetActive(true);
-            StartBlur(radius, time);
+            StartBlur(size, time);
         }
 
         public void Close()
@@ -47,42 +105,27 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public virtual void StartBlur(float radius, float time)
+        public virtual void StartBlur(float size, float time)
         {
             if (!gameObject.activeSelf)
                 return;
-            StartCoroutine(CoBlur(radius, time));
+            StartCoroutine(CoBlur(size, time));
         }
 
-        private void FindGlassMaterial(GameObject go)
-        {
-            if (!image ||
-                !image.material ||
-                !image.material.shader.name.Equals("UI/Unlit/FrostedGlass"))
-                return;
-
-            _glassOriginal = image.material;
-            _originalBlurRadius = _glassOriginal.GetFloat(RadiusPropertyID);
-            _glass
-                = image.material
-                = new Material(_glassOriginal);
-        }
-
-        private IEnumerator CoBlur(float radius, float time)
+        private IEnumerator CoBlur(float size, float time)
         {
             if (!_glass)
                 yield break;
 
             var from = 0f;
-            var to = radius;
+            var to = size;
 
-            _glass.SetFloat(RadiusPropertyID, from);
-            _glass.SetFloat(ScreenWidthPropertyID, Screen.width);
+            _glass.SetFloat(SizePropertyID, from);
             var elapsedTime = 0f;
             while (true)
             {
                 var current = Mathf.Lerp(from, to, elapsedTime / time);
-                _glass.SetFloat(RadiusPropertyID, current);
+                _glass.SetFloat(SizePropertyID, current);
 
                 elapsedTime += Time.deltaTime;
                 if (elapsedTime > time ||
@@ -90,17 +133,11 @@ namespace Nekoyume.UI
                 {
                     break;
                 }
+
                 yield return null;
             }
 
-            _glass.SetFloat(RadiusPropertyID, to);
-        }
-
-        protected void OnDisable()
-        {
-            if (!_glass)
-                return;
-            _glass.SetFloat(RadiusPropertyID, _originalBlurRadius);
+            _glass.SetFloat(SizePropertyID, to);
         }
     }
 }

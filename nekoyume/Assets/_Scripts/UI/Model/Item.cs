@@ -43,8 +43,7 @@ namespace Nekoyume.UI.Model
 
             if (equipment != null)
             {
-                HasOptions.Value = equipment.optionCountFromCombination > 0 ||
-                    equipment.StatsMap.GetAdditionalStats(true).Count() + equipment.Skills.Count > 0;
+                HasOptions.Value = equipment.GetOptionCountFromCombination() > 0;
             }
         }
 
