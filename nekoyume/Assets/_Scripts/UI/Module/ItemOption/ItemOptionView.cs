@@ -1,4 +1,4 @@
-﻿using Nekoyume.Game.Controller;
+using Nekoyume.Game.Controller;
 using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
@@ -59,8 +59,8 @@ namespace Nekoyume.UI.Module
 
         public void UpdateViewAsTotalAndPlusStat(StatType type, int totalValue, int plusValue) =>
             UpdateView(
-                $"{type} {(type == StatType.SPD ? totalValue / 100f : totalValue)}",
-                plusValue > 0 ? $"+{plusValue}" : string.Empty);
+                $"{type} {StatExtensions.ValueToString(type, totalValue)}",
+                plusValue > 0 ? $"+{StatExtensions.ValueToString(type, plusValue)}" : string.Empty);
 
         public void UpdateAsTotalAndPlusSkill(
             string skillName,

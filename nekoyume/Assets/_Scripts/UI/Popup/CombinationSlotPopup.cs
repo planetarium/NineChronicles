@@ -8,8 +8,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Mail;
-using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -176,14 +174,17 @@ namespace Nekoyume.UI
             {
                 var (type, value, _) = itemOptionInfo.StatOptions[0];
                 information.MainStatView.UpdateView(
-                    $"{type} {value}",
+                    $"{type} {StatExtensions.ValueToString(type, value)}",
                     string.Empty);
 
                 return;
             }
 
+            var statType = itemOptionInfo.MainStat.type;
+            var statValueString = StatExtensions.ValueToString(statType, itemOptionInfo.MainStat.baseValue);
+
             information.MainStatView.UpdateView(
-                $"{itemOptionInfo.MainStat.type} {itemOptionInfo.MainStat.baseValue}",
+                $"{statType} {statValueString}",
                 string.Empty);
 
             var statOptionRows = ItemOptionHelper.GetStatOptionRows(
@@ -205,7 +206,9 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var text = $"{optionRow.StatType} ({optionRow.StatMin} - {optionRow.StatMax})";
+                var statMin = StatExtensions.ValueToString(optionRow.StatType, optionRow.StatMin);
+                var statMax = StatExtensions.ValueToString(optionRow.StatType, optionRow.StatMax);
+                var text = $"{optionRow.StatType} ({statMin} - {statMax})";
                 optionView.UpdateView(text, string.Empty, 1);
                 optionView.Show();
             }

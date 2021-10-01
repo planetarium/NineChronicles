@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Nekoyume.Model.Stat;
 using UnityEngine;
@@ -45,11 +45,16 @@ namespace Nekoyume.UI.Module
             IsEmpty = IsEmpty && optionCount == 0;
         }
 
-        public void UpdateAsTotalAndPlusStatWithCount(StatType type, int totalValue, int plusValue, int count) =>
+        public void UpdateAsTotalAndPlusStatWithCount(StatType type, int totalValue, int plusValue, int count)
+        {
+            var totalValueString = StatExtensions.ValueToString(type, totalValue);
+            var plusValueString = StatExtensions.ValueToString(type, plusValue);
+
             UpdateView(
-                $"{type} {(type == StatType.SPD ? totalValue / 100f : totalValue)}",
-                plusValue > 0 ? $"+{(type == StatType.SPD ? plusValue / 100f : plusValue)}" : string.Empty,
+                $"{type} {totalValueString}",
+                plusValue > 0 ? $"+{plusValueString}" : string.Empty,
                 count);
+        }
 
         public override void UpdateToEmpty() =>
             UpdateView(string.Empty, string.Empty, 0);

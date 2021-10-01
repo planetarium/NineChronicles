@@ -13,9 +13,7 @@ namespace Nekoyume.UI.Module
         public void Show(StatType statType, int statValue, int afterStatValue)
         {
             afterValueText.text
-                = statType == StatType.SPD
-                    ? (afterStatValue / 100f).ToString(CultureInfo.InvariantCulture)
-                    : afterStatValue.ToString();
+                = StatExtensions.ValueToString(statType, afterStatValue);
             Show(statType, statValue);
         }
 
