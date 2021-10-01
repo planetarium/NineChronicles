@@ -1114,7 +1114,7 @@ namespace Nekoyume.Game
                 .Where(c => c.Id == caster.Id);
             var character = characters?.FirstOrDefault();
 
-            if (!(characters is null))
+            if (!(characters is null) && characters.Any())
             {
                 var ch = characters.First();
 
