@@ -35,7 +35,28 @@ namespace Lib9c.Benchmarks
 
             string storePath = args[0];
             int limit = int.Parse(args[1]);
-            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().CreateLogger();
+            int offset = 0;
+
+            if (args.Length >= 3)
+            {
+                offset = int.Parse(args[2]);
+            }
+
+            if (limit < 0)
+            {
+                Console.Error.WriteLine("Limit value must be greater than 0. Entered value: {0}", limit);
+                Environment.Exit(1);
+                return;
+            }
+
+            if (offset < 0)
+            {
+                Console.Error.WriteLine("Offset value must be greater than 0. Entered value: {0}", offset);
+                Environment.Exit(1);
+                return;
+            }
+
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Verbose().WriteTo.Console().CreateLogger();
             Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
             var policySource = new BlockPolicySource(Log.Logger, LogEventLevel.Verbose);
             IBlockPolicy<NCAction> policy =
@@ -63,9 +84,15 @@ namespace Lib9c.Benchmarks
             var stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
             var chain = new BlockChain<NCAction>(policy, stagePolicy, store, stateStore, genesis);
             long height = chain.Tip.Index;
-            BlockHash[] blockHashes = limit < 0
-                ? chain.BlockHashes.SkipWhile((_, i) => i < height + limit).ToArray()
-                : chain.BlockHashes.Take(limit).ToArray();
+            if (offset + limit > (int)height)
+            {
+                Console.Error.WriteLine(
+                    "The sum of the offset and limit is greater than the chain tip index: {0}", height);
+                Environment.Exit(1);
+                return;
+            }
+
+            BlockHash[] blockHashes = store.IterateIndexes(chain.Id, offset, limit).Select((value, i) => value ).ToArray();
             Console.Error.WriteLine(
                 "Executing {0} blocks: {1}-{2} (inclusive).",
                 blockHashes.Length,
