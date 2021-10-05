@@ -3,7 +3,7 @@ using Libplanet;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public static class PermissionedMiningPolicy
+    public static class PermissionedMinersPolicy
     {
         public static VariableSubPolicy<ImmutableHashSet<Address>> Default
         {

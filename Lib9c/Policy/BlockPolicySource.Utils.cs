@@ -37,18 +37,11 @@ namespace Nekoyume.BlockChain.Policy
                 && admin.AdminAddress.Equals(transaction.Signer);
         }
 
-        internal static bool IsAuthorizedMinerTransactionRaw(
+        private static bool IsAuthorizedMinerTransactionRaw(
             Transaction<NCAction> transaction,
             ImmutableHashSet<Address> allAuthorizedMiners)
         {
             return allAuthorizedMiners.Contains(transaction.Signer);
-        }
-
-        internal static Func<Transaction<NCAction>, bool> IsAuthorizedMinerTransactionFactory(
-            ImmutableHashSet<Address> allAuthorizedMiners)
-        {
-            return transaction => IsAuthorizedMinerTransactionRaw(
-                transaction, allAuthorizedMiners);
         }
 
         internal static AdminState GetAdminState(
@@ -68,9 +61,10 @@ namespace Nekoyume.BlockChain.Policy
 
         // FIXME: Tx count validation should be done in libplanet, not here.
         // Should be removed once libplanet is updated.
-        internal static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
+        private static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
             Block<NCAction> block,
-            Func<long, int> getMinTransactionsPerBlock)
+            Func<long, int> getMinTransactionsPerBlock,
+            Func<long, int> getMaxTransactionsPerSignerPerBlock)
         {
             if (block.Transactions.Count < getMinTransactionsPerBlock(block.Index))
             {
@@ -78,14 +72,28 @@ namespace Nekoyume.BlockChain.Policy
                     $"Block #{block.Index} {block.Hash} should include " +
                     $"at least {MinTransactionsPerBlock} transaction(s).");
             }
+            else
+            {
+                int maxTransactionsPerSignerPerBlock =
+                    getMaxTransactionsPerSignerPerBlock(block.Index);
+                if (block.Transactions
+                    .GroupBy(tx => tx.Signer)
+                    .Any(group => group.Count() > maxTransactionsPerSignerPerBlock))
+                {
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash} includes too many transactions " +
+                        $"from a single signer where the maximum number of allowed by " +
+                        $"a single signer per block is {maxTransactionsPerSignerPerBlock}.");
+                }
+            }
 
             return null;
         }
 
-        internal static BlockPolicyViolationException ValidateMinerAuthorityRaw(
+        private static BlockPolicyViolationException ValidateMinerAuthorityRaw(
             Block<NCAction> block,
-            Func<long, bool> getAuthorizedMiningNoOpTxRequirement,
-            Func<long, ImmutableHashSet<Address>> getAuthorizedMiners)
+            Func<long, ImmutableHashSet<Address>> getAuthorizedMiners,
+            Func<long, bool> getAuthorizedMiningNoOpTxRequired)
         {
             ImmutableHashSet<Address> authorizedMiners = getAuthorizedMiners(block.Index);
 
@@ -102,7 +110,7 @@ namespace Nekoyume.BlockChain.Policy
             // Otherwise, block's miner should be one of the authorized miners.
             else if (authorizedMiners.Contains(block.Miner))
             {
-                return ValidateMinerAuthorityNoOpTxRaw(block, getAuthorizedMiningNoOpTxRequirement);
+                return ValidateMinerAuthorityNoOpTxRaw(block, getAuthorizedMiningNoOpTxRequired);
             }
             else
             {
@@ -111,23 +119,11 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
-        internal static Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
-            ValidateMinerAuthorityFactory(
-                Func<long, bool> getAuthorizedMiningNoOpTxRequirement,
-                Func<long, ImmutableHashSet<Address>> getAuthorizedMiners)
-        {
-            return (blockChain, block) =>
-                ValidateMinerAuthorityRaw(
-                    block,
-                    getAuthorizedMiningNoOpTxRequirement,
-                    getAuthorizedMiners);
-        }
-
-        internal static BlockPolicyViolationException ValidateMinerAuthorityNoOpTxRaw(
+        private static BlockPolicyViolationException ValidateMinerAuthorityNoOpTxRaw(
             Block<NCAction> block,
-            Func<long, bool> getAuthorizedMiningNoOpTxRequirement)
+            Func<long, bool> getAuthorizedMiningNoOpTxRequired)
         {
-            if (getAuthorizedMiningNoOpTxRequirement(block.Index))
+            if (getAuthorizedMiningNoOpTxRequired(block.Index))
             {
                 // Authority is proven through a no-op transaction, i.e. a transaction
                 // with zero actions, starting from ValidateMinerAuthorityNoOpHardcodedIndex.
@@ -157,7 +153,7 @@ namespace Nekoyume.BlockChain.Policy
             return null;
         }
 
-        internal static BlockPolicyViolationException ValidateMinerPermissionRaw(
+        private static BlockPolicyViolationException ValidateMinerPermissionRaw(
             Block<NCAction> block,
             Func<long, ImmutableHashSet<Address>> getPermissionedMiners)
         {
@@ -175,13 +171,11 @@ namespace Nekoyume.BlockChain.Policy
                 // If the set of permissioned miners is not empty, only miners in the set can mine.
                 if (permissionedMiners.Contains(miner))
                 {
-                    // TODO: Only existance of a transaction with miner signature was checked for
+                    // FIXME: Only existance of a transaction with miner signature was checked for
                     // some time.  Checking whether such transaction is a no-op transaction
-                    // was missing.  Although unlikely, past blocks should be inspected to see
-                    // if unintended blocks are included in the chain.
-                    // Also a no-op transaction created by miner must be included.
+                    // was missing.  This results in a different definition of proof transaction
+                    // for authorized mining and permissioned mining.
                     if (block.Transactions
-                        .Where(tx => tx.Actions.Count == 0)
                         .Any(tx => tx.Signer.Equals(miner)))
                     {
                         return null;
@@ -203,24 +197,7 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
-        internal static Func<Block<NCAction>, BlockPolicyViolationException>
-            ValidateMinerPermissionFactory(
-                Func<long, ImmutableHashSet<Address>> getPermissionedMiners)
-        {
-            return block => ValidateMinerPermissionRaw(block, getPermissionedMiners);
-        }
-
-        internal static Func<Block<NCAction>, BlockPolicyViolationException>
-            ValidateTxCountPerBlockFactory(
-                VariableSubPolicy<int> minTransactionsPerBlockPolicy,
-                Func<long, int> getMinTransactionsPerBlock)
-        {
-            return block => ValidateTxCountPerBlockRaw(
-                block,
-                getMinTransactionsPerBlock);
-        }
-
-        internal static bool IsAllowedToMineRaw(
+        private static bool IsAllowedToMineRaw(
             Address miner,
             long index,
             Func<long, ImmutableHashSet<Address>> getAuthorizedMiners,
@@ -245,18 +222,6 @@ namespace Nekoyume.BlockChain.Policy
 
             // If none of the conditions apply, any miner is allowed to mine.
             return true;
-        }
-
-        internal static Func<Address, long, bool> IsAllowedToMineFactory(
-            Func<long, ImmutableHashSet<Address>> getAuthorizedMiners,
-            Func<long, ImmutableHashSet<Address>> getPermissionedMiners)
-        {
-            return (miner, index) =>
-                IsAllowedToMineRaw(
-                    miner,
-                    index,
-                    getAuthorizedMiners,
-                    getPermissionedMiners);
         }
     }
 }

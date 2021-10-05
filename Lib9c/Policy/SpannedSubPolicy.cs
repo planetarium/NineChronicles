@@ -44,7 +44,7 @@ namespace Nekoyume.BlockChain.Policy
         public bool IsTargetRange(long index)
         {
             return StartIndex <= index
-                && (EndIndex is null || (EndIndex is long endIndex && index <= endIndex));
+                && (Indefinite || (EndIndex is long endIndex && index <= endIndex));
         }
 
         [Pure]

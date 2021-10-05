@@ -45,6 +45,7 @@ namespace Nekoyume.BlockChain.Policy
                     lastSpannedSubPolicy = new SpannedSubPolicy<T>(
                         lastSpannedSubPolicy.StartIndex,
                         spannedSubPolicy.StartIndex - 1,
+                        lastSpannedSubPolicy.Interval,
                         lastSpannedSubPolicy.Value);
                     spannedSubPolicies[spannedSubPolicies.Count - 1] = lastSpannedSubPolicy;
                 }
@@ -56,25 +57,6 @@ namespace Nekoyume.BlockChain.Policy
             _spannedSubPolicies = spannedSubPolicies.ToImmutableList();
 
             Validate();
-        }
-
-        /// <summary>
-        /// Creates a new subpolicy with an additional <see cref="SpannedSubPolicy{T}"/> added.
-        /// </summary>
-        /// <param name="spannedSubPolicy">New <see cref="SpannedSubPolicy{T}"/> to add.</param>
-        /// <returns>
-        /// A new <see cref="VariableSubPolicy{T}"/> instance with
-        /// <paramref name="spannedSubPolicy"/> added at the end.
-        /// </returns>
-        /// <remarks>
-        /// Last spanned subpolicy will be cut short and adjusted accordingly before
-        /// adding <paramref name="spannedSubPolicy"/> if <paramref name="spannedSubPolicy"/>
-        /// overlaps with the last one.
-        /// </remarks>
-        [Pure]
-        public VariableSubPolicy<T> Add(SpannedSubPolicy<T> spannedSubPolicy)
-        {
-            return new VariableSubPolicy<T>(this, spannedSubPolicy);
         }
 
         /// <summary>
@@ -107,6 +89,36 @@ namespace Nekoyume.BlockChain.Policy
 
                 prev = next;
             }
+        }
+
+        /// <summary>
+        /// Creates a new subpolicy with an additional <see cref="SpannedSubPolicy{T}"/> added.
+        /// </summary>
+        /// <param name="spannedSubPolicy">New <see cref="SpannedSubPolicy{T}"/> to add.</param>
+        /// <returns>
+        /// A new <see cref="VariableSubPolicy{T}"/> instance with
+        /// <paramref name="spannedSubPolicy"/> added at the end.
+        /// </returns>
+        /// <remarks>
+        /// Last spanned subpolicy will be cut short and adjusted accordingly before
+        /// adding <paramref name="spannedSubPolicy"/> if <paramref name="spannedSubPolicy"/>
+        /// overlaps with the last one.
+        /// </remarks>
+        [Pure]
+        public VariableSubPolicy<T> Add(SpannedSubPolicy<T> spannedSubPolicy)
+        {
+            return new VariableSubPolicy<T>(this, spannedSubPolicy);
+        }
+
+        [Pure]
+        public VariableSubPolicy<T> AddRange(List<SpannedSubPolicy<T>> spannedSubPolicies)
+        {
+            VariableSubPolicy<T> variableSubPolicy = this;
+            foreach (SpannedSubPolicy<T> spannedSubPolicy in spannedSubPolicies)
+            {
+                variableSubPolicy = variableSubPolicy.Add(spannedSubPolicy);
+            }
+            return variableSubPolicy;
         }
 
         [Pure]

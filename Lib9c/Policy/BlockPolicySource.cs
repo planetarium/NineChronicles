@@ -38,14 +38,14 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// Last index in which restriction will apply.
         /// </summary>
-        public const long AuthorizedMiningPolicyEndIndex = 3_153_600;
+        public const long AuthorizedMinersPolicyEndIndex = 3_153_600;
 
-        public const long AuthorizedMiningPolicyInterval = 50;
+        public const long AuthorizedMinersPolicyInterval = 50;
 
         /// <summary>
         /// First index in which restriction will apply.
         /// </summary>
-        public const long AuthorizedMiningNoOpTxRequirementStartIndex = 1_200_001;
+        public const long AuthorizedMiningNoOpTxRequiredStartIndex = 1_200_001;
 
         /// <summary>
         /// First index in which restriction will apply.
@@ -109,9 +109,9 @@ namespace Nekoyume.BlockChain.Policy
                 maxTransactionsPerBlock,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
-                authorizedMiningPolicy: AuthorizedMiningPolicy.Mainnet,
-                authorizedMiningNoOpTxRequirementPolicy: AuthorizedMiningNoOpTxRequirementPolicy.Mainnet,
-                permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet);
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
+                authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy.Mainnet,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 
         /// <summary>
         /// Gets a <see cref="BlockPolicy"/> constructed from given parameters.
@@ -122,19 +122,19 @@ namespace Nekoyume.BlockChain.Policy
         /// <see cref="Transaction{T}"/>s that a <see cref="Block{T}"/> can have.</param>
         /// <param name="minTransactionsPerBlockPolicy">Used for minimum number of transactions
         /// required per block.</param>
-        /// <param name="authorizedMiningPolicy">Used for authorized mining.</param>
-        /// <param name="authorizedMiningNoOpTxRequirementPolicy">Used for no-op tx proof check
+        /// <param name="authorizedMinersPolicy">Used for authorized mining.</param>
+        /// <param name="authorizedMiningNoOpTxRequiredPolicy">Used for no-op tx proof check
         /// for authorized mining.</param>
-        /// <param name="permissionedMiningPolicy">Used for permissioned mining.</param>
+        /// <param name="permissionedMinersPolicy">Used for permissioned mining.</param>
         /// <returns>A <see cref="BlockPolicy"/> constructed from given parameters.</returns>
         internal IBlockPolicy<NCAction> GetPolicy(
             int minimumDifficulty,
             int maxTransactionsPerBlock,
             VariableSubPolicy<int> minTransactionsPerBlockPolicy,
             VariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
-            VariableSubPolicy<ImmutableHashSet<Address>> authorizedMiningPolicy,
-            VariableSubPolicy<bool> authorizedMiningNoOpTxRequirementPolicy,
-            VariableSubPolicy<ImmutableHashSet<Address>> permissionedMiningPolicy)
+            VariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
+            VariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy,
+            VariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
 #if UNITY_EDITOR
             return new DebugPolicy();
@@ -143,12 +143,12 @@ namespace Nekoyume.BlockChain.Policy
                 ?? MinTransactionsPerBlockPolicy.Default;
             maxTransactionsPerSignerPerBlockPolicy = maxTransactionsPerSignerPerBlockPolicy
                 ?? MaxTransactionsPerSignerPerBlockPolicy.Default;
-            authorizedMiningPolicy = authorizedMiningPolicy
-                ?? AuthorizedMiningPolicy.Default;
-            authorizedMiningNoOpTxRequirementPolicy = authorizedMiningNoOpTxRequirementPolicy
-                ?? AuthorizedMiningNoOpTxRequirementPolicy.Default;
-            permissionedMiningPolicy = permissionedMiningPolicy
-                ?? PermissionedMiningPolicy.Default;
+            authorizedMinersPolicy = authorizedMinersPolicy
+                ?? AuthorizedMinersPolicy.Default;
+            authorizedMiningNoOpTxRequiredPolicy = authorizedMiningNoOpTxRequiredPolicy
+                ?? AuthorizedMiningNoOpTxRequiredPolicy.Default;
+            permissionedMinersPolicy = permissionedMinersPolicy
+                ?? PermissionedMinersPolicy.Default;
 
             // FIXME: Slight inconsistency due to pre-existing delegate.
             HashAlgorithmGetter getHashAlgorithmType =
@@ -161,34 +161,45 @@ namespace Nekoyume.BlockChain.Policy
             Func<long, int> getMaxTransactionsPerSignerPerBlock =
                 maxTransactionsPerSignerPerBlockPolicy.ToGetter();
             Func<long, ImmutableHashSet<Address>> getAuthorizedMiners =
-                authorizedMiningPolicy.ToGetter();
-            Func<long, bool> getAuthorizedMiningNoOpTxRequirement =
-                authorizedMiningNoOpTxRequirementPolicy.ToGetter();
+                authorizedMinersPolicy.ToGetter();
+            Func<long, bool> getAuthorizedMiningNoOpTxRequired =
+                authorizedMiningNoOpTxRequiredPolicy.ToGetter();
             Func<long, ImmutableHashSet<Address>> getPermissionedMiners =
-                permissionedMiningPolicy.ToGetter();
+                permissionedMinersPolicy.ToGetter();
 
             ImmutableHashSet<Address> allAuthorizedMiners =
-                authorizedMiningPolicy.SpannedSubPolicies
+                authorizedMinersPolicy.SpannedSubPolicies
                     .Select(spannedSubPolicy => spannedSubPolicy.Value)
 #pragma warning disable LAA1002
                     .Aggregate(
-                        authorizedMiningPolicy.DefaultValue,
+                        authorizedMinersPolicy.DefaultValue,
                         (union, next) => union.Union(next));
 #pragma warning restore LAA1002
 
-            var validateNextBlockTx = ValidateNextBlockTxFactory(
-                allAuthorizedMiners);
-            var validateNextBlock = ValidateNextBlockFactory(
-                getMinTransactionsPerBlock,
-                getAuthorizedMiningNoOpTxRequirement,
-                getAuthorizedMiners,
-                getPermissionedMiners);
-            var getNextBlockDifficulty = GetNextBlockDifficultyFactory(
-                BlockInterval,
-                DifficultyStability,
-                minimumDifficulty,
-                getAuthorizedMiners);
-            var isAllowedToMine = IsAllowedToMineFactory(
+            Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException> validateNextBlockTx =
+                (blockChain, transaction) => ValidateNextBlockTxRaw(
+                    blockChain, transaction, allAuthorizedMiners);
+            Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException> validateNextBlock =
+                (blockChain, block) => ValidateNextBlockRaw(
+                    blockChain,
+                    block,
+                    getMinTransactionsPerBlock,
+                    getMaxTransactionsPerSignerPerBlock,
+                    getAuthorizedMiners,
+                    getAuthorizedMiningNoOpTxRequired,
+                    getPermissionedMiners);
+            Func<BlockChain<NCAction>, long> getNextBlockDifficulty = blockChain =>
+                GetNextBlockDifficultyRaw(
+                    blockChain,
+                    BlockInterval,
+                    DifficultyStability,
+                    minimumDifficulty,
+                    getAuthorizedMiners,
+                    defaultAlgorithm: chain => DifficultyAdjustment<NCAction>.BaseAlgorithm(
+                        chain, BlockInterval, DifficultyStability, minimumDifficulty));
+            Func<Address, long, bool> isAllowedToMine = (address, index) => IsAllowedToMineRaw(
+                address,
+                index,
                 getAuthorizedMiners,
                 getPermissionedMiners);
 
@@ -213,7 +224,7 @@ namespace Nekoyume.BlockChain.Policy
         public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
             new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
 
-        public static TxPolicyViolationException ValidateNextBlockTxRaw(
+        internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,
             Transaction<NCAction> transaction,
             ImmutableHashSet<Address> allAuthorizedMiners)
@@ -313,53 +324,51 @@ namespace Nekoyume.BlockChain.Policy
             return null;
         }
 
-        public static Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
-            ValidateNextBlockTxFactory(ImmutableHashSet<Address> allAuthorizedMiners)
-        {
-            return (blockChain, transaction) => ValidateNextBlockTxRaw(
-                blockChain, transaction, allAuthorizedMiners);
-        }
-
-        public static BlockPolicyViolationException ValidateNextBlockRaw(
+        internal static BlockPolicyViolationException ValidateNextBlockRaw(
             BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock,
             Func<long, int> getMinTransactionsPerBlock,
-            Func<long, bool> getAuthorizedMiningNoOpTxRequirement,
+            Func<long, int> getMaxTransactionsPerSignerPerBlock,
             Func<long, ImmutableHashSet<Address>> getAuthorizedMiners,
+            Func<long, bool> getAuthorizedMiningNoOpTxRequired,
             Func<long, ImmutableHashSet<Address>> getPermissionedMiners)
         {
             // FIXME: Tx count validation should be done in libplanet, not here.
             // Should be removed once libplanet is updated.
-            return ValidateTxCountPerBlockRaw(
+            if (ValidateTxCountPerBlockRaw(
                 nextBlock,
-                getMinTransactionsPerBlock)
-                ?? ValidateMinerAuthorityRaw(
-                    nextBlock,
-                    getAuthorizedMiningNoOpTxRequirement,
-                    getAuthorizedMiners)
-                ?? ValidateMinerPermissionRaw(
-                    nextBlock,
-                    getPermissionedMiners);
+                getMinTransactionsPerBlock,
+                getMaxTransactionsPerSignerPerBlock) is BlockPolicyViolationException bpve)
+            {
+                return bpve;
+            }
+            else
+            {
+                if (nextBlock.Index == 0)
+                {
+                    return null;
+                }
+                else if (!getAuthorizedMiners(nextBlock.Index).IsEmpty)
+                {
+                    return ValidateMinerAuthorityRaw(
+                        nextBlock,
+                        getAuthorizedMiners,
+                        getAuthorizedMiningNoOpTxRequired);
+                }
+                else if (!getPermissionedMiners(nextBlock.Index).IsEmpty)
+                {
+                    return ValidateMinerPermissionRaw(
+                        nextBlock,
+                        getPermissionedMiners);
+                }
+            }
+
+            return null;
         }
 
-        public static Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
-            ValidateNextBlockFactory(
-                Func<long, int> getMinTransactionsPerBlock,
-                Func<long, bool> getAuthorizedMiningNoOpTxRequirement,
-                Func<long, ImmutableHashSet<Address>> getAuthorizedMiners,
-                Func<long, ImmutableHashSet<Address>> getPermissionedMiners)
-        {
-            return (blockChain, nextBlock) =>
-                ValidateNextBlockRaw(
-                    blockChain,
-                    nextBlock,
-                    getMinTransactionsPerBlock,
-                    getAuthorizedMiningNoOpTxRequirement,
-                    getAuthorizedMiners,
-                    getPermissionedMiners);
-        }
-
-        public static long GetNextBlockDifficultyRaw(
+        // FIXME: Although the intention is to use a slight variant of the algorithm provided,
+        // this allows a wildly different implementation for special cases.
+        internal static long GetNextBlockDifficultyRaw(
             BlockChain<NCAction> blockChain,
             TimeSpan targetBlockInterval,
             long difficultyStability,
@@ -432,23 +441,6 @@ namespace Nekoyume.BlockChain.Policy
             {
                 return minimumDifficulty;
             }
-        }
-
-        public static Func<BlockChain<NCAction>, long> GetNextBlockDifficultyFactory(
-            TimeSpan targetBlockInterval,
-            long difficultyStability,
-            long minimumDifficulty,
-            Func<long, ImmutableHashSet<Address>> getAuthorizedMiners)
-        {
-            return (blockChain) =>
-                GetNextBlockDifficultyRaw(
-                    blockChain: blockChain,
-                    targetBlockInterval: targetBlockInterval,
-                    difficultyStability: difficultyStability,
-                    minimumDifficulty: minimumDifficulty,
-                    getAuthorizedMiners: getAuthorizedMiners,
-                    defaultAlgorithm: DifficultyAdjustment<NCAction>.AlgorithmFactory(
-                        targetBlockInterval, difficultyStability, minimumDifficulty));
         }
     }
 }

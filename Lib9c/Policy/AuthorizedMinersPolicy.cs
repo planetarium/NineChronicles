@@ -3,7 +3,7 @@ using Libplanet;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public static class AuthorizedMiningPolicy
+    public static class AuthorizedMinersPolicy
     {
         public static VariableSubPolicy<ImmutableHashSet<Address>> Default
         {
@@ -22,8 +22,8 @@ namespace Nekoyume.BlockChain.Policy
                     .Create(ImmutableHashSet<Address>.Empty)
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
-                        endIndex: BlockPolicySource.AuthorizedMiningPolicyEndIndex,
-                        interval: BlockPolicySource.AuthorizedMiningPolicyInterval,
+                        endIndex: BlockPolicySource.AuthorizedMinersPolicyEndIndex,
+                        interval: BlockPolicySource.AuthorizedMinersPolicyInterval,
                         value: BlockPolicySource.AuthorizedMiners));
             }
         }
