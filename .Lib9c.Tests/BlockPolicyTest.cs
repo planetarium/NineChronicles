@@ -607,6 +607,18 @@ namespace Lib9c.Tests
         }
 
         [Fact]
+        public void Obsolete_Actions()
+        {
+            Assert.Empty(Assembly.GetAssembly(typeof(ActionBase))!.GetTypes().Where(
+                type => type.Namespace is { } @namespace &&
+                        @namespace.StartsWith($"{nameof(Nekoyume)}.{nameof(Nekoyume.Action)}") &&
+                        typeof(ActionBase).IsAssignableFrom(type) &&
+                        !type.IsAbstract &&
+                        Regex.IsMatch(type.Name, @"\d+$") &&
+                        !type.IsDefined(typeof(ActionObsoleteAttribute), false)));
+        }
+
+        [Fact]
         public async Task PermissionedBlockPolicy()
         {
             // This creates genesis with _privateKey as its miner.

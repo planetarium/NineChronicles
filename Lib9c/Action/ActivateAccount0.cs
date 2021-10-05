@@ -9,6 +9,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("activate_account")]
     public class ActivateAccount0 : ActionBase, IActivateAction
     {
@@ -45,6 +46,8 @@ namespace Nekoyume.Action
                     .SetState(ActivatedAccountsState.Address, MarkChanged)
                     .SetState(PendingAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex, context);
 
             if (!state.TryGetState(ActivatedAccountsState.Address, out Dictionary accountsAsDict))
             {

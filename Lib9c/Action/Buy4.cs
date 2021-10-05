@@ -16,6 +16,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("buy4")]
     public class Buy4 : GameAction, IBuy0
     {
@@ -59,6 +60,8 @@ namespace Nekoyume.Action
                         GoldCurrencyState.Address);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress, sellerAvatarAddress);
 

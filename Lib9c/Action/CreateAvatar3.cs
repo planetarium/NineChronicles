@@ -14,6 +14,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("create_avatar3")]
     public class CreateAvatar3 : GameAction
     {
@@ -83,6 +84,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
+
+            CheckObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
