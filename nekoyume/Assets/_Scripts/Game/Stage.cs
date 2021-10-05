@@ -1153,10 +1153,6 @@ namespace Nekoyume.Game
         private IEnumerator CoUnlockMenu()
         {
             var menuNames = new List<string>();
-            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuCombination)
-            {
-                menuNames.Add(nameof(Combination));
-            }
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
             {
