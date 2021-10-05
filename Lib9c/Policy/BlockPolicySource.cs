@@ -52,6 +52,11 @@ namespace Nekoyume.BlockChain.Policy
         // FIXME: Should be finalized before release.
         public const int MaxTransactionsPerSignerPerBlock = 4;
 
+        public const long V100080ObsoleteIndex = 2_448_000;
+
+        // FIXME: Should be finalized before release.
+        public const long V100081ObsoleteIndex = 2_500_000;
+
         public readonly Dictionary<long, HashAlgorithmType> HashAlgorithmTable =
             new Dictionary<long, HashAlgorithmType> { [0] = HashAlgorithmType.Of<SHA256>() };
 
