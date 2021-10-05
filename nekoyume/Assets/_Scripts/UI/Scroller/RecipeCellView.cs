@@ -71,8 +71,7 @@ namespace Nekoyume.UI.Scroller
         public readonly Subject<RecipeCellView> OnClick =
             new Subject<RecipeCellView>();
 
-        public bool IsLocked => lockParent.activeSelf ||
-            !Widget.Find<Combination>().RecipeVFXSkipMap.ContainsKey(EquipmentRowData.Id);
+        public bool IsLocked => lockParent.activeSelf;
         public ItemSubType ItemSubType { get; protected set; }
         public ElementalType ElementalType { get; protected set; }
         public StatType StatType { get; protected set; }
