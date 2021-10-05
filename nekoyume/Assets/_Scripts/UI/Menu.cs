@@ -432,7 +432,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                if (!States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.MaterialId))
+                if (!States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.MaterialId, recipeRow.MaterialCount))
                 {
                     tutorialController.SaveTutorialProgress(2);
                     if (!Game.Game.instance.Stage.TutorialController.IsPlaying)
