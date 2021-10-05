@@ -1,46 +1,28 @@
-using System;
-
 namespace Nekoyume.BlockChain.Policy
 {
-    public struct MinTransactionsPerBlockPolicy
+    public static class MinTransactionsPerBlockPolicy
     {
-        public MinTransactionsPerBlockPolicy(
-            long startIndex, long? endIndex, int minTransactionsPerBlock)
+        public static VariableSubPolicy<int> Default
         {
-            if (startIndex < 0)
+            get
             {
-                throw new ArgumentOutOfRangeException(
-                    $"Value of {nameof(startIndex)} must be non-negative: {startIndex}");
+                return VariableSubPolicy<int>
+                    .Create(0);
             }
-            else if (endIndex is long ei && ei < startIndex)
-            {
-                throw new ArgumentOutOfRangeException(
-                    $"Non-null {nameof(endIndex)} cannot be less than {nameof(startIndex)}.");
-            }
-
-            StartIndex = startIndex;
-            EndIndex = endIndex;
-            MinTransactionsPerBlock = minTransactionsPerBlock;
         }
 
-        public long StartIndex { get; private set; }
-
-        public long? EndIndex { get; private set; }
-
-        public int MinTransactionsPerBlock { get; private set; }
-
-        public bool IsTargetBlockIndex(long index)
+        public static VariableSubPolicy<int> Mainnet
         {
-            return StartIndex <= index
-                && (EndIndex is null
-                    || (EndIndex is long endIndex && index <= endIndex));
+            get
+            {
+                return VariableSubPolicy<int>
+                    .Create(0)
+                    // To prevent selfish mining, we define a consensus that blocks with
+                    // no transactions are not accepted starting from hard coded index.
+                    .Add(new SpannedSubPolicy<int>(
+                        startIndex: BlockPolicySource.MinTransactionsPerBlockStartIndex,
+                        value: 1));
+            }
         }
-
-        public static MinTransactionsPerBlockPolicy Mainnet => new MinTransactionsPerBlockPolicy()
-        {
-            StartIndex = BlockPolicySource.MinTransactionsPerBlockHardcodedIndex,
-            EndIndex = null,
-            MinTransactionsPerBlock = BlockPolicySource.MinTransactionsPerBlock,
-        };
     }
 }

@@ -137,18 +137,20 @@ namespace Lib9c.Tests
             );
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            AuthorizedMiningPolicy authorizedMiningPolicy = new AuthorizedMiningPolicy(
-                startIndex: 0,
-                endIndex: 10,
-                interval: 5,
-                miners: new[] { authorizedMinerPrivateKey.ToAddress() }.ToHashSet());
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 10000,
                 maxTransactionsPerBlock: 100,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null,
-                authorizedMiningPolicy: authorizedMiningPolicy,
-                authorizedMiningNoOpTxPolicy: null,
+                authorizedMiningPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
+                    .Create(ImmutableHashSet<Address>.Empty)
+                    .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
+                        startIndex: 0,
+                        endIndex: 10,
+                        interval: 5,
+                        value: new Address[] { authorizedMinerPrivateKey.ToAddress() }
+                            .ToImmutableHashSet())),
+                authorizedMiningNoOpTxRequirementPolicy: null,
                 permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -285,22 +287,25 @@ namespace Lib9c.Tests
             var stranger = new PrivateKey();
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            AuthorizedMiningPolicy authorizedMiningPolicy = new AuthorizedMiningPolicy(
-                miners: miners.ToHashSet(),
-                startIndex: 0,
-                endIndex: 4,
-                interval: 2);
-            AuthorizedMiningNoOpTxPolicy authorizedMiningNoOpTxPolicy = new AuthorizedMiningNoOpTxPolicy(
-                startIndex: 0,
-                endIndex: 4,
-                interval: 2);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 10000,
                 100,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null,
-                authorizedMiningPolicy: authorizedMiningPolicy,
-                authorizedMiningNoOpTxPolicy: authorizedMiningNoOpTxPolicy,
+                authorizedMiningPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
+                    .Create(ImmutableHashSet<Address>.Empty)
+                    .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
+                        startIndex: 0,
+                        endIndex: 4,
+                        interval: 2,
+                        value: miners.ToImmutableHashSet())),
+                authorizedMiningNoOpTxRequirementPolicy: VariableSubPolicy<bool>
+                    .Create(false)
+                    .Add(new SpannedSubPolicy<bool>(
+                        startIndex: 0,
+                        endIndex: 4,
+                        interval: 2,
+                        value: true)),
                 permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -406,18 +411,19 @@ namespace Lib9c.Tests
             var miners = new[] { minerKey.ToAddress() };
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            AuthorizedMiningPolicy authorizedMiningPolicy = new AuthorizedMiningPolicy(
-                miners: miners.ToHashSet(),
-                startIndex: 0,
-                endIndex: 6,
-                interval: 2);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 4096,
                 maxTransactionsPerBlock: 100,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null,
-                authorizedMiningPolicy: authorizedMiningPolicy,
-                authorizedMiningNoOpTxPolicy: null,
+                authorizedMiningPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
+                    .Create(ImmutableHashSet<Address>.Empty)
+                    .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
+                        startIndex: 0,
+                        endIndex: 6,
+                        interval: 2,
+                        value: miners.ToImmutableHashSet())),
+                authorizedMiningNoOpTxRequirementPolicy: null,
                 permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -651,14 +657,15 @@ namespace Lib9c.Tests
                     minTransactionsPerBlockPolicy: null,
                     maxTransactionsPerSignerPerBlockPolicy: null,
                     authorizedMiningPolicy: null,
-                    authorizedMiningNoOpTxPolicy: null,
-                    permissionedMiningPolicy: new PermissionedMiningPolicy(
-                        miners: new[]
-                        {
-                            permissionedMinerKey.ToAddress(),
-                        }.ToImmutableHashSet(),
-                        startIndex: 1,
-                        endIndex: null)
+                    authorizedMiningNoOpTxRequirementPolicy: null,
+                    permissionedMiningPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
+                        .Create(ImmutableHashSet<Address>.Empty)
+                        .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
+                            startIndex: 1,
+                            endIndex: null,
+                            interval: 1,
+                            value: new Address[] { permissionedMinerKey.ToAddress() }
+                                .ToImmutableHashSet()))
                 ),
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
                 store,

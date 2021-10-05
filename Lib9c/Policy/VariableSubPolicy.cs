@@ -33,7 +33,8 @@ namespace Nekoyume.BlockChain.Policy
                 variableSubPolicy.SpannedSubPolicies.ToList();
             if (spannedSubPolicies.Count > 0)
             {
-                SpannedSubPolicy<T> lastSpannedSubPolicy = spannedSubPolicies[-1];
+                SpannedSubPolicy<T> lastSpannedSubPolicy =
+                    spannedSubPolicies[spannedSubPolicies.Count - 1];
 
                 // If spannedSubPolicies.StartIndex <= lastSpannedSubPolicy.StartIndex
                 // an exception will be automatically thrown when trying to create
@@ -45,7 +46,7 @@ namespace Nekoyume.BlockChain.Policy
                         lastSpannedSubPolicy.StartIndex,
                         spannedSubPolicy.StartIndex - 1,
                         lastSpannedSubPolicy.Value);
-                    spannedSubPolicies[-1] = lastSpannedSubPolicy;
+                    spannedSubPolicies[spannedSubPolicies.Count - 1] = lastSpannedSubPolicy;
                 }
             }
 

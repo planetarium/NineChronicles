@@ -1,6 +1,6 @@
 namespace Nekoyume.BlockChain.Policy
 {
-    public static class MaxTransactionsPerSignerPerBlockPolicy
+    public static class MaxBlockBytesPolicy
     {
         public static VariableSubPolicy<int> Default
         {
@@ -18,8 +18,11 @@ namespace Nekoyume.BlockChain.Policy
                 return VariableSubPolicy<int>
                     .Create(int.MaxValue)
                     .Add(new SpannedSubPolicy<int>(
-                        startIndex: BlockPolicySource.MinTransactionsPerBlockStartIndex,
-                        value: BlockPolicySource.MaxTransactionsPerSignerPerBlock));
+                        startIndex: 0,
+                        value: BlockPolicySource.MaxGenesisBytes))
+                    .Add(new SpannedSubPolicy<int>(
+                        startIndex: 1,
+                        value: BlockPolicySource.MaxBlockBytes));
             }
         }
     }
