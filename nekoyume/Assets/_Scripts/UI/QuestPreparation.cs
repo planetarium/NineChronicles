@@ -198,26 +198,32 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
-                .Where(_ => Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value) && EnoughToPlay)
                 .Subscribe(_ =>
                 {
-                    var costumes = _player.Costumes;
-                    var equipments = equipmentSlots
-                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                        .Select(slot => (Equipment)slot.Item)
-                        .ToList();
+                    if (Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value) && EnoughToPlay)
+                    {
+                        var costumes = _player.Costumes;
+                        var equipments = equipmentSlots
+                            .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                            .Select(slot => (Equipment) slot.Item)
+                            .ToList();
 
-                    var consumables = consumableSlots
-                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                        .Select(slot => (Consumable)slot.Item)
-                        .ToList();
+                        var consumables = consumableSlots
+                            .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                            .Select(slot => (Consumable) slot.Item)
+                            .ToList();
 
-                    _stage.IsExitReserved = false;
-                    _stage.IsRepeatStage = false;
-                    _stage.foodCount = consumables.Count;
-                    ActionRenderHandler.Instance.Pending = true;
+                        _stage.IsExitReserved = false;
+                        _stage.IsRepeatStage = false;
+                        _stage.foodCount = consumables.Count;
+                        ActionRenderHandler.Instance.Pending = true;
 
-                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables);
+                        Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables);
+                    }
+                    else
+                    {
+                        OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_BOOSTER_CONDITIONS_GUIDE"));
+                    }
                 });
             boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
@@ -838,7 +844,7 @@ namespace Nekoyume.UI
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
 
-            var playCount = 1; //int.Parse(boostTestInputField.text);
+            var playCount = 1;
             Game.Game.instance.ActionManager
                 .HackAndSlash(
                     costumes,
