@@ -37,27 +37,8 @@ namespace Nekoyume.UI.Module
 
         public virtual void SetByAvatarState(AvatarState avatarState)
         {
-            var fullCostume = avatarState.inventory.Costumes
-                .FirstOrDefault(costume =>
-                    costume.ItemSubType == ItemSubType.FullCostume &&
-                    costume.equipped);
-            if (!(fullCostume is null))
-            {
-                SetByArmorId(fullCostume.Id);
-                return;
-            }
-
-            var armor = avatarState.inventory.Equipments
-                .FirstOrDefault(equipment =>
-                    equipment.ItemSubType == ItemSubType.Armor &&
-                    equipment.equipped);
-            if (!(armor is null))
-            {
-                SetByArmorId(armor.Id);
-                return;
-            }
-
-            SetByCharacterId(avatarState.characterId);
+            var id = avatarState.GetArmorIdForPortrait();
+            SetByArmorId(id);
         }
 
         public virtual void SetByPlayer(Player player)
