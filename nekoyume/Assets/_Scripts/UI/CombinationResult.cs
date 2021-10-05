@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -298,7 +298,7 @@ namespace Nekoyume.UI
             _iconImage.overrideSprite = _equipmentIconSprite;
 
             var (mainStatType, _, mainStatTotalValue) = _itemOptionInfo.MainStat;
-            _resultItem.mainStatText.text = $"{mainStatType.ToString()} {mainStatTotalValue}";
+            _resultItem.mainStatText.text = $"{mainStatType} {mainStatType.ValueToString(mainStatTotalValue)}";
 
             var statsCP = CPHelper.GetStatCP(mainStatType, mainStatTotalValue);
             _cpListForAnimationSteps.Add(statsCP);

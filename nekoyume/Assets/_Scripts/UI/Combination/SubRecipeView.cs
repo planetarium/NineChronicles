@@ -68,7 +68,6 @@ namespace Nekoyume.UI
         private RecipeInfo _selectedRecipeInfo;
 
         private const string StatTextFormat = "{0} {1}";
-        private const string OptionTextFormat = "{0} +({1}-{2})";
 
         private void Awake()
         {
@@ -286,16 +285,8 @@ namespace Nekoyume.UI
                 if (option.StatType != StatType.NONE)
                 {
                     var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
-                    var statMin = option.StatType == StatType.SPD
-                        ? (option.StatMin * 0.01m).ToString(CultureInfo.InvariantCulture)
-                        : option.StatMin.ToString();
 
-                    var statMax = option.StatType == StatType.SPD
-                        ? (option.StatMax * 0.01m).ToString(CultureInfo.InvariantCulture)
-                        : (option.StatMax).ToString(CultureInfo.InvariantCulture);
-
-                    var description = string.Format(OptionTextFormat, option.StatType, statMin, statMax);
-                    optionView.OptionText.text = description;
+                    optionView.OptionText.text = option.OptionRowToString();
                     optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("P0");
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);

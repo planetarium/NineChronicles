@@ -493,8 +493,8 @@ namespace Nekoyume.UI
                 var mainAdd = Math.Max(1, (int)(mainValue * row.BaseStatGrowthMax.NormalizeFromTenThousandths()));
                 mainStatView.gameObject.SetActive(true);
                 mainStatView.Set(mainStatType.ToString(),
-                    ValueToString(mainValue, mainStatType),
-                    $"(<size=80%>max</size> +{ValueToString(mainAdd, mainStatType)})");
+                    mainStatType.ValueToString(mainValue),
+                    $"(<size=80%>max</size> +{mainStatType.ValueToString(mainAdd)})");
             }
 
             var stats = itemOptionInfo.StatOptions;
@@ -508,7 +508,7 @@ namespace Nekoyume.UI
                 if (row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0)
                 {
                     statViews[i].Set(statType.ToString(),
-                        ValueToString(statValue, statType),
+                        statType.ValueToString(statValue),
                         string.Empty,
                         count);
                 }
@@ -516,8 +516,8 @@ namespace Nekoyume.UI
                 {
                     var statAdd = Math.Max(1, (int)(statValue * row.ExtraStatGrowthMax.NormalizeFromTenThousandths()));
                     statViews[i].Set(statType.ToString(),
-                        ValueToString(statValue, statType),
-                        $"(<size=80%>max</size> +{ValueToString(statAdd, statType)})",
+                        statType.ValueToString(statValue),
+                        $"(<size=80%>max</size> +{statType.ValueToString(statAdd)})",
                         count);
                 }
             }
@@ -551,12 +551,6 @@ namespace Nekoyume.UI
                         $"(<size=80%>max</size> +{chanceAdd}%)");
                 }
             }
-        }
-
-        private string ValueToString(int value, StatType type)
-        {
-            var result = type == StatType.SPD ? value * 0.01m : value;
-            return result.ToString(CultureInfo.InvariantCulture);
         }
 
         private bool IsInteractableButton(IItem item, IItem material)
