@@ -10,6 +10,7 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -654,7 +655,13 @@ namespace Nekoyume.UI
                         case ItemSubType.ApStone:
                             submitEnabledFunc = DimmedFuncForChargeActionPoint;
                             submitText = L10nManager.Localize("UI_CHARGE_AP");
-                            if (States.Instance.CurrentAvatarState.actionPoint > 0)
+                            if (Find<HeaderMenu>().ChargingAP)
+                            {
+                                onSubmit = _ =>
+                                    OneLinePopup.Push(MailType.System,
+                                        L10nManager.Localize("UI_CHARGING_AP"));
+                            }
+                            else if (States.Instance.CurrentAvatarState.actionPoint > 0)
                             {
                                 onSubmit = ShowRefillConfirmPopup;
                             }

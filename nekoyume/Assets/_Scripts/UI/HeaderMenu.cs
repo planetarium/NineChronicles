@@ -94,6 +94,8 @@ namespace Nekoyume.UI.Module
 
         public Image ActionPointImage => actionPointImage;
 
+        public bool ChargingAP => actionPoint.GetComponent<ActionPoint>().NowCharging;
+
         public override void Initialize()
         {
             base.Initialize();
