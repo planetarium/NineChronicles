@@ -47,8 +47,8 @@ namespace Nekoyume.UI.Module
 
         public void UpdateAsTotalAndPlusStatWithCount(StatType type, int totalValue, int plusValue, int count)
         {
-            var totalValueString = StatExtensions.ValueToString(type, totalValue);
-            var plusValueString = StatExtensions.ValueToString(type, plusValue);
+            var totalValueString = type.ValueToString(totalValue);
+            var plusValueString = type.ValueToString(plusValue);
 
             UpdateView(
                 $"{type} {totalValueString}",

@@ -20,8 +20,8 @@ namespace Nekoyume.UI.Module
         public void Show(StatType statType, (int valueMin, int valueMax) valueRange)
         {
             statTypeText.text = statType.ToString();
-            var valueMin = StatExtensions.ValueToString(statType, valueRange.valueMin);
-            var valueMax = StatExtensions.ValueToString(statType, valueRange.valueMax);
+            var valueMin = statType.ValueToString(valueRange.valueMin);
+            var valueMax = statType.ValueToString(valueRange.valueMax);
 
             valueText.text = $"{valueMin} - {valueMax}";
             additionalText.text = string.Empty;

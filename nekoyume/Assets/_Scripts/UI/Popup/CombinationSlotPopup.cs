@@ -174,14 +174,14 @@ namespace Nekoyume.UI
             {
                 var (type, value, _) = itemOptionInfo.StatOptions[0];
                 information.MainStatView.UpdateView(
-                    $"{type} {StatExtensions.ValueToString(type, value)}",
+                    $"{type} {type.ValueToString(value)}",
                     string.Empty);
 
                 return;
             }
 
             var statType = itemOptionInfo.MainStat.type;
-            var statValueString = StatExtensions.ValueToString(statType, itemOptionInfo.MainStat.baseValue);
+            var statValueString = statType.ValueToString(itemOptionInfo.MainStat.baseValue);
 
             information.MainStatView.UpdateView(
                 $"{statType} {statValueString}",
@@ -206,8 +206,8 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var statMin = StatExtensions.ValueToString(optionRow.StatType, optionRow.StatMin);
-                var statMax = StatExtensions.ValueToString(optionRow.StatType, optionRow.StatMax);
+                var statMin = optionRow.StatType.ValueToString(optionRow.StatMin);
+                var statMax = optionRow.StatType.ValueToString(optionRow.StatMax);
                 var text = $"{optionRow.StatType} ({statMin} - {statMax})";
                 optionView.UpdateView(text, string.Empty, 1);
                 optionView.Show();

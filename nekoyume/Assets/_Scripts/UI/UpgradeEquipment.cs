@@ -493,8 +493,8 @@ namespace Nekoyume.UI
                 var mainAdd = Math.Max(1, (int)(mainValue * row.BaseStatGrowthMax.NormalizeFromTenThousandths()));
                 mainStatView.gameObject.SetActive(true);
                 mainStatView.Set(mainStatType.ToString(),
-                    StatExtensions.ValueToString(mainStatType, mainValue),
-                    $"(<size=80%>max</size> +{StatExtensions.ValueToString(mainStatType, mainAdd)})");
+                    mainStatType.ValueToString(mainValue),
+                    $"(<size=80%>max</size> +{mainStatType.ValueToString(mainAdd)})");
             }
 
             var stats = itemOptionInfo.StatOptions;
@@ -508,7 +508,7 @@ namespace Nekoyume.UI
                 if (row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0)
                 {
                     statViews[i].Set(statType.ToString(),
-                        StatExtensions.ValueToString(statType, statValue),
+                        statType.ValueToString(statValue),
                         string.Empty,
                         count);
                 }
@@ -516,8 +516,8 @@ namespace Nekoyume.UI
                 {
                     var statAdd = Math.Max(1, (int)(statValue * row.ExtraStatGrowthMax.NormalizeFromTenThousandths()));
                     statViews[i].Set(statType.ToString(),
-                        StatExtensions.ValueToString(statType, statValue),
-                        $"(<size=80%>max</size> +{StatExtensions.ValueToString(statType, statAdd)})",
+                        statType.ValueToString(statValue),
+                        $"(<size=80%>max</size> +{statType.ValueToString(statAdd)})",
                         count);
                 }
             }

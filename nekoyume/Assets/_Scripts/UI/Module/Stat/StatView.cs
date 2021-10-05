@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
 
         public virtual void Show(StatType statType, int value, bool showPlus = false)
         {
-            var valueString = StatExtensions.ValueToString(statType, value);
+            var valueString = statType.ValueToString(value);
             Show(statType.ToString(), showPlus ? $"+{valueString}" : valueString);
         }
 

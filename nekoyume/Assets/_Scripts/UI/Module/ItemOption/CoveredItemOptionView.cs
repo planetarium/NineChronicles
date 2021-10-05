@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Module
 
         public void UpdateAsStatWithCount(StatType type, int value, int count) =>
             UpdateView(
-                $"{type} +{StatExtensions.ValueToString(type, value)}",
+                $"{type} +{type.ValueToString(value)}",
                 string.Empty,
                 count,
                 L10nManager.Localize("UI_ITEM_OPTION_COVER_TEXT_FORMAT", type.ToString()));

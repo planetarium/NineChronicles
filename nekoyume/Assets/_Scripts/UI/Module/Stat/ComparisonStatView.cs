@@ -13,7 +13,7 @@ namespace Nekoyume.UI.Module
         public void Show(StatType statType, int statValue, int afterStatValue)
         {
             afterValueText.text
-                = StatExtensions.ValueToString(statType, afterStatValue);
+                = statType.ValueToString(afterStatValue);
             Show(statType, statValue);
         }
 

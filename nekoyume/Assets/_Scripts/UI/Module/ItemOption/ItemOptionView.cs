@@ -59,8 +59,8 @@ namespace Nekoyume.UI.Module
 
         public void UpdateViewAsTotalAndPlusStat(StatType type, int totalValue, int plusValue) =>
             UpdateView(
-                $"{type} {StatExtensions.ValueToString(type, totalValue)}",
-                plusValue > 0 ? $"+{StatExtensions.ValueToString(type, plusValue)}" : string.Empty);
+                $"{type} {type.ValueToString(totalValue)}",
+                plusValue > 0 ? $"+{type.ValueToString(plusValue)}" : string.Empty);
 
         public void UpdateAsTotalAndPlusSkill(
             string skillName,

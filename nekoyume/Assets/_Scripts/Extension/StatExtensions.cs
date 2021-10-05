@@ -23,7 +23,7 @@ namespace Nekoyume
             return description;
         }
 
-        public static string ValueToString(StatType statType, int value, string format = null)
+        public static string ValueToString(this StatType statType, int value, string format = null)
         {
             if (string.IsNullOrEmpty(format))
             {
