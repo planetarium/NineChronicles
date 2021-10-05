@@ -8,6 +8,7 @@ using Libplanet.Assets;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Helper;
 using UniRx;
 
@@ -22,6 +23,8 @@ namespace Nekoyume.BlockChain
         PrivateKey PrivateKey { get; }
 
         Address Address { get; }
+        
+        BlockPolicySource BlockPolicySource { get; }
 
         BlockRenderer BlockRenderer { get; }
 

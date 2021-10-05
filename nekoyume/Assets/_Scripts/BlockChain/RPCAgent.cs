@@ -327,7 +327,13 @@ namespace Nekoyume.BlockChain
 
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
         {
-            var newTipHeader = BlockHeader.Deserialize(newTip);
+            // var newTipHeader = BlockHeader.Deserialize(newTip);
+            var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
+            HashAlgorithmGetter hashAlgorithmGetter = Game.Game.instance.Agent.BlockPolicySource
+                .GetPolicy(0, 0) // NOTE: Arguments of `GetPolicy()` method are not important in this context.
+                .GetHashAlgorithm;
+            var newTipHeader =
+                BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
             BlockTipHash = new BlockHash(newTipHeader.Hash.ToByteArray());

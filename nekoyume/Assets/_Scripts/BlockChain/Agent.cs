@@ -198,9 +198,8 @@ namespace Nekoyume.BlockChain
 
             try
             {
-                IKeyValueStore stateRootKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "state_hashes")),
-                    stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "states"));
-                _stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
+                IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "states"));
+                _stateStore = new TrieStateStore(stateKeyValueStore);
                 blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                     policy,
                     stagePolicy,
