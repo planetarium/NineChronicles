@@ -23,23 +23,10 @@ namespace Nekoyume
             return fullCostume is { };
         }
 
-        public static (bool isCharacterId, int id) GetPortraitId(
-            this AvatarState avatarState,
-            bool getCharacterIdWhenArmorIsEmpty = false)
-        {
-            var portraitId = TryGetEquippedFullCostume(avatarState, out var fullCostume)
+        public static int GetArmorIdForPortrait(this AvatarState avatarState) =>
+            TryGetEquippedFullCostume(avatarState, out var fullCostume)
                 ? fullCostume.Id
                 : avatarState.GetArmorId();
-
-            if (getCharacterIdWhenArmorIsEmpty)
-            {
-                return portraitId == GameConfig.DefaultAvatarArmorId
-                    ? (true, avatarState.characterId)
-                    : (false, portraitId);
-            }
-
-            return (false, portraitId);
-        }
 
         public static int GetCP(this AvatarState avatarState)
         {

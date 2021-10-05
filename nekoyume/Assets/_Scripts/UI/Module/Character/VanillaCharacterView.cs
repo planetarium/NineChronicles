@@ -37,15 +37,8 @@ namespace Nekoyume.UI.Module
 
         public virtual void SetByAvatarState(AvatarState avatarState)
         {
-            var (isCharacterId, id) = avatarState.GetPortraitId(true);
-            if (isCharacterId)
-            {
-                SetByCharacterId(id);
-            }
-            else
-            {
-                SetByArmorId(id);
-            }
+            var id = avatarState.GetArmorIdForPortrait();
+            SetByArmorId(id);
         }
 
         public virtual void SetByPlayer(Player player)
