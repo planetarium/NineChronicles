@@ -9,6 +9,7 @@ using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
+using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Serilog.Core;
@@ -63,10 +64,11 @@ namespace Lib9c.Tools.SubCommand
             var printed = new HashSet<Address>();
             foreach (BlockHash blockHash in chain.BlockHashes)
             {
-                Block<NCAction> b = store.GetBlock<NCAction>(blockHash);
-                stderr.WriteLine("Scanning block #{0} {1}...", b.Index, b.Hash);
+                BlockDigest digest = GetBlockDigest(store, blockHash);
+                stderr.WriteLine("Scanning block #{0} {1}...", digest.Index, digest.Hash);
                 stderr.Flush();
-                IEnumerable<Address> addrs = b.Transactions
+                IEnumerable<Address> addrs = digest.TxIds
+                    .Select(txId => store.GetTransaction<NCAction>(new TxId(txId.ToArray())))
                     .SelectMany(tx => tx.Actions
                         .Select(a => a.InnerAction)
                         .SelectMany(a => a is TransferAsset t
@@ -76,7 +78,7 @@ namespace Lib9c.Tools.SubCommand
                             ? l.OfType<Bencodex.Types.Dictionary>()
                                 .Select(d => new GoldDistribution(d).Address)
                             : new Address[0]))
-                    .Append(b.Miner);
+                    .Append(digest.Miner);
                 foreach (Address addr in addrs)
                 {
                     if (!printed.Contains(addr))
@@ -87,6 +89,17 @@ namespace Lib9c.Tools.SubCommand
                     }
                 }
             }
+        }
+
+        private static BlockDigest GetBlockDigest(IStore store, BlockHash blockHash)
+        {
+            BlockDigest? digest = store.GetBlockDigest(blockHash);
+            if (digest is { } d)
+            {
+                return d;
+            }
+
+            throw new InvalidOperationException($"Block #{blockHash} is not found in the store.");
         }
     }
 }
