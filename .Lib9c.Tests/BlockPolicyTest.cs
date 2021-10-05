@@ -137,17 +137,22 @@ namespace Lib9c.Tests
             );
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            AuthorizedMiningPolicy authorizedMiningPolicy = new AuthorizedMiningPolicy(
+                startIndex: 0,
+                endIndex: 10,
+                interval: 5,
+                miners: new[] { authorizedMinerPrivateKey.ToAddress() }.ToHashSet());
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+                minimumDifficulty: 10000,
+                maxTransactionsPerBlock: 100,
+                ignoreHardcodedPolicies: false,
+                authorizedMiningPolicy: authorizedMiningPolicy,
+                permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
-                new AuthorizedMinersState(
-                    new[] { authorizedMinerPrivateKey.ToAddress() },
-                    5,
-                    10
-                ),
                 pendingActivations: new[] { ps }
             );
             using var store = new DefaultStore(null);
@@ -286,18 +291,22 @@ namespace Lib9c.Tests
             );
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
+            AuthorizedMiningPolicy authorizedMiningPolicy = new AuthorizedMiningPolicy(
+                miners: miners.ToHashSet(),
+                startIndex: 0,
+                endIndex: 4,
+                interval: 2);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 10000,
                 100,
                 ignoreHardcodedPolicies: true,
+                authorizedMiningPolicy: authorizedMiningPolicy,
                 permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
-                ImmutableHashSet<Address>.Empty,
-                new AuthorizedMinersState(miners, 2, 4)
-            );
+                ImmutableHashSet<Address>.Empty);
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
@@ -398,14 +407,22 @@ namespace Lib9c.Tests
             var miners = new[] { miner };
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(4096, 100);
+            AuthorizedMiningPolicy authorizedMiningPolicy = new AuthorizedMiningPolicy(
+                miners: miners.ToHashSet(),
+                startIndex: 0,
+                endIndex: 6,
+                interval: 2);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+                minimumDifficulty: 4096,
+                maxTransactionsPerBlock: 100,
+                ignoreHardcodedPolicies: false,
+                authorizedMiningPolicy: authorizedMiningPolicy,
+                permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
-                ImmutableHashSet<Address>.Empty,
-                new AuthorizedMinersState(miners, 2, 6)
-            );
+                ImmutableHashSet<Address>.Empty);
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
@@ -629,12 +646,14 @@ namespace Lib9c.Tests
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 50_000,
                     maxTransactionsPerBlock: 100,
+                    authorizedMiningPolicy: null,
                     permissionedMiningPolicy: new PermissionedMiningPolicy(
-                        threshold: 1,
                         miners: new[]
                         {
                             permissionedMinerKey.ToAddress(),
-                        }.ToImmutableHashSet()
+                        }.ToImmutableHashSet(),
+                        startIndex: 1,
+                        endIndex: null
                     ),
                     ignoreHardcodedPolicies: true
                 ),

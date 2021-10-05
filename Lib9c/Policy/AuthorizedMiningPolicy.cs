@@ -8,9 +8,14 @@ namespace Nekoyume.BlockChain.Policy
     public struct AuthorizedMiningPolicy
     {
         public AuthorizedMiningPolicy(
-            ISet<Address> miners, long startIndex, long? endIndex, long interval)
+            long startIndex, long? endIndex, long interval, ISet<Address> miners)
         {
-            if (endIndex is long ei && ei < startIndex)
+            if (startIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    $"Value of {nameof(startIndex)} must be non-negative: {startIndex}");
+            }
+            else if (endIndex is long ei && ei < startIndex)
             {
                 throw new ArgumentOutOfRangeException(
                     $"Non-null {nameof(endIndex)} cannot be less than {nameof(startIndex)}.");
@@ -18,7 +23,7 @@ namespace Nekoyume.BlockChain.Policy
             else if (interval <= 0)
             {
                 throw new ArgumentOutOfRangeException(
-                    $"Value of {nameof(interval)} must be positive.");
+                    $"Value of {nameof(interval)} must be positive: {interval}");
             }
             else if (miners.Count == 0)
             {
@@ -44,11 +49,15 @@ namespace Nekoyume.BlockChain.Policy
         {
             return index % Interval == 0
                 && StartIndex <= index
-                && (EndIndex is long endIndex && index <= endIndex);
+                && (EndIndex is null
+                    || (EndIndex is long endIndex && index <= endIndex));
         }
 
         public static AuthorizedMiningPolicy Mainnet => new AuthorizedMiningPolicy()
         {
+            StartIndex = 0,
+            EndIndex = 3_153_600,
+            Interval = 50,
             Miners = new[]
             {
                 new Address("ab1dce17dCE1Db1424BB833Af6cC087cd4F5CB6d"),
@@ -56,9 +65,6 @@ namespace Nekoyume.BlockChain.Policy
                 new Address("474CB59Dea21159CeFcC828b30a8D864e0b94a6B"),
                 new Address("636d187B4d434244A92B65B06B5e7da14b3810A9"),
             }.ToImmutableHashSet(),
-            StartIndex = 0,
-            EndIndex = 3_153_600,
-            Interval = 50,
         };
     }
 }
