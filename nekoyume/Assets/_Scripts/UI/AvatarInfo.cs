@@ -655,13 +655,7 @@ namespace Nekoyume.UI
                         case ItemSubType.ApStone:
                             submitEnabledFunc = DimmedFuncForChargeActionPoint;
                             submitText = L10nManager.Localize("UI_CHARGE_AP");
-                            if (Find<HeaderMenu>().ChargingAP)
-                            {
-                                onSubmit = _ =>
-                                    OneLinePopup.Push(MailType.System,
-                                        L10nManager.Localize("UI_CHARGING_AP"));
-                            }
-                            else if (States.Instance.CurrentAvatarState.actionPoint > 0)
+                            if (States.Instance.CurrentAvatarState.actionPoint > 0)
                             {
                                 onSubmit = ShowRefillConfirmPopup;
                             }
@@ -697,6 +691,11 @@ namespace Nekoyume.UI
 
         public static bool DimmedFuncForChargeActionPoint(CountableItem item)
         {
+            if (Find<HeaderMenu>().ChargingAP)
+            {
+                return false;
+            }
+
             if (item is null || item.Count.Value < 1)
             {
                 return false;
