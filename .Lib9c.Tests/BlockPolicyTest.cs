@@ -4,7 +4,9 @@ namespace Lib9c.Tests
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using System.Reflection;
     using System.Security.Cryptography;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Bencodex.Types;
     using Libplanet;
@@ -597,6 +599,18 @@ namespace Lib9c.Tests
             Assert.Throws<BlockExceedingTransactionsException>(() => blockChain.Append(block3));
             Assert.Equal(3, blockChain.Count);
             Assert.False(blockChain.ContainsBlock(block3.Hash));
+        }
+
+        [Fact]
+        public void Obsolete_Actions()
+        {
+            Assert.Empty(Assembly.GetAssembly(typeof(ActionBase))!.GetTypes().Where(
+                type => type.Namespace is { } @namespace &&
+                        @namespace.StartsWith($"{nameof(Nekoyume)}.{nameof(Nekoyume.Action)}") &&
+                        typeof(ActionBase).IsAssignableFrom(type) &&
+                        !type.IsAbstract &&
+                        Regex.IsMatch(type.Name, @"\d+$") &&
+                        !type.IsDefined(typeof(ActionObsoleteAttribute), false)));
         }
 
         [Fact]
