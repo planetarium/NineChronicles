@@ -137,6 +137,7 @@ namespace Nekoyume.UI
         private Coroutine _coUpdateBottomText;
 
         private readonly WaitForSeconds _battleWinVFXYield = new WaitForSeconds(0.2f);
+        private static readonly int ClearedWave = Animator.StringToHash("ClearedWave");
 
         private Animator _victoryImageAnimator;
 
@@ -301,10 +302,12 @@ namespace Nekoyume.UI
         private IEnumerator CoUpdateViewAsVictory(bool isBoosted)
         {
             AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-            StartCoroutine(EmitBattleWinVFX(isBoosted));
+            StartCoroutine(EmitBattleWinVFX());
 
             victoryImageContainer.SetActive(true);
-            _victoryImageAnimator.SetInteger("ClearedWave",
+            // 4 is index of animation about boost.
+            // if not use boost, set animation index to SharedModel.ClearedWaveNumber (1/2/3).
+            _victoryImageAnimator.SetInteger(ClearedWave,
                 isBoosted ? 4 : SharedModel.ClearedWaveNumber);
 
             defeatImageContainer.SetActive(false);
@@ -317,19 +320,10 @@ namespace Nekoyume.UI
             yield return StartCoroutine(CoUpdateRewards());
         }
 
-        private IEnumerator EmitBattleWinVFX(bool isBoosted)
+        private IEnumerator EmitBattleWinVFX()
         {
             yield return _battleWinVFXYield;
             AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
-
-            if (isBoosted)
-            {
-                _battleWin04VFX =
-                    VFXController.instance.CreateAndChase<BattleWin04VFX>(
-                        ActionCamera.instance.transform,
-                        VfxBattleWinOffset);
-                yield break;
-            }
 
             switch (SharedModel.ClearedWaveNumber)
             {
