@@ -305,6 +305,8 @@ namespace Nekoyume.UI
             StartCoroutine(EmitBattleWinVFX());
 
             victoryImageContainer.SetActive(true);
+            // 4 is index of animation about boost.
+            // if not use boost, set animation index to SharedModel.ClearedWaveNumber (1/2/3).
             _victoryImageAnimator.SetInteger(ClearedWave,
                 isBoosted ? 4 : SharedModel.ClearedWaveNumber);
 
