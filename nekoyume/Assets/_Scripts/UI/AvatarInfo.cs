@@ -10,6 +10,7 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -690,6 +691,11 @@ namespace Nekoyume.UI
 
         public static bool DimmedFuncForChargeActionPoint(CountableItem item)
         {
+            if (Find<HeaderMenu>().ChargingAP)
+            {
+                return false;
+            }
+
             if (item is null || item.Count.Value < 1)
             {
                 return false;

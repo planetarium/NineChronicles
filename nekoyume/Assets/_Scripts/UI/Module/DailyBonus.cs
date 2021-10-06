@@ -7,6 +7,7 @@ using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.Common;
@@ -161,7 +162,11 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (States.Instance.CurrentAvatarState.actionPoint > 0)
+            if (actionPoint != null && actionPoint.NowCharging)
+            {
+                OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_CHARGING_AP"));
+            }
+            else if (States.Instance.CurrentAvatarState.actionPoint > 0)
             {
                 var confirm = Widget.Find<Confirm>();
                 confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");

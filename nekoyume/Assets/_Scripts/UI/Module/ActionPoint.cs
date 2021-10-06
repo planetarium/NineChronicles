@@ -42,6 +42,8 @@ namespace Nekoyume.UI.Module
 
         public Image Image => image;
 
+        public bool NowCharging => loading.activeSelf;
+
         #region Mono
 
         private void Awake()
