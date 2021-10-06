@@ -137,7 +137,6 @@ namespace Nekoyume.UI
                 Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(i =>
                     i.Id == Find<WorldMap>().SelectedStageId);
 
-            Debug.Assert(selectedStageIdRow != null, nameof(selectedStageIdRow) + " != null");
             return selectedStageIdRow.CostAP;
         }
     }
