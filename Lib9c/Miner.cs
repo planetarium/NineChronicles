@@ -91,7 +91,7 @@ namespace Nekoyume.BlockChain
                 IComparer<Transaction<NCAction>> txPriority = GetProofTxPriority(proof);
 
                 block = await _chain.MineBlock(
-                    Address,
+                    _privateKey,
                     DateTimeOffset.UtcNow,
                     cancellationToken: cancellationToken,
                     maxTransactions: maxTransactions,
