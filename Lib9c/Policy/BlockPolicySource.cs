@@ -28,8 +28,10 @@ namespace Nekoyume.BlockChain.Policy
     {
         public const int DifficultyStability = 2048;
 
-        // Note: The heaviest block of 9c-main (except for the genesis) weighs 58,408 B (58 KiB).
-        public const int MaxBlockBytes = 1024 * 100; // 100 KiB
+        // FIXME: We should adjust this value after resolving 
+        // https://github.com/planetarium/NineChronicles/issues/777
+        // Previous value is 100 kb (until v100080)
+        public const int MaxBlockBytes = 1024 * 1024 * 10; // 10 Mib
 
         // Note: The genesis block of 9c-main net weighs 11,085,640 B (11 MiB).
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
