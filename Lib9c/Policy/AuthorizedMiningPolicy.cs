@@ -5,9 +5,10 @@ using Libplanet;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public struct PermissionedMiningPolicy
+    public struct AuthorizedMiningPolicy
     {
-        public PermissionedMiningPolicy(long startIndex, long? endIndex, ISet<Address> miners)
+        public AuthorizedMiningPolicy(
+            long startIndex, long? endIndex, long interval, ISet<Address> miners)
         {
             if (startIndex < 0)
             {
@@ -19,6 +20,11 @@ namespace Nekoyume.BlockChain.Policy
                 throw new ArgumentOutOfRangeException(
                     $"Non-null {nameof(endIndex)} cannot be less than {nameof(startIndex)}.");
             }
+            else if (interval <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    $"Value of {nameof(interval)} must be positive: {interval}");
+            }
             else if (miners.Count == 0)
             {
                 throw new ArgumentException(
@@ -28,6 +34,7 @@ namespace Nekoyume.BlockChain.Policy
             Miners = miners;
             StartIndex = startIndex;
             EndIndex = endIndex;
+            Interval = interval;
         }
 
         public ISet<Address> Miners { get; private set; }
@@ -36,17 +43,21 @@ namespace Nekoyume.BlockChain.Policy
 
         public long? EndIndex { get; private set; }
 
+        public long Interval { get; private set; }
+
         public bool IsTargetBlockIndex(long index)
         {
-            return StartIndex <= index
+            return index % Interval == 0
+                && StartIndex <= index
                 && (EndIndex is null
                     || (EndIndex is long endIndex && index <= endIndex));
         }
 
-        public static PermissionedMiningPolicy Mainnet => new PermissionedMiningPolicy()
+        public static AuthorizedMiningPolicy Mainnet => new AuthorizedMiningPolicy()
         {
-            StartIndex = BlockPolicySource.PermissionedMiningHardcodedIndex,
-            EndIndex = null,
+            StartIndex = 0,
+            EndIndex = 3_153_600,
+            Interval = 50,
             Miners = new[]
             {
                 new Address("ab1dce17dCE1Db1424BB833Af6cC087cd4F5CB6d"),
