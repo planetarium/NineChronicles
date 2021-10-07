@@ -139,8 +139,12 @@ namespace Nekoyume.BlockChain.Policy
 #if UNITY_EDITOR
             return new DebugPolicy();
 #else
+            VariableSubPolicy<int> maxBlockBytesPolicy =
+                MaxBlockBytesPolicy.Mainnet;
             minTransactionsPerBlockPolicy = minTransactionsPerBlockPolicy
                 ?? MinTransactionsPerBlockPolicy.Default;
+            VariableSubPolicy<int> maxTransactionsPerBlockPolicy =
+                VariableSubPolicy<int>.Create(maxTransactionsPerBlock);
             maxTransactionsPerSignerPerBlockPolicy = maxTransactionsPerSignerPerBlockPolicy
                 ?? MaxTransactionsPerSignerPerBlockPolicy.Default;
             authorizedMinersPolicy = authorizedMinersPolicy
@@ -152,21 +156,10 @@ namespace Nekoyume.BlockChain.Policy
 
             // FIXME: Slight inconsistency due to pre-existing delegate.
             HashAlgorithmGetter getHashAlgorithmType =
-                index => HashAlgorithmTypePolicy.Mainnet.ToGetter()(index);
-            Func<long, int> getMaxBlockBytes = MaxBlockBytesPolicy.Mainnet.ToGetter();
-            Func<long, int> getMinTransactionsPerBlock =
-                minTransactionsPerBlockPolicy.ToGetter();
-            Func<long, int> getMaxTransactionsPerBlock =
-                VariableSubPolicy<int>.Create(maxTransactionsPerBlock).ToGetter();
-            Func<long, int> getMaxTransactionsPerSignerPerBlock =
-                maxTransactionsPerSignerPerBlockPolicy.ToGetter();
-            Func<long, ImmutableHashSet<Address>> getAuthorizedMiners =
-                authorizedMinersPolicy.ToGetter();
-            Func<long, bool> getAuthorizedMiningNoOpTxRequired =
-                authorizedMiningNoOpTxRequiredPolicy.ToGetter();
-            Func<long, ImmutableHashSet<Address>> getPermissionedMiners =
-                permissionedMinersPolicy.ToGetter();
+                index => HashAlgorithmTypePolicy.Mainnet.Getter(index);
+            Func<long, int> getMaxBlockBytes = MaxBlockBytesPolicy.Mainnet.Getter;
 
+            // FIXME: Ad hoc solution to poorly defined tx validity.
             ImmutableHashSet<Address> allAuthorizedMiners =
                 authorizedMinersPolicy.SpannedSubPolicies
                     .Select(spannedSubPolicy => spannedSubPolicy.Value)
@@ -183,25 +176,25 @@ namespace Nekoyume.BlockChain.Policy
                 (blockChain, block) => ValidateNextBlockRaw(
                     blockChain,
                     block,
-                    getMinTransactionsPerBlock,
-                    getMaxTransactionsPerSignerPerBlock,
-                    getAuthorizedMiners,
-                    getAuthorizedMiningNoOpTxRequired,
-                    getPermissionedMiners);
+                    minTransactionsPerBlockPolicy,
+                    maxTransactionsPerSignerPerBlockPolicy,
+                    authorizedMinersPolicy,
+                    authorizedMiningNoOpTxRequiredPolicy,
+                    permissionedMinersPolicy);
             Func<BlockChain<NCAction>, long> getNextBlockDifficulty = blockChain =>
                 GetNextBlockDifficultyRaw(
                     blockChain,
                     BlockInterval,
                     DifficultyStability,
                     minimumDifficulty,
-                    getAuthorizedMiners,
+                    authorizedMinersPolicy,
                     defaultAlgorithm: chain => DifficultyAdjustment<NCAction>.BaseAlgorithm(
                         chain, BlockInterval, DifficultyStability, minimumDifficulty));
             Func<Address, long, bool> isAllowedToMine = (address, index) => IsAllowedToMineRaw(
                 address,
                 index,
-                getAuthorizedMiners,
-                getPermissionedMiners);
+                authorizedMinersPolicy,
+                permissionedMinersPolicy);
 
             return new BlockPolicy(
                 new RewardGold(),
@@ -213,9 +206,9 @@ namespace Nekoyume.BlockChain.Policy
                 validateNextBlockTx: validateNextBlockTx,
                 validateNextBlock: validateNextBlock,
                 getMaxBlockBytes: getMaxBlockBytes,
-                getMinTransactionsPerBlock: getMinTransactionsPerBlock,
-                getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
-                getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock,
+                getMinTransactionsPerBlock: minTransactionsPerBlockPolicy.Getter,
+                getMaxTransactionsPerBlock: maxTransactionsPerBlockPolicy.Getter,
+                getMaxTransactionsPerSignerPerBlock: maxTransactionsPerSignerPerBlockPolicy.Getter,
                 getNextBlockDifficulty: getNextBlockDifficulty,
                 isAllowedToMine: isAllowedToMine);
 #endif
@@ -327,18 +320,18 @@ namespace Nekoyume.BlockChain.Policy
         internal static BlockPolicyViolationException ValidateNextBlockRaw(
             BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock,
-            Func<long, int> getMinTransactionsPerBlock,
-            Func<long, int> getMaxTransactionsPerSignerPerBlock,
-            Func<long, ImmutableHashSet<Address>> getAuthorizedMiners,
-            Func<long, bool> getAuthorizedMiningNoOpTxRequired,
-            Func<long, ImmutableHashSet<Address>> getPermissionedMiners)
+            VariableSubPolicy<int> minTransactionsPerBlockPolicy,
+            VariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
+            VariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
+            VariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy,
+            VariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
             // FIXME: Tx count validation should be done in libplanet, not here.
             // Should be removed once libplanet is updated.
             if (ValidateTxCountPerBlockRaw(
                 nextBlock,
-                getMinTransactionsPerBlock,
-                getMaxTransactionsPerSignerPerBlock) is BlockPolicyViolationException bpve)
+                minTransactionsPerBlockPolicy,
+                maxTransactionsPerSignerPerBlockPolicy) is BlockPolicyViolationException bpve)
             {
                 return bpve;
             }
@@ -348,18 +341,18 @@ namespace Nekoyume.BlockChain.Policy
                 {
                     return null;
                 }
-                else if (!getAuthorizedMiners(nextBlock.Index).IsEmpty)
+                else if (authorizedMinersPolicy.IsTargetIndex(nextBlock.Index))
                 {
                     return ValidateMinerAuthorityRaw(
                         nextBlock,
-                        getAuthorizedMiners,
-                        getAuthorizedMiningNoOpTxRequired);
+                        authorizedMinersPolicy,
+                        authorizedMiningNoOpTxRequiredPolicy);
                 }
-                else if (!getPermissionedMiners(nextBlock.Index).IsEmpty)
+                else if (permissionedMinersPolicy.IsTargetIndex(nextBlock.Index))
                 {
                     return ValidateMinerPermissionRaw(
                         nextBlock,
-                        getPermissionedMiners);
+                        permissionedMinersPolicy);
                 }
             }
 
@@ -373,10 +366,11 @@ namespace Nekoyume.BlockChain.Policy
             TimeSpan targetBlockInterval,
             long difficultyStability,
             long minimumDifficulty,
-            Func<long, ImmutableHashSet<Address>> getAuthorizedMiners,
+            VariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
             Func<BlockChain<NCAction>, long> defaultAlgorithm)
         {
             long index = blockChain.Count;
+            Func<long, bool> isAuthorizedMiningIndex = authorizedMinersPolicy.IsTargetIndex;
 
             // FIXME: Uninstantiated blockChain can be passed as an argument.
             // Until this is fixed, it is crucial block index is checked first.
@@ -390,12 +384,16 @@ namespace Nekoyume.BlockChain.Policy
             {
                 return index == 0 ? 0 : minimumDifficulty;
             }
-            else if (getAuthorizedMiners(index).IsEmpty)
+            else if (isAuthorizedMiningIndex(index))
             {
-                long prevIndex = getAuthorizedMiners(index - 1).IsEmpty
+                return minimumDifficulty;
+            }
+            else
+            {
+                long prevIndex = !isAuthorizedMiningIndex(index - 1)
                     ? index - 1
                     : index - 2;
-                long prevPrevIndex = getAuthorizedMiners(prevIndex - 1).IsEmpty
+                long prevPrevIndex = !isAuthorizedMiningIndex(prevIndex - 1)
                     ? prevIndex - 1
                     : prevIndex - 2;
 
@@ -412,8 +410,8 @@ namespace Nekoyume.BlockChain.Policy
                 }
                 // At least one of previous blocks involved is authorized mining block.
                 // This can happen if two or more consecutive blocks are authorized mining blocks.
-                else if (!getAuthorizedMiners(prevIndex).IsEmpty
-                    || !getAuthorizedMiners(prevPrevIndex).IsEmpty)
+                else if (isAuthorizedMiningIndex(prevIndex)
+                    || isAuthorizedMiningIndex(prevPrevIndex))
                 {
                     return minimumDifficulty;
                 }
@@ -436,10 +434,6 @@ namespace Nekoyume.BlockChain.Policy
 
                     return nextDifficulty;
                 }
-            }
-            else
-            {
-                return minimumDifficulty;
             }
         }
     }

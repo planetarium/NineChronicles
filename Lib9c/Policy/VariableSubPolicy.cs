@@ -10,11 +10,13 @@ namespace Nekoyume.BlockChain.Policy
     {
         private T _defaultValue;
         private ImmutableList<SpannedSubPolicy<T>> _spannedSubPolicies;
+        private Func<long, T> _getter;
 
         private VariableSubPolicy(T defaultValue)
         {
             _defaultValue = defaultValue;
             _spannedSubPolicies = ImmutableList<SpannedSubPolicy<T>>.Empty;
+            _getter = ToGetter();
 
             Validate();
         }
@@ -55,6 +57,7 @@ namespace Nekoyume.BlockChain.Policy
 
             _defaultValue = variableSubPolicy.DefaultValue;
             _spannedSubPolicies = spannedSubPolicies.ToImmutableList();
+            _getter = ToGetter();
 
             Validate();
         }
@@ -75,15 +78,18 @@ namespace Nekoyume.BlockChain.Policy
                         if (prevEndIndex >= next.StartIndex)
                         {
                             throw new ArgumentOutOfRangeException(
-                                $"Previous {nameof(SpannedSubPolicy<T>)} overlaps with " +
-                                $"next {nameof(SpannedSubPolicy<T>)}");
+                                paramName: nameof(prevEndIndex),
+                                actualValue: prevEndIndex,
+                                message: $"Previous {nameof(SpannedSubPolicy<T>)} overlaps with " +
+                                    $"next {nameof(SpannedSubPolicy<T>)}: " +
+                                    $"{nameof(next.StartIndex)}");
                         }
                     }
                     else
                     {
                         throw new ArgumentOutOfRangeException(
                             $"Previous {nameof(SpannedSubPolicy<T>)} overlaps with " +
-                            $"next {nameof(SpannedSubPolicy<T>)}");
+                            $"next {nameof(SpannedSubPolicy<T>)}.");
                     }
                 }
 
@@ -110,8 +116,18 @@ namespace Nekoyume.BlockChain.Policy
             return new VariableSubPolicy<T>(this, spannedSubPolicy);
         }
 
+        /// <summary>
+        /// Creates a new subpolicy with an additional <see cref="ImmutableList{T}"/> of
+        /// <see cref="SpannedSubPolicy{T}"/> added sequentially.
+        /// </summary>
+        /// <param name="spannedSubPolicies">An <see cref="ImmutableList{T}"/> of
+        /// <see cref="SpannedSubPolicy{T}"/>s to add.</param>
+        /// <returns>
+        /// A new <see cref="VariableSubPolicy{T}"/> instance with
+        /// <paramref name="spannedSubPolicies"/> added at the end.
+        /// </returns>
         [Pure]
-        public VariableSubPolicy<T> AddRange(List<SpannedSubPolicy<T>> spannedSubPolicies)
+        public VariableSubPolicy<T> AddRange(ImmutableList<SpannedSubPolicy<T>> spannedSubPolicies)
         {
             VariableSubPolicy<T> variableSubPolicy = this;
             foreach (SpannedSubPolicy<T> spannedSubPolicy in spannedSubPolicies)
@@ -131,30 +147,19 @@ namespace Nekoyume.BlockChain.Policy
         public bool IsEmpty => SpannedSubPolicies.Count == 0;
 
         [Pure]
-        public Func<long, T> ToGetter()
+        public bool IsTargetIndex(long index) =>
+            SpannedSubPolicies.Any(spannedSubPolicy => spannedSubPolicy.IsTargetIndex(index));
+
+        [Pure]
+        public Func<long, T> Getter => _getter;
+
+        [Pure]
+        private Func<long, T> ToGetter()
         {
-            T ValueSelector(long index)
-            {
-                List<SpannedSubPolicy<T>> spannedSubPolicies = SpannedSubPolicies
-                    .Where(spannedSubPolicy => spannedSubPolicy.IsTargetIndex(index))
-                    .ToList();
-
-                if (spannedSubPolicies.Count > 1)
-                {
-                    throw new ArgumentException(
-                        $"More than one subpolicy is selected where it should not be possible.");
-                }
-                else if (spannedSubPolicies.Count == 1)
-                {
-                    return spannedSubPolicies.Single().Value;
-                }
-                else
-                {
-                    return DefaultValue;
-                }
-            }
-
-            return index => ValueSelector(index);
+            return index => SpannedSubPolicies
+                .FirstOrDefault(_ssp => _ssp.IsTargetIndex(index)) is SpannedSubPolicy<T> ssp
+                    ? ssp.Value
+                    : DefaultValue;
         }
 
         /// <summary>

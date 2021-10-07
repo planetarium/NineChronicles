@@ -11,17 +11,24 @@ namespace Nekoyume.BlockChain.Policy
             if (startIndex < 0)
             {
                 throw new ArgumentOutOfRangeException(
-                    $"Start index must be non-negative: {startIndex}");
+                    paramName: nameof(startIndex),
+                    actualValue: startIndex,
+                    message: $"Start index must be non-negative: {startIndex}");
             }
             else if (endIndex is long ei && ei < startIndex)
             {
                 throw new ArgumentOutOfRangeException(
-                    $"Non-null end index must not be less than start index: {startIndex}, {endIndex}");
+                    paramName: nameof(endIndex),
+                    actualValue: endIndex,
+                    message: $"Non-null end index must not be less than start index: " +
+                        $"{{{nameof(startIndex)}: {startIndex}, {nameof(endIndex)}: {endIndex}}}");
             }
             else if (interval < 1)
             {
                 throw new ArgumentOutOfRangeException(
-                    $"Interval must be positive: {interval}");
+                    paramName: nameof(interval),
+                    actualValue: interval,
+                    message: $"Interval must be positive: {interval}");
             }
         }
 

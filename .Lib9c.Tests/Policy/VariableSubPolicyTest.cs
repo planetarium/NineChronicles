@@ -50,7 +50,7 @@ namespace Lib9c.Tests
             Assert.Equal(80, variableSubPolicy.SpannedSubPolicies[3].EndIndex);
             Assert.Equal(5, variableSubPolicy.SpannedSubPolicies[3].Interval);
 
-            getter = variableSubPolicy.ToGetter();
+            getter = variableSubPolicy.Getter;
             Assert.Equal(
                 indices.Where(i => getter(i)).Count(),
                 variableSubPolicy.SpannedSubPolicies
