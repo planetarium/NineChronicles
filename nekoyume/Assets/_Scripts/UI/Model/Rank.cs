@@ -107,7 +107,8 @@ namespace Nekoyume.UI.Model
                 .ToList();
             AbilityRankingInfos.ForEach(i => i.Rank = rankOffset++);
 
-            foreach (var pair in States.Instance.AvatarStates)
+            var avatarStates = States.Instance.AvatarStates.ToList();
+            foreach (var pair in avatarStates)
             {
                 var avatarState = pair.Value;
                 var avatarAddress = avatarState.address;
@@ -177,7 +178,8 @@ namespace Nekoyume.UI.Model
                 .Where(e => e != null)
                 .ToList();
 
-            foreach (var pair in States.Instance.AvatarStates)
+            var avatarStates = States.Instance.AvatarStates.ToList();
+            foreach (var pair in avatarStates)
             {
                 var myInfoQuery =
                     $@"query {{
@@ -259,7 +261,8 @@ namespace Nekoyume.UI.Model
                 .Where(e => e != null)
                 .ToList();
 
-            foreach (var pair in States.Instance.AvatarStates)
+            var avatarStates = States.Instance.AvatarStates.ToList();
+            foreach (var pair in avatarStates)
             {
                 var myInfoQuery =
                     $@"query {{
@@ -339,7 +342,8 @@ namespace Nekoyume.UI.Model
                 .Where(e => e != null)
                 .ToList();
 
-            foreach (var pair in States.Instance.AvatarStates)
+            var avatarStates = States.Instance.AvatarStates.ToList();
+            foreach (var pair in avatarStates)
             {
                 var myInfoQuery =
                     $@"query {{
@@ -428,7 +432,8 @@ namespace Nekoyume.UI.Model
                     .Where(e => e != null)
                     .ToList();
 
-                foreach (var pair in States.Instance.AvatarStates)
+                var avatarStates = States.Instance.AvatarStates.ToList();
+                foreach (var pair in avatarStates)
                 {
                     var myInfoQuery =
                         $@"query {{
