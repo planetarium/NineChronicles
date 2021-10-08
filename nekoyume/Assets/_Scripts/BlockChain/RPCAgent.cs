@@ -332,8 +332,7 @@ namespace Nekoyume.BlockChain
             HashAlgorithmGetter hashAlgorithmGetter = Game.Game.instance.Agent.BlockPolicySource
                 .GetPolicy(0, 0) // NOTE: Arguments of `GetPolicy()` method are not important in this context.
                 .GetHashAlgorithm;
-            var newTipHeader =
-                BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
+            var newTipHeader = BlockMarshaler.UnmarshalBlockHeader(hashAlgorithmGetter, dict);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
             BlockTipHash = new BlockHash(newTipHeader.Hash.ToByteArray());
