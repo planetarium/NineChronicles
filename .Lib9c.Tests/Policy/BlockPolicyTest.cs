@@ -44,7 +44,7 @@ namespace Lib9c.Tests
             var adminAddress = adminPrivateKey.ToAddress();
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -137,8 +137,9 @@ namespace Lib9c.Tests
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 10000,
-                maxTransactionsPerBlock: 100,
+                maxBlockBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
+                maxTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null,
                 authorizedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
                     .Create(ImmutableHashSet<Address>.Empty)
@@ -193,7 +194,7 @@ namespace Lib9c.Tests
             );
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -239,7 +240,7 @@ namespace Lib9c.Tests
             );
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -287,8 +288,9 @@ namespace Lib9c.Tests
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 10000,
-                100,
+                maxBlockBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
+                maxTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null,
                 authorizedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
                     .Create(ImmutableHashSet<Address>.Empty)
@@ -411,8 +413,9 @@ namespace Lib9c.Tests
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 4096,
-                maxTransactionsPerBlock: 100,
+                maxBlockBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
+                maxTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null,
                 authorizedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
                     .Create(ImmutableHashSet<Address>.Empty)
@@ -546,7 +549,17 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminPublicKey = adminPrivateKey.PublicKey;
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(3000, 10);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+                minimumDifficulty: 3000,
+                maxBlockBytesPolicy: null,
+                minTransactionsPerBlockPolicy: null,
+                maxTransactionsPerBlockPolicy: VariableSubPolicy<int>
+                    .Create(int.MaxValue)
+                    .Add(new SpannedSubPolicy<int>(0, null, 1, 10)),
+                maxTransactionsPerSignerPerBlockPolicy: null,
+                authorizedMinersPolicy: null,
+                authorizedMiningNoOpTxRequiredPolicy: null,
+                permissionedMinersPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis =
@@ -642,17 +655,19 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminAddress = new Address(adminPrivateKey.PublicKey);
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy =
-                blockPolicySource.GetPolicy(
-                    minimumDifficulty: 3000,
-                    maxTransactionsPerBlock: 10,
-                    minTransactionsPerBlockPolicy: null,
-                    maxTransactionsPerSignerPerBlockPolicy: VariableSubPolicy<int>
-                        .Create(int.MaxValue)
-                        .Add(new SpannedSubPolicy<int>(2, null, 1, 5)),
-                    authorizedMinersPolicy: null,
-                    authorizedMiningNoOpTxRequiredPolicy: null,
-                    permissionedMinersPolicy: null);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+                minimumDifficulty: 3000,
+                maxBlockBytesPolicy: null,
+                minTransactionsPerBlockPolicy: null,
+                maxTransactionsPerBlockPolicy: VariableSubPolicy<int>
+                    .Create(int.MaxValue)
+                    .Add(new SpannedSubPolicy<int>(0, null, 1, 10)),
+                maxTransactionsPerSignerPerBlockPolicy: VariableSubPolicy<int>
+                    .Create(int.MaxValue)
+                    .Add(new SpannedSubPolicy<int>(2, null, 1, 5)),
+                authorizedMinersPolicy: null,
+                authorizedMiningNoOpTxRequiredPolicy: null,
+                permissionedMinersPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
@@ -759,8 +774,9 @@ namespace Lib9c.Tests
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 50_000,
-                    maxTransactionsPerBlock: 100,
+                    maxBlockBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
+                    maxTransactionsPerBlockPolicy: null,
                     maxTransactionsPerSignerPerBlockPolicy: null,
                     authorizedMinersPolicy: null,
                     authorizedMiningNoOpTxRequiredPolicy: null,
@@ -771,8 +787,7 @@ namespace Lib9c.Tests
                             endIndex: null,
                             interval: 1,
                             value: new Address[] { permissionedMinerKey.ToAddress() }
-                                .ToImmutableHashSet()))
-                ),
+                                .ToImmutableHashSet()))),
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
                 store,
                 stateStore,
@@ -842,8 +857,9 @@ namespace Lib9c.Tests
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 50_000,
-                    maxTransactionsPerBlock: 100,
+                    maxBlockBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
+                    maxTransactionsPerBlockPolicy: null,
                     maxTransactionsPerSignerPerBlockPolicy: null,
                     authorizedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
                         .Create(ImmutableHashSet<Address>.Empty)
@@ -999,8 +1015,9 @@ namespace Lib9c.Tests
 
             var policy = (BlockPolicy)blockPolicySource.GetPolicy(
                     minimumDifficulty: 50_000,
-                    maxTransactionsPerBlock: 100,
+                    maxBlockBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
+                    maxTransactionsPerBlockPolicy: null,
                     maxTransactionsPerSignerPerBlockPolicy: null,
                     authorizedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
                         .Create(ImmutableHashSet<Address>.Empty)

@@ -25,7 +25,9 @@ namespace Nekoyume.BlockChain.Policy
 {
     public partial class BlockPolicySource
     {
-        public const int DifficultyStability = 2048;
+        public const long MinimumDifficulty = 5_000_000;
+
+        public const long DifficultyStability = 2048;
 
         // FIXME: We should adjust this value after resolving
         // https://github.com/planetarium/NineChronicles/issues/777
@@ -102,13 +104,25 @@ namespace Nekoyume.BlockChain.Policy
                 new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
+        public IBlockPolicy<NCAction> GetPolicy() =>
+            GetPolicy(
+                MinimumDifficulty,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
+                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
+                authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy.Mainnet,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
+
         // FIXME 남은 설정들도 설정화 해야 할지도?
-        public IBlockPolicy<NCAction> GetPolicy(int minimumDifficulty, int maxTransactionsPerBlock) =>
+        public IBlockPolicy<NCAction> GetPolicy(long minimumDifficulty) =>
             GetPolicy(
                 minimumDifficulty,
-                maxTransactionsPerBlock,
-                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
                 authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
@@ -128,9 +142,10 @@ namespace Nekoyume.BlockChain.Policy
         /// <param name="permissionedMinersPolicy">Used for permissioned mining.</param>
         /// <returns>A <see cref="BlockPolicy"/> constructed from given parameters.</returns>
         internal IBlockPolicy<NCAction> GetPolicy(
-            int minimumDifficulty,
-            int maxTransactionsPerBlock,
+            long minimumDifficulty,
+            VariableSubPolicy<int> maxBlockBytesPolicy,
             VariableSubPolicy<int> minTransactionsPerBlockPolicy,
+            VariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             VariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
             VariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
             VariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy,
@@ -139,12 +154,12 @@ namespace Nekoyume.BlockChain.Policy
 #if UNITY_EDITOR
             return new DebugPolicy();
 #else
-            VariableSubPolicy<int> maxBlockBytesPolicy =
-                MaxBlockBytesPolicy.Mainnet;
+            maxBlockBytesPolicy = maxBlockBytesPolicy
+                ?? MaxBlockBytesPolicy.Mainnet;
             minTransactionsPerBlockPolicy = minTransactionsPerBlockPolicy
                 ?? MinTransactionsPerBlockPolicy.Default;
-            VariableSubPolicy<int> maxTransactionsPerBlockPolicy =
-                VariableSubPolicy<int>.Create(maxTransactionsPerBlock);
+            maxTransactionsPerBlockPolicy = maxTransactionsPerBlockPolicy
+                ?? MaxTransactionsPerBlockPolicy.Default;
             maxTransactionsPerSignerPerBlockPolicy = maxTransactionsPerSignerPerBlockPolicy
                 ?? MaxTransactionsPerSignerPerBlockPolicy.Default;
             authorizedMinersPolicy = authorizedMinersPolicy
@@ -157,7 +172,6 @@ namespace Nekoyume.BlockChain.Policy
             // FIXME: Slight inconsistency due to pre-existing delegate.
             HashAlgorithmGetter getHashAlgorithmType =
                 index => HashAlgorithmTypePolicy.Mainnet.Getter(index);
-            Func<long, int> getMaxBlockBytes = MaxBlockBytesPolicy.Mainnet.Getter;
 
             // FIXME: Ad hoc solution to poorly defined tx validity.
             ImmutableHashSet<Address> allAuthorizedMiners =
@@ -205,7 +219,7 @@ namespace Nekoyume.BlockChain.Policy
                 hashAlgorithmGetter: getHashAlgorithmType,
                 validateNextBlockTx: validateNextBlockTx,
                 validateNextBlock: validateNextBlock,
-                getMaxBlockBytes: getMaxBlockBytes,
+                getMaxBlockBytes: maxBlockBytesPolicy.Getter,
                 getMinTransactionsPerBlock: minTransactionsPerBlockPolicy.Getter,
                 getMaxTransactionsPerBlock: maxTransactionsPerBlockPolicy.Getter,
                 getMaxTransactionsPerSignerPerBlock: maxTransactionsPerSignerPerBlockPolicy.Getter,

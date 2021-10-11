@@ -45,9 +45,8 @@ namespace Lib9c.Tools
         {
             var policySource = new BlockPolicySource(logger);
             IBlockPolicy<NCAction> policy = policySource.GetPolicy(
-                BlockPolicySource.DifficultyStability + 1,
-                int.MaxValue
-            );
+                // Explicitly set to lowest possible difficulty.
+                BlockPolicySource.DifficultyStability);
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             IStore store
                 = monorocksdb
