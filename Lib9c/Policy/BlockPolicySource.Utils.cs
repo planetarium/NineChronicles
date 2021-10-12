@@ -63,19 +63,32 @@ namespace Nekoyume.BlockChain.Policy
         private static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
             Block<NCAction> block,
             VariableSubPolicy<int> minTransactionsPerBlockPolicy,
+            VariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             VariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy)
         {
-            int minTransactionsPerBlock = minTransactionsPerBlockPolicy.Getter(block.Index);
+            int minTransactionsPerBlock =
+                minTransactionsPerBlockPolicy.Getter(block.Index);
+            int maxTransactionsPerBlock =
+                maxTransactionsPerBlockPolicy.Getter(block.Index);
+            int maxTransactionsPerSignerPerBlock =
+                maxTransactionsPerSignerPerBlockPolicy.Getter(block.Index);
+
             if (block.Transactions.Count < minTransactionsPerBlock)
             {
                 return new BlockPolicyViolationException(
                     $"Block #{block.Index} {block.Hash} should include " +
-                    $"at least {minTransactionsPerBlock} transaction(s).");
+                    $"at least {minTransactionsPerBlock} transaction(s): " +
+                    $"{block.Transactions.Count}");
+            }
+            else if (block.Transactions.Count > maxTransactionsPerBlock)
+            {
+                return new BlockPolicyViolationException(
+                    $"Block #{block.Index} {block.Hash} should include " +
+                    $"at most {maxTransactionsPerBlock} transaction(s): " +
+                    $"{block.Transactions.Count}");
             }
             else
             {
-                int maxTransactionsPerSignerPerBlock =
-                    maxTransactionsPerSignerPerBlockPolicy.Getter(block.Index);
                 if (block.Transactions
                     .GroupBy(tx => tx.Signer)
                     .Any(group => group.Count() > maxTransactionsPerSignerPerBlock))

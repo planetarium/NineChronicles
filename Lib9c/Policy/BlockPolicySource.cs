@@ -191,6 +191,7 @@ namespace Nekoyume.BlockChain.Policy
                     blockChain,
                     block,
                     minTransactionsPerBlockPolicy,
+                    maxTransactionsPerBlockPolicy,
                     maxTransactionsPerSignerPerBlockPolicy,
                     authorizedMinersPolicy,
                     authorizedMiningNoOpTxRequiredPolicy,
@@ -335,6 +336,7 @@ namespace Nekoyume.BlockChain.Policy
             BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock,
             VariableSubPolicy<int> minTransactionsPerBlockPolicy,
+            VariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             VariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
             VariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
             VariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy,
@@ -345,6 +347,7 @@ namespace Nekoyume.BlockChain.Policy
             if (ValidateTxCountPerBlockRaw(
                 nextBlock,
                 minTransactionsPerBlockPolicy,
+                maxTransactionsPerBlockPolicy,
                 maxTransactionsPerSignerPerBlockPolicy) is BlockPolicyViolationException bpve)
             {
                 return bpve;
