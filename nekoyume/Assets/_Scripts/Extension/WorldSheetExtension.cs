@@ -3,7 +3,7 @@ using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
 
-namespace Nekoyume.UI
+namespace Nekoyume
 {
     public static class WorldSheetExtension
     {

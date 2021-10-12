@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    public static class VectorExtensions
+    public static class VectorExtension
     {
         public static float2 ToCanvasPosition(this Vector3 worldPosition, Camera camera, Canvas canvas)
         {
             return ToCanvasPosition((float3) worldPosition, camera, canvas);
         }
-        
+
         public static float2 ToCanvasPosition(this float3 worldPosition, Camera camera, Canvas canvas)
         {
             var canvasRect = canvas.GetComponent<RectTransform>();

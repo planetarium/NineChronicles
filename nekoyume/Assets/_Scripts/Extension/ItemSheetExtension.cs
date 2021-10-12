@@ -1,7 +1,7 @@
-using Nekoyume.L10n;
 using Nekoyume.TableData;
+using Nekoyume.UI;
 
-namespace Nekoyume.UI
+namespace Nekoyume
 {
     public static class ItemSheetExtension
     {
