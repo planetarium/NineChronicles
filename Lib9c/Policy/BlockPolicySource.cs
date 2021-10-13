@@ -28,7 +28,7 @@ namespace Nekoyume.BlockChain.Policy
     {
         public const int DifficultyStability = 2048;
 
-        // FIXME: We should adjust this value after resolving 
+        // FIXME: We should adjust this value after resolving
         // https://github.com/planetarium/NineChronicles/issues/777
         // Previous value is 100 kb (until v100080)
         public const int MaxBlockBytes = 1024 * 1024 * 10; // 10 Mib
@@ -57,7 +57,7 @@ namespace Nekoyume.BlockChain.Policy
         public const long V100080ObsoleteIndex = 2_448_000;
 
         // FIXME: Should be finalized before release.
-        public const long V100081ObsoleteIndex = 2_500_000;
+        public const long V100081ObsoleteIndex = 2_550_000;
 
         public const long PermissionedMiningHardcodedIndex = 2_225_500;
 
