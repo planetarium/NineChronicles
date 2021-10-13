@@ -2,7 +2,7 @@
 using Nekoyume.Model.Item;
 using UnityEngine;
 
-namespace Nekoyume.UI
+namespace Nekoyume
 {
     public static class WeaponExtension
     {

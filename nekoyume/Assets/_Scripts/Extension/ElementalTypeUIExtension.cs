@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Stat;
+using Nekoyume.UI;
 using UnityEngine;
 
-namespace Nekoyume.UI
+namespace Nekoyume
 {
     static class ElementalTypeUIExtension
     {

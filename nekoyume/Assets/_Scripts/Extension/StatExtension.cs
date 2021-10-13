@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Nekoyume
 {
-    public static class StatExtensions
+    public static class StatExtension
     {
         public static string DecimalStatToString(this DecimalStat stat)
         {

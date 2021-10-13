@@ -5,7 +5,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume
 {
-    public static class AvatarExtensions
+    public static class AvatarExtension
     {
         public static bool TryGetEquippedFullCostume(this AvatarState avatarState, out Costume fullCostume)
         {

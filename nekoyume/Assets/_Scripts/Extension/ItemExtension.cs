@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    public static class ItemExtensions
+    public static class ItemExtension
     {
         public static Sprite GetIconSprite(this ItemBase item) => SpriteHelper.GetItemIcon(item.Id);
 
