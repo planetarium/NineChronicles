@@ -5,7 +5,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
-using RedBlueGames.Tools.TextTyper;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +12,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class CombinationSlots : XTweenWidget
+    public class CombinationSlotsPopup : XTweenWidget
     {
         [SerializeField]
         private List<CombinationSlot> slots;
@@ -27,7 +26,6 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
 
         public override WidgetType WidgetType => WidgetType.Popup;
-        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         protected override void Awake()
         {
@@ -119,7 +117,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    slots[i].SetSlot(blockIndex, i );
+                    slots[i].SetSlot(blockIndex, i);
                 }
             }
         }

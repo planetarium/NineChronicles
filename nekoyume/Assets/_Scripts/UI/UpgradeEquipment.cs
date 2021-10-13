@@ -300,7 +300,7 @@ namespace Nekoyume.UI
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
-            var slots = Find<CombinationSlots>();
+            var slots = Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
             {
                 return;
@@ -567,7 +567,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            if (!Find<CombinationSlots>().TryGetEmptyCombinationSlot(out _))
+            if (!Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _))
             {
                 errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");
                 return false;

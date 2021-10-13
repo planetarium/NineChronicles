@@ -247,7 +247,27 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<UpgradeEquipment>());
             yield return null;
 
-            // popup
+            // header menu
+            secondWidgets.Add(Widget.Create<HeaderMenu>());
+            yield return null;
+
+            // Popup included in header menu
+            secondWidgets.Add(Widget.Create<MailPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<QuestPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<AvatarInfoPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CombinationSlotsPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<Rank>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ChatPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<QuitPopup>());
+            yield return null;
+
+            // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<RankingBattleResult>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
@@ -260,28 +280,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
             yield return null;
-
-            // header menu
-            secondWidgets.Add(Widget.Create<HeaderMenu>());
-            yield return null;
-
-            // Popup included in header menu
-            secondWidgets.Add(Widget.Create<Mail>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Quest>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<AvatarInfo>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<CombinationSlots>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Rank>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<ChatPopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<QuitPopup>());
-            yield return null;
-
-            // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<CombinationResult>());
             yield return null;
             secondWidgets.Add(Widget.Create<EnhancementResult>());

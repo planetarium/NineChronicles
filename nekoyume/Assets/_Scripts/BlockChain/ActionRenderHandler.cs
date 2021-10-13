@@ -333,7 +333,7 @@ namespace Nekoyume.BlockChain
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
             }
-            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
@@ -427,7 +427,7 @@ namespace Nekoyume.BlockChain
                     result.itemUsable.TradableId);
                 // ~Notify
             }
-            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable> eval)
@@ -469,7 +469,7 @@ namespace Nekoyume.BlockChain
                     result.itemUsable.TradableId);
                 // ~Notify
             }
-            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
@@ -534,7 +534,7 @@ namespace Nekoyume.BlockChain
                 // ~Notify
             }
 
-            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)

@@ -344,7 +344,7 @@ namespace Nekoyume.UI.Module
                     Widget.Find<UpgradeEquipment>()?.gameObject.SetActive(false);
                     Widget.Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
                     Widget.Find<CombinationMain>().Show();
-                    Widget.Find<CombinationSlots>().Close();
+                    Widget.Find<CombinationSlotsPopup>().Close();
                     break;
 
                 case SlotType.Working:

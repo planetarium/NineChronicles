@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using Nekoyume.UI.Tween;
 using System.Collections;
+using Nekoyume.EnumType;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -9,6 +10,8 @@ namespace Nekoyume.UI
     {
         [SerializeField]
         private AnchoredPositionXTweener xTweener = null;
+
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         public override void Show(bool ignoreShowAnimation = false)
         {

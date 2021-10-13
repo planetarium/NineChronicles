@@ -1,15 +1,11 @@
-using Nekoyume.Helper;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.L10n;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using QuestModel = Nekoyume.Model.Quest.Quest;
@@ -18,7 +14,8 @@ using Nekoyume.UI.Module;
 namespace Nekoyume.UI
 {
     using UniRx;
-    public class Quest : XTweenWidget
+
+    public class QuestPopup : XTweenWidget
     {
         [SerializeField]
         private CategoryTabButton adventureButton = null;
@@ -49,9 +46,9 @@ namespace Nekoyume.UI
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
         public override WidgetType WidgetType => WidgetType.Popup;
-        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region override
+
         protected override void Awake()
         {
             base.Awake();
@@ -80,6 +77,7 @@ namespace Nekoyume.UI
             {
                 blur.Show();
             }
+
             HelpPopup.HelpMe(100011, true);
         }
 
@@ -97,10 +95,10 @@ namespace Nekoyume.UI
 
         public void ChangeState(int state)
         {
-            filterType = (QuestType) state;
+            filterType = (QuestType)state;
 
             var list = _questList.Value.ToList()
-                .FindAll(e => e.QuestType == (QuestType) state)
+                .FindAll(e => e.QuestType == (QuestType)state)
                 .OrderBy(e => e, new QuestOrderComparer())
                 .ToList();
             scroll.UpdateData(list, true);
@@ -119,7 +117,7 @@ namespace Nekoyume.UI
             }
 
             _questList.Value = list;
-            ChangeState((int) filterType);
+            ChangeState((int)filterType);
         }
 
         public void EnqueueCompletedQuest(QuestModel quest)
@@ -139,7 +137,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            foreach (var questType in (QuestType[]) Enum.GetValues(typeof(QuestType)))
+            foreach (var questType in (QuestType[])Enum.GetValues(typeof(QuestType)))
             {
                 var button = questType switch
                 {

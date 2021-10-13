@@ -3,7 +3,6 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.UI.Module;
 using UnityEngine;
 using UniRx;
 

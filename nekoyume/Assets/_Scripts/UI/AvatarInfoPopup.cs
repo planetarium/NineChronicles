@@ -10,7 +10,6 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -19,7 +18,6 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,7 +25,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class AvatarInfo : XTweenWidget
+    public class AvatarInfoPopup : XTweenWidget
     {
         public bool HasNotification =>
             inventory.SharedModel.Equipments.Any(item => item.HasNotification.Value);
@@ -79,7 +77,6 @@ namespace Nekoyume.UI
 
         public readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
         public override WidgetType WidgetType => WidgetType.Popup;
-        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region Override
 
@@ -242,7 +239,8 @@ namespace Nekoyume.UI
             if (!(title is null))
             {
                 Destroy(_cachedCharacterTitle);
-                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName(false));
+                var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
+                    title.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 
@@ -265,7 +263,8 @@ namespace Nekoyume.UI
             else
             {
                 inventory.gameObject.SetActive(false);
-                cpText.text = CPHelper.GetCPV2(avatarState, game.TableSheets.CharacterSheet, game.TableSheets.CostumeStatSheet)
+                cpText.text = CPHelper.GetCPV2(avatarState, game.TableSheets.CharacterSheet,
+                        game.TableSheets.CostumeStatSheet)
                     .ToString();
             }
 
@@ -292,7 +291,8 @@ namespace Nekoyume.UI
                 statModifiers.AddRange(
                     costumeStatSheet.OrderedList
                         .Where(r => r.CostumeId == itemId)
-                        .Select(row => new StatModifier(row.StatType, StatModifier.OperationType.Add, (int) row.Stat))
+                        .Select(row => new StatModifier(row.StatType,
+                            StatModifier.OperationType.Add, (int)row.Stat))
                 );
             }
 
@@ -383,7 +383,8 @@ namespace Nekoyume.UI
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
                         Destroy(_cachedCharacterTitle);
-                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName(false));
+                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
+                            costume.GetLocalizedNonColoredName(false));
                         _cachedCharacterTitle = Instantiate(clone, titleSocket);
                     }
 
@@ -397,13 +398,13 @@ namespace Nekoyume.UI
                     {
                         case ItemSubType.Armor:
                         {
-                            var armor = (Armor) _armorSlot.Item;
-                            var weapon = (Weapon) _weaponSlot.Item;
+                            var armor = (Armor)_armorSlot.Item;
+                            var weapon = (Weapon)_weaponSlot.Item;
                             player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                             break;
                         }
                         case ItemSubType.Weapon:
-                            player.EquipWeapon((Weapon) slot.Item);
+                            player.EquipWeapon((Weapon)slot.Item);
                             break;
                     }
 
@@ -481,8 +482,8 @@ namespace Nekoyume.UI
 
                     UpdateStatViews();
 
-                    var armor = (Armor) _armorSlot.Item;
-                    var weapon = (Weapon) _weaponSlot.Item;
+                    var armor = (Armor)_armorSlot.Item;
+                    var weapon = (Weapon)_weaponSlot.Item;
                     player.UnequipCostume(costume, true);
                     player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                     Game.Event.OnUpdatePlayerEquip.OnNext(player);
@@ -514,13 +515,13 @@ namespace Nekoyume.UI
                     {
                         case ItemSubType.Armor:
                         {
-                            var armor = (Armor) _armorSlot.Item;
-                            var weapon = (Weapon) _weaponSlot.Item;
+                            var armor = (Armor)_armorSlot.Item;
+                            var weapon = (Weapon)_weaponSlot.Item;
                             player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                             break;
                         }
                         case ItemSubType.Weapon:
-                            player.EquipWeapon((Weapon) _weaponSlot.Item);
+                            player.EquipWeapon((Weapon)_weaponSlot.Item);
                             break;
                     }
 
@@ -573,9 +574,9 @@ namespace Nekoyume.UI
             switch (item.ItemType)
             {
                 case ItemType.Costume:
-                    return costumeSlots.TryGetToEquip((Costume) item, out slot);
+                    return costumeSlots.TryGetToEquip((Costume)item, out slot);
                 case ItemType.Equipment:
-                    return equipmentSlots.TryGetToEquip((Equipment) item, out slot);
+                    return equipmentSlots.TryGetToEquip((Equipment)item, out slot);
                 default:
                     slot = null;
                     return false;
@@ -663,6 +664,7 @@ namespace Nekoyume.UI
                             {
                                 onSubmit = ChargeActionPoint;
                             }
+
                             break;
                     }
 
@@ -729,6 +731,7 @@ namespace Nekoyume.UI
                 {
                     GameConfigStateSubject.ActionPointState.Remove(address);
                 }
+
                 GameConfigStateSubject.ActionPointState.Add(address, true);
 
                 LocalLayerModifier.RemoveItem(States.Instance.CurrentAvatarState.address,

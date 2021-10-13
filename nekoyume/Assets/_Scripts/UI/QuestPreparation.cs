@@ -371,18 +371,18 @@ namespace Nekoyume.UI
                     tooltip.Show(
                         view.RectTransform,
                         view.Model,
-                        AvatarInfo.DimmedFuncForChargeActionPoint,
+                        AvatarInfoPopup.DimmedFuncForChargeActionPoint,
                         L10nManager.Localize("UI_CHARGE_AP"),
                          _ =>
                          {
                              if (States.Instance.CurrentAvatarState.actionPoint > 0)
                              {
-                                 AvatarInfo.ShowRefillConfirmPopup(tooltip.itemInformation.Model
+                                 AvatarInfoPopup.ShowRefillConfirmPopup(tooltip.itemInformation.Model
                                      .item.Value);
                              }
                              else
                              {
-                                 AvatarInfo.ChargeActionPoint(tooltip.itemInformation.Model.item
+                                 AvatarInfoPopup.ChargeActionPoint(tooltip.itemInformation.Model.item
                                      .Value);
                              }
                          }
@@ -697,7 +697,7 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
             inventory.SharedModel.UpdateEquipmentNotification();
-            var avatarInfo = Find<AvatarInfo>();
+            var avatarInfo = Find<AvatarInfoPopup>();
             if (avatarInfo != null)
             {
                 Find<HeaderMenu>().UpdateInventoryNotification(avatarInfo.HasNotification);

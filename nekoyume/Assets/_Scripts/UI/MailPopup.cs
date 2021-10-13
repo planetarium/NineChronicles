@@ -23,7 +23,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class Mail : XTweenWidget, IMail
+    public class MailPopup : XTweenWidget, IMail
     {
         public enum MailTabState : int
         {
@@ -75,7 +75,6 @@ namespace Nekoyume.UI
         public MailBox MailBox { get; private set; }
 
         public override WidgetType WidgetType => WidgetType.Popup;
-        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region override
 

@@ -100,10 +100,10 @@ namespace Nekoyume.UI.Module
         {
             base.Initialize();
 
-            _toggleWidgets.Add(ToggleType.Quest, Find<Quest>());
-            _toggleWidgets.Add(ToggleType.AvatarInfo, Find<AvatarInfo>());
-            _toggleWidgets.Add(ToggleType.CombinationSlots, Find<CombinationSlots>());
-            _toggleWidgets.Add(ToggleType.Mail, Find<Mail>());
+            _toggleWidgets.Add(ToggleType.Quest, Find<QuestPopup>());
+            _toggleWidgets.Add(ToggleType.AvatarInfo, Find<AvatarInfoPopup>());
+            _toggleWidgets.Add(ToggleType.CombinationSlots, Find<CombinationSlotsPopup>());
+            _toggleWidgets.Add(ToggleType.Mail, Find<MailPopup>());
             _toggleWidgets.Add(ToggleType.Rank, Find<Rank>());
             _toggleWidgets.Add(ToggleType.Settings, Find<Settings>());
             _toggleWidgets.Add(ToggleType.Chat, Find<ChatPopup>());
@@ -272,7 +272,7 @@ namespace Nekoyume.UI.Module
             _blockIndex = blockIndex;
             UpdateCombinationNotification(blockIndex);
 
-            var mailBox = Find<Mail>().MailBox;
+            var mailBox = Find<MailPopup>().MailBox;
             if (mailBox is null)
             {
                 return;
@@ -306,7 +306,7 @@ namespace Nekoyume.UI.Module
             var hasNotification =
                 questList.Any(quest => quest.IsPaidInAction && quest.isReceivable);
             _toggleNotifications[ToggleType.Quest].Value = hasNotification;
-            Find<Quest>().SetList(questList);
+            Find<QuestPopup>().SetList(questList);
         }
 
         private void SubscribeInventory(Nekoyume.Model.Item.Inventory inventory)

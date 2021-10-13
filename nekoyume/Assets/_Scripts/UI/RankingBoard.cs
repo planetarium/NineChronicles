@@ -420,7 +420,7 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
-            var avatarInfo = Find<AvatarInfo>();
+            var avatarInfo = Find<AvatarInfoPopup>();
             var friendInfoPopup = Find<FriendInfoPopup>();
             if (avatarInfo.gameObject.activeSelf)
             {

@@ -383,7 +383,7 @@ namespace Nekoyume.UI
             var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
             LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
             Game.Game.instance.ActionManager.RapidCombination(avatarAddress, slotIndex);
-            Find<CombinationSlots>().SetCaching(slotIndex, true, slotType:CombinationSlot.SlotType.WaitingReceive);
+            Find<CombinationSlotsPopup>().SetCaching(slotIndex, true, slotType:CombinationSlot.SlotType.WaitingReceive);
         }
     }
 }

@@ -264,7 +264,7 @@ namespace Nekoyume.UI
                 requiredBlockIndex += subRecipeRow.RequiredBlockIndex;
             }
 
-            var slots = Find<CombinationSlots>();
+            var slots = Find<CombinationSlotsPopup>();
             slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:equipment);
 
             equipmentSubRecipeView.UpdateView();
@@ -289,7 +289,7 @@ namespace Nekoyume.UI
             var consumable = (Consumable)ItemFactory.CreateItemUsable(
                 consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
-            var slots = Find<CombinationSlots>();
+            var slots = Find<CombinationSlotsPopup>();
             slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:consumable);
 
             consumableSubRecipeView.UpdateView();
