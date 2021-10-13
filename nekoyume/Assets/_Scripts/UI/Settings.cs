@@ -92,7 +92,7 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             SubmitWidget = () => Close(true);
-            CloseWidget = () => Close(true);
+            CloseWidget = ApplyCurrentSettings;
             base.OnEnable();
         }
 
