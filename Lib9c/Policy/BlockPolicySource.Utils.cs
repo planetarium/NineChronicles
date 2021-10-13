@@ -87,17 +87,14 @@ namespace Nekoyume.BlockChain.Policy
                     $"at most {maxTransactionsPerBlock} transaction(s): " +
                     $"{block.Transactions.Count}");
             }
-            else
-            {
-                if (block.Transactions
+            else if (block.Transactions
                     .GroupBy(tx => tx.Signer)
                     .Any(group => group.Count() > maxTransactionsPerSignerPerBlock))
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} includes too many transactions " +
-                        $"from a single signer where the maximum number of allowed by " +
-                        $"a single signer per block is {maxTransactionsPerSignerPerBlock}.");
-                }
+            {
+                return new BlockPolicyViolationException(
+                    $"Block #{block.Index} {block.Hash} includes too many transactions " +
+                    $"from a single signer where the maximum number of allowed by " +
+                    $"a single signer per block is {maxTransactionsPerSignerPerBlock}.");
             }
 
             return null;

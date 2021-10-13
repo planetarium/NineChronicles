@@ -146,7 +146,7 @@ namespace Lib9c.Tests
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
                         endIndex: 10,
-                        interval: 5,
+                        predicate: index => index % 5 == 0,
                         value: new Address[] { authorizedMinerPrivateKey.ToAddress() }
                             .ToImmutableHashSet())),
                 authorizedMiningNoOpTxRequiredPolicy: null,
@@ -297,14 +297,14 @@ namespace Lib9c.Tests
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
                         endIndex: 4,
-                        interval: 2,
+                        predicate: index => index % 2 == 0,
                         value: miners.ToImmutableHashSet())),
                 authorizedMiningNoOpTxRequiredPolicy: VariableSubPolicy<bool>
                     .Create(false)
                     .Add(new SpannedSubPolicy<bool>(
                         startIndex: 0,
                         endIndex: 4,
-                        interval: 2,
+                        predicate: index => index % 2 == 0,
                         value: true)),
                 permissionedMinersPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
@@ -422,7 +422,7 @@ namespace Lib9c.Tests
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
                         endIndex: 6,
-                        interval: 2,
+                        predicate: index => index % 2 == 0,
                         value: miners.ToImmutableHashSet())),
                 authorizedMiningNoOpTxRequiredPolicy: null,
                 permissionedMinersPolicy: null);
@@ -555,7 +555,7 @@ namespace Lib9c.Tests
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: VariableSubPolicy<int>
                     .Create(int.MaxValue)
-                    .Add(new SpannedSubPolicy<int>(0, null, 1, 10)),
+                    .Add(new SpannedSubPolicy<int>(0, null, null, 10)),
                 maxTransactionsPerSignerPerBlockPolicy: null,
                 authorizedMinersPolicy: null,
                 authorizedMiningNoOpTxRequiredPolicy: null,
@@ -661,10 +661,10 @@ namespace Lib9c.Tests
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: VariableSubPolicy<int>
                     .Create(int.MaxValue)
-                    .Add(new SpannedSubPolicy<int>(0, null, 1, 10)),
+                    .Add(new SpannedSubPolicy<int>(0, null, null, 10)),
                 maxTransactionsPerSignerPerBlockPolicy: VariableSubPolicy<int>
                     .Create(int.MaxValue)
-                    .Add(new SpannedSubPolicy<int>(2, null, 1, 5)),
+                    .Add(new SpannedSubPolicy<int>(2, null, null, 5)),
                 authorizedMinersPolicy: null,
                 authorizedMiningNoOpTxRequiredPolicy: null,
                 permissionedMinersPolicy: null);
@@ -786,7 +786,7 @@ namespace Lib9c.Tests
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 1,
                             endIndex: null,
-                            interval: 1,
+                            predicate: null,
                             value: new Address[] { permissionedMinerKey.ToAddress() }
                                 .ToImmutableHashSet()))),
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
@@ -867,7 +867,7 @@ namespace Lib9c.Tests
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 0,
                             endIndex: 6,
-                            interval: 2,
+                            predicate: index => index % 2 == 0,
                             value: new Address[] { authorizedMinerKey.ToAddress() }
                                 .ToImmutableHashSet())),
                     authorizedMiningNoOpTxRequiredPolicy: VariableSubPolicy<bool>
@@ -875,14 +875,14 @@ namespace Lib9c.Tests
                         .Add(new SpannedSubPolicy<bool>(
                             startIndex: 4,
                             endIndex: 10,
-                            interval: 1,
+                            predicate: null,
                             value: true)),
                     permissionedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
                         .Create(ImmutableHashSet<Address>.Empty)
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 2,
                             endIndex: 10,
-                            interval: 3,
+                            predicate: index => index % 3 == 0,
                             value: new Address[] { permissionedMinerKey.ToAddress() }
                                 .ToImmutableHashSet()))),
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
@@ -1025,7 +1025,7 @@ namespace Lib9c.Tests
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 0,
                             endIndex: 10,
-                            interval: 2,
+                            predicate: index => index % 2 == 0,
                             value: new Address[] { authorizedMinerKey.ToAddress() }
                                 .ToImmutableHashSet())),
                     authorizedMiningNoOpTxRequiredPolicy: null,
@@ -1034,7 +1034,7 @@ namespace Lib9c.Tests
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 5,
                             endIndex: 20,
-                            interval: 3,
+                            predicate: index => index % 3 == 0,
                             value: new Address[] { permissionedMinerKey.ToAddress() }
                                 .ToImmutableHashSet())));
 

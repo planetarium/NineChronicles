@@ -3,10 +3,10 @@ using System.Diagnostics.Contracts;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public class SpannedSubPolicy<T> : Tuple<long, long?, long, T>
+    public class SpannedSubPolicy<T>
     {
-        public SpannedSubPolicy(long startIndex, long? endIndex, long interval, T value)
-            : base(startIndex, endIndex, interval, value)
+        public SpannedSubPolicy(
+            long startIndex, long? endIndex, Func<long, bool> predicate, T value)
         {
             if (startIndex < 0)
             {
@@ -23,17 +23,15 @@ namespace Nekoyume.BlockChain.Policy
                     message: $"Non-null end index must not be less than start index: " +
                         $"{{{nameof(startIndex)}: {startIndex}, {nameof(endIndex)}: {endIndex}}}");
             }
-            else if (interval < 1)
-            {
-                throw new ArgumentOutOfRangeException(
-                    paramName: nameof(interval),
-                    actualValue: interval,
-                    message: $"Interval must be positive: {interval}");
-            }
+
+            StartIndex = startIndex;
+            EndIndex = endIndex;
+            Predicate = predicate ?? (index => true);
+            Value = value;
         }
 
         public SpannedSubPolicy(long startIndex, long? endIndex, T value)
-            : this(startIndex, endIndex, 1, value)
+            : this(startIndex, endIndex, null, value)
         {
         }
 
@@ -57,16 +55,16 @@ namespace Nekoyume.BlockChain.Policy
         [Pure]
         public bool IsTargetIndex(long index)
         {
-            return IsTargetRange(index) && (Interval == 1 || index % Interval == 0);
+            return IsTargetRange(index) && Predicate(index);
         }
 
-        public long StartIndex => Item1;
+        public long StartIndex { get; }
 
-        public long? EndIndex => Item2;
+        public long? EndIndex { get; }
 
-        public long Interval => Item3;
+        public Func<long, bool> Predicate { get; }
 
-        public T Value => Item4;
+        public T Value { get; }
 
         public bool Indefinite => EndIndex is null;
     }

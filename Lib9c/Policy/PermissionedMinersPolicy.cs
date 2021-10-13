@@ -23,7 +23,7 @@ namespace Nekoyume.BlockChain.Policy
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: BlockPolicySource.PermissionedMiningStartIndex,
                         endIndex: null,
-                        interval: 1,
+                        predicate: null,
                         value: BlockPolicySource.AuthorizedMiners));
             }
         }

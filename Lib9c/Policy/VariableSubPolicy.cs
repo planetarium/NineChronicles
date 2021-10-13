@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using Libplanet.Blocks;
 
 namespace Nekoyume.BlockChain.Policy
 {
@@ -47,7 +48,7 @@ namespace Nekoyume.BlockChain.Policy
                     lastSpannedSubPolicy = new SpannedSubPolicy<T>(
                         lastSpannedSubPolicy.StartIndex,
                         spannedSubPolicy.StartIndex - 1,
-                        lastSpannedSubPolicy.Interval,
+                        lastSpannedSubPolicy.Predicate,
                         lastSpannedSubPolicy.Value);
                     spannedSubPolicies[spannedSubPolicies.Count - 1] = lastSpannedSubPolicy;
                 }
@@ -60,41 +61,6 @@ namespace Nekoyume.BlockChain.Policy
             _getter = ToGetter();
 
             Validate();
-        }
-
-        /// <summary>
-        /// Checks if a <see cref="VariableSubPolicy{T}"/> instance is valid.
-        /// Should be called inside every constructor at the end.
-        /// </summary>
-        private void Validate()
-        {
-            SpannedSubPolicy<T> prev = null;
-            foreach (SpannedSubPolicy<T> next in SpannedSubPolicies)
-            {
-                if (prev is SpannedSubPolicy<T> _prev)
-                {
-                    if (_prev.EndIndex is long prevEndIndex)
-                    {
-                        if (prevEndIndex >= next.StartIndex)
-                        {
-                            throw new ArgumentOutOfRangeException(
-                                paramName: nameof(prevEndIndex),
-                                actualValue: prevEndIndex,
-                                message: $"Previous {nameof(SpannedSubPolicy<T>)} overlaps with " +
-                                    $"next {nameof(SpannedSubPolicy<T>)}: " +
-                                    $"{nameof(next.StartIndex)}");
-                        }
-                    }
-                    else
-                    {
-                        throw new ArgumentOutOfRangeException(
-                            $"Previous {nameof(SpannedSubPolicy<T>)} overlaps with " +
-                            $"next {nameof(SpannedSubPolicy<T>)}.");
-                    }
-                }
-
-                prev = next;
-            }
         }
 
         /// <summary>
@@ -137,15 +103,42 @@ namespace Nekoyume.BlockChain.Policy
             return variableSubPolicy;
         }
 
+        /// <summary>
+        /// Value to use as a fallback if none of the <see cref="SpannedSubPolicy{T}"/> in
+        /// <see cref="SpannedSubPolicies"/> apply.
+        /// </summary>
+        /// <remarks>
+        /// <pr>
+        /// It is recommended set this property to a value that would always pass the predicate
+        /// for validation in case there is a policy gap.
+        /// </pr>
+        /// <pr>
+        /// For instance, for checking the max number of transactions allowed per block, it is
+        /// better to set <see cref="DefaultValue"/> as <c>int.MaxValue</c> then overwrite it
+        /// with some sensible value such as <c>100</c> by adding a new
+        /// <see cref="SpannedSubPolicy{T}"/>.
+        /// </pr>
+        /// </remarks>
         [Pure]
         public T DefaultValue => _defaultValue;
 
         [Pure]
         public ImmutableList<SpannedSubPolicy<T>> SpannedSubPolicies => _spannedSubPolicies;
 
-        [Pure]
-        public bool IsEmpty => SpannedSubPolicies.Count == 0;
-
+        /// <summary>
+        /// Checks if the current instance of <see cref="VariableSubPolicy{T}"/> applies to
+        /// given <paramref name="index"/>.
+        /// </summary>
+        /// <param name="index">The index of a possibly-yet-to-be-mined <see cref="Block{T}"/>
+        /// to check.</param>
+        /// <returns><c>true</c> if <paramref name="index"/> is target for any
+        /// <see cref="SpannedSubPolicy{T}"/> in <see cref="SpannedSubPolicies"/>.  Otherwise,
+        /// <c>fase</c>.</returns>
+        /// <remarks>
+        /// Call to this method must only be used <em>sparingly</em> and should be <em>avoided</em>
+        /// if possible.  Usage of this method indicates dependency coupling between two
+        /// different <see cref="VariableSubPolicy{T}"/>s.
+        /// </remarks>
         [Pure]
         public bool IsTargetIndex(long index) =>
             SpannedSubPolicies.Any(spannedSubPolicy => spannedSubPolicy.IsTargetIndex(index));
@@ -157,7 +150,7 @@ namespace Nekoyume.BlockChain.Policy
         private Func<long, T> ToGetter()
         {
             return index => SpannedSubPolicies
-                .FirstOrDefault(_ssp => _ssp.IsTargetIndex(index)) is SpannedSubPolicy<T> ssp
+                .FirstOrDefault(spannedSubPolicy => spannedSubPolicy.IsTargetIndex(index)) is SpannedSubPolicy<T> ssp
                     ? ssp.Value
                     : DefaultValue;
         }
@@ -166,16 +159,56 @@ namespace Nekoyume.BlockChain.Policy
         /// Creates a new <see cref="VariableSubPolicy{T}"/> instance with a default behavior.
         /// </summary>
         /// <param name="defaultValue">The default value to use when none of
-        /// <see cref="SpannedSubPolicies{T}"/> apply.
+        /// <see cref="SpannedSubPolicies"/> apply.
         /// </param>
         /// <returns>
         /// A newly created subpolicy with given <paramref name="defaultValue"/> as
-        /// its default behavior.
+        /// its default value.
         /// </returns>
         [Pure]
         public static VariableSubPolicy<T> Create(T defaultValue)
         {
             return new VariableSubPolicy<T>(defaultValue);
+        }
+
+        /// <summary>
+        /// Checks if a <see cref="VariableSubPolicy{T}"/> instance has sound data.
+        /// Should be called inside every constructor at the end.
+        /// </summary>
+        /// <remarks>
+        /// This only checks if any pair of <see cref="SpannedSubPolicy"/>s overlap with
+        /// each other to ensure that there is no ambiguity on selecting the binding argument
+        /// when <see cref="Getter"/> is called with an index.
+        /// </remarks>
+        private void Validate()
+        {
+            SpannedSubPolicy<T> prev = null;
+            foreach (SpannedSubPolicy<T> next in SpannedSubPolicies)
+            {
+                if (prev is SpannedSubPolicy<T> _prev)
+                {
+                    if (_prev.EndIndex is long prevEndIndex)
+                    {
+                        if (prevEndIndex >= next.StartIndex)
+                        {
+                            throw new ArgumentOutOfRangeException(
+                                paramName: nameof(prevEndIndex),
+                                actualValue: prevEndIndex,
+                                message: $"Previous {nameof(SpannedSubPolicy<T>)} overlaps with " +
+                                    $"next {nameof(SpannedSubPolicy<T>)}: " +
+                                    $"{nameof(next.StartIndex)}");
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentOutOfRangeException(
+                            $"Previous {nameof(SpannedSubPolicy<T>)} overlaps with " +
+                            $"next {nameof(SpannedSubPolicy<T>)}.");
+                    }
+                }
+
+                prev = next;
+            }
         }
     }
 }

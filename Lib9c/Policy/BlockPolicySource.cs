@@ -115,7 +115,6 @@ namespace Nekoyume.BlockChain.Policy
                 authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 
-        // FIXME 남은 설정들도 설정화 해야 할지도?
         public IBlockPolicy<NCAction> GetPolicy(long minimumDifficulty) =>
             GetPolicy(
                 minimumDifficulty,
@@ -132,10 +131,13 @@ namespace Nekoyume.BlockChain.Policy
         /// </summary>
         /// <param name="minimumDifficulty">The minimum difficulty that a <see cref="Block{T}"/>
         /// can have.  This is ignored for genesis blocks.</param>
-        /// <param name="maxTransactionsPerBlock">The maximum number of
-        /// <see cref="Transaction{T}"/>s that a <see cref="Block{T}"/> can have.</param>
         /// <param name="minTransactionsPerBlockPolicy">Used for minimum number of transactions
         /// required per block.</param>
+        /// <param name="maxTransactionsPerBlockPolicy">The maximum number of
+        /// <see cref="Transaction{T}"/>s that a <see cref="Block{T}"/> can have.</param>
+        /// <param name="maxTransactionsPerSignerPerBlockPolicy">The maximum number of
+        /// <see cref="Transaction{T}"/>s from a single miner that a <see cref="Block{T}"/>
+        /// can have.</param>
         /// <param name="authorizedMinersPolicy">Used for authorized mining.</param>
         /// <param name="authorizedMiningNoOpTxRequiredPolicy">Used for no-op tx proof check
         /// for authorized mining.</param>

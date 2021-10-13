@@ -20,34 +20,31 @@ namespace Lib9c.Tests
 
             // Bad start index
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                new SpannedSubPolicy<int>(-1, null, 1, 1));
+                new SpannedSubPolicy<int>(-1, null, null, 1));
             // Bad end index
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                new SpannedSubPolicy<int>(10, 9, 1, 1));
+                new SpannedSubPolicy<int>(10, 9, null, 1));
             // Same start index and end index should be fine
-            spannedSubPolicy = new SpannedSubPolicy<int>(10, 10, 1, 1);
-            // Bad interval
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-                new SpannedSubPolicy<int>(10, 20, 0, 1));
+            spannedSubPolicy = new SpannedSubPolicy<int>(10, 10, null, 1);
 
             // Count indices in range
             Assert.Equal(11, indices.Where(i =>
-                new SpannedSubPolicy<int>(10, 20, 30, 1).IsTargetRange(i)).Count());
-            // Interval is too wide to have any target index.
+                new SpannedSubPolicy<int>(10, 20, index => index % 30 == 0, 1).IsTargetRange(i)).Count());
+            // No index in range satisfies predicate
             Assert.False(indices.Where(i =>
-                new SpannedSubPolicy<int>(10, 20, 30, 1).IsTargetIndex(i)).Any());
-            // Interval of 1 should not throw an error and count as expected.
+                new SpannedSubPolicy<int>(10, 20, index => index % 30 == 0, 1).IsTargetIndex(i)).Any());
+            // Predicate of null counts everything in range
             Assert.Equal(11, indices.Where(i =>
-                new SpannedSubPolicy<int>(10, 20, 1, 1).IsTargetIndex(i)).Count());
+                new SpannedSubPolicy<int>(10, 20, null, 1).IsTargetIndex(i)).Count());
             // Count target indices
             Assert.Equal(3, indices.Where(i =>
-                new SpannedSubPolicy<int>(10, 20, 5, 1).IsTargetIndex(i)).Count());
-            // Indefinite case
+                new SpannedSubPolicy<int>(10, 20, index => index % 5 == 0, 1).IsTargetIndex(i)).Count());
+            // Count indices in range for indefinite case
             Assert.Equal(90, indices.Where(i =>
-                new SpannedSubPolicy<int>(10, null, 5, 1).IsTargetRange(i)).Count());
-            // Indefinite case
+                new SpannedSubPolicy<int>(10, null, index => index % 5 == 0, 1).IsTargetRange(i)).Count());
+            // Count target indices for indefinite case
             Assert.Equal(18, indices.Where(i =>
-                new SpannedSubPolicy<int>(10, null, 5, 1).IsTargetIndex(i)).Count());
+                new SpannedSubPolicy<int>(10, null, index => index % 5 == 0, 1).IsTargetIndex(i)).Count());
         }
     }
 }
