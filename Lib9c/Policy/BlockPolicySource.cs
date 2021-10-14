@@ -56,6 +56,8 @@ namespace Nekoyume.BlockChain.Policy
 
         public const int MinTransactionsPerBlock = 1;
 
+        public const int MaxTransactionsPerBlock = 100;
+
         // FIXME: Should be finalized before release.
         public const long MaxTransactionsPerSignerPerBlockStartIndex = 3_000_001;
 
@@ -106,18 +108,7 @@ namespace Nekoyume.BlockChain.Policy
 
         public IBlockPolicy<NCAction> GetPolicy() =>
             GetPolicy(
-                MinimumDifficulty,
-                maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
-                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
-                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
-                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
-                authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
-                authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy.Mainnet,
-                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
-
-        public IBlockPolicy<NCAction> GetPolicy(long minimumDifficulty) =>
-            GetPolicy(
-                minimumDifficulty,
+                minimumDifficulty: MinimumDifficulty,
                 maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
@@ -157,7 +148,7 @@ namespace Nekoyume.BlockChain.Policy
             return new DebugPolicy();
 #else
             maxBlockBytesPolicy = maxBlockBytesPolicy
-                ?? MaxBlockBytesPolicy.Mainnet;
+                ?? MaxBlockBytesPolicy.Default;
             minTransactionsPerBlockPolicy = minTransactionsPerBlockPolicy
                 ?? MinTransactionsPerBlockPolicy.Default;
             maxTransactionsPerBlockPolicy = maxTransactionsPerBlockPolicy

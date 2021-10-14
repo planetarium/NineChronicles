@@ -2,12 +2,13 @@ namespace Nekoyume.BlockChain.Policy
 {
     public static class AuthorizedMiningNoOpTxRequiredPolicy
     {
+        public static readonly bool DefaultValue = false;
+
         public static VariableSubPolicy<bool> Default
         {
             get
             {
-                return VariableSubPolicy<bool>
-                    .Create(false);
+                return VariableSubPolicy<bool>.Create(DefaultValue);
             }
         }
 
@@ -15,8 +16,7 @@ namespace Nekoyume.BlockChain.Policy
         {
             get
             {
-                return VariableSubPolicy<bool>
-                    .Create(false)
+                return Default
                     .Add(new SpannedSubPolicy<bool>(
                         startIndex: BlockPolicySource.AuthorizedMiningNoOpTxRequiredStartIndex,
                         endIndex: BlockPolicySource.AuthorizedMinersPolicyEndIndex,

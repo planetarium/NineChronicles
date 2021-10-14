@@ -5,12 +5,14 @@ namespace Nekoyume.BlockChain.Policy
 {
     public static class HashAlgorithmTypePolicy
     {
+        public static readonly HashAlgorithmType DefaultValue = HashAlgorithmType.Of<SHA256>();
+
         public static VariableSubPolicy<HashAlgorithmType> Default
         {
             get
             {
                 return VariableSubPolicy<HashAlgorithmType>
-                    .Create(HashAlgorithmType.Of<SHA256>());
+                    .Create(DefaultValue);
             }
         }
 
@@ -18,8 +20,7 @@ namespace Nekoyume.BlockChain.Policy
         {
             get
             {
-                return VariableSubPolicy<HashAlgorithmType>
-                    .Create(HashAlgorithmType.Of<SHA256>());
+                return Default;
             }
         }
     }

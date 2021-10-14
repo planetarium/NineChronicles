@@ -5,12 +5,14 @@ namespace Nekoyume.BlockChain.Policy
 {
     public static class AuthorizedMinersPolicy
     {
+        public static readonly ImmutableHashSet<Address> DefaultValue = ImmutableHashSet<Address>.Empty;
+
         public static VariableSubPolicy<ImmutableHashSet<Address>> Default
         {
             get
             {
                 return VariableSubPolicy<ImmutableHashSet<Address>>
-                    .Create(ImmutableHashSet<Address>.Empty);
+                    .Create(DefaultValue);
             }
         }
 
@@ -18,8 +20,7 @@ namespace Nekoyume.BlockChain.Policy
         {
             get
             {
-                return VariableSubPolicy<ImmutableHashSet<Address>>
-                    .Create(ImmutableHashSet<Address>.Empty)
+                return Default
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
                         endIndex: BlockPolicySource.AuthorizedMinersPolicyEndIndex,

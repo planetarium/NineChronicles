@@ -5,6 +5,18 @@ namespace Nekoyume.BlockChain.Policy
 {
     public class SpannedSubPolicy<T>
     {
+        /// <summary>
+        /// Class for storing binding arguments for <see cref="VariableSubPolicy{T}"/>.
+        /// One can think of this as a sparse list where a designated value is "stored" for
+        /// any index between start index and end index (inclusive) satisfying
+        /// <paramref name="predicate"/> condition.
+        /// </summary>
+        /// <param name="startIndex">Start index of the range.</param>
+        /// <param name="endIndex">End index of the range, inclusive.</param>
+        /// <param name="predicate">Additional index filtering predicate.</param>
+        /// <param name="value">Value stored.</param>
+        /// <exception cref="ArgumentOutOfRangeException">If an invalid value is given for either
+        /// <paramref name="startIndex"/> or <paramref name="endIndex"/>.</exception>
         public SpannedSubPolicy(
             long startIndex, long? endIndex, Func<long, bool> predicate, T value)
         {
@@ -20,8 +32,7 @@ namespace Nekoyume.BlockChain.Policy
                 throw new ArgumentOutOfRangeException(
                     paramName: nameof(endIndex),
                     actualValue: endIndex,
-                    message: $"Non-null end index must not be less than start index: " +
-                        $"{{{nameof(startIndex)}: {startIndex}, {nameof(endIndex)}: {endIndex}}}");
+                    message: $"Non-null end index must not be less than start index.");
             }
 
             StartIndex = startIndex;

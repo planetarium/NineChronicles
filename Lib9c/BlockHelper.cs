@@ -68,7 +68,7 @@ namespace Nekoyume
             {
                 initialStatesAction,
             };
-            var blockAction = new BlockPolicySource(Log.Logger).GetPolicy(5000000).BlockAction;
+            var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
             return
                 BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
                     HashAlgorithmType.Of<SHA256>(),

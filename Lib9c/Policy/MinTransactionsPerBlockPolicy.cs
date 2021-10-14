@@ -2,12 +2,14 @@ namespace Nekoyume.BlockChain.Policy
 {
     public static class MinTransactionsPerBlockPolicy
     {
+        public static readonly int DefaultValue = 0;
+
         public static VariableSubPolicy<int> Default
         {
             get
             {
                 return VariableSubPolicy<int>
-                    .Create(0);
+                    .Create(DefaultValue);
             }
         }
 
@@ -15,8 +17,7 @@ namespace Nekoyume.BlockChain.Policy
         {
             get
             {
-                return VariableSubPolicy<int>
-                    .Create(0)
+                return Default
                     // To prevent selfish mining, we define a consensus that blocks with
                     // no transactions are not accepted starting from hard coded index.
                     .Add(new SpannedSubPolicy<int>(

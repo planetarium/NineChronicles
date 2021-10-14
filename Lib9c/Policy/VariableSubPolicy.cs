@@ -195,8 +195,7 @@ namespace Nekoyume.BlockChain.Policy
                                 paramName: nameof(prevEndIndex),
                                 actualValue: prevEndIndex,
                                 message: $"Previous {nameof(SpannedSubPolicy<T>)} overlaps with " +
-                                    $"next {nameof(SpannedSubPolicy<T>)}: " +
-                                    $"{nameof(next.StartIndex)}");
+                                    $"next {nameof(SpannedSubPolicy<T>)}");
                         }
                     }
                     else

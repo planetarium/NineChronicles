@@ -88,8 +88,8 @@ namespace Nekoyume.BlockChain.Policy
                     $"{block.Transactions.Count}");
             }
             else if (block.Transactions
-                    .GroupBy(tx => tx.Signer)
-                    .Any(group => group.Count() > maxTransactionsPerSignerPerBlock))
+                .GroupBy(tx => tx.Signer)
+                .Any(group => group.Count() > maxTransactionsPerSignerPerBlock))
             {
                 return new BlockPolicyViolationException(
                     $"Block #{block.Index} {block.Hash} includes too many transactions " +
@@ -105,8 +105,6 @@ namespace Nekoyume.BlockChain.Policy
             VariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
             VariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy)
         {
-            ImmutableHashSet<Address> authorizedMiners = authorizedMinersPolicy.Getter(block.Index);
-
             // For genesis block, any miner can mine.
             if (block.Index == 0)
             {
@@ -168,24 +166,21 @@ namespace Nekoyume.BlockChain.Policy
             Block<NCAction> block,
             VariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
-            ImmutableHashSet<Address> permissionedMiners = permissionedMinersPolicy.Getter(block.Index);
-
             // If the set of permissioned miners is empty, any miner can mine.
-            if (permissionedMiners.IsEmpty)
+            if (!permissionedMinersPolicy.IsTargetIndex(block.Index))
             {
                 return null;
             }
             else
             {
                 // If the set of permissioned miners is not empty, only miners in the set can mine.
-                if (permissionedMiners.Contains(block.Miner))
+                if (permissionedMinersPolicy.Getter(block.Index).Contains(block.Miner))
                 {
                     // FIXME: Only existance of a transaction with miner signature was checked for
                     // some time.  Checking whether such transaction is a no-op transaction
                     // was missing.  This results in a different definition of proof transaction
                     // for authorized mining and permissioned mining.
-                    if (block.Transactions
-                        .Any(tx => tx.Signer.Equals(block.Miner)))
+                    if (block.Transactions.Any(tx => tx.Signer.Equals(block.Miner)))
                     {
                         return null;
                     }
