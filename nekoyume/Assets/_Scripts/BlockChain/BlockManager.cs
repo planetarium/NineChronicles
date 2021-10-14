@@ -1,9 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using Bencodex;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
+using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using UnityEngine;
@@ -16,6 +20,8 @@ namespace Nekoyume.BlockChain
           // 만약 이 값을 수정할 경우 entrypoint.sh도 같이 수정할 필요가 있습니다.
           public const string GenesisBlockName = "genesis-block";
 
+          private static readonly Codec _codec = new Codec();
+
           public static string GenesisBlockPath => BlockPath(GenesisBlockName);
 
           /// <summary>
@@ -26,7 +32,8 @@ namespace Nekoyume.BlockChain
               Block<PolymorphicAction<ActionBase>> block,
               string path)
           {
-              byte[] encoded = block.Serialize();
+              Bencodex.Types.Dictionary dict = block.MarshalBlock();
+              byte[] encoded = _codec.Encode(dict);
               File.WriteAllBytes(path, encoded);
           }
 
@@ -37,17 +44,26 @@ namespace Nekoyume.BlockChain
           /// <returns>읽어들인 블록 객체.</returns>
           public static Block<PolymorphicAction<ActionBase>> ImportBlock(string path)
           {
+              var agent = Game.Game.instance.Agent;
               if (File.Exists(path))
               {
                   var buffer = File.ReadAllBytes(path);
-                  return Block<PolymorphicAction<ActionBase>>.Deserialize(buffer);
+                  var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
+                  HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
+                      .GetPolicy(5_000_000, 100) // FIXME: e.g., GetPolicy(IAgent.GetMinimumDifficulty(), IAgent.GetMaxTxCount())
+                      .GetHashAlgorithm;
+                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
               }
 
               var uri = new Uri(path);
               using (var client = new WebClient())
               {
                   byte[] rawGenesisBlock = client.DownloadData(uri);
-                  return Block<PolymorphicAction<ActionBase>>.Deserialize(rawGenesisBlock);
+                  var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
+                  HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
+                      .GetPolicy(5_000_000, 100) // FIXME: e.g., GetPolicy(IAgent.GetMinimumDifficulty(), IAgent.GetMaxTxCount())
+                      .GetHashAlgorithm;
+                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
               }
           }
 

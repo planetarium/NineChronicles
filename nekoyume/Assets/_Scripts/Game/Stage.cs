@@ -90,9 +90,7 @@ namespace Nekoyume.Game
         public bool IsExitReserved { get; set; }
         public bool IsRepeatStage { get; set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
-
-
-
+        public int PlayCount { get; set; }
 
         public Vector3 SelectPositionBegin(int index) =>
             new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
@@ -550,7 +548,12 @@ namespace Nekoyume.Game
             avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
             _battleResultModel.LastClearedStageId = lasStageId;
             _battleResultModel.IsClear = log.IsClear;
-            _battleResultModel.IsEndStage = false;
+            var succeedToGetWorldRow =
+                Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow);
+            if (succeedToGetWorldRow)
+            {
+                _battleResultModel.IsEndStage = stageId == worldRow.StageEnd;
+            }
 
             if (IsExitReserved)
             {
@@ -578,11 +581,10 @@ namespace Nekoyume.Game
                             BattleResult.NextState.RepeatStage :
                             BattleResult.NextState.NextStage;
 
-                        if (Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
+                        if (succeedToGetWorldRow)
                         {
                             if (stageId == worldRow.StageEnd)
                             {
-                                _battleResultModel.IsEndStage = true;
                                 _battleResultModel.NextState = IsRepeatStage ?
                                     BattleResult.NextState.RepeatStage :
                                     BattleResult.NextState.GoToMain;
@@ -598,7 +600,7 @@ namespace Nekoyume.Game
                 }
             }
 
-            Widget.Find<BattleResult>().Show(_battleResultModel);
+            Widget.Find<BattleResult>().Show(_battleResultModel, PlayCount > 1);
 
             yield return null;
 
@@ -697,7 +699,9 @@ namespace Nekoyume.Game
                     isTutorial = true;
                 }
 
-                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial);
+                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial, PlayCount * Game.instance
+                    .TableSheets.StageSheet.Values.FirstOrDefault(i =>
+                        i.Id == Widget.Find<WorldMap>().SelectedStageId).CostAP);
                 var stageSheet = Game.instance.TableSheets.StageSheet;
                 if (stageSheet.TryGetValue(stageId, out var row))
                 {
@@ -1153,10 +1157,6 @@ namespace Nekoyume.Game
         private IEnumerator CoUnlockMenu()
         {
             var menuNames = new List<string>();
-            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuCombination)
-            {
-                menuNames.Add(nameof(Combination));
-            }
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
             {

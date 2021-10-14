@@ -20,9 +20,10 @@ namespace Nekoyume.UI.Module
         public void Show(StatType statType, (int valueMin, int valueMax) valueRange)
         {
             statTypeText.text = statType.ToString();
-            valueText.text = statType == StatType.SPD
-                ? $"{(valueRange.valueMin / 100f).ToString(CultureInfo.InvariantCulture)} - {(valueRange.valueMax / 100f).ToString(CultureInfo.InvariantCulture)}"
-                : $"{valueRange.valueMin} - {valueRange.valueMax}";
+            var valueMin = statType.ValueToString(valueRange.valueMin);
+            var valueMax = statType.ValueToString(valueRange.valueMax);
+
+            valueText.text = $"{valueMin} - {valueMax}";
             additionalText.text = string.Empty;
             gameObject.SetActive(true);
         }

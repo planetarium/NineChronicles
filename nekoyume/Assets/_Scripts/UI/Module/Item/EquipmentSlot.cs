@@ -250,20 +250,23 @@ namespace Nekoyume.UI.Module
                     enhancementImage.material = gradeData.EnhancementMaterial;
                 }
 
+                if (equip.GetOptionCountFromCombination() <= 0)
+                {
+                    optionTagBg.gameObject.SetActive(false);
+                    return;
+                }
+
                 foreach (var image in optionTagImages)
                 {
                     image.gameObject.SetActive(false);
                 }
 
-                if (equip.optionCountFromCombination > 0)
-                {
-                    var data = optionTagData.GetOptionTagData(Item.Grade);
-                    optionTagBg.gameObject.SetActive(true);
-                    optionTagBg.range = data.GradeHsvRange;
-                    optionTagBg.hue = data.GradeHsvHue;
-                    optionTagBg.saturation = data.GradeHsvSaturation;
-                    optionTagBg.value = data.GradeHsvValue;
-                }
+                var data = optionTagData.GetOptionTagData(Item.Grade);
+                optionTagBg.gameObject.SetActive(true);
+                optionTagBg.range = data.GradeHsvRange;
+                optionTagBg.hue = data.GradeHsvHue;
+                optionTagBg.saturation = data.GradeHsvSaturation;
+                optionTagBg.value = data.GradeHsvValue;
 
                 var optionInfo = new ItemOptionInfo(Item as Equipment);
                 var optionCount = optionInfo.StatOptions.Sum(x => x.count);

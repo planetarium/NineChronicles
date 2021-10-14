@@ -318,7 +318,10 @@ namespace Nekoyume.UI
                     //         arenaInfo = new ArenaInfo(
                     //             States.Instance.CurrentAvatarState,
                     //             Game.Game.instance.TableSheets.CharacterSheet,
-                    //             true),
+                    //             true)
+                    //         {
+                    //             ArmorId = States.Instance.CurrentAvatarState.GetPortraitId()
+                    //         },
                     //         currentAvatarArenaInfo = null
                     //     }).ToList(), true);
 
@@ -507,9 +510,7 @@ namespace Nekoyume.UI
                     var arenaInfo = tuple.arenaInfo;
 #pragma warning disable 618
                     arenaInfo.Level = avatarState.level;
-                    arenaInfo.ArmorId = avatarState.TryGetEquippedFullCostume(out var fullCostume)
-                        ? fullCostume.Id
-                        : avatarState.GetArmorId();
+                    arenaInfo.ArmorId = avatarState.GetArmorIdForPortrait();
                     arenaInfo.CombatPoint = avatarState.GetCP();
 #pragma warning restore 618
                     return tuple;

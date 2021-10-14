@@ -23,6 +23,11 @@ namespace Nekoyume
             return fullCostume is { };
         }
 
+        public static int GetArmorIdForPortrait(this AvatarState avatarState) =>
+            TryGetEquippedFullCostume(avatarState, out var fullCostume)
+                ? fullCostume.Id
+                : avatarState.GetArmorId();
+
         public static int GetCP(this AvatarState avatarState)
         {
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;

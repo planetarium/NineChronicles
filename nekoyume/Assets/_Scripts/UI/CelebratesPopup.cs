@@ -127,9 +127,6 @@ namespace Nekoyume.UI
                 default:
                     menuText.text = string.Empty;
                     break;
-                case nameof(Combination):
-                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_COMBINATION");
-                    break;
                 case nameof(RankingBoard):
                     menuText.text = L10nManager.Localize("UI_MAIN_MENU_RANKING");
                     break;

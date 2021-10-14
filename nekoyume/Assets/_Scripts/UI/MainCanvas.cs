@@ -315,6 +315,9 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<HelpPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<Confirm>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<BoosterPopup>());
+            yield return null;
 
             // tooltip
             secondWidgets.Add(Widget.Create<AvatarTooltip>());

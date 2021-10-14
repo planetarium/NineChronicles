@@ -54,7 +54,7 @@ namespace Nekoyume.UI.Module
 
         [SerializeField] private List<ToggleInfo> toggles = new List<ToggleInfo>();
         [SerializeField] private GameObject ncg;
-        [SerializeField] private GameObject actionPoint;
+        [SerializeField] private ActionPoint actionPoint;
         [SerializeField] private GameObject dailyBonus;
         [SerializeField] private GameObject hourglass;
         [SerializeField] private VFX inventoryVFX;
@@ -93,6 +93,8 @@ namespace Nekoyume.UI.Module
         private long _blockIndex;
 
         public Image ActionPointImage => actionPointImage;
+
+        public bool ChargingAP => actionPoint.NowCharging;
 
         public override void Initialize()
         {
@@ -260,7 +262,7 @@ namespace Nekoyume.UI.Module
             bool isDailyBonusActive, bool isHourglassActive)
         {
             ncg.SetActive(isNcgActive);
-            actionPoint.SetActive(isActionPointActive);
+            actionPoint.gameObject.SetActive(isActionPointActive);
             dailyBonus.SetActive(isDailyBonusActive);
             hourglass.SetActive(isHourglassActive);
         }

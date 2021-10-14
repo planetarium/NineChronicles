@@ -32,11 +32,7 @@ namespace Nekoyume.UI.Module
 
         public virtual void Show(StatType statType, int value, bool showPlus = false)
         {
-            var valueString =
-                statType == StatType.SPD
-                    ? (value / 100f).ToString(CultureInfo.InvariantCulture)
-                    : value.ToString();
-
+            var valueString = statType.ValueToString(value);
             Show(statType.ToString(), showPlus ? $"+{valueString}" : valueString);
         }
 

@@ -109,10 +109,6 @@ namespace Nekoyume.Helper
             Sprite result = null;
             switch (menuName)
             {
-                case nameof(Combination):
-                    result = Resources.Load<Sprite>(
-                        string.Format(MenuIllustratePathFormat, "UI_bg_combination"));
-                    break;
                 case nameof(RankingBoard):
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_ranking"));

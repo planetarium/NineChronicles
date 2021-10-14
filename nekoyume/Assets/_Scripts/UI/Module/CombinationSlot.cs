@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
@@ -97,7 +98,28 @@ namespace Nekoyume.UI.Module
 
         public SlotType Type { get; private set; } = SlotType.Empty;
         public CacheType CachedType { get; private set; }
-        public bool IsCached { get; private set; }
+        public bool IsCached
+        {
+            get
+            {
+                var address = States.Instance.CurrentAvatarState.address;
+                return cached.ContainsKey(address) && cached[address];
+            }
+            private set
+            {
+                var address = States.Instance.CurrentAvatarState.address;
+                if (cached.ContainsKey(address))
+                {
+                    cached[address] = value;
+                }
+                else
+                {
+                    cached.Add(address, value);
+                }
+            }
+        }
+
+        private readonly Dictionary<Address, bool> cached = new Dictionary<Address, bool>();
 
         public void SetCached(bool value, long requiredBlockIndex, SlotType slotType, ItemUsable itemUsable = null)
         {

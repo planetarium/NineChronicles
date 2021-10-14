@@ -29,6 +29,7 @@ using Libplanet.Tx;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -197,9 +198,8 @@ namespace Nekoyume.BlockChain
 
             try
             {
-                IKeyValueStore stateRootKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "state_hashes")),
-                    stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "states"));
-                _stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
+                IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "states"));
+                _stateStore = new TrieStateStore(stateKeyValueStore);
                 blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                     policy,
                     stagePolicy,
@@ -212,14 +212,6 @@ namespace Nekoyume.BlockChain
             catch (InvalidGenesisBlockException)
             {
                 Widget.Find<SystemPopup>().ShowAndQuit("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
-            }
-
-            if (blocks?.GetState(AuthorizedMinersState.Address) is Dictionary asm)
-            {
-                if (policy is BlockPolicy bp)
-                {
-                    bp.AuthorizedMinersState = new AuthorizedMinersState(asm);
-                }
             }
 
 #if BLOCK_LOG_USE
@@ -886,6 +878,7 @@ namespace Nekoyume.BlockChain
                     new List<Costume>(),
                     new List<Equipment>(),
                     new List<Consumable>(),
+                    1,
                     1,
                     1).ToYieldInstruction();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
