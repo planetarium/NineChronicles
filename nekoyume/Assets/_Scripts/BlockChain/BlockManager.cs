@@ -50,7 +50,7 @@ namespace Nekoyume.BlockChain
                   var buffer = File.ReadAllBytes(path);
                   var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
                   HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
-                      .GetPolicy(0, 0) // NOTE: Arguments of `GetPolicy()` method are not important in this context.
+                      .GetPolicy(5_000_000, 100) // FIXME: e.g., GetPolicy(IAgent.GetMinimumDifficulty(), IAgent.GetMaxTxCount())
                       .GetHashAlgorithm;
                   return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
               }
@@ -61,7 +61,7 @@ namespace Nekoyume.BlockChain
                   byte[] rawGenesisBlock = client.DownloadData(uri);
                   var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
                   HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
-                      .GetPolicy(0, 0) // NOTE: Arguments of `GetPolicy()` method are not important in this context.
+                      .GetPolicy(5_000_000, 100) // FIXME: e.g., GetPolicy(IAgent.GetMinimumDifficulty(), IAgent.GetMaxTxCount())
                       .GetHashAlgorithm;
                   return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
               }

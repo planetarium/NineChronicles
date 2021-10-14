@@ -198,37 +198,41 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
+                .Where(_ =>
+                    Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value)
+                    && EnoughToPlay)
                 .Subscribe(_ =>
                 {
-                    if (Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value) && EnoughToPlay)
-                    {
-                        var costumes = _player.Costumes;
-                        var equipments = equipmentSlots
-                            .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                            .Select(slot => (Equipment) slot.Item)
-                            .ToList();
+                    var costumes = _player.Costumes;
+                    var equipments = equipmentSlots
+                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                        .Select(slot => (Equipment) slot.Item)
+                        .ToList();
 
-                        var consumables = consumableSlots
-                            .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                            .Select(slot => (Consumable) slot.Item)
-                            .ToList();
+                    var consumables = consumableSlots
+                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                        .Select(slot => (Consumable) slot.Item)
+                        .ToList();
 
-                        _stage.IsExitReserved = false;
-                        _stage.IsRepeatStage = false;
-                        _stage.foodCount = consumables.Count;
-                        ActionRenderHandler.Instance.Pending = true;
+                    _stage.IsExitReserved = false;
+                    _stage.IsRepeatStage = false;
+                    _stage.foodCount = consumables.Count;
+                    ActionRenderHandler.Instance.Pending = true;
 
-                        Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables);
-                    }
-                    else
-                    {
-                        OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_BOOSTER_CONDITIONS_GUIDE"));
-                    }
+                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables);
                 });
+
             boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
                     OneLinePopup.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                .AddTo(gameObject);
+
+            boostPopupButton.OnClickAsObservable()
+                .Where(_ =>
+                    !Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value))
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ => OneLinePopup.Push(MailType.System, "UI_BOOSTER_CONDITIONS_GUIDE"))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
