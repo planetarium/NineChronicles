@@ -5,6 +5,7 @@ namespace Lib9c.Tests
     using System.Collections.Immutable;
     using System.Linq;
     using System.Reflection;
+    using System.Security.Cryptography;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Bencodex.Types;
@@ -21,6 +22,7 @@ namespace Lib9c.Tests
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.BlockChain;
+    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Serilog.Core;
@@ -52,7 +54,7 @@ namespace Lib9c.Tests
                 ImmutableHashSet.Create(adminAddress)
             );
             using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 stagePolicy,
@@ -80,7 +82,7 @@ namespace Lib9c.Tests
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new AddActivatedAccount(newActivatedAddress) }
             );
-            await blockChain.MineBlock(adminAddress);
+            await blockChain.MineBlock(adminPrivateKey);
 
             Transaction<PolymorphicAction<ActionBase>> txByNewActivated =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
@@ -135,21 +137,26 @@ namespace Lib9c.Tests
             );
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            AuthorizedMiningPolicy authorizedMiningPolicy = new AuthorizedMiningPolicy(
+                startIndex: 0,
+                endIndex: 10,
+                interval: 5,
+                miners: new[] { authorizedMinerPrivateKey.ToAddress() }.ToHashSet());
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+                minimumDifficulty: 10000,
+                maxTransactionsPerBlock: 100,
+                ignoreHardcodedPolicies: false,
+                authorizedMiningPolicy: authorizedMiningPolicy,
+                permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(adminAddress),
-                new AuthorizedMinersState(
-                    new[] { authorizedMinerPrivateKey.ToAddress() },
-                    5,
-                    10
-                ),
                 pendingActivations: new[] { ps }
             );
             using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 stagePolicy,
@@ -198,7 +205,7 @@ namespace Lib9c.Tests
                 pendingActivations: new[] { ps }
             );
             using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 stagePolicy,
@@ -245,7 +252,7 @@ namespace Lib9c.Tests
             );
 
             using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 stagePolicy,
@@ -260,7 +267,7 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
 
-            await blockChain.MineBlock(adminAddress);
+            await blockChain.MineBlock(adminPrivateKey);
             FungibleAssetValue actualBalance = blockChain.GetBalance(adminAddress, _currency);
             FungibleAssetValue expectedBalance = new FungibleAssetValue(_currency, 10, 0);
             Assert.True(expectedBalance.Equals(actualBalance));
@@ -273,31 +280,27 @@ namespace Lib9c.Tests
             var adminAddress = adminPrivateKey.ToAddress();
             var minerKeys = new[] { new PrivateKey(), new PrivateKey() };
             Address[] miners = minerKeys.Select(AddressExtensions.ToAddress).ToArray();
-            var stranger = new Address(
-                new byte[]
-                {
-                    0x03, 0x00, 0x00, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00,
-                    0x00, 0x00, 0x00, 0x00, 0x00,
-                }
-            );
+            var stranger = new PrivateKey();
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
+            AuthorizedMiningPolicy authorizedMiningPolicy = new AuthorizedMiningPolicy(
+                miners: miners.ToHashSet(),
+                startIndex: 0,
+                endIndex: 4,
+                interval: 2);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 10000,
                 100,
                 ignoreHardcodedPolicies: true,
+                authorizedMiningPolicy: authorizedMiningPolicy,
                 permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
-                ImmutableHashSet<Address>.Empty,
-                new AuthorizedMinersState(miners, 2, 4)
-            );
+                ImmutableHashSet<Address>.Empty);
             using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 stagePolicy,
@@ -307,17 +310,11 @@ namespace Lib9c.Tests
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
 
-            if (policy is BlockPolicy bp)
-            {
-                bp.AuthorizedMinersState = new AuthorizedMinersState(
-                    (Dictionary)blockChain.GetState(AuthorizedMinersState.Address)
-                    );
-            }
-
             blockChain.MakeTransaction(
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
+
             await blockChain.MineBlock(stranger);
 
             await Assert.ThrowsAsync<BlockPolicyViolationException>(async () =>
@@ -326,7 +323,7 @@ namespace Lib9c.Tests
             });
 
             new Miner(blockChain, null, minerKeys[0], true).StageProofTransaction();
-            await blockChain.MineBlock(miners[0]);
+            await blockChain.MineBlock(minerKeys[0]);
 
             blockChain.MakeTransaction(
                 adminPrivateKey,
@@ -351,7 +348,7 @@ namespace Lib9c.Tests
             );
             // the authorization block should be proved by a proof tx
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                async () => await blockChain.MineBlock(miners[1])
+                async () => await blockChain.MineBlock(minerKeys[1])
             );
 
             // the proof tx should be signed by the same authorized miner
@@ -363,7 +360,7 @@ namespace Lib9c.Tests
             );
             blockChain.StageTransaction(othersProof);
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                async () => await blockChain.MineBlock(miners[1])
+                async () => await blockChain.MineBlock(minerKeys[1])
             );
 
             // the proof tx should be no-op
@@ -378,11 +375,11 @@ namespace Lib9c.Tests
             );
             blockChain.StageTransaction(nonEmptyProof);
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                async () => await blockChain.MineBlock(miners[1])
+                async () => await blockChain.MineBlock(minerKeys[1])
             );
 
             new Miner(blockChain, null, minerKeys[1], true).StageProofTransaction();
-            await blockChain.MineBlock(miners[1]);
+            await blockChain.MineBlock(minerKeys[1]);
 
             // it's okay because block index exceeds limitations.
             blockChain.MakeTransaction(
@@ -398,20 +395,27 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
             var minerKey = new PrivateKey();
-            var miner = minerKey.ToAddress();
-            var miners = new[] { miner };
+            var miners = new[] { minerKey.ToAddress() };
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(4096, 100);
+            AuthorizedMiningPolicy authorizedMiningPolicy = new AuthorizedMiningPolicy(
+                miners: miners.ToHashSet(),
+                startIndex: 0,
+                endIndex: 6,
+                interval: 2);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
+                minimumDifficulty: 4096,
+                maxTransactionsPerBlock: 100,
+                ignoreHardcodedPolicies: false,
+                authorizedMiningPolicy: authorizedMiningPolicy,
+                permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
-                ImmutableHashSet<Address>.Empty,
-                new AuthorizedMinersState(miners, 2, 6)
-            );
+                ImmutableHashSet<Address>.Empty);
             using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 stagePolicy,
@@ -422,13 +426,6 @@ namespace Lib9c.Tests
             );
             var minerObj = new Miner(blockChain, null, minerKey, true);
 
-            if (policy is BlockPolicy bp)
-            {
-                bp.AuthorizedMinersState = new AuthorizedMinersState(
-                    (Dictionary)blockChain.GetState(AuthorizedMinersState.Address)
-                    );
-            }
-
             var dateTimeOffset = DateTimeOffset.MinValue;
 
             // Index 1
@@ -438,14 +435,14 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
             dateTimeOffset += TimeSpan.FromSeconds(1);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 2, target index
             Assert.Equal(4096, policy.GetNextBlockDifficulty(blockChain));
 
             minerObj.StageProofTransaction();
             dateTimeOffset += TimeSpan.FromSeconds(1);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 3
             Assert.Equal(4096, policy.GetNextBlockDifficulty(blockChain));
@@ -454,14 +451,14 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
             dateTimeOffset += TimeSpan.FromSeconds(1);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 4, target index
             Assert.Equal(4096, policy.GetNextBlockDifficulty(blockChain));
 
             minerObj.StageProofTransaction();
             dateTimeOffset += TimeSpan.FromSeconds(1);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 5
             Assert.Equal(4096, policy.GetNextBlockDifficulty(blockChain));
@@ -471,14 +468,14 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
             dateTimeOffset += TimeSpan.FromSeconds(1);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 6, target index
             Assert.Equal(4096, policy.GetNextBlockDifficulty(blockChain));
 
             minerObj.StageProofTransaction();
             dateTimeOffset += TimeSpan.FromSeconds(1);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 7
             Assert.Equal(4098, policy.GetNextBlockDifficulty(blockChain));
@@ -487,7 +484,7 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
             dateTimeOffset += TimeSpan.FromSeconds(1);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 8
             Assert.Equal(4100, policy.GetNextBlockDifficulty(blockChain));
@@ -496,7 +493,7 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
             dateTimeOffset += TimeSpan.FromSeconds(1);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 9
             Assert.Equal(4102, policy.GetNextBlockDifficulty(blockChain));
@@ -505,7 +502,7 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
             dateTimeOffset += TimeSpan.FromSeconds(1);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 10
             Assert.Equal(4104, policy.GetNextBlockDifficulty(blockChain));
@@ -514,7 +511,7 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
             dateTimeOffset += TimeSpan.FromSeconds(1);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 11
             Assert.Equal(4106, policy.GetNextBlockDifficulty(blockChain));
@@ -523,7 +520,7 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
             dateTimeOffset += TimeSpan.FromSeconds(20);
-            await blockChain.MineBlock(miner, dateTimeOffset);
+            await blockChain.MineBlock(minerKey, dateTimeOffset);
 
             // Index 12
             Assert.Equal(4104, policy.GetNextBlockDifficulty(blockChain));
@@ -533,15 +530,16 @@ namespace Lib9c.Tests
         public void ValidateNextBlockWithManyTransactions()
         {
             var adminPrivateKey = new PrivateKey();
-            var adminAddress = new Address(adminPrivateKey.PublicKey);
+            var adminPublicKey = adminPrivateKey.PublicKey;
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(3000, 10);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
+            Block<PolymorphicAction<ActionBase>> genesis =
+                MakeGenesisBlock(adminPublicKey.ToAddress(), ImmutableHashSet<Address>.Empty);
 
             using var store = new DefaultStore(null);
-            var stateStore = new NoOpStateStore();
+            var stateStore = new TrieStateStore(new MemoryKeyValueStore());
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 stagePolicy,
@@ -568,39 +566,45 @@ namespace Lib9c.Tests
             }
 
             Assert.Equal(1, blockChain.Count);
-            Block<PolymorphicAction<ActionBase>> block1 = Block<PolymorphicAction<ActionBase>>.Mine(
-                index: 1,
-                hashAlgorithm: policy.GetHashAlgorithm(1),
-                difficulty: policy.GetNextBlockDifficulty(blockChain),
-                previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
-                miner: adminAddress,
-                previousHash: blockChain.Tip.Hash,
-                timestamp: DateTimeOffset.MinValue,
-                transactions: GenerateTransactions(5));
+            Block<PolymorphicAction<ActionBase>> block1 = new BlockContent<PolymorphicAction<ActionBase>>
+            {
+                Index = 1,
+                Difficulty = policy.GetNextBlockDifficulty(blockChain),
+                TotalDifficulty =
+                    blockChain.Tip.TotalDifficulty + policy.GetNextBlockDifficulty(blockChain),
+                PublicKey = adminPublicKey,
+                PreviousHash = blockChain.Tip.Hash,
+                Timestamp = DateTimeOffset.MinValue,
+                Transactions = GenerateTransactions(5),
+            }.Mine(policy.GetHashAlgorithm(1)).Evaluate(adminPrivateKey, blockChain);
             blockChain.Append(block1);
             Assert.Equal(2, blockChain.Count);
             Assert.True(blockChain.ContainsBlock(block1.Hash));
-            Block<PolymorphicAction<ActionBase>> block2 = Block<PolymorphicAction<ActionBase>>.Mine(
-                index: 2,
-                hashAlgorithm: policy.GetHashAlgorithm(2),
-                difficulty: policy.GetNextBlockDifficulty(blockChain),
-                previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
-                miner: adminAddress,
-                previousHash: blockChain.Tip.Hash,
-                timestamp: DateTimeOffset.MinValue,
-                transactions: GenerateTransactions(10));
+            Block<PolymorphicAction<ActionBase>> block2 = new BlockContent<PolymorphicAction<ActionBase>>
+            {
+                Index = 2,
+                Difficulty = policy.GetNextBlockDifficulty(blockChain),
+                TotalDifficulty =
+                    blockChain.Tip.TotalDifficulty + policy.GetNextBlockDifficulty(blockChain),
+                PublicKey = adminPublicKey,
+                PreviousHash = blockChain.Tip.Hash,
+                Timestamp = DateTimeOffset.MinValue,
+                Transactions = GenerateTransactions(10),
+            }.Mine(policy.GetHashAlgorithm(2)).Evaluate(adminPrivateKey, blockChain);
             blockChain.Append(block2);
             Assert.Equal(3, blockChain.Count);
             Assert.True(blockChain.ContainsBlock(block2.Hash));
-            Block<PolymorphicAction<ActionBase>> block3 = Block<PolymorphicAction<ActionBase>>.Mine(
-                index: 3,
-                hashAlgorithm: policy.GetHashAlgorithm(3),
-                difficulty: policy.GetNextBlockDifficulty(blockChain),
-                previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
-                miner: adminAddress,
-                previousHash: blockChain.Tip.Hash,
-                timestamp: DateTimeOffset.MinValue,
-                transactions: GenerateTransactions(11));
+            Block<PolymorphicAction<ActionBase>> block3 = new BlockContent<PolymorphicAction<ActionBase>>
+            {
+                Index = 3,
+                Difficulty = policy.GetNextBlockDifficulty(blockChain),
+                TotalDifficulty =
+                    blockChain.Tip.TotalDifficulty + policy.GetNextBlockDifficulty(blockChain),
+                PublicKey = adminPublicKey,
+                PreviousHash = blockChain.Tip.Hash,
+                Timestamp = DateTimeOffset.MinValue,
+                Transactions = GenerateTransactions(11),
+            }.Mine(policy.GetHashAlgorithm(3)).Evaluate(adminPrivateKey, blockChain);
             Assert.Throws<BlockExceedingTransactionsException>(() => blockChain.Append(block3));
             Assert.Equal(3, blockChain.Count);
             Assert.False(blockChain.ContainsBlock(block3.Hash));
@@ -628,18 +632,20 @@ namespace Lib9c.Tests
             var permissionedMinerKey = _privateKey;
             var nonPermissionedMinerKey = new PrivateKey();
             using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
             var blockPolicySource = new BlockPolicySource(Logger.None);
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 50_000,
-                    maximumTransactions: 100,
+                    maxTransactionsPerBlock: 100,
+                    authorizedMiningPolicy: null,
                     permissionedMiningPolicy: new PermissionedMiningPolicy(
-                        threshold: 1,
                         miners: new[]
                         {
                             permissionedMinerKey.ToAddress(),
-                        }.ToImmutableHashSet()
+                        }.ToImmutableHashSet(),
+                        startIndex: 1,
+                        endIndex: null
                     ),
                     ignoreHardcodedPolicies: true
                 ),
@@ -658,11 +664,11 @@ namespace Lib9c.Tests
                 genesis.Hash,
                 new PolymorphicAction<ActionBase>[] { }
             ));
-            await blockChain.MineBlock(permissionedMinerKey.ToAddress());
+            await blockChain.MineBlock(permissionedMinerKey);
 
             // Error, there is no proof tx.
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                () => blockChain.MineBlock(permissionedMinerKey.ToAddress()));
+                () => blockChain.MineBlock(permissionedMinerKey));
 
             // Error, it's invalid proof
             blockChain.StageTransaction(Transaction<PolymorphicAction<ActionBase>>.Create(
@@ -672,11 +678,11 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { }
             ));
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                () => blockChain.MineBlock(permissionedMinerKey.ToAddress()));
+                () => blockChain.MineBlock(permissionedMinerKey));
 
             // Error, it isn't permissioned miner.
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                () => blockChain.MineBlock(nonPermissionedMinerKey.ToAddress()));
+                () => blockChain.MineBlock(nonPermissionedMinerKey));
         }
 
         private Block<PolymorphicAction<ActionBase>> MakeGenesisBlock(
@@ -707,28 +713,6 @@ namespace Lib9c.Tests
                 credits: null,
                 privateKey: _privateKey,
                 timestamp: timestamp ?? DateTimeOffset.MinValue);
-        }
-
-        private class NoOpStateStore : IStateStore
-        {
-            public void SetStates<T>(Block<T> block, IImmutableDictionary<string, IValue> states)
-                where T : IAction, new()
-            {
-            }
-
-            public IValue GetState(string stateKey, BlockHash? blockHash = null) =>
-                default(Null);
-
-            public bool ContainsBlockStates(BlockHash blockHash) => false;
-
-            public void ForkStates<T>(Guid sourceChainId, Guid destinationChainId, Block<T> branchpoint)
-                where T : IAction, new()
-            {
-            }
-
-            public void Dispose()
-            {
-            }
         }
     }
 }

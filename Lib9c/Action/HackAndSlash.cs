@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash8")]
+    [ActionType("hack_and_slash9")]
     public class HackAndSlash : GameAction
     {
         public List<Guid> costumes;
@@ -24,6 +24,7 @@ namespace Nekoyume.Action
         public List<Guid> foods;
         public int worldId;
         public int stageId;
+        public int playCount;
         public Address avatarAddress;
         public Address rankingMapAddress;
 
@@ -35,6 +36,7 @@ namespace Nekoyume.Action
                 ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
+                ["playCount"] = playCount.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
                 ["rankingMapAddress"] = rankingMapAddress.Serialize(),
             }.ToImmutableDictionary();
@@ -48,6 +50,7 @@ namespace Nekoyume.Action
             foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
+            playCount = plainValue["playCount"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             rankingMapAddress = plainValue["rankingMapAddress"].ToAddress();
         }
@@ -156,15 +159,22 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS get CostumeStatSheet: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            if (avatarState.actionPoint < stageRow.CostAP)
+            if (playCount <= 0)
+            {
+                throw new PlayCountIsZeroException($"{addressesHex}playCount must be greater than 0. " +
+                                                   $"current playCount : {playCount}");
+            }
+
+            var totalCostActionPoint = stageRow.CostAP * playCount;
+            if (avatarState.actionPoint < totalCostActionPoint)
             {
                 throw new NotEnoughActionPointException(
                     $"{addressesHex}Aborted due to insufficient action point: " +
-                    $"{avatarState.actionPoint} < {stageRow.CostAP}"
+                    $"{avatarState.actionPoint} < totalAP({totalCostActionPoint}) = cost({stageRow.CostAP}) * boostCount({playCount})"
                 );
             }
 
-            avatarState.actionPoint -= stageRow.CostAP;
+            avatarState.actionPoint -= totalCostActionPoint;
 
             var items = equipments.Concat(costumes);
             avatarState.EquipItems(items);
@@ -189,7 +199,6 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Update QuestList: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var characterSheet = states.GetSheet<CharacterSheet>();
             var simulator = new StageSimulator(
                 ctx.Random,
                 avatarState,
@@ -198,13 +207,14 @@ namespace Nekoyume.Action
                 stageId,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
-                StageSimulator.ConstructorVersionV100025);
+                StageSimulator.ConstructorVersionV100080,
+                playCount);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.Simulate();
+            simulator.Simulate(playCount);
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Simulator.SimulateV2(): {Elapsed}", addressesHex, sw.Elapsed);
 

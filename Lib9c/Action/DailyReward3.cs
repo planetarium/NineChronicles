@@ -12,7 +12,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex)]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("daily_reward3")]
     public class DailyReward3 : GameAction
     {
@@ -30,7 +30,7 @@ namespace Nekoyume.Action
                 return states.SetState(avatarAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex, context);
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

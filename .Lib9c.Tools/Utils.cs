@@ -5,11 +5,9 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Cocona;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
@@ -17,8 +15,7 @@ using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
-using Nekoyume.Action;
-using Nekoyume.BlockChain;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
@@ -48,7 +45,7 @@ namespace Lib9c.Tools
         {
             var policySource = new BlockPolicySource(logger);
             IBlockPolicy<NCAction> policy = policySource.GetPolicy(
-                BlockPolicySource.DifficultyBoundDivisor + 1,
+                BlockPolicySource.DifficultyStability + 1,
                 int.MaxValue
             );
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
@@ -58,9 +55,7 @@ namespace Lib9c.Tools
                 : new RocksDBStore(storePath);
             IKeyValueStore stateKeyValueStore =
                 new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
-            IKeyValueStore stateHashKeyValueStore =
-                new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes"));
-            IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateHashKeyValueStore);
+            IStateStore stateStore = new TrieStateStore(stateKeyValueStore);
             Guid chainIdValue
                 = chainId ??
                   store.GetCanonicalChainId() ??
@@ -82,7 +77,10 @@ namespace Lib9c.Tools
                     1
                 );
             }
-            Block<NCAction> genesis = store.GetBlock<NCAction>(genesisBlockHash);
+            Block<NCAction> genesis = store.GetBlock<NCAction>(
+                policy.GetHashAlgorithm,
+                genesisBlockHash
+            );
             BlockChain<NCAction> chain = new BlockChain<NCAction>(
                 policy,
                 stagePolicy,

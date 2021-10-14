@@ -23,9 +23,10 @@ namespace Nekoyume.BlockChain
         private readonly BlockChain<PolymorphicAction<ActionBase>> _subChain;
         private readonly Swarm<PolymorphicAction<ActionBase>> _mainSwarm;
         private readonly Swarm<PolymorphicAction<ActionBase>> _subSwarm;
+        private readonly PrivateKey _privateKey;
         private readonly int _reorgInterval;
 
-        public Address Address { get; }
+        public Address Address => _privateKey.ToAddress();
 
         public async Task<(
                 Block<PolymorphicAction<ActionBase>> MainBlock,
@@ -42,13 +43,13 @@ namespace Nekoyume.BlockChain
             try
             {
                 mainBlock = await _mainChain.MineBlock(
-                    Address,
+                    _privateKey,
                     DateTimeOffset.UtcNow,
                     cancellationToken: cancellationToken,
                     maxTransactions: maxTransactions);
-                
+
                 subBlock = await _subChain.MineBlock(
-                    Address,
+                    _privateKey,
                     DateTimeOffset.UtcNow,
                     cancellationToken: cancellationToken,
                     maxTransactions: maxTransactions);
@@ -112,7 +113,7 @@ namespace Nekoyume.BlockChain
             _subSwarm = subSwarm ?? throw new ArgumentNullException(nameof(subSwarm));
             _mainChain = mainSwarm.BlockChain ?? throw new ArgumentNullException(nameof(mainSwarm.BlockChain));
             _subChain = subSwarm.BlockChain ?? throw new ArgumentNullException(nameof(subSwarm.BlockChain));
-            Address = privateKey.PublicKey.ToAddress();
+            _privateKey = privateKey;
             _reorgInterval = reorgInterval;
         }
     }
