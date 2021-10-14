@@ -330,7 +330,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 937548774}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -356,7 +356,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
-  m_SortingOrder: 40
+  m_SortingOrder: 30
   m_TargetDisplay: 0
 --- !u!114 &98550338
 MonoBehaviour:
@@ -534,7 +534,7 @@ GameObject:
   - component: {fileID: 384134974}
   - component: {fileID: 384134975}
   m_Layer: 15
-  m_Name: SystemInfoLayer
+  m_Name: SystemLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -552,7 +552,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 937548774}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -578,7 +578,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 1092445747
-  m_SortingOrder: 60
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &384134975
 MonoBehaviour:
@@ -736,7 +736,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 937548774}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -761,8 +761,8 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 555532309
-  m_SortingOrder: 70
+  m_SortingLayerID: 1092445747
+  m_SortingOrder: 10
   m_TargetDisplay: 0
 --- !u!114 &721921034
 MonoBehaviour:
@@ -780,7 +780,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 32
+    m_Bits: 32800
 --- !u!1 &937548770
 GameObject:
   m_ObjectHideFlags: 0
@@ -876,13 +876,13 @@ RectTransform:
   m_Children:
   - {fileID: 946775609}
   - {fileID: 1162800117}
-  - {fileID: 1772531778}
   - {fileID: 1346351532}
   - {fileID: 98550336}
   - {fileID: 1962509240}
+  - {fileID: 1574399856}
+  - {fileID: 1772531778}
   - {fileID: 384134973}
   - {fileID: 721921032}
-  - {fileID: 1574399856}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1624,7 +1624,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 937548774}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1650,7 +1650,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
-  m_SortingOrder: 30
+  m_SortingOrder: 20
   m_TargetDisplay: 0
 --- !u!114 &1346351534
 MonoBehaviour:
@@ -1699,7 +1699,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 937548774}
-  m_RootOrder: 8
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1742,7 +1742,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
-  m_SortingOrder: 100
+  m_SortingOrder: 50
   m_TargetDisplay: 0
 --- !u!1 &1772531777
 GameObject:
@@ -1774,7 +1774,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 937548774}
-  m_RootOrder: 2
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1800,7 +1800,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
-  m_SortingOrder: 20
+  m_SortingOrder: 60
   m_TargetDisplay: 0
 --- !u!114 &1772531780
 MonoBehaviour:
@@ -2044,7 +2044,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 937548774}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -2070,7 +2070,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 555532309
-  m_SortingOrder: 50
+  m_SortingOrder: 40
   m_TargetDisplay: 0
 --- !u!114 &1962509242
 MonoBehaviour:

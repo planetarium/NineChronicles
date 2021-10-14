@@ -22,7 +22,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private EventSubject closeEventSubject = null;
 
-        public override WidgetType WidgetType => WidgetType.SystemInfo;
+        public override WidgetType WidgetType => WidgetType.System;
 
         protected override void Awake()
         {

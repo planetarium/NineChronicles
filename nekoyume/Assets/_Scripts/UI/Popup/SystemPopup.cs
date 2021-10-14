@@ -8,7 +8,7 @@ namespace Nekoyume.UI
 {
     public class SystemPopup : Alert
     {
-        public override WidgetType WidgetType => WidgetType.SystemInfo;
+        public override WidgetType WidgetType => WidgetType.System;
 
         [SerializeField]
         private Button bgImageButton = null;

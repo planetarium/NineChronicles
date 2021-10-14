@@ -242,7 +242,7 @@ namespace Nekoyume.UI.Module
             }
 
             var systemInfoSortingOrder =
-                MainCanvas.instance.GetLayer(WidgetType.SystemInfo).root.sortingOrder;
+                MainCanvas.instance.GetLayer(WidgetType.System).root.sortingOrder;
             sortingGroup.sortingOrder = systemInfoSortingOrder;
         }
 

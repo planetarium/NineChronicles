@@ -96,7 +96,7 @@ namespace Nekoyume.UI
                     return widgetLayer;
                 case WidgetType.Animation:
                     return animationLayer;
-                case WidgetType.SystemInfo:
+                case WidgetType.System:
                     return systemInfoLayer;
                 case WidgetType.Development:
                     return developmentLayer;

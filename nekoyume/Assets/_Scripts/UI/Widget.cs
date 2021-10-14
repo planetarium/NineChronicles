@@ -147,7 +147,7 @@ namespace Nekoyume.UI
                 case WidgetType.Screen:
                 case WidgetType.Tooltip:
                 case WidgetType.Widget:
-                case WidgetType.SystemInfo:
+                case WidgetType.System:
                 case WidgetType.Development:
                     Pool.Add(type, new PoolElementModel
                     {
