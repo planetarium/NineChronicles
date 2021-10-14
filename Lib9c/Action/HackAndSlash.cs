@@ -36,7 +36,7 @@ namespace Nekoyume.Action
                 ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
-                ["playCount"] = stageId.Serialize(),
+                ["playCount"] = playCount.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
                 ["rankingMapAddress"] = rankingMapAddress.Serialize(),
             }.ToImmutableDictionary();
