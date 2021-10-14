@@ -388,7 +388,7 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfShowAnimationInternal();
             // TODO: move invocation the PlayTutorial() inside of CoHelpPopup().
-            Find<Dialog>().Show(1, PlayTutorial);
+            Find<DialogPopup>().Show(1, PlayTutorial);
             StartCoroutine(CoHelpPopup());
         }
 
@@ -449,7 +449,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoHelpPopup()
         {
-            var dialog = Find<Dialog>();
+            var dialog = Find<DialogPopup>();
             while (dialog.IsActive())
             {
                 yield return null;
@@ -544,17 +544,17 @@ namespace Nekoyume.UI
         {
             base.Update();
 
-            if (!Find<CombinationResult>().gameObject.activeSelf &&
-                !Find<EnhancementResult>().gameObject.activeSelf &&
+            if (!Find<CombinationResultPopup>().gameObject.activeSelf &&
+                !Find<EnhancementResultPopup>().gameObject.activeSelf &&
                 Input.GetKey(KeyCode.LeftControl))
             {
                 if (Input.GetKeyDown(KeyCode.C))
                 {
-                    Find<CombinationResult>().ShowWithEditorProperty();
+                    Find<CombinationResultPopup>().ShowWithEditorProperty();
                 }
                 else if (Input.GetKeyDown(KeyCode.E))
                 {
-                    Find<EnhancementResult>().ShowWithEditorProperty();
+                    Find<EnhancementResultPopup>().ShowWithEditorProperty();
                 }
             }
         }

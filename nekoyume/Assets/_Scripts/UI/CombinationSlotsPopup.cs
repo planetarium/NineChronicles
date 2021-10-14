@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -12,7 +11,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class CombinationSlotsPopup : XTweenWidget
+    public class CombinationSlotsPopup : XTweenPopupWidget
     {
         [SerializeField]
         private List<CombinationSlot> slots;
@@ -24,8 +23,6 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
-
-        public override WidgetType WidgetType => WidgetType.Popup;
 
         protected override void Awake()
         {

@@ -65,7 +65,7 @@ namespace Nekoyume.Game.Entrance
             {
                 battle.Close(true);
             }
-            var battleResult = Widget.Find<BattleResult>();
+            var battleResult = Widget.Find<BattleResultPopup>();
             if (battleResult.IsActive())
             {
                 battleResult.Close();

@@ -168,7 +168,7 @@ namespace Nekoyume.UI.Module
             }
             else if (States.Instance.CurrentAvatarState.actionPoint > 0)
             {
-                var confirm = Widget.Find<Confirm>();
+                var confirm = Widget.Find<ConfirmPopup>();
                 confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
                 confirm.CloseCallback = result =>
                 {

@@ -181,11 +181,11 @@ namespace Nekoyume.Game
             // Initialize NineChroniclesAPIClient.
             _apiClient = new NineChroniclesAPIClient(_options.ApiServerHost);
             // Initialize Rank.SharedModel
-            Rank.UpdateSharedModel();
+            RankPopup.UpdateSharedModel();
             // Initialize Stage
             Stage.Initialize();
 
-            Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
+            Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());
@@ -300,9 +300,9 @@ namespace Nekoyume.Game
             {
                 Widget.Find<StageLoadingScreen>().Close();
 
-                if (Widget.Find<BattleResult>().IsActive())
+                if (Widget.Find<BattleResultPopup>().IsActive())
                 {
-                    Widget.Find<BattleResult>().Close(true);
+                    Widget.Find<BattleResultPopup>().Close(true);
                 }
 
                 needToBackToMain = true;
@@ -368,9 +368,9 @@ namespace Nekoyume.Game
             {
                 Widget.Find<StageLoadingScreen>().Close();
 
-                if (Widget.Find<BattleResult>().IsActive())
+                if (Widget.Find<BattleResultPopup>().IsActive())
                 {
-                    Widget.Find<BattleResult>().Close(true);
+                    Widget.Find<BattleResultPopup>().Close(true);
                 }
 
                 needToBackToMain = true;
@@ -568,7 +568,7 @@ namespace Nekoyume.Game
 
             if (_options.TestEnd)
             {
-                var w = Widget.Find<Confirm>();
+                var w = Widget.Find<ConfirmPopup>();
                 w.CloseCallback = result =>
                 {
                     if (result == ConfirmResult.Yes)
@@ -587,7 +587,7 @@ namespace Nekoyume.Game
                 yield break;
             }
 
-            var settings = Widget.Find<UI.Settings>();
+            var settings = Widget.Find<UI.SettingPopup>();
             settings.UpdateSoundSettings();
             settings.UpdatePrivateKey(_options.PrivateKey);
 
@@ -613,7 +613,7 @@ namespace Nekoyume.Game
 
         public void ResetStore()
         {
-            var confirm = Widget.Find<Confirm>();
+            var confirm = Widget.Find<ConfirmPopup>();
             var storagePath = _options.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
             confirm.CloseCallback = result =>
             {
@@ -635,7 +635,7 @@ namespace Nekoyume.Game
 
         public void ResetKeyStore()
         {
-            var confirm = Widget.Find<Confirm>();
+            var confirm = Widget.Find<ConfirmPopup>();
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)

@@ -9,7 +9,7 @@ namespace Nekoyume.UI
     /// <summary>
     /// `Agent`를 초기화하기 전에 생성된다고 전제함.
     /// </summary>
-    public class BlockChainMessageBoard : SystemInfoWidget
+    public class BlockChainMessageBoard : SystemWidget
     {
         private enum PanelAnimationState
         {

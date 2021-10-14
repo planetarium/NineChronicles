@@ -74,7 +74,7 @@ namespace Nekoyume.UI
         public void CreateClick()
         {
             Mixpanel.Track("Unity/Create Click");
-            var inputBox = Find<InputBox>();
+            var inputBox = Find<InputBoxPopup>();
             inputBox.CloseCallback = result =>
             {
                 if (result == ConfirmResult.Yes)

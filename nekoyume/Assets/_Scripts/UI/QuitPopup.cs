@@ -73,7 +73,7 @@ namespace Nekoyume.UI
             Game.Event.OnNestEnter.Invoke();
 
             var deletableWidgets = FindWidgets().Where(widget =>
-                !(widget is SystemInfoWidget) && !(widget is QuitPopup) &&
+                !(widget is SystemWidget) && !(widget is QuitPopup) &&
                 !(widget is MessageCatManager) && widget.IsActive());
             foreach (var widget in deletableWidgets)
             {

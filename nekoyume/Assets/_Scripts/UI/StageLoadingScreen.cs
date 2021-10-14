@@ -118,7 +118,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            var dialog = Widget.Find<Dialog>();
+            var dialog = Widget.Find<DialogPopup>();
             foreach (var stageDialog in stageDialogs)
             {
                 dialog.Show(stageDialog.DialogId);

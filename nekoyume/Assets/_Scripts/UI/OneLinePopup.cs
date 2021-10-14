@@ -13,7 +13,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class OneLinePopup : SystemInfoWidget
+    public class OneLinePopup : SystemWidget
     {
         private enum State
         {

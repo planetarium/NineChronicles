@@ -16,7 +16,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class LoginPopup : Widget
+    public class LoginPopup : SystemWidget
     {
         public enum States
         {
@@ -30,8 +30,6 @@ namespace Nekoyume.UI
         }
 
         public IKeyStore KeyStore = Web3KeyStore.DefaultKeyStore;
-
-        public override WidgetType WidgetType => WidgetType.System;
         public InputField passPhraseField;
         public InputField retypeField;
         public InputField loginField;
@@ -74,8 +72,6 @@ namespace Nekoyume.UI
         private PrivateKey _privateKey;
         private States _prevState;
         public Blur blur;
-
-        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         protected override void Awake()
         {

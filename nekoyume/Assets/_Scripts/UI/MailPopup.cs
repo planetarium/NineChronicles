@@ -4,7 +4,6 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Action;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -23,7 +22,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class MailPopup : XTweenWidget, IMail
+    public class MailPopup : XTweenPopupWidget, IMail
     {
         public enum MailTabState : int
         {
@@ -73,8 +72,6 @@ namespace Nekoyume.UI
         private const int TutorialEquipmentId = 10110000;
 
         public MailBox MailBox { get; private set; }
-
-        public override WidgetType WidgetType => WidgetType.Popup;
 
         #region override
 
@@ -269,11 +266,11 @@ namespace Nekoyume.UI
                         resultModel.subRecipeId.Value,
                         out var row))
                 {
-                    Find<CombinationResult>().Show(itemUsable, row.Options.Count);
+                    Find<CombinationResultPopup>().Show(itemUsable, row.Options.Count);
                 }
                 else
                 {
-                    Find<CombinationResult>().Show(itemUsable);
+                    Find<CombinationResultPopup>().Show(itemUsable);
                 }
             }
         }
@@ -284,8 +281,8 @@ namespace Nekoyume.UI
             var order = Util.GetOrder(orderBuyerMail.OrderId);
             var itemBase = Util.GetItemBaseByTradableId(order.TradableId, order.ExpiredBlockIndex);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-            var popup = Find<CombinationResultPopup>();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, count))
+            var popup = Find<BuyItemInformationPopup>();
+            var model = new UI.Model.BuyItemInformationPopup(new CountableItem(itemBase, count))
             {
                 isSuccess = true,
                 materialItems = new List<CombinationMaterial>()
@@ -375,7 +372,7 @@ namespace Nekoyume.UI
             });
             // ~LocalLayer
 
-            Find<EnhancementResult>().Show(itemEnhanceMail);
+            Find<EnhancementResultPopup>().Show(itemEnhanceMail);
         }
 
         public void Read(DailyRewardMail dailyRewardMail)

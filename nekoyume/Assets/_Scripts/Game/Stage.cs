@@ -71,7 +71,7 @@ namespace Nekoyume.Game
 
         private Camera _camera;
         private BattleLog _battleLog;
-        private BattleResult.Model _battleResultModel;
+        private BattleResultPopup.Model _battleResultModel;
         private bool _rankingBattle;
         private Coroutine _battleCoroutine;
         private Player _stageRunningPlayer;
@@ -422,7 +422,7 @@ namespace Nekoyume.Game
             if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
                 yield break;
 
-            _battleResultModel = new BattleResult.Model();
+            _battleResultModel = new BattleResultPopup.Model();
 
             zone = data.Background;
             LoadBackground(zone, 3.0f);
@@ -433,7 +433,7 @@ namespace Nekoyume.Game
 
             Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
             Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
-            Widget.Find<BattleResult>().StageProgressBar.Initialize(false);
+            Widget.Find<BattleResultPopup>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
             IsShowHud = false;
@@ -456,7 +456,7 @@ namespace Nekoyume.Game
             if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
                 yield break;
 
-            _battleResultModel = new BattleResult.Model();
+            _battleResultModel = new BattleResultPopup.Model();
 
             zone = data.Background;
             LoadBackground(zone, 3.0f);
@@ -552,7 +552,7 @@ namespace Nekoyume.Game
 
             if (IsExitReserved)
             {
-                _battleResultModel.NextState = BattleResult.NextState.GoToMain;
+                _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
                 _battleResultModel.ActionPointNotEnough = false;
             }
             else
@@ -566,15 +566,15 @@ namespace Nekoyume.Game
                 _battleResultModel.ActionPointNotEnough = apNotEnough;
                 if (apNotEnough)
                 {
-                    _battleResultModel.NextState = BattleResult.NextState.GoToMain;
+                    _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
                 }
                 else
                 {
                     if (isClear)
                     {
                         _battleResultModel.NextState = IsRepeatStage ?
-                            BattleResult.NextState.RepeatStage :
-                            BattleResult.NextState.NextStage;
+                            BattleResultPopup.NextState.RepeatStage :
+                            BattleResultPopup.NextState.NextStage;
 
                         if (Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
                         {
@@ -582,21 +582,21 @@ namespace Nekoyume.Game
                             {
                                 _battleResultModel.IsEndStage = true;
                                 _battleResultModel.NextState = IsRepeatStage ?
-                                    BattleResult.NextState.RepeatStage :
-                                    BattleResult.NextState.GoToMain;
+                                    BattleResultPopup.NextState.RepeatStage :
+                                    BattleResultPopup.NextState.GoToMain;
                             }
                         }
                     }
                     else
                     {
                         _battleResultModel.NextState = IsRepeatStage ?
-                            BattleResult.NextState.RepeatStage :
-                            BattleResult.NextState.GoToMain;
+                            BattleResultPopup.NextState.RepeatStage :
+                            BattleResultPopup.NextState.GoToMain;
                     }
                 }
             }
 
-            Widget.Find<BattleResult>().Show(_battleResultModel, PlayCount > 1);
+            Widget.Find<BattleResultPopup>().Show(_battleResultModel, PlayCount > 1);
 
             yield return null;
 
@@ -617,7 +617,7 @@ namespace Nekoyume.Game
         private IEnumerator CoSlideBg()
         {
             RunPlayer();
-            while (Widget.Find<BattleResult>().IsActive())
+            while (Widget.Find<BattleResultPopup>().IsActive())
             {
                 yield return new WaitForEndOfFrame();
             }
@@ -651,7 +651,7 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().Close();
 
-            Widget.Find<RankingBattleResult>().Show(log, _battleResultModel.Rewards);
+            Widget.Find<RankingBattleResultPopup>().Show(log, _battleResultModel.Rewards);
             yield return null;
         }
 

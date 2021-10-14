@@ -59,8 +59,8 @@ namespace Nekoyume.Game
             _fenrir.Animator.StandingToIdle();
             yield return new WaitUntil(() => _fenrir.Animator.IsIdle());
             yield return new WaitForSeconds(1f);
-            Widget.Find<PrologueDialog>().Show();
-            yield return new WaitWhile(() => Widget.Find<PrologueDialog>().isActiveAndEnabled);
+            Widget.Find<PrologueDialogPopup>().Show();
+            yield return new WaitWhile(() => Widget.Find<PrologueDialogPopup>().isActiveAndEnabled);
             yield return StartCoroutine(CoSpawnWave(go));
             yield return StartCoroutine(CoBattle());
             yield return StartCoroutine(CoPrologueEnd());
@@ -252,8 +252,8 @@ namespace Nekoyume.Game
         private IEnumerator CoFenrirFinisher()
         {
             yield return new WaitForSeconds(1f);
-            Widget.Find<PrologueDialog>().Show();
-            yield return new WaitWhile(() => Widget.Find<PrologueDialog>().isActiveAndEnabled);
+            Widget.Find<PrologueDialogPopup>().Show();
+            yield return new WaitWhile(() => Widget.Find<PrologueDialogPopup>().isActiveAndEnabled);
             yield return StartCoroutine(_fenrir.CoFinisher(new[] {580214, 999999}, new[] {true, true}));
             yield return new WaitForSeconds(1f);
             Time.timeScale = 1f;

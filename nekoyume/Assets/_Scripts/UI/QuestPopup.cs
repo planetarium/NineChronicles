@@ -4,7 +4,6 @@ using Nekoyume.UI.Scroller;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +14,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class QuestPopup : XTweenWidget
+    public class QuestPopup : XTweenPopupWidget
     {
         [SerializeField]
         private CategoryTabButton adventureButton = null;
@@ -44,8 +43,6 @@ namespace Nekoyume.UI
         private ReactiveProperty<QuestList> _questList = new ReactiveProperty<QuestList>();
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
-
-        public override WidgetType WidgetType => WidgetType.Popup;
 
         #region override
 

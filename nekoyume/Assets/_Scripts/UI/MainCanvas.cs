@@ -161,7 +161,7 @@ namespace Nekoyume.UI
                 Widget.Create<PreloadingScreen>(),
 
                 // 팝업 영역.
-                Widget.Create<Settings>(),
+                Widget.Create<SettingPopup>(),
 
                 // 팝업 영역: 알림.
                 Widget.Create<UpdatePopup>(),
@@ -174,7 +174,7 @@ namespace Nekoyume.UI
                 Widget.Create<BlockChainMessageBoard>(true),
                 Widget.Create<Notification>(true),
                 Widget.Create<OneLinePopup>(true),
-                Widget.Create<VersionInfo>(true),
+                Widget.Create<VersionSystem>(true),
                 Widget.Create<OneButtonPopup>(),
                 Widget.Create<TwoButtonPopup>(),
             };
@@ -260,7 +260,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationSlotsPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<Rank>());
+            secondWidgets.Add(Widget.Create<RankPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ChatPopup>());
             yield return null;
@@ -268,23 +268,23 @@ namespace Nekoyume.UI
             yield return null;
 
             // Over than HeaderMenu
-            secondWidgets.Add(Widget.Create<RankingBattleResult>());
+            secondWidgets.Add(Widget.Create<RankingBattleResultPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
-            secondWidgets.Add(Widget.Create<InputBox>());
+            secondWidgets.Add(Widget.Create<InputBoxPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CombinationResult>());
+            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<EnhancementResult>());
+            secondWidgets.Add(Widget.Create<EnhancementResultPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<BattleResult>());
+            secondWidgets.Add(Widget.Create<BattleResultPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
             yield return null;
@@ -292,19 +292,19 @@ namespace Nekoyume.UI
             // popup
             secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
+            secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
             yield return null;
-            secondWidgets.Add(Widget.Create<Dialog>());
+            secondWidgets.Add(Widget.Create<DialogPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CodeReward>());
+            secondWidgets.Add(Widget.Create<CodeRewardPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<PrologueDialog>());
+            secondWidgets.Add(Widget.Create<PrologueDialogPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
             yield return null;
@@ -312,7 +312,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<HelpPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<Confirm>());
+            secondWidgets.Add(Widget.Create<ConfirmPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<BoosterPopup>());
             yield return null;
@@ -343,7 +343,7 @@ namespace Nekoyume.UI
             Widgets.AddRange(secondWidgets);
             UpdateLayers();
 
-            Widget.Find<Settings>().transform.SetAsLastSibling();
+            Widget.Find<SettingPopup>().transform.SetAsLastSibling();
         }
 
         public void SetLayerSortingOrderToTarget(

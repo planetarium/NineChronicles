@@ -143,12 +143,12 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (_widget is Confirm confirm)
+            if (_widget is ConfirmPopup confirm)
             {
                 confirm.NoWithoutCallback();
             }
 
-            if (_widget is InputBox inputBox)
+            if (_widget is InputBoxPopup inputBox)
             {
                 inputBox.No();
             }

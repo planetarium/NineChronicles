@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -25,7 +24,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class AvatarInfoPopup : XTweenWidget
+    public class AvatarInfoPopup : XTweenPopupWidget
     {
         public bool HasNotification =>
             inventory.SharedModel.Equipments.Any(item => item.HasNotification.Value);
@@ -76,7 +75,6 @@ namespace Nekoyume.UI
         private GameObject _cachedCharacterTitle;
 
         public readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
-        public override WidgetType WidgetType => WidgetType.Popup;
 
         #region Override
 
@@ -678,7 +676,7 @@ namespace Nekoyume.UI
 
         public static void ShowRefillConfirmPopup(CountableItem item)
         {
-            var confirm = Widget.Find<Confirm>();
+            var confirm = Widget.Find<ConfirmPopup>();
             confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
             confirm.CloseCallback = result =>
             {

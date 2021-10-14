@@ -6,7 +6,7 @@ using UniRx;
 
 namespace Nekoyume.UI
 {
-    public class OneButtonPopup : SystemInfoWidget
+    public class OneButtonPopup : SystemWidget
     {
         public SubmitButton confirmButton;
         public TextMeshProUGUI contentText;

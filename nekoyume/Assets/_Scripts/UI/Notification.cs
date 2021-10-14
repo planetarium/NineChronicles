@@ -16,7 +16,7 @@ namespace Nekoyume.UI
     /// <summary>
     /// Usage: Just to call the `Notification.Push()` method anywhere.
     /// </summary>
-    public class Notification : SystemInfoWidget
+    public class Notification : SystemWidget
     {
         private enum State
         {

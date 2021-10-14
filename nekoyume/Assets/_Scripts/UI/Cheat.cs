@@ -401,7 +401,7 @@ namespace Nekoyume
 
         private void DummyBattle(int stageId)
         {
-            Find<BattleResult>()?.Close();
+            Find<BattleResultPopup>()?.Close();
             Find<Menu>()?.Close();
             Find<Menu>()?.ShowWorld();
 

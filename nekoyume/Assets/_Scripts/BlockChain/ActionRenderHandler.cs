@@ -778,9 +778,9 @@ namespace Nekoyume.BlockChain
                     }
                 }
                 else if (Widget.Find<StageLoadingScreen>().IsActive() &&
-                         Widget.Find<BattleResult>().IsActive())
+                         Widget.Find<BattleResultPopup>().IsActive())
                 {
-                    Widget.Find<BattleResult>().NextStage(log);
+                    Widget.Find<BattleResultPopup>().NextStage(log);
                 }
             }
             else
@@ -790,10 +790,10 @@ namespace Nekoyume.BlockChain
                 {
                     Widget.Find<StageLoadingScreen>().Close();
                 }
-                if (Widget.Find<BattleResult>().IsActive())
+                if (Widget.Find<BattleResultPopup>().IsActive())
                 {
                     showLoadingScreen = true;
-                    Widget.Find<BattleResult>().Close();
+                    Widget.Find<BattleResultPopup>().Close();
                 }
 
                 var exc = eval.Exception.InnerException;
@@ -856,9 +856,9 @@ namespace Nekoyume.BlockChain
                     }
                 }
                 else if (Widget.Find<StageLoadingScreen>().IsActive() &&
-                         Widget.Find<BattleResult>().IsActive())
+                         Widget.Find<BattleResultPopup>().IsActive())
                 {
-                    Widget.Find<BattleResult>().NextMimisbrunnrStage(log);
+                    Widget.Find<BattleResultPopup>().NextMimisbrunnrStage(log);
                 }
             }
             else
@@ -868,10 +868,10 @@ namespace Nekoyume.BlockChain
                 {
                     Widget.Find<StageLoadingScreen>().Close();
                 }
-                if (Widget.Find<BattleResult>().IsActive())
+                if (Widget.Find<BattleResultPopup>().IsActive())
                 {
                     showLoadingScreen = true;
-                    Widget.Find<BattleResult>().Close();
+                    Widget.Find<BattleResultPopup>().Close();
                 }
 
                 var exc = eval.Exception.InnerException;
@@ -920,10 +920,10 @@ namespace Nekoyume.BlockChain
                 {
                     Widget.Find<ArenaBattleLoadingScreen>().Close();
                 }
-                if (Widget.Find<RankingBattleResult>().IsActive())
+                if (Widget.Find<RankingBattleResultPopup>().IsActive())
                 {
                     showLoadingScreen = true;
-                    Widget.Find<RankingBattleResult>().Close();
+                    Widget.Find<RankingBattleResultPopup>().Close();
                 }
 
                 BackToMain(showLoadingScreen, eval.Exception.InnerException);
@@ -935,7 +935,7 @@ namespace Nekoyume.BlockChain
             var key = "UI_REDEEM_CODE_INVALID_CODE";
             if (eval.Exception is null)
             {
-                Widget.Find<CodeReward>().Show(eval.OutputStates.GetRedeemCodeState());
+                Widget.Find<CodeRewardPopup>().Show(eval.OutputStates.GetRedeemCodeState());
                 key = "UI_REDEEM_CODE_SUCCESS";
                 UpdateCurrentAvatarState(eval);
             }

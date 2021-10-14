@@ -104,8 +104,8 @@ namespace Nekoyume.UI.Module
             _toggleWidgets.Add(ToggleType.AvatarInfo, Find<AvatarInfoPopup>());
             _toggleWidgets.Add(ToggleType.CombinationSlots, Find<CombinationSlotsPopup>());
             _toggleWidgets.Add(ToggleType.Mail, Find<MailPopup>());
-            _toggleWidgets.Add(ToggleType.Rank, Find<Rank>());
-            _toggleWidgets.Add(ToggleType.Settings, Find<Settings>());
+            _toggleWidgets.Add(ToggleType.Rank, Find<RankPopup>());
+            _toggleWidgets.Add(ToggleType.Settings, Find<SettingPopup>());
             _toggleWidgets.Add(ToggleType.Chat, Find<ChatPopup>());
             _toggleWidgets.Add(ToggleType.Quit, Find<QuitPopup>());
 
