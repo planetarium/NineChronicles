@@ -72,7 +72,7 @@ namespace Nekoyume.UI
                 .SetEase(Ease.OutSine);
             yield return new WaitForSeconds(_animationTime - 0.5f);
 
-            Find<HeaderMenu>().PlayVFX(endPoint);
+            Find<HeaderMenuStatic>().PlayVFX(endPoint);
 
             yield return new WaitWhile(tweenMove.IsPlaying);
             itemImage.enabled = false;

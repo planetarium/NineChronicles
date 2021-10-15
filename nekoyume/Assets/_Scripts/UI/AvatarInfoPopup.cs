@@ -537,7 +537,7 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
             inventory.SharedModel.UpdateEquipmentNotification();
-            Find<HeaderMenu>().UpdateInventoryNotification(HasNotification);
+            Find<HeaderMenuStatic>().UpdateInventoryNotification(HasNotification);
         }
 
         private void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
@@ -691,7 +691,7 @@ namespace Nekoyume.UI
 
         public static bool DimmedFuncForChargeActionPoint(CountableItem item)
         {
-            if (Find<HeaderMenu>().ChargingAP)
+            if (Find<HeaderMenuStatic>().ChargingAP)
             {
                 return false;
             }

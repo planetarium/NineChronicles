@@ -685,17 +685,17 @@ namespace Nekoyume.Game
                 {
                     if (worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton)
                     {
-                        Widget.Find<HeaderMenu>().Close(true);
+                        Widget.Find<HeaderMenuStatic>().Close(true);
                         isTutorial = true;
                     }
                     else
                     {
-                        Widget.Find<HeaderMenu>().Show();
+                        Widget.Find<HeaderMenuStatic>().Show();
                     }
                 }
                 else
                 {
-                    Widget.Find<HeaderMenu>().Close(true);
+                    Widget.Find<HeaderMenuStatic>().Close(true);
                     isTutorial = true;
                 }
 
@@ -853,7 +853,7 @@ namespace Nekoyume.Game
             var prevEnemies = GetComponentsInChildren<Character.Enemy>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
 
-            var isHeaderMenuShown = Widget.Find<HeaderMenu>().IsActive();
+            var isHeaderMenuShown = Widget.Find<HeaderMenuStatic>().IsActive();
             if (isHeaderMenuShown && items.Count > 0)
             {
                 var player = GetPlayer();

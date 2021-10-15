@@ -58,7 +58,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Find<HeaderMenu>().Close();
+            Find<HeaderMenuStatic>().Close();
         }
 
         protected override void OnEnable()

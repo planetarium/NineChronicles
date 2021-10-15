@@ -489,7 +489,7 @@ namespace Nekoyume.UI
             ShowTooltip(view);
         }
 
-        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
+        private void SubscribeBackButtonClick(HeaderMenuStatic headerMenuStatic)
         {
             if (!CanClose)
             {
@@ -547,7 +547,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoQuestClick(bool repeat)
         {
-            var actionPointImage = Find<HeaderMenu>().ActionPointImage;
+            var actionPointImage = Find<HeaderMenuStatic>().ActionPointImage;
             var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,
@@ -704,7 +704,7 @@ namespace Nekoyume.UI
             var avatarInfo = Find<AvatarInfoPopup>();
             if (avatarInfo != null)
             {
-                Find<HeaderMenu>().UpdateInventoryNotification(avatarInfo.HasNotification);
+                Find<HeaderMenuStatic>().UpdateInventoryNotification(avatarInfo.HasNotification);
             }
         }
 

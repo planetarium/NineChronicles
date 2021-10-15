@@ -78,13 +78,13 @@ namespace Nekoyume.UI
 
             Game.Event.OnGetItem.AddListener(_ =>
             {
-                var headerMenu = Find<HeaderMenu>();
+                var headerMenu = Find<HeaderMenuStatic>();
                 if (!headerMenu)
                 {
-                    throw new WidgetNotFoundException<HeaderMenu>();
+                    throw new WidgetNotFoundException<HeaderMenuStatic>();
                 }
 
-                var target = headerMenu.GetToggle(HeaderMenu.ToggleType.AvatarInfo);
+                var target = headerMenu.GetToggle(HeaderMenuStatic.ToggleType.AvatarInfo);
                 VFXController.instance.CreateAndChase<DropItemInventoryVFX>(target, Vector3.zero);
             });
             CloseWidget = null;
@@ -94,7 +94,7 @@ namespace Nekoyume.UI
         {
             guidedQuest.Hide(ignoreCloseAnimation);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
-            Find<HeaderMenu>().Close();
+            Find<HeaderMenuStatic>().Close();
             base.Close(ignoreCloseAnimation);
         }
 
@@ -107,7 +107,7 @@ namespace Nekoyume.UI
 
         public void ShowInArena(bool ignoreShowAnimation = false)
         {
-            Find<HeaderMenu>().Close(true);
+            Find<HeaderMenuStatic>().Close(true);
             stageTitle.Close();
             comboText.Close();
             stageProgressBar.Close();
@@ -194,7 +194,7 @@ namespace Nekoyume.UI
             exitToggle.gameObject.SetActive(false);
             comboText.comboMax = 5;
             gameObject.SetActive(true);
-            Find<HeaderMenu>().Close(true);
+            Find<HeaderMenuStatic>().Close(true);
         }
         #endregion
     }

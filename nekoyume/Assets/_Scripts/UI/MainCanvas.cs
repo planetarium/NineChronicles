@@ -46,28 +46,33 @@ namespace Nekoyume.UI
         private CanvasLayer hudLayer = default;
 
         [SerializeField]
-        private CanvasLayer popupLayer = default;
-
-        [SerializeField]
-        private CanvasLayer screenLayer = default;
-
-        [SerializeField]
-        private CanvasLayer tooltipLayer = default;
-
-        [SerializeField]
         private CanvasLayer widgetLayer = default;
+
+        [SerializeField]
+        private CanvasLayer staticLayer = default;
+
+        [SerializeField]
+        private CanvasLayer popupLayer = default;
 
         [SerializeField]
         private CanvasLayer animationLayer = default;
 
         [SerializeField]
-        private CanvasLayer systemInfoLayer = default;
+        private CanvasLayer tooltipLayer = default;
+
+        [SerializeField]
+        private CanvasLayer tutorialMaskLayer = default;
+
+        [SerializeField]
+        private CanvasLayer screenLayer = default;
+
+        [SerializeField]
+        private CanvasLayer systemLayer = default;
 
         [SerializeField]
         private CanvasLayer developmentLayer = default;
 
-        [SerializeField]
-        private CanvasLayer tutorialMaskLayer = default;
+
 
         private List<CanvasLayer> _layers;
         public RectTransform RectTransform { get; private set; }
@@ -84,24 +89,29 @@ namespace Nekoyume.UI
         {
             switch (widgetType)
             {
+                // UI
                 case WidgetType.Hud:
                     return hudLayer;
-                case WidgetType.Popup:
-                    return popupLayer;
-                case WidgetType.Screen:
-                    return screenLayer;
-                case WidgetType.Tooltip:
-                    return tooltipLayer;
                 case WidgetType.Widget:
                     return widgetLayer;
+                case WidgetType.Static:
+                    return staticLayer;
+                case WidgetType.Popup:
+                    return popupLayer;
                 case WidgetType.Animation:
                     return animationLayer;
-                case WidgetType.System:
-                    return systemInfoLayer;
-                case WidgetType.Development:
-                    return developmentLayer;
+                case WidgetType.Tooltip:
+                    return tooltipLayer;
                 case WidgetType.TutorialMask:
                     return tutorialMaskLayer;
+                case WidgetType.Screen:
+                    return screenLayer;
+            // SystemUI
+                case WidgetType.System:
+                    return systemLayer;
+                case WidgetType.Development:
+                    return developmentLayer;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }
@@ -132,7 +142,7 @@ namespace Nekoyume.UI
                     tooltipLayer,
                     widgetLayer,
                     animationLayer,
-                    systemInfoLayer,
+                    systemLayer,
                     developmentLayer,
                     tutorialMaskLayer,
                 };
@@ -246,7 +256,7 @@ namespace Nekoyume.UI
             yield return null;
 
             // header menu
-            secondWidgets.Add(Widget.Create<HeaderMenu>());
+            secondWidgets.Add(Widget.Create<HeaderMenuStatic>());
             yield return null;
 
             // Popup included in header menu

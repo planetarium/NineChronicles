@@ -159,7 +159,7 @@ namespace Nekoyume.UI
             yield return new WaitForSeconds(speechBubble.bubbleTweenTime);
 
             var item = speechBubble.item;
-            var target = Find<HeaderMenu>().GetToggle(HeaderMenu.ToggleType.CombinationSlots);
+            var target = Find<HeaderMenuStatic>().GetToggle(HeaderMenuStatic.ToggleType.CombinationSlots);
             var targetPosition = target ? target.position : Vector3.zero;
 
             ItemMoveAnimation.Show(

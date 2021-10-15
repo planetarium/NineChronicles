@@ -61,7 +61,7 @@ namespace Nekoyume.UI.Module
             if (sortingGroup)
             {
                 var widget = GetComponentInParent<Widget>();
-                if (widget is HeaderMenu)
+                if (widget is HeaderMenuStatic)
                 {
                     _originalSortingOrderOffset = 0;
                     sortingGroup.sortingOrder =

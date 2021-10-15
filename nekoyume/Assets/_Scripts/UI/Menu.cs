@@ -231,7 +231,7 @@ namespace Nekoyume.UI
             _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
-            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             AudioController.PlayClick();
         }
 
@@ -252,7 +252,7 @@ namespace Nekoyume.UI
 
             Close();
             Find<ShopBuy>().Show();
-            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Shop);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
             AudioController.PlayClick();
         }
 
@@ -280,7 +280,7 @@ namespace Nekoyume.UI
             }
 
             Close();
-            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             showAction();
 
             AudioController.PlayClick();
@@ -360,7 +360,7 @@ namespace Nekoyume.UI
             var status = Find<Status>();
             status.Close(true);
             Find<EventBanner>().Close(true);
-            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             HelpTooltip.HelpMe(100019, true);
         }
 

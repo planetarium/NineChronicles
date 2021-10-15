@@ -48,7 +48,7 @@ namespace Nekoyume.Game
             ActionCamera.instance.ChaseX(_player.transform);
             _battle = Widget.Find<UI.Battle>();
             _battle.ShowForTutorial(true);
-            Widget.Find<HeaderMenu>().Close(true);
+            Widget.Find<HeaderMenuStatic>().Close(true);
             yield return new WaitForSeconds(2f);
             var go2 = EnemyFactory.Create(205007, _player.transform.position, 7f, _player);
             _fenrir = go2.GetComponent<PrologueCharacter>();

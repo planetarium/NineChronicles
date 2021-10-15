@@ -85,7 +85,7 @@ namespace Nekoyume.UI
             }
 
             base.Show();
-            Find<HeaderMenu>().Close();
+            Find<HeaderMenuStatic>().Close();
             StartCoroutine(ShowSequence(worldName, stageId, isNext, clearedStageId));
             StartCoroutine(CoRun());
         }

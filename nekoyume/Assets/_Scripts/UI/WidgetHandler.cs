@@ -8,7 +8,7 @@ namespace Nekoyume.UI
         private static WidgetHandler _instance;
         public static WidgetHandler Instance => _instance ?? (_instance = new WidgetHandler());
         private MessageCatTooltip _messageCatTooltip;
-        private HeaderMenu _headerMenu;
+        private HeaderMenuStatic _headerMenuStatic;
         private Battle _battle;
         private Menu _menu;
 

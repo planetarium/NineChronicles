@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Entrance
                 Widget.Find<LoadingScreen>().Show();
             }
 
-            Widget.Find<HeaderMenu>().Close(true);
+            Widget.Find<HeaderMenuStatic>().Close(true);
 
             stage.ClearBattle();
             stage.stageId = 0;
@@ -89,7 +89,7 @@ namespace Nekoyume.Game.Entrance
 
             Widget.Find<Status>().Show();
             Widget.Find<EventBanner>().Show();
-            var headerMenu = Widget.Find<HeaderMenu>();
+            var headerMenu = Widget.Find<HeaderMenuStatic>();
             if (!headerMenu.isActiveAndEnabled)
             {
                 headerMenu.Show();

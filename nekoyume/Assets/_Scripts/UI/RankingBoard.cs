@@ -205,7 +205,7 @@ namespace Nekoyume.UI
             HelpTooltip.HelpMe(100015, true);
             ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
 
-            Find<HeaderMenu>().Show(HeaderMenu.AssetVisibleState.Battle);
+            Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Battle);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -418,7 +418,7 @@ namespace Nekoyume.UI
             Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
         }
 
-        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
+        private void SubscribeBackButtonClick(HeaderMenuStatic headerMenuStatic)
         {
             var avatarInfo = Find<AvatarInfoPopup>();
             var friendInfoPopup = Find<FriendInfoPopup>();

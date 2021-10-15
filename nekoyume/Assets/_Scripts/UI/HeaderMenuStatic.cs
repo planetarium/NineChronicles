@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Module
 {
     using UniRx;
 
-    public class HeaderMenu : Widget
+    public class HeaderMenuStatic : StaticWidget
     {
         public enum ToggleType
         {
