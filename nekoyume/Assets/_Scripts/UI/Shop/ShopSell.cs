@@ -56,7 +56,7 @@ namespace Nekoyume.UI
             buyButton.onClick.AddListener(() =>
             {
                 speechBubble.gameObject.SetActive(false);
-                Find<TwoButtonPopup>().Close();
+                Find<TwoButtonSystem>().Close();
                 Find<ItemCountableAndPricePopup>().Close();
                 Find<ShopBuy>().gameObject.SetActive(true);
                 Find<ShopBuy>().Open();
@@ -137,7 +137,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             shopItems.Close();
-            Find<TwoButtonPopup>().Close();
+            Find<TwoButtonSystem>().Close();
             Find<ItemCountableAndPricePopup>().Close();
             speechBubble.gameObject.SetActive(false);
             Find<ShopBuy>().ForceClose();
@@ -310,7 +310,7 @@ namespace Nekoyume.UI
 
             if (data.TotalPrice.Value.MinorUnit > 0)
             {
-                OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARINING"));
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARINING"));
                 return;
             }
 
@@ -337,7 +337,7 @@ namespace Nekoyume.UI
 
             if (data.TotalPrice.Value.MinorUnit > 0)
             {
-                OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARINING"));
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARINING"));
                 return;
             }
 
@@ -413,7 +413,7 @@ namespace Nekoyume.UI
                         break;
                 }
 
-                OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"));
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"));
             }
 
             var currency = model.TotalPrice.Value.Currency;
@@ -429,11 +429,11 @@ namespace Nekoyume.UI
         {
             if (data is null)
             {
-                Find<TwoButtonPopup>().Close();
+                Find<TwoButtonSystem>().Close();
                 return;
             }
 
-            Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCELLATION"),
+            Find<TwoButtonSystem>().Show(L10nManager.Localize("UI_SELL_CANCELLATION"),
                                         L10nManager.Localize("UI_YES"),
                                         L10nManager.Localize("UI_NO"),
                                         SubscribeSellCancellationPopupSubmit,
@@ -470,7 +470,7 @@ namespace Nekoyume.UI
         private void SubscribeSellCancellationPopupCancel()
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            Find<TwoButtonPopup>().Close();
+            Find<TwoButtonSystem>().Close();
         }
 
         private static bool DimmedFuncForSell(ItemBase itemBase)
@@ -526,7 +526,7 @@ namespace Nekoyume.UI
                 message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_START"),
                     item.ItemBase.Value.GetLocalizedName());
             }
-            OneLinePopup.Push(MailType.Auction, message);
+            OneLineSystem.Push(MailType.Auction, message);
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
             Refresh();
         }
@@ -538,7 +538,7 @@ namespace Nekoyume.UI
             ReactiveShopState.RemoveSellDigest(orderId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
-            OneLinePopup.Push(MailType.Auction, string.Format(format, itemName));
+            OneLineSystem.Push(MailType.Auction, string.Format(format, itemName));
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
             Refresh();
         }

@@ -50,7 +50,7 @@ namespace Nekoyume.UI
                  avatarState.questList == null ||
                  avatarState.worldInformation == null))
             {
-                Notification.Push(MailType.System, L10nManager.Localize("NOTIFICATION_CHARACTER_IS_BEING_RESTORED"));
+                NotificationSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_CHARACTER_IS_BEING_RESTORED"));
                 return;
             }
 

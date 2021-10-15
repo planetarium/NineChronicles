@@ -62,7 +62,7 @@ namespace Nekoyume.UI
 
             addressCopyButton.OnClickAsObservable().ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
-                    OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_COPIED")))
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_COPIED")))
                 .AddTo(addressCopyButton);
 
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard())
@@ -70,7 +70,7 @@ namespace Nekoyume.UI
 
             privateKeyCopyButton.OnClickAsObservable().ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
-                    OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_COPIED")))
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_COPIED")))
                 .AddTo(privateKeyCopyButton);
 
             redeemCode.OnRequested.AddListener(() =>

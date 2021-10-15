@@ -327,7 +327,7 @@ namespace Nekoyume.UI
             var msg = string.IsNullOrEmpty(questContent)
                 ? string.Empty
                 : string.Format(format, questContent);
-            Notification.Push(MailType.System, msg);
+            NotificationSystem.Push(MailType.System, msg);
         }
 
         private static void UpdateLocalState(int questId, Dictionary<int, int> rewards)

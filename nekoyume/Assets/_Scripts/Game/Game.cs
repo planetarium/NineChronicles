@@ -296,9 +296,9 @@ namespace Nekoyume.Game
                     needToBackToMain = true;
                 }
             }
-            else if (Widget.Find<StageLoadingScreen>().IsActive())
+            else if (Widget.Find<StageLoadingEffect>().IsActive())
             {
-                Widget.Find<StageLoadingScreen>().Close();
+                Widget.Find<StageLoadingEffect>().Close();
 
                 if (Widget.Find<BattleResultPopup>().IsActive())
                 {
@@ -364,9 +364,9 @@ namespace Nekoyume.Game
                     needToBackToMain = true;
                 }
             }
-            else if (Widget.Find<StageLoadingScreen>().IsActive())
+            else if (Widget.Find<StageLoadingEffect>().IsActive())
             {
-                Widget.Find<StageLoadingScreen>().Close();
+                Widget.Find<StageLoadingEffect>().Close();
 
                 if (Widget.Find<BattleResultPopup>().IsActive())
                 {
@@ -411,7 +411,7 @@ namespace Nekoyume.Game
                 var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
                     L10nManager.Localize("BLOCK_DOWNLOAD_FAIL"));
 
-                Widget.Find<SystemPopup>().ShowAndQuit(
+                Widget.Find<TitleOneButtonSystem>().ShowAndQuit(
                     L10nManager.Localize("UI_ERROR"),
                     errorMsg,
                     L10nManager.Localize("UI_QUIT"),
@@ -435,7 +435,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            Widget.Find<SystemPopup>().ShowAndQuit(
+            Widget.Find<TitleOneButtonSystem>().ShowAndQuit(
                 "UI_ERROR",
                 "UI_ERROR_RPC_CONNECTION",
                 "UI_QUIT"
@@ -526,7 +526,7 @@ namespace Nekoyume.Game
 
         public static void Quit()
         {
-            var popup = Widget.Find<QuitPopup>();
+            var popup = Widget.Find<QuitSystem>();
             if (popup.gameObject.activeSelf)
             {
                 popup.Close();
@@ -547,7 +547,7 @@ namespace Nekoyume.Game
         {
             if (_options.Maintenance)
             {
-                var w = Widget.Create<SystemPopup>();
+                var w = Widget.Create<TitleOneButtonSystem>();
                 w.CloseCallback = () =>
                 {
                     Application.OpenURL(GameConfig.DiscordLink);
@@ -590,7 +590,7 @@ namespace Nekoyume.Game
             settings.UpdateSoundSettings();
             settings.UpdatePrivateKey(_options.PrivateKey);
 
-            var loginPopup = Widget.Find<LoginPopup>();
+            var loginPopup = Widget.Find<LoginSystem>();
 
             if (Application.isBatchMode)
             {

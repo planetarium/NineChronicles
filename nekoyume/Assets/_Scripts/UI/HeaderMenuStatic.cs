@@ -50,8 +50,6 @@ namespace Nekoyume.UI.Module
             public TextMeshProUGUI LockText;
         }
 
-        public override WidgetType WidgetType => WidgetType.Popup;
-
         [SerializeField] private List<ToggleInfo> toggles = new List<ToggleInfo>();
         [SerializeField] private GameObject ncg;
         [SerializeField] private ActionPoint actionPoint;
@@ -107,7 +105,7 @@ namespace Nekoyume.UI.Module
             _toggleWidgets.Add(ToggleType.Rank, Find<RankPopup>());
             _toggleWidgets.Add(ToggleType.Settings, Find<SettingPopup>());
             _toggleWidgets.Add(ToggleType.Chat, Find<ChatPopup>());
-            _toggleWidgets.Add(ToggleType.Quit, Find<QuitPopup>());
+            _toggleWidgets.Add(ToggleType.Quit, Find<QuitSystem>());
 
             foreach (var toggleInfo in toggles)
             {
@@ -127,7 +125,7 @@ namespace Nekoyume.UI.Module
                         {
                             var msg = string.Format(L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
                                 requiredStage);
-                            OneLinePopup.Push(MailType.System, msg);
+                            OneLineSystem.Push(MailType.System, msg);
                             toggleInfo.Toggle.isOn = false;
                             return;
                         }

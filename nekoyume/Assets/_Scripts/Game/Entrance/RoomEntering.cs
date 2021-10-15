@@ -55,7 +55,7 @@ namespace Nekoyume.Game.Entrance
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
 
-            var stageLoadingScreen = Widget.Find<StageLoadingScreen>();
+            var stageLoadingScreen = Widget.Find<StageLoadingEffect>();
             if (stageLoadingScreen.IsActive())
             {
                 stageLoadingScreen.Close();

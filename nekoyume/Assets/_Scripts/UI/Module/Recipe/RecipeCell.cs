@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Module
                         {
                             var format = L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE");
                             var message = string.Format(format, equipmentRow.UnlockStage);
-                            OneLinePopup.Push(MailType.System, message);
+                            OneLineSystem.Push(MailType.System, message);
                         }
                     }
                 });

@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class StageLoadingScreen : Widget
+    public class StageLoadingEffect : Widget
     {
         public override WidgetType WidgetType => WidgetType.Widget;
 

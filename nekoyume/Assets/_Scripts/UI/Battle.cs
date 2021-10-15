@@ -71,7 +71,7 @@ namespace Nekoyume.UI
                 stage.IsExitReserved = value;
                 if (value)
                 {
-                    OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_BATTLE_EXIT_RESERVATION_TITLE"));
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_BATTLE_EXIT_RESERVATION_TITLE"));
                     stage.IsRepeatStage = false;
                 }
             });

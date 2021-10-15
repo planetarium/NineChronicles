@@ -174,18 +174,17 @@ namespace Nekoyume.UI
                 Widget.Create<SettingPopup>(),
 
                 // 팝업 영역: 알림.
-                Widget.Create<BlockFailPopup>(),
-                Widget.Create<ActionFailPopup>(),
-                Widget.Create<LoginPopup>(),
-                Widget.Create<SystemPopup>(),
+                Widget.Create<BlockFailTitleOneButtonSystem>(),
+                Widget.Create<LoginSystem>(),
+                Widget.Create<TitleOneButtonSystem>(),
 
                 // 시스템 정보 영역.
-                Widget.Create<BlockChainMessageBoard>(true),
-                Widget.Create<Notification>(true),
-                Widget.Create<OneLinePopup>(true),
+                Widget.Create<BlockChainMessageSystem>(true),
+                Widget.Create<NotificationSystem>(true),
+                Widget.Create<OneLineSystem>(true),
                 Widget.Create<VersionSystem>(true),
-                Widget.Create<OneButtonPopup>(),
-                Widget.Create<TwoButtonPopup>(),
+                Widget.Create<OneButtonSystem>(),
+                Widget.Create<TwoButtonSystem>(),
             };
 
             foreach (var value in firstWidgets)
@@ -241,7 +240,7 @@ namespace Nekoyume.UI
             yield return null;
 
             // loading
-            secondWidgets.Add(Widget.Create<StageLoadingScreen>());
+            secondWidgets.Add(Widget.Create<StageLoadingEffect>());
             yield return null;
 
             // module
@@ -271,7 +270,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ChatPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<QuitPopup>());
+            secondWidgets.Add(Widget.Create<QuitSystem>());
             yield return null;
 
             // Over than HeaderMenu

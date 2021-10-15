@@ -720,7 +720,7 @@ namespace Nekoyume.UI
         {
             if (item.ItemBase.Value is Nekoyume.Model.Item.Material material)
             {
-                Notification.Push(Nekoyume.Model.Mail.MailType.System,
+                NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
                     L10nManager.Localize("UI_CHARGE_AP"));
                 Game.Game.instance.ActionManager.ChargeActionPoint();
 

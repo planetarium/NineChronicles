@@ -134,7 +134,7 @@ namespace Nekoyume.UI
 
             notificationButton.OnClickAsObservable().Subscribe(_ =>
             {
-                OneLinePopup.Push(MailType.System,
+                OneLineSystem.Push(MailType.System,
                     L10nManager.Localize("NOTIFICATION_QUANTITY_CANNOT_CHANGED"));
             }).AddTo(_disposablesForAwake);
 

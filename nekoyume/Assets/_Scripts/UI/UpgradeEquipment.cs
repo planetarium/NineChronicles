@@ -284,14 +284,14 @@ namespace Nekoyume.UI
         {
             if (!IsInteractableButton(_baseItem, _materialItem))
             {
-                Notification.Push(MailType.System, errorMessage);
+                NotificationSystem.Push(MailType.System, errorMessage);
                 return;
             }
 
             if (States.Instance.GoldBalanceState.Gold.MajorUnit < _costNcg)
             {
                 errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
-                Notification.Push(MailType.System, errorMessage);
+                NotificationSystem.Push(MailType.System, errorMessage);
                 return;
             }
 
@@ -322,7 +322,7 @@ namespace Nekoyume.UI
             LocalLayerModifier.RemoveItem(avatarAddress, _materialItem.TradableId,
                 _materialItem.RequiredBlockIndex, 1);
 
-            Notification.Push(MailType.Workshop,
+            NotificationSystem.Push(MailType.Workshop,
                 L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"));
 
             Game.Game.instance.ActionManager

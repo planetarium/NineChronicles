@@ -436,7 +436,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ =>
                 {
                     Widget
-                        .Find<SystemPopup>()
+                        .Find<TitleOneButtonSystem>()
                         .ShowAndQuit(L10nManager.Localize("UI_ERROR"), errorMsg,
                             L10nManager.Localize("UI_OK"), false);
                 });

@@ -310,7 +310,7 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var order = Util.GetOrder(orderExpirationMail.OrderId);
 
-            Find<OneButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
+            Find<OneButtonSystem>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
@@ -324,7 +324,7 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var order = Util.GetOrder(cancelOrderMail.OrderId);
 
-            Find<OneButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
+            Find<OneButtonSystem>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {

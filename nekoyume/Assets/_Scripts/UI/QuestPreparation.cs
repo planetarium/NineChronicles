@@ -194,7 +194,7 @@ namespace Nekoyume.UI
             questButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
-                    OneLinePopup.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
@@ -225,14 +225,14 @@ namespace Nekoyume.UI
             boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
-                    OneLinePopup.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
                 .Where(_ =>
                     !Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value))
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ => OneLinePopup.Push(MailType.System, "UI_BOOSTER_CONDITIONS_GUIDE"))
+                .Subscribe(_ => OneLineSystem.Push(MailType.System, "UI_BOOSTER_CONDITIONS_GUIDE"))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());

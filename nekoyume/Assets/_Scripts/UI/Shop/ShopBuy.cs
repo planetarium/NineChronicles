@@ -192,7 +192,7 @@ namespace Nekoyume.UI
 
             var price = shopItem.Price.Value.GetQuantityString();
             var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"), 1, price);
-            Find<TwoButtonPopup>().Show(content, L10nManager.Localize("UI_BUY"),
+            Find<TwoButtonSystem>().Show(content, L10nManager.Localize("UI_BUY"),
                 L10nManager.Localize("UI_CANCEL"), (() => { Buy(shopItem); }));
         }
 
@@ -228,7 +228,7 @@ namespace Nekoyume.UI
             ReactiveShopState.RemoveBuyDigest(shopItem.OrderId.Value);
 
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
-            OneLinePopup.Push(MailType.Auction,
+            OneLineSystem.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
@@ -283,7 +283,7 @@ namespace Nekoyume.UI
         {
             if (shopItems.SharedModel.isMultiplePurchase && shopItems.SharedModel.WishItemCount > 0)
             {
-                Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
+                Widget.Find<TwoButtonSystem>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
                     L10nManager.Localize("UI_YES"), L10nManager.Localize("UI_NO"), callback);
             }
             else

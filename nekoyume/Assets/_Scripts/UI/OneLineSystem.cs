@@ -6,14 +6,13 @@ using System.Linq;
 using EasingCore;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class OneLinePopup : SystemWidget
+    public class OneLineSystem : SystemWidget
     {
         private enum State
         {

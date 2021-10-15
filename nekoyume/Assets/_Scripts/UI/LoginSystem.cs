@@ -16,7 +16,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class LoginPopup : SystemWidget
+    public class LoginSystem : SystemWidget
     {
         public enum States
         {

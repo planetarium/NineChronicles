@@ -6,7 +6,7 @@ using UniRx;
 
 namespace Nekoyume.UI
 {
-    public class SystemPopup : Alert
+    public class TitleOneButtonSystem : Alert
     {
         public override WidgetType WidgetType => WidgetType.System;
 

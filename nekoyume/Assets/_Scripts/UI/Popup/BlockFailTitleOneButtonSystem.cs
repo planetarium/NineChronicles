@@ -1,10 +1,10 @@
-using Nekoyume.Action;
-using Nekoyume.EnumType;
+using System.Collections;
 using Nekoyume.L10n;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class ActionFailPopup : SystemPopup
+    public class BlockFailTitleOneButtonSystem : TitleOneButtonSystem
     {
         protected override void Awake()
         {
@@ -13,24 +13,26 @@ namespace Nekoyume.UI
             SubmitWidget = () => Close();
         }
 
-        public void Show(string msg)
+        public void Show(long idx)
         {
             var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
-                L10nManager.Localize("ACTION_HANDLE"));
+                L10nManager.Localize("BLOCK_DOWNLOAD"));
 
             base.Show(L10nManager.Localize("UI_ERROR"), errorMsg,
                 L10nManager.Localize("UI_OK"), false);
-            content.text += $"\n{msg}";
+            StartCoroutine(CoCheckBlockIndex(idx));
 #if UNITY_EDITOR
             CloseCallback = UnityEditor.EditorApplication.ExitPlaymode;
 #else
-            CloseCallback = UnityEngine.Application.Quit;
+            CloseCallback = () => Application.Quit(21);
 #endif
         }
 
-        public void Show<T>(string msg) where T : ActionBase
+        private IEnumerator CoCheckBlockIndex(long blockIndex)
         {
-            Show($"[{typeof(T).Name}] {msg}");
+            yield return new WaitWhile(() => Game.Game.instance.Agent.BlockIndex == blockIndex);
+            CloseCallback = null;
+            Close();
         }
     }
 }

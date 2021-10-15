@@ -326,8 +326,8 @@ namespace Nekoyume.BlockChain
                 }
 
                 var format = L10nManager.Localize(formatKey);
-                UI.Notification.CancelReserve(result.itemUsable.TradableId);
-                UI.Notification.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
+                UI.NotificationSystem.CancelReserve(result.itemUsable.TradableId);
+                UI.NotificationSystem.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
 
                 States.Instance.UpdateCombinationSlotState(slotIndex, slotState);
                 UpdateAgentState(eval);
@@ -420,7 +420,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 var format = L10nManager.Localize(formatKey);
-                UI.Notification.Reserve(
+                UI.NotificationSystem.Reserve(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
@@ -462,7 +462,7 @@ namespace Nekoyume.BlockChain
 
                 // Notify
                 var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-                UI.Notification.Reserve(
+                UI.NotificationSystem.Reserve(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
@@ -526,7 +526,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 var format = L10nManager.Localize(formatKey);
-                UI.Notification.Reserve(
+                UI.NotificationSystem.Reserve(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
@@ -562,7 +562,7 @@ namespace Nekoyume.BlockChain
                         item.GetLocalizedName());
                 }
 
-                OneLinePopup.Push(MailType.Auction, message);
+                OneLineSystem.Push(MailType.Auction, message);
 
                 UpdateCurrentAvatarState(eval);
                 var shopSell = Widget.Find<ShopSell>();
@@ -587,7 +587,7 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
             LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            OneLinePopup.Push(MailType.Auction, string.Format(format, itemName));
+            OneLineSystem.Push(MailType.Auction, string.Format(format, itemName));
             UpdateCurrentAvatarState(eval);
             var shopSell = Widget.Find<ShopSell>();
             if (shopSell.isActiveAndEnabled)
@@ -605,7 +605,7 @@ namespace Nekoyume.BlockChain
 
             var itemName = Util.GetItemNameByOrdierId(eval.Action.orderId);
             var format = L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE");
-            OneLinePopup.Push(MailType.Auction, string.Format(format, itemName));
+            OneLineSystem.Push(MailType.Auction, string.Format(format, itemName));
             UpdateCurrentAvatarState(eval);
             var shopSell = Widget.Find<ShopSell>();
             if (shopSell.isActiveAndEnabled)
@@ -651,7 +651,7 @@ namespace Nekoyume.BlockChain
                             itemName,
                             L10nManager.Localize(errorType),
                             price);
-                        OneLinePopup.Push(MailType.Auction, msg);
+                        OneLineSystem.Push(MailType.Auction, msg);
                     }
                     else
                     {
@@ -661,7 +661,7 @@ namespace Nekoyume.BlockChain
                         LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
 
                         var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                        OneLinePopup.Push(MailType.Auction, string.Format(format, itemName, price));
+                        OneLineSystem.Push(MailType.Auction, string.Format(format, itemName, price));
                     }
                 }
             }
@@ -693,7 +693,7 @@ namespace Nekoyume.BlockChain
                         L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
                         buyerNameWithHash,
                         itemName);
-                    OneLinePopup.Push(MailType.Auction, message);
+                    OneLineSystem.Push(MailType.Auction, message);
                 }
             }
 
@@ -715,7 +715,7 @@ namespace Nekoyume.BlockChain
                 LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                     eval.Action.avatarAddress);
                 UpdateCurrentAvatarState(eval);
-                UI.Notification.Push(MailType.System, L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"));
+                UI.NotificationSystem.Push(MailType.System, L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"));
             }
         }
 
@@ -777,7 +777,7 @@ namespace Nekoyume.BlockChain
                         Widget.Find<Menu>().GoToStage(log);
                     }
                 }
-                else if (Widget.Find<StageLoadingScreen>().IsActive() &&
+                else if (Widget.Find<StageLoadingEffect>().IsActive() &&
                          Widget.Find<BattleResultPopup>().IsActive())
                 {
                     Widget.Find<BattleResultPopup>().NextStage(log);
@@ -786,9 +786,9 @@ namespace Nekoyume.BlockChain
             else
             {
                 var showLoadingScreen = false;
-                if (Widget.Find<StageLoadingScreen>().IsActive())
+                if (Widget.Find<StageLoadingEffect>().IsActive())
                 {
-                    Widget.Find<StageLoadingScreen>().Close();
+                    Widget.Find<StageLoadingEffect>().Close();
                 }
                 if (Widget.Find<BattleResultPopup>().IsActive())
                 {
@@ -855,7 +855,7 @@ namespace Nekoyume.BlockChain
                         Widget.Find<Menu>().GoToStage(log);
                     }
                 }
-                else if (Widget.Find<StageLoadingScreen>().IsActive() &&
+                else if (Widget.Find<StageLoadingEffect>().IsActive() &&
                          Widget.Find<BattleResultPopup>().IsActive())
                 {
                     Widget.Find<BattleResultPopup>().NextMimisbrunnrStage(log);
@@ -864,9 +864,9 @@ namespace Nekoyume.BlockChain
             else
             {
                 var showLoadingScreen = false;
-                if (Widget.Find<StageLoadingScreen>().IsActive())
+                if (Widget.Find<StageLoadingEffect>().IsActive())
                 {
-                    Widget.Find<StageLoadingScreen>().Close();
+                    Widget.Find<StageLoadingEffect>().Close();
                 }
                 if (Widget.Find<BattleResultPopup>().IsActive())
                 {
@@ -948,7 +948,7 @@ namespace Nekoyume.BlockChain
             }
 
             var msg = L10nManager.Localize(key);
-            UI.Notification.Push(MailType.System, msg);
+            UI.NotificationSystem.Push(MailType.System, msg);
         }
 
         private void ResponseChargeActionPoint(ActionBase.ActionEvaluation<ChargeActionPoint> eval)
@@ -1024,7 +1024,7 @@ namespace Nekoyume.BlockChain
             // ~LocalLayer
 
             // Notification
-            UI.Notification.Push(
+            UI.NotificationSystem.Push(
                 MailType.System,
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"));
 
@@ -1051,7 +1051,7 @@ namespace Nekoyume.BlockChain
                 var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_SENDER");
                 var message = string.Format(messageFormat, amount, recipientAddress);
 
-                OneLinePopup.Push(MailType.System, message);
+                OneLineSystem.Push(MailType.System, message);
             }
             else if (recipientAddress == currentAgentAddress)
             {
@@ -1068,7 +1068,7 @@ namespace Nekoyume.BlockChain
                     message = string.Format(messageFormat, amount, senderAddress);
                 }
 
-                OneLinePopup.Push(MailType.System, message);
+                OneLineSystem.Push(MailType.System, message);
             }
             UpdateAgentState(eval);
         }
@@ -1131,7 +1131,7 @@ namespace Nekoyume.BlockChain
                     code)
                 : errorMsg;
             Widget
-                .Find<SystemPopup>()
+                .Find<TitleOneButtonSystem>()
                 .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
                     L10nManager.Localize("UI_OK"), false);
         }

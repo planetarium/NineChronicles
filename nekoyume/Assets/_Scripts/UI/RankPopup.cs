@@ -360,7 +360,7 @@ namespace Nekoyume.UI
 
         private void AlertNotImplemented()
         {
-            Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+            Find<TitleOneButtonSystem>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
     }
 }

@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Nekoyume.BlockChain;
-using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ namespace Nekoyume.UI
     /// <summary>
     /// `Agent`를 초기화하기 전에 생성된다고 전제함.
     /// </summary>
-    public class BlockChainMessageBoard : SystemWidget
+    public class BlockChainMessageSystem : SystemWidget
     {
         private enum PanelAnimationState
         {

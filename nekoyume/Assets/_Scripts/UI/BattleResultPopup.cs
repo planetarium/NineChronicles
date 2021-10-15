@@ -514,7 +514,7 @@ namespace Nekoyume.UI
             var stage = Game.Game.instance.Stage;
             stage.IsRepeatStage = false;
             stage.IsExitReserved = false;
-            var stageLoadingScreen = Find<StageLoadingScreen>();
+            var stageLoadingScreen = Find<StageLoadingEffect>();
             stageLoadingScreen.Show(stage.zone, SharedModel.WorldName,
                 SharedModel.StageID + 1, true, SharedModel.StageID);
             Find<Status>().Close();
@@ -573,7 +573,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
-            var stageLoadingScreen = Find<StageLoadingScreen>();
+            var stageLoadingScreen = Find<StageLoadingEffect>();
             stageLoadingScreen.Show(stage.zone, SharedModel.WorldName,
                 SharedModel.StageID, false, SharedModel.StageID);
             Find<Status>().Close();
@@ -631,7 +631,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
+            yield return StartCoroutine(Find<StageLoadingEffect>().CoClose());
             yield return StartCoroutine(CoFadeOut());
             Game.Event.OnStageStart.Invoke(log);
             Close();
@@ -648,7 +648,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
+            yield return StartCoroutine(Find<StageLoadingEffect>().CoClose());
             yield return StartCoroutine(CoFadeOut());
             Game.Event.OnStageStart.Invoke(log);
             Close();

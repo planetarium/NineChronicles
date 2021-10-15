@@ -1,5 +1,4 @@
 using System.Linq;
-using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -8,7 +7,7 @@ using UniRx;
 
 namespace Nekoyume.UI
 {
-    public class QuitPopup : PopupWidget
+    public class QuitSystem : SystemWidget
     {
         [SerializeField]
         private Blur blur = null;
@@ -21,8 +20,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private EventSubject closeEventSubject = null;
-
-        public override WidgetType WidgetType => WidgetType.System;
 
         protected override void Awake()
         {
@@ -59,13 +56,14 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             blur.Show(blurRadius);
+            AudioController.PlayPopup();
         }
 
         private void SelectCharacter()
         {
             if (Game.Game.instance.Stage.IsInStage)
             {
-                Notification.Push(Nekoyume.Model.Mail.MailType.System,
+                NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
                     L10nManager.Localize("UI_BLOCK_EXIT"));
                 return;
             }
@@ -73,7 +71,7 @@ namespace Nekoyume.UI
             Game.Event.OnNestEnter.Invoke();
 
             var deletableWidgets = FindWidgets().Where(widget =>
-                !(widget is SystemWidget) && !(widget is QuitPopup) &&
+                !(widget is SystemWidget) && !(widget is QuitSystem) &&
                 !(widget is MessageCatTooltip) && widget.IsActive());
             foreach (var widget in deletableWidgets)
             {

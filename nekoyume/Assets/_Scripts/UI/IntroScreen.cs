@@ -27,7 +27,7 @@ namespace Nekoyume.UI
 
         private void StartLoading()
         {
-            var w = Find<LoginPopup>();
+            var w = Find<LoginSystem>();
             w.Show(_keyStorePath, _privateKey);
         }
     }

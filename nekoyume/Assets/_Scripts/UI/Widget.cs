@@ -144,9 +144,10 @@ namespace Nekoyume.UI
             switch (widget.WidgetType)
             {
                 case WidgetType.Popup:
-                case WidgetType.Screen:
-                case WidgetType.Tooltip:
+                case WidgetType.Static:
                 case WidgetType.Widget:
+                case WidgetType.Tooltip:
+                case WidgetType.Screen:
                 case WidgetType.System:
                 case WidgetType.Development:
                     Pool.Add(type, new PoolElementModel
