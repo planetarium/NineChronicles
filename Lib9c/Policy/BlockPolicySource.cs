@@ -136,13 +136,13 @@ namespace Nekoyume.BlockChain.Policy
         /// <returns>A <see cref="BlockPolicy"/> constructed from given parameters.</returns>
         internal IBlockPolicy<NCAction> GetPolicy(
             long minimumDifficulty,
-            VariableSubPolicy<int> maxBlockBytesPolicy,
-            VariableSubPolicy<int> minTransactionsPerBlockPolicy,
-            VariableSubPolicy<int> maxTransactionsPerBlockPolicy,
-            VariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
-            VariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
-            VariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy,
-            VariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
+            MaxBlockBytesPolicy maxBlockBytesPolicy,
+            MinTransactionsPerBlockPolicy minTransactionsPerBlockPolicy,
+            MaxTransactionsPerBlockPolicy maxTransactionsPerBlockPolicy,
+            MaxTransactionsPerSignerPerBlockPolicy maxTransactionsPerSignerPerBlockPolicy,
+            AuthorizedMinersPolicy authorizedMinersPolicy,
+            AuthorizedMiningNoOpTxRequiredPolicy authorizedMiningNoOpTxRequiredPolicy,
+            PermissionedMinersPolicy permissionedMinersPolicy)
         {
 #if UNITY_EDITOR
             return new DebugPolicy();
@@ -328,12 +328,12 @@ namespace Nekoyume.BlockChain.Policy
         internal static BlockPolicyViolationException ValidateNextBlockRaw(
             BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock,
-            VariableSubPolicy<int> minTransactionsPerBlockPolicy,
-            VariableSubPolicy<int> maxTransactionsPerBlockPolicy,
-            VariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
-            VariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
-            VariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy,
-            VariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
+            MinTransactionsPerBlockPolicy minTransactionsPerBlockPolicy,
+            MaxTransactionsPerBlockPolicy maxTransactionsPerBlockPolicy,
+            MaxTransactionsPerSignerPerBlockPolicy maxTransactionsPerSignerPerBlockPolicy,
+            AuthorizedMinersPolicy authorizedMinersPolicy,
+            AuthorizedMiningNoOpTxRequiredPolicy authorizedMiningNoOpTxRequiredPolicy,
+            PermissionedMinersPolicy permissionedMinersPolicy)
         {
             // FIXME: Tx count validation should be done in libplanet, not here.
             // Should be removed once libplanet is updated.
@@ -376,7 +376,7 @@ namespace Nekoyume.BlockChain.Policy
             TimeSpan targetBlockInterval,
             long difficultyStability,
             long minimumDifficulty,
-            VariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
+            AuthorizedMinersPolicy authorizedMinersPolicy,
             Func<BlockChain<NCAction>, long> defaultAlgorithm)
         {
             long index = blockChain.Count;
