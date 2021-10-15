@@ -1,4 +1,3 @@
-using System;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
@@ -16,7 +15,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class CombinationLoadingScreen : Widget
+    public class CombinationLoadingScreen : ScreenWidget
     {
         [SerializeField] private Button button = null;
         [SerializeField] private CanvasGroup _buttonCanvasGroup = null;
@@ -39,8 +38,6 @@ namespace Nekoyume.UI
         private System.Action _closeAction;
 
         private static readonly Vector3 NPCPosition = new Vector3(1000f, 999.2f, 2.15f);
-
-        public override WidgetType WidgetType => WidgetType.Screen;
 
         protected override void Awake()
         {

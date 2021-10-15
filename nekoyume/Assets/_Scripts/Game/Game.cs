@@ -262,7 +262,7 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentPreloadStarted(RPCAgent rpcAgent)
         {
-            if (Widget.Find<Intro>().IsActive() ||
+            if (Widget.Find<IntroScreen>().IsActive() ||
                 Widget.Find<PreloadingScreen>().IsActive() ||
                 Widget.Find<Synopsis>().IsActive())
             {
@@ -330,7 +330,7 @@ namespace Nekoyume.Game
         }
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
-            if (Widget.Find<Intro>().IsActive() ||
+            if (Widget.Find<IntroScreen>().IsActive() ||
                 Widget.Find<PreloadingScreen>().IsActive() ||
                 Widget.Find<Synopsis>().IsActive())
             {
@@ -425,7 +425,6 @@ namespace Nekoyume.Game
             {
                 // FIXME: 최신 버전이 뭔지는 Agent.EncounrtedHighestVersion 속성에 들어있으니, 그걸 UI에서 표시해줘야 할 듯?
                 // AppProtocolVersion? newVersion = _agent is Agent agent ? agent.EncounteredHighestVersion : null;
-                Widget.Find<UpdatePopup>().Show();
                 return;
             }
 
@@ -477,7 +476,7 @@ namespace Nekoyume.Game
             if (succeed)
             {
                 IsInitialized = true;
-                var intro = Widget.Find<Intro>();
+                var intro = Widget.Find<IntroScreen>();
                 intro.Close();
                 Widget.Find<PreloadingScreen>().Show();
                 StartCoroutine(ClosePreloadingScene(4));
@@ -599,7 +598,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                var intro = Widget.Find<Intro>();
+                var intro = Widget.Find<IntroScreen>();
                 intro.Show(_options.KeyStorePath, _options.PrivateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
             }

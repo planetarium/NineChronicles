@@ -1,9 +1,6 @@
-using mixpanel;
-using Nekoyume.L10n;
-
 namespace Nekoyume.UI
 {
-    public class Intro : LoadingScreen
+    public class IntroScreen : LoadingScreen
     {
         private string _keyStorePath;
         private string _privateKey;

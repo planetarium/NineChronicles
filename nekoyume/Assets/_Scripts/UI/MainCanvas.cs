@@ -153,7 +153,7 @@ namespace Nekoyume.UI
 
         public void InitializeIntro()
         {
-            var intro = Widget.Create<Intro>(true);
+            var intro = Widget.Create<IntroScreen>(true);
             intro.Initialize();
 
             UpdateLayers();
@@ -174,7 +174,6 @@ namespace Nekoyume.UI
                 Widget.Create<SettingPopup>(),
 
                 // 팝업 영역: 알림.
-                Widget.Create<UpdatePopup>(),
                 Widget.Create<BlockFailPopup>(),
                 Widget.Create<ActionFailPopup>(),
                 Widget.Create<LoginPopup>(),
