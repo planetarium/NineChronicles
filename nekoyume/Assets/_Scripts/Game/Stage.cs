@@ -548,7 +548,12 @@ namespace Nekoyume.Game
             avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
             _battleResultModel.LastClearedStageId = lasStageId;
             _battleResultModel.IsClear = log.IsClear;
-            _battleResultModel.IsEndStage = false;
+            var succeedToGetWorldRow =
+                Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow);
+            if (succeedToGetWorldRow)
+            {
+                _battleResultModel.IsEndStage = stageId == worldRow.StageEnd;
+            }
 
             if (IsExitReserved)
             {
@@ -576,11 +581,10 @@ namespace Nekoyume.Game
                             BattleResultPopup.NextState.RepeatStage :
                             BattleResultPopup.NextState.NextStage;
 
-                        if (Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
+                        if (succeedToGetWorldRow)
                         {
                             if (stageId == worldRow.StageEnd)
                             {
-                                _battleResultModel.IsEndStage = true;
                                 _battleResultModel.NextState = IsRepeatStage ?
                                     BattleResultPopup.NextState.RepeatStage :
                                     BattleResultPopup.NextState.GoToMain;

@@ -315,7 +315,6 @@ namespace Nekoyume.UI
 
         public void Show(string path, string privateKeyString)
         {
-            Debug.Log($"[LoginPopup]Show({path}, {privateKeyString}) invoked");
             KeyStore = path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
             _privateKeyString = privateKeyString;
             //Auto login for miner, seed, launcher
