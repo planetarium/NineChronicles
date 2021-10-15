@@ -24,7 +24,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class CelebratesPopup : Widget
+    public class CelebratesPopup : PopupWidget
     {
         private const float ContinueTime = 3f;
         private const int NPCId = 300004;
@@ -80,8 +80,6 @@ namespace Nekoyume.UI
         private Coroutine _coShowSomethingCoroutine;
         private List<CountableItem> _rewards;
         private PraiseVFX _praiseVFX;
-
-        public override WidgetType WidgetType => WidgetType.Tooltip;
 
         #region override
 

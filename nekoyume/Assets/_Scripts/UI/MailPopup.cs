@@ -116,7 +116,7 @@ namespace Nekoyume.UI
             {
                 blur.Show();
             }
-            HelpPopup.HelpMe(100010, true);
+            HelpTooltip.HelpMe(100010, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

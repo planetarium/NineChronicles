@@ -74,7 +74,7 @@ namespace Nekoyume.UI
 
             var deletableWidgets = FindWidgets().Where(widget =>
                 !(widget is SystemWidget) && !(widget is QuitPopup) &&
-                !(widget is MessageCatManager) && widget.IsActive());
+                !(widget is MessageCatTooltip) && widget.IsActive());
             foreach (var widget in deletableWidgets)
             {
                 widget.Close(true);

@@ -119,7 +119,7 @@ namespace Nekoyume.UI
                 Reset();
                 Find<ShopSell>().gameObject.SetActive(false);
                 Find<DataLoadingScreen>().Close();
-                HelpPopup.HelpMe(100018, true);
+                HelpTooltip.HelpMe(100018, true);
             }
         }
 

@@ -276,19 +276,6 @@ namespace Nekoyume.UI
                 WidgetStack.Push(gameObject);
             }
 
-            if (WidgetType == WidgetType.Screen)
-            {
-                MainCanvas.instance.SetLayerSortingOrderToTarget(
-                    WidgetType.Screen,
-                    WidgetType.Popup);
-            }
-            else if (WidgetType == WidgetType.Popup)
-            {
-                MainCanvas.instance.SetLayerSortingOrderToTarget(
-                    WidgetType.Popup,
-                    WidgetType.Screen);
-            }
-
             AnimationState.Value = AnimationStateType.Showing;
             gameObject.SetActive(true);
 

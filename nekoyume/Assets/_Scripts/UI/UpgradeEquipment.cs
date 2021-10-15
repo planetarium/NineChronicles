@@ -196,7 +196,7 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             UpdateState(State.Show);
-            HelpPopup.HelpMe(100017, true);
+            HelpTooltip.HelpMe(100017, true);
         }
 
         private void Close()

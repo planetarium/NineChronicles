@@ -335,7 +335,7 @@ namespace Nekoyume.UI
             questButton.gameObject.SetActive(true);
             questButton.interactable = true;
             coverToBlockClick.SetActive(false);
-            HelpPopup.HelpMe(100004, true);
+            HelpTooltip.HelpMe(100004, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

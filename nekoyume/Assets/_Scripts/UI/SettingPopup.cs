@@ -150,7 +150,7 @@ namespace Nekoyume.UI
             {
                 blur.Show();
             }
-            HelpPopup.HelpMe(100014, true);
+            HelpTooltip.HelpMe(100014, true);
         }
 
         public void ApplyCurrentSettings()

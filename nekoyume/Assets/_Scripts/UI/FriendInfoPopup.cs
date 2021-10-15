@@ -18,8 +18,6 @@ namespace Nekoyume.UI
 {
     public class FriendInfoPopup : PopupWidget
     {
-        public override WidgetType WidgetType => WidgetType.Tooltip;
-
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 
         private static readonly Vector3 NPCPosition = new Vector3(2000f, 1999.2f, 2.15f);

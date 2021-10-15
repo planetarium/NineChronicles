@@ -89,7 +89,7 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfShowAnimationInternal()
         {
             base.OnCompleteOfShowAnimationInternal();
-            HelpPopup.HelpMe(100000, true);
+            HelpTooltip.HelpMe(100000, true);
         }
 
         private void ClearPlayers()

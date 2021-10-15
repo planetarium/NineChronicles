@@ -163,7 +163,7 @@ namespace Nekoyume.UI
 
             if (!Game.Game.instance.Stage.TutorialController.IsPlaying)
             {
-                HelpPopup.HelpMe(100016, true);
+                HelpTooltip.HelpMe(100016, true);
             }
 
             var audioController = AudioController.instance;

@@ -202,7 +202,7 @@ namespace Nekoyume.UI
             _state.SetValueAndForceNotify(stateType);
             Find<DataLoadingScreen>().Close();
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
-            HelpPopup.HelpMe(100015, true);
+            HelpTooltip.HelpMe(100015, true);
             ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
 
             Find<HeaderMenu>().Show(HeaderMenu.AssetVisibleState.Battle);

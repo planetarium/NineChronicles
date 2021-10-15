@@ -301,7 +301,7 @@ namespace Nekoyume.UI
             startButton.gameObject.SetActive(true);
             startButton.interactable = true;
             coverToBlockClick.SetActive(false);
-            HelpPopup.HelpMe(100020, true);
+            HelpTooltip.HelpMe(100020, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

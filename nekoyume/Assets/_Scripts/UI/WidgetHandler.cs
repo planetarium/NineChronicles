@@ -7,17 +7,17 @@ namespace Nekoyume.UI
     {
         private static WidgetHandler _instance;
         public static WidgetHandler Instance => _instance ?? (_instance = new WidgetHandler());
-        private MessageCatManager _messageCatManager;
+        private MessageCatTooltip _messageCatTooltip;
         private HeaderMenu _headerMenu;
         private Battle _battle;
         private Menu _menu;
 
         public bool IsActiveTutorialMaskWidget { get; set; }
 
-        public MessageCatManager MessageCatManager =>
-            _messageCatManager
-                ? _messageCatManager
-                : (_messageCatManager = Widget.Find<MessageCatManager>());
+        public MessageCatTooltip MessageCatTooltip =>
+            _messageCatTooltip
+                ? _messageCatTooltip
+                : (_messageCatTooltip = Widget.Find<MessageCatTooltip>());
 
         public Battle Battle => _battle ? _battle : (_battle = Widget.Find<Battle>());
         public Menu Menu => _menu ? _menu : (_menu = Widget.Find<Menu>());
@@ -26,7 +26,7 @@ namespace Nekoyume.UI
         {
             try
             {
-                MessageCatManager.HideAll(false);
+                MessageCatTooltip.HideAll(false);
             }
             catch (WidgetNotFoundException)
             {

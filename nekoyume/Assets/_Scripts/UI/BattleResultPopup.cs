@@ -258,7 +258,7 @@ namespace Nekoyume.UI
             nextButton.gameObject.SetActive(false);
 
             UpdateView(isBoosted);
-            HelpPopup.HelpMe(100006, true);
+            HelpTooltip.HelpMe(100006, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

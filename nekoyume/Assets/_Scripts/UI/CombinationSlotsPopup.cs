@@ -51,7 +51,7 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
-            HelpPopup.HelpMe(100008, true);
+            HelpTooltip.HelpMe(100008, true);
 
             if (blur)
             {

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6151055518076283872}
   - component: {fileID: 2048810829483763651}
   m_Layer: 5
-  m_Name: UI_MessageCatManager
+  m_Name: UI_MessageCatTooltip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,5 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e76095aee0cc87418a8011e416c726d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
   messageCatPrefab: {fileID: 4514932977838230656, guid: 2fe4cd54962e2c644a66e78ec890e5d5,
     type: 3}

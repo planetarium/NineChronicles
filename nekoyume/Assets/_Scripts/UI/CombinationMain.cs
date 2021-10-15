@@ -87,7 +87,7 @@ namespace Nekoyume.UI
             }
 
             NPCShowAnimation();
-            HelpPopup.HelpMe(100007, true);
+            HelpTooltip.HelpMe(100007, true);
             StartCoroutine(speechBubble.CoShowText(true));
         }
 

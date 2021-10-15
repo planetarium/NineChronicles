@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class MessageCatManager : Widget
+    public class MessageCatTooltip : Widget
     {
         private readonly List<MessageCat> _pool = new List<MessageCat>();
 

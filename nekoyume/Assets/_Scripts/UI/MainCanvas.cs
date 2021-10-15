@@ -206,8 +206,6 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<ArenaBattleLoadingScreen>());
             yield return null;
             // 메뉴보단 더 앞에 나와야 합니다.
-            secondWidgets.Add(Widget.Create<VanilaTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Battle>());
             yield return null;
             secondWidgets.Add(Widget.Create<Blind>());
@@ -294,10 +292,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<FriendInfoPopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<DialogPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CodeRewardPopup>());
@@ -308,19 +302,25 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CelebratesPopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<HelpPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<ConfirmPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<BoosterPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<CelebratesPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<FriendInfoPopup>());
+            yield return null;
 
             // tooltip
+            secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
+            yield return null;
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
             yield return null;
-            secondWidgets.Add(Widget.Create<MessageCatManager>(true));
+            secondWidgets.Add(Widget.Create<HelpTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<VanilaTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<MessageCatTooltip>(true));
             yield return null;
 
             // tutorial
@@ -344,55 +344,6 @@ namespace Nekoyume.UI
             UpdateLayers();
 
             Widget.Find<SettingPopup>().transform.SetAsLastSibling();
-        }
-
-        public void SetLayerSortingOrderToTarget(
-            WidgetType fromWidgetType,
-            WidgetType toWidgetType,
-            bool checkFromIsSmallerThanTo = true)
-        {
-            if (fromWidgetType == toWidgetType)
-            {
-                return;
-            }
-
-            var from = GetLayer(fromWidgetType);
-            var fromSortingOrder = from.root.sortingOrder;
-            var to = GetLayer(toWidgetType);
-            var toSortingOrder = to.root.sortingOrder;
-            if (fromSortingOrder == toSortingOrder)
-            {
-                return;
-            }
-
-            if (checkFromIsSmallerThanTo &&
-                fromSortingOrder > toSortingOrder)
-            {
-                return;
-            }
-
-            var fromIndex = fromSortingOrder == 0 ? 0 : fromSortingOrder / 10;
-            var toIndex = toSortingOrder == 0 ? 0 : toSortingOrder / 10;
-            from.SetSortingOrder(toSortingOrder);
-
-            if (fromIndex < toIndex)
-            {
-                for (var i = fromIndex + 1; i < toIndex + 1; i++)
-                {
-                    var layer = _layers[i];
-                    layer.SetSortingOrder(layer.root.sortingOrder - 10);
-                }
-            }
-            else
-            {
-                for (var i = toIndex; i < fromIndex; i++)
-                {
-                    var layer = _layers[i];
-                    layer.SetSortingOrder(layer.root.sortingOrder + 10);
-                }
-            }
-
-            UpdateLayers();
         }
 
         public void InitWidgetInMain()

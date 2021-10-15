@@ -9,22 +9,23 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using TMPro;
-using UniRx;
 using UniRx.Toolkit;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
-using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using System.Text.RegularExpressions;
+using Nekoyume.EnumType;
 
 namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class HelpPopup : PopupWidget
+    public class HelpTooltip : Widget
     {
+        public override WidgetType WidgetType => WidgetType.Tooltip;
+
         #region Models
 
         [Serializable]
@@ -83,12 +84,12 @@ namespace Nekoyume.UI
 
         private const string JsonDataPath = "HelpPopupData/HelpPopupData";
 
-        private static HelpPopup _instanceCache;
+        private static HelpTooltip _instanceCache;
         private static List<ViewModel> _sharedViewModelsCache;
 
-        private static HelpPopup Instance => _instanceCache
+        private static HelpTooltip Instance => _instanceCache
             ? _instanceCache
-            : _instanceCache = Find<HelpPopup>();
+            : _instanceCache = Find<HelpTooltip>();
 
         private static List<ViewModel> SharedViewModels =>
             _sharedViewModelsCache ?? (_sharedViewModelsCache = GetViewModels());
@@ -131,8 +132,6 @@ namespace Nekoyume.UI
         private List<(Image, float)> _spinningImages = new List<(Image, float)>();
         private List<(TextMeshProUGUI, float)> _texts = new List<(TextMeshProUGUI, float)>();
 
-        public override WidgetType WidgetType => WidgetType.Tooltip;
-
         #region Control
 
         public static void HelpMe(int id, bool showOnceForEachAgentAddress = default)
@@ -140,13 +139,13 @@ namespace Nekoyume.UI
             if (showOnceForEachAgentAddress)
             {
                 if (PlayerPrefs.HasKey(
-                    $"{nameof(HelpPopup)}_{id}_{States.Instance.AgentState.address}"))
+                    $"{nameof(HelpTooltip)}_{id}_{States.Instance.AgentState.address}"))
                 {
                     return;
                 }
 
                 PlayerPrefs.SetInt(
-                    $"{nameof(HelpPopup)}_{id}_{States.Instance.AgentState.address}",
+                    $"{nameof(HelpTooltip)}_{id}_{States.Instance.AgentState.address}",
                     1);
             }
 
@@ -205,7 +204,7 @@ namespace Nekoyume.UI
                 return jsonModel.viewModels.ToList();
             }
 
-            var sb = new StringBuilder($"[{nameof(HelpPopup)}]");
+            var sb = new StringBuilder($"[{nameof(HelpTooltip)}]");
             sb.Append($" {nameof(GetViewModels)}()");
             sb.Append($" Failed to load resource at {JsonDataPath}");
             Debug.LogError(sb.ToString());
@@ -379,7 +378,7 @@ namespace Nekoyume.UI
             _viewModel = SharedViewModels.FirstOrDefault(e => e.id == id);
             if (_viewModel is null)
             {
-                var sb = new StringBuilder($"[{nameof(HelpPopup)}]");
+                var sb = new StringBuilder($"[{nameof(HelpTooltip)}]");
                 sb.Append($" {nameof(TrySetId)}({id.GetType().Name} {nameof(id)}):");
                 sb.Append($" Cannot found {id}");
                 Debug.LogError(sb.ToString());
@@ -513,7 +512,7 @@ namespace Nekoyume.UI
             {
                 text.alignment = alignment;
             }
-            
+
             _texts.Add((
                 text,
                 textModel.duration < 0f
