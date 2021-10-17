@@ -22,7 +22,7 @@ namespace Nekoyume.BlockChain.Policy
                 .Add(new SpannedSubPolicy<bool>(
                     startIndex: BlockPolicySource.AuthorizedMiningNoOpTxRequiredStartIndex,
                     endIndex: BlockPolicySource.AuthorizedMinersPolicyEndIndex,
-                    predicate: index => index % BlockPolicySource.AuthorizedMinersPolicyInterval == 0,
+                    filter: index => index % BlockPolicySource.AuthorizedMinersPolicyInterval == 0,
                     value: true));
     }
 }

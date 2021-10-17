@@ -70,7 +70,7 @@ namespace Nekoyume.BlockChain.Policy
                     lastSpannedSubPolicy = new SpannedSubPolicy<T>(
                         lastSpannedSubPolicy.StartIndex,
                         spannedSubPolicy.StartIndex - 1,
-                        lastSpannedSubPolicy.Predicate,
+                        lastSpannedSubPolicy.Filter,
                         lastSpannedSubPolicy.Value);
                     spannedSubPolicies[spannedSubPolicies.Count - 1] = lastSpannedSubPolicy;
                 }

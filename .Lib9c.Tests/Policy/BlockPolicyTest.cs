@@ -147,7 +147,7 @@ namespace Lib9c.Tests
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
                         endIndex: 10,
-                        predicate: index => index % 5 == 0,
+                        filter: index => index % 5 == 0,
                         value: new Address[] { authorizedMinerPrivateKey.ToAddress() }
                             .ToImmutableHashSet())),
                 authorizedMiningNoOpTxRequiredPolicy: null,
@@ -300,14 +300,14 @@ namespace Lib9c.Tests
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
                         endIndex: 4,
-                        predicate: index => index % 2 == 0,
+                        filter: index => index % 2 == 0,
                         value: miners.ToImmutableHashSet())),
                 authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy
                     .Default
                     .Add(new SpannedSubPolicy<bool>(
                         startIndex: 0,
                         endIndex: 4,
-                        predicate: index => index % 2 == 0,
+                        filter: index => index % 2 == 0,
                         value: true)),
                 permissionedMinersPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
@@ -425,7 +425,7 @@ namespace Lib9c.Tests
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
                         endIndex: 6,
-                        predicate: index => index % 2 == 0,
+                        filter: index => index % 2 == 0,
                         value: miners.ToImmutableHashSet())),
                 authorizedMiningNoOpTxRequiredPolicy: null,
                 permissionedMinersPolicy: null);
@@ -789,7 +789,7 @@ namespace Lib9c.Tests
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 1,
                             endIndex: null,
-                            predicate: null,
+                            filter: null,
                             value: new Address[] { permissionedMinerKey.ToAddress() }
                                 .ToImmutableHashSet()))),
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
@@ -870,7 +870,7 @@ namespace Lib9c.Tests
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 0,
                             endIndex: 6,
-                            predicate: index => index % 2 == 0,
+                            filter: index => index % 2 == 0,
                             value: new Address[] { authorizedMinerKey.ToAddress() }
                                 .ToImmutableHashSet())),
                     authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy
@@ -878,14 +878,14 @@ namespace Lib9c.Tests
                         .Add(new SpannedSubPolicy<bool>(
                             startIndex: 4,
                             endIndex: 10,
-                            predicate: null,
+                            filter: null,
                             value: true)),
                     permissionedMinersPolicy: PermissionedMinersPolicy
                         .Default
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 2,
                             endIndex: 10,
-                            predicate: index => index % 3 == 0,
+                            filter: index => index % 3 == 0,
                             value: new Address[] { permissionedMinerKey.ToAddress() }
                                 .ToImmutableHashSet()))),
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
@@ -1028,7 +1028,7 @@ namespace Lib9c.Tests
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 0,
                             endIndex: 10,
-                            predicate: index => index % 2 == 0,
+                            filter: index => index % 2 == 0,
                             value: new Address[] { authorizedMinerKey.ToAddress() }
                                 .ToImmutableHashSet())),
                     authorizedMiningNoOpTxRequiredPolicy: null,
@@ -1037,7 +1037,7 @@ namespace Lib9c.Tests
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 5,
                             endIndex: 20,
-                            predicate: index => index % 3 == 0,
+                            filter: index => index % 3 == 0,
                             value: new Address[] { permissionedMinerKey.ToAddress() }
                                 .ToImmutableHashSet())));
 

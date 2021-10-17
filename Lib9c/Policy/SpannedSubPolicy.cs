@@ -9,16 +9,16 @@ namespace Nekoyume.BlockChain.Policy
         /// Class for storing binding arguments for <see cref="VariableSubPolicy{T}"/>.
         /// One can think of this as a sparse list where a designated value is "stored" for
         /// any index between start index and end index (inclusive) satisfying
-        /// <paramref name="predicate"/> condition.
+        /// <paramref name="filter"/> condition.
         /// </summary>
         /// <param name="startIndex">Start index of the range.</param>
         /// <param name="endIndex">End index of the range, inclusive.</param>
-        /// <param name="predicate">Additional index filtering predicate.</param>
+        /// <param name="filter">Additional index filtering predicate.</param>
         /// <param name="value">Value stored.</param>
         /// <exception cref="ArgumentOutOfRangeException">If an invalid value is given for either
         /// <paramref name="startIndex"/> or <paramref name="endIndex"/>.</exception>
         public SpannedSubPolicy(
-            long startIndex, long? endIndex, Func<long, bool> predicate, T value)
+            long startIndex, long? endIndex, Func<long, bool> filter, T value)
         {
             if (startIndex < 0)
             {
@@ -37,7 +37,7 @@ namespace Nekoyume.BlockChain.Policy
 
             StartIndex = startIndex;
             EndIndex = endIndex;
-            Predicate = predicate ?? (index => true);
+            Filter = filter ?? (index => true);
             Value = value;
         }
 
@@ -66,14 +66,14 @@ namespace Nekoyume.BlockChain.Policy
         [Pure]
         public bool IsTargetIndex(long index)
         {
-            return IsTargetRange(index) && Predicate(index);
+            return IsTargetRange(index) && Filter(index);
         }
 
         public long StartIndex { get; }
 
         public long? EndIndex { get; }
 
-        public Func<long, bool> Predicate { get; }
+        public Func<long, bool> Filter { get; }
 
         public T Value { get; }
 
