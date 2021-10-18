@@ -1,5 +1,6 @@
 using System;
 using Libplanet;
+using Nekoyume;
 using Nekoyume.Model.State;
 using Nekoyume.UI;
 using UnityEngine;

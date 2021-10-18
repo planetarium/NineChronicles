@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
-using UnityEngine;
 
-namespace Nekoyume.UI
+namespace Nekoyume
 {
     public static class SkillSheetExtension
     {

@@ -2,7 +2,7 @@
 using System.Linq;
 using Nekoyume.TableData;
 
-namespace Nekoyume.UI
+namespace Nekoyume
 {
     public static class StageSheetExtension
     {

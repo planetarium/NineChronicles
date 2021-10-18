@@ -17,7 +17,7 @@ using UnityEngine;
 using MailModel = Nekoyume.Model.Mail.Mail;
 using QuestModel = Nekoyume.Model.Quest.Quest;
 
-namespace Nekoyume.UI
+namespace Nekoyume
 {
     public static class LocalizationExtension
     {

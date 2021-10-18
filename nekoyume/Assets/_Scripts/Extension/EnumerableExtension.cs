@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace Nekoyume
 {
-    public static class EnumerableExtensions
+    public static class EnumerableExtension
     {
         public static IEnumerable<T> Sample<T>(this IEnumerable<T> population, int k)
         {

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using Libplanet.Assets;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
@@ -11,7 +10,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume
 {
-    public static class UniRxExtensions
+    public static class UniRxExtension
     {
         public static void DisposeAll<T>(this ReactiveProperty<T> property) where T : IDisposable
         {
