@@ -162,13 +162,13 @@ namespace Nekoyume.BlockChain
                     var quest = questList.First();
                     var format = L10nManager.Localize("NOTIFICATION_QUEST_COMPLETE");
                     var msg = string.Format(format, quest.GetContent());
-                    UI.Notification.Push(MailType.System, msg);
+                    UI.NotificationSystem.Push(MailType.System, msg);
                 }
                 else
                 {
                     var format = L10nManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
                     var msg = string.Format(format, questList.Count);
-                    UI.Notification.Push(MailType.System, msg);
+                    UI.NotificationSystem.Push(MailType.System, msg);
                 }
             }
 

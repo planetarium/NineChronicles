@@ -181,11 +181,11 @@ namespace Nekoyume.Game
             // Initialize NineChroniclesAPIClient.
             _apiClient = new NineChroniclesAPIClient(_options.ApiServerHost);
             // Initialize Rank.SharedModel
-            Rank.UpdateSharedModel();
+            RankPopup.UpdateSharedModel();
             // Initialize Stage
             Stage.Initialize();
 
-            Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
+            Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
             StartCoroutine(CoUpdate());
@@ -262,7 +262,7 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentPreloadStarted(RPCAgent rpcAgent)
         {
-            if (Widget.Find<Intro>().IsActive() ||
+            if (Widget.Find<IntroScreen>().IsActive() ||
                 Widget.Find<PreloadingScreen>().IsActive() ||
                 Widget.Find<Synopsis>().IsActive())
             {
@@ -296,13 +296,13 @@ namespace Nekoyume.Game
                     needToBackToMain = true;
                 }
             }
-            else if (Widget.Find<StageLoadingScreen>().IsActive())
+            else if (Widget.Find<StageLoadingEffect>().IsActive())
             {
-                Widget.Find<StageLoadingScreen>().Close();
+                Widget.Find<StageLoadingEffect>().Close();
 
-                if (Widget.Find<BattleResult>().IsActive())
+                if (Widget.Find<BattleResultPopup>().IsActive())
                 {
-                    Widget.Find<BattleResult>().Close(true);
+                    Widget.Find<BattleResultPopup>().Close(true);
                 }
 
                 needToBackToMain = true;
@@ -330,7 +330,7 @@ namespace Nekoyume.Game
         }
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
-            if (Widget.Find<Intro>().IsActive() ||
+            if (Widget.Find<IntroScreen>().IsActive() ||
                 Widget.Find<PreloadingScreen>().IsActive() ||
                 Widget.Find<Synopsis>().IsActive())
             {
@@ -364,13 +364,13 @@ namespace Nekoyume.Game
                     needToBackToMain = true;
                 }
             }
-            else if (Widget.Find<StageLoadingScreen>().IsActive())
+            else if (Widget.Find<StageLoadingEffect>().IsActive())
             {
-                Widget.Find<StageLoadingScreen>().Close();
+                Widget.Find<StageLoadingEffect>().Close();
 
-                if (Widget.Find<BattleResult>().IsActive())
+                if (Widget.Find<BattleResultPopup>().IsActive())
                 {
-                    Widget.Find<BattleResult>().Close(true);
+                    Widget.Find<BattleResultPopup>().Close(true);
                 }
 
                 needToBackToMain = true;
@@ -411,7 +411,7 @@ namespace Nekoyume.Game
                 var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
                     L10nManager.Localize("BLOCK_DOWNLOAD_FAIL"));
 
-                Widget.Find<SystemPopup>().ShowAndQuit(
+                Widget.Find<TitleOneButtonSystem>().ShowAndQuit(
                     L10nManager.Localize("UI_ERROR"),
                     errorMsg,
                     L10nManager.Localize("UI_QUIT"),
@@ -425,7 +425,6 @@ namespace Nekoyume.Game
             {
                 // FIXME: 최신 버전이 뭔지는 Agent.EncounrtedHighestVersion 속성에 들어있으니, 그걸 UI에서 표시해줘야 할 듯?
                 // AppProtocolVersion? newVersion = _agent is Agent agent ? agent.EncounteredHighestVersion : null;
-                Widget.Find<UpdatePopup>().Show();
                 return;
             }
 
@@ -436,7 +435,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            Widget.Find<SystemPopup>().ShowAndQuit(
+            Widget.Find<TitleOneButtonSystem>().ShowAndQuit(
                 "UI_ERROR",
                 "UI_ERROR_RPC_CONNECTION",
                 "UI_QUIT"
@@ -477,7 +476,7 @@ namespace Nekoyume.Game
             if (succeed)
             {
                 IsInitialized = true;
-                var intro = Widget.Find<Intro>();
+                var intro = Widget.Find<IntroScreen>();
                 intro.Close();
                 Widget.Find<PreloadingScreen>().Show();
                 StartCoroutine(ClosePreloadingScene(4));
@@ -527,7 +526,7 @@ namespace Nekoyume.Game
 
         public static void Quit()
         {
-            var popup = Widget.Find<QuitPopup>();
+            var popup = Widget.Find<QuitSystem>();
             if (popup.gameObject.activeSelf)
             {
                 popup.Close();
@@ -548,7 +547,7 @@ namespace Nekoyume.Game
         {
             if (_options.Maintenance)
             {
-                var w = Widget.Create<SystemPopup>();
+                var w = Widget.Create<TitleOneButtonSystem>();
                 w.CloseCallback = () =>
                 {
                     Application.OpenURL(GameConfig.DiscordLink);
@@ -568,7 +567,7 @@ namespace Nekoyume.Game
 
             if (_options.TestEnd)
             {
-                var w = Widget.Find<Confirm>();
+                var w = Widget.Find<ConfirmPopup>();
                 w.CloseCallback = result =>
                 {
                     if (result == ConfirmResult.Yes)
@@ -587,11 +586,11 @@ namespace Nekoyume.Game
                 yield break;
             }
 
-            var settings = Widget.Find<UI.Settings>();
+            var settings = Widget.Find<UI.SettingPopup>();
             settings.UpdateSoundSettings();
             settings.UpdatePrivateKey(_options.PrivateKey);
 
-            var loginPopup = Widget.Find<LoginPopup>();
+            var loginPopup = Widget.Find<LoginSystem>();
 
             if (Application.isBatchMode)
             {
@@ -599,7 +598,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                var intro = Widget.Find<Intro>();
+                var intro = Widget.Find<IntroScreen>();
                 intro.Show(_options.KeyStorePath, _options.PrivateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
             }
@@ -613,7 +612,7 @@ namespace Nekoyume.Game
 
         public void ResetStore()
         {
-            var confirm = Widget.Find<Confirm>();
+            var confirm = Widget.Find<ConfirmPopup>();
             var storagePath = _options.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
             confirm.CloseCallback = result =>
             {
@@ -635,7 +634,7 @@ namespace Nekoyume.Game
 
         public void ResetKeyStore()
         {
-            var confirm = Widget.Find<Confirm>();
+            var confirm = Widget.Find<ConfirmPopup>();
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
