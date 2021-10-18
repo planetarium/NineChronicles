@@ -115,6 +115,7 @@ namespace Nekoyume.UI
             repeatToggle.gameObject.SetActive(false);
             exitToggle.gameObject.SetActive(false);
             helpButton.gameObject.SetActive(false);
+            boostEffectObject.SetActive(false);
             base.Show(ignoreShowAnimation);
         }
 
