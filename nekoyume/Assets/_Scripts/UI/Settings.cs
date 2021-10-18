@@ -97,7 +97,7 @@ namespace Nekoyume.UI
         }
 
 
-        void InitResolution()
+        private void InitResolution()
         {
             var settings = Nekoyume.Settings.Instance;
             var options = settings.Resolutions.Select(resolution => $"{resolution.Width} x {resolution.Height}").ToList();
