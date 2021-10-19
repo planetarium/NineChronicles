@@ -707,7 +707,7 @@ namespace Nekoyume.BlockChain
                     var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
                         L10nManager.Localize("BOOTSTRAP_FAIL"));
 
-                    Widget.Find<SystemPopup>().Show(
+                    Widget.Find<TitleOneButtonSystem>().Show(
                         L10nManager.Localize("UI_ERROR"),
                         errorMsg,
                         L10nManager.Localize("UI_QUIT"),
