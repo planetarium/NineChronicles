@@ -139,6 +139,7 @@ namespace Nekoyume.UI
                     hudLayer,
                     popupLayer,
                     screenLayer,
+                    staticLayer,
                     tooltipLayer,
                     widgetLayer,
                     animationLayer,
