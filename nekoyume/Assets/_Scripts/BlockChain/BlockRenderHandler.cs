@@ -57,7 +57,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ =>
                 {
                     var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
-                    UI.Notification.Push(Model.Mail.MailType.System, msg);
+                    UI.NotificationSystem.Push(Model.Mail.MailType.System, msg);
                 })
                 .AddTo(_disposables);
         }

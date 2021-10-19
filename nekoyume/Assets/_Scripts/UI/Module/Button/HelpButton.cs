@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
 
             OnClick
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
-                .Subscribe(_ => HelpPopup.HelpMe(helpId, showOnceForEachAgentAddress))
+                .Subscribe(_ => HelpTooltip.HelpMe(helpId, showOnceForEachAgentAddress))
                 .AddTo(gameObject);
         }
 

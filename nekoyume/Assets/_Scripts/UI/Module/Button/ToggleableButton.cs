@@ -61,7 +61,7 @@ namespace Nekoyume.UI.Module
             if (sortingGroup)
             {
                 var widget = GetComponentInParent<Widget>();
-                if (widget is HeaderMenu)
+                if (widget is HeaderMenuStatic)
                 {
                     _originalSortingOrderOffset = 0;
                     sortingGroup.sortingOrder =
@@ -143,12 +143,12 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (_widget is Confirm confirm)
+            if (_widget is ConfirmPopup confirm)
             {
                 confirm.NoWithoutCallback();
             }
 
-            if (_widget is InputBox inputBox)
+            if (_widget is InputBoxPopup inputBox)
             {
                 inputBox.No();
             }
@@ -242,7 +242,7 @@ namespace Nekoyume.UI.Module
             }
 
             var systemInfoSortingOrder =
-                MainCanvas.instance.GetLayer(WidgetType.SystemInfo).root.sortingOrder;
+                MainCanvas.instance.GetLayer(WidgetType.System).root.sortingOrder;
             sortingGroup.sortingOrder = systemInfoSortingOrder;
         }
 

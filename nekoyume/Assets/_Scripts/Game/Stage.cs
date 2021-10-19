@@ -71,7 +71,7 @@ namespace Nekoyume.Game
 
         private Camera _camera;
         private BattleLog _battleLog;
-        private BattleResult.Model _battleResultModel;
+        private BattleResultPopup.Model _battleResultModel;
         private bool _rankingBattle;
         private Coroutine _battleCoroutine;
         private Player _stageRunningPlayer;
@@ -327,7 +327,7 @@ namespace Nekoyume.Game
 
             IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
-            HelpPopup.HelpMe(100005, true);
+            HelpTooltip.HelpMe(100005, true);
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
@@ -422,7 +422,7 @@ namespace Nekoyume.Game
             if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
                 yield break;
 
-            _battleResultModel = new BattleResult.Model();
+            _battleResultModel = new BattleResultPopup.Model();
 
             zone = data.Background;
             LoadBackground(zone, 3.0f);
@@ -433,7 +433,7 @@ namespace Nekoyume.Game
 
             Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
             Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
-            Widget.Find<BattleResult>().StageProgressBar.Initialize(false);
+            Widget.Find<BattleResultPopup>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
             IsShowHud = false;
@@ -456,7 +456,7 @@ namespace Nekoyume.Game
             if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
                 yield break;
 
-            _battleResultModel = new BattleResult.Model();
+            _battleResultModel = new BattleResultPopup.Model();
 
             zone = data.Background;
             LoadBackground(zone, 3.0f);
@@ -557,7 +557,7 @@ namespace Nekoyume.Game
 
             if (IsExitReserved)
             {
-                _battleResultModel.NextState = BattleResult.NextState.GoToMain;
+                _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
                 _battleResultModel.ActionPointNotEnough = false;
             }
             else
@@ -571,36 +571,36 @@ namespace Nekoyume.Game
                 _battleResultModel.ActionPointNotEnough = apNotEnough;
                 if (apNotEnough)
                 {
-                    _battleResultModel.NextState = BattleResult.NextState.GoToMain;
+                    _battleResultModel.NextState = BattleResultPopup.NextState.GoToMain;
                 }
                 else
                 {
                     if (isClear)
                     {
                         _battleResultModel.NextState = IsRepeatStage ?
-                            BattleResult.NextState.RepeatStage :
-                            BattleResult.NextState.NextStage;
+                            BattleResultPopup.NextState.RepeatStage :
+                            BattleResultPopup.NextState.NextStage;
 
                         if (succeedToGetWorldRow)
                         {
                             if (stageId == worldRow.StageEnd)
                             {
                                 _battleResultModel.NextState = IsRepeatStage ?
-                                    BattleResult.NextState.RepeatStage :
-                                    BattleResult.NextState.GoToMain;
+                                    BattleResultPopup.NextState.RepeatStage :
+                                    BattleResultPopup.NextState.GoToMain;
                             }
                         }
                     }
                     else
                     {
                         _battleResultModel.NextState = IsRepeatStage ?
-                            BattleResult.NextState.RepeatStage :
-                            BattleResult.NextState.GoToMain;
+                            BattleResultPopup.NextState.RepeatStage :
+                            BattleResultPopup.NextState.GoToMain;
                     }
                 }
             }
 
-            Widget.Find<BattleResult>().Show(_battleResultModel, PlayCount > 1);
+            Widget.Find<BattleResultPopup>().Show(_battleResultModel, PlayCount > 1);
 
             yield return null;
 
@@ -621,7 +621,7 @@ namespace Nekoyume.Game
         private IEnumerator CoSlideBg()
         {
             RunPlayer();
-            while (Widget.Find<BattleResult>().IsActive())
+            while (Widget.Find<BattleResultPopup>().IsActive())
             {
                 yield return new WaitForEndOfFrame();
             }
@@ -655,7 +655,7 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().Close();
 
-            Widget.Find<RankingBattleResult>().Show(log, _battleResultModel.Rewards);
+            Widget.Find<RankingBattleResultPopup>().Show(log, _battleResultModel.Rewards);
             yield return null;
         }
 
@@ -685,17 +685,17 @@ namespace Nekoyume.Game
                 {
                     if (worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton)
                     {
-                        Widget.Find<HeaderMenu>().Close(true);
+                        Widget.Find<HeaderMenuStatic>().Close(true);
                         isTutorial = true;
                     }
                     else
                     {
-                        Widget.Find<HeaderMenu>().Show();
+                        Widget.Find<HeaderMenuStatic>().Show();
                     }
                 }
                 else
                 {
-                    Widget.Find<HeaderMenu>().Close(true);
+                    Widget.Find<HeaderMenuStatic>().Close(true);
                     isTutorial = true;
                 }
 
@@ -853,7 +853,7 @@ namespace Nekoyume.Game
             var prevEnemies = GetComponentsInChildren<Character.Enemy>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
 
-            var isHeaderMenuShown = Widget.Find<HeaderMenu>().IsActive();
+            var isHeaderMenuShown = Widget.Find<HeaderMenuStatic>().IsActive();
             if (isHeaderMenuShown && items.Count > 0)
             {
                 var player = GetPlayer();
