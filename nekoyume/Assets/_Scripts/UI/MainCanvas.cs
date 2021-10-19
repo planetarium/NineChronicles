@@ -282,8 +282,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<InputBoxPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationResultPopup>());
@@ -317,6 +315,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
 
             // tooltip
