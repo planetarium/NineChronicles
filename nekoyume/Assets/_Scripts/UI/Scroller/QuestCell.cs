@@ -71,7 +71,7 @@ namespace Nekoyume.UI.Scroller
 
         private void OnReceiveClick(SubmitButton submitButton)
         {
-            var questWidget = Widget.Find<Quest>();
+            var questWidget = Widget.Find<QuestPopup>();
             questWidget.EnqueueCompletedQuest(_quest);
 
             AudioController.PlayClick();
@@ -185,7 +185,7 @@ namespace Nekoyume.UI.Scroller
         public void UpdateTab()
         {
             UpdateView();
-            Widget.Find<Quest>().DoneScrollAnimation();
+            Widget.Find<QuestPopup>().DoneScrollAnimation();
         }
 
         public void ShowAsComplete()

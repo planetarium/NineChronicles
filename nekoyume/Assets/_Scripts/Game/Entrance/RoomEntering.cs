@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Entrance
                 Widget.Find<LoadingScreen>().Show();
             }
 
-            Widget.Find<HeaderMenu>().Close(true);
+            Widget.Find<HeaderMenuStatic>().Close(true);
 
             stage.ClearBattle();
             stage.stageId = 0;
@@ -55,7 +55,7 @@ namespace Nekoyume.Game.Entrance
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
 
-            var stageLoadingScreen = Widget.Find<StageLoadingScreen>();
+            var stageLoadingScreen = Widget.Find<StageLoadingEffect>();
             if (stageLoadingScreen.IsActive())
             {
                 stageLoadingScreen.Close();
@@ -65,7 +65,7 @@ namespace Nekoyume.Game.Entrance
             {
                 battle.Close(true);
             }
-            var battleResult = Widget.Find<BattleResult>();
+            var battleResult = Widget.Find<BattleResultPopup>();
             if (battleResult.IsActive())
             {
                 battleResult.Close();
@@ -89,7 +89,7 @@ namespace Nekoyume.Game.Entrance
 
             Widget.Find<Status>().Show();
             Widget.Find<EventBanner>().Show();
-            var headerMenu = Widget.Find<HeaderMenu>();
+            var headerMenu = Widget.Find<HeaderMenuStatic>();
             if (!headerMenu.isActiveAndEnabled)
             {
                 headerMenu.Show();

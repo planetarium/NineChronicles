@@ -89,7 +89,7 @@ namespace Nekoyume.UI.Module
                             _cat.Hide();
                         }
 
-                        _cat = Widget.Find<MessageCatManager>().Show(true, _messageForCat, gameObject);
+                        _cat = Widget.Find<MessageCatTooltip>().Show(true, _messageForCat, gameObject);
 
                         return;
                     }

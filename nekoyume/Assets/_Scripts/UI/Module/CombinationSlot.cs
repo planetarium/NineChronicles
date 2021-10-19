@@ -336,15 +336,15 @@ namespace Nekoyume.UI.Module
                 case SlotType.Empty:
                     if (Game.Game.instance.Stage.IsInStage)
                     {
-                        UI.Notification.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize("UI_BLOCK_EXIT"));
+                        UI.NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize("UI_BLOCK_EXIT"));
                         return;
                     }
 
                     Widget.Find<Craft>()?.gameObject.SetActive(false);
                     Widget.Find<UpgradeEquipment>()?.gameObject.SetActive(false);
-                    Widget.Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
+                    Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
                     Widget.Find<CombinationMain>().Show();
-                    Widget.Find<CombinationSlots>().Close();
+                    Widget.Find<CombinationSlotsPopup>().Close();
                     break;
 
                 case SlotType.Working:
@@ -352,7 +352,7 @@ namespace Nekoyume.UI.Module
                     break;
 
                 case SlotType.Appraise:
-                    UI.Notification.Push(Nekoyume.Model.Mail.MailType.System,
+                    UI.NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
                         L10nManager.Localize("UI_COMBINATION_NOTIFY_IDENTIFYING"));
                     break;
             }
