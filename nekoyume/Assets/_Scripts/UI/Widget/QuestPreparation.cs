@@ -232,7 +232,7 @@ namespace Nekoyume.UI
                 .Where(_ =>
                     !Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value))
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ => OneLineSystem.Push(MailType.System, "UI_BOOSTER_CONDITIONS_GUIDE"))
+                .Subscribe(_ => OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_BOOSTER_CONDITIONS_GUIDE")))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
