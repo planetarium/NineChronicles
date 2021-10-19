@@ -14,7 +14,6 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Battle;
     using Nekoyume.Model;
-    using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.Quest;
@@ -861,6 +860,67 @@ namespace Lib9c.Tests.Action
             }));
 
             SerializeException<NotEnoughActionPointException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteWithoutPlayCount()
+        {
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            previousAvatarState.level = 1;
+            var clearedStageId = 0;
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearedStageId);
+
+            var costumes = new List<Guid>();
+            var equipments = new List<Guid>();
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
+            var result = new CombinationConsumable5.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = mailEquipment,
+            };
+
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            IAccountStateDelta state = _initialState
+            .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+            .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+            .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+            .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+
+            var action = new HackAndSlash
+            {
+                costumes = costumes,
+                equipments = equipments,
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
+            };
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = 1,
+            });
+
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.True(nextAvatarState.worldInformation.IsStageCleared(1));
         }
 
         [Theory]
