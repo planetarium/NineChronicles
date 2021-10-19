@@ -92,12 +92,12 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             SubmitWidget = () => Close(true);
-            CloseWidget = () => Close(true);
+            CloseWidget = ApplyCurrentSettings;
             base.OnEnable();
         }
 
 
-        void InitResolution()
+        private void InitResolution()
         {
             var settings = Nekoyume.Settings.Instance;
             var options = settings.Resolutions.Select(resolution => $"{resolution.Width} x {resolution.Height}").ToList();
