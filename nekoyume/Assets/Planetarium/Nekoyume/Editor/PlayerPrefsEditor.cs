@@ -23,7 +23,7 @@ namespace Planetarium.Nekoyume.Editor
         [MenuItem("Tools/Delete Dialog PlayerPrefs Of Current AvatarState(Play Mode)", false)]
         public static void DeleteDialogPlayerPrefsOfCurrentAvatarState()
         {
-            Dialog.DeleteDialogPlayerPrefsOfCurrentAvatarState();
+            DialogPopup.DeleteDialogPlayerPrefsOfCurrentAvatarState();
         }
     }
 }

@@ -164,11 +164,11 @@ namespace Nekoyume.UI.Module
 
             if (actionPoint != null && actionPoint.NowCharging)
             {
-                OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_CHARGING_AP"));
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_CHARGING_AP"));
             }
             else if (States.Instance.CurrentAvatarState.actionPoint > 0)
             {
-                var confirm = Widget.Find<Confirm>();
+                var confirm = Widget.Find<ConfirmPopup>();
                 confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
                 confirm.CloseCallback = result =>
                 {
@@ -188,7 +188,7 @@ namespace Nekoyume.UI.Module
 
         private void GetDailyReward()
         {
-            UI.Notification.Push(
+            UI.NotificationSystem.Push(
                 Nekoyume.Model.Mail.MailType.System,
                 L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
 

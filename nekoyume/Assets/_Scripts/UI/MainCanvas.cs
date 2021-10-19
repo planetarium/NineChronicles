@@ -46,28 +46,33 @@ namespace Nekoyume.UI
         private CanvasLayer hudLayer = default;
 
         [SerializeField]
-        private CanvasLayer popupLayer = default;
-
-        [SerializeField]
-        private CanvasLayer screenLayer = default;
-
-        [SerializeField]
-        private CanvasLayer tooltipLayer = default;
-
-        [SerializeField]
         private CanvasLayer widgetLayer = default;
+
+        [SerializeField]
+        private CanvasLayer staticLayer = default;
+
+        [SerializeField]
+        private CanvasLayer popupLayer = default;
 
         [SerializeField]
         private CanvasLayer animationLayer = default;
 
         [SerializeField]
-        private CanvasLayer systemInfoLayer = default;
+        private CanvasLayer tooltipLayer = default;
+
+        [SerializeField]
+        private CanvasLayer tutorialMaskLayer = default;
+
+        [SerializeField]
+        private CanvasLayer screenLayer = default;
+
+        [SerializeField]
+        private CanvasLayer systemLayer = default;
 
         [SerializeField]
         private CanvasLayer developmentLayer = default;
 
-        [SerializeField]
-        private CanvasLayer tutorialMaskLayer = default;
+
 
         private List<CanvasLayer> _layers;
         public RectTransform RectTransform { get; private set; }
@@ -84,24 +89,29 @@ namespace Nekoyume.UI
         {
             switch (widgetType)
             {
+                // UI
                 case WidgetType.Hud:
                     return hudLayer;
-                case WidgetType.Popup:
-                    return popupLayer;
-                case WidgetType.Screen:
-                    return screenLayer;
-                case WidgetType.Tooltip:
-                    return tooltipLayer;
                 case WidgetType.Widget:
                     return widgetLayer;
+                case WidgetType.Static:
+                    return staticLayer;
+                case WidgetType.Popup:
+                    return popupLayer;
                 case WidgetType.Animation:
                     return animationLayer;
-                case WidgetType.SystemInfo:
-                    return systemInfoLayer;
-                case WidgetType.Development:
-                    return developmentLayer;
+                case WidgetType.Tooltip:
+                    return tooltipLayer;
                 case WidgetType.TutorialMask:
                     return tutorialMaskLayer;
+                case WidgetType.Screen:
+                    return screenLayer;
+            // SystemUI
+                case WidgetType.System:
+                    return systemLayer;
+                case WidgetType.Development:
+                    return developmentLayer;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }
@@ -132,7 +142,7 @@ namespace Nekoyume.UI
                     tooltipLayer,
                     widgetLayer,
                     animationLayer,
-                    systemInfoLayer,
+                    systemLayer,
                     developmentLayer,
                     tutorialMaskLayer,
                 };
@@ -143,7 +153,7 @@ namespace Nekoyume.UI
 
         public void InitializeIntro()
         {
-            var intro = Widget.Create<Intro>(true);
+            var intro = Widget.Create<IntroScreen>(true);
             intro.Initialize();
 
             UpdateLayers();
@@ -161,22 +171,20 @@ namespace Nekoyume.UI
                 Widget.Create<PreloadingScreen>(),
 
                 // 팝업 영역.
-                Widget.Create<Settings>(),
+                Widget.Create<SettingPopup>(),
 
                 // 팝업 영역: 알림.
-                Widget.Create<UpdatePopup>(),
-                Widget.Create<BlockFailPopup>(),
-                Widget.Create<ActionFailPopup>(),
-                Widget.Create<LoginPopup>(),
-                Widget.Create<SystemPopup>(),
+                Widget.Create<BlockFailTitleOneButtonSystem>(),
+                Widget.Create<LoginSystem>(),
+                Widget.Create<TitleOneButtonSystem>(),
 
                 // 시스템 정보 영역.
-                Widget.Create<BlockChainMessageBoard>(true),
-                Widget.Create<Notification>(true),
-                Widget.Create<OneLinePopup>(true),
-                Widget.Create<VersionInfo>(true),
-                Widget.Create<OneButtonPopup>(),
-                Widget.Create<TwoButtonPopup>(),
+                Widget.Create<BlockChainMessageSystem>(true),
+                Widget.Create<NotificationSystem>(true),
+                Widget.Create<OneLineSystem>(true),
+                Widget.Create<VersionSystem>(true),
+                Widget.Create<OneButtonSystem>(),
+                Widget.Create<TwoButtonSystem>(),
             };
 
             foreach (var value in firstWidgets)
@@ -206,8 +214,6 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<ArenaBattleLoadingScreen>());
             yield return null;
             // 메뉴보단 더 앞에 나와야 합니다.
-            secondWidgets.Add(Widget.Create<VanilaTooltip>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Battle>());
             yield return null;
             secondWidgets.Add(Widget.Create<Blind>());
@@ -234,7 +240,7 @@ namespace Nekoyume.UI
             yield return null;
 
             // loading
-            secondWidgets.Add(Widget.Create<StageLoadingScreen>());
+            secondWidgets.Add(Widget.Create<StageLoadingEffect>());
             yield return null;
 
             // module
@@ -247,46 +253,44 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<UpgradeEquipment>());
             yield return null;
 
-            // popup
-            secondWidgets.Add(Widget.Create<RankingBattleResult>());
+            // header menu
+            secondWidgets.Add(Widget.Create<HeaderMenuStatic>());
+            yield return null;
+
+            // Popup included in header menu
+            secondWidgets.Add(Widget.Create<MailPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<QuestPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<AvatarInfoPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CombinationSlotsPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<RankPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ChatPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<QuitSystem>());
+            yield return null;
+
+            // Over than HeaderMenu
+            secondWidgets.Add(Widget.Create<RankingBattleResultPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
-            secondWidgets.Add(Widget.Create<InputBox>());
+            secondWidgets.Add(Widget.Create<InputBoxPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
             yield return null;
-
-            // header menu
-            secondWidgets.Add(Widget.Create<HeaderMenu>());
+            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
             yield return null;
-
-            // Popup included in header menu
-            secondWidgets.Add(Widget.Create<Mail>());
+            secondWidgets.Add(Widget.Create<EnhancementResultPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<Quest>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<AvatarInfo>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<CombinationSlots>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Rank>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<ChatPopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<QuitPopup>());
-            yield return null;
-
-            // Over than HeaderMenu
-            secondWidgets.Add(Widget.Create<CombinationResult>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<EnhancementResult>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<BattleResult>());
+            secondWidgets.Add(Widget.Create<BattleResultPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
             yield return null;
@@ -294,35 +298,37 @@ namespace Nekoyume.UI
             // popup
             secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
+            secondWidgets.Add(Widget.Create<BuyItemInformationPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<FriendInfoPopup>());
+            secondWidgets.Add(Widget.Create<DialogPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Dialog>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<CodeReward>());
+            secondWidgets.Add(Widget.Create<CodeRewardPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<PrologueDialog>());
+            secondWidgets.Add(Widget.Create<PrologueDialogPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CelebratesPopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<HelpPopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Confirm>());
+            secondWidgets.Add(Widget.Create<ConfirmPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<BoosterPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<CelebratesPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<FriendInfoPopup>());
+            yield return null;
 
             // tooltip
+            secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
+            yield return null;
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
             yield return null;
-            secondWidgets.Add(Widget.Create<MessageCatManager>(true));
+            secondWidgets.Add(Widget.Create<HelpTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<VanilaTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<MessageCatTooltip>(true));
             yield return null;
 
             // tutorial
@@ -345,56 +351,7 @@ namespace Nekoyume.UI
             Widgets.AddRange(secondWidgets);
             UpdateLayers();
 
-            Widget.Find<Settings>().transform.SetAsLastSibling();
-        }
-
-        public void SetLayerSortingOrderToTarget(
-            WidgetType fromWidgetType,
-            WidgetType toWidgetType,
-            bool checkFromIsSmallerThanTo = true)
-        {
-            if (fromWidgetType == toWidgetType)
-            {
-                return;
-            }
-
-            var from = GetLayer(fromWidgetType);
-            var fromSortingOrder = from.root.sortingOrder;
-            var to = GetLayer(toWidgetType);
-            var toSortingOrder = to.root.sortingOrder;
-            if (fromSortingOrder == toSortingOrder)
-            {
-                return;
-            }
-
-            if (checkFromIsSmallerThanTo &&
-                fromSortingOrder > toSortingOrder)
-            {
-                return;
-            }
-
-            var fromIndex = fromSortingOrder == 0 ? 0 : fromSortingOrder / 10;
-            var toIndex = toSortingOrder == 0 ? 0 : toSortingOrder / 10;
-            from.SetSortingOrder(toSortingOrder);
-
-            if (fromIndex < toIndex)
-            {
-                for (var i = fromIndex + 1; i < toIndex + 1; i++)
-                {
-                    var layer = _layers[i];
-                    layer.SetSortingOrder(layer.root.sortingOrder - 10);
-                }
-            }
-            else
-            {
-                for (var i = toIndex; i < fromIndex; i++)
-                {
-                    var layer = _layers[i];
-                    layer.SetSortingOrder(layer.root.sortingOrder + 10);
-                }
-            }
-
-            UpdateLayers();
+            Widget.Find<SettingPopup>().transform.SetAsLastSibling();
         }
 
         public void InitWidgetInMain()

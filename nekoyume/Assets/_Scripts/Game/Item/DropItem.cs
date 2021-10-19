@@ -103,10 +103,10 @@ namespace Nekoyume.Game.Item
                 yield return null;
             }
 
-            var headerMenu = Widget.Find<HeaderMenu>();
+            var headerMenu = Widget.Find<HeaderMenuStatic>();
             if (!headerMenu)
             {
-                throw new WidgetNotFoundException<HeaderMenu>();
+                throw new WidgetNotFoundException<HeaderMenuStatic>();
             }
             headerMenu.PlayVFX(ItemMoveAnimation.EndPoint.Inventory);
 
@@ -122,13 +122,13 @@ namespace Nekoyume.Game.Item
             }
             else
             {
-                var headerMenu = Widget.Find<HeaderMenu>();
+                var headerMenu = Widget.Find<HeaderMenuStatic>();
                 if (!headerMenu)
                 {
-                    throw new WidgetNotFoundException<HeaderMenu>();
+                    throw new WidgetNotFoundException<HeaderMenuStatic>();
                 }
 
-                var target = headerMenu.GetToggle(HeaderMenu.ToggleType.AvatarInfo);
+                var target = headerMenu.GetToggle(HeaderMenuStatic.ToggleType.AvatarInfo);
                 _inventoryPosition = target ? target.position : Vector3.zero;
                 _inventoryPosition.z = transform.position.z;
             }

@@ -211,7 +211,7 @@ namespace Nekoyume.BlockChain
             }
             catch (InvalidGenesisBlockException)
             {
-                Widget.Find<SystemPopup>().ShowAndQuit("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
+                Widget.Find<TitleOneButtonSystem>().ShowAndQuit("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
 
 #if BLOCK_LOG_USE
@@ -463,7 +463,7 @@ namespace Nekoyume.BlockChain
                 yield return new WaitForSeconds(180f);
                 if (BlockIndex == current)
                 {
-                    Widget.Find<BlockFailPopup>().Show(current);
+                    Widget.Find<BlockFailTitleOneButtonSystem>().Show(current);
                     break;
                 }
             }

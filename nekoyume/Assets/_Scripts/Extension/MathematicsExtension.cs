@@ -1,6 +1,6 @@
 ﻿using Unity.Mathematics;
 
-namespace Nekoyume.Extension
+namespace Nekoyume
 {
     public static class MathematicsExtension
     {

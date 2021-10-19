@@ -2151,7 +2151,7 @@
             <param name="actions">List of actions will be included in the genesis block.
             If it's null, it will be replaced with <see cref="F:System.Collections.Immutable.ImmutableArray`1.Empty"/>
             as default.</param>
-            <param name="privateKey">A private key to sign the transaction in the genesis block.
+            <param name="privateKey">A private key to sign the transaction and the genesis block.
             If it's null, it will use new private key as default.</param>
             <param name="timestamp">The timestamp of the genesis block. If it's null, it will
             use <see cref="P:System.DateTimeOffset.UtcNow"/> as default.</param>
@@ -2369,7 +2369,7 @@
             by the same address, those with greater nonce never comes before those with
             lesser nonce.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.Nullable{System.DateTimeOffset},System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Nullable{System.Threading.CancellationToken})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset},System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Nullable{System.Threading.CancellationToken})">
             <summary>
             <para>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
@@ -2380,7 +2380,7 @@
             block is produced with current timestamp and appended immediately to the chain.
             </para>
             </summary>
-            <param name="miner">The <see cref="T:Libplanet.Address"/> of the miner that mines the block.</param>
+            <param name="miner">The miner's <see cref="T:Libplanet.Crypto.PublicKey"/> that mines the block.</param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to append the mined block immediately after mining.</param>
             <param name="maxTransactions">The maximum number of transactions that a block can
@@ -2397,11 +2397,11 @@
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.DateTimeOffset,System.Boolean,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.DateTimeOffset,System.Boolean,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
             <summary>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
-            <param name="miner">The <see cref="T:Libplanet.Address"/> of the miner that mines the block.</param>
+            <param name="miner">The miner's <see cref="T:Libplanet.Crypto.PublicKey"/> that mines the block.</param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to append the mined block immediately after mining.</param>
             <param name="maxTransactions">The maximum number of transactions that a block can
@@ -4360,7 +4360,7 @@
             <paramref name="header"/>'s <see cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.Nonce"/> does not
             satisfy the required <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.#ctor(Libplanet.Blocks.PreEvaluationBlock{`0},Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+        <member name="M:Libplanet.Blocks.Block`1.#ctor(Libplanet.Blocks.PreEvaluationBlock{`0},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
             <summary>
             Creates a <see cref="T:Libplanet.Blocks.Block`1"/> instance by combining
             a <paramref name="preEvaluationBlock"/> and its corresponding
@@ -4369,6 +4369,9 @@
             <param name="preEvaluationBlock">A pre-evaluation block.</param>
             <param name="stateRootHash">A state root hash determined from the given
             <paramref name="preEvaluationBlock"/> and its previous state root.</param>
+            <param name="signature">The block signature made using the miner's private key.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockSignatureException">Thrown when
+            the <paramref name="signature"/> signature is invalid.</exception>
         </member>
         <member name="P:Libplanet.Blocks.Block`1.ProtocolVersion">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/>
@@ -4378,6 +4381,9 @@
         </member>
         <member name="P:Libplanet.Blocks.Block`1.Hash">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockExcerpt.Hash"/>
+        </member>
+        <member name="P:Libplanet.Blocks.Block`1.Signature">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockHeader.Signature"/>
         </member>
         <member name="P:Libplanet.Blocks.Block`1.PreEvaluationHash">
             <inheritdoc cref="P:Libplanet.Blocks.IPreEvaluationBlockHeader.PreEvaluationHash"/>
@@ -4399,6 +4405,9 @@
         </member>
         <member name="P:Libplanet.Blocks.Block`1.Miner">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>
+        </member>
+        <member name="P:Libplanet.Blocks.Block`1.PublicKey">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PublicKey"/>
         </member>
         <member name="P:Libplanet.Blocks.Block`1.PreviousHash">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PreviousHash"/>
@@ -4797,7 +4806,7 @@
             Block header containing information about <see cref="T:Libplanet.Blocks.Block`1"/>s except transactions.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(Libplanet.Blocks.PreEvaluationBlockHeader,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(Libplanet.Blocks.PreEvaluationBlockHeader,Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
             <summary>
             Creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> instance from the given
             <paramref name="preEvaluationBlockHeader"/> and <paramref name="stateRootHash"/>.
@@ -4805,8 +4814,11 @@
             </summary>
             <param name="preEvaluationBlockHeader">The pre-evaluation block header.</param>
             <param name="stateRootHash">The state root hash.</param>
+            <param name="signature">The block signature.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockSignatureException">Thrown when
+            the <paramref name="signature"/> signature is invalid.</exception>
         </member>
-        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(Libplanet.Blocks.PreEvaluationBlockHeader,Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.Blocks.BlockHash)">
+        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(Libplanet.Blocks.PreEvaluationBlockHeader,Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},Libplanet.Blocks.BlockHash)">
             <summary>
             Creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> instance from the given
             <paramref name="preEvaluationBlockHeader"/> and <paramref name="stateRootHash"/>.
@@ -4814,21 +4826,26 @@
             </summary>
             <param name="preEvaluationBlockHeader">The pre-evaluation block header.</param>
             <param name="stateRootHash">The state root hash.</param>
+            <param name="signature">The block signature.</param>
             <param name="hash">The block hash to check.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockSignatureException">Thrown when
+            the <paramref name="signature"/> signature is invalid.</exception>
             <exception cref="T:Libplanet.Blocks.InvalidBlockHashException">Thrown when the given block
             <paramref name="hash"/> is consistent with other arguments.</exception>
         </member>
-        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(Libplanet.Blocks.PreEvaluationBlockHeader,System.ValueTuple{Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.Blocks.BlockHash})">
+        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(Libplanet.Blocks.PreEvaluationBlockHeader,System.ValueTuple{Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},Libplanet.Blocks.BlockHash})">
             <summary>
             Unsafely creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> instance with its
             <paramref name="preEvaluationBlockHeader"/> and <paramref name="proof"/> which is
             probably considered as to be valid.
             </summary>
             <param name="preEvaluationBlockHeader">The pre-evaluation block header.</param>
-            <param name="proof">A pair of the state root hash and the block hash which is probably
-            considered as to be derived from the <paramref name="preEvaluationBlockHeader"/> and
-            the state root hash.</param>
-            <remarks>This does not verify if a <paramref name="proof"/>'s hash is dervied from
+            <param name="proof">A triple of the state root hash, the block signature, and the block
+            hash which is probably considered as to be derived from
+            the <paramref name="preEvaluationBlockHeader"/> and the state root hash.</param>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockSignatureException">Thrown if a <paramref name="proof"/>'s
+            signature is invalid.</exception>
+            <remarks>This does not verify if a <paramref name="proof"/>'s hash is derived from
             the <paramref name="preEvaluationBlockHeader"/> and the state root hash.</remarks>
         </member>
         <member name="P:Libplanet.Blocks.BlockHeader.ProtocolVersion">
@@ -4849,6 +4866,9 @@
         <member name="P:Libplanet.Blocks.BlockHeader.Miner">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>
         </member>
+        <member name="P:Libplanet.Blocks.BlockHeader.PublicKey">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PublicKey"/>
+        </member>
         <member name="P:Libplanet.Blocks.BlockHeader.Difficulty">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>
         </member>
@@ -4860,6 +4880,9 @@
         </member>
         <member name="P:Libplanet.Blocks.BlockHeader.TxHash">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockHeader.Signature">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockHeader.Signature"/>
         </member>
         <member name="P:Libplanet.Blocks.BlockHeader.Hash">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockExcerpt.Hash"/>
@@ -4968,6 +4991,10 @@
         <member name="P:Libplanet.Blocks.BlockMetadata.Miner">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>
         </member>
+        <member name="P:Libplanet.Blocks.BlockMetadata.PublicKey">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PublicKey"/>
+            <remarks>Its setter also updates the <see cref="P:Libplanet.Blocks.BlockMetadata.Miner"/> property too.</remarks>
+        </member>
         <member name="P:Libplanet.Blocks.BlockMetadata.Difficulty">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>
             <exception cref="T:Libplanet.Blocks.InvalidBlockDifficultyException">Thrown when the value to set is
@@ -4990,11 +5017,11 @@
         <member name="P:Libplanet.Blocks.BlockMetadata.TxHash">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.TxHash"/>
         </member>
-        <member name="M:Libplanet.Blocks.BlockMetadata.ToBencodex(Libplanet.Nonce)">
+        <member name="M:Libplanet.Blocks.BlockMetadata.MakeCandidateData(Libplanet.Nonce)">
             <summary>
-            Serializes the block content into a Bencodex dictionary.  This data is used for
-            PoW (proof-of-work) to find the nonce, rather than transmitting the block over the
-            network.
+            Serializes data of a possible candidate shifted from it into a Bencodex dictionary.
+            This data is used for PoW (proof-of-work) to find the satisfying
+            <paramref name="nonce"/>, rather than transmitting the block over the network.
             </summary>
             <param name="nonce">The nonce of the block.</param>
             <returns>The serialized block content in a Bencodex dictionary.</returns>
@@ -5222,6 +5249,17 @@
             </summary>
             <seealso cref="P:Libplanet.Store.Trie.ITrie.Hash"/>
         </member>
+        <member name="P:Libplanet.Blocks.IBlockHeader.Signature">
+            <summary>
+            The digital signature of the whole block content (except for
+            <see cref="P:Libplanet.Blocks.IBlockExcerpt.Hash"/>, which is derived from the signature and other
+            contents).  This is made by the <see cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>'s
+            <see cref="T:Libplanet.Crypto.PrivateKey"/>.
+            <para>As the block signature is introduced since the protocol version 2, it is
+            <c>null</c> for blocks with earlier protocol versions than 2.  Although the property
+            is type-wise, the block signature is mandatory since the protocol version 2.</para>
+            </summary>
+        </member>
         <member name="T:Libplanet.Blocks.IBlockMetadata">
             <summary>
             A common interface for blocks that do not have any proofs nor transactions (but only
@@ -5248,6 +5286,15 @@
         <member name="P:Libplanet.Blocks.IBlockMetadata.Miner">
             <summary>
             The address of the miner.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.IBlockMetadata.PublicKey">
+            <summary>
+            The public key of the <see cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>.  This is used for verifying the signature.
+            <para>Although this is nullable type-wise, it is mandatory where
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.ProtocolVersion"/> is 2 or later.  As blocks had not been signed in
+            the previous protocol versions, the type of this is nullable.
+            </para>
             </summary>
         </member>
         <member name="P:Libplanet.Blocks.IBlockMetadata.Difficulty">
@@ -5366,13 +5413,54 @@
         <member name="M:Libplanet.Blocks.InvalidBlockProtocolVersionException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc cref="M:System.Exception.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
         </member>
+        <member name="T:Libplanet.Blocks.InvalidBlockPublicKeyException">
+            <summary>
+            An exception thrown when a block's public key is invalid.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockPublicKeyException.#ctor(Libplanet.Crypto.PublicKey,System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blocks.InvalidBlockPublicKeyException"/> instance.
+            </summary>
+            <param name="invalidPublicKey">The invalid public key tried to be used
+            in the block.</param>
+            <param name="message">A message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockPublicKeyException.InvalidPublicKey">
+            <summary>
+            The invalid public key tried to be used in the block.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Blocks.InvalidBlockSignatureException">
+            <summary>
+            An exception thrown when a block's signature is invalid.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockSignatureException.#ctor(Libplanet.Crypto.PublicKey,System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blocks.InvalidBlockPublicKeyException"/> instance.
+            </summary>
+            <param name="publicKey">The public key used for signing the block.</param>
+            <param name="invalidSignature">The block signature which is invalid.</param>
+            <param name="message">A message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockSignatureException.PublicKey">
+            <summary>
+            The public key used for signing the block.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockSignatureException.InvalidSignature">
+            <summary>
+            The block signature which is invalid.
+            </summary>
+        </member>
         <member name="T:Libplanet.Blocks.InvalidBlockStateRootHashException">
             <summary>
             The exception that is thrown when the state root hash in the block has
             mismatches to the state root hash of the trie on the block executed in local.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockStateRootHashException.#ctor(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.String)">
+        <member name="M:Libplanet.Blocks.InvalidBlockStateRootHashException.#ctor(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.String)">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Blocks.InvalidBlockStateRootHashException"/> class.
@@ -5602,34 +5690,82 @@
             The internal block content.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.Evaluate(Libplanet.Action.IAction,Libplanet.Store.IStateStore)">
+        <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.Evaluate(Libplanet.Crypto.PrivateKey,Libplanet.Action.IAction,Libplanet.Store.IStateStore)">
             <summary>
             Evaluates all actions in the <see cref="P:Libplanet.Blocks.PreEvaluationBlock`1.Transactions"/> and
             a <paramref name="blockAction"/> (if any), and returns a <see cref="T:Libplanet.Blocks.Block`1"/> instance
             combined with the <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/> determined from ground zero
-            (i.e., empty state root).
+            (i.e., empty state root).  The returned <see cref="T:Libplanet.Blocks.Block`1"/> is signed by the given
+            <paramref name="privateKey"/>.
             </summary>
+            <param name="privateKey">The miner's private key to be used for signing the block.
+            This must match to the block's <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Miner"/> and
+            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.PublicKey"/>.</param>
             <param name="blockAction">An optional
             <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>.</param>
             <param name="stateStore">The <see cref="P:Libplanet.Blockchain.BlockChain`1.StateStore"/>.</param>
             <returns>The block combined with the resulting <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.
-            </returns>
+            It is signed by the given <paramref name="privateKey"/>.</returns>
             <remarks>This can be used with only genesis blocks.  For blocks with indices greater
             than zero, use <see cref="M:Libplanet.Blocks.PreEvaluationBlock`1.DetermineStateRootHash(Libplanet.Blockchain.BlockChain{`0})"/> overloaded one
             instead.</remarks>
             <exception cref="T:System.InvalidOperationException">Thrown when its
-            <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/> is not zero.</exception>
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/> is not zero, or the block's
+            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> is less than 2.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="privateKey"/>
+            does not match to the block miner's <see cref="T:Libplanet.Crypto.PublicKey"/>.</exception>
+            <remarks>As blocks have their signatures since the <see
+            cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> 2, it is not usable with blocks of
+            the earlier <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/>s than 2.
+            To create a <see cref="T:Libplanet.Blocks.Block`1"/> instance with <see cref="P:Libplanet.Blocks.Block`1.ProtocolVersion"/>
+            less than 2, use <see cref="T:Libplanet.Blocks.Block`1"/>'s constructors with <c>null</c> signatures.
+            </remarks>
         </member>
-        <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.Evaluate(Libplanet.Blockchain.BlockChain{`0})">
+        <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.Evaluate(Libplanet.Crypto.PrivateKey,Libplanet.Blockchain.BlockChain{`0})">
             <summary>
             Evaluates all actions in the <see cref="P:Libplanet.Blocks.PreEvaluationBlock`1.Transactions"/> and an optional
             <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>, and returns
             a <see cref="T:Libplanet.Blocks.Block`1"/> instance combined with the <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>
-            determined from ground zero (i.e., empty state root).
+            determined from ground zero (i.e., empty state root). The returned
+            <see cref="T:Libplanet.Blocks.Block`1"/> is signed by the given <paramref name="privateKey"/>.
             </summary>
+            <param name="privateKey">The miner's private key to be used for signing the block.
+            This must match to the block's <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Miner"/> and
+            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.PublicKey"/>.</param>
             <param name="blockChain">The blockchain on which actions are evaluated based.</param>
             <returns>The block combined with the resulting <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.
-            </returns>
+            It is signed by the given <paramref name="privateKey"/>.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when the block's
+            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> is less than 2.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="privateKey"/>
+            does not match to the block miner's <see cref="T:Libplanet.Crypto.PublicKey"/>.</exception>
+            <remarks>As blocks have their signatures since the <see
+            cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> 2, it is not usable with blocks of
+            the earlier <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/>s than 2.
+            To create a <see cref="T:Libplanet.Blocks.Block`1"/> instance with <see cref="P:Libplanet.Blocks.Block`1.ProtocolVersion"/>
+            less than 2, use <see cref="T:Libplanet.Blocks.Block`1"/>'s constructors with <c>null</c> signatures.
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.Sign(Libplanet.Crypto.PrivateKey,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Signs the block content with the given <paramref name="stateRootHash"/>.
+            </summary>
+            <param name="privateKey">The miner's private key to be used for signing the block.
+            This must match to the block's <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Miner"/> and
+            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.PublicKey"/>.</param>
+            <param name="stateRootHash">The state root hash to include to the input message to
+            sign.</param>
+            <returns>The signed block with the <paramref name="stateRootHash"/>.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when the block's
+            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> is less than 2.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="privateKey"/>
+            does not match to the block miner's <see cref="T:Libplanet.Crypto.PublicKey"/>.</exception>
+            <remarks>As blocks have their signatures since the <see
+            cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> 2, it is not usable with blocks of
+            the earlier <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/>s than 2.
+            To create a <see cref="T:Libplanet.Blocks.Block`1"/> instance with <see cref="P:Libplanet.Blocks.Block`1.ProtocolVersion"/>
+            less than 2, use <see cref="T:Libplanet.Blocks.Block`1"/>'s constructors with <c>null</c> signatures.
+            </remarks>
         </member>
         <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.DetermineStateRootHash(Libplanet.Action.IAction,Libplanet.Store.IStateStore)">
             <summary>
@@ -5787,6 +5923,9 @@
         <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.Miner">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>
         </member>
+        <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.PublicKey">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PublicKey"/>
+        </member>
         <member name="P:Libplanet.Blocks.PreEvaluationBlockHeader.Difficulty">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>
         </member>
@@ -5810,23 +5949,60 @@
             The internal block metadata.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.ToBencodex(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+        <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.MakeCandidateData(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
             <summary>
-            Serializes the block content into a Bencodex dictionary.  This data is used as
-            the input to calculate the block <see cref="P:Libplanet.Blocks.Block`1.Hash"/>, rather than transmitting
-            the block over the network.
+            Serializes data of a possible candidate shifted from it into a Bencodex dictionary.
+            This data is used as the input to calculate the block <see cref="P:Libplanet.Blocks.Block`1.Hash"/>,
+            rather than transmitting the block over the network.
             </summary>
             <param name="stateRootHash">The <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of
             the resulting states after evaluating transactions and
             a <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> (if exists).</param>
+            <param name="signature">The block signature created using <see cref="M:Libplanet.Blocks.PreEvaluationBlockHeader.MakeSignature(Libplanet.Crypto.PrivateKey,Libplanet.HashDigest{System.Security.Cryptography.SHA256})"/>
+            method with the <paramref name="stateRootHash"/>.  This must be <c>null</c> for
+            blocks with earlier <seealso cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/>s than 2.</param>
             <returns>The serialized block header in a Bencodex dictionary.</returns>
         </member>
-        <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.DeriveBlockHash(Libplanet.HashDigest{System.Security.Cryptography.SHA256}@)">
+        <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.MakeSignature(Libplanet.Crypto.PrivateKey,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Makes a signature of the block content with a <paramref name="stateRootHash"/> using
+            the given <paramref name="privateKey"/>.
+            </summary>
+            <param name="privateKey">The miner's private key.  This must match to the block's
+            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.Miner"/> and <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.PublicKey"/>.</param>
+            <param name="stateRootHash">The state root hash to include to the input message to
+            sign.</param>
+            <returns>The signature of the block content with a <paramref name="stateRootHash"/>
+            using the given <paramref name="privateKey"/>.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when the block's
+            <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> is less than 2.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="privateKey"/>
+            does not match to the block miner's <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.PublicKey"/>.</exception>
+            <remarks>As blocks have their signatures since the <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/> 2,
+            it is not usable with blocks of the earlier <see cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/>s than 2.
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.VerifySignature(System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}},Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Verifies if the given block <paramref name="signature"/> is valid with the block
+            content and the specified <paramref name="stateRootHash"/>.
+            </summary>
+            <param name="signature">The block signature created using <see cref="M:Libplanet.Blocks.PreEvaluationBlockHeader.MakeSignature(Libplanet.Crypto.PrivateKey,Libplanet.HashDigest{System.Security.Cryptography.SHA256})"/>
+            method with the <paramref name="stateRootHash"/>.  This must be <c>null</c> for
+            blocks with earlier <seealso cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/>s than 2.</param>
+            <param name="stateRootHash">The state root hash included in the original message
+            of the signature.</param>
+            <returns><c>true</c> if the signature is valid.  <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.DeriveBlockHash(Libplanet.HashDigest{System.Security.Cryptography.SHA256}@,System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
             <summary>
             Derives a hash digest from the given pre-evaluation block header and
             <paramref name="stateRootHash"/>.
             </summary>
             <param name="stateRootHash">The state root hash.</param>
+            <param name="signature">The block signature created using <see cref="M:Libplanet.Blocks.PreEvaluationBlockHeader.MakeSignature(Libplanet.Crypto.PrivateKey,Libplanet.HashDigest{System.Security.Cryptography.SHA256})"/>
+            method with the <paramref name="stateRootHash"/>.  This must be <c>null</c> for
+            blocks with earlier <seealso cref="P:Libplanet.Blocks.PreEvaluationBlockHeader.ProtocolVersion"/>s than 2.</param>
             <returns>A block hash.</returns>
         </member>
         <member name="M:Libplanet.Blocks.PreEvaluationBlockHeader.CheckPreEvaluationHash(Libplanet.HashAlgorithmType,Libplanet.Blocks.BlockMetadata,Libplanet.Nonce@,System.Collections.Immutable.ImmutableArray{System.Byte}@)">
@@ -6319,6 +6495,12 @@
             <returns><c>true</c> if the <paramref name="signature"/> proves authenticity of
             the <paramref name="message"/> with the corresponding <see cref="T:Libplanet.Crypto.PrivateKey"/>.
             Otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:Libplanet.Crypto.PublicKey.ToString">
+            <summary>
+            Gets the public key's hexadecimal representation in compressed form.
+            </summary>
+            <returns>The hexadecimal string of the public key's compressed bytes.</returns>
         </member>
         <member name="T:Libplanet.Crypto.SymmetricKey">
             <summary>
@@ -9084,6 +9266,9 @@
         <member name="P:Libplanet.Store.BlockDigest.Miner">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Miner"/>
         </member>
+        <member name="P:Libplanet.Store.BlockDigest.PublicKey">
+            <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.PublicKey"/>
+        </member>
         <member name="P:Libplanet.Store.BlockDigest.Difficulty">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>
         </member>
@@ -9104,6 +9289,11 @@
         <member name="P:Libplanet.Store.BlockDigest.StateRootHash">
             <summary>
             The state root hash.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Store.BlockDigest.Signature">
+            <summary>
+            The block signature.
             </summary>
         </member>
         <member name="M:Libplanet.Store.BlockDigest.FromBlock``1(Libplanet.Blocks.Block{``0})">
@@ -9311,7 +9501,7 @@
             <summary>
             Prunes the states no more used from the state store.
             </summary>
-            <param name="survivalStateRootHashes">The state root hashes <em>not</em> to prune.
+            <param name="survivingStateRootHashes">The state root hashes <em>not</em> to prune.
             These state root hashes are guaranteed to survive after pruning.</param>
         </member>
         <member name="M:Libplanet.Store.IStore.ListChainIds">

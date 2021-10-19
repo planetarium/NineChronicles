@@ -90,7 +90,7 @@ namespace Nekoyume.BlockChain
                             index
                         )
                     );
-                    Dialog.DeleteDialogPlayerPrefs(avatarAddress);
+                    DialogPopup.DeleteDialogPlayerPrefs(avatarAddress);
                 });
         }
 

@@ -60,7 +60,7 @@ namespace Nekoyume.State.Modifiers
                 var worldRow = worldSheet.OrderedList.FirstOrDefault(row => row.Id == worldId);
                 if (worldRow is null)
                 {
-                    Notification.Push(MailType.System,
+                    NotificationSystem.Push(MailType.System,
                         L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"));
                     continue;
                 }
