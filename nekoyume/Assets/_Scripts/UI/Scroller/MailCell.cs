@@ -93,7 +93,7 @@ namespace Nekoyume.UI.Scroller
             unseal.SetActive(true);
             content.color = ColorHelper.HexToColorRGB("7a7a7a");
 
-            var mail = Widget.Find<Mail>();
+            var mail = Widget.Find<MailPopup>();
             _mail.Read(mail);
             mail.UpdateTabs();
         }
