@@ -7,8 +7,8 @@ namespace Nekoyume.UI.Module
 {
     public class EventBanner : Widget
     {
-        [SerializeField]
-        private Button ArenaEventButton;
+        // [SerializeField]
+        // private Button ArenaEventButton;
 
         [SerializeField]
         private Button playToEarnGoldEventButton;
@@ -24,9 +24,9 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            ArenaEventButton.onClick.AsObservable()
-                .Subscribe(_ => GoToArenaEventPage())
-                .AddTo(gameObject);
+            // ArenaEventButton.onClick.AsObservable()
+            //     .Subscribe(_ => GoToArenaEventPage())
+            //     .AddTo(gameObject);
 
             playToEarnGoldEventButton.onClick.AsObservable()
                 .Subscribe(_ => GoToGoldEventPage())
