@@ -1,0 +1,124 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_Lobby_shop
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 4aab04cddafed4a1f9661424d00cf49e, type: 3}
+    totalSpriteSurfaceArea: 396032
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: a716d100d90694e65bfa9b4f311a31a1, type: 3}
+  - {fileID: 21300000, guid: 3b8214105c8bc4906b4226c36a9889e3, type: 3}
+  - {fileID: 21300000, guid: 5af72b30bb5ec4590838b444349e1ae7, type: 3}
+  - {fileID: 21300000, guid: 6ce2e5b11bb424653816cac5832ec7bc, type: 3}
+  - {fileID: 21300000, guid: f8e7c612da4d447f8b2fea999ccc7f56, type: 3}
+  - {fileID: 21300000, guid: c21ccf12c81ae48eb8aeda4db5869348, type: 3}
+  - {fileID: 21300000, guid: 1d7a384247053451b90fed36437ba1f7, type: 3}
+  - {fileID: 21300000, guid: a4f2b1628ae3b46f28bef34ffa1e0b1b, type: 3}
+  - {fileID: 21300000, guid: 75f319e3ca4a34abb90f9cf87c4e8cdc, type: 3}
+  - {fileID: 21300000, guid: fc666614470dd4656be0d3af91407846, type: 3}
+  - {fileID: 21300000, guid: 929fa234af21c4d1485e230e62e487ec, type: 3}
+  - {fileID: 21300000, guid: 24eebc34a1e854914a92d52953ffd656, type: 3}
+  - {fileID: 21300000, guid: 3aa0bc26908804dbab46a436c1d38ad5, type: 3}
+  - {fileID: 21300000, guid: 209b23766fd184cd6b3a850c4b3c3b44, type: 3}
+  - {fileID: 21300000, guid: 9272a1e69fdb84e36866a188b5d4202b, type: 3}
+  - {fileID: 21300000, guid: 4403f0774680943fc829e09eeb1dc43b, type: 3}
+  - {fileID: 21300000, guid: 229a25c88ba334c9280f1df240364dc9, type: 3}
+  - {fileID: 21300000, guid: a420bd299f3994f2bb01049e0233f511, type: 3}
+  - {fileID: 21300000, guid: bfad4e0a3ee964fd29a25ce7d9b1f361, type: 3}
+  - {fileID: 21300000, guid: 45840c6ad14f04413bc1cfe9012e5281, type: 3}
+  - {fileID: 21300000, guid: 1bf3b27a4623a46f59dce32efcfe6d08, type: 3}
+  - {fileID: 21300000, guid: 60be714b1865345a28b81d851dea0a6b, type: 3}
+  - {fileID: 21300000, guid: 1975366bd4e20415d9ce48b6a95411d4, type: 3}
+  - {fileID: 21300000, guid: 8661537b39ab54ff7b3c352eea15d24f, type: 3}
+  - {fileID: 21300000, guid: dc70918b5c272446ba2ad44fddb1c453, type: 3}
+  - {fileID: 21300000, guid: 29d1e42cf2bb74452afe2350b4caeec9, type: 3}
+  - {fileID: 21300000, guid: 9878a3bc50fdd4ab2879c8f9e7f8598a, type: 3}
+  - {fileID: 21300000, guid: 4a63fd0ddfc05454b8ee8b439a7ea34f, type: 3}
+  - {fileID: 21300000, guid: a39d065eca8aa45679adc4be54845f3d, type: 3}
+  - {fileID: 21300000, guid: 6d4741ae3353a4442b1821837df2a7ba, type: 3}
+  - {fileID: 21300000, guid: 2ee5ebae81fd548719a446b5ac7f33c9, type: 3}
+  - {fileID: 21300000, guid: 8d6e48ced295f4ab6807125de40986ec, type: 3}
+  - {fileID: 21300000, guid: e4e11b7f7c73d4e3d901f51853b766c5, type: 3}
+  - {fileID: 21300000, guid: 369df68fb40664a29a3765f0bbc465f4, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Idle_31
+  - Idle_25
+  - Idle_30
+  - Idle_28
+  - Idle_19
+  - Idle_23
+  - Idle_12
+  - Idle_24
+  - Idle_01
+  - Idle_20
+  - Idle_27
+  - Idle_26
+  - Idle_22
+  - Idle_18
+  - Idle_04
+  - Idle_05
+  - Idle_21
+  - Idle_00
+  - Idle_06
+  - Idle_17
+  - Idle_03
+  - Idle_32
+  - Idle_09
+  - Idle_13
+  - Idle_15
+  - Idle_08
+  - Idle_07
+  - Idle_33
+  - Idle_10
+  - Idle_02
+  - Idle_16
+  - Idle_14
+  - Idle_11
+  - Idle_29
+  m_RenderDataMap: {}
+  m_Tag: Atlas_Lobby_shop
+  m_IsVariant: 0
