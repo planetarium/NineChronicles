@@ -163,10 +163,6 @@ namespace Nekoyume.BlockChain
             {
                 await _hub.DisposeAsync();
             }
-            if (!(_service is null))
-            {
-                await _service.RemoveClient(Address.ToByteArray());
-            }
             if (!(_channel is null))
             {
                 await _channel?.ShutdownAsync();
@@ -361,7 +357,14 @@ namespace Nekoyume.BlockChain
             {
                 Debug.Log($"Retry rpc connection. (count: {retryCount})");
                 await Task.Delay(5000);
-                _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                try
+                {
+                    _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                }
+                catch (ObjectDisposedException)
+                {
+                    break;
+                }
                 try
                 {
                     Debug.Log($"Trying to join hub...");
