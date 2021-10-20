@@ -219,7 +219,7 @@ namespace Nekoyume.Action
                 stageId,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
-                StageSimulator.ConstructorVersionV100025,
+                StageSimulator.ConstructorVersionV100080,
                 playCount);
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);

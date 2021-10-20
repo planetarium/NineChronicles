@@ -113,9 +113,29 @@ namespace Lib9c.Tests.Action
             }
 
             var equipmentRow =
-                _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
-            var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10151001);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0);
             previousAvatarState.inventory.AddItem(equipment);
+
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10251001);
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(mailEquipment);
+
+            var beltEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10351000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(beltEquipment);
+
+            var necklaceEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10451000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(necklaceEquipment);
+
+            var equipments = new List<Guid>
+            {
+                equipment.ItemId,
+                mailEquipment.ItemId,
+                beltEquipment.ItemId,
+                necklaceEquipment.ItemId,
+            };
 
             foreach (var equipmentId in previousAvatarState.inventory.Equipments)
             {
@@ -158,7 +178,7 @@ namespace Lib9c.Tests.Action
             var action = new MimisbrunnrBattle()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
-                equipments = new List<Guid>() { equipment.ItemId },
+                equipments = equipments,
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
@@ -625,12 +645,26 @@ namespace Lib9c.Tests.Action
             List<Guid> equipments = new List<Guid>();
 
             var equipmentRow =
-                _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
-            var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10151001);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0);
             previousAvatarState.inventory.AddItem(equipment);
 
-            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
-            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10251001);
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(mailEquipment);
+
+            var beltEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10351000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(beltEquipment);
+
+            var necklaceEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10451000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(necklaceEquipment);
+            equipments.Add(equipment.ItemId);
+            equipments.Add(mailEquipment.ItemId);
+            equipments.Add(beltEquipment.ItemId);
+            equipments.Add(necklaceEquipment.ItemId);
+
             var result = new CombinationConsumable5.ResultModel
             {
                 id = default,
@@ -690,27 +724,12 @@ namespace Lib9c.Tests.Action
                      x.item is IFungibleItem ownedFungibleItem &&
                      x.item.Id != 400000 && x.item.Id != 500000);
 
-            _testOutputHelper.WriteLine($"{rewardItem.ToList().Count}");
             Assert.Equal(stageRow.Rewards.Count(), rewardItem.Count());
-
-            var worldQuestSheet = state.GetSheet<WorldQuestSheet>();
-            var questRow = worldQuestSheet.OrderedList.FirstOrDefault(e => e.Goal == stageId);
-            var questRewardSheet = state.GetSheet<QuestRewardSheet>();
-            var rewardIds = questRewardSheet.First(x => x.Key == questRow.QuestRewardId).Value.RewardIds;
-            var questItemRewardSheet = state.GetSheet<QuestItemRewardSheet>();
-            var materialItemSheet = state.GetSheet<MaterialItemSheet>();
-            var sortedMaterialItemSheet = materialItemSheet
-                .Where(x => x.Value.ItemSubType == ItemSubType.EquipmentMaterial &&
-                           x.Value.ItemSubType == ItemSubType.MonsterPart);
-            var sortedQuestItemRewardSheet = questItemRewardSheet
-                .Where(x => sortedMaterialItemSheet.Any(y => y.Value.ItemId.Equals(x.Value.ItemId)));
-            var questSum = sortedQuestItemRewardSheet != null && sortedQuestItemRewardSheet.Any() ?
-                rewardIds.Sum(x => sortedQuestItemRewardSheet.First(y => y.Value.Id == x).Value.Count) : 0;
 
             var min = stageRow.Rewards.OrderBy(x => x.Min).First().Min;
             var max = stageRow.Rewards.OrderBy(x => x.Max).First().Max;
-            var totalMin = (min * playCount * stageRow.DropItemMin) + questSum;
-            var totalMax = (max * playCount * stageRow.DropItemMax) + questSum;
+            var totalMin = min * playCount * stageRow.DropItemMin;
+            var totalMax = max * playCount * stageRow.DropItemMax;
             var totalCount = rewardItem.Sum(x => x.count);
             Assert.InRange(totalCount, totalMin, totalMax);
         }
