@@ -106,10 +106,10 @@ namespace Nekoyume.UI
                 switch (menu.type)
                 {
                     case MenuType.Combination:
-                        _menu.combinationSpriteRenderer.material = growOutline;
+                        _menu.combinationImage.material = growOutline;
                         break;
                     case MenuType.Quest:
-                        _menu.hasSpriteRenderer.material = growOutline;
+                        _menu.hasSpriteImage.material = growOutline;
                         break;
                 }
             }
@@ -124,8 +124,8 @@ namespace Nekoyume.UI
                 _cachedImage.material = null;
             }
 
-            _menu.combinationSpriteRenderer.material = spriteDefault;
-            _menu.hasSpriteRenderer.material = spriteDefault;
+            _menu.combinationImage.material = spriteDefault;
+            _menu.hasSpriteImage.material = spriteDefault;
         }
 
         public void PlaySfx()

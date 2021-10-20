@@ -12,6 +12,7 @@ using mixpanel;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -63,13 +64,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private GuidedQuest guidedQuest = null;
 
-        [SerializeField]
-        private ActionPoint actionPoint;
-
         private Coroutine _coLazyClose;
 
-        public SpriteRenderer combinationSpriteRenderer;
-        public SpriteRenderer hasSpriteRenderer;
+        public Image combinationImage;
+        public Image hasSpriteImage;
 
         protected override void Awake()
         {
