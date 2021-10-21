@@ -64,7 +64,6 @@ namespace Nekoyume.Game
         public int waveNumber;
         public int waveTurn;
         public Player selectedPlayer;
-        public readonly Vector2 roomPosition = new Vector2(-2.808f, -1.519f);
         public int foodCount;
         public string zone;
         public Animator roomAnimator { get; private set; }
@@ -277,8 +276,6 @@ namespace Nekoyume.Game
 
             background = Instantiate(prefab, transform);
             background.name = prefabName;
-            if (prefabName == "room")
-                roomAnimator = background.GetComponent<Animator>();
 
             foreach (Transform child in background.transform)
             {

@@ -64,6 +64,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GuidedQuest guidedQuest = null;
 
+        [SerializeField]
+        private Button playerButton;
+
         private Coroutine _coLazyClose;
 
         public Image combinationImage;
@@ -486,9 +489,7 @@ namespace Nekoyume.UI
                 {
                     n--;
                     var k = Mathf.FloorToInt(Random.value * (n + 1));
-                    var value = speechBubbles[k];
-                    speechBubbles[k] = speechBubbles[n];
-                    speechBubbles[n] = value;
+                    (speechBubbles[k], speechBubbles[n]) = (speechBubbles[n], speechBubbles[k]);
                 }
 
                 foreach (var bubble in speechBubbles)
@@ -506,6 +507,12 @@ namespace Nekoyume.UI
             {
                 bubble.Hide();
             }
+        }
+
+        public void UpdatePlayerReactButton(System.Action callback)
+        {
+            playerButton.onClick.RemoveAllListeners();
+            playerButton.onClick.AddListener(() => callback?.Invoke());
         }
 
         public void TutorialActionHackAndSlash() => HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 1);
