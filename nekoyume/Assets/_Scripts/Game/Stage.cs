@@ -577,9 +577,10 @@ namespace Nekoyume.Game
                 {
                     if (isClear)
                     {
-                        _battleResultModel.NextState = IsRepeatStage ?
-                            BattleResultPopup.NextState.RepeatStage :
-                            BattleResultPopup.NextState.NextStage;
+                        _battleResultModel.NextState = PlayCount >= 2
+                            ? BattleResultPopup.NextState.GoToMain
+                            : IsRepeatStage
+                                ? BattleResultPopup.NextState.RepeatStage : BattleResultPopup.NextState.NextStage;
 
                         if (succeedToGetWorldRow)
                         {
