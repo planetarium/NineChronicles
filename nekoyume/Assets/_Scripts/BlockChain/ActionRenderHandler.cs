@@ -765,7 +765,6 @@ namespace Nekoyume.BlockChain
                 var log = simulator.Log;
                 Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
 
-
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
                     if (Widget.Find<QuestPreparation>().IsActive())
@@ -839,10 +838,12 @@ namespace Nekoyume.BlockChain
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
                     Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080
+                    StageSimulator.ConstructorVersionV100080,
+                    eval.Action.playCount
                 );
-                simulator.Simulate(1);
+                simulator.Simulate(eval.Action.playCount);
                 BattleLog log = simulator.Log;
+                Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {

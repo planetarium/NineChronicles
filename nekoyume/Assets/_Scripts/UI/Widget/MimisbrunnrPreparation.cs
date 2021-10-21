@@ -99,6 +99,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject coverToBlockClick = null;
 
+        [SerializeField]
+        private Button boostPopupButton;
+
         private Stage _stage;
         private Game.Character.Player _player;
         private EquipmentSlot _weaponSlot;
@@ -200,6 +203,45 @@ namespace Nekoyume.UI
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                .AddTo(gameObject);
+
+            boostPopupButton.OnClickAsObservable()
+                .Where(_ =>
+                    Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value)
+                    && EnoughActionPoint)
+                .Subscribe(_ =>
+                {
+                    var costumes = _player.Costumes;
+                    var equipments = equipmentSlots
+                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                        .Select(slot => (Equipment) slot.Item)
+                        .ToList();
+
+                    var consumables = consumableSlots
+                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                        .Select(slot => (Consumable) slot.Item)
+                        .ToList();
+
+                    _stage.IsExitReserved = false;
+                    _stage.IsRepeatStage = false;
+                    _stage.foodCount = consumables.Count;
+                    ActionRenderHandler.Instance.Pending = true;
+
+                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables, 6,
+                        GameConfig.MimisbrunnrWorldId, _stageId.Value);
+                });
+
+            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughActionPoint && !_stage.IsInStage)
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                .AddTo(gameObject);
+
+            boostPopupButton.OnClickAsObservable()
+                .Where(_ =>
+                    !Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value))
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ => OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_BOOSTER_CONDITIONS_GUIDE")))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
