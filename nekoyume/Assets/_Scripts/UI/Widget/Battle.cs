@@ -147,6 +147,7 @@ namespace Nekoyume.UI
                 .TableSheets.StageSheet.Values.First(i => i.Id == stageId).CostAP;
             boostEffectObject.SetActive(boostCost > cost);
             exitToggle.gameObject.SetActive(true);
+            exitToggle.isOn = boostCost > cost;
             boostCountText.text = $"<sprite name=UI_main_icon_star><size=75%>{boostCost}</size>";
         }
 
