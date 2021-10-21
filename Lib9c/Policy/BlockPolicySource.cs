@@ -48,16 +48,19 @@ namespace Nekoyume.BlockChain.Policy
 
         public const int MinTransactionsPerBlock = 1;
 
-        // FIXME: Should be finalized before release.
         public const long MaxTransactionsPerSignerPerBlockHardcodedIndex = 3_000_001;
 
-        // FIXME: Should be finalized before release.
         public const int MaxTransactionsPerSignerPerBlock = 4;
 
         public const long V100080ObsoleteIndex = 2_448_000;
 
-        // FIXME: Should be finalized before release.
         public const long V100081ObsoleteIndex = 2_550_000;
+
+        // FIXME: Should be finalized before release.
+        // current: 2021. 10. 20. pm 10:53 KST // 2,571,500
+        // target: 2021. 10. 22. am 11:00 KST
+        // seconds per block: 12
+        public const long V100082ObsoleteIndex = 2_582_500;
 
         public const long PermissionedMiningHardcodedIndex = 2_225_500;
 
