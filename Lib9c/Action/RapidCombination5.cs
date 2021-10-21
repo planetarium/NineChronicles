@@ -15,7 +15,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100082ObsoleteIndex)]
+    [ActionObsolete(BlockPolicySource.V100083ObsoleteIndex)]
     [ActionType("rapid_combination5")]
     public class RapidCombination5 : GameAction
     {
@@ -72,7 +72,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
             
-            CheckObsolete(BlockPolicySource.V100082ObsoleteIndex, context);
+            CheckObsolete(BlockPolicySource.V100083ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
