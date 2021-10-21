@@ -6,6 +6,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -14,36 +15,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("rapid_combination5")]
+    [ActionType("rapid_combination6")]
     public class RapidCombination : GameAction
     {
-        [Serializable]
-        public class ResultModel : AttachmentActionResult
-        {
-            public Guid id;
-            public Dictionary<Material, int> cost;
-
-            protected override string TypeId => "rapid_combination5.result";
-
-            public ResultModel(Dictionary serialized) : base(serialized)
-            {
-                id = serialized["id"].ToGuid();
-                if (serialized.TryGetValue((Text) "cost", out var value))
-                {
-                    cost = value.ToDictionary_Material_int();
-                }
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "id"] = id.Serialize(),
-                    [(Text) "cost"] = cost.Serialize(),
-                }.Union((Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
-        }
-
         public Address avatarAddress;
         public int slotIndex;
 
@@ -123,8 +97,28 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");
             }
 
+            if (slotState.TryGetResultId(out var resultId) &&
+                avatarState.mailBox.All(mail => mail.id != resultId) &&
+                slotState.TryGetMail(
+                    context.BlockIndex,
+                    context.BlockIndex,
+                    out var combinationMail,
+                    out var itemEnhanceMail))
+            {
+                if (combinationMail != null)
+                {
+                    avatarState.Update(combinationMail);
+                }
+                else if (itemEnhanceMail != null)
+                {
+                    avatarState.Update(itemEnhanceMail);
+                }
+            }
+
             slotState.UpdateV2(context.BlockIndex, hourGlass, count);
-            avatarState.UpdateFromRapidCombinationV2((ResultModel)slotState.Result, context.BlockIndex);
+            avatarState.UpdateFromRapidCombinationV2(
+                (RapidCombination5.ResultModel)slotState.Result,
+                context.BlockIndex);
 
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
