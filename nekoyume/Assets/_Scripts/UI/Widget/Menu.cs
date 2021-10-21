@@ -188,15 +188,8 @@ namespace Nekoyume.UI
             worldMap.UpdateNotificationInfo();
             var hasNotificationInWorldMap = worldMap.HasNotification;
 
-            questExclamationMark.gameObject.SetActive(
-                (btnQuest.IsUnlocked &&
-                 PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
-                hasNotificationInWorldMap);
-
-            mimisbrunnrExclamationMark.gameObject.SetActive(
-                (btnMimisbrunnr.IsUnlocked &&
-                 PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0) ||
-                hasNotificationInWorldMap);
+            questExclamationMark.gameObject.SetActive((btnQuest.IsUnlocked && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) || hasNotificationInWorldMap);
+            mimisbrunnrExclamationMark.gameObject.SetActive((btnMimisbrunnr.IsUnlocked && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0));
         }
 
         private void HideButtons()

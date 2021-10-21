@@ -5,6 +5,7 @@ using UnityEngine;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.AnimatedGraphics;
+using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Module
 {
@@ -28,18 +29,13 @@ namespace Nekoyume.UI.Module
         private SpeechBubble speechBubble;
 
         [SerializeField]
-        private RectTransform bgTransform;
-
-        [SerializeField]
-        private float TweenDuration = 0.3f;
-        [SerializeField]
-        private float BgScale = 1.05f;
-
-        [SerializeField]
         private GameObject[] lockObjects;
 
         [SerializeField]
         private GameObject[] unLockObjects;
+
+        [SerializeField]
+        private HoverScaleTweener hoverScaleTweener;
 
         private MessageCat _cat;
 
@@ -55,8 +51,6 @@ namespace Nekoyume.UI.Module
         {
             if (!GetComponentInParent<Menu>())
                 throw new NotFoundComponentException<Menu>();
-
-            _originLocalScale = bgTransform.localScale;
 
             switch (type)
             {
@@ -85,50 +79,43 @@ namespace Nekoyume.UI.Module
             _messageForCat =
                 $"{L10nManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
 
-            gameObject.AddComponent<ObservablePointerEnterTrigger>()
-                .OnPointerEnterAsObservable()
-                .Subscribe(x =>
-                {
-                    if (!IsUnlocked)
-                    {
-                        if (_cat)
-                        {
-                            _cat.Hide();
-                        }
-
-                        _cat = Widget.Find<MessageCatTooltip>()
-                            .Show(true, _messageForCat, gameObject);
-
-                        return;
-                    }
-                    bgTransform.DOScale(_originLocalScale * BgScale, TweenDuration);
-                })
-                .AddTo(gameObject);
-
-            gameObject.AddComponent<ObservablePointerExitTrigger>()
-                .OnPointerExitAsObservable()
-                .Subscribe(x =>
-                {
-                    if (!IsUnlocked)
-                    {
-                        if (!_cat)
-                            return;
-
-                        _cat.Hide();
-                        _cat = null;
-
-                        return;
-                    }
-
-                    bgTransform.DOScale(_originLocalScale, TweenDuration);
-                    ResetLocalizationKey();
-                })
-                .AddTo(gameObject);
+            hoverScaleTweener.AddCondition(PointEnterTrigger, PointExitTrigger);
         }
 
-        private void OnEnable()
+        private bool PointEnterTrigger()
         {
-            bgTransform.localScale = _originLocalScale;
+            if (!IsUnlocked)
+            {
+                if (_cat)
+                {
+                    _cat.Hide();
+                }
+
+                _cat = Widget.Find<MessageCatTooltip>()
+                    .Show(true, _messageForCat, gameObject);
+            }
+
+            return IsUnlocked;
+        }
+
+        private bool PointExitTrigger()
+        {
+            if (IsUnlocked)
+            {
+                ResetLocalizationKey();
+            }
+            else
+            {
+                if (!_cat)
+                {
+                    return IsUnlocked;
+                }
+
+                _cat.Hide();
+                _cat = null;
+            }
+
+            return IsUnlocked;
         }
 
         #endregion
