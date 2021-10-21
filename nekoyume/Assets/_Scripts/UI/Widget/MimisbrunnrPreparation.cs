@@ -893,7 +893,8 @@ namespace Nekoyume.UI
                     equipments,
                     consumables,
                     GameConfig.MimisbrunnrWorldId,
-                    _stageId.Value
+                    _stageId.Value,
+                    1
                 )
                 .Subscribe(
                     _ =>
