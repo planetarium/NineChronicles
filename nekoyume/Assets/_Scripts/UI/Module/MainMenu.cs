@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Module
         private SpeechBubble speechBubble;
 
         [SerializeField]
-        private Transform bgTransform;
+        private RectTransform bgTransform;
 
         [SerializeField]
         private float TweenDuration = 0.3f;
@@ -101,7 +101,6 @@ namespace Nekoyume.UI.Module
 
                         return;
                     }
-
                     bgTransform.DOScale(_originLocalScale * BgScale, TweenDuration);
                 })
                 .AddTo(gameObject);
