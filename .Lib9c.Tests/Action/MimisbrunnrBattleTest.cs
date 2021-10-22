@@ -18,12 +18,10 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using Xunit.Abstractions;
     using static SerializeKeys;
 
     public class MimisbrunnrBattleTest
     {
-        private readonly ITestOutputHelper _testOutputHelper;
         private readonly TableSheets _tableSheets;
 
         private readonly Address _agentAddress;
@@ -34,9 +32,8 @@ namespace Lib9c.Tests.Action
 
         private readonly IAccountStateDelta _initialState;
 
-        public MimisbrunnrBattleTest(ITestOutputHelper testOutputHelper)
+        public MimisbrunnrBattleTest()
         {
-            _testOutputHelper = testOutputHelper;
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
 
