@@ -284,7 +284,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            OnCombinationAction(recipeInfo);
             var consumableRow = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet[recipeInfo.RecipeId];
             var consumable = (Consumable)ItemFactory.CreateItemUsable(
                 consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
@@ -293,9 +292,7 @@ namespace Nekoyume.UI
             slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:consumable);
 
             consumableSubRecipeView.UpdateView();
-            Game.Game.instance.ActionManager.CombinationConsumable(
-                recipeInfo.RecipeId,
-                slotIndex);
+            Game.Game.instance.ActionManager.CombinationConsumable(recipeInfo, slotIndex);
 
             StartCoroutine(CoCombineNPCAnimation(consumable, requiredBlockIndex, true));
         }

@@ -187,23 +187,33 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(
-            int recipeId, int slotIndex)
+        public void CombinationConsumable(SubRecipeView.RecipeInfo recipeInfo, int slotIndex)
         {
-            Mixpanel.Track("Unity/Create CombinationConsumable", new Value()
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
+            LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
+
+            foreach (var (material, count) in recipeInfo.Materials)
             {
-                ["RecipeId"] = recipeId,
+                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
+            }
+
+            Mixpanel.Track("Unity/Create CombinationConsumable", new Value
+            {
+                ["RecipeId"] = recipeInfo.RecipeId,
             });
 
             var action = new CombinationConsumable
             {
-                recipeId = recipeId,
+                recipeId = recipeInfo.RecipeId,
                 avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<CombinationConsumable>()
+            _renderer.EveryRender<CombinationConsumable>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
