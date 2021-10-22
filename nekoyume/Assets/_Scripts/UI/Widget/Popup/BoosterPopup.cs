@@ -113,22 +113,13 @@ namespace Nekoyume.UI
             _stage.IsInStage = true;
             _stage.IsShowHud = true;
 
-            Game.Game.instance.ActionManager
-                .HackAndSlash(
-                    _costumes,
-                    _equipments,
-                    _consumables,
-                    worldId,
-                    stageId,
-                    (int) apSlider.value
-                )
-                .Subscribe(
-                    _ =>
-                    {
-                        LocalLayerModifier.ModifyAvatarActionPoint(
-                            States.Instance.CurrentAvatarState.address, GetCostOfStage());
-                    }, e => ActionRenderHandler.BackToMain(false, e))
-                .AddTo(this);
+            Game.Game.instance.ActionManager.HackAndSlash(
+                _costumes,
+                _equipments,
+                _consumables,
+                worldId,
+                stageId,
+                (int)apSlider.value);
         }
 
         private static int GetCostOfStage()

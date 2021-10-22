@@ -132,20 +132,13 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
-            Player player,
-            int worldId,
-            int stageId,
-            int playCount)
-        {
-            return HackAndSlash(
-                player.Costumes,
-                player.Equipments,
-                null,
-                worldId,
-                stageId,
-                playCount);
-        }
+        public void HackAndSlash(Player player, int worldId, int stageId, int playCount) => HackAndSlash(
+            player.Costumes,
+            player.Equipments,
+            null,
+            worldId,
+            stageId,
+            playCount);
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Costume> costumes,
@@ -187,7 +180,11 @@ namespace Nekoyume.BlockChain
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e =>
+                {
+                    HandleException(action.Id, e);
+                    ActionRenderHandler.BackToMain(false, e);
+                });
         }
 
         public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(

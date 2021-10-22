@@ -848,23 +848,14 @@ namespace Nekoyume.UI
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
 
-            var playCount = 1;
-            Game.Game.instance.ActionManager
-                .HackAndSlash(
-                    costumes,
-                    equipments,
-                    consumables,
-                    _worldId,
-                    _stageId.Value,
-                    playCount
-                )
-                .Subscribe(
-                    _ =>
-                    {
-                        LocalLayerModifier.ModifyAvatarActionPoint(
-                            States.Instance.CurrentAvatarState.address, _requiredCost);
-                    }, e => ActionRenderHandler.BackToMain(false, e))
-                .AddTo(this);
+            Game.Game.instance.ActionManager.HackAndSlash(
+                costumes,
+                equipments,
+                consumables,
+                _worldId,
+                _stageId.Value,
+                1
+            );
         }
 
         public void GoToStage(BattleLog battleLog)

@@ -880,7 +880,7 @@ namespace Nekoyume.BlockChain
                     new List<Consumable>(),
                     1,
                     1,
-                    1).ToYieldInstruction();
+                    1);
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }

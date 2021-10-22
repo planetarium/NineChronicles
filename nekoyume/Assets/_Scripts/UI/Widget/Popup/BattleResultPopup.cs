@@ -536,16 +536,13 @@ namespace Nekoyume.UI
             }
             else
             {
-                yield return Game.Game.instance.ActionManager
-                    .HackAndSlash(
-                        player.Costumes,
-                        player.Equipments,
-                        new List<Consumable>(),
-                        SharedModel.WorldID,
-                        SharedModel.StageID + 1,
-                        1)
-                    .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
-                    .Subscribe();
+                yield return Game.Game.instance.ActionManager.HackAndSlash(
+                    player.Costumes,
+                    player.Equipments,
+                    new List<Consumable>(),
+                    SharedModel.WorldID,
+                    SharedModel.StageID + 1,
+                    1);
             }
         }
 
@@ -600,16 +597,13 @@ namespace Nekoyume.UI
             }
             else
             {
-                yield return Game.Game.instance.ActionManager
-                    .HackAndSlash(
-                        player.Costumes,
-                        player.Equipments,
-                        new List<Consumable>(),
-                        SharedModel.WorldID,
-                        SharedModel.StageID,
-                        1)
-                    .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
-                    .Subscribe();
+                yield return Game.Game.instance.ActionManager.HackAndSlash(
+                    player.Costumes,
+                    player.Equipments,
+                    new List<Consumable>(),
+                    SharedModel.WorldID,
+                    SharedModel.StageID,
+                    1);
             }
         }
 
