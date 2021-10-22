@@ -94,7 +94,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<MimisbrunnrBattle>> MimisbrunnrBattle(
+        public void MimisbrunnrBattle(
             List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
@@ -120,12 +120,16 @@ namespace Nekoyume.BlockChain
 
             _lastBattleActionId = action.Id;
 
-            return _renderer.EveryRender<MimisbrunnrBattle>()
+            _renderer.EveryRender<MimisbrunnrBattle>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e =>
+                {
+                    HandleException(action.Id, e);
+                    ActionRenderHandler.BackToMain(false, e);
+                });
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
