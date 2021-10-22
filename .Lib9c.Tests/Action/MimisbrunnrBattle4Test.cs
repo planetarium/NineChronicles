@@ -113,9 +113,9 @@
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0);
             previousAvatarState.inventory.AddItem(equipment);
 
-            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10251001);
-            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, Guid.NewGuid(), 0);
-            previousAvatarState.inventory.AddItem(mailEquipment);
+            var armorEquipmentRow = _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10251001);
+            var armorEquipment = ItemFactory.CreateItemUsable(armorEquipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(armorEquipment);
 
             var beltEquipment = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10351000), Guid.NewGuid(), 0);
@@ -125,7 +125,7 @@
                 _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10451000), Guid.NewGuid(), 0);
             previousAvatarState.inventory.AddItem(necklaceEquipment);
             equipments.Add(equipment.ItemId);
-            equipments.Add(mailEquipment.ItemId);
+            equipments.Add(armorEquipment.ItemId);
             equipments.Add(beltEquipment.ItemId);
             equipments.Add(necklaceEquipment.ItemId);
 
