@@ -574,9 +574,9 @@ namespace Nekoyume.Game
                 {
                     if (isClear)
                     {
-                        _battleResultModel.NextState = IsRepeatStage ?
-                            BattleResultPopup.NextState.RepeatStage :
-                            BattleResultPopup.NextState.NextStage;
+                        _battleResultModel.NextState = IsRepeatStage
+                            ? BattleResultPopup.NextState.RepeatStage
+                            : BattleResultPopup.NextState.NextStage;
 
                         if (succeedToGetWorldRow)
                         {
@@ -696,9 +696,9 @@ namespace Nekoyume.Game
                     isTutorial = true;
                 }
 
-                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial, PlayCount * Game.instance
-                    .TableSheets.StageSheet.Values.FirstOrDefault(i =>
-                        i.Id == Widget.Find<WorldMap>().SelectedStageId).CostAP);
+                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial, PlayCount * Game
+                    .instance
+                    .TableSheets.StageSheet.Values.First(i => i.Id == stageId).CostAP);
                 var stageSheet = Game.instance.TableSheets.StageSheet;
                 if (stageSheet.TryGetValue(stageId, out var row))
                 {
