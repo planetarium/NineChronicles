@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
@@ -45,6 +46,7 @@ namespace Nekoyume.BlockChain
         void EnqueueAction(GameAction gameAction);
 
         IValue GetState(Address address);
+        Task<IValue> GetStateAsync(Address address);
 
         void SendException(Exception exc);
 

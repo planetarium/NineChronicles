@@ -127,6 +127,12 @@ namespace Nekoyume.BlockChain
             return _codec.Decode(raw);
         }
 
+        public async Task<IValue> GetStateAsync(Address address)
+        {
+            byte[] raw = await _service.GetState(address.ToByteArray());
+            return _codec.Decode(raw);
+        }
+
         public FungibleAssetValue GetBalance(Address address, Currency currency)
         {
             // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
