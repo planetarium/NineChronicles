@@ -483,8 +483,16 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(Address avatarAddress, int slotIndex)
+        public void RapidCombination(CombinationSlotState state, int slotIndex)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                .First(r => r.ItemSubType == ItemSubType.Hourglass);
+            var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+
+            LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
+
             var action = new RapidCombination
             {
                 avatarAddress = avatarAddress,
@@ -492,7 +500,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<RapidCombination>()
+            _renderer.EveryRender<RapidCombination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
