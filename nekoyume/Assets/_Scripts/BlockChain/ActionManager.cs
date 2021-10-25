@@ -221,20 +221,22 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid tradableId,
-                                                                   FungibleAssetValue price,
-                                                                   int count,
-                                                                   ItemSubType itemSubType)
+        public void Sell(ITradableItem tradableItem, int count, FungibleAssetValue price, ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
+            if (!(tradableItem is TradableMaterial))
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+            }
+
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
 
             var action = new Sell
             {
                 sellerAvatarAddress = avatarAddress,
-                tradableId = tradableId,
+                tradableId = tradableItem.TradableId,
                 count = count,
                 price = price,
                 itemSubType = itemSubType,
@@ -242,15 +244,15 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<Sell>()
+            _renderer.EveryRender<Sell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
+        public void SellCancellation(
             Address sellerAvatarAddress,
             Guid orderId,
             Guid tradableId,
@@ -265,31 +267,36 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<SellCancellation>()
+            _renderer.EveryRender<SellCancellation>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(
+        public void UpdateSell(
             Guid orderId,
-            Guid tradableId,
-            FungibleAssetValue price,
+            ITradableItem tradableItem,
             int count,
+            FungibleAssetValue price,
             ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
+            if (!(tradableItem is TradableMaterial))
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+            }
+
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
 
             var action = new UpdateSell
             {
                 orderId = orderId,
                 updateSellOrderId = Guid.NewGuid(),
-                tradableId = tradableId,
+                tradableId = tradableItem.TradableId,
                 sellerAvatarAddress = avatarAddress,
                 itemSubType = itemSubType,
                 price = price,
@@ -297,12 +304,12 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<UpdateSell>()
+            _renderer.EveryRender<UpdateSell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(IEnumerable<PurchaseInfo> purchaseInfos,
