@@ -16,20 +16,20 @@ namespace Nekoyume.UI.Tween
             PingPongRepeat,
         }
 
-        public bool StartWithPlay = true;
-        public float StartDelay = 0.0f;
-        public float Duration = 1.0f;
-        public TweenType TweenType_ = TweenType.Forward;
+        public bool startWithPlay = true;
+        public float startDelay = 0.0f;
+        public float duration = 1.0f;
+        public TweenType tweenType = TweenType.Forward;
         [HideInInspector]
-        public Ease Ease_ = Ease.Linear;
+        public Ease ease = Ease.Linear;
         [HideInInspector]
-        public string CompleteMethod = "";
+        public string completeMethod = "";
         [HideInInspector]
-        public int ComponentIndex = 0;
+        public int componentIndex = 0;
         [HideInInspector]
-        public GameObject Target = null;
+        public GameObject target = null;
         [HideInInspector]
-        public float CompleteDelay = 0.0f;
+        public float completeDelay = 0.0f;
         public DG.Tweening.Tween currentTween;
         public readonly Subject<DG.Tweening.Tween> onStopSubject = new Subject<DG.Tweening.Tween>();
         public System.Action onCompleted = null;
@@ -45,18 +45,18 @@ namespace Nekoyume.UI.Tween
 
         protected IEnumerator Start()
         {
-            if (!StartWithPlay)
+            if (!startWithPlay)
             {
                 yield break;
             }
 
-            yield return new WaitForSeconds(StartDelay);
+            yield return new WaitForSeconds(startDelay);
             Play();
         }
 
         public virtual void Play()
         {
-            Invoke($"Play{TweenType_.ToString()}", 0.0f);
+            Invoke($"Play{tweenType.ToString()}", 0.0f);
         }
 
         public virtual void PlayDelayed(float delay)
@@ -116,7 +116,7 @@ namespace Nekoyume.UI.Tween
 
             onCompleted?.Invoke();
 
-            if (!string.IsNullOrEmpty(CompleteMethod) && Target)
+            if (!string.IsNullOrEmpty(completeMethod) && target)
             {
                 StartCoroutine(CoOnComplete());
             }
@@ -124,10 +124,10 @@ namespace Nekoyume.UI.Tween
 
         private IEnumerator CoOnComplete()
         {
-            yield return new WaitForSeconds(CompleteDelay);
-            var components = Target.GetComponents<Component>();
-            var methodInfo = components[ComponentIndex].GetType().GetMethod(CompleteMethod);
-            methodInfo.Invoke(components[ComponentIndex], new object[]{});
+            yield return new WaitForSeconds(completeDelay);
+            var components = target.GetComponents<Component>();
+            var methodInfo = components[componentIndex].GetType().GetMethod(completeMethod);
+            methodInfo.Invoke(components[componentIndex], new object[]{});
         }
 
         protected virtual IEnumerator CPlayDelayed(float delay)

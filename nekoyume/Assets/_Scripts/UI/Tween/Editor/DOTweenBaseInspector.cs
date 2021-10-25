@@ -15,22 +15,22 @@ namespace Nekoyume.UI.Tween
             base.OnInspectorGUI();
 
             var tween = target as DOTweenBase;
-            if (tween.TweenType_ == DOTweenBase.TweenType.Forward
-                || tween.TweenType_ == DOTweenBase.TweenType.Reverse
-                || tween.TweenType_ == DOTweenBase.TweenType.PingPongOnce)
+            if (tween.tweenType == DOTweenBase.TweenType.Forward
+                || tween.tweenType == DOTweenBase.TweenType.Reverse
+                || tween.tweenType == DOTweenBase.TweenType.PingPongOnce)
             {
                 GUILayout.Space(4.0f);
                 GUILayout.Label ("[Tween Complete Callback]");
-                tween.Target = (GameObject)EditorGUILayout.ObjectField("GameObject", tween.Target, typeof(GameObject), true);
-                if (tween.Target)
+                tween.target = (GameObject)EditorGUILayout.ObjectField("GameObject", tween.target, typeof(GameObject), true);
+                if (tween.target)
                 {
                     DrawGUIComponents();
                 }
                 else
                 {
-                    tween.CompleteMethod = "";
+                    tween.completeMethod = "";
                 }
-                tween.CompleteDelay = EditorGUILayout.FloatField("CompleteDelay", tween.CompleteDelay);
+                tween.completeDelay = EditorGUILayout.FloatField("CompleteDelay", tween.completeDelay);
             }
 
             EditorGUILayout.Space();
@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Tween
             }
             else
             {
-                tween.Ease_ = (Ease) EditorGUILayout.EnumPopup("Easing function", tween.Ease_);
+                tween.ease = (Ease) EditorGUILayout.EnumPopup("Easing function", tween.ease);
             }
 
             DrawGUIRectTransformMoveTo();
@@ -52,16 +52,16 @@ namespace Nekoyume.UI.Tween
         private void DrawGUIComponents()
         {
             var tween = target as DOTweenBase;
-            var components = tween.Target.GetComponents(typeof(Component));
+            var components = tween.target.GetComponents(typeof(Component));
             if (components.Length == 0)
                 return;
             string[] options = components.Select((x, i) => $"[{i}] " + x.GetType().ToString()).ToArray();
-            int selected = tween.ComponentIndex;
+            int selected = tween.componentIndex;
             selected = selected < 0 ? 0 : selected;
             selected = EditorGUILayout.Popup("Component", selected, options);
-            tween.ComponentIndex = selected;
+            tween.componentIndex = selected;
 
-            if (tween.ComponentIndex >= 0)
+            if (tween.componentIndex >= 0)
             {
                 DrawGUIComponentMethods(components[selected]);
             }
@@ -75,12 +75,12 @@ namespace Nekoyume.UI.Tween
                 | System.Reflection.BindingFlags.Instance
                 | System.Reflection.BindingFlags.DeclaredOnly);
             string[] options = methodInfos.Select(x => x.Name).ToArray();
-            int selected = Array.IndexOf(options, tween.CompleteMethod);
+            int selected = Array.IndexOf(options, tween.completeMethod);
             selected = selected < 0 ? 0 : selected;
             selected = EditorGUILayout.Popup("Method", selected, options);
             if (options.Length == 0)
                 return;
-            tween.CompleteMethod = options[selected];
+            tween.completeMethod = options[selected];
         }
 
         private void DrawGUIRectTransformMoveTo()

@@ -18,58 +18,58 @@ namespace Nekoyume.UI.Tween
             _transform = GetComponent<RectTransform>();
             BeginValue = StartFromDelta ? _transform.localPosition - DeltaValue : _transform.localPosition;
             EndValue = StartFromDelta ? _transform.localPosition : _transform.localPosition + DeltaValue;
-            if (StartWithPlay)
+            if (startWithPlay)
                 _transform.DOLocalMove(BeginValue, 0.0f);
         }
 
         public override void PlayForward()
         {
             _transform.DOLocalMove(BeginValue, 0.0f);
-            if (TweenType.Repeat == TweenType_)
+            if (TweenType.Repeat == tweenType)
             {
-                _transform.DOLocalMove(EndValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOLocalMove(EndValue, duration)
+                    .SetEase(ease)
                     .onComplete = PlayForward;
             }
-            else if (TweenType.PingPongOnce == TweenType_)
+            else if (TweenType.PingPongOnce == tweenType)
             {
-                _transform.DOLocalMove(EndValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOLocalMove(EndValue, duration)
+                    .SetEase(ease)
                     .onComplete = PlayReverse;
             }
-            else if (TweenType.PingPongRepeat == TweenType_)
+            else if (TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOLocalMove(EndValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOLocalMove(EndValue, duration)
+                    .SetEase(ease)
                     .onComplete = PlayReverse;
             }
             else
             {
-                _transform.DOLocalMove(EndValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOLocalMove(EndValue, duration)
+                    .SetEase(ease)
                     .onComplete = OnComplete;
             }
         }
-        
+
         public override void PlayReverse()
         {
             _transform.DOLocalMove(EndValue, 0.0f);
-            if (TweenType.PingPongOnce == TweenType_)
+            if (TweenType.PingPongOnce == tweenType)
             {
-                _transform.DOLocalMove(BeginValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOLocalMove(BeginValue, duration)
+                    .SetEase(ease)
                     .onComplete = OnComplete;
             }
-            else if (TweenType.PingPongRepeat == TweenType_)
+            else if (TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOLocalMove(BeginValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOLocalMove(BeginValue, duration)
+                    .SetEase(ease)
                     .onComplete = PlayForward;
             }
             else
             {
-                _transform.DOLocalMove(BeginValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOLocalMove(BeginValue, duration)
+                    .SetEase(ease)
                     .onComplete = OnComplete;
             }
         }

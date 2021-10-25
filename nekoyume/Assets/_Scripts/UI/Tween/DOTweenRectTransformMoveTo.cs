@@ -27,51 +27,51 @@ namespace Nekoyume.UI.Tween
         public override void PlayForward()
         {
             _transform.DOMove(BeginValue, 0.0f);
-            if (TweenType.Repeat == TweenType_)
+            if (TweenType.Repeat == tweenType)
             {
-                _transform.DOMove(EndValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOMove(EndValue, duration)
+                    .SetEase(ease)
                     .onComplete = PlayForward;
             }
-            else if (TweenType.PingPongOnce == TweenType_)
+            else if (TweenType.PingPongOnce == tweenType)
             {
-                _transform.DOMove(EndValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOMove(EndValue, duration)
+                    .SetEase(ease)
                     .onComplete = PlayReverse;
             }
-            else if (TweenType.PingPongRepeat == TweenType_)
+            else if (TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOMove(EndValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOMove(EndValue, duration)
+                    .SetEase(ease)
                     .onComplete = PlayReverse;
             }
             else
             {
-                _transform.DOMove(EndValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOMove(EndValue, duration)
+                    .SetEase(ease)
                     .onComplete = OnComplete;
             }
         }
-        
+
         public override void PlayReverse()
         {
             _transform.DOMove(EndValue, 0.0f);
-            if (TweenType.PingPongOnce == TweenType_)
+            if (TweenType.PingPongOnce == tweenType)
             {
-                _transform.DOMove(BeginValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOMove(BeginValue, duration)
+                    .SetEase(ease)
                     .onComplete = OnComplete;
             }
-            else if (TweenType.PingPongRepeat == TweenType_)
+            else if (TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOMove(BeginValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOMove(BeginValue, duration)
+                    .SetEase(ease)
                     .onComplete = PlayForward;
             }
             else
             {
-                _transform.DOMove(BeginValue, Duration)
-                    .SetEase(Ease_)
+                _transform.DOMove(BeginValue, duration)
+                    .SetEase(ease)
                     .onComplete = OnComplete;
             }
         }

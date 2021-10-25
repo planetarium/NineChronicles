@@ -15,58 +15,58 @@ namespace Nekoyume.UI.Tween
         {
             base.Awake();
             _group = GetComponent<CanvasGroup>();
-            if (StartWithPlay)
+            if (startWithPlay)
                 _group.DOFade(BeginValue, 0.0f);
         }
 
         public override void PlayForward()
         {
             _group.DOFade(BeginValue, 0.0f);
-            if (TweenType.Repeat == TweenType_)
+            if (TweenType.Repeat == tweenType)
             {
-                currentTween = _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _group.DOFade(EndValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = PlayForward;
             }
-            else if (TweenType.PingPongOnce == TweenType_)
+            else if (TweenType.PingPongOnce == tweenType)
             {
-                currentTween = _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _group.DOFade(EndValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = PlayReverse;
             }
-            else if (TweenType.PingPongRepeat == TweenType_)
+            else if (TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _group.DOFade(EndValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = PlayReverse;
             }
             else
             {
-                currentTween = _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _group.DOFade(EndValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = OnComplete;
             }
         }
-        
+
         public override void PlayReverse()
         {
             _group.DOFade(EndValue, 0.0f);
-            if (TweenType.PingPongOnce == TweenType_)
+            if (TweenType.PingPongOnce == tweenType)
             {
-                currentTween = _group.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _group.DOFade(BeginValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = OnComplete;
             }
-            else if (TweenType.PingPongRepeat == TweenType_)
+            else if (TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = _group.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _group.DOFade(BeginValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = PlayForward;
             }
             else
             {
-                currentTween = _group.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _group.DOFade(BeginValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = OnComplete;
             }
         }

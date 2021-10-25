@@ -22,51 +22,51 @@ namespace Nekoyume.UI.Tween
         public override void PlayForward()
         {
             _text.DOFade(BeginValue, 0.0f);
-            if (TweenType.Repeat == TweenType_)
+            if (TweenType.Repeat == tweenType)
             {
-                currentTween = _text.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _text.DOFade(EndValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = PlayForward;
             }
-            else if (TweenType.PingPongOnce == TweenType_)
+            else if (TweenType.PingPongOnce == tweenType)
             {
-                currentTween = _text.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _text.DOFade(EndValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = PlayReverse;
             }
-            else if (TweenType.PingPongRepeat == TweenType_)
+            else if (TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = _text.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _text.DOFade(EndValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = PlayReverse;
             }
             else
             {
-                currentTween = _text.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _text.DOFade(EndValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = OnComplete;
             }
         }
-        
+
         public override void PlayReverse()
         {
             _text.DOFade(EndValue, 0.0f);
-            if (TweenType.PingPongOnce == TweenType_)
+            if (TweenType.PingPongOnce == tweenType)
             {
-                currentTween = _text.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _text.DOFade(BeginValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = OnComplete;
             }
-            else if (TweenType.PingPongRepeat == TweenType_)
+            else if (TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = _text.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _text.DOFade(BeginValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = PlayForward;
             }
             else
             {
-                currentTween = _text.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_);
+                currentTween = _text.DOFade(BeginValue, duration)
+                    .SetEase(ease);
                 currentTween.onComplete = OnComplete;
             }
         }
