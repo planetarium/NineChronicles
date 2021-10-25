@@ -357,34 +357,47 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(
-            Guid itemId,
-            Guid materialId,
-            int slotIndex)
+        public void ItemEnhancement(
+            Equipment baseEquipment,
+            Equipment materialEquipment,
+            int slotIndex,
+            BigInteger costNCG)
         {
+            var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -costNCG);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
+            LocalLayerModifier.RemoveItem(avatarAddress, baseEquipment.TradableId,
+                baseEquipment.RequiredBlockIndex, 1);
+            LocalLayerModifier.RemoveItem(avatarAddress, materialEquipment.TradableId,
+                materialEquipment.RequiredBlockIndex, 1);
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false);
-            LocalLayerModifier.SetItemEquip(avatarAddress, materialId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, materialEquipment.NonFungibleId, false);
 
             Mixpanel.Track("Unity/Item Enhancement");
 
             var action = new ItemEnhancement
             {
-                itemId = itemId,
-                materialId = materialId,
+                itemId = baseEquipment.NonFungibleId,
+                materialId = materialEquipment.NonFungibleId,
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<ItemEnhancement>()
+            _renderer.EveryRender<ItemEnhancement>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e =>
+                {
+                    HandleException(action.Id, e);
+                    ActionRenderHandler.BackToMain(false, e);
+                });
         }
 
         public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
