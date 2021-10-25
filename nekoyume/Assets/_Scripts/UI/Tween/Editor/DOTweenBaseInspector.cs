@@ -33,13 +33,19 @@ namespace Nekoyume.UI.Tween
                 tween.CompleteDelay = EditorGUILayout.FloatField("CompleteDelay", tween.CompleteDelay);
             }
 
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Easing Options", EditorStyles.boldLabel);
+            tween.useCustomEaseCurve =
+                EditorGUILayout.Toggle("Use Custom Ease Curve",
+                    tween.useCustomEaseCurve,
+                    GUILayout.Width(300f));
             if (tween.useCustomEaseCurve)
             {
-                tween.customEaseCurve = EditorGUILayout.CurveField("AnimationCurve", tween.customEaseCurve);
+                tween.customEaseCurve = EditorGUILayout.CurveField("Custom Easing Curve", tween.customEaseCurve);
             }
             else
             {
-                
+                tween.Ease_ = (Ease) EditorGUILayout.EnumPopup("Easing function", tween.Ease_);
             }
 
             DrawGUIRectTransformMoveTo();

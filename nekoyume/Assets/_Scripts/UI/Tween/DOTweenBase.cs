@@ -33,6 +33,7 @@ namespace Nekoyume.UI.Tween
         public DG.Tweening.Tween currentTween;
         public readonly Subject<DG.Tweening.Tween> onStopSubject = new Subject<DG.Tweening.Tween>();
         public System.Action onCompleted = null;
+        [HideInInspector]
         public bool useCustomEaseCurve = false;
         [HideInInspector]
         public AnimationCurve customEaseCurve;
