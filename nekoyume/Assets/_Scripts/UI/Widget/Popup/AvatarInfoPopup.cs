@@ -718,26 +718,21 @@ namespace Nekoyume.UI
 
         public static void ChargeActionPoint(CountableItem item)
         {
-            if (item.ItemBase.Value is Nekoyume.Model.Item.Material material)
+            if (!(item.ItemBase.Value is Nekoyume.Model.Item.Material material))
             {
-                NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
-                    L10nManager.Localize("UI_CHARGE_AP"));
-                Game.Game.instance.ActionManager.ChargeActionPoint();
-
-                var address = States.Instance.CurrentAvatarState.address;
-                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
-                {
-                    GameConfigStateSubject.ActionPointState.Remove(address);
-                }
-
-                GameConfigStateSubject.ActionPointState.Add(address, true);
-
-                LocalLayerModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
-                    material.ItemId, 1);
-                LocalLayerModifier.ModifyAvatarActionPoint(
-                    States.Instance.CurrentAvatarState.address,
-                    States.Instance.GameConfigState.ActionPointMax);
+                return;
             }
+
+            NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize("UI_CHARGE_AP"));
+            Game.Game.instance.ActionManager.ChargeActionPoint(material);
+
+            var address = States.Instance.CurrentAvatarState.address;
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(address);
+            }
+
+            GameConfigStateSubject.ActionPointState.Add(address, true);
         }
 
         public void TutorialActionClickAvatarInfoFirstInventoryCellView()
@@ -748,8 +743,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                Debug.LogError(
-                    $"TutorialActionClickAvatarInfoFirstInventoryCellView() throw error.");
+                Debug.LogError($"TutorialActionClickAvatarInfoFirstInventoryCellView() throw error.");
             }
         }
 

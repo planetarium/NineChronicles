@@ -12,6 +12,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using UniRx;
 using mixpanel;
+using Nekoyume.Model.State;
 using Nekoyume.UI;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 
@@ -524,15 +525,20 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ChargeActionPoint>> ChargeActionPoint()
+        public void ChargeActionPoint(Material material)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            LocalLayerModifier.RemoveItem(avatarAddress, material.ItemId);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
+
             var action = new ChargeActionPoint
             {
-                avatarAddress = States.Instance.CurrentAvatarState.address
+                avatarAddress = avatarAddress
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<ChargeActionPoint>()
+            _renderer.EveryRender<ChargeActionPoint>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
