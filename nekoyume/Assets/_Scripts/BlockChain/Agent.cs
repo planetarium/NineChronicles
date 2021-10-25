@@ -134,7 +134,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void Initialize(
+        public IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
             Action<bool> callback)
@@ -142,7 +142,7 @@ namespace Nekoyume.BlockChain
             if (disposed)
             {
                 Debug.Log("Agent Exist");
-                return;
+                yield return null;
             }
 
             InitAgent(callback, privateKey, options);

@@ -89,7 +89,7 @@ namespace Nekoyume.BlockChain
 
         public BlockHash BlockTipHash { get; private set; }
 
-        public void Initialize(
+        public IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
             Action<bool> callback)
@@ -108,8 +108,10 @@ namespace Nekoyume.BlockChain
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
             _service = MagicOnionClient.Create<IBlockChainService>(_channel);
-            OnRenderBlock(null, _service.GetTip().ResponseAsync.Result);
-
+            var getTipTask = Task.Run(async () => await _service.GetTip());
+            yield return new WaitUntil(() => getTipTask.IsCompleted);
+            OnRenderBlock(null, getTipTask.Result);
+            yield return null;
             _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
@@ -119,6 +121,7 @@ namespace Nekoyume.BlockChain
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
+            yield return null;
         }
 
         public IValue GetState(Address address)
@@ -141,6 +144,19 @@ namespace Nekoyume.BlockChain
                 _codec.Encode(CurrencyExtensions.Serialize(currency))
             );
             byte[] raw = result.ResponseAsync.Result;
+            var serialized = (Bencodex.Types.List) _codec.Decode(raw);
+            return FungibleAssetValue.FromRawValue(
+                new Currency(serialized.ElementAt(0)),
+                serialized.ElementAt(1).ToBigInteger());
+        }
+
+        public async Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency)
+        {
+            // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
+            byte[] raw = await _service.GetBalance(
+                address.ToByteArray(),
+                _codec.Encode(CurrencyExtensions.Serialize(currency))
+            );
             var serialized = (Bencodex.Types.List) _codec.Decode(raw);
             return FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
@@ -195,45 +211,60 @@ namespace Nekoyume.BlockChain
             Connected = true;
 
             // 에이전트의 상태를 한 번 동기화 한다.
-            Currency goldCurrency = new GoldCurrencyState(
-                (Dictionary)GetState(GoldCurrencyState.Address)
-            ).Currency;
-            States.Instance.SetAgentState(
-                GetState(Address) is Bencodex.Types.Dictionary agentDict
-                    ? new AgentState(agentDict)
-                    : new AgentState(Address));
-            States.Instance.SetGoldBalanceState(
-                new GoldBalanceState(Address, GetBalance(Address, goldCurrency)));
-
-            // 랭킹의 상태를 한 번 동기화 한다.
-            for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+            Task currencyTask = Task.Run(async () =>
             {
-                var address = RankingState.Derive(i);
-                var mapState = GetState(address) is Bencodex.Types.Dictionary serialized
-                    ? new RankingMapState(serialized)
-                    : new RankingMapState(address);
-                States.Instance.SetRankingMapStates(mapState);
-            }
+                var state = await GetStateAsync(GoldCurrencyState.Address);
+                Currency goldCurrency = new GoldCurrencyState(
+                    (Dictionary)state
+                ).Currency;
 
-            // 상점의 상태를 한 번 동기화 한다.
+                States.Instance.SetAgentState(
+                    await GetStateAsync(Address) is Bencodex.Types.Dictionary agentDict
+                        ? new AgentState(agentDict)
+                        : new AgentState(Address));
+                States.Instance.SetGoldBalanceState(
+                    new GoldBalanceState(Address, await GetBalanceAsync(Address, goldCurrency)));
 
-            if (GetState(GameConfigState.Address) is Dictionary configDict)
-            {
-                States.Instance.SetGameConfigState(new GameConfigState(configDict));
-            }
-            else
-            {
-                throw new FailedToInstantiateStateException<GameConfigState>();
-            }
+                // 랭킹의 상태를 한 번 동기화 한다.
+                for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+                {
+                    var address = RankingState.Derive(i);
+                    var mapState = await GetStateAsync(address) is Bencodex.Types.Dictionary serialized
+                        ? new RankingMapState(serialized)
+                        : new RankingMapState(address);
+                    States.Instance.SetRankingMapStates(mapState);
+                }
 
-            if (ArenaHelper.TryGetThisWeekState(BlockIndex, out var weeklyArenaState))
-            {
+                // 상점의 상태를 한 번 동기화 한다.
+
+                if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
+                {
+                    States.Instance.SetGameConfigState(new GameConfigState(configDict));
+                }
+                else
+                {
+                    throw new FailedToInstantiateStateException<GameConfigState>();
+                }
+
+                var weeklyArenaState = await ArenaHelper.GetThisWeekStateAsync(BlockIndex);
+                if (weeklyArenaState is null)
+                {
+                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
+                }
+
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
-            }
-            else
-                throw new FailedToInstantiateStateException<WeeklyArenaState>();
 
-            ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
+                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
+
+            });
+
+            yield return new WaitUntil(() => currencyTask.IsCompleted);
+
+            if (currencyTask.IsFaulted)
+            {
+                callback?.Invoke(false);
+                yield break;
+            }
 
             // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
             BlockRenderHandler.Instance.Start(BlockRenderer);

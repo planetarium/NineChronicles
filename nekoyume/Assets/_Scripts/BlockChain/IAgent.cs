@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Bencodex.Types;
@@ -37,7 +38,7 @@ namespace Nekoyume.BlockChain
 
         BlockHash BlockTipHash { get; }
 
-        void Initialize(
+        IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
             Action<bool> callback
