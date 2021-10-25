@@ -40,7 +40,6 @@ using Nekoyume.UI;
 using NetMQ;
 using Serilog;
 using Serilog.Events;
-using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -49,7 +48,7 @@ namespace Nekoyume.BlockChain
     using UniRx;
 
     /// <summary>
-    /// 블록체인 노드 관련 로직을 처리
+    /// Agent handles events from blockchain nodes.
     /// </summary>
     public class Agent : MonoBehaviour, IDisposable, IAgent
     {
@@ -71,9 +70,6 @@ namespace Nekoyume.BlockChain
         private const int SwarmDialTimeout = 5000;
         private const int SwarmLinger = 1 * 1000;
         private const string QueuedActionsFileName = "queued_actions.dat";
-
-        private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(15);
 
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
@@ -100,7 +96,6 @@ namespace Nekoyume.BlockChain
         public BlockPolicySource BlockPolicySource { get; private set; }
 
         public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
-
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
         public int AppProtocolVersion { get; private set; }
         public BlockHash BlockTipHash => blocks.Tip.Hash;
@@ -134,10 +129,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void Initialize(
-            CommandLineOptions options,
-            PrivateKey privateKey,
-            Action<bool> callback)
+        public void Initialize(CommandLineOptions options, PrivateKey privateKey, Action<bool> callback)
         {
             if (disposed)
             {
@@ -238,9 +230,8 @@ namespace Nekoyume.BlockChain
                 .ToImmutableList();
             _seedPeers = (_peerList.Count > MaxSeed ? _peerList.Sample(MaxSeed) : _peerList)
                 .ToImmutableList();
-            // Init SyncSucceed
-            SyncSucceed = true;
 
+            SyncSucceed = true;
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -301,12 +292,6 @@ namespace Nekoyume.BlockChain
             blocks.GetBalance(address, currency);
 
         #region Mono
-
-        public void SendException(Exception exc)
-        {
-            //FIXME: Make more meaningful method
-            return;
-        }
 
         private void Awake()
         {
@@ -1043,8 +1028,8 @@ namespace Nekoyume.BlockChain
                     throw new Exception("Unknown state was reported during preload.");
             }
 
-            string format = L10nManager.Localize(localizationKey);
-            string text = string.Format(format, count, totalCount);
+            var format = L10nManager.Localize(localizationKey);
+            var text = string.Format(format, count, totalCount);
             return $"{text}  ({state.CurrentPhase} / {PreloadState.TotalPhase})";
         }
     }

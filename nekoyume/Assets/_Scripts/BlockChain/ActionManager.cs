@@ -17,7 +17,7 @@ using RedeemCode = Nekoyume.Action.RedeemCode;
 namespace Nekoyume.BlockChain
 {
     /// <summary>
-    /// 게임의 Action을 생성하고 Agent에 넣어주는 역할을 한다.
+    /// Creates an action of the game and puts it in the agent.
     /// </summary>
     public class ActionManager
     {

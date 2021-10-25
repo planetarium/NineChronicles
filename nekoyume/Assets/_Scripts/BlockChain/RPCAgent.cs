@@ -141,10 +141,6 @@ namespace Nekoyume.BlockChain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
-        public void SendException(Exception exc)
-        {
-        }
-
         public void EnqueueAction(GameAction action)
         {
             _queuedActions.Enqueue(action);
