@@ -310,7 +310,7 @@ namespace Nekoyume.UI
 
             if (data.TotalPrice.Value.MinorUnit > 0)
             {
-                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARINING"));
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARNING"));
                 return;
             }
 
@@ -336,7 +336,7 @@ namespace Nekoyume.UI
 
             if (data.TotalPrice.Value.MinorUnit > 0)
             {
-                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARINING"));
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARNING"));
                 return;
             }
 
