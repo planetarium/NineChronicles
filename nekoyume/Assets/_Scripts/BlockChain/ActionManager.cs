@@ -335,12 +335,13 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
+        public void DailyReward()
         {
-            // NOTE: 이곳에서 하는 것이 바람직 하지만, 연출 타이밍을 위해 밖에서 한다.
-            // var avatarAddress = States.Instance.CurrentAvatarState.address;
-            // LocalLayerModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
-            // LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
+            var blockCount = Game.Game.instance.Agent.BlockIndex -
+                States.Instance.CurrentAvatarState.dailyRewardReceivedIndex + 1;
+            LocalLayerModifier.IncreaseAvatarDailyRewardReceivedIndex(
+                States.Instance.CurrentAvatarState.address,
+                blockCount);
 
             var action = new DailyReward
             {
@@ -348,7 +349,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<DailyReward>()
+            _renderer.EveryRender<DailyReward>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
