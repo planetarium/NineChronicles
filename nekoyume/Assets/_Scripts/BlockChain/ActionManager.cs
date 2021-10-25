@@ -508,7 +508,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(string code)
+        public void RedeemCode(string code)
         {
             var action = new RedeemCode(
                 code,
@@ -516,7 +516,7 @@ namespace Nekoyume.BlockChain
             );
             ProcessAction(action);
 
-            return _renderer.EveryRender<RedeemCode>()
+            _renderer.EveryRender<RedeemCode>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
