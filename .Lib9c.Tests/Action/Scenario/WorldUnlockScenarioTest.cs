@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action.Scenario
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using Libplanet;
     using Libplanet.Action;
@@ -9,6 +10,7 @@ namespace Lib9c.Tests.Action.Scenario
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
+    using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -151,7 +153,7 @@ namespace Lib9c.Tests.Action.Scenario
         [Theory]
         [InlineData(400, 10000001, "4,2,100,10001", "4,1,1,10001")]
         [InlineData(400, 10000001, "4,2,100,10001", "4,2,99,10001")]
-        public void UnlockWorldByMimisbrunnrBttleAfterPatchTableWithChangeRow(
+        public void UnlockWorldByMimisbrunnrBattleAfterPatchTableWithChangeRow(
             int avatarLevel,
             int stageIdToUnlock,
             string targetRowStringBefore,
@@ -177,6 +179,29 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.True(avatarState.worldInformation.IsWorldUnlocked(worldIdToClear));
             Assert.False(avatarState.worldInformation.IsWorldUnlocked(worldIdToUnlock));
 
+            var equipments = new List<Guid>();
+
+            var equipmentRow =
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10151001);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0);
+            avatarState.inventory.AddItem(equipment);
+
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10251001);
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, Guid.NewGuid(), 0);
+            avatarState.inventory.AddItem(mailEquipment);
+
+            var beltEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10351000), Guid.NewGuid(), 0);
+            avatarState.inventory.AddItem(beltEquipment);
+
+            var necklaceEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10451000), Guid.NewGuid(), 0);
+            avatarState.inventory.AddItem(necklaceEquipment);
+            equipments.Add(equipment.ItemId);
+            equipments.Add(mailEquipment.ItemId);
+            equipments.Add(beltEquipment.ItemId);
+            equipments.Add(necklaceEquipment.ItemId);
+
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
             var mimisbrunnrBattle = new MimisbrunnrBattle3()
             {
@@ -184,7 +209,7 @@ namespace Lib9c.Tests.Action.Scenario
                 stageId = stageIdToUnlock,
                 avatarAddress = _avatarAddress,
                 costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
+                equipments = equipments,
                 foods = new List<Guid>(),
                 WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
