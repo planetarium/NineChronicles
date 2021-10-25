@@ -312,9 +312,14 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(IEnumerable<PurchaseInfo> purchaseInfos,
-            List<Nekoyume.UI.Model.ShopItem> shopItems)
+        public void Buy(List<PurchaseInfo> purchaseInfos)
         {
+            var buyerAgentAddress = States.Instance.AgentState.address;
+            foreach (var purchaseInfo in purchaseInfos)
+            {
+                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -purchaseInfo.Price);
+            }
+
             var action = new Buy
             {
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
@@ -322,12 +327,12 @@ namespace Nekoyume.BlockChain
             };
 
             ProcessAction(action);
-            return _renderer.EveryRender<Buy>()
+            _renderer.EveryRender<Buy>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()

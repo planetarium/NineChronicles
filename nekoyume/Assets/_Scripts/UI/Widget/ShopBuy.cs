@@ -209,8 +209,8 @@ namespace Nekoyume.UI
 
         private void Buy(ShopItem shopItem)
         {
-            var purchaseInfos = new List<PurchaseInfo> {GetPurchseInfo(shopItem.OrderId.Value)};
-            Game.Game.instance.ActionManager.Buy(purchaseInfos, new List<ShopItem> {shopItem});
+            var purchaseInfos = new List<PurchaseInfo> {GetPurchaseInfo(shopItem.OrderId.Value)};
+            Game.Game.instance.ActionManager.Buy(purchaseInfos);
 
             var countProps = new Value {["Count"] = 1,};
             Mixpanel.Track("Unity/Number of Purchased Items", countProps);
@@ -220,10 +220,6 @@ namespace Nekoyume.UI
 
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             shopItem.Selected.Value = false;
-
-            var buyerAgentAddress = States.Instance.AgentState.address;
-
-            LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
 
             ReactiveShopState.RemoveBuyDigest(shopItem.OrderId.Value);
 
@@ -292,7 +288,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public static PurchaseInfo GetPurchseInfo(System.Guid orderId)
+        public static PurchaseInfo GetPurchaseInfo(System.Guid orderId)
         {
             var order = Util.GetOrder(orderId);
             return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
