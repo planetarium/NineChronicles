@@ -404,7 +404,6 @@ namespace Nekoyume.UI
         {
             var currentAvatarInventory = States.Instance.CurrentAvatarState.inventory;
 
-            //TODO 소모품장착
             Game.Game.instance.ActionManager.RankingBattle(
                 arenaRankCell.ArenaInfo.AvatarAddress,
                 currentAvatarInventory.Costumes

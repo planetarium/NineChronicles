@@ -400,7 +400,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
+        public void RankingBattle(
             Address enemyAddress,
             List<Guid> costumeIds,
             List<Guid> equipmentIds,
@@ -408,7 +408,9 @@ namespace Nekoyume.BlockChain
         )
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+            {
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
+            }
 
             Mixpanel.Track("Unity/Ranking Battle");
             var action = new RankingBattle
@@ -423,13 +425,16 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
 
             _lastBattleActionId = action.Id;
-
-            return _renderer.EveryRender<RankingBattle>()
+            _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e =>
+                {
+                    HandleException(action.Id, e);
+                    ActionRenderHandler.BackToMain(false, e);
+                });
         }
 
         public void PatchTableSheet(string tableName, string tableCsv)
