@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -16,15 +16,15 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("mimisbrunnr_battle6")]
-    public class MimisbrunnrBattle : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100083ObsoleteIndex)]
+    [ActionType("mimisbrunnr_battle5")]
+    public class MimisbrunnrBattle5 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
         public List<Guid> foods;
         public int worldId;
         public int stageId;
-        public int playCount = 1;
         public Address avatarAddress;
         public Address rankingMapAddress;
 
@@ -36,7 +36,6 @@ namespace Nekoyume.Action
                 ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
-                ["playCount"] = playCount.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
                 ["rankingMapAddress"] = rankingMapAddress.Serialize(),
             }.ToImmutableDictionary();
@@ -48,7 +47,6 @@ namespace Nekoyume.Action
             foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
-            playCount = plainValue["playCount"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             rankingMapAddress = plainValue["rankingMapAddress"].ToAddress();
         }
@@ -70,6 +68,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100083ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -186,22 +186,14 @@ namespace Nekoyume.Action
             avatarState.ValidateCostume(costumes);
 
             sw.Restart();
-
-            if (playCount <= 0)
-            {
-                throw new PlayCountIsZeroException($"{addressesHex}playCount must be greater than 0. " +
-                                                   $"current playCount : {playCount}");
-            }
-
-            var totalCostActionPoint = stageRow.CostAP * playCount;
-            if (avatarState.actionPoint < totalCostActionPoint)
+            if (avatarState.actionPoint < stageRow.CostAP)
             {
                 throw new NotEnoughActionPointException(
                     $"{addressesHex}Aborted due to insufficient action point: " +
-                    $"{avatarState.actionPoint} < totalAP({totalCostActionPoint}) = cost({stageRow.CostAP}) * boostCount({playCount})"
+                    $"{avatarState.actionPoint} < {stageRow.CostAP}"
                 );
             }
-            avatarState.actionPoint -= totalCostActionPoint;
+            avatarState.actionPoint -= stageRow.CostAP;
             var equippableItem = new List<Guid>();
             equippableItem.AddRange(costumes);
             equippableItem.AddRange(equipments);
@@ -219,13 +211,12 @@ namespace Nekoyume.Action
                 stageId,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
-                StageSimulator.ConstructorVersionV100080,
-                playCount);
+                StageSimulator.ConstructorVersionV100025);
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.Simulate(playCount);
+            simulator.Simulate5();
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 

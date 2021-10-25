@@ -981,16 +981,16 @@ namespace Lib9c.Tests.Action
             previousAvatarState.inventory.AddItem(weapon, iLock: orderLock);
 
             var armorId = _tableSheets
-            .EquipmentItemSheet
-            .Values
-            .Where(r => r.ItemSubType == ItemSubType.Armor)
-            .OrderBy(r => r.Stat.ValueAsInt)
-            .Last()
-            .Id;
+                .EquipmentItemSheet
+                .Values
+                .Where(r => r.ItemSubType == ItemSubType.Armor)
+                .OrderBy(r => r.Stat.ValueAsInt)
+                .Last()
+                .Id;
 
             var armor = ItemFactory.CreateItem(
-                _tableSheets.EquipmentItemSheet[armorId],
-                random)
+                    _tableSheets.EquipmentItemSheet[armorId],
+                    random)
                 as Equipment;
             equipments.Add(armor.ItemId);
             previousAvatarState.inventory.AddItem(armor);
@@ -1051,9 +1051,15 @@ namespace Lib9c.Tests.Action
             {
                 state = _initialState
                     .SetState(_avatarAddress, previousAvatarState.SerializeV2())
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+                    .SetState(
+                        _avatarAddress.Derive(LegacyInventoryKey),
+                        previousAvatarState.inventory.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        previousAvatarState.worldInformation.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyQuestListKey),
+                        previousAvatarState.questList.Serialize());
             }
 
             var action = new HackAndSlash
@@ -1091,17 +1097,26 @@ namespace Lib9c.Tests.Action
             var worldQuestSheet = state.GetSheet<WorldQuestSheet>();
             var questRow = worldQuestSheet.OrderedList.FirstOrDefault(e => e.Goal == stageId);
             var questRewardSheet = state.GetSheet<QuestRewardSheet>();
-            var rewardIds = questRewardSheet.First(x => x.Key == questRow.QuestRewardId).Value.RewardIds;
+            var rewardIds = questRewardSheet.First(x => x.Key == questRow.QuestRewardId).Value
+                .RewardIds;
             var questItemRewardSheet = state.GetSheet<QuestItemRewardSheet>();
             var materialItemSheet = state.GetSheet<MaterialItemSheet>();
             var sortedMaterialItemSheet = materialItemSheet
-                .Where(x => x.Value.ItemSubType == ItemSubType.EquipmentMaterial &&
-                           x.Value.ItemSubType == ItemSubType.MonsterPart);
-            var sortedQuestItemRewardSheet = questItemRewardSheet
-                .Where(x => sortedMaterialItemSheet.Any(y => y.Value.ItemId.Equals(x.Value.ItemId)));
-            var questSum = sortedQuestItemRewardSheet != null && sortedQuestItemRewardSheet.Any() ?
-                rewardIds.Sum(x => sortedQuestItemRewardSheet.First(y => y.Value.Id == x).Value.Count) : 0;
+                .Where(x =>
+                    x.Value.ItemSubType == ItemSubType.EquipmentMaterial ||
+                    x.Value.ItemSubType == ItemSubType.MonsterPart).ToList();
 
+            var selectedIdn = new Dictionary<int, int>();
+            foreach (var row in questItemRewardSheet)
+            {
+                if (sortedMaterialItemSheet.Exists(x => x.Key.Equals(row.ItemId)))
+                {
+                    selectedIdn.Add(row.Key, row.Count);
+                }
+            }
+
+            var questSum = rewardIds.Where(rewardId => selectedIdn.ContainsKey(rewardId))
+                .Sum(rewardId => selectedIdn[rewardId]);
             var min = stageRow.Rewards.OrderBy(x => x.Min).First().Min;
             var max = stageRow.Rewards.OrderBy(x => x.Max).First().Max;
             var totalMin = (min * playCount * stageRow.DropItemMin) + questSum;
