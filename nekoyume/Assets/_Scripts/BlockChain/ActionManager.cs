@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Assets;
@@ -447,26 +448,34 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
-            int recipeId,
-            int slotIndex,
-            int? subRecipeId = null)
+        public void CombinationEquipment(SubRecipeView.RecipeInfo recipeInfo, int slotIndex)
         {
-            Mixpanel.Track("Unity/Create CombinationEquipment", new Value()
+            Mixpanel.Track("Unity/Create CombinationEquipment", new Value
             {
-                ["RecipeId"] = recipeId,
+                ["RecipeId"] = recipeInfo.RecipeId,
             });
+            
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
+            LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
+
+            foreach (var (material, count) in recipeInfo.Materials)
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
+            }
 
             var action = new CombinationEquipment
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex,
-                recipeId = recipeId,
-                subRecipeId = subRecipeId,
+                recipeId = recipeInfo.RecipeId,
+                subRecipeId = recipeInfo.SubRecipeId,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<CombinationEquipment>()
+            _renderer.EveryRender<CombinationEquipment>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
