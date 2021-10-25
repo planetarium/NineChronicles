@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections;
+using DG.Tweening;
 using UnityEditor;
 using UnityEngine;
 
@@ -30,6 +31,15 @@ namespace Nekoyume.UI.Tween
                     tween.CompleteMethod = "";
                 }
                 tween.CompleteDelay = EditorGUILayout.FloatField("CompleteDelay", tween.CompleteDelay);
+            }
+
+            if (tween.useCustomEaseCurve)
+            {
+                tween.customEaseCurve = EditorGUILayout.CurveField("AnimationCurve", tween.customEaseCurve);
+            }
+            else
+            {
+                
             }
 
             DrawGUIRectTransformMoveTo();
