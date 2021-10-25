@@ -48,15 +48,12 @@ namespace Nekoyume.BlockChain.Policy
 
         public const int MinTransactionsPerBlock = 1;
 
-        // FIXME: Should be finalized before release.
         public const long MaxTransactionsPerSignerPerBlockHardcodedIndex = 3_000_001;
 
-        // FIXME: Should be finalized before release.
         public const int MaxTransactionsPerSignerPerBlock = 4;
 
         public const long V100080ObsoleteIndex = 2_448_000;
 
-        // FIXME: Should be finalized before release.
         public const long V100081ObsoleteIndex = 2_550_000;
 
         // FIXME: Should be finalized before release.

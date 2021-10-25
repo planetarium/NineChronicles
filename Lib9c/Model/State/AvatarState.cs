@@ -355,7 +355,7 @@ namespace Nekoyume.Model.State
             item.Update(requiredIndex);
         }
 
-        public void UpdateFromRapidCombinationV2(RapidCombination.ResultModel result,
+        public void UpdateFromRapidCombinationV2(RapidCombination5.ResultModel result,
             long requiredIndex)
         {
             var mail = mailBox.First(m => m.id == result.id);
