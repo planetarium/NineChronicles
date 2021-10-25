@@ -39,7 +39,7 @@ namespace Nekoyume.BlockChain
             _agent.EnqueueAction(gameAction);
         }
 
-        private void HandleException(Guid actionId, Exception e)
+        private static void HandleException(Guid actionId, Exception e)
         {
             if (e is TimeoutException)
             {
@@ -150,7 +150,7 @@ namespace Nekoyume.BlockChain
             int stageId,
             int playCount)
         {
-            Mixpanel.Track("Unity/HackAndSlash", new Value()
+            Mixpanel.Track("Unity/HackAndSlash", new Value
             {
                 ["WorldId"] = worldId,
                 ["StageId"] = stageId,
@@ -229,7 +229,8 @@ namespace Nekoyume.BlockChain
 
             if (!(tradableItem is TradableMaterial))
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,
+                    count);
             }
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
@@ -288,7 +289,8 @@ namespace Nekoyume.BlockChain
 
             if (!(tradableItem is TradableMaterial))
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,
+                    count);
             }
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
@@ -455,7 +457,7 @@ namespace Nekoyume.BlockChain
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
             });
-            
+
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
@@ -545,7 +547,6 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
         }
-
 
         #endregion
     }
