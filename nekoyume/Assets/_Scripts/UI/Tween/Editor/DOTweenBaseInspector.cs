@@ -36,9 +36,7 @@ namespace Nekoyume.UI.Tween
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Easing Options", EditorStyles.boldLabel);
             tween.useCustomEaseCurve =
-                EditorGUILayout.Toggle("Use Custom Ease Curve",
-                    tween.useCustomEaseCurve,
-                    GUILayout.Width(300f));
+                EditorGUILayout.Toggle("Use Custom Ease Curve", tween.useCustomEaseCurve);
             if (tween.useCustomEaseCurve)
             {
                 tween.customEaseCurve = EditorGUILayout.CurveField("Custom Easing Curve", tween.customEaseCurve);
