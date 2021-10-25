@@ -14,10 +14,10 @@ namespace Nekoyume.BlockChain.Policy
         {
         }
 
-        public static AuthorizedMiningNoOpTxRequiredPolicy Default =>
+        public static IVariableSubPolicy<bool> Default =>
             new AuthorizedMiningNoOpTxRequiredPolicy(false);
 
-        public static AuthorizedMiningNoOpTxRequiredPolicy Mainnet =>
+        public static IVariableSubPolicy<bool> Mainnet =>
             Default
                 .Add(new SpannedSubPolicy<bool>(
                     startIndex: BlockPolicySource.AuthorizedMiningNoOpTxRequiredStartIndex,

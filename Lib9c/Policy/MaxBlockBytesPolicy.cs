@@ -18,10 +18,10 @@ namespace Nekoyume.BlockChain.Policy
         {
         }
 
-        public static MaxBlockBytesPolicy Default =>
+        public static IVariableSubPolicy<int> Default =>
             new MaxBlockBytesPolicy(int.MaxValue);
 
-        public static MaxBlockBytesPolicy Mainnet =>
+        public static IVariableSubPolicy<int> Mainnet =>
             Default
                 .Add(new SpannedSubPolicy<int>(
                     startIndex: 0,

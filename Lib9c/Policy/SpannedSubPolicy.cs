@@ -18,7 +18,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <exception cref="ArgumentOutOfRangeException">If an invalid value is given for either
         /// <paramref name="startIndex"/> or <paramref name="endIndex"/>.</exception>
         public SpannedSubPolicy(
-            long startIndex, long? endIndex, Func<long, bool> filter, T value)
+            long startIndex, long? endIndex, Predicate<long> filter, T value)
         {
             if (startIndex < 0)
             {
@@ -73,7 +73,7 @@ namespace Nekoyume.BlockChain.Policy
 
         public long? EndIndex { get; }
 
-        public Func<long, bool> Filter { get; }
+        public Predicate<long> Filter { get; }
 
         public T Value { get; }
 

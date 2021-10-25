@@ -16,7 +16,7 @@ namespace Lib9c.Tests
         [Fact]
         public void Constructor()
         {
-            GenericSubPolicy<bool> genericSubPolicy;
+            IVariableSubPolicy<bool> genericSubPolicy;
             List<long> indices = Enumerable.Range(0, 100).Select(i => (long)i).ToList();
 
             SpannedSubPolicy<bool> first = new SpannedSubPolicy<bool>(10, null, null, true);

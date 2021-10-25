@@ -14,10 +14,10 @@ namespace Nekoyume.BlockChain.Policy
         {
         }
 
-        public static MinTransactionsPerBlockPolicy Default =>
+        public static IVariableSubPolicy<int> Default =>
             new MinTransactionsPerBlockPolicy(0);
 
-        public static MinTransactionsPerBlockPolicy Mainnet =>
+        public static IVariableSubPolicy<int> Mainnet =>
             Default
                 // To prevent selfish mining, we define a consensus that blocks with
                 // no transactions are not accepted starting from hard coded index.

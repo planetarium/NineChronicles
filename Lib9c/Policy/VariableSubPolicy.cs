@@ -8,30 +8,17 @@ using Libplanet.Blocks;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public abstract class VariableSubPolicy<T>
+    public abstract class VariableSubPolicy<T> : IVariableSubPolicy<T>
     {
-        /// <summary>
-        /// Value to use as a fallback if none of the <see cref="SpannedSubPolicy{T}"/> in
-        /// <see cref="SpannedSubPolicies"/> apply.
-        /// </summary>
-        /// <remarks>
-        /// <pr>
-        /// It is recommended set this property to a value that would always pass the predicate
-        /// for validation in case there is a policy gap.
-        /// </pr>
-        /// <pr>
-        /// For instance, for checking the max number of transactions allowed per block, it is
-        /// better to set <see cref="DefaultValue"/> as <c>int.MaxValue</c> then overwrite it
-        /// with some sensible value such as <c>100</c> by adding a new
-        /// <see cref="SpannedSubPolicy{T}"/>.
-        /// </pr>
-        /// </remarks>
+        /// <inheritdoc/>
         [Pure]
         public T DefaultValue { get; private set; }
 
+        /// <inheritdoc/>
         [Pure]
         public ImmutableList<SpannedSubPolicy<T>> SpannedSubPolicies { get; private set; }
 
+        /// <inheritdoc/>
         [Pure]
         public Func<long, T> Getter { get; private set; }
 
@@ -85,20 +72,9 @@ namespace Nekoyume.BlockChain.Policy
             Validate();
         }
 
-        /// <summary>
-        /// Creates a new subpolicy with an additional <see cref="SpannedSubPolicy{T}"/> added.
-        /// </summary>
-        /// <param name="spannedSubPolicy">New <see cref="SpannedSubPolicy{T}"/> to add.</param>
-        /// <returns>
-        /// A new <see cref="VariableSubPolicy{T}"/> instance with
-        /// <paramref name="spannedSubPolicy"/> added at the end.
-        /// </returns>
-        /// <remarks>
-        /// Last spanned subpolicy will be cut short and adjusted accordingly before
-        /// adding <paramref name="spannedSubPolicy"/> if <paramref name="spannedSubPolicy"/>
-        /// overlaps with the last one.
-        /// </remarks>
-        public dynamic Add(SpannedSubPolicy<T> spannedSubPolicy)
+        /// <inheritdoc/>
+        [Pure]
+        public IVariableSubPolicy<T> Add(SpannedSubPolicy<T> spannedSubPolicy)
         {
             try
             {
@@ -122,21 +98,12 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
-        /// <summary>
-        /// Creates a new subpolicy with an additional <see cref="ImmutableList{T}"/> of
-        /// <see cref="SpannedSubPolicy{T}"/> added sequentially.
-        /// </summary>
-        /// <param name="spannedSubPolicies">An <see cref="ImmutableList{T}"/> of
-        /// <see cref="SpannedSubPolicy{T}"/>s to add.</param>
-        /// <returns>
-        /// A new <see cref="VariableSubPolicy{T}"/> instance with
-        /// <paramref name="spannedSubPolicies"/> added at the end.
-        /// </returns>
+        /// <inheritdoc/>
         [Pure]
-        public dynamic AddRange(
+        public IVariableSubPolicy<T> AddRange(
             ImmutableList<SpannedSubPolicy<T>> spannedSubPolicies)
         {
-            VariableSubPolicy<T> variableSubPolicy = this;
+            IVariableSubPolicy<T> variableSubPolicy = this;
             foreach (SpannedSubPolicy<T> spannedSubPolicy in spannedSubPolicies)
             {
                 variableSubPolicy = variableSubPolicy.Add(spannedSubPolicy);
@@ -144,20 +111,7 @@ namespace Nekoyume.BlockChain.Policy
             return variableSubPolicy;
         }
 
-        /// <summary>
-        /// Checks if the current instance of <see cref="VariableSubPolicy{T}"/> applies to
-        /// given <paramref name="index"/>.
-        /// </summary>
-        /// <param name="index">The index of a possibly-yet-to-be-mined <see cref="Block{T}"/>
-        /// to check.</param>
-        /// <returns><c>true</c> if <paramref name="index"/> is target for any
-        /// <see cref="SpannedSubPolicy{T}"/> in <see cref="SpannedSubPolicies"/>.  Otherwise,
-        /// <c>fase</c>.</returns>
-        /// <remarks>
-        /// Call to this method must only be used <em>sparingly</em> and should be <em>avoided</em>
-        /// if possible.  Usage of this method indicates dependency coupling between two
-        /// different <see cref="VariableSubPolicy{T}"/>s.
-        /// </remarks>
+        /// <inheritdoc/>
         [Pure]
         public bool IsTargetIndex(long index) =>
             SpannedSubPolicies.Any(spannedSubPolicy => spannedSubPolicy.IsTargetIndex(index));
@@ -176,7 +130,7 @@ namespace Nekoyume.BlockChain.Policy
         /// Should be called inside every constructor at the end.
         /// </summary>
         /// <remarks>
-        /// This only checks if any pair of <see cref="SpannedSubPolicy"/>s overlap with
+        /// This only checks if any pair of <see cref="SpannedSubPolicy{T}"/>s overlap with
         /// each other to ensure that there is no ambiguity on selecting the binding argument
         /// when <see cref="Getter"/> is called with an index.
         /// </remarks>

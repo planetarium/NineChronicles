@@ -17,10 +17,10 @@ namespace Nekoyume.BlockChain.Policy
         {
         }
 
-        public static AuthorizedMinersPolicy Default =>
+        public static IVariableSubPolicy<ImmutableHashSet<Address>> Default =>
             new AuthorizedMinersPolicy(ImmutableHashSet<Address>.Empty);
 
-        public static AuthorizedMinersPolicy Mainnet =>
+        public static IVariableSubPolicy<ImmutableHashSet<Address>> Mainnet =>
             Default
                 .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                     startIndex: 0,

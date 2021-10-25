@@ -14,10 +14,10 @@ namespace Nekoyume.BlockChain.Policy
         {
         }
 
-        public static MaxTransactionsPerSignerPerBlockPolicy Default =>
+        public static IVariableSubPolicy<int> Default =>
             new MaxTransactionsPerSignerPerBlockPolicy(int.MaxValue);
 
-        public static MaxTransactionsPerSignerPerBlockPolicy Mainnet =>
+        public static IVariableSubPolicy<int> Mainnet =>
             Default
                 .Add(new SpannedSubPolicy<int>(
                     startIndex: BlockPolicySource.MinTransactionsPerBlockStartIndex,

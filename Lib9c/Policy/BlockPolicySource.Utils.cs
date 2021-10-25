@@ -62,9 +62,9 @@ namespace Nekoyume.BlockChain.Policy
         // Should be removed once libplanet is updated.
         private static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
             Block<NCAction> block,
-            MinTransactionsPerBlockPolicy minTransactionsPerBlockPolicy,
-            MaxTransactionsPerBlockPolicy maxTransactionsPerBlockPolicy,
-            MaxTransactionsPerSignerPerBlockPolicy maxTransactionsPerSignerPerBlockPolicy)
+            IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
+            IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
+            IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy)
         {
             int minTransactionsPerBlock =
                 minTransactionsPerBlockPolicy.Getter(block.Index);
@@ -102,8 +102,8 @@ namespace Nekoyume.BlockChain.Policy
 
         private static BlockPolicyViolationException ValidateMinerAuthorityRaw(
             Block<NCAction> block,
-            AuthorizedMinersPolicy authorizedMinersPolicy,
-            AuthorizedMiningNoOpTxRequiredPolicy authorizedMiningNoOpTxRequiredPolicy)
+            IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
+            IVariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy)
         {
             // For genesis block, any miner can mine.
             if (block.Index == 0)
@@ -130,7 +130,7 @@ namespace Nekoyume.BlockChain.Policy
 
         private static BlockPolicyViolationException ValidateMinerAuthorityNoOpTxRaw(
             Block<NCAction> block,
-            AuthorizedMiningNoOpTxRequiredPolicy authorizedMininingNoOpTxRequiredPolicy)
+            IVariableSubPolicy<bool> authorizedMininingNoOpTxRequiredPolicy)
         {
             if (authorizedMininingNoOpTxRequiredPolicy.Getter(block.Index))
             {
@@ -164,7 +164,7 @@ namespace Nekoyume.BlockChain.Policy
 
         private static BlockPolicyViolationException ValidateMinerPermissionRaw(
             Block<NCAction> block,
-            PermissionedMinersPolicy permissionedMinersPolicy)
+            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
             // If the set of permissioned miners is empty, any miner can mine.
             if (!permissionedMinersPolicy.IsTargetIndex(block.Index))
@@ -204,8 +204,8 @@ namespace Nekoyume.BlockChain.Policy
         private static bool IsAllowedToMineRaw(
             Address miner,
             long index,
-            AuthorizedMinersPolicy authorizedMinersPolicy,
-            PermissionedMinersPolicy permissionedMinersPolicy)
+            IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
+            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
             // For genesis blocks, any miner is allowed to mine.
             if (index == 0)
