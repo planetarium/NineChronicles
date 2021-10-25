@@ -112,7 +112,11 @@ namespace Nekoyume.BlockChain
             yield return new WaitUntil(() => getTipTask.IsCompleted);
             OnRenderBlock(null, getTipTask.Result);
             yield return null;
-            _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
+            var task = Task.Run(async () =>
+            {
+                _genesis = await BlockManager.ImportBlockAsync(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
+            });
+            yield return new WaitUntil(() => task.IsCompleted);
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
                 : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
