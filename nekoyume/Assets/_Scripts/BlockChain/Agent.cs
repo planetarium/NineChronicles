@@ -293,7 +293,7 @@ namespace Nekoyume.BlockChain
 
         public Task<IValue> GetStateAsync(Address address)
         {
-            return Task.FromResult(blocks.GetState(address));
+            return Task.Run(() => blocks.GetState(address));
         }
 
         public bool IsActionStaged(Guid actionId, out TxId txId)
