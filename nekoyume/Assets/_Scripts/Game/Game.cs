@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -671,19 +672,18 @@ namespace Nekoyume.Game
                     AddressableAssetsContainerPath);
             }
 
-            var task = Task.Run(async () =>
+            var task = Task.Run(() =>
             {
                 List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
-                var csv = new Dictionary<string, string>();
-                foreach (var asset in csvAssets)
+                var csv = new ConcurrentDictionary<string, string>();
+                Parallel.ForEach(csvAssets, asset =>
                 {
-                    if (await Agent.GetStateAsync(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
+                    if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
                     {
                         var table = tableCsv.ToDotnetString();
                         csv[asset.name] = table;
                     }
-
-                }
+                });
                 TableSheets = new TableSheets(csv);
             });
             yield return new WaitUntil(() => task.IsCompleted);

@@ -7,7 +7,7 @@ namespace Nekoyume.Game
 {
     public class TableSheets
     {
-        public TableSheets(Dictionary<string, string> sheets)
+        public TableSheets(IDictionary<string, string> sheets)
         {
             foreach (var pair in sheets)
             {
