@@ -132,23 +132,25 @@ namespace Nekoyume.Model
             RowData = row;
         }
 
-        public void InitAI()
+        [Obsolete("Use InitAI")]
+        public void InitAI2()
         {
             SetSkill();
 
             _root = new Root();
             _root.OpenBranch(
-                BT.Call(Act)
+                BT.Call(Act2)
             );
         }
-        
-        public void InitAIV2()
+
+        [Obsolete("Use InitAI")]
+        public void InitAI3()
         {
             SetSkill();
 
             _root = new Root();
             _root.OpenBranch(
-                BT.Call(ActV2)
+                BT.Call(Act3)
             );
         }
 
@@ -178,10 +180,11 @@ namespace Nekoyume.Model
             Skills.ReduceCooldown();
         }
 
-        private void UseSkill()
+        [Obsolete("Use UseSkill")]
+        private void UseSkill2()
         {
             // 스킬 선택.
-            var selectedSkill = Skills.Select(Simulator.Random);
+            var selectedSkill = Skills.Select2(Simulator.Random);
 
             // 스킬 사용.
             var usedSkill = selectedSkill.Use(
@@ -207,11 +210,12 @@ namespace Nekoyume.Model
                 target?.Die();
             }
         }
-        
-        private void UseSkillV2()
+
+        [Obsolete("Use UseSkill")]
+        private void UseSkill3()
         {
             // 스킬 선택.
-            var selectedSkill = Skills.SelectV2(Simulator.Random);
+            var selectedSkill = Skills.Select3(Simulator.Random);
 
             // 스킬 사용.
             var usedSkill = selectedSkill.Use(
@@ -373,25 +377,27 @@ namespace Nekoyume.Model
             return chance > Simulator.Random.Next(0, 100);
         }
 
-        private void Act()
+        [Obsolete("Use Act")]
+        private void Act2()
         {
             if (IsAlive())
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldown();
-                UseSkill();
+                UseSkill2();
                 RemoveBuffs();
             }
             EndTurn();
         }
-        
-        private void ActV2()
+
+        [Obsolete("Use Act")]
+        private void Act3()
         {
             if (IsAlive())
             {
                 ReduceDurationOfBuffs();
                 ReduceSkillCooldown();
-                UseSkillV2();
+                UseSkill3();
                 RemoveBuffs();
             }
             EndTurn();
@@ -465,14 +471,16 @@ namespace Nekoyume.Model
             }
         }
 
-        public Skill.Skill Select(IRandom random)
+        [Obsolete("Use Select")]
+        public Skill.Skill Select2(IRandom random)
         {
-            return PostSelect(random, GetSelectableSkills());
+            return PostSelect2(random, GetSelectableSkills());
         }
-        
-        public Skill.Skill SelectV2(IRandom random)
+
+        [Obsolete("Use Select")]
+        public Skill.Skill Select3(IRandom random)
         {
-            return PostSelectV2(random, GetSelectableSkills());
+            return PostSelect3(random, GetSelectableSkills());
         }
 
         private IEnumerable<Skill.Skill> GetSelectableSkills()
@@ -480,7 +488,8 @@ namespace Nekoyume.Model
             return _skills.Where(skill => !_skillsCooldown.ContainsKey(skill.SkillRow.Id));
         }
 
-        private Skill.Skill PostSelect(IRandom random, IEnumerable<Skill.Skill> skills)
+        [Obsolete("Use PostSelect")]
+        private Skill.Skill PostSelect2(IRandom random, IEnumerable<Skill.Skill> skills)
         {
             var selected = skills
                 .Select(skill => new {skill, chance = random.Next(0, 100)})
@@ -494,8 +503,9 @@ namespace Nekoyume.Model
                 ? selected[random.Next(selected.Count)]
                 : throw new Exception($"[{nameof(Skills)}] There is no selected skills");
         }
-        
-        private Skill.Skill PostSelectV2(IRandom random, IEnumerable<Skill.Skill> skills)
+
+        [Obsolete("Use PostSelect")]
+        private Skill.Skill PostSelect3(IRandom random, IEnumerable<Skill.Skill> skills)
         {
             var selected = skills
                 .OrderBy(skill => skill.SkillRow.Id)

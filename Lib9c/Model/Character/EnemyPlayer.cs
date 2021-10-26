@@ -48,16 +48,18 @@ namespace Nekoyume.Model
             NameWithHash = value.NameWithHash;
         }
 
-        public override void Spawn()
+        [Obsolete("Use Spawn")]
+        public override void Spawn2()
         {
-            InitAI();
+            InitAI2();
             var spawn = new SpawnEnemyPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
-        
-        public override void SpawnV2()
+
+        [Obsolete("Use Spawn")]
+        public override void Spawn3()
         {
-            InitAIV2();
+            InitAI3();
             var spawn = new SpawnEnemyPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }

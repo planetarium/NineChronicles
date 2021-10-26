@@ -410,16 +410,16 @@ namespace Nekoyume.Battle
 
         private void Spawn()
         {
-            Player.Spawn();
-            _enemyPlayer.Spawn();
+            Player.Spawn2();
+            _enemyPlayer.Spawn2();
             Player.Targets.Add(_enemyPlayer);
             _enemyPlayer.Targets.Add(Player);
         }
 
         private void SpawnV2()
         {
-            Player.SpawnV2();
-            _enemyPlayer.SpawnV2();
+            Player.Spawn3();
+            _enemyPlayer.Spawn3();
             Player.Targets.Add(_enemyPlayer);
             _enemyPlayer.Targets.Add(Player);
         }

@@ -379,16 +379,18 @@ namespace Nekoyume.Model
             return map;
         }
 
-        public virtual void Spawn()
+        [Obsolete("Use Spawn")]
+        public virtual void Spawn2()
         {
-            InitAI();
+            InitAI2();
             var spawn = new SpawnPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
 
-        public virtual void SpawnV2()
+        [Obsolete("Use Spawn")]
+        public virtual void Spawn3()
         {
-            InitAIV2();
+            InitAI3();
             var spawn = new SpawnPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
