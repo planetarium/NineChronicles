@@ -132,6 +132,16 @@ namespace Nekoyume.Model
             RowData = row;
         }
 
+        public void InitAI()
+        {
+            SetSkill();
+
+            _root = new Root();
+            _root.OpenBranch(
+                BT.Call(Act)
+            );
+        }
+
         [Obsolete("Use InitAI")]
         public void InitAI2()
         {
@@ -178,6 +188,36 @@ namespace Nekoyume.Model
         private void ReduceSkillCooldown()
         {
             Skills.ReduceCooldown();
+        }
+
+        private void UseSkill()
+        {
+            // 스킬 선택.
+            var selectedSkill = Skills.Select(Simulator.Random);
+
+            // 스킬 사용.
+            var usedSkill = selectedSkill.Use(
+                this,
+                Simulator.WaveTurn,
+                BuffFactory.GetBuffs(
+                    selectedSkill,
+                    Simulator.SkillBuffSheet,
+                    Simulator.BuffSheet
+                )
+            );
+
+            // 쿨다운 적용.
+            Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
+            Simulator.Log.Add(usedSkill);
+
+            foreach (var info in usedSkill.SkillInfos)
+            {
+                if (!info.Target.IsDead)
+                    continue;
+
+                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
+                target?.Die();
+            }
         }
 
         [Obsolete("Use UseSkill")]
@@ -363,7 +403,7 @@ namespace Nekoyume.Model
 
         protected virtual void SetSkill()
         {
-            if (!Simulator.SkillSheet.TryGetValue(100000, out var skillRow))
+            if (!Simulator.SkillSheet.TryGetValue(GameConfig.DefaultAttackId, out var skillRow))
             {
                 throw new KeyNotFoundException("100000");
             }
@@ -375,6 +415,18 @@ namespace Nekoyume.Model
         public bool GetChance(int chance)
         {
             return chance > Simulator.Random.Next(0, 100);
+        }
+
+        private void Act()
+        {
+            if (IsAlive())
+            {
+                ReduceDurationOfBuffs();
+                ReduceSkillCooldown();
+                UseSkill();
+                RemoveBuffs();
+            }
+            EndTurn();
         }
 
         [Obsolete("Use Act")]
@@ -471,6 +523,11 @@ namespace Nekoyume.Model
             }
         }
 
+        public Skill.Skill Select(IRandom random)
+        {
+            return PostSelect(random, GetSelectableSkills());
+        }
+
         [Obsolete("Use Select")]
         public Skill.Skill Select2(IRandom random)
         {
@@ -486,6 +543,20 @@ namespace Nekoyume.Model
         private IEnumerable<Skill.Skill> GetSelectableSkills()
         {
             return _skills.Where(skill => !_skillsCooldown.ContainsKey(skill.SkillRow.Id));
+        }
+
+        private Skill.Skill PostSelect(IRandom random, IEnumerable<Skill.Skill> skills)
+        {
+            var defaultAttack = skills.FirstOrDefault(x => x.SkillRow.Id == GameConfig.DefaultAttackId);
+            if (defaultAttack == null)
+            {
+                throw new Exception($"[There is no default attack");
+            }
+
+            var sortedSkills = skills.Where(x => x.SkillRow.Id != GameConfig.DefaultAttackId);
+            var randomValue = random.Next(0, 100);
+            var selectedSkills = sortedSkills.Where(x => x.Chance > randomValue).ToList();
+            return selectedSkills.Any() ? selectedSkills[random.Next(selectedSkills.Count)] : defaultAttack;
         }
 
         [Obsolete("Use PostSelect")]

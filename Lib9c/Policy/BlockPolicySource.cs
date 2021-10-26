@@ -62,6 +62,8 @@ namespace Nekoyume.BlockChain.Policy
         // seconds per block: 12
         public const long V100083ObsoleteIndex = 2_625_728;
 
+        public const long V100084ObsoleteIndex = 2_700_000;
+
         public const long PermissionedMiningHardcodedIndex = 2_225_500;
 
         public readonly Dictionary<long, HashAlgorithmType> HashAlgorithmTable =

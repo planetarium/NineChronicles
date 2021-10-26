@@ -105,6 +105,32 @@ namespace Lib9c.Tests.Model
         }
 
         [Fact]
+        public void Simulate6()
+        {
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.CostumeStatSheet,
+                2);
+
+            var player = simulator.Player;
+
+            while (player.Level == 1)
+            {
+                simulator.Simulate6(1);
+            }
+
+            var player2 = simulator.Player;
+            Assert.Equal(2, player2.Level);
+            Assert.Equal(1, player2.eventMap[(int)QuestEventType.Level]);
+            Assert.True(simulator.Log.OfType<GetExp>().Any());
+        }
+
+        [Fact]
         public void Simulate()
         {
             var simulator = new StageSimulator(

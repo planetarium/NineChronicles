@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Model
     using System.Linq;
     using Lib9c.Tests.Action;
     using Libplanet.Action;
+    using Nekoyume;
     using Nekoyume.Battle;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
@@ -52,7 +53,7 @@ namespace Lib9c.Tests.Model
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
             player.Targets.Add(enemy);
-            player.InitAI3();
+            player.InitAI();
             player.Tick();
 
             Assert.NotEmpty(simulator.Log);
@@ -75,7 +76,7 @@ namespace Lib9c.Tests.Model
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
             player.Targets.Add(enemy);
-            player.InitAI3();
+            player.InitAI();
             player.CurrentHP = -1;
 
             Assert.True(player.IsDead);
@@ -93,6 +94,12 @@ namespace Lib9c.Tests.Model
         {
             var skill = SkillFactory.Get(
                 _tableSheets.SkillSheet.Values.First(r => r.SkillCategory == skillCategory),
+                100,
+                100
+            );
+
+            var defaultAttack = SkillFactory.Get(
+                _tableSheets.SkillSheet.Values.First(r => r.Id == GameConfig.DefaultAttackId),
                 100,
                 100
             );
@@ -115,9 +122,10 @@ namespace Lib9c.Tests.Model
             player.Targets.Add(enemy);
             simulator.Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             simulator.Characters.Enqueue(enemy, 0);
-            player.InitAI3();
+            player.InitAI();
             player.OverrideSkill(skill);
-            Assert.Single(player.Skills);
+            player.AddSkill(defaultAttack);
+            Assert.Equal(2, player.Skills.Count());
 
             player.Tick();
 

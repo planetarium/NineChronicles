@@ -82,7 +82,7 @@ namespace Nekoyume.Battle
             var sb = new System.Text.StringBuilder();
 #endif
             Log.stageId = _stageId;
-            SpawnV2();
+            Spawn();
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
@@ -193,7 +193,7 @@ namespace Nekoyume.Battle
             var sb = new System.Text.StringBuilder();
 #endif
             Log.stageId = _stageId;
-            Spawn();
+            Spawn2();
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
@@ -304,7 +304,7 @@ namespace Nekoyume.Battle
             var sb = new System.Text.StringBuilder();
 #endif
             Log.stageId = _stageId;
-            SpawnV2();
+            Spawn3();
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
@@ -408,7 +408,127 @@ namespace Nekoyume.Battle
             return Player;
         }
 
+        [Obsolete("Use Simulate")]
+        public Player Simulate4()
+        {
+#if TEST_LOG
+            var sb = new System.Text.StringBuilder();
+#endif
+            Log.stageId = _stageId;
+            Spawn3();
+            Characters = new SimplePriorityQueue<CharacterBase, decimal>();
+            Characters.Enqueue(Player, TurnPriority / Player.SPD);
+            Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
+            TurnNumber = 1;
+            WaveNumber = 1;
+            WaveTurn = 1;
+#if TEST_LOG
+            sb.Clear();
+            sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+            sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+            sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+            sb.Append($" / {nameof(WaveNumber)} Start");
+            UnityEngine.Debug.LogWarning(sb.ToString());
+#endif
+            while (true)
+            {
+                if (TurnNumber > MaxTurn)
+                {
+                    Result = BattleLog.Result.TimeOver;
+#if TEST_LOG
+                    sb.Clear();
+                    sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+                    sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+                    sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+                    sb.Append($" / {nameof(MaxTurn)}: {MaxTurn}");
+                    sb.Append($" / {nameof(Result)}: {Result.ToString()}");
+                    UnityEngine.Debug.LogWarning(sb.ToString());
+#endif
+                    break;
+                }
+
+                // 캐릭터 큐가 비어 있는 경우 break.
+                if (!Characters.TryDequeue(out var character))
+                    break;
+
+                character.Tick();
+
+                // 플레이어가 죽은 경우 break;
+                if (Player.IsDead)
+                {
+                    Result = BattleLog.Result.Lose;
+#if TEST_LOG
+                    sb.Clear();
+                    sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+                    sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+                    sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+                    sb.Append($" / {nameof(Player)} Dead");
+                    sb.Append($" / {nameof(Result)}: {Result.ToString()}");
+                    UnityEngine.Debug.LogWarning(sb.ToString());
+#endif
+                    break;
+                }
+
+                // 플레이어의 타겟(적)이 없는 경우 break.
+                if (!Player.Targets.Any())
+                {
+                    Result = BattleLog.Result.Win;
+                    Log.clearedWaveNumber = WaveNumber;
+
+                    break;
+                }
+
+                foreach (var other in Characters)
+                {
+                    var current = Characters.GetPriority(other);
+                    var speed = current * 0.6m;
+                    Characters.UpdatePriority(other, speed);
+                }
+
+                Characters.Enqueue(character, TurnPriority / character.SPD);
+            }
+
+            Log.diffScore = _arenaInfo.Update(_enemyInfo, Result);
+            Log.score = _arenaInfo.Score;
+
+            var itemSelector = new WeightedSelector<StageSheet.RewardData>(Random);
+            var rewardSheet = WeeklyArenaRewardSheet;
+            foreach (var row in rewardSheet.OrderedList)
+            {
+                var reward = row.Reward;
+                if (reward.RequiredLevel <= Player.Level)
+                {
+                    itemSelector.Add(reward, reward.Ratio);
+                }
+            }
+
+            var max = _arenaInfo.GetRewardCount();
+            _reward = SetRewardV2(itemSelector, max, Random, MaterialItemSheet);
+            var getReward = new GetReward(null, _reward);
+            Log.Add(getReward);
+            Log.result = Result;
+#if TEST_LOG
+            sb.Clear();
+            sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+            sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+            sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+            sb.Append($" / {nameof(Simulate)} End");
+            sb.Append($" / {nameof(Result)}: {Result.ToString()}");
+            UnityEngine.Debug.LogWarning(sb.ToString());
+#endif
+            return Player;
+        }
+
         private void Spawn()
+        {
+            Player.Spawn();
+            _enemyPlayer.Spawn();
+            Player.Targets.Add(_enemyPlayer);
+            _enemyPlayer.Targets.Add(Player);
+        }
+
+        [Obsolete("Use Spawn")]
+        private void Spawn2()
         {
             Player.Spawn2();
             _enemyPlayer.Spawn2();
@@ -416,7 +536,8 @@ namespace Nekoyume.Battle
             _enemyPlayer.Targets.Add(Player);
         }
 
-        private void SpawnV2()
+        [Obsolete("Use Spawn")]
+        private void Spawn3()
         {
             Player.Spawn3();
             _enemyPlayer.Spawn3();

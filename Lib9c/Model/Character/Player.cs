@@ -379,6 +379,13 @@ namespace Nekoyume.Model
             return map;
         }
 
+        public virtual void Spawn()
+        {
+            InitAI();
+            var spawn = new SpawnPlayer((CharacterBase) Clone());
+            Simulator.Log.Add(spawn);
+        }
+
         [Obsolete("Use Spawn")]
         public virtual void Spawn2()
         {
@@ -422,6 +429,11 @@ namespace Nekoyume.Model
         public void OverrideSkill(Skill.Skill skill)
         {
             Skills.Clear();
+            Skills.Add(skill);
+        }
+
+        public void AddSkill(Skill.Skill skill)
+        {
             Skills.Add(skill);
         }
 

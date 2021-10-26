@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -16,8 +16,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("mimisbrunnr_battle7")]
-    public class MimisbrunnrBattle : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100084ObsoleteIndex)]
+    [ActionType("mimisbrunnr_battle6")]
+    public class MimisbrunnrBattle6 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -70,6 +71,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100084ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -225,7 +228,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.Simulate(playCount);
+            simulator.Simulate6(playCount);
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
