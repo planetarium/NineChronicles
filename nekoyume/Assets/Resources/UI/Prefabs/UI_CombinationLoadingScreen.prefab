@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4495130319120217331}
   - component: {fileID: 6538991087583530236}
   - component: {fileID: 8450438534055216996}
-  - component: {fileID: 3022871231602403312}
+  - component: {fileID: 2552136477636974016}
   - component: {fileID: 5402043068474052087}
   m_Layer: 5
   m_Name: ContinueText
@@ -158,7 +158,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &3022871231602403312
+--- !u!114 &2552136477636974016
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -167,18 +167,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1351400452316674082}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c14ca50aa2eb114686b18d870d6efd2, type: 3}
+  m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 0
-  StartDelay: 0
-  Duration: 0.3
-  TweenType_: 0
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
   useCustomEaseCurve: 0
   customEaseCurve:
     serializedVersion: 2
@@ -186,9 +186,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  BeginValue: 1
-  EndValue: 0
-  ClearOnStop: 0
+  beginValue: 1
+  endValue: 0
+  infiniteLoop: 0
+  loopType: 1
 --- !u!114 &5402043068474052087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -527,15 +528,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e20b377b90b84274db63bc9c14107473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 0
-  StartDelay: 0
-  Duration: 0.3
-  TweenType_: 0
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
   useCustomEaseCurve: 0
   customEaseCurve:
     serializedVersion: 2
@@ -858,15 +859,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e20b377b90b84274db63bc9c14107473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 0
-  StartDelay: 0
-  Duration: 0.3
-  TweenType_: 0
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
   useCustomEaseCurve: 0
   customEaseCurve:
     serializedVersion: 2
