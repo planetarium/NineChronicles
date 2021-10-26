@@ -671,19 +671,22 @@ namespace Nekoyume.Game
                     AddressableAssetsContainerPath);
             }
 
-            List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
-            var csv = new Dictionary<string, string>();
-            foreach (var asset in csvAssets)
+            var task = Task.Run(async () =>
             {
-                if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
+                List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
+                var csv = new Dictionary<string, string>();
+                foreach (var asset in csvAssets)
                 {
-                    var table = tableCsv.ToDotnetString();
-                    csv[asset.name] = table;
-                }
+                    if (await Agent.GetStateAsync(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
+                    {
+                        var table = tableCsv.ToDotnetString();
+                        csv[asset.name] = table;
+                    }
 
-                yield return null;
-            }
-            TableSheets = new TableSheets(csv);
+                }
+                TableSheets = new TableSheets(csv);
+            });
+            yield return new WaitUntil(() => task.IsCompleted);
         }
 
         private async void UploadLog(string logString, string stackTrace, LogType type)
