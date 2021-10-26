@@ -20,21 +20,28 @@ namespace Nekoyume.UI.Tween
         public float startDelay = 0.0f;
         public float duration = 1.0f;
         public TweenType tweenType = TweenType.Forward;
-        [HideInInspector]
-        public Ease ease = Ease.Linear;
-        [HideInInspector]
-        public string completeMethod = "";
-        [HideInInspector]
-        public int componentIndex = 0;
-        [HideInInspector]
-        public GameObject target = null;
-        [HideInInspector]
-        public float completeDelay = 0.0f;
         public DG.Tweening.Tween currentTween;
         public readonly Subject<DG.Tweening.Tween> onStopSubject = new Subject<DG.Tweening.Tween>();
         public System.Action onCompleted = null;
+
+        [HideInInspector]
+        public Ease ease = Ease.Linear;
+
+        [HideInInspector]
+        public string completeMethod = "";
+
+        [HideInInspector]
+        public int componentIndex = 0;
+
+        [HideInInspector]
+        public GameObject target = null;
+
+        [HideInInspector]
+        public float completeDelay = 0.0f;
+
         [HideInInspector]
         public bool useCustomEaseCurve = false;
+
         [HideInInspector]
         public AnimationCurve customEaseCurve;
 

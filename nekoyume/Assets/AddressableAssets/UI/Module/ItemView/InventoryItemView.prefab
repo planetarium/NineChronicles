@@ -255,7 +255,7 @@ GameObject:
   - component: {fileID: 8880440719130387239}
   - component: {fileID: 6420678468728769412}
   - component: {fileID: 537691525163953925}
-  - component: {fileID: 7755115239797919012}
+  - component: {fileID: 4162643380615831004}
   m_Layer: 5
   m_Name: GlowImage
   m_TagString: Untagged
@@ -320,7 +320,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7755115239797919012
+--- !u!114 &4162643380615831004
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -329,21 +329,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 8860376413470112879}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea01e3caa21d0264cab5f5afa838df19, type: 3}
+  m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 1
-  StartDelay: 0
-  Duration: 1
-  TweenType_: 4
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 0.5
-  EndValue: 1
-  ClearOnStop: 0
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 0.5
+  endValue: 1
+  infiniteLoop: 0
+  loopType: 1
 --- !u!1 &8863195949093324077
 GameObject:
   m_ObjectHideFlags: 0
@@ -583,18 +591,6 @@ PrefabInstance:
     - {fileID: 1997991965690462128, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
     - {fileID: 4194215539597630542, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
---- !u!114 &4948683952959936506 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-    type: 3}
-  m_PrefabInstance: {fileID: 6851555308607067550}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &234346097715996200 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6653239178440684470, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
@@ -763,6 +759,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6851555308607067550}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4948683952959936506 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1997588973851837028, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+    type: 3}
+  m_PrefabInstance: {fileID: 6851555308607067550}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4392119260659533546 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7198560295553602420, guid: 5a7ec89f001bf46e686e8583d2f3a60e,

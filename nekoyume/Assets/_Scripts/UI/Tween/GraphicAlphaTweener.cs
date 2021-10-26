@@ -1,6 +1,4 @@
 using DG.Tweening;
-using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,30 +20,97 @@ namespace Nekoyume.UI.Tween
         private LoopType loopType = LoopType.Yoyo;
 
         private Graphic _graphic;
-        private Color _originColor;
 
         protected override void Awake()
         {
             base.Awake();
             _graphic = GetComponent<Graphic>();
-            _originColor = _graphic.color;
+        }
+
+        public override void PlayForward()
+        {
+            _graphic.DOFade(beginValue, 0.0f);
+            if (TweenType.Repeat == tweenType)
+            {
+                currentTween = _graphic.DOFade(endValue, duration)
+                    .SetEase(ease);
+                currentTween.onComplete = PlayForward;
+            }
+            else if (TweenType.PingPongOnce == tweenType)
+            {
+                currentTween = _graphic.DOFade(endValue, duration)
+                    .SetEase(ease);
+                currentTween.onComplete = PlayReverse;
+            }
+            else if (TweenType.PingPongRepeat == tweenType)
+            {
+                currentTween = _graphic.DOFade(endValue, duration)
+                    .SetEase(ease);
+                currentTween.onComplete = PlayReverse;
+            }
+            else
+            {
+                currentTween = _graphic.DOFade(endValue, duration)
+                    .SetEase(ease);
+                currentTween.onComplete = OnComplete;
+            }
+        }
+
+        public override void PlayReverse()
+        {
+            _graphic.DOFade(endValue, 0.0f);
+            if (TweenType.PingPongOnce == tweenType)
+            {
+                currentTween = _graphic.DOFade(beginValue, duration)
+                    .SetEase(ease);
+                currentTween.onComplete = OnComplete;
+            }
+            else if (TweenType.PingPongRepeat == tweenType)
+            {
+                currentTween = _graphic.DOFade(beginValue, duration)
+                    .SetEase(ease);
+                currentTween.onComplete = PlayForward;
+            }
+            else
+            {
+                currentTween = _graphic.DOFade(beginValue, duration)
+                    .SetEase(ease);
+                currentTween.onComplete = OnComplete;
+            }
+        }
+
+        public override void PlayRepeat()
+        {
+            PlayForward();
+        }
+
+        public override void PlayPingPongOnce()
+        {
+            PlayForward();
+        }
+
+        public override void PlayPingPongRepeat()
+        {
+            PlayForward();
         }
 
         private void OnEnable()
         {
-            _graphic.DOFade(beginValue, 0f);
-            currentTween = _graphic.DOFade(endValue, duration).SetEase(ease);
-
-            if (infiniteLoop)
+            if (startWithPlay)
             {
-                currentTween = currentTween.SetLoops(-1, loopType);
+                _graphic.DOFade(beginValue, 0f);
+                currentTween = _graphic.DOFade(endValue, duration).SetEase(ease);
+
+                if (infiniteLoop)
+                {
+                    currentTween = currentTween.SetLoops(-1, loopType);
+                }
             }
         }
 
         private void OnDisable()
         {
             Stop();
-            _graphic.color = _originColor;
         }
     }
 }

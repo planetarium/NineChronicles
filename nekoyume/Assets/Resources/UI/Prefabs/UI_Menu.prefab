@@ -12824,7 +12824,7 @@ GameObject:
   - component: {fileID: 5186417245190519701}
   - component: {fileID: 7187615522837325458}
   - component: {fileID: 1001352562564403235}
-  - component: {fileID: 3847623462679189743}
+  - component: {fileID: 3449594692726591627}
   m_Layer: 5
   m_Name: Bg_add2
   m_TagString: Untagged
@@ -12889,7 +12889,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3847623462679189743
+--- !u!114 &3449594692726591627
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -12898,21 +12898,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 6631961005200770364}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea01e3caa21d0264cab5f5afa838df19, type: 3}
+  m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 1
-  StartDelay: 0
-  Duration: 1
-  TweenType_: 0
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 0
-  EndValue: 1
-  ClearOnStop: 0
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 0
+  endValue: 1
+  infiniteLoop: 0
+  loopType: 1
 --- !u!1 &6815722065523509715
 GameObject:
   m_ObjectHideFlags: 0
@@ -13241,7 +13249,7 @@ GameObject:
   - component: {fileID: 966005766725031115}
   - component: {fileID: 2431520084702482688}
   - component: {fileID: 5960306077332467165}
-  - component: {fileID: 1052087018537934867}
+  - component: {fileID: 7324791367047945874}
   m_Layer: 5
   m_Name: Bg_add1
   m_TagString: Untagged
@@ -13306,7 +13314,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1052087018537934867
+--- !u!114 &7324791367047945874
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13315,21 +13323,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 8959248101129416618}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea01e3caa21d0264cab5f5afa838df19, type: 3}
+  m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 1
-  StartDelay: 0
-  Duration: 1
-  TweenType_: 0
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 0
-  EndValue: 1
-  ClearOnStop: 0
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 0
+  endValue: 1
+  infiniteLoop: 0
+  loopType: 1
 --- !u!1 &9200619741190121934
 GameObject:
   m_ObjectHideFlags: 0
