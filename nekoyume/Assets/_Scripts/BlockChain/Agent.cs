@@ -188,14 +188,6 @@ namespace Nekoyume.BlockChain
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
 
-            // 같은 논스를 다시 찍지 않기 위해서 직접 만든 Tx는 유지합니다.
-            ImmutableHashSet<TxId> pendingTxsFromOhters = store.IterateStagedTransactionIds()
-                .Select(tid => store.GetTransaction<PolymorphicAction<ActionBase>>(tid))
-                .Where(tx => tx.Signer != Address)
-                .Select(tx => tx.Id)
-                .ToImmutableHashSet();
-            store.UnstageTransactionIds(pendingTxsFromOhters);
-
             try
             {
                 IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "states"));
@@ -646,22 +638,8 @@ namespace Nekoyume.BlockChain
                     $" - LastChecked: {peerState.LastChecked}\n" +
                     $" - Latency: {peerState.Latency}"));
                 Cheat.Display("Peers", peerStateString);
-                StringBuilder log = new StringBuilder($"Staged Transactions : {store.IterateStagedTransactionIds().Count()}\n");
-                var count = 1;
-                foreach (var id in store.IterateStagedTransactionIds())
-                {
-                    var tx = store.GetTransaction<PolymorphicAction<ActionBase>>(id);
-                    log.Append($"[{count++}] Id : {tx.Id}\n");
-                    log.Append($"-Signer : {tx.Signer.ToString()}\n");
-                    log.Append($"-Nonce : {tx.Nonce}\n");
-                    log.Append($"-Timestamp : {tx.Timestamp}\n");
-                    log.Append($"-Actions\n");
-                    log = tx.Actions.Aggregate(log, (current, action) => current.Append($" -{action.InnerAction}\n"));
-                }
 
-                Cheat.Display("StagedTxs", log.ToString());
-
-                log = new StringBuilder($"Last 10 tips :\n");
+                StringBuilder log = new StringBuilder($"Last 10 tips :\n");
                 foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
                 {
                     log.Append($"[{block.Index}] {block.Hash}\n");
