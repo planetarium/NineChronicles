@@ -83,6 +83,7 @@ namespace Nekoyume.BlockChain
         protected BlockChain<PolymorphicAction<ActionBase>> blocks;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
         protected BaseStore store;
+        private IStagePolicy<PolymorphicAction<ActionBase>> _stagePolicy;
         private IStateStore _stateStore;
         private ImmutableList<Peer> _seedPeers;
         private ImmutableList<Peer> _peerList;
@@ -183,8 +184,7 @@ namespace Nekoyume.BlockChain
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
             var policy = BlockPolicySource.GetPolicy();
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            _stagePolicy = new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
 
@@ -194,7 +194,7 @@ namespace Nekoyume.BlockChain
                 _stateStore = new TrieStateStore(stateKeyValueStore);
                 blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                     policy,
-                    stagePolicy,
+                    _stagePolicy,
                     store,
                     _stateStore,
                     genesisBlock,
@@ -961,8 +961,7 @@ namespace Nekoyume.BlockChain
                 // 프레임 저하를 막기 위해 별도 스레드로 처리합니다.
                 Task<List<Transaction<PolymorphicAction<ActionBase>>>> getOwnTxs =
                     Task.Run(
-                        () => store.IterateStagedTransactionIds()
-                            .Select(id => store.GetTransaction<PolymorphicAction<ActionBase>>(id))
+                        () => _stagePolicy.Iterate(blocks)
                             .Where(tx => tx.Signer.Equals(Address))
                             .ToList()
                     );
