@@ -24,7 +24,7 @@ namespace Nekoyume.Action
         public List<Guid> foods;
         public int worldId;
         public int stageId;
-        public int playCount;
+        public int playCount = 1;
         public Address avatarAddress;
         public Address rankingMapAddress;
 
