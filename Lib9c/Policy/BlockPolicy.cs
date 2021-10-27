@@ -13,14 +13,13 @@ namespace Nekoyume.BlockChain.Policy
     public class BlockPolicy : BlockPolicy<NCAction>
     {
         private readonly Func<BlockChain<NCAction>, long> _getNextBlockDifficulty;
-        private readonly Func<BlockChain<NCAction>, Address, long, bool> _isAllowedToMine;
+        private readonly Func<Address, long, bool> _isAllowedToMine;
 
         public BlockPolicy(
             IAction blockAction,
             TimeSpan blockInterval,
             long difficultyStability,
             long minimumDifficulty,
-            PermissionedMiningPolicy? permissionedMiningPolicy,
             IComparer<IBlockExcerpt> canonicalChainComparer,
             HashAlgorithmGetter hashAlgorithmGetter,
             Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
@@ -32,7 +31,7 @@ namespace Nekoyume.BlockChain.Policy
             Func<long, int> getMaxTransactionsPerBlock = null,
             Func<long, int> getMaxTransactionsPerSignerPerBlock = null,
             Func<BlockChain<NCAction>, long> getNextBlockDifficulty = null,
-            Func<BlockChain<NCAction>, Address, long, bool> isAllowedToMine = null)
+            Func<Address, long, bool> isAllowedToMine = null)
             : base(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
@@ -54,7 +53,7 @@ namespace Nekoyume.BlockChain.Policy
         public override long GetNextBlockDifficulty(BlockChain<NCAction> blockChain) =>
              _getNextBlockDifficulty(blockChain);
 
-        public bool IsAllowedToMine(BlockChain<NCAction> blockChain, Address miner, long index) =>
-            _isAllowedToMine(blockChain, miner, index);
+        public bool IsAllowedToMine(Address miner, long index) =>
+            _isAllowedToMine(miner, index);
     }
 }
