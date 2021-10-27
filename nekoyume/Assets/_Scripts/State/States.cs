@@ -266,13 +266,14 @@ namespace Nekoyume.State
 
             if (isNew)
             {
+                _combinationSlotStates.Clear();
                 if (!TryGetAvatarState(avatarState.address, out var curAvatarState))
                 {
                     return null;
                 }
 
-                AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
                 SetCombinationSlotStates(curAvatarState);
+                AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
             }
 
             if (Game.Game.instance.Agent is RPCAgent agent)

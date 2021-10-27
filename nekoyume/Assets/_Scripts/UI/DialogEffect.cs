@@ -6,7 +6,7 @@ namespace Nekoyume.UI
 {
     public abstract class DialogEffect
     {
-        public abstract void Execute(Dialog widget);
+        public abstract void Execute(DialogPopup widget);
     }
 
     public class DialogEffectShake : DialogEffect
@@ -15,7 +15,7 @@ namespace Nekoyume.UI
         public float duration = 1.0f;
         public int loops = 1;
 
-        public override void Execute(Dialog widget)
+        public override void Execute(DialogPopup widget)
         {
             duration = duration / (loops * 2.0f);
             var seq = DOTween.Sequence();

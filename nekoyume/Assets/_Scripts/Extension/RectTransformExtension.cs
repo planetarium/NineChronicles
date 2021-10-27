@@ -1,6 +1,5 @@
 using System;
 using DG.Tweening;
-using DG.Tweening.Plugins.Options;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Util;
 using Unity.Mathematics;

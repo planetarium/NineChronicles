@@ -350,7 +350,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            var slots = Widget.Find<CombinationSlots>();
+            var slots = Widget.Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out slotIndex))
             {
                 var message = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");

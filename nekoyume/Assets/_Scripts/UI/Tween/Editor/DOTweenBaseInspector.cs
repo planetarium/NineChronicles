@@ -85,7 +85,7 @@ namespace Nekoyume.UI.Tween
             {
                 rectMoveToTween.EndValue = rectMoveToTween.transform.position;
             }
-            
+
             if (GUILayout.Button("BeginValue -> Current"))
             {
                 rectMoveToTween.transform.position = rectMoveToTween.BeginValue;

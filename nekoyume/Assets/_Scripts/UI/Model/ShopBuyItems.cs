@@ -45,7 +45,7 @@ namespace Nekoyume.UI.Model
                     }
                     else
                     {
-                        OneLinePopup.Push(MailType.System,
+                        OneLineSystem.Push(MailType.System,
                             L10nManager.Localize("NOTIFICATION_BUY_WISHLIST_FULL"));
                     }
                 }

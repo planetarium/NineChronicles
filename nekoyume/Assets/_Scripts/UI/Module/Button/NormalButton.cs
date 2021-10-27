@@ -34,7 +34,7 @@ namespace Nekoyume.UI.Module
             if (sortingGroup)
             {
                 var widget = GetComponentInParent<Widget>();
-                if (widget is HeaderMenu)
+                if (widget is HeaderMenuStatic)
                 {
                     _originalSortingOrderOffset = 0;
                     sortingGroup.sortingOrder =
@@ -85,7 +85,7 @@ namespace Nekoyume.UI.Module
             }
 
             var systemInfoSortingOrder =
-                MainCanvas.instance.GetLayer(WidgetType.SystemInfo).root.sortingOrder;
+                MainCanvas.instance.GetLayer(WidgetType.System).root.sortingOrder;
             sortingGroup.sortingOrder = systemInfoSortingOrder;
         }
 

@@ -86,7 +86,7 @@ namespace Nekoyume.L10n
         ChineseSimplified,
 
         /// <summary>
-        /// font file: Assets/Font/TTF/kanit-regular.otf
+        /// font file: Assets/Font/TTF/kanit-light.otf
         /// font asset file: Assets/Resources/Font/SDF/Thai SDF.asset
         ///     - Sampling Font Size: 80
         ///     - Padding: 7
