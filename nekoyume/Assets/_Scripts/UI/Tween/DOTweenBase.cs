@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Tween
         public bool useCustomEaseCurve = false;
 
         [HideInInspector]
-        public AnimationCurve customEaseCurve;
+        public AnimationCurve customEaseCurve = AnimationCurve.Linear(0,0,0,0);
 
         protected virtual void Awake()
         {

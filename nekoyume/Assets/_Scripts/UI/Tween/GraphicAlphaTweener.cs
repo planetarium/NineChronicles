@@ -13,12 +13,6 @@ namespace Nekoyume.UI.Tween
         [SerializeField]
         private float endValue = 1f;
 
-        [SerializeField]
-        private bool infiniteLoop = false;
-
-        [SerializeField]
-        private LoopType loopType = LoopType.Yoyo;
-
         private Graphic _graphic;
 
         protected override void Awake()
@@ -29,11 +23,19 @@ namespace Nekoyume.UI.Tween
 
         public override void PlayForward()
         {
-            _graphic.DOFade(beginValue, 0.0f);
+            _graphic.DOFade(useCustomEaseCurve ? beginValue : customEaseCurve.keys[0].value, 0.0f);
             if (TweenType.Repeat == tweenType)
             {
-                currentTween = _graphic.DOFade(endValue, duration)
-                    .SetEase(ease);
+                if (useCustomEaseCurve)
+                {
+                    currentTween = _graphic
+                        .DOFade(customEaseCurve.keys[customEaseCurve.keys.Length - 1].value,
+                            duration).SetEase(customEaseCurve);
+                }
+                else
+                {
+                    currentTween = _graphic.DOFade(endValue, duration).SetEase(ease);
+                }
                 currentTween.onComplete = PlayForward;
             }
             else if (TweenType.PingPongOnce == tweenType)
@@ -92,20 +94,6 @@ namespace Nekoyume.UI.Tween
         public override void PlayPingPongRepeat()
         {
             PlayForward();
-        }
-
-        private void OnEnable()
-        {
-            if (startWithPlay)
-            {
-                _graphic.DOFade(beginValue, 0f);
-                currentTween = _graphic.DOFade(endValue, duration).SetEase(ease);
-
-                if (infiniteLoop)
-                {
-                    currentTween = currentTween.SetLoops(-1, loopType);
-                }
-            }
         }
 
         private void OnDisable()
