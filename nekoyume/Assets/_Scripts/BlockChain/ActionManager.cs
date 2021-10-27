@@ -101,7 +101,8 @@ namespace Nekoyume.BlockChain
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
-            int stageId)
+            int stageId,
+            int playCount)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes ??= new List<Costume>();
@@ -117,6 +118,7 @@ namespace Nekoyume.BlockChain
                 stageId = stageId,
                 avatarAddress = avatarAddress,
                 rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
+                playCount = playCount,
             };
             ProcessAction(action);
 

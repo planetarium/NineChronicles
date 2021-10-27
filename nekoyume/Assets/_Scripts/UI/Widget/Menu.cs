@@ -12,6 +12,7 @@ using mixpanel;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -64,12 +65,12 @@ namespace Nekoyume.UI
         private GuidedQuest guidedQuest = null;
 
         [SerializeField]
-        private ActionPoint actionPoint;
+        private Button playerButton;
 
         private Coroutine _coLazyClose;
 
-        public SpriteRenderer combinationSpriteRenderer;
-        public SpriteRenderer hasSpriteRenderer;
+        public Image combinationImage;
+        public Image hasSpriteImage;
 
         protected override void Awake()
         {
@@ -180,15 +181,8 @@ namespace Nekoyume.UI
             worldMap.UpdateNotificationInfo();
             var hasNotificationInWorldMap = worldMap.HasNotification;
 
-            questExclamationMark.gameObject.SetActive(
-                (btnQuest.IsUnlocked &&
-                 PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
-                hasNotificationInWorldMap);
-
-            mimisbrunnrExclamationMark.gameObject.SetActive(
-                (btnMimisbrunnr.IsUnlocked &&
-                 PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0) ||
-                hasNotificationInWorldMap);
+            questExclamationMark.gameObject.SetActive((btnQuest.IsUnlocked && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) || hasNotificationInWorldMap);
+            mimisbrunnrExclamationMark.gameObject.SetActive((btnMimisbrunnr.IsUnlocked && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0));
         }
 
         private void HideButtons()
@@ -481,9 +475,7 @@ namespace Nekoyume.UI
                 {
                     n--;
                     var k = Mathf.FloorToInt(Random.value * (n + 1));
-                    var value = speechBubbles[k];
-                    speechBubbles[k] = speechBubbles[n];
-                    speechBubbles[n] = value;
+                    (speechBubbles[k], speechBubbles[n]) = (speechBubbles[n], speechBubbles[k]);
                 }
 
                 foreach (var bubble in speechBubbles)
@@ -501,6 +493,12 @@ namespace Nekoyume.UI
             {
                 bubble.Hide();
             }
+        }
+
+        public void UpdatePlayerReactButton(System.Action callback)
+        {
+            playerButton.onClick.RemoveAllListeners();
+            playerButton.onClick.AddListener(() => callback?.Invoke());
         }
 
         public void TutorialActionHackAndSlash() => HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 1);

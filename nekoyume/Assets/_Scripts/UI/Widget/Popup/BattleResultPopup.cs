@@ -532,7 +532,8 @@ namespace Nekoyume.UI
                     player.Equipments,
                     new List<Consumable>(),
                     SharedModel.WorldID,
-                    SharedModel.StageID + 1);
+                    SharedModel.StageID + 1,
+                    1);
             }
             else
             {
@@ -593,7 +594,8 @@ namespace Nekoyume.UI
                     player.Equipments,
                     new List<Consumable>(),
                     SharedModel.WorldID,
-                    SharedModel.StageID);
+                    SharedModel.StageID,
+                    1);
             }
             else
             {

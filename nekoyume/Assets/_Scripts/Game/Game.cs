@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
@@ -603,7 +604,7 @@ namespace Nekoyume.Game
                 yield return new WaitUntil(() => loginPopup.Login);
             }
 
-            Agent.Initialize(
+            yield return Agent.Initialize(
                 _options,
                 loginPopup.GetPrivateKey(),
                 callback

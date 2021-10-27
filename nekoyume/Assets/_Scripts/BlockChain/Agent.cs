@@ -134,7 +134,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void Initialize(
+        public IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
             Action<bool> callback)
@@ -142,7 +142,7 @@ namespace Nekoyume.BlockChain
             if (disposed)
             {
                 Debug.Log("Agent Exist");
-                return;
+                yield return null;
             }
 
             InitAgent(callback, privateKey, options);
@@ -289,6 +289,11 @@ namespace Nekoyume.BlockChain
         public IValue GetState(Address address)
         {
             return blocks.GetState(address);
+        }
+
+        public Task<IValue> GetStateAsync(Address address)
+        {
+            return Task.Run(() => blocks.GetState(address));
         }
 
         public bool IsActionStaged(Guid actionId, out TxId txId)
