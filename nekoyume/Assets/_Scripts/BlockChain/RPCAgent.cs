@@ -366,7 +366,7 @@ namespace Nekoyume.BlockChain
         {
             var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
             HashAlgorithmGetter hashAlgorithmGetter = Game.Game.instance.Agent.BlockPolicySource
-                .GetPolicy(5_000_000, 100) // FIXME: e.g., GetPolicy(IAgent.GetMinimumDifficulty(), IAgent.GetMaxTxCount())
+                .GetPolicy()
                 .GetHashAlgorithm;
             Block<PolymorphicAction<ActionBase>> newTipBlock =
                 BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
