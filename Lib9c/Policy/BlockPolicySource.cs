@@ -104,6 +104,23 @@ namespace Nekoyume.BlockChain.Policy
                 new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
+        [Obsolete("Left for temporary old API compliance.")]
+        public IBlockPolicy<NCAction> GetPolicy(
+            long minimumDifficulty,
+            int maxTransactionsPerBlock) =>
+            GetPolicy(
+                minimumDifficulty: minimumDifficulty,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
+                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Default.Add(
+                    new SpannedSubPolicy<int>(
+                        startIndex: 0,
+                        value: maxTransactionsPerBlock)),
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
+                authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy.Mainnet,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
+
         public IBlockPolicy<NCAction> GetPolicy() =>
             GetPolicy(
                 minimumDifficulty: MinimumDifficulty,
