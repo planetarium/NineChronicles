@@ -1,28 +1,28 @@
 namespace Nekoyume.BlockChain.Policy
 {
-    public static class AuthorizedMiningNoOpTxRequiredPolicy
+    public sealed class AuthorizedMiningNoOpTxRequiredPolicy : VariableSubPolicy<bool>
     {
-        public static readonly bool DefaultValue = false;
-
-        public static VariableSubPolicy<bool> Default
+        private AuthorizedMiningNoOpTxRequiredPolicy(bool defaultValue)
+            : base(defaultValue)
         {
-            get
-            {
-                return VariableSubPolicy<bool>.Create(DefaultValue);
-            }
         }
 
-        public static VariableSubPolicy<bool> Mainnet
+        private AuthorizedMiningNoOpTxRequiredPolicy(
+            AuthorizedMiningNoOpTxRequiredPolicy authorizedMiningNoOpTxRequiredPolicy,
+            SpannedSubPolicy<bool> spannedSubPolicy)
+            : base(authorizedMiningNoOpTxRequiredPolicy, spannedSubPolicy)
         {
-            get
-            {
-                return Default
-                    .Add(new SpannedSubPolicy<bool>(
-                        startIndex: BlockPolicySource.AuthorizedMiningNoOpTxRequiredStartIndex,
-                        endIndex: BlockPolicySource.AuthorizedMinersPolicyEndIndex,
-                        predicate: index => index % BlockPolicySource.AuthorizedMinersPolicyInterval == 0,
-                        value: true));
-            }
         }
+
+        public static AuthorizedMiningNoOpTxRequiredPolicy Default =>
+            new AuthorizedMiningNoOpTxRequiredPolicy(false);
+
+        public static AuthorizedMiningNoOpTxRequiredPolicy Mainnet =>
+            Default
+                .Add(new SpannedSubPolicy<bool>(
+                    startIndex: BlockPolicySource.AuthorizedMiningNoOpTxRequiredStartIndex,
+                    endIndex: BlockPolicySource.AuthorizedMinersPolicyEndIndex,
+                    predicate: index => index % BlockPolicySource.AuthorizedMinersPolicyInterval == 0,
+                    value: true));
     }
 }

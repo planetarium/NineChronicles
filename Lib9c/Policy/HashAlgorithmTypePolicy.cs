@@ -3,25 +3,24 @@ using Libplanet;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public static class HashAlgorithmTypePolicy
+    public sealed class HashAlgorithmTypePolicy : VariableSubPolicy<HashAlgorithmType>
     {
-        public static readonly HashAlgorithmType DefaultValue = HashAlgorithmType.Of<SHA256>();
-
-        public static VariableSubPolicy<HashAlgorithmType> Default
+        private HashAlgorithmTypePolicy(HashAlgorithmType defaultValue)
+            : base(defaultValue)
         {
-            get
-            {
-                return VariableSubPolicy<HashAlgorithmType>
-                    .Create(DefaultValue);
-            }
         }
 
-        public static VariableSubPolicy<HashAlgorithmType> Mainnet
+        private HashAlgorithmTypePolicy(
+            HashAlgorithmTypePolicy hashAlgorithmTypePolicy,
+            SpannedSubPolicy<HashAlgorithmType> spannedSubPolicy)
+            : base(hashAlgorithmTypePolicy, spannedSubPolicy)
         {
-            get
-            {
-                return Default;
-            }
         }
+
+        public static VariableSubPolicy<HashAlgorithmType> Default =>
+            new HashAlgorithmTypePolicy(HashAlgorithmType.Of<SHA256>());
+
+        public static VariableSubPolicy<HashAlgorithmType> Mainnet =>
+            Default;
     }
 }

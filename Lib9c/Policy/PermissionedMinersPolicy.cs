@@ -3,30 +3,29 @@ using Libplanet;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public static class PermissionedMinersPolicy
+    public sealed class PermissionedMinersPolicy : VariableSubPolicy<ImmutableHashSet<Address>>
     {
-        public static readonly ImmutableHashSet<Address> DefaultValue = ImmutableHashSet<Address>.Empty;
-
-        public static VariableSubPolicy<ImmutableHashSet<Address>> Default
+        private PermissionedMinersPolicy(ImmutableHashSet<Address> defaultValue)
+            : base(defaultValue)
         {
-            get
-            {
-                return VariableSubPolicy<ImmutableHashSet<Address>>
-                    .Create(DefaultValue);
-            }
         }
 
-        public static VariableSubPolicy<ImmutableHashSet<Address>> Mainnet
+        private PermissionedMinersPolicy(
+            PermissionedMinersPolicy permissionedMinersPolicy,
+            SpannedSubPolicy<ImmutableHashSet<Address>> spannedSubPolicy)
+            : base(permissionedMinersPolicy, spannedSubPolicy)
         {
-            get
-            {
-                return Default
-                    .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
-                        startIndex: BlockPolicySource.PermissionedMiningStartIndex,
-                        endIndex: null,
-                        predicate: null,
-                        value: BlockPolicySource.AuthorizedMiners));
-            }
         }
+
+        public static PermissionedMinersPolicy Default =>
+            new PermissionedMinersPolicy(ImmutableHashSet<Address>.Empty);
+
+        public static PermissionedMinersPolicy Mainnet =>
+            Default
+                .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
+                    startIndex: BlockPolicySource.PermissionedMiningStartIndex,
+                    endIndex: null,
+                    predicate: null,
+                    value: BlockPolicySource.AuthorizedMiners));
     }
 }

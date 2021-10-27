@@ -142,8 +142,8 @@ namespace Lib9c.Tests
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null,
-                authorizedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
-                    .Create(ImmutableHashSet<Address>.Empty)
+                authorizedMinersPolicy: AuthorizedMinersPolicy
+                    .Default
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
                         endIndex: 10,
@@ -295,15 +295,15 @@ namespace Lib9c.Tests
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null,
-                authorizedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
-                    .Create(ImmutableHashSet<Address>.Empty)
+                authorizedMinersPolicy: AuthorizedMinersPolicy
+                    .Default
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
                         endIndex: 4,
                         predicate: index => index % 2 == 0,
                         value: miners.ToImmutableHashSet())),
-                authorizedMiningNoOpTxRequiredPolicy: VariableSubPolicy<bool>
-                    .Create(false)
+                authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy
+                    .Default
                     .Add(new SpannedSubPolicy<bool>(
                         startIndex: 0,
                         endIndex: 4,
@@ -420,8 +420,8 @@ namespace Lib9c.Tests
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: null,
                 maxTransactionsPerSignerPerBlockPolicy: null,
-                authorizedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
-                    .Create(ImmutableHashSet<Address>.Empty)
+                authorizedMinersPolicy: AuthorizedMinersPolicy
+                    .Default
                     .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                         startIndex: 0,
                         endIndex: 6,
@@ -556,8 +556,8 @@ namespace Lib9c.Tests
                 minimumDifficulty: 10_000,
                 maxBlockBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
-                maxTransactionsPerBlockPolicy: VariableSubPolicy<int>
-                    .Create(int.MaxValue)
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy
+                    .Default
                     .Add(new SpannedSubPolicy<int>(0, null, null, 10)),
                 maxTransactionsPerSignerPerBlockPolicy: null,
                 authorizedMinersPolicy: null,
@@ -662,11 +662,11 @@ namespace Lib9c.Tests
                 minimumDifficulty: 10_000,
                 maxBlockBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
-                maxTransactionsPerBlockPolicy: VariableSubPolicy<int>
-                    .Create(int.MaxValue)
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy
+                    .Default
                     .Add(new SpannedSubPolicy<int>(0, null, null, 10)),
-                maxTransactionsPerSignerPerBlockPolicy: VariableSubPolicy<int>
-                    .Create(int.MaxValue)
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy
+                    .Default
                     .Add(new SpannedSubPolicy<int>(2, null, null, 5)),
                 authorizedMinersPolicy: null,
                 authorizedMiningNoOpTxRequiredPolicy: null,
@@ -784,8 +784,8 @@ namespace Lib9c.Tests
                     maxTransactionsPerSignerPerBlockPolicy: null,
                     authorizedMinersPolicy: null,
                     authorizedMiningNoOpTxRequiredPolicy: null,
-                    permissionedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
-                        .Create(ImmutableHashSet<Address>.Empty)
+                    permissionedMinersPolicy: PermissionedMinersPolicy
+                        .Default
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 1,
                             endIndex: null,
@@ -865,23 +865,23 @@ namespace Lib9c.Tests
                     minTransactionsPerBlockPolicy: null,
                     maxTransactionsPerBlockPolicy: null,
                     maxTransactionsPerSignerPerBlockPolicy: null,
-                    authorizedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
-                        .Create(ImmutableHashSet<Address>.Empty)
+                    authorizedMinersPolicy: AuthorizedMinersPolicy
+                        .Default
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 0,
                             endIndex: 6,
                             predicate: index => index % 2 == 0,
                             value: new Address[] { authorizedMinerKey.ToAddress() }
                                 .ToImmutableHashSet())),
-                    authorizedMiningNoOpTxRequiredPolicy: VariableSubPolicy<bool>
-                        .Create(false)
+                    authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy
+                        .Default
                         .Add(new SpannedSubPolicy<bool>(
                             startIndex: 4,
                             endIndex: 10,
                             predicate: null,
                             value: true)),
-                    permissionedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
-                        .Create(ImmutableHashSet<Address>.Empty)
+                    permissionedMinersPolicy: PermissionedMinersPolicy
+                        .Default
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 2,
                             endIndex: 10,
@@ -1023,8 +1023,8 @@ namespace Lib9c.Tests
                     minTransactionsPerBlockPolicy: null,
                     maxTransactionsPerBlockPolicy: null,
                     maxTransactionsPerSignerPerBlockPolicy: null,
-                    authorizedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
-                        .Create(ImmutableHashSet<Address>.Empty)
+                    authorizedMinersPolicy: AuthorizedMinersPolicy
+                        .Default
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 0,
                             endIndex: 10,
@@ -1032,8 +1032,8 @@ namespace Lib9c.Tests
                             value: new Address[] { authorizedMinerKey.ToAddress() }
                                 .ToImmutableHashSet())),
                     authorizedMiningNoOpTxRequiredPolicy: null,
-                    permissionedMinersPolicy: VariableSubPolicy<ImmutableHashSet<Address>>
-                        .Create(ImmutableHashSet<Address>.Empty)
+                    permissionedMinersPolicy: PermissionedMinersPolicy
+                        .Default
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
                             startIndex: 5,
                             endIndex: 20,

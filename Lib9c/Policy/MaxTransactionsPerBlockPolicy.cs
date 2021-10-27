@@ -1,27 +1,26 @@
 namespace Nekoyume.BlockChain.Policy
 {
-    public static class MaxTransactionsPerBlockPolicy
+    public sealed class MaxTransactionsPerBlockPolicy : VariableSubPolicy<int>
     {
-        public static readonly int DefaultValue = int.MaxValue;
-
-        public static VariableSubPolicy<int> Default
+        private MaxTransactionsPerBlockPolicy(int defaultValue)
+            : base(defaultValue)
         {
-            get
-            {
-                return VariableSubPolicy<int>
-                    .Create(DefaultValue);
-            }
         }
 
-        public static VariableSubPolicy<int> Mainnet
+        private MaxTransactionsPerBlockPolicy(
+            MaxTransactionsPerBlockPolicy maxTransactionsPerBlockPolicy,
+            SpannedSubPolicy<int> spannedSubPolicy)
+            : base(maxTransactionsPerBlockPolicy, spannedSubPolicy)
         {
-            get
-            {
-                return Default
-                    .Add(new SpannedSubPolicy<int>(
-                        startIndex: 0,
-                        value: BlockPolicySource.MaxTransactionsPerBlock));
-            }
         }
+
+        public static MaxTransactionsPerBlockPolicy Default =>
+            new MaxTransactionsPerBlockPolicy(int.MaxValue);
+
+        public static MaxTransactionsPerBlockPolicy Mainnet =>
+            Default
+                .Add(new SpannedSubPolicy<int>(
+                    startIndex: 0,
+                    value: BlockPolicySource.MaxTransactionsPerBlock));
     }
 }

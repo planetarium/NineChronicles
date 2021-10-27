@@ -7,16 +7,16 @@ namespace Lib9c.Tests
     using Nekoyume.BlockChain.Policy;
     using Xunit;
 
-    public class VariableSubPolicyTest
+    public class GenericSubPolicyTest
     {
-        public VariableSubPolicyTest()
+        public GenericSubPolicyTest()
         {
         }
 
         [Fact]
         public void Constructor()
         {
-            VariableSubPolicy<bool> variableSubPolicy;
+            GenericSubPolicy<bool> genericSubPolicy;
             List<long> indices = Enumerable.Range(0, 100).Select(i => (long)i).ToList();
 
             SpannedSubPolicy<bool> first = new SpannedSubPolicy<bool>(10, null, null, true);
@@ -26,7 +26,7 @@ namespace Lib9c.Tests
             SpannedSubPolicy<bool> fourth = new SpannedSubPolicy<bool>(50, 80, index => index % 5 == 0, true);
 
             // Should be fine.
-            variableSubPolicy = VariableSubPolicy<bool>
+            genericSubPolicy = GenericSubPolicy<bool>
                 .Create(false)
                 // 10 ~ 19 => count 10
                 .Add(first)
@@ -37,44 +37,47 @@ namespace Lib9c.Tests
                 // 50 ~ 80 && mod 5 => count 7
                 .Add(fourth);
 
-            Assert.Equal(4, variableSubPolicy.SpannedSubPolicies.Count);
-            Assert.Equal(10, variableSubPolicy.SpannedSubPolicies[0].StartIndex);
-            Assert.Equal(19, variableSubPolicy.SpannedSubPolicies[0].EndIndex);
-            Assert.Equal(20, variableSubPolicy.SpannedSubPolicies[1].StartIndex);
-            Assert.Equal(29, variableSubPolicy.SpannedSubPolicies[1].EndIndex);
-            Assert.Equal(30, variableSubPolicy.SpannedSubPolicies[2].StartIndex);
-            Assert.Equal(40, variableSubPolicy.SpannedSubPolicies[2].EndIndex);
-            Assert.Equal(50, variableSubPolicy.SpannedSubPolicies[3].StartIndex);
-            Assert.Equal(80, variableSubPolicy.SpannedSubPolicies[3].EndIndex);
+            Assert.Equal(4, genericSubPolicy.SpannedSubPolicies.Count);
+            Assert.Equal(10, genericSubPolicy.SpannedSubPolicies[0].StartIndex);
+            Assert.Equal(19, genericSubPolicy.SpannedSubPolicies[0].EndIndex);
+            Assert.Equal(20, genericSubPolicy.SpannedSubPolicies[1].StartIndex);
+            Assert.Equal(29, genericSubPolicy.SpannedSubPolicies[1].EndIndex);
+            Assert.Equal(30, genericSubPolicy.SpannedSubPolicies[2].StartIndex);
+            Assert.Equal(40, genericSubPolicy.SpannedSubPolicies[2].EndIndex);
+            Assert.Equal(50, genericSubPolicy.SpannedSubPolicies[3].StartIndex);
+            Assert.Equal(80, genericSubPolicy.SpannedSubPolicies[3].EndIndex);
 
             Assert.Equal(
-                indices.Where(i => variableSubPolicy.Getter(i)).Count(),
-                variableSubPolicy.SpannedSubPolicies
+                indices.Where(i => genericSubPolicy.Getter(i)).Count(),
+                genericSubPolicy.SpannedSubPolicies
                     .Select(s => indices.Where(i => s.IsTargetIndex(i)).Count())
                     .Sum());
-            Assert.Equal(33, indices.Where(i => variableSubPolicy.Getter(i)).Count());
+            Assert.Equal(33, indices.Where(i => genericSubPolicy.Getter(i)).Count());
             // Check first one is no longer indefinite and cut short.
             Assert.True(first.Indefinite);
-            Assert.False(variableSubPolicy.SpannedSubPolicies.First().Indefinite);
-            Assert.Equal(19, variableSubPolicy.SpannedSubPolicies.First().EndIndex);
+            Assert.False(genericSubPolicy.SpannedSubPolicies.First().Indefinite);
+            Assert.Equal(19, genericSubPolicy.SpannedSubPolicies.First().EndIndex);
 
             // Out of order addition should not work.
-            Assert.Throws<ArgumentOutOfRangeException>(() => VariableSubPolicy<bool>
+            Assert.Throws<ArgumentOutOfRangeException>(() => GenericSubPolicy<bool>
                 .Create(false)
                 .Add(fourth)
                 .Add(third));
-            Assert.Throws<ArgumentOutOfRangeException>(() => VariableSubPolicy<bool>
+            Assert.Throws<ArgumentOutOfRangeException>(() => GenericSubPolicy<bool>
                 .Create(false)
                 .Add(first)
                 .Add(badSecond));
 
             // Create using AddRange().
-            variableSubPolicy = VariableSubPolicy<bool>
+            genericSubPolicy = GenericSubPolicy<bool>
                 .Create(false)
                 .AddRange(new List<SpannedSubPolicy<bool>>() { first, second, third, fourth }.ToImmutableList());
-            Assert.Throws<ArgumentOutOfRangeException>(() => VariableSubPolicy<bool>
-                .Create(false)
+            Assert.Throws<ArgumentOutOfRangeException>(() => AuthorizedMiningNoOpTxRequiredPolicy
+                .Default
                 .AddRange(new List<SpannedSubPolicy<bool>>() { second, first }.ToImmutableList()));
+
+            // Type check
+            Assert.IsType<GenericSubPolicy<bool>>(genericSubPolicy);
         }
     }
 }

@@ -3,30 +3,29 @@ using Libplanet;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public static class AuthorizedMinersPolicy
+    public sealed class AuthorizedMinersPolicy : VariableSubPolicy<ImmutableHashSet<Address>>
     {
-        public static readonly ImmutableHashSet<Address> DefaultValue = ImmutableHashSet<Address>.Empty;
-
-        public static VariableSubPolicy<ImmutableHashSet<Address>> Default
+        private AuthorizedMinersPolicy(ImmutableHashSet<Address> defaultValue)
+            : base(defaultValue)
         {
-            get
-            {
-                return VariableSubPolicy<ImmutableHashSet<Address>>
-                    .Create(DefaultValue);
-            }
         }
 
-        public static VariableSubPolicy<ImmutableHashSet<Address>> Mainnet
+        private AuthorizedMinersPolicy(
+            AuthorizedMinersPolicy authorizedMinersPolicy,
+            SpannedSubPolicy<ImmutableHashSet<Address>> spannedSubPolicy)
+            : base(authorizedMinersPolicy, spannedSubPolicy)
         {
-            get
-            {
-                return Default
-                    .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
-                        startIndex: 0,
-                        endIndex: BlockPolicySource.AuthorizedMinersPolicyEndIndex,
-                        predicate: index => index % BlockPolicySource.AuthorizedMinersPolicyInterval == 0,
-                        value: BlockPolicySource.AuthorizedMiners));
-            }
         }
+
+        public static AuthorizedMinersPolicy Default =>
+            new AuthorizedMinersPolicy(ImmutableHashSet<Address>.Empty);
+
+        public static AuthorizedMinersPolicy Mainnet =>
+            Default
+                .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
+                    startIndex: 0,
+                    endIndex: BlockPolicySource.AuthorizedMinersPolicyEndIndex,
+                    predicate: index => index % BlockPolicySource.AuthorizedMinersPolicyInterval == 0,
+                    value: BlockPolicySource.AuthorizedMiners));
     }
 }

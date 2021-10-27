@@ -3,26 +3,48 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Reflection;
 using Libplanet.Blocks;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public class VariableSubPolicy<T>
+    public abstract class VariableSubPolicy<T>
     {
-        private T _defaultValue;
-        private ImmutableList<SpannedSubPolicy<T>> _spannedSubPolicies;
-        private Func<long, T> _getter;
+        /// <summary>
+        /// Value to use as a fallback if none of the <see cref="SpannedSubPolicy{T}"/> in
+        /// <see cref="SpannedSubPolicies"/> apply.
+        /// </summary>
+        /// <remarks>
+        /// <pr>
+        /// It is recommended set this property to a value that would always pass the predicate
+        /// for validation in case there is a policy gap.
+        /// </pr>
+        /// <pr>
+        /// For instance, for checking the max number of transactions allowed per block, it is
+        /// better to set <see cref="DefaultValue"/> as <c>int.MaxValue</c> then overwrite it
+        /// with some sensible value such as <c>100</c> by adding a new
+        /// <see cref="SpannedSubPolicy{T}"/>.
+        /// </pr>
+        /// </remarks>
+        [Pure]
+        public T DefaultValue { get; private set; }
 
-        private VariableSubPolicy(T defaultValue)
+        [Pure]
+        public ImmutableList<SpannedSubPolicy<T>> SpannedSubPolicies { get; private set; }
+
+        [Pure]
+        public Func<long, T> Getter { get; private set; }
+
+        protected VariableSubPolicy(T defaultValue)
         {
-            _defaultValue = defaultValue;
-            _spannedSubPolicies = ImmutableList<SpannedSubPolicy<T>>.Empty;
-            _getter = ToGetter();
+            DefaultValue = defaultValue;
+            SpannedSubPolicies = ImmutableList<SpannedSubPolicy<T>>.Empty;
+            Getter = ToGetter();
 
             Validate();
         }
 
-        private VariableSubPolicy(
+        protected VariableSubPolicy(
             VariableSubPolicy<T> variableSubPolicy, SpannedSubPolicy<T> spannedSubPolicy)
         {
             if (variableSubPolicy is null || spannedSubPolicy is null)
@@ -56,9 +78,9 @@ namespace Nekoyume.BlockChain.Policy
 
             spannedSubPolicies.Add(spannedSubPolicy);
 
-            _defaultValue = variableSubPolicy.DefaultValue;
-            _spannedSubPolicies = spannedSubPolicies.ToImmutableList();
-            _getter = ToGetter();
+            DefaultValue = variableSubPolicy.DefaultValue;
+            SpannedSubPolicies = spannedSubPolicies.ToImmutableList();
+            Getter = ToGetter();
 
             Validate();
         }
@@ -76,10 +98,28 @@ namespace Nekoyume.BlockChain.Policy
         /// adding <paramref name="spannedSubPolicy"/> if <paramref name="spannedSubPolicy"/>
         /// overlaps with the last one.
         /// </remarks>
-        [Pure]
-        public VariableSubPolicy<T> Add(SpannedSubPolicy<T> spannedSubPolicy)
+        public dynamic Add(SpannedSubPolicy<T> spannedSubPolicy)
         {
-            return new VariableSubPolicy<T>(this, spannedSubPolicy);
+            try
+            {
+                return (VariableSubPolicy<T>)Activator.CreateInstance(
+                        this.GetType(),
+                        BindingFlags.Instance | BindingFlags.NonPublic,
+                        null,
+                        new object[] { this, spannedSubPolicy },
+                        null);
+            }
+            catch (TargetInvocationException tie)
+            {
+                if (tie.InnerException is ArgumentOutOfRangeException aoore)
+                {
+                    throw aoore;
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         /// <summary>
@@ -93,7 +133,8 @@ namespace Nekoyume.BlockChain.Policy
         /// <paramref name="spannedSubPolicies"/> added at the end.
         /// </returns>
         [Pure]
-        public VariableSubPolicy<T> AddRange(ImmutableList<SpannedSubPolicy<T>> spannedSubPolicies)
+        public dynamic AddRange(
+            ImmutableList<SpannedSubPolicy<T>> spannedSubPolicies)
         {
             VariableSubPolicy<T> variableSubPolicy = this;
             foreach (SpannedSubPolicy<T> spannedSubPolicy in spannedSubPolicies)
@@ -102,28 +143,6 @@ namespace Nekoyume.BlockChain.Policy
             }
             return variableSubPolicy;
         }
-
-        /// <summary>
-        /// Value to use as a fallback if none of the <see cref="SpannedSubPolicy{T}"/> in
-        /// <see cref="SpannedSubPolicies"/> apply.
-        /// </summary>
-        /// <remarks>
-        /// <pr>
-        /// It is recommended set this property to a value that would always pass the predicate
-        /// for validation in case there is a policy gap.
-        /// </pr>
-        /// <pr>
-        /// For instance, for checking the max number of transactions allowed per block, it is
-        /// better to set <see cref="DefaultValue"/> as <c>int.MaxValue</c> then overwrite it
-        /// with some sensible value such as <c>100</c> by adding a new
-        /// <see cref="SpannedSubPolicy{T}"/>.
-        /// </pr>
-        /// </remarks>
-        [Pure]
-        public T DefaultValue => _defaultValue;
-
-        [Pure]
-        public ImmutableList<SpannedSubPolicy<T>> SpannedSubPolicies => _spannedSubPolicies;
 
         /// <summary>
         /// Checks if the current instance of <see cref="VariableSubPolicy{T}"/> applies to
@@ -144,31 +163,12 @@ namespace Nekoyume.BlockChain.Policy
             SpannedSubPolicies.Any(spannedSubPolicy => spannedSubPolicy.IsTargetIndex(index));
 
         [Pure]
-        public Func<long, T> Getter => _getter;
-
-        [Pure]
         private Func<long, T> ToGetter()
         {
             return index => SpannedSubPolicies
                 .FirstOrDefault(spannedSubPolicy => spannedSubPolicy.IsTargetIndex(index)) is SpannedSubPolicy<T> ssp
                     ? ssp.Value
                     : DefaultValue;
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="VariableSubPolicy{T}"/> instance with a default behavior.
-        /// </summary>
-        /// <param name="defaultValue">The default value to use when none of
-        /// <see cref="SpannedSubPolicies"/> apply.
-        /// </param>
-        /// <returns>
-        /// A newly created subpolicy with given <paramref name="defaultValue"/> as
-        /// its default value.
-        /// </returns>
-        [Pure]
-        public static VariableSubPolicy<T> Create(T defaultValue)
-        {
-            return new VariableSubPolicy<T>(defaultValue);
         }
 
         /// <summary>
