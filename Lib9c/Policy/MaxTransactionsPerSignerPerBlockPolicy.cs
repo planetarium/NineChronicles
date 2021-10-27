@@ -20,7 +20,7 @@ namespace Nekoyume.BlockChain.Policy
         public static IVariableSubPolicy<int> Mainnet =>
             Default
                 .Add(new SpannedSubPolicy<int>(
-                    startIndex: BlockPolicySource.MinTransactionsPerBlockStartIndex,
+                    startIndex: BlockPolicySource.MaxTransactionsPerSignerPerBlockStartIndex,
                     value: BlockPolicySource.MaxTransactionsPerSignerPerBlock));
     }
 }
