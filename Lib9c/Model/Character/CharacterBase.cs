@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using BTAI;
 using Nekoyume.Battle;
@@ -206,7 +207,7 @@ namespace Nekoyume.Model
 
             if (!Simulator.SkillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var sheetSkill))
             {
-                throw new KeyNotFoundException(selectedSkill.SkillRow.Id.ToString());
+                throw new KeyNotFoundException(selectedSkill.SkillRow.Id.ToString(CultureInfo.InvariantCulture));
             }
 
             Skills.SetCooldown(selectedSkill.SkillRow.Id, sheetSkill.Cooldown);
