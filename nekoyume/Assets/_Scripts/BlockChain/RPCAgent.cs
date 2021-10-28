@@ -229,16 +229,6 @@ namespace Nekoyume.BlockChain
                 States.Instance.SetGoldBalanceState(
                     new GoldBalanceState(Address, await GetBalanceAsync(Address, goldCurrency)));
 
-                // 랭킹의 상태를 한 번 동기화 한다.
-                for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
-                {
-                    var address = RankingState.Derive(i);
-                    var mapState = await GetStateAsync(address) is Bencodex.Types.Dictionary serialized
-                        ? new RankingMapState(serialized)
-                        : new RankingMapState(address);
-                    States.Instance.SetRankingMapStates(mapState);
-                }
-
                 // 상점의 상태를 한 번 동기화 한다.
 
                 if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
@@ -366,7 +356,7 @@ namespace Nekoyume.BlockChain
         {
             var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
             HashAlgorithmGetter hashAlgorithmGetter = Game.Game.instance.Agent.BlockPolicySource
-                .GetPolicy(5_000_000, 100) // FIXME: e.g., GetPolicy(IAgent.GetMinimumDifficulty(), IAgent.GetMaxTxCount())
+                .GetPolicy()
                 .GetHashAlgorithm;
             Block<PolymorphicAction<ActionBase>> newTipBlock =
                 BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
