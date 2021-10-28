@@ -44,7 +44,6 @@ namespace Nekoyume.BlockChain.Policy
 
         public int GetMaxTransactionsPerBlock(long index) => int.MaxValue;
 
-        public int GetMaxTransactionsPerSignerPerBlock(long index) =>
-            GetMaxTransactionsPerBlock(index);
+        public int GetMaxTransactionsPerSignerPerBlock(long index) => int.MaxValue;
     }
 }

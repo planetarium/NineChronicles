@@ -11,7 +11,6 @@ using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Tx;
-using Nekoyume.Action;
 using Serilog;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -59,7 +58,6 @@ namespace Nekoyume.BlockChain
         }
 
         public async Task<Block<NCAction>> MineBlockAsync(
-            int maxTransactions,
             CancellationToken cancellationToken)
         {
             var txs = new HashSet<Transaction<NCAction>>();
@@ -94,7 +92,6 @@ namespace Nekoyume.BlockChain
                     _privateKey,
                     DateTimeOffset.UtcNow,
                     cancellationToken: cancellationToken,
-                    maxTransactions: maxTransactions,
                     append: false,
                     txPriority: txPriority);
 

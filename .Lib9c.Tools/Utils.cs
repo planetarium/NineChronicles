@@ -44,10 +44,7 @@ namespace Lib9c.Tools
         )
         {
             var policySource = new BlockPolicySource(logger);
-            IBlockPolicy<NCAction> policy = policySource.GetPolicy(
-                BlockPolicySource.DifficultyStability + 1,
-                int.MaxValue
-            );
+            IBlockPolicy<NCAction> policy = policySource.GetPolicy();
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             IStore store
                 = monorocksdb

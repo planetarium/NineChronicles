@@ -1,4 +1,5 @@
-using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using Bencodex.Types;
@@ -35,24 +36,11 @@ namespace Nekoyume.BlockChain.Policy
                 && admin.AdminAddress.Equals(transaction.Signer);
         }
 
-        internal static bool IsAuthorizedMinerTransactionRaw(
-            Transaction<NCAction> transaction, AuthorizedMiningPolicy? authorizedMiningPolicy)
+        private static bool IsAuthorizedMinerTransactionRaw(
+            Transaction<NCAction> transaction,
+            ImmutableHashSet<Address> allAuthorizedMiners)
         {
-            if (authorizedMiningPolicy is AuthorizedMiningPolicy amp)
-            {
-                return amp.Miners.Contains(transaction.Signer);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        internal static Func<Transaction<NCAction>, bool> IsAuthorizedMinerTransactionFactory(
-            AuthorizedMiningPolicy? authorizedMiningPolicy)
-        {
-            return transaction => IsAuthorizedMinerTransactionRaw(
-                transaction, authorizedMiningPolicy);
+            return allAuthorizedMiners.Contains(transaction.Signer);
         }
 
         internal static AdminState GetAdminState(
@@ -70,86 +58,52 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
-        internal static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
-            Block<NCAction> block, bool ignoreHardcodedPolicies)
+        // FIXME: Tx count validation should be done in libplanet, not here.
+        // Should be removed once libplanet is updated.
+        private static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
+            Block<NCAction> block,
+            IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
+            IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
+            IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy)
         {
-            if (!(block.Miner is Address miner))
-            {
-                return null;
-            }
+            int minTransactionsPerBlock =
+                minTransactionsPerBlockPolicy.Getter(block.Index);
+            int maxTransactionsPerBlock =
+                maxTransactionsPerBlockPolicy.Getter(block.Index);
+            int maxTransactionsPerSignerPerBlock =
+                maxTransactionsPerSignerPerBlockPolicy.Getter(block.Index);
 
-            // To prevent selfish mining, we define a consensus that blocks with no transactions
-            // are not accepted starting from MinTransactionsPerBlockHardcodedIndex.
-            if (block.Transactions.Count < MinTransactionsPerBlock)
+            if (block.Transactions.Count < minTransactionsPerBlock)
             {
-                if (ignoreHardcodedPolicies)
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} mined by {miner} should " +
-                        "include at least one transaction. (Forced failure)");
-                }
-                else if (block.Index >= MinTransactionsPerBlockHardcodedIndex)
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} mined by {miner} should " +
-                        $"include at least {MinTransactionsPerBlock} transaction(s).");
-                }
+                return new BlockPolicyViolationException(
+                    $"Block #{block.Index} {block.Hash} should include " +
+                    $"at least {minTransactionsPerBlock} transaction(s): " +
+                    $"{block.Transactions.Count}");
+            }
+            else if (block.Transactions.Count > maxTransactionsPerBlock)
+            {
+                return new BlockPolicyViolationException(
+                    $"Block #{block.Index} {block.Hash} should include " +
+                    $"at most {maxTransactionsPerBlock} transaction(s): " +
+                    $"{block.Transactions.Count}");
+            }
+            else if (block.Transactions
+                .GroupBy(tx => tx.Signer)
+                .Any(group => group.Count() > maxTransactionsPerSignerPerBlock))
+            {
+                return new BlockPolicyViolationException(
+                    $"Block #{block.Index} {block.Hash} includes too many transactions " +
+                    $"from a single signer where the maximum number of allowed by " +
+                    $"a single signer per block is {maxTransactionsPerSignerPerBlock}.");
             }
 
             return null;
         }
 
-        internal static BlockPolicyViolationException ValidateMinerPermissionRaw(
+        private static BlockPolicyViolationException ValidateMinerAuthorityRaw(
             Block<NCAction> block,
-            PermissionedMiningPolicy? permissionedMiningPolicy,
-            bool ignoreHardcodedPolicies)
-        {
-            Address miner = block.Miner;
-
-            // If no permission policy is given, pass validation by default.
-            if (!(permissionedMiningPolicy is PermissionedMiningPolicy pmp))
-            {
-                return null;
-            }
-
-            // Predicate for permission validity.
-            if (!pmp.Miners.Contains(miner) || !block.Transactions.Any(t => t.Signer.Equals(miner)))
-            {
-                if (ignoreHardcodedPolicies)
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.  "
-                            + "(Forced failure)");
-                }
-                else if (block.Index >= pmp.StartIndex)
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.");
-                }
-            }
-
-            return null;
-        }
-
-        internal static Func<Block<NCAction>, BlockPolicyViolationException>
-            ValidateMinerPermissionFactory(
-                PermissionedMiningPolicy? permissionedMiningPolicy,
-                bool ignoreHardcodedPolicies)
-        {
-            return block => ValidateMinerPermissionRaw(
-                block, permissionedMiningPolicy, ignoreHardcodedPolicies);
-        }
-
-        internal static Func<Block<NCAction>, BlockPolicyViolationException>
-            ValidateTxCountPerBlockFactory(bool ignoreHardcodedPolicies)
-        {
-            return block => ValidateTxCountPerBlockRaw(block, ignoreHardcodedPolicies);
-        }
-
-        internal static BlockPolicyViolationException ValidateMinerAuthorityRaw(
-            Block<NCAction> block,
-            AuthorizedMiningPolicy? authorizedMiningPolicy,
-            bool ignoreHardcodedPolicies)
+            IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
+            IVariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy)
         {
             // For genesis block, any miner can mine.
             if (block.Index == 0)
@@ -157,36 +111,41 @@ namespace Nekoyume.BlockChain.Policy
                 return null;
             }
             // If not an authorized mining block index, any miner can mine.
-            else if (!IsAuthorizedMiningBlockIndexRaw(block.Index, authorizedMiningPolicy))
+            else if (!authorizedMinersPolicy.IsTargetIndex(block.Index))
             {
                 return null;
             }
             // Otherwise, block's miner should be one of the authorized miners.
-            else if (!IsAuthorizedToMineRaw(block.Miner, block.Index, authorizedMiningPolicy))
+            else if (authorizedMinersPolicy.Getter(block.Index).Contains(block.Miner))
+            {
+                return ValidateMinerAuthorityNoOpTxRaw(
+                    block, authorizedMiningNoOpTxRequiredPolicy);
+            }
+            else
             {
                 return new BlockPolicyViolationException(
                     $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.");
             }
+        }
 
-            // Authority is proven through a no-op transaction, i.e. a transaction
-            // with zero actions, starting from ValidateMinerAuthorityNoOpHardcodedIndex.
-            Transaction<NCAction>[] txs = block.Transactions.ToArray();
-            if (!txs.Any(tx => tx.Signer.Equals(block.Miner) && !tx.Actions.Any())
-                    && block.ProtocolVersion > 0)
+        private static BlockPolicyViolationException ValidateMinerAuthorityNoOpTxRaw(
+            Block<NCAction> block,
+            IVariableSubPolicy<bool> authorizedMininingNoOpTxRequiredPolicy)
+        {
+            if (authorizedMininingNoOpTxRequiredPolicy.Getter(block.Index))
             {
-                if (ignoreHardcodedPolicies)
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash}'s miner {block.Miner} should be "
-                            + "proven by including a no-op transaction by signed "
-                            + "the same authority.  (Forced failure)");
-                }
-                else if (block.Index >= ValidateMinerAuthorityNoOpTxHardcodedIndex)
+                // Authority is proven through a no-op transaction, i.e. a transaction
+                // with zero actions, starting from ValidateMinerAuthorityNoOpHardcodedIndex.
+                List<Transaction<NCAction>> txs = block.Transactions.ToList();
+                if (!txs.Any(tx => tx.Signer.Equals(block.Miner) && !tx.Actions.Any())
+                        && block.ProtocolVersion > 0)
                 {
 #if DEBUG
                     string debug =
                         "  Note that there " +
-                        (txs.Length == 1 ? "is a transaction:" : $"are {txs.Length} transactions:") +
+                        (txs.Count == 1
+                            ? "is a transaction:"
+                            : $"are {txs.Count} transactions:") +
                         txs.Select((tx, i) =>
                                 $"\n    {i}. {tx.Actions.Count} actions; signed by {tx.Signer}")
                             .Aggregate(string.Empty, (a, b) => a + b);
@@ -203,185 +162,67 @@ namespace Nekoyume.BlockChain.Policy
             return null;
         }
 
-        internal static Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
-            ValidateMinerAuthorityFactory(
-                AuthorizedMiningPolicy? authorizedMiningPolicy, bool ignoreHardcodedPolicies)
+        private static BlockPolicyViolationException ValidateMinerPermissionRaw(
+            Block<NCAction> block,
+            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
-            return (blockChain, block) =>
-                ValidateMinerAuthorityRaw(block, authorizedMiningPolicy, ignoreHardcodedPolicies);
+            // If the set of permissioned miners is empty, any miner can mine.
+            if (!permissionedMinersPolicy.IsTargetIndex(block.Index))
+            {
+                return null;
+            }
+            else
+            {
+                // If the set of permissioned miners is not empty, only miners in the set can mine.
+                if (permissionedMinersPolicy.Getter(block.Index).Contains(block.Miner))
+                {
+                    // FIXME: Only existance of a transaction with miner signature was checked for
+                    // some time.  Checking whether such transaction is a no-op transaction
+                    // was missing.  This results in a different definition of proof transaction
+                    // for authorized mining and permissioned mining.
+                    if (block.Transactions.Any(tx => tx.Signer.Equals(block.Miner)))
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        return new BlockPolicyViolationException(
+                            $"Block #{block.Index} {block.Hash} is mined by " +
+                            $"a permissioned miner {block.Miner}, but does not include " +
+                            $"a proof transaction for permissioned mining.");
+                    }
+                }
+                else
+                {
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash} is not mined by " +
+                        $"a permissioned miner: {block.Miner}");
+                }
+            }
         }
 
-        internal static bool IsAllowedToMineRaw(
-            BlockChain<NCAction> blockChain,
+        private static bool IsAllowedToMineRaw(
             Address miner,
             long index,
-            Func<long, bool> isAuthorizedMiningBlockIndex,
-            Func<Address, long, bool> isAuthorizedToMine,
-            Func<long, bool> isPermissionedMiningBlockIndex,
-            Func<Address, long, bool> isPermissionedToMine)
+            IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
+            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
             // For genesis blocks, any miner is allowed to mine.
             if (index == 0)
             {
                 return true;
             }
-            else if (isAuthorizedMiningBlockIndex(index))
+            else if (authorizedMinersPolicy.IsTargetIndex(index))
             {
-                return isAuthorizedToMine(miner, index);
+                return authorizedMinersPolicy.Getter(index).Contains(miner);
             }
-            else if (isPermissionedMiningBlockIndex(index))
+            else if (permissionedMinersPolicy.IsTargetIndex(index))
             {
-                return isPermissionedToMine(miner, index);
+                return permissionedMinersPolicy.Getter(index).Contains(miner);
             }
 
             // If none of the conditions apply, any miner is allowed to mine.
             return true;
-        }
-
-        internal static Func<BlockChain<NCAction>, Address, long, bool> IsAllowedToMineFactory(
-            Func<long, bool> isAuthorizedMiningBlockIndex,
-            Func<Address, long, bool> isAuthorizedToMine,
-            Func<long, bool> isPermissionedMiningBlockIndex,
-            Func<Address, long, bool> isPermissionedToMine)
-        {
-            return (blockChain, miner, index) =>
-                IsAllowedToMineRaw(
-                    blockChain,
-                    miner,
-                    index,
-                    isAuthorizedMiningBlockIndex,
-                    isAuthorizedToMine,
-                    isPermissionedMiningBlockIndex,
-                    isPermissionedToMine);
-        }
-
-        /// <summary>
-        /// Checks if authorized mining policy applies to given block index.
-        /// </summary>
-        /// <remarks>
-        /// An implementation should be agnostic about other policies affecting the same index.
-        /// Policy overruling between different policies should be handled elsewhere.
-        /// </remarks>
-        internal static bool IsAuthorizedMiningBlockIndexRaw(
-            long index, AuthorizedMiningPolicy? authorizedMiningPolicy)
-        {
-            if (authorizedMiningPolicy is AuthorizedMiningPolicy amp)
-            {
-                return amp.IsTargetBlockIndex(index);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        internal static Func<long, bool> IsAuthorizedMiningBlockIndexFactory(
-            AuthorizedMiningPolicy? authorizedMiningPolicy)
-        {
-            return index => IsAuthorizedMiningBlockIndexRaw(index, authorizedMiningPolicy);
-        }
-
-
-        /// <summary>
-        /// Checks if given miner is allowed to mine a block with given index according to
-        /// authorized mining policy.
-        /// </summary>
-        /// <remarks>
-        /// An implementation should be agnostic about other policies affecting the same index.
-        /// Policy overruling between different policies should be handled elsewhere.
-        /// </remarks>
-        internal static bool IsAuthorizedToMineRaw(
-            Address miner, long index, AuthorizedMiningPolicy? authorizedMiningPolicy)
-        {
-            if (IsAuthorizedMiningBlockIndexRaw(index, authorizedMiningPolicy))
-            {
-                if (authorizedMiningPolicy is AuthorizedMiningPolicy amp)
-                {
-                    return amp.Miners.Contains(miner);
-                }
-                else
-                {
-                    throw new ArgumentException(
-                        $"Result of {nameof(authorizedMiningPolicy)} cannot be null.");
-                }
-            }
-            else
-            {
-                throw new ArgumentException(
-                    $"Result of {nameof(authorizedMiningPolicy)} must be true.");
-            }
-        }
-
-        internal static Func<Address, long, bool> IsAuthorizedToMineFactory(
-            AuthorizedMiningPolicy? authorizedMiningPolicy)
-        {
-            return (miner, index) => IsAuthorizedToMineRaw(miner, index, authorizedMiningPolicy);
-        }
-
-        /// <summary>
-        /// Checks if permissioned mining policy applies to given block index.
-        /// </summary>
-        /// <remarks>
-        /// An implementation should be agnostic about other policies affecting the same index.
-        /// Policy overruling between different policies should be handled elsewhere.
-        /// </remarks>
-        internal static bool IsPermissionedMiningBlockIndexRaw(
-            long index,
-            PermissionedMiningPolicy? permissionedMiningPolicy)
-        {
-            if (permissionedMiningPolicy is PermissionedMiningPolicy pmp)
-            {
-                return pmp.IsTargetBlockIndex(index);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        internal static Func<long, bool> IsPermissionedMiningBlockIndexFactory(
-            PermissionedMiningPolicy? permissionedMiningPolicy)
-        {
-            return index => IsPermissionedMiningBlockIndexRaw(index, permissionedMiningPolicy);
-        }
-
-        /// <summary>
-        /// Checks if given miner is allowed to mine a block with given index according to
-        /// permissioned mining policy.
-        /// </summary>
-        /// <remarks>
-        /// An implementation should be agnostic about other policies affecting the same index.
-        /// Policy overruling between different policies should be handled elsewhere.
-        /// </remarks>
-        internal static bool IsPermissionedToMineRaw(
-            Address miner,
-            long index,
-            PermissionedMiningPolicy? permissionedMiningPolicy)
-        {
-            if (IsPermissionedMiningBlockIndexRaw(index, permissionedMiningPolicy))
-            {
-                if (permissionedMiningPolicy is PermissionedMiningPolicy pmp)
-                {
-                    return pmp.Miners.Contains(miner);
-                }
-                else
-                {
-                    throw new ArgumentException(
-                        $"Argument {nameof(permissionedMiningPolicy)} cannot be null.");
-                }
-            }
-            else
-            {
-                throw new ArgumentException(
-                    $"Result of {nameof(IsPermissionedMiningBlockIndexRaw)} must be true.");
-            }
-        }
-
-        internal static Func<Address, long, bool>
-            IsPermissionedToMineFactory(PermissionedMiningPolicy? permissionedMiningPolicy)
-        {
-            return (miner, index) => IsPermissionedToMineRaw(
-                miner, index, permissionedMiningPolicy);
         }
     }
 }
