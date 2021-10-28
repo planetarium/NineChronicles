@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Tween
         {
             if (gameObject.activeInHierarchy)
             {
-                StartCoroutine(CPlayDelayed(delay));
+                StartCoroutine(CoPlayDelayed(delay));
             }
         }
 
@@ -137,10 +137,17 @@ namespace Nekoyume.UI.Tween
             methodInfo.Invoke(components[componentIndex], new object[]{});
         }
 
-        protected virtual IEnumerator CPlayDelayed(float delay)
+        protected virtual IEnumerator CoPlayDelayed(float delay)
         {
             yield return new WaitForSeconds(delay);
             Play();
+        }
+
+        protected virtual DG.Tweening.Tween SetEase()
+        {
+            return useCustomEaseCurve
+                ? currentTween.SetEase(customEaseCurve)
+                : currentTween.SetEase(ease);
         }
     }
 }

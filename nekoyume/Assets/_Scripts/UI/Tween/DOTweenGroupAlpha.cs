@@ -7,8 +7,8 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(CanvasGroup))]
     public class DOTweenGroupAlpha : DOTweenBase
     {
-        public float BeginValue = 0.0f;
-        public float EndValue = 1.0f;
+        public float beginValue = 0.0f;
+        public float endValue = 1.0f;
         private CanvasGroup _group;
 
         protected override void Awake()
@@ -16,58 +16,44 @@ namespace Nekoyume.UI.Tween
             base.Awake();
             _group = GetComponent<CanvasGroup>();
             if (startWithPlay)
-                _group.DOFade(BeginValue, 0.0f);
+            {
+                _group.DOFade(beginValue, 0.0f);
+            }
         }
 
         public override void PlayForward()
         {
-            _group.DOFade(BeginValue, 0.0f);
+            _group.DOFade(beginValue, 0.0f);
+            currentTween = _group.DOFade(endValue, duration);
             if (TweenType.Repeat == tweenType)
             {
-                currentTween = _group.DOFade(EndValue, duration)
-                    .SetEase(ease);
-                currentTween.onComplete = PlayForward;
+                currentTween = SetEase().OnComplete(PlayForward);
             }
-            else if (TweenType.PingPongOnce == tweenType)
+            else if (TweenType.PingPongOnce == tweenType || TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = _group.DOFade(EndValue, duration)
-                    .SetEase(ease);
-                currentTween.onComplete = PlayReverse;
-            }
-            else if (TweenType.PingPongRepeat == tweenType)
-            {
-                currentTween = _group.DOFade(EndValue, duration)
-                    .SetEase(ease);
-                currentTween.onComplete = PlayReverse;
+                currentTween = SetEase().OnComplete(PlayReverse);
             }
             else
             {
-                currentTween = _group.DOFade(EndValue, duration)
-                    .SetEase(ease);
-                currentTween.onComplete = OnComplete;
+                currentTween = SetEase().OnComplete(OnComplete);
             }
         }
 
         public override void PlayReverse()
         {
-            _group.DOFade(EndValue, 0.0f);
+            _group.DOFade(endValue, 0.0f);
+            currentTween = _group.DOFade(beginValue, duration);
             if (TweenType.PingPongOnce == tweenType)
             {
-                currentTween = _group.DOFade(BeginValue, duration)
-                    .SetEase(ease);
-                currentTween.onComplete = OnComplete;
+                currentTween = SetEase().OnComplete(OnComplete);
             }
             else if (TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = _group.DOFade(BeginValue, duration)
-                    .SetEase(ease);
-                currentTween.onComplete = PlayForward;
+                currentTween = SetEase().OnComplete(PlayForward);
             }
             else
             {
-                currentTween = _group.DOFade(BeginValue, duration)
-                    .SetEase(ease);
-                currentTween.onComplete = OnComplete;
+                currentTween = SetEase().OnComplete(OnComplete);
             }
         }
 
@@ -86,9 +72,9 @@ namespace Nekoyume.UI.Tween
             PlayForward();
         }
 
-        protected override IEnumerator CPlayDelayed(float delay)
+        protected override IEnumerator CoPlayDelayed(float delay)
         {
-            _group.DOFade(BeginValue, 0.0f);
+            _group.DOFade(beginValue, 0.0f);
             yield return new WaitForSeconds(delay);
             Play();
         }

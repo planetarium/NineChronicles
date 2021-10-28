@@ -19,58 +19,40 @@ namespace Nekoyume.UI.Tween
             BeginValue = StartFromDelta ? _transform.localPosition - DeltaValue : _transform.localPosition;
             EndValue = StartFromDelta ? _transform.localPosition : _transform.localPosition + DeltaValue;
             if (startWithPlay)
+            {
                 _transform.DOLocalMove(BeginValue, 0.0f);
+            }
         }
 
         public override void PlayForward()
         {
             _transform.DOLocalMove(BeginValue, 0.0f);
+            currentTween = _transform.DOLocalMove(EndValue, duration);
             if (TweenType.Repeat == tweenType)
             {
-                _transform.DOLocalMove(EndValue, duration)
-                    .SetEase(ease)
-                    .onComplete = PlayForward;
+                currentTween = SetEase().OnComplete(PlayForward);
             }
-            else if (TweenType.PingPongOnce == tweenType)
+            else if (TweenType.PingPongOnce == tweenType || TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOLocalMove(EndValue, duration)
-                    .SetEase(ease)
-                    .onComplete = PlayReverse;
-            }
-            else if (TweenType.PingPongRepeat == tweenType)
-            {
-                _transform.DOLocalMove(EndValue, duration)
-                    .SetEase(ease)
-                    .onComplete = PlayReverse;
+                currentTween = SetEase().OnComplete(PlayReverse);
             }
             else
             {
-                _transform.DOLocalMove(EndValue, duration)
-                    .SetEase(ease)
-                    .onComplete = OnComplete;
+                currentTween = SetEase().OnComplete(OnComplete);
             }
         }
 
         public override void PlayReverse()
         {
             _transform.DOLocalMove(EndValue, 0.0f);
-            if (TweenType.PingPongOnce == tweenType)
+            currentTween = _transform.DOLocalMove(BeginValue, duration);
+            if (TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOLocalMove(BeginValue, duration)
-                    .SetEase(ease)
-                    .onComplete = OnComplete;
-            }
-            else if (TweenType.PingPongRepeat == tweenType)
-            {
-                _transform.DOLocalMove(BeginValue, duration)
-                    .SetEase(ease)
-                    .onComplete = PlayForward;
+                currentTween = SetEase().OnComplete(PlayForward);
             }
             else
             {
-                _transform.DOLocalMove(BeginValue, duration)
-                    .SetEase(ease)
-                    .onComplete = OnComplete;
+                currentTween = SetEase().OnComplete(OnComplete);
             }
         }
 

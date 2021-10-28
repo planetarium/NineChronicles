@@ -8,71 +8,51 @@ namespace Nekoyume.UI.Tween
     {
         public float multiplier = 1.2f;
 
-        private Vector2 BeginValue;
-        private Vector2 EndValue;
+        private Vector2 _beginValue;
+        private Vector2 _endValue;
         private RectTransform _rectTransform;
 
         protected override void Awake()
         {
             base.Awake();
             _rectTransform = GetComponent<RectTransform>();
-            BeginValue = _rectTransform.sizeDelta;
-            EndValue = BeginValue * multiplier;
+            _beginValue = _rectTransform.sizeDelta;
+            _endValue = _beginValue * multiplier;
             if (startWithPlay)
             {
-                currentTween = _rectTransform.DOSizeDelta(BeginValue, 0.0f);
+                currentTween = _rectTransform.DOSizeDelta(_beginValue, 0.0f);
             }
         }
 
         public override void PlayForward()
         {
-            currentTween = _rectTransform.DOSizeDelta(BeginValue, 0.0f);
+            currentTween = _rectTransform.DOSizeDelta(_beginValue, 0.0f);
+            currentTween = _rectTransform.DOSizeDelta(_endValue, duration);
             if (TweenType.Repeat == tweenType)
             {
-                currentTween = _rectTransform.DOSizeDelta(EndValue, duration)
-                    .SetEase(ease)
-                    .OnComplete(PlayForward);
+                currentTween = SetEase().OnComplete(PlayForward);
             }
-            else if (TweenType.PingPongOnce == tweenType)
+            else if (TweenType.PingPongOnce == tweenType || TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = _rectTransform.DOSizeDelta(EndValue, duration)
-                    .SetEase(ease)
-                    .OnComplete(PlayReverse);
-            }
-            else if (TweenType.PingPongRepeat == tweenType)
-            {
-                currentTween = _rectTransform.DOSizeDelta(EndValue, duration)
-                    .SetEase(ease)
-                    .OnComplete(PlayReverse);
+                currentTween = SetEase().OnComplete(PlayReverse);
             }
             else
             {
-                currentTween = _rectTransform.DOSizeDelta(EndValue, duration)
-                    .SetEase(ease)
-                    .OnComplete(OnComplete);
+                currentTween = SetEase().OnComplete(OnComplete);
             }
         }
 
         public override void PlayReverse()
         {
-            currentTween = _rectTransform.DOSizeDelta(EndValue, 0.0f);
-            if (TweenType.PingPongOnce == tweenType)
+            currentTween = _rectTransform.DOSizeDelta(_endValue, 0.0f);
+            currentTween = _rectTransform.DOSizeDelta(_beginValue, duration);
+            if (TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = _rectTransform.DOSizeDelta(BeginValue, duration)
-                    .SetEase(ease)
-                    .OnComplete(OnComplete);
-            }
-            else if (TweenType.PingPongRepeat == tweenType)
-            {
-                currentTween = _rectTransform.DOSizeDelta(BeginValue, duration)
-                    .SetEase(ease)
-                    .OnComplete(PlayForward);
+                currentTween = SetEase().OnComplete(PlayForward);
             }
             else
             {
-                currentTween = _rectTransform.DOSizeDelta(BeginValue, duration)
-                    .SetEase(ease)
-                    .OnComplete(OnComplete);
+                currentTween = SetEase().OnComplete(OnComplete);
             }
         }
 
@@ -90,13 +70,6 @@ namespace Nekoyume.UI.Tween
         public override void PlayPingPongRepeat()
         {
             PlayForward();
-        }
-
-        public override void Stop()
-        {
-            base.Stop();
-
-
         }
     }
 }
