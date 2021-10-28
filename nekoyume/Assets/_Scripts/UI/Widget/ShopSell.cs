@@ -526,10 +526,10 @@ namespace Nekoyume.UI
             Refresh();
         }
 
-        private void ResponseSellCancellation(Guid orderId, Guid tradableId)
+        private async void ResponseSellCancellation(Guid orderId, Guid tradableId)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            var itemName = Util.GetItemNameByOrdierId(orderId);
+            var itemName = await Util.GetItemNameByOrderId(orderId);
             ReactiveShopState.RemoveSellDigest(orderId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");

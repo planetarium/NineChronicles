@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Bencodex.Types;
 using Lib9c.Model.Order;
 using Libplanet;
@@ -89,23 +90,23 @@ namespace Nekoyume.State
         private const int buyItemsPerPage = 24;
         private const int sellItemsPerPage = 20;
 
-        public static void InitAndUpdateBuyDigests()
+        public static async Task InitAndUpdateBuyDigests()
         {
-            _buyDigests = GetBuyOrderDigests();
+            _buyDigests = await GetBuyOrderDigests();
             UpdateBuyDigests();
         }
 
-        public static void InitSellDigests()
+        public static async void InitSellDigests()
         {
             if (_sellDigests != null)
             {
-                _sellDigests = GetSellOrderDigests();
+                _sellDigests = await GetSellOrderDigests();
             }
         }
 
-        public static void InitAndUpdateSellDigests()
+        public static async void InitAndUpdateSellDigests()
         {
-            _sellDigests = GetSellOrderDigests();
+            _sellDigests = await GetSellOrderDigests();
             UpdateSellDigests();
         }
 
@@ -365,7 +366,7 @@ namespace Nekoyume.State
             return result;
         }
 
-        private static List<OrderDigest> GetBuyOrderDigests()
+        private static async Task<List<OrderDigest>> GetBuyOrderDigests()
         {
             var orderDigests = new Dictionary<Address, List<OrderDigest>>();
 
@@ -376,13 +377,13 @@ namespace Nekoyume.State
                     foreach (var addressKey in ShardedShopState.AddressKeys)
                     {
                         var address = ShardedShopStateV2.DeriveAddress(itemSubType, addressKey);
-                        AddOrderDigest(address, orderDigests);
+                        await AddOrderDigest(address, orderDigests);
                     }
                 }
                 else
                 {
                     var address = ShardedShopStateV2.DeriveAddress(itemSubType, string.Empty);
-                    AddOrderDigest(address, orderDigests);
+                    await AddOrderDigest(address, orderDigests);
                 }
             }
 
@@ -395,10 +396,10 @@ namespace Nekoyume.State
             return digests;
         }
 
-        private static void AddOrderDigest(Address address,
+        private static async Task AddOrderDigest(Address address,
             IDictionary<Address, List<OrderDigest>> orderDigests)
         {
-            var shardedShopState = Game.Game.instance.Agent.GetState(address);
+            var shardedShopState = await Game.Game.instance.Agent.GetStateAsync(address);
             if (shardedShopState is Dictionary dictionary)
             {
                 var state = new ShardedShopStateV2(dictionary);
@@ -419,11 +420,11 @@ namespace Nekoyume.State
             }
         }
 
-        private static List<OrderDigest> GetSellOrderDigests()
+        private static async Task<List<OrderDigest>> GetSellOrderDigests()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var receiptAddress = OrderDigestListState.DeriveAddress(avatarAddress);
-            var receiptState = Game.Game.instance.Agent.GetState(receiptAddress);
+            var receiptState = await Game.Game.instance.Agent.GetStateAsync(receiptAddress);
             var receipts = new List<OrderDigest>();
             if (receiptState is Dictionary dictionary)
             {

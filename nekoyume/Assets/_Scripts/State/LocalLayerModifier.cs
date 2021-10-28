@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Model.State;
@@ -94,7 +95,7 @@ namespace Nekoyume.State
 
         #region Avatar / AddItem
 
-        public static void AddItem(
+        public static async void AddItem(
             Address avatarAddress,
             Guid tradableId,
             long requiredBlockIndex,
@@ -114,10 +115,10 @@ namespace Nekoyume.State
                 return;
             }
 
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+            await TryResetLoadedAvatarState(avatarAddress);
         }
 
-        public static void AddItem(
+        public static async void AddItem(
             Address avatarAddress,
             HashDigest<SHA256> fungibleId,
             int count = 1,
@@ -136,7 +137,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+            await TryResetLoadedAvatarState(avatarAddress);
         }
 
         #endregion
@@ -279,7 +280,7 @@ namespace Nekoyume.State
         /// <param name="avatarAddress"></param>
         /// <param name="mailId"></param>
         /// <param name="resetState"></param>
-        public static void RemoveNewAttachmentMail(
+        public static async void RemoveNewAttachmentMail(
             Address avatarAddress,
             Guid mailId,
             bool resetState = true)
@@ -292,10 +293,10 @@ namespace Nekoyume.State
                 return;
             }
 
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+            await TryResetLoadedAvatarState(avatarAddress);
         }
 
-        public static void RemoveNewMail(
+        public static async void RemoveNewMail(
             Address avatarAddress,
             Guid mailId,
             bool resetState = true)
@@ -308,10 +309,10 @@ namespace Nekoyume.State
                 return;
             }
 
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+            await TryResetLoadedAvatarState(avatarAddress);
         }
 
-        public static void RemoveAttachmentResult(
+        public static async void RemoveAttachmentResult(
             Address avatarAddress,
             Guid mailId,
             bool resetState = true)
@@ -324,7 +325,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+            await TryResetLoadedAvatarState(avatarAddress);
         }
         #endregion
 
@@ -366,7 +367,7 @@ namespace Nekoyume.State
         /// <param name="avatarAddress"></param>
         /// <param name="id"></param>
         /// <param name="resetState"></param>
-        public static void RemoveReceivableQuest(
+        public static async void RemoveReceivableQuest(
             Address avatarAddress,
             int id,
             bool resetState = true)
@@ -379,7 +380,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+            await TryResetLoadedAvatarState(avatarAddress);
         }
 
         #endregion
@@ -544,24 +545,18 @@ namespace Nekoyume.State
         /// Therefore, there is no need to additionally update `ReactiveAvatarState` after using this function.
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="outAvatarState"></param>
-        /// <param name="isCurrentAvatarState"></param>
-        private static bool TryResetLoadedAvatarState(
-            Address avatarAddress,
-            out AvatarState outAvatarState,
-            out bool isCurrentAvatarState)
+        private static async Task TryResetLoadedAvatarState(Address avatarAddress)
         {
-            if (!TryGetLoadedAvatarState(avatarAddress, out outAvatarState, out var outKey,
-                out isCurrentAvatarState))
+            if (!TryGetLoadedAvatarState(avatarAddress, out _, out var outKey,
+                out var isCurrentAvatarState))
             {
-                return false;
+                return;
             }
 
-            outAvatarState = States.Instance.AddOrReplaceAvatarState(
+            await States.Instance.AddOrReplaceAvatarState(
                 avatarAddress,
                 outKey,
                 isCurrentAvatarState);
-            return outAvatarState != null;
         }
     }
 }

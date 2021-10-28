@@ -82,14 +82,14 @@ namespace Nekoyume.UI.Model
             return item;
         }
 
-        protected void SelectItemView(ShopItemView view)
+        protected async void SelectItemView(ShopItemView view)
         {
             if (view == null || view.Model is null)
                 return;
 
             DeselectItemView();
             _selectedItemViewModel.Value = view.Model;
-            var item = Util.GetItemBaseByTradableId(view.Model.TradableId.Value, view.Model.ExpiredBlockIndex.Value);
+            var item = await Util.GetItemBaseByTradableId(view.Model.TradableId.Value, view.Model.ExpiredBlockIndex.Value);
             _selectedItemViewModel.Value.Selected.Value = true;
             _selectedItemViewModel.Value.ItemBase.Value = item;
             SelectedItemView.SetValueAndForceNotify(view);
