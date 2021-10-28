@@ -254,7 +254,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slotState = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (RapidCombination.ResultModel) slotState.Result;
+                var result = (RapidCombination5.ResultModel) slotState.Result;
                 foreach (var pair in result.cost)
                 {
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -326,8 +326,8 @@ namespace Nekoyume.BlockChain
                 }
 
                 var format = L10nManager.Localize(formatKey);
-                UI.NotificationSystem.CancelReserve(result.itemUsable.TradableId);
-                UI.NotificationSystem.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
+                NotificationSystem.CancelReserve(result.itemUsable.TradableId);
+                NotificationSystem.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
 
                 States.Instance.UpdateCombinationSlotState(slotIndex, slotState);
                 UpdateAgentState(eval);

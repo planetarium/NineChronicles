@@ -40,6 +40,7 @@ using Nekoyume.UI;
 using NetMQ;
 using Serilog;
 using Serilog.Events;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -48,7 +49,7 @@ namespace Nekoyume.BlockChain
     using UniRx;
 
     /// <summary>
-    /// Agent handles events from blockchain nodes.
+    /// 블록체인 노드 관련 로직을 처리
     /// </summary>
     public class Agent : MonoBehaviour, IDisposable, IAgent
     {
@@ -71,6 +72,9 @@ namespace Nekoyume.BlockChain
         private const int SwarmLinger = 1 * 1000;
         private const string QueuedActionsFileName = "queued_actions.dat";
 
+        private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(15);
+
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 
@@ -79,6 +83,7 @@ namespace Nekoyume.BlockChain
         protected BlockChain<PolymorphicAction<ActionBase>> blocks;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
         protected BaseStore store;
+        private IStagePolicy<PolymorphicAction<ActionBase>> _stagePolicy;
         private IStateStore _stateStore;
         private ImmutableList<Peer> _seedPeers;
         private ImmutableList<Peer> _peerList;
@@ -96,6 +101,7 @@ namespace Nekoyume.BlockChain
         public BlockPolicySource BlockPolicySource { get; private set; }
 
         public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
+
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
         public int AppProtocolVersion { get; private set; }
         public BlockHash BlockTipHash => blocks.Tip.Hash;
@@ -129,12 +135,15 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void Initialize(CommandLineOptions options, PrivateKey privateKey, Action<bool> callback)
+        public IEnumerator Initialize(
+            CommandLineOptions options,
+            PrivateKey privateKey,
+            Action<bool> callback)
         {
             if (disposed)
             {
                 Debug.Log("Agent Exist");
-                return;
+                yield return null;
             }
 
             InitAgent(callback, privateKey, options);
@@ -174,19 +183,10 @@ namespace Nekoyume.BlockChain
 
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
-            var policy = BlockPolicySource.GetPolicy(minimumDifficulty, 100);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            var policy = BlockPolicySource.GetPolicy();
+            _stagePolicy = new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
-
-            // 같은 논스를 다시 찍지 않기 위해서 직접 만든 Tx는 유지합니다.
-            ImmutableHashSet<TxId> pendingTxsFromOhters = store.IterateStagedTransactionIds()
-                .Select(tid => store.GetTransaction<PolymorphicAction<ActionBase>>(tid))
-                .Where(tx => tx.Signer != Address)
-                .Select(tx => tx.Id)
-                .ToImmutableHashSet();
-            store.UnstageTransactionIds(pendingTxsFromOhters);
 
             try
             {
@@ -194,7 +194,7 @@ namespace Nekoyume.BlockChain
                 _stateStore = new TrieStateStore(stateKeyValueStore);
                 blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                     policy,
-                    stagePolicy,
+                    _stagePolicy,
                     store,
                     _stateStore,
                     genesisBlock,
@@ -230,8 +230,9 @@ namespace Nekoyume.BlockChain
                 .ToImmutableList();
             _seedPeers = (_peerList.Count > MaxSeed ? _peerList.Sample(MaxSeed) : _peerList)
                 .ToImmutableList();
-
+            // Init SyncSucceed
             SyncSucceed = true;
+
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -282,6 +283,11 @@ namespace Nekoyume.BlockChain
             return blocks.GetState(address);
         }
 
+        public Task<IValue> GetStateAsync(Address address)
+        {
+            return Task.Run(() => blocks.GetState(address));
+        }
+
         public bool IsActionStaged(Guid actionId, out TxId txId)
         {
             return _transactions.TryGetValue(actionId, out txId)
@@ -292,6 +298,12 @@ namespace Nekoyume.BlockChain
             blocks.GetBalance(address, currency);
 
         #region Mono
+
+        public void SendException(Exception exc)
+        {
+            //FIXME: Make more meaningful method
+            return;
+        }
 
         private void Awake()
         {
@@ -626,22 +638,8 @@ namespace Nekoyume.BlockChain
                     $" - LastChecked: {peerState.LastChecked}\n" +
                     $" - Latency: {peerState.Latency}"));
                 Cheat.Display("Peers", peerStateString);
-                StringBuilder log = new StringBuilder($"Staged Transactions : {store.IterateStagedTransactionIds().Count()}\n");
-                var count = 1;
-                foreach (var id in store.IterateStagedTransactionIds())
-                {
-                    var tx = store.GetTransaction<PolymorphicAction<ActionBase>>(id);
-                    log.Append($"[{count++}] Id : {tx.Id}\n");
-                    log.Append($"-Signer : {tx.Signer.ToString()}\n");
-                    log.Append($"-Nonce : {tx.Nonce}\n");
-                    log.Append($"-Timestamp : {tx.Timestamp}\n");
-                    log.Append($"-Actions\n");
-                    log = tx.Actions.Aggregate(log, (current, action) => current.Append($" -{action.InnerAction}\n"));
-                }
 
-                Cheat.Display("StagedTxs", log.ToString());
-
-                log = new StringBuilder($"Last 10 tips :\n");
+                StringBuilder log = new StringBuilder($"Last 10 tips :\n");
                 foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
                 {
                     log.Append($"[{block.Index}] {block.Hash}\n");
@@ -876,7 +874,7 @@ namespace Nekoyume.BlockChain
             var sleepInterval = new WaitForSeconds(15);
             while (true)
             {
-                var task = Task.Run(async() => await miner.MineBlockAsync(100, _cancellationTokenSource.Token));
+                var task = Task.Run(async() => await miner.MineBlockAsync(_cancellationTokenSource.Token));
                 yield return new WaitUntil(() => task.IsCompleted);
 #if UNITY_EDITOR
                 yield return sleepInterval;
@@ -963,8 +961,7 @@ namespace Nekoyume.BlockChain
                 // 프레임 저하를 막기 위해 별도 스레드로 처리합니다.
                 Task<List<Transaction<PolymorphicAction<ActionBase>>>> getOwnTxs =
                     Task.Run(
-                        () => store.IterateStagedTransactionIds()
-                            .Select(id => store.GetTransaction<PolymorphicAction<ActionBase>>(id))
+                        () => _stagePolicy.Iterate(blocks)
                             .Where(tx => tx.Signer.Equals(Address))
                             .ToList()
                     );
@@ -1028,8 +1025,8 @@ namespace Nekoyume.BlockChain
                     throw new Exception("Unknown state was reported during preload.");
             }
 
-            var format = L10nManager.Localize(localizationKey);
-            var text = string.Format(format, count, totalCount);
+            string format = L10nManager.Localize(localizationKey);
+            string text = string.Format(format, count, totalCount);
             return $"{text}  ({state.CurrentPhase} / {PreloadState.TotalPhase})";
         }
     }
