@@ -6,28 +6,29 @@ namespace Nekoyume.UI.Tween
 {
     public class DOTweenRectTransformMoveBy : DOTweenBase
     {
-        public bool StartFromDelta = false;
-        public Vector3 DeltaValue = new Vector3();
-        private Vector3 BeginValue = new Vector3();
-        private Vector3 EndValue = new Vector3();
+        public bool startFromDelta = false;
+        public Vector3 deltaValue = new Vector3();
+
+        private Vector3 _beginValue = new Vector3();
+        private Vector3 _endValue = new Vector3();
         private RectTransform _transform;
 
         protected override void Awake()
         {
             base.Awake();
             _transform = GetComponent<RectTransform>();
-            BeginValue = StartFromDelta ? _transform.localPosition - DeltaValue : _transform.localPosition;
-            EndValue = StartFromDelta ? _transform.localPosition : _transform.localPosition + DeltaValue;
+            _beginValue = startFromDelta ? _transform.localPosition - deltaValue : _transform.localPosition;
+            _endValue = startFromDelta ? _transform.localPosition : _transform.localPosition + deltaValue;
             if (startWithPlay)
             {
-                _transform.DOLocalMove(BeginValue, 0.0f);
+                _transform.DOLocalMove(_beginValue, 0.0f);
             }
         }
 
         public override void PlayForward()
         {
-            _transform.DOLocalMove(BeginValue, 0.0f);
-            currentTween = _transform.DOLocalMove(EndValue, duration);
+            _transform.DOLocalMove(_beginValue, 0.0f);
+            currentTween = _transform.DOLocalMove(_endValue, duration);
             if (TweenType.Repeat == tweenType)
             {
                 currentTween = SetEase().OnComplete(PlayForward);
@@ -44,8 +45,8 @@ namespace Nekoyume.UI.Tween
 
         public override void PlayReverse()
         {
-            _transform.DOLocalMove(EndValue, 0.0f);
-            currentTween = _transform.DOLocalMove(BeginValue, duration);
+            _transform.DOLocalMove(_endValue, 0.0f);
+            currentTween = _transform.DOLocalMove(_beginValue, duration);
             if (TweenType.PingPongRepeat == tweenType)
             {
                 currentTween = SetEase().OnComplete(PlayForward);

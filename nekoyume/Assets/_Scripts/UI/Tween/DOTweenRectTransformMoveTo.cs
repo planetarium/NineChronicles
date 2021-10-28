@@ -6,8 +6,8 @@ namespace Nekoyume.UI.Tween
 {
     public class DOTweenRectTransformMoveTo : DOTweenBase
     {
-        public Vector3 BeginValue = new Vector3();
-        public Vector3 EndValue = new Vector3();
+        public Vector3 beginValue = new Vector3();
+        public Vector3 endValue = new Vector3();
         private RectTransform _transform;
 
         protected override void Awake()
@@ -19,35 +19,35 @@ namespace Nekoyume.UI.Tween
         public void SetBeginRect(RectTransform rect)
         {
             var beginPos = rect.GetWorldPositionOfCenter();
-            BeginValue = beginPos;
-            EndValue = transform.position;
+            beginValue = beginPos;
+            endValue = transform.position;
             transform.position = beginPos;
         }
 
         public override void PlayForward()
         {
-            _transform.DOMove(BeginValue, 0.0f);
+            _transform.DOMove(beginValue, 0.0f);
             if (TweenType.Repeat == tweenType)
             {
-                _transform.DOMove(EndValue, duration)
+                _transform.DOMove(endValue, duration)
                     .SetEase(ease)
                     .onComplete = PlayForward;
             }
             else if (TweenType.PingPongOnce == tweenType)
             {
-                _transform.DOMove(EndValue, duration)
+                _transform.DOMove(endValue, duration)
                     .SetEase(ease)
                     .onComplete = PlayReverse;
             }
             else if (TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOMove(EndValue, duration)
+                _transform.DOMove(endValue, duration)
                     .SetEase(ease)
                     .onComplete = PlayReverse;
             }
             else
             {
-                _transform.DOMove(EndValue, duration)
+                _transform.DOMove(endValue, duration)
                     .SetEase(ease)
                     .onComplete = OnComplete;
             }
@@ -55,22 +55,22 @@ namespace Nekoyume.UI.Tween
 
         public override void PlayReverse()
         {
-            _transform.DOMove(EndValue, 0.0f);
+            _transform.DOMove(endValue, 0.0f);
             if (TweenType.PingPongOnce == tweenType)
             {
-                _transform.DOMove(BeginValue, duration)
+                _transform.DOMove(beginValue, duration)
                     .SetEase(ease)
                     .onComplete = OnComplete;
             }
             else if (TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOMove(BeginValue, duration)
+                _transform.DOMove(beginValue, duration)
                     .SetEase(ease)
                     .onComplete = PlayForward;
             }
             else
             {
-                _transform.DOMove(BeginValue, duration)
+                _transform.DOMove(beginValue, duration)
                     .SetEase(ease)
                     .onComplete = OnComplete;
             }

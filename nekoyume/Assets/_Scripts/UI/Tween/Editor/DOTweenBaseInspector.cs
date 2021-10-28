@@ -93,20 +93,20 @@ namespace Nekoyume.UI.Tween
             GUILayout.Label ("[MoveTo Control]");
             if (GUILayout.Button("Current -> BeginValue"))
             {
-                rectMoveToTween.BeginValue = rectMoveToTween.transform.position;
+                rectMoveToTween.beginValue = rectMoveToTween.transform.position;
             }
             if (GUILayout.Button("Current -> EndValue"))
             {
-                rectMoveToTween.EndValue = rectMoveToTween.transform.position;
+                rectMoveToTween.endValue = rectMoveToTween.transform.position;
             }
 
             if (GUILayout.Button("BeginValue -> Current"))
             {
-                rectMoveToTween.transform.position = rectMoveToTween.BeginValue;
+                rectMoveToTween.transform.position = rectMoveToTween.beginValue;
             }
             if (GUILayout.Button("EndValue -> Current"))
             {
-                rectMoveToTween.transform.position = rectMoveToTween.EndValue;
+                rectMoveToTween.transform.position = rectMoveToTween.endValue;
             }
         }
     }
