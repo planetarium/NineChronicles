@@ -42,23 +42,42 @@ namespace Nekoyume.UI.Model
 
         private HashSet<Nekoyume.Model.State.RankingInfo> _rankingInfoSet = null;
 
+        private bool _rankingMapLoaded;
+
         public Task Update(int displayCount)
         {
-            var rankingMapStates = States.Instance.RankingMapStates;
-            _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
-            foreach (var pair in rankingMapStates)
-            {
-                var rankingInfo = pair.Value.GetRankingInfos(null);
-                _rankingInfoSet.UnionWith(rankingInfo);
-            }
-
-            Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
             var apiClient = Game.Game.instance.ApiClient;
 
             if (apiClient.IsInitialized)
             {
                 return Task.Run(async () =>
                 {
+                    if (!_rankingMapLoaded)
+                    {
+                        for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+                        {
+                            var address = RankingState.Derive(i);
+                            var mapState =
+                                await Game.Game.instance.Agent.GetStateAsync(address) is
+                                    Bencodex.Types.Dictionary serialized
+                                ? new RankingMapState(serialized)
+                                : new RankingMapState(address);
+                            States.Instance.SetRankingMapStates(mapState);
+                        }
+
+                        var rankingMapStates = States.Instance.RankingMapStates;
+                        _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
+                        foreach (var pair in rankingMapStates)
+                        {
+                            var rankingInfo = pair.Value.GetRankingInfos(null);
+                            _rankingInfoSet.UnionWith(rankingInfo);
+                        }
+
+                        _rankingMapLoaded = true;
+                    }
+
+                    Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
+
                     var sw = new Stopwatch();
                     sw.Start();
 
