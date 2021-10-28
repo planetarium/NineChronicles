@@ -28,16 +28,19 @@ namespace Nekoyume.BlockChain
         public Transaction<NCAction> Get(BlockChain<NCAction> blockChain, TxId id, bool includeUnstaged)
             => _impl.Get(blockChain, id, includeUnstaged);
 
-        public void Ignore(BlockChain<NCAction> blockChain, TxId id) 
+        public long GetNextTxNonce(Address address, long minedTxs)
+            => _impl.GetNextTxNonce(address, minedTxs);
+
+        public void Ignore(BlockChain<NCAction> blockChain, TxId id)
             => _impl.Ignore(blockChain, id);
 
         public bool Ignores(BlockChain<NCAction> blockChain, TxId id)
             => _impl.Ignores(blockChain, id);
 
-        public IEnumerable<Transaction<NCAction>> Iterate(BlockChain<NCAction> blockChain)
+        public IEnumerable<Transaction<NCAction>> Iterate()
         {
             var txsPerSigner = new Dictionary<Address, SortedSet<Transaction<NCAction>>>();
-            foreach (Transaction<NCAction> tx in _impl.Iterate(blockChain))
+            foreach (Transaction<NCAction> tx in _impl.Iterate())
             {
                 if (!txsPerSigner.TryGetValue(tx.Signer, out var s))
                 {
@@ -56,7 +59,7 @@ namespace Nekoyume.BlockChain
 #pragma warning restore LAA1002 // DictionariesOrSetsShouldBeOrderedToEnumerate
         }
 
-        public void Stage(BlockChain<NCAction> blockChain, Transaction<NCAction> transaction) 
+        public void Stage(BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
             => _impl.Stage(blockChain, transaction);
 
         public void Unstage(BlockChain<NCAction> blockChain, TxId id)

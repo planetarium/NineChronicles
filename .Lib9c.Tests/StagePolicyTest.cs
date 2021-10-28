@@ -211,7 +211,7 @@ namespace Lib9c.Tests
 
             Assert.Equal(
                 txs.ToHashSet(),
-                policy.Iterate(_chain).ToHashSet()
+                policy.Iterate().ToHashSet()
             );
         }
     }
