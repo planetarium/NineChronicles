@@ -172,7 +172,6 @@ namespace Nekoyume.Model
 
         private void ReduceDurationOfBuffs()
         {
-            // 자신의 기존 버프 턴 조절.
 #pragma warning disable LAA1002
             foreach (var pair in Buffs)
 #pragma warning restore LAA1002
@@ -194,10 +193,7 @@ namespace Nekoyume.Model
 
         private void UseSkill()
         {
-            // 스킬 선택.
             var selectedSkill = Skills.Select(Simulator.Random);
-
-            // 스킬 사용.
             var usedSkill = selectedSkill.Use(
                 this,
                 Simulator.WaveTurn,
@@ -208,8 +204,12 @@ namespace Nekoyume.Model
                 )
             );
 
-            // 쿨다운 적용.
-            Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
+            if (!Simulator.SkillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var sheetSkill))
+            {
+                throw new KeyNotFoundException(selectedSkill.SkillRow.Id.ToString());
+            }
+
+            Skills.SetCooldown(selectedSkill.SkillRow.Id, sheetSkill.Cooldown);
             Simulator.Log.Add(usedSkill);
 
             foreach (var info in usedSkill.SkillInfos)
@@ -225,10 +225,8 @@ namespace Nekoyume.Model
         [Obsolete("Use UseSkill")]
         private void UseSkill2()
         {
-            // 스킬 선택.
             var selectedSkill = Skills.Select2(Simulator.Random);
 
-            // 스킬 사용.
             var usedSkill = selectedSkill.Use(
                 this,
                 Simulator.WaveTurn,
@@ -239,7 +237,6 @@ namespace Nekoyume.Model
                 )
             );
 
-            // 쿨다운 적용.
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
 
@@ -256,10 +253,8 @@ namespace Nekoyume.Model
         [Obsolete("Use UseSkill")]
         private void UseSkill3()
         {
-            // 스킬 선택.
             var selectedSkill = Skills.Select3(Simulator.Random);
 
-            // 스킬 사용.
             var usedSkill = selectedSkill.Use(
                 this,
                 Simulator.WaveTurn,
@@ -270,7 +265,6 @@ namespace Nekoyume.Model
                 )
             );
 
-            // 쿨다운 적용.
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
 
@@ -288,7 +282,6 @@ namespace Nekoyume.Model
         {
             var isDirtyMySelf = false;
 
-            // 자신의 버프 제거.
             var keyList = Buffs.Keys.ToList();
             foreach (var key in keyList)
             {
@@ -303,7 +296,6 @@ namespace Nekoyume.Model
             if (!isDirtyMySelf)
                 return;
 
-            // 버프를 상태에 반영.
             Stats.SetBuffs(Buffs.Values);
             Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
         }
