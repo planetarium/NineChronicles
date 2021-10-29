@@ -2,11 +2,10 @@ using System;
 using DG.Tweening;
 using UniRx.Triggers;
 using UnityEngine;
-using Nekoyume.Game.Character;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.AnimatedGraphics;
-using UnityEngine.UI;
+using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Module
 {
@@ -24,21 +23,25 @@ namespace Nekoyume.UI.Module
     public class MainMenu : MonoBehaviour
     {
         public string localizationKey = string.Empty;
-        public float TweenDuration = 0.3f;
-        public float BgScale = 1.05f;
-        public SpeechBubble speechBubble;
-        public string pointerClickKey;
-        public NPC npc;
-        public Transform bgTransform;
-        private Vector3 _originLocalScale;
         public MenuType type;
-        public Image hasNotificationImage;
-        public GameObject[] lockObjects;
-        public GameObject[] unLockObjects;
 
-        private int _requireStage;
-        private string _messageForCat;
+        [SerializeField]
+        private SpeechBubble speechBubble;
+
+        [SerializeField]
+        private GameObject[] lockObjects;
+
+        [SerializeField]
+        private GameObject[] unLockObjects;
+
+        [SerializeField]
+        private HoverScaleTweener hoverScaleTweener;
+
         private MessageCat _cat;
+
+        private Vector3 _originLocalScale;
+        private string _messageForCat;
+        private int _requireStage;
 
         public bool IsUnlocked { get; private set; }
 
@@ -48,8 +51,6 @@ namespace Nekoyume.UI.Module
         {
             if (!GetComponentInParent<Menu>())
                 throw new NotFoundComponentException<Menu>();
-
-            _originLocalScale = bgTransform.localScale;
 
             switch (type)
             {
@@ -78,50 +79,43 @@ namespace Nekoyume.UI.Module
             _messageForCat =
                 $"{L10nManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
 
-            gameObject.AddComponent<ObservablePointerEnterTrigger>()
-                .OnPointerEnterAsObservable()
-                .Subscribe(x =>
-                {
-                    if (!IsUnlocked)
-                    {
-                        if (_cat)
-                        {
-                            _cat.Hide();
-                        }
-
-                        _cat = Widget.Find<MessageCatTooltip>().Show(true, _messageForCat, gameObject);
-
-                        return;
-                    }
-
-                    bgTransform.DOScale(_originLocalScale * BgScale, TweenDuration);
-                })
-                .AddTo(gameObject);
-
-            gameObject.AddComponent<ObservablePointerExitTrigger>()
-                .OnPointerExitAsObservable()
-                .Subscribe(x =>
-                {
-                    if (!IsUnlocked)
-                    {
-                        if (!_cat)
-                            return;
-
-                        _cat.Hide();
-                        _cat = null;
-
-                        return;
-                    }
-
-                    bgTransform.DOScale(_originLocalScale, TweenDuration);
-                    ResetLocalizationKey();
-                })
-                .AddTo(gameObject);
+            hoverScaleTweener.AddCondition(PointEnterTrigger, PointExitTrigger);
         }
 
-        private void OnEnable()
+        private bool PointEnterTrigger()
         {
-            bgTransform.localScale = _originLocalScale;
+            if (!IsUnlocked)
+            {
+                if (_cat)
+                {
+                    _cat.Hide();
+                }
+
+                _cat = Widget.Find<MessageCatTooltip>()
+                    .Show(true, _messageForCat, gameObject);
+            }
+
+            return IsUnlocked;
+        }
+
+        private bool PointExitTrigger()
+        {
+            if (IsUnlocked)
+            {
+                ResetLocalizationKey();
+            }
+            else
+            {
+                if (!_cat)
+                {
+                    return IsUnlocked;
+                }
+
+                _cat.Hide();
+                _cat = null;
+            }
+
+            return IsUnlocked;
         }
 
         #endregion
@@ -129,18 +123,22 @@ namespace Nekoyume.UI.Module
         public void JingleTheCat()
         {
             if (!_cat)
+            {
                 return;
+            }
 
             _cat.Jingle();
         }
 
         private void ResetLocalizationKey()
         {
-            if (speechBubble)
+            if (!speechBubble)
             {
-                speechBubble.ResetKey();
-                speechBubble.Hide();
+                return;
             }
+
+            speechBubble.ResetKey();
+            speechBubble.Hide();
         }
 
         public void Update()
@@ -148,8 +146,8 @@ namespace Nekoyume.UI.Module
             if (_requireStage > 0)
             {
                 if (States.Instance.CurrentAvatarState.worldInformation != null &&
-                    States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                    out var world))
+                    States.Instance.CurrentAvatarState.worldInformation
+                        .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
                 {
                     IsUnlocked = _requireStage <= world.StageClearedId;
                 }
@@ -161,11 +159,6 @@ namespace Nekoyume.UI.Module
             else
             {
                 IsUnlocked = true;
-            }
-
-            if (npc)
-            {
-                npc.gameObject.SetActive(true);
             }
 
             foreach (var go in lockObjects)

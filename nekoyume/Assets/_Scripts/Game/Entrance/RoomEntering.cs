@@ -27,8 +27,6 @@ namespace Nekoyume.Game.Entrance
 
             stage.ClearBattle();
             stage.stageId = 0;
-            stage.LoadBackground("room");
-            stage.roomAnimator.Play("EnteringRoom");
 
             yield return new WaitForEndOfFrame();
             stage.selectedPlayer = null;
@@ -36,17 +34,14 @@ namespace Nekoyume.Game.Entrance
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(stage.AvatarState);
             }
-            var roomPosition = stage.roomPosition;
-
-            var player = stage.GetPlayer(roomPosition - new Vector2(3.0f, 0.0f));
+            var startPosition = new Vector2(5000.2f, 4999.1f);
+            var player = stage.GetPlayer(startPosition - new Vector2(3.0f, 0.0f));
             player.transform.localScale = Vector3.one;
             player.SetSortingLayer(SortingLayer.NameToID("Character"), 100);
             player.StopAllCoroutines();
             player.StartRun();
-            if (player.Costumes.Any(value => value.Id == 40100002))
-            {
-                roomPosition += new Vector2(-0.17f, -0.05f);
-            }
+
+            Widget.Find<Menu>().UpdatePlayerReactButton(player.Animator.Touch);
 
             var status = Widget.Find<Status>();
             status.UpdatePlayer(player);
@@ -81,7 +76,7 @@ namespace Nekoyume.Game.Entrance
 
             if (player)
             {
-                yield return new WaitWhile(() => player.transform.position.x < roomPosition.x);
+                yield return new WaitWhile(() => player.transform.position.x < startPosition.x);
             }
 
             player.RunSpeed = 0.0f;

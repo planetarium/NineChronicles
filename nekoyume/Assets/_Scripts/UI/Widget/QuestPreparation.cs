@@ -198,9 +198,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
-                .Where(_ =>
-                    Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value)
-                    && EnoughToPlay)
+                .Where(_ => EnoughToPlay)
                 .Subscribe(_ =>
                 {
                     var costumes = _player.Costumes;
@@ -219,20 +217,13 @@ namespace Nekoyume.UI
                     _stage.foodCount = consumables.Count;
                     ActionRenderHandler.Instance.Pending = true;
 
-                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables);
+                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables, 12, _worldId, _stageId.Value);
                 });
 
             boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
-                .AddTo(gameObject);
-
-            boostPopupButton.OnClickAsObservable()
-                .Where(_ =>
-                    !Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value))
-                .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ => OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_BOOSTER_CONDITIONS_GUIDE")))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
