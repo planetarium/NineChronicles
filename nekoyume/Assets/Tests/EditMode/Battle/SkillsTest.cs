@@ -138,11 +138,11 @@ namespace Tests.EditMode.Battle
             Assert.IsFalse(firstSkill.Equals(firstBuffSkill));
 
             var skills = new Skills {firstSkill};
-            var selectedSkill = skills.SelectV2(new Random());
+            var selectedSkill = skills.Select(new Random());
             Assert.IsTrue(selectedSkill.Equals(firstSkill));
 
             skills.Add(firstBuffSkill);
-            selectedSkill = skills.SelectV2(new Random());
+            selectedSkill = skills.Select(new Random());
             Assert.IsTrue(selectedSkill.Equals(firstBuffSkill));
         }
     }
