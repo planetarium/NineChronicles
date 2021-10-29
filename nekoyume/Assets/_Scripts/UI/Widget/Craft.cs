@@ -250,10 +250,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            OnCombinationAction(recipeInfo);
-
             var tableSheets = Game.Game.instance.TableSheets;
-
             var equipmentRow = tableSheets.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
                 equipmentRow.GetResultEquipmentItemRow(), Guid.Empty, default);
@@ -268,10 +265,7 @@ namespace Nekoyume.UI
             slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:equipment);
 
             equipmentSubRecipeView.UpdateView();
-            Game.Game.instance.ActionManager.CombinationEquipment(
-                recipeInfo.RecipeId,
-                slotIndex,
-                recipeInfo.SubRecipeId);
+            Game.Game.instance.ActionManager.CombinationEquipment(recipeInfo, slotIndex);
 
             StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
         }
@@ -284,7 +278,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            OnCombinationAction(recipeInfo);
             var consumableRow = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet[recipeInfo.RecipeId];
             var consumable = (Consumable)ItemFactory.CreateItemUsable(
                 consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
@@ -293,25 +286,9 @@ namespace Nekoyume.UI
             slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:consumable);
 
             consumableSubRecipeView.UpdateView();
-            Game.Game.instance.ActionManager.CombinationConsumable(
-                recipeInfo.RecipeId,
-                slotIndex);
+            Game.Game.instance.ActionManager.CombinationConsumable(recipeInfo, slotIndex);
 
             StartCoroutine(CoCombineNPCAnimation(consumable, requiredBlockIndex, true));
-        }
-
-        private void OnCombinationAction(SubRecipeView.RecipeInfo recipeInfo)
-        {
-            var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-
-            LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
-            LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
-
-            foreach (var (material, count) in recipeInfo.Materials)
-            {
-                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
-            }
         }
 
         private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, long blockIndex, bool isConsumable = false)

@@ -122,14 +122,7 @@ namespace Nekoyume.UI
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
             ActionRenderHandler.Instance.Pending = true;
-            Game.Game.instance.ActionManager
-                .HackAndSlash(player, worldId, stageId, 1)
-                .Subscribe(_ =>
-                {
-                    LocalLayerModifier.ModifyAvatarActionPoint(
-                        States.Instance.CurrentAvatarState.address,
-                        requiredCost);
-                }, e => ActionRenderHandler.BackToMain(false, e));
+            Game.Game.instance.ActionManager.HackAndSlash(player, worldId, stageId, 1);
             LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 - requiredCost);
             var props = new Value
