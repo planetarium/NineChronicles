@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Security.Cryptography;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet.Blocks;
@@ -26,7 +25,9 @@ namespace Nekoyume.BlockChain.Policy
 {
     public partial class BlockPolicySource
     {
-        public const int DifficultyStability = 2048;
+        public const long MinimumDifficulty = 5_000_000;
+
+        public const long DifficultyStability = 2048;
 
         // FIXME: We should adjust this value after resolving
         // https://github.com/planetarium/NineChronicles/issues/777
@@ -37,34 +38,48 @@ namespace Nekoyume.BlockChain.Policy
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
         /// <summary>
-        /// Starting point in which Validate restriction will apply.
+        /// Last index in which restriction will apply.
         /// </summary>
-        public const long ValidateMinerAuthorityNoOpTxHardcodedIndex = 1_200_001;
+        public const long AuthorizedMinersPolicyEndIndex = 3_153_600;
+
+        public const long AuthorizedMinersPolicyInterval = 50;
 
         /// <summary>
-        /// Starting point in which MinTransactionsPerBlock restriction will apply.
+        /// First index in which restriction will apply.
         /// </summary>
-        public const long MinTransactionsPerBlockHardcodedIndex = 2_173_701;
+        public const long AuthorizedMiningNoOpTxRequiredStartIndex = 1_200_001;
+
+        /// <summary>
+        /// First index in which restriction will apply.
+        /// </summary>
+        public const long MinTransactionsPerBlockStartIndex = 2_173_701;
 
         public const int MinTransactionsPerBlock = 1;
 
-        // FIXME: Should be finalized before release.
-        public const long MaxTransactionsPerSignerPerBlockHardcodedIndex = 3_000_001;
+        public const int MaxTransactionsPerBlock = 100;
 
         // FIXME: Should be finalized before release.
+        public const long MaxTransactionsPerSignerPerBlockStartIndex = 3_000_001;
+
         public const int MaxTransactionsPerSignerPerBlock = 4;
 
         public const long V100080ObsoleteIndex = 2_448_000;
 
-        // FIXME: Should be finalized before release.
         public const long V100081ObsoleteIndex = 2_550_000;
 
-        public const long PermissionedMiningHardcodedIndex = 2_225_500;
+        public const long V100083ObsoleteIndex = 2_680_000;
 
-        public readonly Dictionary<long, HashAlgorithmType> HashAlgorithmTable =
-            new Dictionary<long, HashAlgorithmType> { [0] = HashAlgorithmType.Of<SHA256>() };
+        public const long PermissionedMiningStartIndex = 2_225_500;
 
-        public readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
+        public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
+
+        public static readonly ImmutableHashSet<Address> AuthorizedMiners = new Address[]
+        {
+            new Address("ab1dce17dCE1Db1424BB833Af6cC087cd4F5CB6d"),
+            new Address("3217f757064Cd91CAba40a8eF3851F4a9e5b4985"),
+            new Address("474CB59Dea21159CeFcC828b30a8D864e0b94a6B"),
+            new Address("636d187B4d434244A92B65B06B5e7da14b3810A9"),
+        }.ToImmutableHashSet();
 
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
 
@@ -85,82 +100,134 @@ namespace Nekoyume.BlockChain.Policy
                 new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
-        // FIXME 남은 설정들도 설정화 해야 할지도?
-        public IBlockPolicy<NCAction> GetPolicy(int minimumDifficulty, int maxTransactionsPerBlock) =>
+        [Obsolete("Left for temporary old API compliance.")]
+        public IBlockPolicy<NCAction> GetPolicy(
+            long minimumDifficulty,
+            int maxTransactionsPerBlock) =>
             GetPolicy(
-                minimumDifficulty,
-                maxTransactionsPerBlock,
-                ignoreHardcodedPolicies: false,
-                authorizedMiningPolicy: AuthorizedMiningPolicy.Mainnet,
-                permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet);
+                minimumDifficulty: minimumDifficulty,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
+                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Default.Add(
+                    new SpannedSubPolicy<int>(
+                        startIndex: 0,
+                        value: maxTransactionsPerBlock)),
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
+                authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy.Mainnet,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
+
+        public IBlockPolicy<NCAction> GetPolicy() =>
+            GetPolicy(
+                minimumDifficulty: MinimumDifficulty,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
+                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
+                authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy.Mainnet,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 
         /// <summary>
         /// Gets a <see cref="BlockPolicy"/> constructed from given parameters.
         /// </summary>
         /// <param name="minimumDifficulty">The minimum difficulty that a <see cref="Block{T}"/>
         /// can have.  This is ignored for genesis blocks.</param>
-        /// <param name="maxTransactionsPerBlock">The maximum number of
+        /// <param name="minTransactionsPerBlockPolicy">Used for minimum number of transactions
+        /// required per block.</param>
+        /// <param name="maxTransactionsPerBlockPolicy">The maximum number of
         /// <see cref="Transaction{T}"/>s that a <see cref="Block{T}"/> can have.</param>
-        /// <param name="ignoreHardcodedPolicies">
-        /// <para>
-        /// Whether to ignore or respect hardcoded policies.
-        /// </para>
-        /// <para>
-        /// There are several policies where each policy only applies after its corresponding
-        /// hardcoded index.  Turning on this option ignores these hard coded indices and
-        /// applies said policies starting from index 0, the gensis.
-        /// </para>
-        /// <para>
-        /// This is purely for unit testing and should be set to false for production.
-        /// </para>
-        /// </param>
-        /// <param name="authorizedMiningPolicy">Used for authorized mining.</param>
-        /// <param name="permissionedMiningPolicy">Used for permissioned mining.</param>
+        /// <param name="maxTransactionsPerSignerPerBlockPolicy">The maximum number of
+        /// <see cref="Transaction{T}"/>s from a single miner that a <see cref="Block{T}"/>
+        /// can have.</param>
+        /// <param name="authorizedMinersPolicy">Used for authorized mining.</param>
+        /// <param name="authorizedMiningNoOpTxRequiredPolicy">Used for no-op tx proof check
+        /// for authorized mining.</param>
+        /// <param name="permissionedMinersPolicy">Used for permissioned mining.</param>
         /// <returns>A <see cref="BlockPolicy"/> constructed from given parameters.</returns>
         internal IBlockPolicy<NCAction> GetPolicy(
-            int minimumDifficulty,
-            int maxTransactionsPerBlock,
-            bool ignoreHardcodedPolicies,
-            AuthorizedMiningPolicy? authorizedMiningPolicy,
-            PermissionedMiningPolicy? permissionedMiningPolicy)
+            long minimumDifficulty,
+            IVariableSubPolicy<int> maxBlockBytesPolicy,
+            IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
+            IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
+            IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
+            IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
+            IVariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy,
+            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
 #if UNITY_EDITOR
             return new DebugPolicy();
 #else
+            maxBlockBytesPolicy = maxBlockBytesPolicy
+                ?? MaxBlockBytesPolicy.Default;
+            minTransactionsPerBlockPolicy = minTransactionsPerBlockPolicy
+                ?? MinTransactionsPerBlockPolicy.Default;
+            maxTransactionsPerBlockPolicy = maxTransactionsPerBlockPolicy
+                ?? MaxTransactionsPerBlockPolicy.Default;
+            maxTransactionsPerSignerPerBlockPolicy = maxTransactionsPerSignerPerBlockPolicy
+                ?? MaxTransactionsPerSignerPerBlockPolicy.Default;
+            authorizedMinersPolicy = authorizedMinersPolicy
+                ?? AuthorizedMinersPolicy.Default;
+            authorizedMiningNoOpTxRequiredPolicy = authorizedMiningNoOpTxRequiredPolicy
+                ?? AuthorizedMiningNoOpTxRequiredPolicy.Default;
+            permissionedMinersPolicy = permissionedMinersPolicy
+                ?? PermissionedMinersPolicy.Default;
 
-            var validateNextBlockTx = ValidateNextBlockTxFactory(
-                authorizedMiningPolicy);
-            var validateNextBlock = ValidateNextBlockFactory(
-                authorizedMiningPolicy,
-                permissionedMiningPolicy,
-                ignoreHardcodedPolicies);
-            var getNextBlockDifficulty = GetNextBlockDifficultyFactory(
-                BlockInterval,
-                DifficultyStability,
-                minimumDifficulty,
-                authorizedMiningPolicy);
-            var isAllowedToMine = IsAllowedToMineFactory(
-                IsAuthorizedMiningBlockIndexFactory(authorizedMiningPolicy),
-                IsAuthorizedToMineFactory(authorizedMiningPolicy),
-                IsPermissionedMiningBlockIndexFactory(permissionedMiningPolicy),
-                IsPermissionedToMineFactory(permissionedMiningPolicy));
+            // FIXME: Slight inconsistency due to pre-existing delegate.
+            HashAlgorithmGetter getHashAlgorithmType =
+                index => HashAlgorithmTypePolicy.Mainnet.Getter(index);
+
+            // FIXME: Ad hoc solution to poorly defined tx validity.
+            ImmutableHashSet<Address> allAuthorizedMiners =
+                authorizedMinersPolicy.SpannedSubPolicies
+                    .Select(spannedSubPolicy => spannedSubPolicy.Value)
+#pragma warning disable LAA1002
+                    .Aggregate(
+                        authorizedMinersPolicy.DefaultValue,
+                        (union, next) => union.Union(next));
+#pragma warning restore LAA1002
+
+            Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException> validateNextBlockTx =
+                (blockChain, transaction) => ValidateNextBlockTxRaw(
+                    blockChain, transaction, allAuthorizedMiners);
+            Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException> validateNextBlock =
+                (blockChain, block) => ValidateNextBlockRaw(
+                    blockChain,
+                    block,
+                    minTransactionsPerBlockPolicy,
+                    maxTransactionsPerBlockPolicy,
+                    maxTransactionsPerSignerPerBlockPolicy,
+                    authorizedMinersPolicy,
+                    authorizedMiningNoOpTxRequiredPolicy,
+                    permissionedMinersPolicy);
+            Func<BlockChain<NCAction>, long> getNextBlockDifficulty = blockChain =>
+                GetNextBlockDifficultyRaw(
+                    blockChain,
+                    BlockInterval,
+                    DifficultyStability,
+                    minimumDifficulty,
+                    authorizedMinersPolicy,
+                    defaultAlgorithm: chain => DifficultyAdjustment<NCAction>.BaseAlgorithm(
+                        chain, BlockInterval, DifficultyStability, minimumDifficulty));
+            Func<Address, long, bool> isAllowedToMine = (address, index) => IsAllowedToMineRaw(
+                address,
+                index,
+                authorizedMinersPolicy,
+                permissionedMinersPolicy);
 
             return new BlockPolicy(
                 new RewardGold(),
                 blockInterval: BlockInterval,
                 difficultyStability: DifficultyStability,
                 minimumDifficulty: minimumDifficulty,
-                permissionedMiningPolicy: permissionedMiningPolicy,
                 canonicalChainComparer: new TotalDifficultyComparer(),
-#pragma warning disable LAA1002
-                hashAlgorithmGetter: HashAlgorithmTable.ToHashAlgorithmGetter(),
-#pragma warning restore LAA1002
+                hashAlgorithmGetter: getHashAlgorithmType,
                 validateNextBlockTx: validateNextBlockTx,
                 validateNextBlock: validateNextBlock,
-                getMaxBlockBytes: GetMaxBlockBytes,
-                getMinTransactionsPerBlock: GetMinTransactionsPerBlock,
-                getMaxTransactionsPerBlock: GetMaxTransactionsPerBlockFactory(maxTransactionsPerBlock),
-                getMaxTransactionsPerSignerPerBlock: GetMaxTransactionsPerSignerPerBlock,
+                getMaxBlockBytes: maxBlockBytesPolicy.Getter,
+                getMinTransactionsPerBlock: minTransactionsPerBlockPolicy.Getter,
+                getMaxTransactionsPerBlock: maxTransactionsPerBlockPolicy.Getter,
+                getMaxTransactionsPerSignerPerBlock: maxTransactionsPerSignerPerBlockPolicy.Getter,
                 getNextBlockDifficulty: getNextBlockDifficulty,
                 isAllowedToMine: isAllowedToMine);
 #endif
@@ -169,10 +236,10 @@ namespace Nekoyume.BlockChain.Policy
         public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
             new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
 
-        public static TxPolicyViolationException ValidateNextBlockTxRaw(
+        internal static TxPolicyViolationException ValidateNextBlockTxRaw(
             BlockChain<NCAction> blockChain,
             Transaction<NCAction> transaction,
-            AuthorizedMiningPolicy? authorizedMiningPolicy)
+            ImmutableHashSet<Address> allAuthorizedMiners)
         {
             // Avoid NRE when genesis block appended
             // Here, index is the index of a prospective block that transaction
@@ -183,8 +250,8 @@ namespace Nekoyume.BlockChain.Policy
             {
                 return new TxPolicyViolationException(
                     transaction.Id,
-                    $"Transaction {transaction.Id} has too many actions: "
-                        + $"{transaction.Actions.Count}");
+                    $"Transaction {transaction.Id} has too many actions: " +
+                    $"{transaction.Actions.Count}");
             }
             else if (IsObsolete(transaction, index))
             {
@@ -196,14 +263,16 @@ namespace Nekoyume.BlockChain.Policy
             try
             {
                 // Check if it is a no-op transaction to prove it's made by the authorized miner.
-                if (IsAuthorizedMinerTransactionRaw(transaction, authorizedMiningPolicy))
+                if (IsAuthorizedMinerTransactionRaw(transaction, allAuthorizedMiners))
                 {
-                    // The authorization proof has to have no actions at all.
+                    // FIXME: This works under a strong assumption that any miner that was ever
+                    // in a set of authorized miners can only create transactions without
+                    // any actions.
                     return transaction.Actions.Any()
                         ? new TxPolicyViolationException(
                             transaction.Id,
-                            $"Transaction {transaction.Id} by an authorized miner should not have "
-                                + $"any action: {transaction.Actions.Count}")
+                            $"Transaction {transaction.Id} by an authorized miner should not " +
+                            $"have any action: {transaction.Actions.Count}")
                         : null;
                 }
 
@@ -239,8 +308,8 @@ namespace Nekoyume.BlockChain.Policy
                                 ? null
                                 : new TxPolicyViolationException(
                                     transaction.Id,
-                                    $"Transaction {transaction.Id} is by a signer "
-                                        + $"without account activation: {transaction.Signer}");
+                                    $"Transaction {transaction.Id} is by a signer " +
+                                    $"without account activation: {transaction.Signer}");
                         }
                         return null;
                     case Bencodex.Types.Boolean _:
@@ -267,81 +336,66 @@ namespace Nekoyume.BlockChain.Policy
             return null;
         }
 
-        public static Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
-            ValidateNextBlockTxFactory(AuthorizedMiningPolicy? authorizedMiningPolicy)
-        {
-            return (blockChain, transaction) => ValidateNextBlockTxRaw(
-                blockChain, transaction, authorizedMiningPolicy);
-        }
-
-
-        public static BlockPolicyViolationException ValidateNextBlockRaw(
+        internal static BlockPolicyViolationException ValidateNextBlockRaw(
             BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock,
-            AuthorizedMiningPolicy? authorizedMiningPolicy,
-            PermissionedMiningPolicy? permissionedMiningPolicy,
-            bool ignoreHardcodedPolicies)
+            IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
+            IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
+            IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
+            IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
+            IVariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy,
+            IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
-            return ValidateTxCountPerBlockRaw(nextBlock, ignoreHardcodedPolicies)
-                ?? ValidateMinerAuthorityRaw(nextBlock, authorizedMiningPolicy, ignoreHardcodedPolicies)
-                ?? ValidateMinerPermissionRaw(nextBlock, permissionedMiningPolicy, ignoreHardcodedPolicies);
+            // FIXME: Tx count validation should be done in libplanet, not here.
+            // Should be removed once libplanet is updated.
+            if (ValidateTxCountPerBlockRaw(
+                nextBlock,
+                minTransactionsPerBlockPolicy,
+                maxTransactionsPerBlockPolicy,
+                maxTransactionsPerSignerPerBlockPolicy) is BlockPolicyViolationException bpve)
+            {
+                return bpve;
+            }
+            else
+            {
+                if (nextBlock.Index == 0)
+                {
+                    return null;
+                }
+                else if (authorizedMinersPolicy.IsTargetIndex(nextBlock.Index))
+                {
+                    return ValidateMinerAuthorityRaw(
+                        nextBlock,
+                        authorizedMinersPolicy,
+                        authorizedMiningNoOpTxRequiredPolicy);
+                }
+                else if (permissionedMinersPolicy.IsTargetIndex(nextBlock.Index))
+                {
+                    return ValidateMinerPermissionRaw(
+                        nextBlock,
+                        permissionedMinersPolicy);
+                }
+            }
+
+            return null;
         }
 
-        public static Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
-            ValidateNextBlockFactory(
-                AuthorizedMiningPolicy? authorizedMiningPolicy,
-                PermissionedMiningPolicy? permissionedMiningPolicy,
-                bool ignoreHardcodedPolicies)
-        {
-            return (blockChain, nextBlock) =>
-                ValidateNextBlockRaw(
-                    blockChain,
-                    nextBlock,
-                    authorizedMiningPolicy,
-                    permissionedMiningPolicy,
-                    ignoreHardcodedPolicies);
-        }
-
-        public static int GetMaxBlockBytes(long index)
-        {
-            return index > 0 ? MaxBlockBytes : MaxGenesisBytes;
-        }
-
-        public static int GetMinTransactionsPerBlock(long index)
-        {
-            return index >= MinTransactionsPerBlockHardcodedIndex
-                ? MinTransactionsPerBlock
-                : 0;
-        }
-
-        public static int GetMaxTransactionsPerBlockRaw(long index, int maxTransactionsPerBlock)
-        {
-            return maxTransactionsPerBlock;
-        }
-
-        public static Func<long, int> GetMaxTransactionsPerBlockFactory(
-            int maxTransactionsPerBlock)
-        {
-            return index => GetMaxTransactionsPerBlockRaw(index, maxTransactionsPerBlock);
-        }
-
-        public static int GetMaxTransactionsPerSignerPerBlock(long index)
-        {
-            return index >= MaxTransactionsPerSignerPerBlockHardcodedIndex
-                ? MaxTransactionsPerSignerPerBlock
-                : int.MaxValue;
-        }
-
-        public static long GetNextBlockDifficultyRaw(
+        // FIXME: Although the intention is to use a slight variant of the algorithm provided,
+        // this allows a wildly different implementation for special cases.
+        internal static long GetNextBlockDifficultyRaw(
             BlockChain<NCAction> blockChain,
             TimeSpan targetBlockInterval,
             long difficultyStability,
             long minimumDifficulty,
-            AuthorizedMiningPolicy? authorizedMiningPolicy,
+            IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
             Func<BlockChain<NCAction>, long> defaultAlgorithm)
         {
             long index = blockChain.Count;
+            Func<long, bool> isAuthorizedMiningIndex = authorizedMinersPolicy.IsTargetIndex;
 
+            // FIXME: Uninstantiated blockChain can be passed as an argument.
+            // Until this is fixed, it is crucial block index is checked first.
+            // Authorized minor validity is only checked for certain indices.
             if (index < 0)
             {
                 throw new InvalidBlockIndexException(
@@ -351,27 +405,34 @@ namespace Nekoyume.BlockChain.Policy
             {
                 return index == 0 ? 0 : minimumDifficulty;
             }
-            // FIXME: Uninstantiated blockChain can be passed as an argument.
-            // Until this is fixed, it is crucial block index is checked first.
-            // Authorized minor validity is only checked for certain indices.
-            else if (authorizedMiningPolicy is AuthorizedMiningPolicy amp)
+            else if (isAuthorizedMiningIndex(index))
             {
-                long prevIndex = IsAuthorizedMiningBlockIndexRaw(
-                    index - 1, authorizedMiningPolicy)
-                        ? index - 2
-                        : index - 1;
-                long prevPrevIndex = IsAuthorizedMiningBlockIndexRaw(
-                    prevIndex - 1, authorizedMiningPolicy)
-                        ? prevIndex - 2
-                        : prevIndex - 1;
+                return minimumDifficulty;
+            }
+            else
+            {
+                long prevIndex = !isAuthorizedMiningIndex(index - 1)
+                    ? index - 1
+                    : index - 2;
+                long prevPrevIndex = !isAuthorizedMiningIndex(prevIndex - 1)
+                    ? prevIndex - 1
+                    : prevIndex - 2;
 
-                if (!(amp.EndIndex is long ei) || prevPrevIndex > ei)
+                // Arbitrary condition not strictly necessary, but already hardcoded.
+                if (prevPrevIndex <= 1)
+                {
+                    return minimumDifficulty;
+                }
+                // Blocks with index, prevIndex, and prevPrevIndex are all
+                // non-authorized mining blocks.
+                else if (prevPrevIndex == index - 2)
                 {
                     return defaultAlgorithm(blockChain);
                 }
-                else if (IsAuthorizedMiningBlockIndexRaw(index, authorizedMiningPolicy)
-                    || prevIndex <= 1
-                    || prevPrevIndex <= 1)
+                // At least one of previous blocks involved is authorized mining block.
+                // This can happen if two or more consecutive blocks are authorized mining blocks.
+                else if (isAuthorizedMiningIndex(prevIndex)
+                    || isAuthorizedMiningIndex(prevPrevIndex))
                 {
                     return minimumDifficulty;
                 }
@@ -395,27 +456,6 @@ namespace Nekoyume.BlockChain.Policy
                     return nextDifficulty;
                 }
             }
-            else
-            {
-                return defaultAlgorithm(blockChain);
-            }
-        }
-
-        public static Func<BlockChain<NCAction>, long> GetNextBlockDifficultyFactory(
-            TimeSpan targetBlockInterval,
-            long difficultyStability,
-            long minimumDifficulty,
-            AuthorizedMiningPolicy? authorizedMiningPolicy)
-        {
-            return (blockChain) =>
-                GetNextBlockDifficultyRaw(
-                    blockChain: blockChain,
-                    targetBlockInterval: targetBlockInterval,
-                    difficultyStability: difficultyStability,
-                    minimumDifficulty: minimumDifficulty,
-                    authorizedMiningPolicy: authorizedMiningPolicy,
-                    defaultAlgorithm: DifficultyAdjustment<NCAction>.AlgorithmFactory(
-                        targetBlockInterval, difficultyStability, minimumDifficulty));
         }
     }
 }

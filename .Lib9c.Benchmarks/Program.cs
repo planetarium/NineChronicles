@@ -60,7 +60,16 @@ namespace Lib9c.Benchmarks
             Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
             var policySource = new BlockPolicySource(Log.Logger, LogEventLevel.Verbose);
             IBlockPolicy<NCAction> policy =
-                policySource.GetPolicy(BlockPolicySource.DifficultyStability + 1, 10000);
+                policySource.GetPolicy(
+                    // Explicitly set to lowest possible difficulty.
+                    minimumDifficulty: BlockPolicySource.DifficultyStability,
+                    maxBlockBytesPolicy: null,
+                    minTransactionsPerBlockPolicy: null,
+                    maxTransactionsPerBlockPolicy: null,
+                    maxTransactionsPerSignerPerBlockPolicy: null,
+                    authorizedMinersPolicy: null,
+                    authorizedMiningNoOpTxRequiredPolicy: null,
+                    permissionedMinersPolicy: null);
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             var store = new RocksDBStore(storePath);
             if (!(store.GetCanonicalChainId() is Guid chainId))

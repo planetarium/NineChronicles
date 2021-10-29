@@ -74,7 +74,7 @@ namespace Nekoyume.Model.State
         public void UpdateV2(long blockIndex, Material material, int count)
         {
             Update(blockIndex);
-            var result = new RapidCombination.ResultModel((Dictionary) Result.Serialize())
+            var result = new RapidCombination5.ResultModel((Dictionary) Result.Serialize())
             {
                 cost = new Dictionary<Material, int> {[material] = count}
             };

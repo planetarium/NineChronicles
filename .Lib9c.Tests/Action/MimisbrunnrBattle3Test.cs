@@ -102,10 +102,28 @@
                 throw new SheetRowNotFoundException("MimisbrunnrSheet", stageId);
             }
 
+            var equipments = new List<Guid>();
+
             var equipmentRow =
-                _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
-            var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            previousAvatarState.inventory.AddItem2(equipment);
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10151001);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(equipment);
+
+            var armorEquipmentRow = _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10251001);
+            var armorEquipment = ItemFactory.CreateItemUsable(armorEquipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(armorEquipment);
+
+            var beltEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10351000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(beltEquipment);
+
+            var necklaceEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10451000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(necklaceEquipment);
+            equipments.Add(equipment.ItemId);
+            equipments.Add(armorEquipment.ItemId);
+            equipments.Add(beltEquipment.ItemId);
+            equipments.Add(necklaceEquipment.ItemId);
 
             foreach (var equipmentId in previousAvatarState.inventory.Equipments)
             {
@@ -136,7 +154,7 @@
             var action = new MimisbrunnrBattle3()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
-                equipments = new List<Guid>() { equipment.ItemId },
+                equipments = equipments,
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,

@@ -28,10 +28,7 @@ namespace Lib9c.Tests
             var blockPolicySource = new BlockPolicySource(Logger.None);
             var genesis = BlockChain<NCAction>.MakeGenesisBlock(HashAlgorithmType.Of<SHA256>());
             var blockChain = new BlockChain<NCAction>(
-                blockPolicySource.GetPolicy(
-                    minimumDifficulty: 50_000,
-                    maxTransactionsPerBlock: 100
-                ),
+                blockPolicySource.GetPolicy(10_000, null, null, null, null, null, null, null),
                 new VolatileStagePolicy<NCAction>(),
                 store,
                 stateStore,
@@ -41,7 +38,7 @@ namespace Lib9c.Tests
 
             var minerKey = new PrivateKey();
             var miner = new Miner(blockChain, null, minerKey, false);
-            Block<NCAction> mined = await miner.MineBlockAsync(100, default);
+            Block<NCAction> mined = await miner.MineBlockAsync(default);
             Transaction<NCAction> tx = Assert.Single(mined.Transactions);
 
             Assert.Equal(miner.Address, tx.Signer);

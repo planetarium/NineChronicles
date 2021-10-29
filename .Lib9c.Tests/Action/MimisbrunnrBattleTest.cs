@@ -42,13 +42,14 @@ namespace Lib9c.Tests.Action
             var agentState = new AgentState(_agentAddress);
 
             _avatarAddress = _agentAddress.Derive("avatar");
+            var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
             _rankingMapAddress = _avatarAddress.Derive("ranking_map");
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(sheets[nameof(GameConfigSheet)]),
+                gameConfigState,
                 _rankingMapAddress
             )
             {
@@ -59,7 +60,11 @@ namespace Lib9c.Tests.Action
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
-                .SetState(_rankingMapAddress, new RankingMapState(_rankingMapAddress).Serialize());
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                .SetState(_rankingMapAddress, new RankingMapState(_rankingMapAddress).Serialize())
+                .SetState(gameConfigState.address, gameConfigState.Serialize());
 
             foreach (var (key, value) in sheets)
             {
@@ -69,11 +74,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(200, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 140, true)]
-        [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 100, true)]
-        [InlineData(200, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 140, false)]
-        [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 100, false)]
-        public void Execute(int avatarLevel, int worldId, int stageId, int clearStageId, bool backward)
+        [InlineData(200, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 1, 140, true)]
+        [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 1, 100, true)]
+        [InlineData(200, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 1, 140, false)]
+        [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 1, 100, false)]
+        [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 2, 100, false)]
+        [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 3, 100, false)]
+        public void Execute(int avatarLevel, int worldId, int stageId, int playCount, int clearStageId, bool backward)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -103,9 +110,29 @@ namespace Lib9c.Tests.Action
             }
 
             var equipmentRow =
-                _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
-            var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10151001);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0);
             previousAvatarState.inventory.AddItem(equipment);
+
+            var armorEquipmentRow = _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10251001);
+            var armorEquipment = ItemFactory.CreateItemUsable(armorEquipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(armorEquipment);
+
+            var beltEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10351000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(beltEquipment);
+
+            var necklaceEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10451000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(necklaceEquipment);
+
+            var equipments = new List<Guid>
+            {
+                equipment.ItemId,
+                armorEquipment.ItemId,
+                beltEquipment.ItemId,
+                necklaceEquipment.ItemId,
+            };
 
             foreach (var equipmentId in previousAvatarState.inventory.Equipments)
             {
@@ -148,10 +175,11 @@ namespace Lib9c.Tests.Action
             var action = new MimisbrunnrBattle()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
-                equipments = new List<Guid>() { equipment.ItemId },
+                equipments = equipments,
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
+                playCount = playCount,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -235,6 +263,7 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
+                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -261,6 +290,7 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = 10001,
                 stageId = 10000002,
+                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -285,6 +315,7 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = 10001,
                 stageId = 10000002,
+                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = default,
             };
@@ -309,6 +340,7 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = 10011,
                 stageId = 10000002,
+                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -333,6 +365,7 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = 10001,
                 stageId = 10000022,
+                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -372,6 +405,7 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = 10001,
                 stageId = 10000001,
+                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -458,6 +492,7 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
+                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -542,6 +577,7 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = GameConfig.MimisbrunnrWorldId,
                 stageId = GameConfig.MimisbrunnrStartStageId,
+                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
@@ -555,6 +591,146 @@ namespace Lib9c.Tests.Action
             });
         }
 
+        [Theory]
+        [InlineData(true, 0, 100)]
+        [InlineData(true, 1, 100)]
+        [InlineData(true, 2, 100)]
+        [InlineData(true, 3, 100)]
+        [InlineData(true, 4, 100)]
+        [InlineData(true, 5, 100)]
+        [InlineData(true, 6, 100)]
+        [InlineData(true, 7, 100)]
+        [InlineData(true, 8, 100)]
+        [InlineData(true, 9, 100)]
+        [InlineData(false, 0, 100)]
+        [InlineData(false, 1, 100)]
+        [InlineData(false, 2, 100)]
+        [InlineData(false, 3, 100)]
+        [InlineData(false, 4, 100)]
+        public void CheckRewardItems(bool backward, int stageIndex, int playCount)
+        {
+            const int worldId = GameConfig.MimisbrunnrWorldId;
+            var stageId = GameConfig.MimisbrunnrStartStageId + stageIndex;
+
+            Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
+            Assert.True(stageId >= worldRow.StageBegin);
+            Assert.True(stageId <= worldRow.StageEnd);
+            Assert.True(_tableSheets.StageSheet.TryGetValue(stageId, out var stageRow));
+
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            previousAvatarState.actionPoint = 999999;
+            previousAvatarState.level = 400;
+            var clearedStageId = stageId;
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearedStageId);
+
+            var costumes = new List<Guid>();
+            var random = new TestRandom();
+            var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+
+            var costume = (Costume)ItemFactory.CreateItem(
+                _tableSheets.ItemSheet[costumeId], random);
+            previousAvatarState.inventory.AddItem(costume);
+            costumes.Add(costume.ItemId);
+
+            List<Guid> equipments = new List<Guid>();
+
+            var equipmentRow =
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10151001);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(equipment);
+
+            var armorEquipmentRow = _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10251001);
+            var armorEquipment = ItemFactory.CreateItemUsable(armorEquipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(armorEquipment);
+
+            var beltEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10351000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(beltEquipment);
+
+            var necklaceEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10451000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(necklaceEquipment);
+            equipments.Add(equipment.ItemId);
+            equipments.Add(armorEquipment.ItemId);
+            equipments.Add(beltEquipment.ItemId);
+            equipments.Add(necklaceEquipment.ItemId);
+
+            var result = new CombinationConsumable5.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = armorEquipment,
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            IAccountStateDelta state;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+            }
+
+            var action = new MimisbrunnrBattle()
+            {
+                costumes = costumes,
+                equipments = equipments,
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                playCount = playCount,
+                avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
+            };
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = 1,
+            });
+
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
+            Assert.Equal(30, nextAvatarState.mailBox.Count);
+
+            var rewardItem = nextAvatarState.inventory.Items.Where(
+                x => x.item.ItemSubType != ItemSubType.FoodMaterial &&
+                     x.item is IFungibleItem ownedFungibleItem &&
+                     x.item.Id != 400000 && x.item.Id != 500000);
+
+            Assert.Equal(stageRow.Rewards.Count(), rewardItem.Count());
+
+            var min = stageRow.Rewards.OrderBy(x => x.Min).First().Min;
+            var max = stageRow.Rewards.OrderBy(x => x.Max).First().Max;
+            var totalMin = min * playCount * stageRow.DropItemMin;
+            var totalMax = max * playCount * stageRow.DropItemMax;
+            var totalCount = rewardItem.Sum(x => x.count);
+            Assert.InRange(totalCount, totalMin, totalMax);
+        }
+
         [Fact]
         public void Rehearsal()
         {
@@ -565,6 +741,7 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = 1,
                 stageId = 1,
+                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
