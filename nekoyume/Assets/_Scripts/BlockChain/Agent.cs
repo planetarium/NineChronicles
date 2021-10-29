@@ -297,6 +297,9 @@ namespace Nekoyume.BlockChain
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
             blocks.GetBalance(address, currency);
 
+        public Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency) =>
+            Task.Run(() => blocks.GetBalance(address, currency));
+
         #region Mono
 
         public void SendException(Exception exc)

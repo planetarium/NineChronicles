@@ -23,7 +23,7 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="agentAddress"></param>
         /// <param name="gold"></param>
-        public static void ModifyAgentGold(Address agentAddress, FungibleAssetValue gold)
+        public static async void ModifyAgentGold(Address agentAddress, FungibleAssetValue gold)
         {
             if (gold.Sign == 0)
             {
@@ -34,7 +34,7 @@ namespace Nekoyume.State
             LocalLayer.Instance.Add(agentAddress, modifier);
 
             //FIXME Avoid LocalLayer duplicate modify gold.
-            var state = new GoldBalanceState(agentAddress, Game.Game.instance.Agent.GetBalance(agentAddress, gold.Currency));
+            var state = new GoldBalanceState(agentAddress, await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, gold.Currency));
             if (!state.address.Equals(agentAddress))
             {
                 return;
