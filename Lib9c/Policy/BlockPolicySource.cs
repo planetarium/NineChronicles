@@ -58,7 +58,8 @@ namespace Nekoyume.BlockChain.Policy
 
         public const int MaxTransactionsPerBlock = 100;
 
-        public const long MaxTransactionsPerSignerPerBlockStartIndex = 2_680_000;
+        // FIXME: Should be finalized before release.
+        public const long MaxTransactionsPerSignerPerBlockStartIndex = 3_000_001;
 
         public const int MaxTransactionsPerSignerPerBlock = 4;
 
