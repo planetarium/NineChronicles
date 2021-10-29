@@ -310,7 +310,7 @@ namespace Nekoyume.UI
 
             if (data.TotalPrice.Value.MinorUnit > 0)
             {
-                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARINING"));
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARNING"));
                 return;
             }
 
@@ -319,11 +319,10 @@ namespace Nekoyume.UI
                 throw new InvalidSellingPriceException(data);
             }
 
-            var tradableId = ((ITradableItem) data.Item.Value.ItemBase.Value).TradableId;
             var totalPrice = data.TotalPrice.Value;
             var count = data.Count.Value;
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-            Game.Game.instance.ActionManager.Sell(tradableId, totalPrice, count, itemSubType);
+            Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType);
             Mixpanel.Track("Unity/Sell");
             ResponseSell();
         }
@@ -337,28 +336,35 @@ namespace Nekoyume.UI
 
             if (data.TotalPrice.Value.MinorUnit > 0)
             {
-                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARINING"));
+                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARNING"));
                 return;
             }
 
-            if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit < Model.Shop.MinimumPrice)
+            if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit < Shop.MinimumPrice)
             {
                 throw new InvalidSellingPriceException(data);
             }
 
-            var tradableId = tradableItem.TradableId;
             var requiredBlockIndex = tradableItem.RequiredBlockIndex;
             var totalPrice = data.TotalPrice.Value;
             var preTotalPrice = data.PreTotalPrice.Value;
             var count = data.Count.Value;
-            var digest = ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, preTotalPrice, count);
-            if (digest != null)
+            var digest =
+                ReactiveShopState.GetSellDigest(tradableItem.TradableId, requiredBlockIndex, preTotalPrice, count);
+            if (digest == null)
             {
-                var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-                Game.Game.instance.ActionManager.UpdateSell(digest.OrderId, tradableId, totalPrice, count, itemSubType);
-                Mixpanel.Track("Unity/UpdateSell");
-                ResponseSell();
+                return;
             }
+
+            var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
+            Game.Game.instance.ActionManager.UpdateSell(
+                digest.OrderId,
+                tradableItem,
+                count,
+                totalPrice,
+                itemSubType);
+            Mixpanel.Track("Unity/UpdateSell");
+            ResponseSell();
         }
 
         private void SubscribeSellPopupCancel(Model.ItemCountableAndPricePopup data)
@@ -497,20 +503,9 @@ namespace Nekoyume.UI
 
         private void ResponseSell()
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-
             var item = SharedModel.ItemCountableAndPricePopup.Value.Item.Value;
             var count = SharedModel.ItemCountableAndPricePopup.Value.Count.Value;
             SharedModel.ItemCountableAndPricePopup.Value.Item.Value = null;
-            if (!(item.ItemBase.Value is ITradableItem tradableItem))
-            {
-                return;
-            }
-
-            if (!(tradableItem is TradableMaterial))
-            {
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
-            }
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
 

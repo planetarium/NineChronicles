@@ -928,23 +928,14 @@ namespace Nekoyume.UI
             _stage.IsRepeatStage = repeat;
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
-            Game.Game.instance.ActionManager
-                .MimisbrunnrBattle(
-                    costumes,
-                    equipments,
-                    consumables,
-                    GameConfig.MimisbrunnrWorldId,
-                    _stageId.Value,
-                    1
-                )
-                .Subscribe(
-                    _ =>
-                    {
-                        LocalLayerModifier.ModifyAvatarActionPoint(
-                            States.Instance.CurrentAvatarState.address,
-                            _requiredCost);
-                    }, e => ActionRenderHandler.BackToMain(false, e))
-                .AddTo(this);
+            Game.Game.instance.ActionManager.MimisbrunnrBattle(
+                costumes,
+                equipments,
+                consumables,
+                GameConfig.MimisbrunnrWorldId,
+                _stageId.Value,
+                1
+            );
         }
 
         public void GoToStage(BattleLog battleLog)

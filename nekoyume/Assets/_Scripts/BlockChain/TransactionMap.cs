@@ -8,14 +8,14 @@ namespace Nekoyume.BlockChain
 {
     public class TransactionMap
     {
-        public readonly int Size;
+        private readonly int _size;
 
         private readonly ConcurrentQueue<KeyValuePair<Guid, TxId>> _queue =
             new ConcurrentQueue<KeyValuePair<Guid, TxId>>();
 
         public TransactionMap(int size)
         {
-            Size = size;
+            _size = size;
         }
 
         public bool TryGetValue(Guid key, out TxId value)
@@ -33,15 +33,10 @@ namespace Nekoyume.BlockChain
         public void TryAdd(Guid key, TxId value)
         {
             _queue.Enqueue(new KeyValuePair<Guid, TxId>(key, value));
-            if (_queue.Count > Size)
+            if (_queue.Count > _size)
             {
                 _queue.TryDequeue(out _);
             }
-        }
-
-        public bool ContainsKey(Guid key)
-        {
-            return _queue.Any(kv => kv.Key.Equals(key));
         }
     }
 }
