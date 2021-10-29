@@ -145,5 +145,30 @@ namespace Tests.EditMode.Battle
             selectedSkill = skills.Select(new Random());
             Assert.IsTrue(selectedSkill.Equals(firstBuffSkill));
         }
+
+        [Test]
+        public void CheckCoolTime()
+        {
+            var skills = new Skills();
+            var defaultAttack = GetFirstSkill();
+            skills.Add(defaultAttack);
+
+            var skillId = 130005;
+            _skillSheet.TryGetValue(skillId, out var skillRow);
+            var skill = SkillFactory.Get(skillRow, 100, 100);
+            skills.Add(skill);
+
+            var selectedSkill = skills.Select(new Random());
+            Assert.IsNotNull(selectedSkill);
+            // When you have a skill, make sure that the skill is pulled out.
+            Assert.AreEqual(skill, selectedSkill);
+
+            skills.SetCooldown(skillId, 2);
+            skills.ReduceCooldown();
+            selectedSkill = skills.Select(new Random());
+            Assert.IsNotNull(selectedSkill);
+            //When the cooldown is 1 or more, check if the skill is not selected
+            Assert.AreEqual(defaultAttack, selectedSkill);
+        }
     }
 }
