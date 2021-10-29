@@ -34,6 +34,7 @@ namespace Nekoyume.UI.Module
         private SheetRow<int> _recipeRow = null;
         private bool _unlockable = false;
         private int _recipeIdToUnlock;
+        private const int UnlockConditionDisplayRange = 50;
 
         private readonly List<IDisposable> _disposablesForOnDisable = new List<IDisposable>();
 
@@ -64,9 +65,23 @@ namespace Nekoyume.UI.Module
                     {
                         if (_recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
                         {
-                            var format = L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE");
-                            var message = string.Format(format, equipmentRow.UnlockStage);
-                            OneLineSystem.Push(MailType.System, message);
+                            var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
+
+                            var unlockStage = equipmentRow.UnlockStage;
+                            var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId) ?
+                                stageId : 0;
+                            var diff = unlockStage - clearedStage;
+
+                            if (diff > UnlockConditionDisplayRange)
+                            {
+                                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_RECIPE_LOCK_GUIDE"));
+                            }
+                            else
+                            {
+                                var format = L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE");
+                                var message = string.Format(format, equipmentRow.UnlockStage);
+                                OneLineSystem.Push(MailType.System, message);
+                            }
                         }
                     }
                 });
@@ -153,7 +168,7 @@ namespace Nekoyume.UI.Module
             {
                 unlockConditionText.text = string.Format(
                     L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                    diff > 50 ? "???" : unlockStage.ToString());
+                    diff > UnlockConditionDisplayRange ? "???" : unlockStage.ToString());
                 unlockConditionText.enabled = true;
                 equipmentView.Hide();
                 IsLocked = true;
