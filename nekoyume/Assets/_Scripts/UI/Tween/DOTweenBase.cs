@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using System.Collections;
+using System.Linq;
 using UniRx;
 
 namespace Nekoyume.UI.Tween
@@ -45,9 +46,19 @@ namespace Nekoyume.UI.Tween
         [HideInInspector]
         public AnimationCurve customEaseCurve = AnimationCurve.Linear(0,0,0,0);
 
+        private AnimationCurve _reverseEaseCurve = new AnimationCurve();
+
         protected virtual void Awake()
         {
             onStopSubject.Subscribe(_ => OnStopTweening()).AddTo(gameObject);
+            if (useCustomEaseCurve)
+            {
+                _reverseEaseCurve = new AnimationCurve();
+                customEaseCurve.keys
+                    .Select(key => new Keyframe(key.value, key.time))
+                    .ToList()
+                    .ForEach(key => _reverseEaseCurve.AddKey(key));
+            }
         }
 
         protected IEnumerator Start()
