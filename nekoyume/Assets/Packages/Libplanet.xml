@@ -5047,6 +5047,22 @@
             <exception cref="T:System.OperationCanceledException">Thrown when the specified
             <paramref name="cancellationToken"/> received a cancellation request.</exception>
         </member>
+        <member name="M:Libplanet.Blocks.BlockMetadata.MineNonce(Libplanet.HashAlgorithmType,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Mines the PoW (proof-of-work) nonce satisfying the block
+            <see cref="P:Libplanet.Blocks.BlockMetadata.Difficulty"/>.
+            </summary>
+            <param name="hashAlgorithm">The hash algorithm to use for calculating pre-evaluation
+            hash.</param>
+            <param name="workers">The number of workers to run in parallel.
+            Must be greater than zero.</param>
+            <param name="cancellationToken">An optional cancellation token used to propagate signal
+            that this operation should be cancelled.</param>
+            <returns>A pair of the mined nonce and the pre-evaluation hash that satisfy the
+            block <see cref="P:Libplanet.Blocks.BlockMetadata.Difficulty"/>.</returns>
+            <exception cref="T:System.OperationCanceledException">Thrown when the specified
+            <paramref name="cancellationToken"/> received a cancellation request.</exception>
+        </member>
         <member name="T:Libplanet.Blocks.BlockMetadataExtensions">
             <summary>
             Convenient extension methods for <see cref="T:Libplanet.Blocks.IBlockMetadata"/>.
@@ -6734,16 +6750,18 @@
             should not vary for different <paramref name="nonce"/>s.</para>
             </summary>
             <param name="nonce">An arbitrary nonce for an attempt, provided by
-            <see cref="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,Libplanet.HashAlgorithmType,System.Int64,System.Threading.CancellationToken)"/> method.
+            <see cref="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,Libplanet.HashAlgorithmType,System.Int64,System.Int32,System.Threading.CancellationToken)"/>
+            method.
             </param>
             <returns>Chunked <see cref="T:System.Byte"/>s determined from the given <paramref name="nonce"/>.
             It should return consistently equivalent bytes for equivalent <paramref name="nonce"/>
             values.  The way how bytes are split into chunks can be flexible; regardless of the way,
             they are concatenated into a single byte array.</returns>
-            <seealso cref="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,Libplanet.HashAlgorithmType,System.Int64,System.Threading.CancellationToken)"/>
+            <seealso cref="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,Libplanet.HashAlgorithmType,System.Int64,System.Int32,System.Threading.CancellationToken)"
+            />
             <seealso cref="T:Libplanet.Nonce"/>
         </member>
-        <member name="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,Libplanet.HashAlgorithmType,System.Int64,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Hashcash.Answer(Libplanet.Hashcash.Stamp,Libplanet.HashAlgorithmType,System.Int64,System.Int32,System.Threading.CancellationToken)">
             <summary>
             Finds a <see cref="T:Libplanet.Nonce"/> that satisfies the given
             <paramref name="difficulty"/>.  This process is so-called
@@ -6757,6 +6775,7 @@
             <param name="hashAlgorithmType">The hash algorithm to use.</param>
             <param name="difficulty">A number to calculate the target number
             for which the returned answer should be less than.</param>
+            <param name="seed">The seed number for random generator.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -7959,6 +7978,11 @@
             Frame containing <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
             </summary>
         </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Type">
+            <summary>
+            Frame containing the type of the message.
+            </summary>
+        </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Peer">
             <summary>
             Frame containing the sender <see cref="F:Libplanet.Net.Messages.Message.MessageFrame.Peer"/> of the <see cref="T:Libplanet.Net.Messages.Message"/>.
@@ -7967,11 +7991,6 @@
         <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Timestamp">
             <summary>
             Frame containing the datetime when the <see cref="T:Libplanet.Net.Messages.Message"/> is created.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Type">
-            <summary>
-            Frame containing the type of the message.
             </summary>
         </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Sign">
@@ -8770,11 +8789,6 @@
             The base timeout used to receive <see cref="T:Libplanet.Tx.Transaction`1"/> from other peers.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.SwarmOptions.RecentStateRecvTimeout">
-            <summary>
-            The timeout used to receive recent states from other peers.
-            </summary>
-        </member>
         <member name="P:Libplanet.Net.SwarmOptions.BlockDownloadTimeout">
             <summary>
             The timeout used to block download in preloading.
@@ -8847,6 +8861,13 @@
         <member name="P:Libplanet.Net.SwarmOptions.MaximumPollPeers">
             <summary>
             The maximum number of peers to poll blocks.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.TipLifespan">
+            <summary>
+            The lifespan of the <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.  When the tip has not been updated
+            for the configured lifespan, <see cref="T:Libplanet.Net.Swarm`1"/> pulls new blocks from neighbor
+            peers.
             </summary>
         </member>
         <member name="T:Libplanet.Net.Transports.BoundPeerExtensions">
@@ -9877,29 +9898,6 @@
             <returns>The state root hash of the block, or <c>null</c> if the block is not found or
             <paramref name="blockHash"/> is <c>null</c>.</returns>
         </member>
-        <member name="T:Libplanet.Store.TrieStateStore">
-            <summary>
-            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
-            </summary>
-            <param name="stateKeyValueStore">The storage to store states. It used by
-            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
-            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
-            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Store.IStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Store.IStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.Dispose">
-            <inheritdoc cref="M:System.IDisposable.Dispose"/>
-        </member>
         <member name="T:Libplanet.Store.Trie.CacheableKeyValueStore">
             <summary>
             The proxy class to cache <see cref="T:Libplanet.Store.Trie.IKeyValueStore"/> operations.
@@ -10112,6 +10110,29 @@
             <summary>
             Wrapper class.
             </summary>
+        </member>
+        <member name="T:Libplanet.Store.TrieStateStore">
+            <summary>
+            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
+            </summary>
+            <param name="stateKeyValueStore">The storage to store states. It used by
+            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
+            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Store.IStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Store.IStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.Dispose">
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>

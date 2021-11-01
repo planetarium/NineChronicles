@@ -209,6 +209,14 @@ namespace Nekoyume.UI
                 .Where(_ => EnoughActionPoint)
                 .Subscribe(_ =>
                 {
+                    if (!CheckEquipmentElementalType())
+                    {
+                        NotificationSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"));
+                        return;
+                    }
+
                     var costumes = _player.Costumes;
                     var equipments = equipmentSlots
                         .Where(slot => !slot.IsLock && !slot.IsEmpty)
