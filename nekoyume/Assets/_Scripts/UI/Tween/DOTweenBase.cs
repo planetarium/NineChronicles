@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Tween
         [HideInInspector]
         public AnimationCurve customEaseCurve = AnimationCurve.Linear(0,0,0,0);
 
-        private AnimationCurve _reverseEaseCurve = new AnimationCurve();
+        protected AnimationCurve _reverseEaseCurve = new AnimationCurve();
 
         protected virtual void Awake()
         {
@@ -154,10 +154,10 @@ namespace Nekoyume.UI.Tween
             Play();
         }
 
-        protected virtual DG.Tweening.Tween SetEase()
+        protected virtual DG.Tweening.Tween SetEase(bool isReverse = false)
         {
             return useCustomEaseCurve
-                ? currentTween.SetEase(customEaseCurve)
+                ? currentTween.SetEase(isReverse ? _reverseEaseCurve : customEaseCurve)
                 : currentTween.SetEase(ease);
         }
     }

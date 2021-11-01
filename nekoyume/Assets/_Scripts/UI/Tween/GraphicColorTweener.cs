@@ -49,11 +49,11 @@ namespace Nekoyume.UI.Tween
             currentTween = _graphic.DOColor(beginValue, duration);
             if (TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = SetEase().OnComplete(PlayForward);
+                currentTween = SetEase(true).OnComplete(PlayForward);
             }
             else
             {
-                currentTween = SetEase().OnComplete(OnComplete);
+                currentTween = SetEase(true).OnComplete(OnComplete);
             }
         }
 

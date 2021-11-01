@@ -27,52 +27,28 @@ namespace Nekoyume.UI.Tween
         public override void PlayForward()
         {
             _transform.DOMove(beginValue, 0.0f);
+            currentTween = _transform.DOMove(endValue, duration);
             if (TweenType.Repeat == tweenType)
             {
-                _transform.DOMove(endValue, duration)
-                    .SetEase(ease)
-                    .onComplete = PlayForward;
+                SetEase().OnComplete(PlayForward);
             }
-            else if (TweenType.PingPongOnce == tweenType)
+            else if (TweenType.PingPongOnce == tweenType || TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOMove(endValue, duration)
-                    .SetEase(ease)
-                    .onComplete = PlayReverse;
-            }
-            else if (TweenType.PingPongRepeat == tweenType)
-            {
-                _transform.DOMove(endValue, duration)
-                    .SetEase(ease)
-                    .onComplete = PlayReverse;
-            }
-            else
-            {
-                _transform.DOMove(endValue, duration)
-                    .SetEase(ease)
-                    .onComplete = OnComplete;
+                SetEase().OnComplete(PlayReverse);
             }
         }
 
         public override void PlayReverse()
         {
             _transform.DOMove(endValue, 0.0f);
-            if (TweenType.PingPongOnce == tweenType)
+            currentTween = _transform.DOMove(beginValue, duration);
+            if (TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOMove(beginValue, duration)
-                    .SetEase(ease)
-                    .onComplete = OnComplete;
-            }
-            else if (TweenType.PingPongRepeat == tweenType)
-            {
-                _transform.DOMove(beginValue, duration)
-                    .SetEase(ease)
-                    .onComplete = PlayForward;
+                SetEase(true).OnComplete(PlayForward);
             }
             else
             {
-                _transform.DOMove(beginValue, duration)
-                    .SetEase(ease)
-                    .onComplete = OnComplete;
+                SetEase(true).OnComplete(OnComplete);
             }
         }
 
