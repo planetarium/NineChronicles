@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -6,24 +5,20 @@ using UnityEngine;
 namespace Nekoyume.UI.Tween
 {
     [RequireComponent(typeof(TextMeshProUGUI))]
-    public class DigitTextTweener : MonoBehaviour
+    public class DigitTextTweener : DOTweenBase
     {
         public TweenCallback onComplete = null;
 
-        public int startValue = 0;
+        public int beginValue = 0;
 
         public int endValue = 0;
 
-        [SerializeField]
-        protected float duration = 0.0f;
+        private TextMeshProUGUI _text = null;
 
-        private TextMeshProUGUI text = null;
-
-        protected Tweener Tweener { get; set; }
-
-        private void Awake()
+        protected override void Awake()
         {
-            text = GetComponent<TextMeshProUGUI>();
+            base.Awake();
+            _text = GetComponent<TextMeshProUGUI>();
         }
 
         private void OnDisable()
@@ -31,22 +26,22 @@ namespace Nekoyume.UI.Tween
             KillTween();
         }
 
-        public Tweener Play()
+        public new DG.Tweening.Tween Play()
         {
             KillTween();
 
-            Tweener = DOTween.To(
-                () => startValue,
-                value => text.text = value.ToString(),
+            currentTween = DOTween.To(
+                () => beginValue,
+                value => _text.text = value.ToString(),
                 endValue,
                 duration);
-            Tweener.onComplete = onComplete;
-            return Tweener;
+
+            return SetEase().OnComplete(onComplete);
         }
 
-        public Tweener Play(int startValue, int endValue)
+        public DG.Tweening.Tween Play(int beginValue, int endValue)
         {
-            this.startValue = startValue;
+            this.beginValue = beginValue;
             this.endValue = endValue;
 
             return Play();
@@ -54,12 +49,12 @@ namespace Nekoyume.UI.Tween
 
         public void KillTween()
         {
-            if (Tweener?.IsPlaying() ?? false)
+            if (currentTween?.IsPlaying() ?? false)
             {
-                Tweener?.Kill();
+                currentTween?.Kill();
             }
 
-            Tweener = null;
+            currentTween = null;
         }
     }
 }
