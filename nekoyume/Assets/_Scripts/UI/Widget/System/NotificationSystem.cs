@@ -58,12 +58,16 @@ namespace Nekoyume.UI
 
         #region Control
 
-        public static void Push(MailType mailType, string message)
+        public static void Push(
+            MailType mailType,
+            string message,
+            NotificationCell.NotificationType notificationType = NotificationCell.NotificationType.Information)
         {
             AddQueue.Enqueue(new NotificationCell.ViewModel
             {
                 mailType = mailType,
-                message = message
+                message = message,
+                notificationType = notificationType,
             });
         }
 
