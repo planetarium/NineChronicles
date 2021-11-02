@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
@@ -58,8 +57,6 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
-        // FIXME: Tx count validation should be done in libplanet, not here.
-        // Should be removed once libplanet is updated.
         private static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
             Block<NCAction> block,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
@@ -102,8 +99,7 @@ namespace Nekoyume.BlockChain.Policy
 
         private static BlockPolicyViolationException ValidateMinerAuthorityRaw(
             Block<NCAction> block,
-            IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
-            IVariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy)
+            IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy)
         {
             // For genesis block, any miner can mine.
             if (block.Index == 0)
@@ -118,48 +114,13 @@ namespace Nekoyume.BlockChain.Policy
             // Otherwise, block's miner should be one of the authorized miners.
             else if (authorizedMinersPolicy.Getter(block.Index).Contains(block.Miner))
             {
-                return ValidateMinerAuthorityNoOpTxRaw(
-                    block, authorizedMiningNoOpTxRequiredPolicy);
+                return null;
             }
             else
             {
                 return new BlockPolicyViolationException(
                     $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.");
             }
-        }
-
-        private static BlockPolicyViolationException ValidateMinerAuthorityNoOpTxRaw(
-            Block<NCAction> block,
-            IVariableSubPolicy<bool> authorizedMininingNoOpTxRequiredPolicy)
-        {
-            if (authorizedMininingNoOpTxRequiredPolicy.Getter(block.Index))
-            {
-                // Authority is proven through a no-op transaction, i.e. a transaction
-                // with zero actions, starting from ValidateMinerAuthorityNoOpHardcodedIndex.
-                List<Transaction<NCAction>> txs = block.Transactions.ToList();
-                if (!txs.Any(tx => tx.Signer.Equals(block.Miner) && !tx.Actions.Any())
-                        && block.ProtocolVersion > 0)
-                {
-#if DEBUG
-                    string debug =
-                        "  Note that there " +
-                        (txs.Count == 1
-                            ? "is a transaction:"
-                            : $"are {txs.Count} transactions:") +
-                        txs.Select((tx, i) =>
-                                $"\n    {i}. {tx.Actions.Count} actions; signed by {tx.Signer}")
-                            .Aggregate(string.Empty, (a, b) => a + b);
-#else
-                    const string debug = "";
-#endif
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash}'s miner {block.Miner} should be "
-                            + "proven by including a no-op transaction signed by "
-                            + "the same authority." + debug);
-                }
-            }
-
-            return null;
         }
 
         private static BlockPolicyViolationException ValidateMinerPermissionRaw(
@@ -171,33 +132,15 @@ namespace Nekoyume.BlockChain.Policy
             {
                 return null;
             }
+            else if (permissionedMinersPolicy.Getter(block.Index).Contains(block.Miner))
+            {
+                return null;
+            }
             else
             {
-                // If the set of permissioned miners is not empty, only miners in the set can mine.
-                if (permissionedMinersPolicy.Getter(block.Index).Contains(block.Miner))
-                {
-                    // FIXME: Only existance of a transaction with miner signature was checked for
-                    // some time.  Checking whether such transaction is a no-op transaction
-                    // was missing.  This results in a different definition of proof transaction
-                    // for authorized mining and permissioned mining.
-                    if (block.Transactions.Any(tx => tx.Signer.Equals(block.Miner)))
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        return new BlockPolicyViolationException(
-                            $"Block #{block.Index} {block.Hash} is mined by " +
-                            $"a permissioned miner {block.Miner}, but does not include " +
-                            $"a proof transaction for permissioned mining.");
-                    }
-                }
-                else
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} is not mined by " +
-                        $"a permissioned miner: {block.Miner}");
-                }
+                return new BlockPolicyViolationException(
+                    $"Block #{block.Index} {block.Hash} is not mined by " +
+                    $"a permissioned miner: {block.Miner}");
             }
         }
 

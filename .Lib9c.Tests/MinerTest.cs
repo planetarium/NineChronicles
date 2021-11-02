@@ -28,7 +28,7 @@ namespace Lib9c.Tests
             var blockPolicySource = new BlockPolicySource(Logger.None);
             var genesis = BlockChain<NCAction>.MakeGenesisBlock(HashAlgorithmType.Of<SHA256>());
             var blockChain = new BlockChain<NCAction>(
-                blockPolicySource.GetPolicy(10_000, null, null, null, null, null, null, null),
+                blockPolicySource.GetPolicy(10_000, null, null, null, null, null, null),
                 new VolatileStagePolicy<NCAction>(),
                 store,
                 stateStore,
