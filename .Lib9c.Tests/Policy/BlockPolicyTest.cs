@@ -45,7 +45,7 @@ namespace Lib9c.Tests
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                10_000, null, null, null, null, null, null, null);
+                10_000, null, null, null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -150,7 +150,6 @@ namespace Lib9c.Tests
                         filter: index => index % 5 == 0,
                         value: new Address[] { authorizedMinerPrivateKey.ToAddress() }
                             .ToImmutableHashSet())),
-                authorizedMiningNoOpTxRequiredPolicy: null,
                 permissionedMinersPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -196,7 +195,7 @@ namespace Lib9c.Tests
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                10_000, null, null, null, null, null, null, null);
+                10_000, null, null, null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -243,7 +242,7 @@ namespace Lib9c.Tests
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                10_000, null, null, null, null, null, null, null);
+                10_000, null, null, null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -302,13 +301,6 @@ namespace Lib9c.Tests
                         endIndex: 4,
                         filter: index => index % 2 == 0,
                         value: miners.ToImmutableHashSet())),
-                authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy
-                    .Default
-                    .Add(new SpannedSubPolicy<bool>(
-                        startIndex: 0,
-                        endIndex: 4,
-                        filter: index => index % 2 == 0,
-                        value: true)),
                 permissionedMinersPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -331,73 +323,43 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
 
+            // Index 1. Anyone can mine.
             await blockChain.MineBlock(stranger);
 
+            // Index 2. Only authorized miner can mine.
             await Assert.ThrowsAsync<BlockPolicyViolationException>(async () =>
             {
                 await blockChain.MineBlock(stranger);
             });
-
+            // Old proof mining still works.
             new Miner(blockChain, null, minerKeys[0], true).StageProofTransaction();
             await blockChain.MineBlock(minerKeys[0]);
 
+            // Index 3. Anyone can mine.
             blockChain.MakeTransaction(
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
-            // it's okay because next block index is 3
             await blockChain.MineBlock(stranger);
 
+            // Index 4. Again, only authorized miner can mine.
             blockChain.MakeTransaction(
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
-            // it isn't :(
             await Assert.ThrowsAsync<BlockPolicyViolationException>(async () =>
             {
                 await blockChain.MineBlock(stranger);
             });
-
+            // No proof is required.
             blockChain.MakeTransaction(
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
-            // the authorization block should be proved by a proof tx
-            await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                async () => await blockChain.MineBlock(minerKeys[1])
-            );
-
-            // the proof tx should be signed by the same authorized miner
-            var othersProof = Transaction<PolymorphicAction<ActionBase>>.Create(
-                blockChain.GetNextTxNonce(miners[0]),
-                minerKeys[0],
-                blockChain.Genesis.Hash,
-                new PolymorphicAction<ActionBase>[0]
-            );
-            blockChain.StageTransaction(othersProof);
-            await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                async () => await blockChain.MineBlock(minerKeys[1])
-            );
-
-            // the proof tx should be no-op
-            var action = new PolymorphicAction<ActionBase>(
-                new TransferAsset(miners[1], miners[0], new Currency("FOO", 0, miners[1]) * 1)
-            );
-            var nonEmptyProof = Transaction<PolymorphicAction<ActionBase>>.Create(
-                blockChain.GetNextTxNonce(miners[1]),
-                minerKeys[1],
-                blockChain.Genesis.Hash,
-                new[] { action }
-            );
-            blockChain.StageTransaction(nonEmptyProof);
-            await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                async () => await blockChain.MineBlock(minerKeys[1])
-            );
-
-            new Miner(blockChain, null, minerKeys[1], true).StageProofTransaction();
             await blockChain.MineBlock(minerKeys[1]);
 
-            // it's okay because block index exceeds limitations.
+            // Index 5, 6. Anyone can mine.
+            await blockChain.MineBlock(stranger);
             blockChain.MakeTransaction(
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
@@ -427,7 +389,6 @@ namespace Lib9c.Tests
                         endIndex: 6,
                         filter: index => index % 2 == 0,
                         value: miners.ToImmutableHashSet())),
-                authorizedMiningNoOpTxRequiredPolicy: null,
                 permissionedMinersPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -561,7 +522,6 @@ namespace Lib9c.Tests
                     .Add(new SpannedSubPolicy<int>(0, null, null, 10)),
                 maxTransactionsPerSignerPerBlockPolicy: null,
                 authorizedMinersPolicy: null,
-                authorizedMiningNoOpTxRequiredPolicy: null,
                 permissionedMinersPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -669,7 +629,6 @@ namespace Lib9c.Tests
                     .Default
                     .Add(new SpannedSubPolicy<int>(2, null, null, 5)),
                 authorizedMinersPolicy: null,
-                authorizedMiningNoOpTxRequiredPolicy: null,
                 permissionedMinersPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -783,7 +742,6 @@ namespace Lib9c.Tests
                     maxTransactionsPerBlockPolicy: null,
                     maxTransactionsPerSignerPerBlockPolicy: null,
                     authorizedMinersPolicy: null,
-                    authorizedMiningNoOpTxRequiredPolicy: null,
                     permissionedMinersPolicy: PermissionedMinersPolicy
                         .Default
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
@@ -799,6 +757,7 @@ namespace Lib9c.Tests
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
 
+            // Old proof mining is still allowed.
             blockChain.StageTransaction(Transaction<PolymorphicAction<ActionBase>>.Create(
                 0,
                 permissionedMinerKey,
@@ -807,19 +766,16 @@ namespace Lib9c.Tests
             ));
             await blockChain.MineBlock(permissionedMinerKey);
 
-            // Error, there is no proof tx.
-            await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                () => blockChain.MineBlock(permissionedMinerKey));
-
-            // Error, it's invalid proof
+            // Bad proof can also be mined.
             blockChain.StageTransaction(Transaction<PolymorphicAction<ActionBase>>.Create(
                 0,
                 nonPermissionedMinerKey,
                 genesis.Hash,
                 new PolymorphicAction<ActionBase>[] { }
             ));
-            await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                () => blockChain.MineBlock(permissionedMinerKey));
+            await blockChain.MineBlock(permissionedMinerKey);
+
+            await blockChain.MineBlock(permissionedMinerKey);
 
             // Error, it isn't permissioned miner.
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
@@ -873,13 +829,6 @@ namespace Lib9c.Tests
                             filter: index => index % 2 == 0,
                             value: new Address[] { authorizedMinerKey.ToAddress() }
                                 .ToImmutableHashSet())),
-                    authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy
-                        .Default
-                        .Add(new SpannedSubPolicy<bool>(
-                            startIndex: 4,
-                            endIndex: 10,
-                            filter: null,
-                            value: true)),
                     permissionedMinersPolicy: PermissionedMinersPolicy
                         .Default
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
@@ -900,60 +849,25 @@ namespace Lib9c.Tests
             // Index 1: Anyone can mine.
             await blockChain.MineBlock(someMinerKey);
 
-            // Index 2: Only authorized miner can mine. No proof required for authorized miners yet.
+            // Index 2: Only authorized miner can mine.
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
                 () => blockChain.MineBlock(permissionedMinerKey));
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
                 () => blockChain.MineBlock(someMinerKey));
             await blockChain.MineBlock(authorizedMinerKey);
 
-            // Index 3: Only permissioned miner can mine. Proof is required for permissioned miners.
+            // Index 3: Only permissioned miner can mine.
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
                 () => blockChain.MineBlock(authorizedMinerKey));
+            await Assert.ThrowsAsync<BlockPolicyViolationException>(
+                () => blockChain.MineBlock(someMinerKey));
+            await blockChain.MineBlock(permissionedMinerKey);
+
+            // Index 4: Only authorized miner can mine.
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
                 () => blockChain.MineBlock(permissionedMinerKey));
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
                 () => blockChain.MineBlock(someMinerKey));
-            // Bad proof.
-            proof = blockChain.MakeTransaction(
-                authorizedMinerKey,
-                new PolymorphicAction<ActionBase>[] { });
-            await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                () => blockChain.MineBlock(permissionedMinerKey));
-            blockChain.UnstageTransaction(proof);
-            // Wrong miner.
-            proof = blockChain.MakeTransaction(
-                authorizedMinerKey,
-                new PolymorphicAction<ActionBase>[] { });
-            await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                () => blockChain.MineBlock(authorizedMinerKey));
-            blockChain.UnstageTransaction(proof);
-            // Good proof.
-            proof = blockChain.MakeTransaction(
-                permissionedMinerKey,
-                // Doesn't matter if no-op or not.
-                new PolymorphicAction<ActionBase>[] { action });
-            await blockChain.MineBlock(permissionedMinerKey);
-
-            // Index 4: Only authorized miner can mine. Proof is now required for authorized mining.
-            // Wrong miner.
-            proof = blockChain.MakeTransaction(
-                permissionedMinerKey,
-                new PolymorphicAction<ActionBase>[] { });
-            await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                () => blockChain.MineBlock(permissionedMinerKey));
-            blockChain.UnstageTransaction(proof);
-            // Bad proof. Not no-op.
-            proof = blockChain.MakeTransaction(
-                authorizedMinerKey,
-                new PolymorphicAction<ActionBase>[] { action });
-            await Assert.ThrowsAsync<BlockPolicyViolationException>(
-                () => blockChain.MineBlock(authorizedMinerKey));
-            blockChain.UnstageTransaction(proof);
-            // Good proof.
-            proof = blockChain.MakeTransaction(
-                authorizedMinerKey,
-                new PolymorphicAction<ActionBase>[] { });
             await blockChain.MineBlock(authorizedMinerKey);
 
             // Index 5: Anyone can mine again.
@@ -961,15 +875,8 @@ namespace Lib9c.Tests
 
             // Index 6: In case both authorized mining and permissioned mining apply,
             // only authorized miner can mine.
-            proof = blockChain.MakeTransaction(
-                permissionedMinerKey,
-                new PolymorphicAction<ActionBase>[] { action });
             await Assert.ThrowsAsync<BlockPolicyViolationException>(
                 () => blockChain.MineBlock(permissionedMinerKey));
-            blockChain.UnstageTransaction(proof);
-            proof = blockChain.MakeTransaction(
-                authorizedMinerKey,
-                new PolymorphicAction<ActionBase>[] { });
             await blockChain.MineBlock(authorizedMinerKey);
 
             // Index 7, 8, 9: Check authorized mining ended.
@@ -986,6 +893,11 @@ namespace Lib9c.Tests
             await blockChain.MineBlock(someMinerKey);
             await blockChain.MineBlock(someMinerKey);
             await blockChain.MineBlock(someMinerKey);
+
+            // Index 13, 14: Check authorized miner and permissioned miner can also mine
+            // when policy is allowed for all miners.
+            await blockChain.MineBlock(authorizedMinerKey);
+            await blockChain.MineBlock(permissionedMinerKey);
         }
 
         [Fact]
@@ -1031,7 +943,6 @@ namespace Lib9c.Tests
                             filter: index => index % 2 == 0,
                             value: new Address[] { authorizedMinerKey.ToAddress() }
                                 .ToImmutableHashSet())),
-                    authorizedMiningNoOpTxRequiredPolicy: null,
                     permissionedMinersPolicy: PermissionedMinersPolicy
                         .Default
                         .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
