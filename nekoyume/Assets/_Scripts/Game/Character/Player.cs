@@ -683,7 +683,7 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
 
-        public int GetAmorId()
+        public int GetArmorId()
         {
             var armor = (Armor) Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
@@ -696,7 +696,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            AreaAttackCutscene.Show(GetAmorId());
+            AreaAttackCutscene.Show(GetArmorId());
         }
     }
 }
