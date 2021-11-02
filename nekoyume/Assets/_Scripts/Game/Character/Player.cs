@@ -405,7 +405,7 @@ namespace Nekoyume.Game.Character
         /// <param name="customizeIndex">0~9</param>
         public void UpdateEarByCustomizeIndex(int customizeIndex)
         {
-            if (IsFullCostumeEquipped || SpineController is null)
+            if (IsFullCostumeEquipped || !SpineController)
             {
                 return;
             }
