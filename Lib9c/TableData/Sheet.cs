@@ -149,6 +149,7 @@ namespace Nekoyume.TableData
                 throw new SheetRowNotFoundException(Name, key.ToString());
             }
 
+            Log.Debug("{sheetName}: Key - {value}", Name, key.ToString());
             return false;
         }
 
