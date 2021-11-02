@@ -119,23 +119,26 @@ namespace Nekoyume.Model
 
         private Skill.Skill PostSelect(IRandom random, IEnumerable<Skill.Skill> skills)
         {
-            var defaultAttack = skills.FirstOrDefault(x => x.SkillRow.Id == GameConfig.DefaultAttackId);
+            var skillList = skills.ToList();
+            var defaultAttack = skillList.FirstOrDefault(x => x.SkillRow.Id == GameConfig.DefaultAttackId);
             if (defaultAttack == null)
             {
-                throw new Exception($"There is no default attack");
+                throw new Exception("There is no default attack");
             }
 
-            if (skills.Count() == 1) // If there's only a default attack in skills
+            if (skillList.Count == 1) // If there's only a default attack in skills
             {
                 return defaultAttack;
             }
 
-            var sortedSkills = skills
+            var sortedSkills = skillList
                 .Where(x => x.SkillRow.Id != GameConfig.DefaultAttackId)
-                .OrderBy(x => x.SkillRow.Id);
+                .OrderBy(x => x.SkillRow.Id)
+                .ToList();
 
             var sumChance = sortedSkills.Sum(x => x.Chance);
-            if (random.Next(0, 100) >= sumChance)
+            if (sumChance < 100 &&
+                sumChance <= random.Next(0, 100))
             {
                 return defaultAttack;
             }
@@ -146,7 +149,7 @@ namespace Nekoyume.Model
                 itemSelector.Add(skill, skill.Chance);
             }
 
-            var selectedSkill = itemSelector.SelectV3(1);
+            var selectedSkill = itemSelector.Select(1);
             return selectedSkill.First();
         }
 

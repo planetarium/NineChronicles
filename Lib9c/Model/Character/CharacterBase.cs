@@ -400,7 +400,7 @@ namespace Nekoyume.Model
         {
             if (!Simulator.SkillSheet.TryGetValue(GameConfig.DefaultAttackId, out var skillRow))
             {
-                throw new KeyNotFoundException("100000");
+                throw new KeyNotFoundException(GameConfig.DefaultAttackId.ToString(CultureInfo.InvariantCulture));
             }
 
             var attack = SkillFactory.Get(skillRow, 0, 100);

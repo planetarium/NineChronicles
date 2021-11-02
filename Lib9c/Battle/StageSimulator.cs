@@ -413,7 +413,7 @@ namespace Nekoyume.Battle
 
                 WaveNumber = i + 1;
                 WaveTurn = 1;
-                _waves[i].Spawn2(this);
+                _waves[i].SpawnV1(this);
 #if TEST_LOG
                 sb.Clear();
                 sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
@@ -586,7 +586,7 @@ namespace Nekoyume.Battle
 
                 WaveNumber = i + 1;
                 WaveTurn = 1;
-                _waves[i].Spawn3(this);
+                _waves[i].SpawnV2(this);
 #if TEST_LOG
                 sb.Clear();
                 sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
@@ -756,7 +756,7 @@ namespace Nekoyume.Battle
 
                 WaveNumber = i + 1;
                 WaveTurn = 1;
-                _waves[i].Spawn3(this);
+                _waves[i].SpawnV2(this);
                 while (true)
                 {
                     // 제한 턴을 넘어서는 경우 break.
@@ -877,7 +877,7 @@ namespace Nekoyume.Battle
 
                 WaveNumber = i + 1;
                 WaveTurn = 1;
-                _waves[i].Spawn3(this);
+                _waves[i].SpawnV2(this);
                 while (true)
                 {
                     // 제한 턴을 넘어서는 경우 break.
@@ -998,7 +998,7 @@ namespace Nekoyume.Battle
 
                 WaveNumber = i + 1;
                 WaveTurn = 1;
-                _waves[i].Spawn3(this);
+                _waves[i].SpawnV2(this);
                 while (true)
                 {
                     // 제한 턴을 넘어서는 경우 break.
