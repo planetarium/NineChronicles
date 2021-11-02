@@ -1,0 +1,122 @@
+id,_name,item_sub_type,grade,elemental_type
+100000,보물상자,NormalMaterial,1,Normal
+301000,핏빛 보석,NormalMaterial,1,Normal
+302000,쌀,FoodMaterial,1,Normal
+302001,생선,FoodMaterial,1,Normal
+302002,깡통,FoodMaterial,1,Normal
+302003,달걀,FoodMaterial,1,Normal
+302004,암염,FoodMaterial,3,Normal
+302005,올리브유,FoodMaterial,1,Normal
+302006,허브,FoodMaterial,4,Normal
+302007,비린내 나는 고기,FoodMaterial,1,Normal
+302008,맛있어 보이는 고기,FoodMaterial,1,Normal
+302009,일품급 고기,FoodMaterial,1,Normal
+302010,고급 암염,FoodMaterial,4,Normal
+302011,고급 허브,FoodMaterial,5,Normal
+303000,녹슨 칼,EquipmentMaterial,1,Normal
+303001,버려진 검,EquipmentMaterial,2,Normal
+303002,단단한 검,EquipmentMaterial,3,Normal
+303003,영험한 기운의 검,EquipmentMaterial,4,Normal
+303004,전설의 검,EquipmentMaterial,5,Normal
+303100,낡은 옷,EquipmentMaterial,1,Normal
+303101,버려진 옷,EquipmentMaterial,2,Normal
+303102,단단한 옷,EquipmentMaterial,3,Normal
+303103,영험한 기운의 갑옷,EquipmentMaterial,4,Normal
+303104,전설의 옷,EquipmentMaterial,5,Normal
+303200,낡은 끈,EquipmentMaterial,1,Normal
+303201,버려진 허리띠,EquipmentMaterial,2,Normal
+303202,단단한 벨트,EquipmentMaterial,3,Normal
+303203,영험한 기운의 벨트,EquipmentMaterial,4,Normal
+303204,전설의 벨트,EquipmentMaterial,5,Normal
+303300,낡은 목걸이,EquipmentMaterial,1,Normal
+303301,버려진 목걸이,EquipmentMaterial,2,Normal
+303302,단단한 목걸이,EquipmentMaterial,3,Normal
+303303,영험한 기운의 목걸이,EquipmentMaterial,4,Normal
+303304,전설의 목걸이,EquipmentMaterial,5,Normal
+303400,낡은 반지,EquipmentMaterial,1,Normal
+303401,버려진 반지,EquipmentMaterial,2,Normal
+303402,단단한 반지,EquipmentMaterial,3,Normal
+303403,영험한 기운의 반지,EquipmentMaterial,4,Normal
+303404,전설의 반지,EquipmentMaterial,5,Normal
+304000,불의 정수,MonsterPart,1,Fire
+304001,대지의 정수,MonsterPart,1,Land
+304002,물의 정수,MonsterPart,1,Water
+304003,바람의 정수,MonsterPart,1,Wind
+305000,얼음의 염료,MonsterPart,1,Water
+305001,불의 염료,MonsterPart,1,Fire
+305002,숲의 염료,MonsterPart,1,Normal
+305003,요정의 염료,MonsterPart,1,Normal
+305004,여신의 염료,MonsterPart,1,Normal
+306000,물의 씨앗 껍질,MonsterPart,1,Water
+306001,물의 수상한 떡잎,MonsterPart,1,Water
+306002,물의 잎사귀 다발,MonsterPart,1,Water
+306003,물의 빛나는 꽃봉오리,MonsterPart,2,Water
+306004,물의 뻣뻣한 줄기,MonsterPart,2,Water
+306005,물의 물컹한 열매,MonsterPart,2,Water
+306006,물의 시든 꽃다발,MonsterPart,3,Water
+306007,물의 열매알,MonsterPart,3,Water
+306008,물의 나무줄기,MonsterPart,3,Water
+306009,대지의 하찮은 자갈,MonsterPart,2,Land
+306010,대지의 돌날,MonsterPart,2,Land
+306011,대지의 두건,MonsterPart,2,Land
+306012,대지의 여우 꼬리,MonsterPart,2,Land
+306013,대지의 칼자루,MonsterPart,2,Land
+306014,대지의 큰 칼날,MonsterPart,2,Land
+306015,대지의 부러진 지팡이,MonsterPart,3,Land
+306016,대지의 부러진 지팡이,MonsterPart,3,Land
+306017,대지의 망토 조각,MonsterPart,3,Land
+306018,대지의 마력 구슬,MonsterPart,4,Land
+306019,대지의 여우 가죽,MonsterPart,4,Land
+306020,대지의 여우 송곳니,MonsterPart,4,Land
+306021,대지의 창 날,MonsterPart,5,Land
+306022,대지의 견장,MonsterPart,5,Land
+306023,화염의 나무둔기,MonsterPart,1,Fire
+306024,화염의 작은 투구,MonsterPart,1,Fire
+306025,화염의 멧돼지뿔,MonsterPart,1,Fire
+306026,화염의 허리가방,MonsterPart,2,Fire
+306027,화염의 둔기 조각,MonsterPart,2,Fire
+306028,화염의 하얀 털다발,MonsterPart,2,Fire
+306029,화염의 큰 멧돼지뿔,MonsterPart,3,Fire
+306030,화염의 무거운 견장,MonsterPart,3,Fire
+306031,화염의 달궈진 쇠사슬,MonsterPart,3,Fire
+306032,화염의 부러진 지팡이,MonsterPart,4,Fire
+306033,화염의 제림니르 도끼,MonsterPart,4,Fire
+306034,화염의 제림니르 철퇴,MonsterPart,4,Fire
+306035,수액 덩어리,MonsterPart,2,Normal
+306036,화염의 수액 덩어리,MonsterPart,2,Fire
+306037,바람의 수액 덩어리,MonsterPart,2,Wind
+306038,대지의 수액 덩어리,MonsterPart,2,Land
+306039,물의 수액 덩어리,MonsterPart,2,Water
+306040,수액 덩어리(소),MonsterPart,1,Normal
+306041,화염의 수액 덩어리(소),MonsterPart,1,Fire
+306042,바람의 수액 덩어리(소),MonsterPart,1,Wind
+306043,대지의 수액 덩어리(소),MonsterPart,1,Land
+306044,물의 수액 덩어리(소),MonsterPart,1,Water
+306045,수액 덩어리(대),MonsterPart,3,Normal
+306046,화염의 수액 덩어리(대),MonsterPart,4,Fire
+306047,바람의 수액 덩어리(대),MonsterPart,4,Wind
+306048,대지의 수액 덩어리(대),MonsterPart,4,Land
+306049,물의 수액 덩어리(대),MonsterPart,4,Water
+306050,유령의 투구,MonsterPart,2,Wind
+306051,유령의 검 조각,MonsterPart,2,Wind
+306052,유령의 혼,MonsterPart,2,Wind
+306053,펜리르의 발톱,MonsterPart,3,Wind
+306054,펜리르의 황금 족쇄,MonsterPart,3,Wind
+306055,펜리르의 갈기,MonsterPart,3,Wind
+306056,브론즈 엠블렘,MonsterPart,1,Normal
+306057,실버 엠블렘,MonsterPart,2,Normal
+306058,화염의 나무둔기,MonsterPart,1,Fire
+306059,화염의 작은 투구,MonsterPart,1,Fire
+306060,화염의 멧돼지뿔,MonsterPart,1,Fire
+306061,화염의 허리가방,MonsterPart,1,Fire
+306062,화염의 둔기 조각,MonsterPart,1,Fire
+306063,화염의 하얀 털다발,MonsterPart,1,Fire
+306064,화염의 큰 멧돼지뿔,MonsterPart,1,Fire
+306065,화염의 무거운 견장,MonsterPart,1,Fire
+306066,화염의 달궈진 쇠사슬,MonsterPart,1,Fire
+306067,화염의 부러진 지팡이,MonsterPart,1,Fire
+306068,화염의 제림니르 도끼,MonsterPart,2,Fire
+306069,화염의 제림니르 철퇴,MonsterPart,2,Fire
+400000,모래시계,Hourglass,4,Normal
+500000,AP 스톤,ApStone,4,Normal
+700000,아레나 시즌0 메달,NormalMaterial,5,Normal
