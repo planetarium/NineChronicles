@@ -14,7 +14,8 @@ namespace Nekoyume
 
         public static string GetLocalizedDescription(this BuffSheet.Row row)
         {
-            return L10nManager.Localize($"BUFF_DESCRIPTION_{row.Id}");
+            var desc = L10nManager.Localize($"BUFF_DESCRIPTION_{row.Id}");
+            return string.Format(desc, row.StatModifier.Value);
         }
 
         public static Sprite GetIcon(this BuffSheet.Row row)
