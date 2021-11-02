@@ -179,7 +179,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.Simulate3();
+            simulator.SimulateV2();
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Simulator.SimulateV2(): {Elapsed}", addressesHex, sw.Elapsed);
 

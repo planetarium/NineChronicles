@@ -187,13 +187,13 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Simulate")]
-        public Player Simulate2()
+        public Player SimulateV1()
         {
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
 #endif
             Log.stageId = _stageId;
-            Spawn2();
+            SpawnV1();
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
@@ -298,13 +298,13 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Simulate")]
-        public Player Simulate3()
+        public Player SimulateV2()
         {
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
 #endif
             Log.stageId = _stageId;
-            Spawn3();
+            SpawnV2();
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
@@ -409,13 +409,13 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Simulate")]
-        public Player Simulate4()
+        public Player SimulateV3()
         {
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
 #endif
             Log.stageId = _stageId;
-            Spawn3();
+            SpawnV2(); // v2
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
@@ -528,19 +528,19 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Spawn")]
-        private void Spawn2()
+        private void SpawnV1()
         {
-            Player.Spawn2();
-            _enemyPlayer.Spawn2();
+            Player.SpawnV1();
+            _enemyPlayer.SpawnV1();
             Player.Targets.Add(_enemyPlayer);
             _enemyPlayer.Targets.Add(Player);
         }
 
         [Obsolete("Use Spawn")]
-        private void Spawn3()
+        private void SpawnV2()
         {
-            Player.Spawn3();
-            _enemyPlayer.Spawn3();
+            Player.SpawnV2();
+            _enemyPlayer.SpawnV2();
             Player.Targets.Add(_enemyPlayer);
             _enemyPlayer.Targets.Add(Player);
         }

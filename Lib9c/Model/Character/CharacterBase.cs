@@ -140,24 +140,24 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use InitAI")]
-        public void InitAI2()
+        public void InitAIV1()
         {
             SetSkill();
 
             _root = new Root();
             _root.OpenBranch(
-                BT.Call(Act2)
+                BT.Call(ActV1)
             );
         }
 
         [Obsolete("Use InitAI")]
-        public void InitAI3()
+        public void InitAIV2()
         {
             SetSkill();
 
             _root = new Root();
             _root.OpenBranch(
-                BT.Call(Act3)
+                BT.Call(ActV2)
             );
         }
 
@@ -187,9 +187,9 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("ReduceSkillCooldown")]
-        private void ReduceSkillCooldown2()
+        private void ReduceSkillCooldownV1()
         {
-            Skills.ReduceCooldown2();
+            Skills.ReduceCooldownV1();
         }
 
         private void UseSkill()
@@ -224,9 +224,9 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use UseSkill")]
-        private void UseSkill2()
+        private void UseSkillV1()
         {
-            var selectedSkill = Skills.Select2(Simulator.Random);
+            var selectedSkill = Skills.SelectV1(Simulator.Random);
 
             var usedSkill = selectedSkill.Use(
                 this,
@@ -252,9 +252,9 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use UseSkill")]
-        private void UseSkill3()
+        private void UseSkillV2()
         {
-            var selectedSkill = Skills.Select3(Simulator.Random);
+            var selectedSkill = Skills.SelectV2(Simulator.Random);
 
             var usedSkill = selectedSkill.Use(
                 this,
@@ -425,26 +425,26 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use Act")]
-        private void Act2()
+        private void ActV1()
         {
             if (IsAlive())
             {
                 ReduceDurationOfBuffs();
-                ReduceSkillCooldown2();
-                UseSkill2();
+                ReduceSkillCooldownV1();
+                UseSkillV1();
                 RemoveBuffs();
             }
             EndTurn();
         }
 
         [Obsolete("Use Act")]
-        private void Act3()
+        private void ActV2()
         {
             if (IsAlive())
             {
                 ReduceDurationOfBuffs();
-                ReduceSkillCooldown2();
-                UseSkill3();
+                ReduceSkillCooldownV1();
+                UseSkillV2();
                 RemoveBuffs();
             }
             EndTurn();

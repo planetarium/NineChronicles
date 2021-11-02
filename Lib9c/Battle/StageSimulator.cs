@@ -394,7 +394,7 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Simulate")]
-        public Player Simulate2()
+        public Player SimulateV1()
         {
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
@@ -404,7 +404,7 @@ namespace Nekoyume.Battle
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
-            Player.Spawn2();
+            Player.SpawnV1();
             TurnNumber = 0;
             for (var i = 0; i < _waves.Count; i++)
             {
@@ -567,7 +567,7 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Simulate")]
-        public Player Simulate3()
+        public Player SimulateV2()
         {
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
@@ -577,7 +577,7 @@ namespace Nekoyume.Battle
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
-            Player.Spawn3();
+            Player.SpawnV2();
             TurnNumber = 0;
             for (var i = 0; i < _waves.Count; i++)
             {
@@ -740,14 +740,14 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Simulate")]
-        public Player Simulate4()
+        public Player SimulateV3()
         {
             Log.worldId = WorldId;
             Log.stageId = StageId;
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
-            Player.Spawn3();
+            Player.SpawnV2();
             TurnNumber = 0;
             for (var i = 0; i < _waves.Count; i++)
             {
@@ -861,14 +861,14 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Simulate")]
-        public Player Simulate5()
+        public Player SimulateV4()
         {
             Log.worldId = WorldId;
             Log.stageId = StageId;
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
-            Player.Spawn3();
+            Player.SpawnV2();
             TurnNumber = 0;
             for (var i = 0; i < _waves.Count; i++)
             {
@@ -982,14 +982,14 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Simulate")]
-        public Player Simulate6(int playCount)
+        public Player SimulateV5(int playCount)
         {
             Log.worldId = WorldId;
             Log.stageId = StageId;
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
-            Player.Spawn3();
+            Player.SpawnV2();
             TurnNumber = 0;
             for (var i = 0; i < _waves.Count; i++)
             {

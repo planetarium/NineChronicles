@@ -75,7 +75,7 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("ReduceCooldown")]
-        public void ReduceCooldown2()
+        public void ReduceCooldownV1()
         {
 #pragma warning disable LAA1002
             if (!_skillsCooldown.Any())
@@ -101,15 +101,15 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use Select")]
-        public Skill.Skill Select2(IRandom random)
+        public Skill.Skill SelectV1(IRandom random)
         {
-            return PostSelect2(random, GetSelectableSkills());
+            return PostSelectV1(random, GetSelectableSkills());
         }
 
         [Obsolete("Use Select")]
-        public Skill.Skill Select3(IRandom random)
+        public Skill.Skill SelectV2(IRandom random)
         {
-            return PostSelect3(random, GetSelectableSkills());
+            return PostSelectV2(random, GetSelectableSkills());
         }
 
         private IEnumerable<Skill.Skill> GetSelectableSkills()
@@ -151,7 +151,7 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use PostSelect")]
-        private Skill.Skill PostSelect2(IRandom random, IEnumerable<Skill.Skill> skills)
+        private Skill.Skill PostSelectV1(IRandom random, IEnumerable<Skill.Skill> skills)
         {
             var selected = skills
                 .Select(skill => new {skill, chance = random.Next(0, 100)})
@@ -167,7 +167,7 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use PostSelect")]
-        private Skill.Skill PostSelect3(IRandom random, IEnumerable<Skill.Skill> skills)
+        private Skill.Skill PostSelectV2(IRandom random, IEnumerable<Skill.Skill> skills)
         {
             var selected = skills
                 .OrderBy(skill => skill.SkillRow.Id)

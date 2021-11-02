@@ -387,17 +387,17 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use Spawn")]
-        public virtual void Spawn2()
+        public virtual void SpawnV1()
         {
-            InitAI2();
+            InitAIV1();
             var spawn = new SpawnPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
 
         [Obsolete("Use Spawn")]
-        public virtual void Spawn3()
+        public virtual void SpawnV2()
         {
-            InitAI3();
+            InitAIV2();
             var spawn = new SpawnPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }

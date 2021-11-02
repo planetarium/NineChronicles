@@ -37,7 +37,7 @@ namespace Nekoyume.Battle
             {
                 stageSimulator.Player.Targets.Add(enemy);
                 stageSimulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
-                enemy.InitAI2();
+                enemy.InitAIV1();
             }
 
             var enemies = _enemies.Select(enemy => new Enemy(enemy)).ToList();
@@ -52,7 +52,7 @@ namespace Nekoyume.Battle
             {
                 stageSimulator.Player.Targets.Add(enemy);
                 stageSimulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
-                enemy.InitAI3();
+                enemy.InitAIV2();
             }
 
             var enemies = _enemies.Select(enemy => new Enemy(enemy)).ToList();

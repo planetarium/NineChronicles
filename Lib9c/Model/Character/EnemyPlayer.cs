@@ -56,17 +56,17 @@ namespace Nekoyume.Model
         }
 
         [Obsolete("Use Spawn")]
-        public override void Spawn2()
+        public override void SpawnV1()
         {
-            InitAI2();
+            InitAIV1();
             var spawn = new SpawnEnemyPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
 
         [Obsolete("Use Spawn")]
-        public override void Spawn3()
+        public override void SpawnV2()
         {
-            InitAI3();
+            InitAIV2();
             var spawn = new SpawnEnemyPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
