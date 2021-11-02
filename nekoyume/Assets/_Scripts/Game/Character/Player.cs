@@ -7,7 +7,6 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
 using UnityEngine;
-using Nekoyume.State;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Game.Character
@@ -26,7 +25,7 @@ namespace Nekoyume.Game.Character
         public long EXP = 0;
         public long EXPMax { get; private set; }
 
-        public Model.Item.Inventory Inventory;
+        public Inventory Inventory;
         public TouchHandler touchHandler;
 
         public List<Costume> Costumes =>
