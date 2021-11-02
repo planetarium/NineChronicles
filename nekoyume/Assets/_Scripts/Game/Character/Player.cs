@@ -8,6 +8,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.UI;
 using UnityEngine;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Character
 {
@@ -265,7 +266,7 @@ namespace Nekoyume.Game.Character
                     UpdateEyeById(costume.Id);
                     break;
                 case ItemSubType.FullCostume:
-                    ChangeSpine(costume.SpineResourcePath);
+                    ChangeSpineObject(costume.SpineResourcePath);
                     break;
                 case ItemSubType.HairCostume:
                     UpdateHairById(costume.Id);
@@ -342,7 +343,7 @@ namespace Nekoyume.Game.Character
 
             var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
             var spineResourcePath = armor?.SpineResourcePath ?? $"Character/Player/{armorId}";
-            ChangeSpine(spineResourcePath);
+            ChangeSpineObject(spineResourcePath);
         }
 
         public void EquipWeapon(Weapon weapon)
@@ -362,7 +363,7 @@ namespace Nekoyume.Game.Character
         public void Equip(int armorId, int weaponId)
         {
             var spineResourcePath = $"Character/Player/{armorId}";
-            ChangeSpine(spineResourcePath);
+            ChangeSpineObject(spineResourcePath);
             var sprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
             SpineController.UpdateWeapon(weaponId, sprite);
         }
@@ -386,11 +387,6 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEar()
         {
-            if (IsFullCostumeEquipped)
-            {
-                return;
-            }
-
             var earCostume =
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EarCostume);
             if (earCostume is null)
@@ -409,6 +405,11 @@ namespace Nekoyume.Game.Character
         /// <param name="customizeIndex">0~9</param>
         public void UpdateEarByCustomizeIndex(int customizeIndex)
         {
+            if (IsFullCostumeEquipped || SpineController is null)
+            {
+                return;
+            }
+
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
             var firstEarRow =
                 sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EarCostume);
@@ -422,13 +423,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEarById(int earCostumeId)
         {
-            if (IsFullCostumeEquipped || SpineController is null)
-            {
-                return;
-            }
-
-            var sheet = Game.instance.TableSheets.CostumeItemSheet;
-            if (!sheet.TryGetValue(earCostumeId, out var row, true))
+            if (!TryGetCostumeRow(earCostumeId, out var row))
             {
                 return;
             }
@@ -440,11 +435,6 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEye()
         {
-            if (IsFullCostumeEquipped)
-            {
-                return;
-            }
-
             var eyeCostume =
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EyeCostume);
             if (eyeCostume is null)
@@ -476,13 +466,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEyeById(int eyeCostumeId)
         {
-            if (IsFullCostumeEquipped || SpineController is null)
-            {
-                return;
-            }
-
-            var sheet = Game.instance.TableSheets.CostumeItemSheet;
-            if (!sheet.TryGetValue(eyeCostumeId, out var row, true))
+            if (!TryGetCostumeRow(eyeCostumeId, out var row))
             {
                 return;
             }
@@ -494,11 +478,6 @@ namespace Nekoyume.Game.Character
 
         private void UpdateHair()
         {
-            if (IsFullCostumeEquipped)
-            {
-                return;
-            }
-
             var hairCostume =
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.HairCostume);
             if (hairCostume is null)
@@ -517,7 +496,7 @@ namespace Nekoyume.Game.Character
         /// <param name="customizeIndex">0~5</param>
         public void UpdateHairByCustomizeIndex(int customizeIndex)
         {
-            if (IsFullCostumeEquipped)
+            if (IsFullCostumeEquipped || !SpineController)
             {
                 return;
             }
@@ -535,13 +514,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateHairById(int hairCostumeId)
         {
-            if (IsFullCostumeEquipped || SpineController is null)
-            {
-                return;
-            }
-
-            var sheet = Game.instance.TableSheets.CostumeItemSheet;
-            if (!sheet.TryGetValue(hairCostumeId, out var row, true))
+            if (!TryGetCostumeRow(hairCostumeId, out var row))
             {
                 return;
             }
@@ -555,11 +528,6 @@ namespace Nekoyume.Game.Character
 
         private void UpdateTail()
         {
-            if (IsFullCostumeEquipped)
-            {
-                return;
-            }
-
             var tailCostume =
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.TailCostume);
             if (tailCostume is null)
@@ -578,7 +546,7 @@ namespace Nekoyume.Game.Character
         /// <param name="customizeIndex">0~9</param>
         public void UpdateTailByCustomizeIndex(int customizeIndex)
         {
-            if (IsFullCostumeEquipped)
+            if (IsFullCostumeEquipped || !SpineController)
             {
                 return;
             }
@@ -596,13 +564,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateTailById(int tailCostumeId)
         {
-            if (IsFullCostumeEquipped || SpineController is null)
-            {
-                return;
-            }
-
-            var sheet = Game.instance.TableSheets.CostumeItemSheet;
-            if (!sheet.TryGetValue(tailCostumeId, out var row, true))
+            if (!TryGetCostumeRow(tailCostumeId, out var row))
             {
                 return;
             }
@@ -611,9 +573,26 @@ namespace Nekoyume.Game.Character
             SpineController.UpdateTail(sprite);
         }
 
+        private bool TryGetCostumeRow(int costumeId, out CostumeItemSheet.Row row)
+        {
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            if (!sheet.TryGetValue(costumeId, out row, false))
+            {
+                return false;
+            }
+
+            var costume = Costumes.FirstOrDefault(costume => costume.Id == costumeId);
+            if (costume != null)
+            {
+                costume.Unequip();
+            }
+
+            return true;
+        }
+
         #endregion
 
-        private void ChangeSpine(string spineResourcePath)
+        private void ChangeSpineObject(string spineResourcePath)
         {
             if (!(Animator.Target is null))
             {
@@ -627,6 +606,11 @@ namespace Nekoyume.Game.Character
             }
 
             var origin = Resources.Load<GameObject>(spineResourcePath);
+            if (origin is null)
+            {
+                return;
+            }
+
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<PlayerSpineController>();
             Animator.ResetTarget(go);
