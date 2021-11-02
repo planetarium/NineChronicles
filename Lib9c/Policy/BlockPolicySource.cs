@@ -47,11 +47,6 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// First index in which restriction will apply.
         /// </summary>
-        public const long AuthorizedMiningNoOpTxRequiredStartIndex = 1_200_001;
-
-        /// <summary>
-        /// First index in which restriction will apply.
-        /// </summary>
         public const long MinTransactionsPerBlockStartIndex = 2_173_701;
 
         public const int MinTransactionsPerBlock = 1;
@@ -114,7 +109,6 @@ namespace Nekoyume.BlockChain.Policy
                         value: maxTransactionsPerBlock)),
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
-                authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 
         public IBlockPolicy<NCAction> GetPolicy() =>
@@ -125,7 +119,6 @@ namespace Nekoyume.BlockChain.Policy
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
-                authorizedMiningNoOpTxRequiredPolicy: AuthorizedMiningNoOpTxRequiredPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 
         /// <summary>
@@ -141,8 +134,6 @@ namespace Nekoyume.BlockChain.Policy
         /// <see cref="Transaction{T}"/>s from a single miner that a <see cref="Block{T}"/>
         /// can have.</param>
         /// <param name="authorizedMinersPolicy">Used for authorized mining.</param>
-        /// <param name="authorizedMiningNoOpTxRequiredPolicy">Used for no-op tx proof check
-        /// for authorized mining.</param>
         /// <param name="permissionedMinersPolicy">Used for permissioned mining.</param>
         /// <returns>A <see cref="BlockPolicy"/> constructed from given parameters.</returns>
         internal IBlockPolicy<NCAction> GetPolicy(
@@ -152,7 +143,6 @@ namespace Nekoyume.BlockChain.Policy
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
             IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
-            IVariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy,
             IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
 #if UNITY_EDITOR
@@ -168,8 +158,6 @@ namespace Nekoyume.BlockChain.Policy
                 ?? MaxTransactionsPerSignerPerBlockPolicy.Default;
             authorizedMinersPolicy = authorizedMinersPolicy
                 ?? AuthorizedMinersPolicy.Default;
-            authorizedMiningNoOpTxRequiredPolicy = authorizedMiningNoOpTxRequiredPolicy
-                ?? AuthorizedMiningNoOpTxRequiredPolicy.Default;
             permissionedMinersPolicy = permissionedMinersPolicy
                 ?? PermissionedMinersPolicy.Default;
 
@@ -198,7 +186,6 @@ namespace Nekoyume.BlockChain.Policy
                     maxTransactionsPerBlockPolicy,
                     maxTransactionsPerSignerPerBlockPolicy,
                     authorizedMinersPolicy,
-                    authorizedMiningNoOpTxRequiredPolicy,
                     permissionedMinersPolicy);
             Func<BlockChain<NCAction>, long> getNextBlockDifficulty = blockChain =>
                 GetNextBlockDifficultyRaw(
@@ -343,7 +330,6 @@ namespace Nekoyume.BlockChain.Policy
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
             IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
-            IVariableSubPolicy<bool> authorizedMiningNoOpTxRequiredPolicy,
             IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
             // FIXME: Tx count validation should be done in libplanet, not here.
@@ -366,8 +352,7 @@ namespace Nekoyume.BlockChain.Policy
                 {
                     return ValidateMinerAuthorityRaw(
                         nextBlock,
-                        authorizedMinersPolicy,
-                        authorizedMiningNoOpTxRequiredPolicy);
+                        authorizedMinersPolicy);
                 }
                 else if (permissionedMinersPolicy.IsTargetIndex(nextBlock.Index))
                 {

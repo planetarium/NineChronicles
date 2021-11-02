@@ -72,8 +72,8 @@ namespace Lib9c.Tests
             genericSubPolicy = GenericSubPolicy<bool>
                 .Create(false)
                 .AddRange(new List<SpannedSubPolicy<bool>>() { first, second, third, fourth }.ToImmutableList());
-            Assert.Throws<ArgumentOutOfRangeException>(() => AuthorizedMiningNoOpTxRequiredPolicy
-                .Default
+            Assert.Throws<ArgumentOutOfRangeException>(() => GenericSubPolicy<bool>
+                .Create(false)
                 .AddRange(new List<SpannedSubPolicy<bool>>() { second, first }.ToImmutableList()));
 
             // Type check
