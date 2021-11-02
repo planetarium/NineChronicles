@@ -97,15 +97,15 @@
         }
 
         [Theory]
-        [InlineData(0, new[] { 1 })]
-        [InlineData(12, new[] { 1, 2 })]
-        [InlineData(2, new[] { 1, 3 })]
-        [InlineData(9, new[] { 1, 4 })]
-        [InlineData(17, new[] { 1, 2, 3 })]
-        [InlineData(13, new[] { 1, 2, 4 })]
-        [InlineData(180, new[] { 1, 3, 4 })]
-        [InlineData(160, new[] { 1, 2, 3, 4 })]
-        public void Case(int randomSeed, int[] optionNumbers)
+        [InlineData(0)]
+        [InlineData(12)]
+        [InlineData(2)]
+        [InlineData(9)]
+        [InlineData(17)]
+        [InlineData(13)]
+        [InlineData(180)]
+        [InlineData(160)]
+        public void Case(int randomSeed)
         {
             var gameConfigState = _initialState.GetGameConfigState();
             Assert.NotNull(gameConfigState);
@@ -155,98 +155,6 @@
             Assert.NotNull(slot0Value);
             var slot0State = new CombinationSlotState((Dictionary)slot0Value);
             Assert.NotNull(slot0State.Result.itemUsable);
-            var equipment = (Equipment)slot0State.Result.itemUsable;
-            var additionalStats = equipment.StatsMap
-                .GetAdditionalStats(true)
-                .ToArray();
-            var skills = equipment.Skills;
-            Assert.Equal(optionNumbers.Length, equipment.optionCountFromCombination);
-            var optionSheet = _tableSheets.EquipmentItemOptionSheet;
-            var mainAdditionalStatMin = 0;
-            var mainAdditionalStatMax = 0;
-            var requiredBlockIndex = 0;
-            foreach (var optionNumber in optionNumbers)
-            {
-                var optionInfo = subRecipeRow.Options[optionNumber - 1];
-                requiredBlockIndex += optionInfo.RequiredBlockIndex;
-                var optionRow = optionSheet[optionInfo.Id];
-                if (optionRow.StatMin > 0 || optionRow.StatMax > 0)
-                {
-                    if (optionRow.StatType == equipment.UniqueStatType)
-                    {
-                        mainAdditionalStatMin += optionRow.StatMin;
-                        mainAdditionalStatMax += optionRow.StatMax;
-                        continue;
-                    }
-
-                    var additionalStatValue = additionalStats
-                        .First(e => e.statType == optionRow.StatType)
-                        .additionalValue;
-                    Assert.True(additionalStatValue >= optionRow.StatMin);
-                    Assert.True(additionalStatValue <= optionRow.StatMax + 1);
-                }
-                else if (optionRow.SkillId != default)
-                {
-                    var skill = skills.First(e => e.SkillRow.Id == optionRow.SkillId);
-                    Assert.True(skill.Chance >= optionRow.SkillChanceMin);
-                    Assert.True(skill.Chance <= optionRow.SkillChanceMax + 1);
-                    Assert.True(skill.Power >= optionRow.SkillDamageMin);
-                    Assert.True(skill.Power <= optionRow.SkillDamageMax + 1);
-                }
-            }
-
-            var mainAdditionalStatValue = additionalStats
-                .First(e => e.statType == equipment.UniqueStatType)
-                .additionalValue;
-            Assert.True(mainAdditionalStatValue >= mainAdditionalStatMin);
-            Assert.True(mainAdditionalStatValue <= mainAdditionalStatMax + 1);
-            Assert.Equal(requiredBlockIndex + 1, slot0State.RequiredBlockIndex);
-
-            // FIXME
-            // https://github.com/planetarium/lib9c/pull/517#discussion_r679218764
-            // The tests after this line should be finished. However, since then the logic is being developed by
-            // different developers in different branches. I wrote a test beforehand, but it's failing.
-            // I plan to move to another branch after this PR is merged and finish writing the tests.
-            return;
-            if (requiredBlockIndex == 0)
-            {
-                return;
-            }
-
-            var hourglassRow = _tableSheets.MaterialItemSheet
-                .First(pair => pair.Value.ItemSubType == ItemSubType.Hourglass)
-                .Value;
-
-            inventoryValue = nextState.GetState(_inventoryAddress);
-            Assert.NotNull(inventoryValue);
-            inventoryState = new Inventory((List)inventoryValue);
-            Assert.False(inventoryState.TryGetFungibleItems(hourglassRow.ItemId, out _));
-
-            var hourglassCount = requiredBlockIndex * gameConfigState.HourglassPerBlock;
-            inventoryState.AddFungibleItem(
-                ItemFactory.CreateMaterial(_tableSheets.MaterialItemSheet, hourglassRow.Id),
-                hourglassCount);
-            Assert.True(inventoryState.TryGetFungibleItems(hourglassRow.ItemId, out var hourglasses));
-            Assert.Equal(hourglassCount, hourglasses.Sum(e => e.count));
-            nextState = nextState.SetState(_inventoryAddress, inventoryState.Serialize());
-
-            var rapidCombinationAction = new RapidCombination
-            {
-                avatarAddress = _avatarAddress,
-                slotIndex = 0,
-            };
-
-            nextState = rapidCombinationAction.Execute(new ActionContext
-            {
-                PreviousStates = nextState,
-                BlockIndex = 1,
-                Random = random,
-                Signer = _agentAddress,
-            });
-            inventoryValue = nextState.GetState(_inventoryAddress);
-            Assert.NotNull(inventoryValue);
-            inventoryState = new Inventory((List)inventoryValue);
-            Assert.False(inventoryState.TryGetFungibleItems(hourglassRow.ItemId, out _));
         }
     }
 }
