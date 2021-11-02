@@ -34,8 +34,12 @@
             return defaultAttack;
         }
 
-        [Fact]
-        public void CheckSkillCooldown()
+        [Theory]
+        [InlineData(2, 2)]
+        [InlineData(2, 1)]
+        [InlineData(0, 1)]
+        [InlineData(0, 0)]
+        public void CheckSkillCooldown(int cooldown, int reduceCount)
         {
             var skills = new Skills();
             var defaultAttack = GetDefaultAttackSkill();
@@ -48,15 +52,19 @@
 
             var selectedSkill = skills.Select(_random);
             Assert.NotNull(selectedSkill);
-            // When you have a skill, make sure that the skill is pulled out.
             Assert.Equal(skill, selectedSkill);
 
-            skills.SetCooldown(skillId, 2);
-            skills.ReduceCooldown();
+            skills.SetCooldown(skillId, cooldown);
+            Assert.Equal(cooldown, skills.GetCooldown(skillId));
+
+            for (var i = 0; i <= reduceCount; i++)
+            {
+                skills.ReduceCooldown();
+            }
+
             selectedSkill = skills.Select(_random);
             Assert.NotNull(selectedSkill);
-            //When the cooldown is 1 or more, check if the skill is not selected
-            Assert.Equal(defaultAttack, selectedSkill);
+            Assert.Equal(cooldown - reduceCount > 0 ? defaultAttack : skill, selectedSkill);
         }
 
         [Fact]
