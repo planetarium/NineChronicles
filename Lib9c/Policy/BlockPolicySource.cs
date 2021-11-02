@@ -95,25 +95,26 @@ namespace Nekoyume.BlockChain.Policy
                 new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
-        [Obsolete("Left for temporary old API compliance.")]
-        public IBlockPolicy<NCAction> GetPolicy(
-            long minimumDifficulty,
-            int maxTransactionsPerBlock) =>
+        /// <summary>
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for deployment.
+        /// </summary>
+        public IBlockPolicy<NCAction> GetPolicy() =>
             GetPolicy(
-                minimumDifficulty: minimumDifficulty,
+                minimumDifficulty: MinimumDifficulty,
                 maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
-                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Default.Add(
-                    new SpannedSubPolicy<int>(
-                        startIndex: 0,
-                        value: maxTransactionsPerBlock)),
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 
-        public IBlockPolicy<NCAction> GetPolicy() =>
+        /// <summary>
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance identical to the one deployed
+        /// except with lower minimum difficulty for faster testing and benchmarking.
+        /// </summary>
+        public IBlockPolicy<NCAction> GetTestPolicy() =>
             GetPolicy(
-                minimumDifficulty: MinimumDifficulty,
+                minimumDifficulty: DifficultyStability,
                 maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
