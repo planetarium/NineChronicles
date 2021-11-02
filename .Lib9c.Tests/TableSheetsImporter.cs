@@ -9,7 +9,8 @@ namespace Lib9c.Tests
             string dir = null)
         {
             var sheets = new Dictionary<string, string>();
-            dir ??= Path.Combine("Data", "TableCSV");
+            dir ??= Path.GetFullPath("..\\")
+                .Replace(".Lib9c.Tests\\bin\\Debug\\", "Lib9c\\TableCSV\\");
             var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
             foreach (var filePath in files)
             {
