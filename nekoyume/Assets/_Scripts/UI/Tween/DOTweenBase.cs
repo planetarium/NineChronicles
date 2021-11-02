@@ -97,28 +97,30 @@ namespace Nekoyume.UI.Tween
             onStopSubject.OnNext(currentTween);
         }
 
-        public virtual void PlayForward()
+        public virtual DG.Tweening.Tween PlayForward()
         {
+            return null;
         }
 
-        public virtual void PlayReverse()
+        public virtual DG.Tweening.Tween PlayReverse()
         {
+            return null;
         }
 
-        public virtual void PlayRepeat()
+        public virtual DG.Tweening.Tween PlayRepeat()
         {
-            PlayForward();
+            return PlayForward();
         }
 
-        public virtual void PlayPingPongOnce()
+        public virtual DG.Tweening.Tween PlayPingPongOnce()
         {
-            PlayForward();
+            return PlayForward();
         }
 
 
-        public virtual void PlayPingPongRepeat()
+        public virtual DG.Tweening.Tween PlayPingPongRepeat()
         {
-            PlayForward();
+            return PlayForward();
         }
 
         public virtual void OnStopTweening()

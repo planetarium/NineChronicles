@@ -25,52 +25,56 @@ namespace Nekoyume.UI.Tween
             }
         }
 
-        public override void PlayForward()
+        public override DG.Tweening.Tween PlayForward()
         {
             _transform.DOLocalMove(_beginValue, 0.0f);
             currentTween = _transform.DOLocalMove(_endValue, duration);
             if (TweenType.Repeat == tweenType)
             {
-                currentTween = SetEase().OnComplete(PlayForward);
+                currentTween = SetEase().OnComplete(() => PlayForward());
             }
             else if (TweenType.PingPongOnce == tweenType || TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = SetEase().OnComplete(PlayReverse);
+                currentTween = SetEase().OnComplete(() => PlayReverse());
             }
             else
             {
                 currentTween = SetEase().OnComplete(OnComplete);
             }
+
+            return currentTween;
         }
 
-        public override void PlayReverse()
+        public override DG.Tweening.Tween PlayReverse()
         {
             _transform.DOLocalMove(_endValue, 0.0f);
             currentTween = _transform.DOLocalMove(_beginValue, duration);
             if (TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = SetEase(true).OnComplete(PlayForward);
+                currentTween = SetEase(true).OnComplete(() => PlayForward());
             }
             else
             {
                 currentTween = SetEase(true).OnComplete(OnComplete);
             }
+
+            return currentTween;
         }
 
-        public override void PlayRepeat()
+        public override DG.Tweening.Tween PlayRepeat()
         {
-            PlayForward();
+            return PlayForward();
         }
 
-        public override void PlayPingPongOnce()
+        public override DG.Tweening.Tween PlayPingPongOnce()
         {
-            PlayForward();
+            return PlayForward();
         }
 
 
-        public override void PlayPingPongRepeat()
+        public override DG.Tweening.Tween PlayPingPongRepeat()
         {
-            PlayForward();
+            return PlayForward();
         }
     }
 }

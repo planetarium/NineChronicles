@@ -24,48 +24,52 @@ namespace Nekoyume.UI.Tween
             transform.position = beginPos;
         }
 
-        public override void PlayForward()
+        public override DG.Tweening.Tween PlayForward()
         {
             _transform.DOMove(beginValue, 0.0f);
             currentTween = _transform.DOMove(endValue, duration);
             if (TweenType.Repeat == tweenType)
             {
-                SetEase().OnComplete(PlayForward);
+                SetEase().OnComplete(() => PlayForward());
             }
             else if (TweenType.PingPongOnce == tweenType || TweenType.PingPongRepeat == tweenType)
             {
-                SetEase().OnComplete(PlayReverse);
+                SetEase().OnComplete(() => PlayReverse());
             }
+
+            return currentTween;
         }
 
-        public override void PlayReverse()
+        public override DG.Tweening.Tween PlayReverse()
         {
             _transform.DOMove(endValue, 0.0f);
             currentTween = _transform.DOMove(beginValue, duration);
             if (TweenType.PingPongRepeat == tweenType)
             {
-                SetEase(true).OnComplete(PlayForward);
+                SetEase(true).OnComplete(() => PlayForward());
             }
             else
             {
                 SetEase(true).OnComplete(OnComplete);
             }
+
+            return currentTween;
         }
 
-        public override void PlayRepeat()
+        public override DG.Tweening.Tween PlayRepeat()
         {
-            PlayForward();
+            return PlayForward();
         }
 
-        public override void PlayPingPongOnce()
+        public override DG.Tweening.Tween PlayPingPongOnce()
         {
-            PlayForward();
+            return PlayForward();
         }
 
 
-        public override void PlayPingPongRepeat()
+        public override DG.Tweening.Tween PlayPingPongRepeat()
         {
-            PlayForward();
+            return PlayForward();
         }
     }
 }
