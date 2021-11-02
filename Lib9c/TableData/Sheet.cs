@@ -9,6 +9,7 @@ using System.Text;
 using Bencodex.Types;
 using JetBrains.Annotations;
 using Nekoyume.Model.State;
+using Serilog;
 #if UNITY_EDITOR
 using Serilog;
 #endif
