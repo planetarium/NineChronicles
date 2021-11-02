@@ -8,7 +8,13 @@ namespace Nekoyume.UI
     public abstract class XTweenPopupWidget : PopupWidget
     {
         [SerializeField]
-        private AnchoredPositionXTweener xTweener = null;
+        private AnchoredPositionSingleTweener xTweener = null;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            xTweener.single = AnchoredPositionSingleTweener.Single.X;
+        }
 
         public override void Show(bool ignoreShowAnimation = false)
         {

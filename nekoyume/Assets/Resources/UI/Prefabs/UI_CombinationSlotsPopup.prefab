@@ -812,7 +812,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8651601264633309819}
   - component: {fileID: 8651601264633309820}
-  - component: {fileID: 6042225408264104850}
+  - component: {fileID: 5818051807044085226}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -850,7 +850,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8651601264633309818}
   m_CullTransparentMesh: 0
---- !u!114 &6042225408264104850
+--- !u!114 &5818051807044085226
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -859,16 +859,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 8651601264633309818}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bacfffa52c78040a2ae4c658801044b7, type: 3}
+  m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startWithPlay: 0
   startDelay: 0
-  end: -494
   duration: 0.5
+  tweenType: 0
+  ease: 27
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  endValue: -494
   snapping: 0
-  showEase: 27
-  closeEase: 26
   isFrom: 1
+  single: 0
 --- !u!1 &8651601265192141224
 GameObject:
   m_ObjectHideFlags: 0
@@ -1165,7 +1187,7 @@ MonoBehaviour:
   - type: 16
     rectTransform: {fileID: 4429108346694645009}
   tutorialActions: 
-  xTweener: {fileID: 6042225408264104850}
+  xTweener: {fileID: 5818051807044085226}
   slots:
   - {fileID: 827225361697374658}
   - {fileID: 8174717150636554073}

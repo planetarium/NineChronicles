@@ -160,7 +160,21 @@ namespace Nekoyume.UI.Tween
         {
             return useCustomEaseCurve
                 ? currentTween.SetEase(isReverse ? _reverseEaseCurve : customEaseCurve)
-                : currentTween.SetEase(ease);
+                : currentTween.SetEase(isReverse ? ReverseEasingFunction(ease) : ease);
+            // ease == Ease.OutBack 27
+            // ease == Ease.InBack 26
+        }
+
+        /// <summary>
+        /// This applies only to the In or Out easing function.
+        /// In XXX -> Parse int -> even number
+        /// Out XXX -> Parse int -> odd number
+        /// </summary>
+        /// <param name="ease"></param>
+        /// <returns></returns>
+        public static Ease ReverseEasingFunction(Ease ease)
+        {
+            return (int) ease % 2 == 0 ? ease + 1 : ease - 1;
         }
     }
 }
