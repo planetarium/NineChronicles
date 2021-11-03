@@ -36,6 +36,10 @@ namespace Nekoyume.UI.Tween
             {
                 SetEase().OnComplete(() => PlayReverse());
             }
+            else
+            {
+                SetEase().OnComplete(OnComplete);
+            }
 
             return currentTween;
         }

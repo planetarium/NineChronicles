@@ -23,12 +23,12 @@ namespace Nekoyume.UI.Tween
 
         private void OnDisable()
         {
-            KillTween();
+            Stop();
         }
 
-        public new DG.Tweening.Tween Play()
+        public override void Play()
         {
-            KillTween();
+            Stop();
 
             currentTween = DOTween.To(
                 () => beginValue,
@@ -36,25 +36,15 @@ namespace Nekoyume.UI.Tween
                 endValue,
                 duration);
 
-            return SetEase().OnComplete(onComplete);
+            SetEase().OnComplete(onComplete);
         }
 
-        public DG.Tweening.Tween Play(int beginValue, int endValue)
+        public void Play(int beginValue, int endValue)
         {
             this.beginValue = beginValue;
             this.endValue = endValue;
 
-            return Play();
-        }
-
-        public void KillTween()
-        {
-            if (currentTween?.IsPlaying() ?? false)
-            {
-                currentTween?.Kill();
-            }
-
-            currentTween = null;
+            Play();
         }
     }
 }

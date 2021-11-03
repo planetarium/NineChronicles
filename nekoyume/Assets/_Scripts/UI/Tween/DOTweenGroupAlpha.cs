@@ -1,21 +1,25 @@
 using UnityEngine;
-using DG.Tweening;
 using System.Collections;
 
 namespace Nekoyume.UI.Tween
 {
+    using DG.Tweening;
     [RequireComponent(typeof(CanvasGroup))]
     public class DOTweenGroupAlpha : DOTweenBase
     {
         public float beginValue = 0.0f;
         public float endValue = 1.0f;
+
+        [SerializeField]
+        private bool infiniteLoop = false;
+
         private CanvasGroup _group;
 
         protected override void Awake()
         {
             base.Awake();
             _group = GetComponent<CanvasGroup>();
-            if (startWithPlay)
+            if (playAtStart)
             {
                 _group.DOFade(beginValue, 0.0f);
             }
@@ -41,7 +45,7 @@ namespace Nekoyume.UI.Tween
             return currentTween;
         }
 
-        public override DG.Tweening.Tween PlayReverse()
+        public override Tween PlayReverse()
         {
             _group.DOFade(endValue, 0.0f);
             currentTween = _group.DOFade(beginValue, duration);
@@ -61,17 +65,17 @@ namespace Nekoyume.UI.Tween
             return currentTween;
         }
 
-        public override DG.Tweening.Tween PlayRepeat()
+        public override Tween PlayRepeat()
         {
             return PlayForward();
         }
 
-        public override DG.Tweening.Tween PlayPingPongOnce()
+        public override Tween PlayPingPongOnce()
         {
             return PlayForward();
         }
 
-        public override DG.Tweening.Tween PlayPingPongRepeat()
+        public override Tween PlayPingPongRepeat()
         {
             return PlayForward();
         }

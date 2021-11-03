@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Tween
             _transform = GetComponent<RectTransform>();
             _beginValue = startFromDelta ? _transform.localPosition - deltaValue : _transform.localPosition;
             _endValue = startFromDelta ? _transform.localPosition : _transform.localPosition + deltaValue;
-            if (startWithPlay)
+            if (playAtStart)
             {
                 _transform.DOLocalMove(_beginValue, 0.0f);
             }

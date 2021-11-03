@@ -6,6 +6,7 @@ using UniRx;
 
 namespace Nekoyume.UI.Tween
 {
+    using DG.Tweening;
     public class DOTweenBase : MonoBehaviour
     {
         public enum TweenType : int
@@ -17,12 +18,12 @@ namespace Nekoyume.UI.Tween
             PingPongRepeat,
         }
 
-        public bool startWithPlay = true;
+        public bool playAtStart = true;
         public float startDelay = 0.0f;
         public float duration = 1.0f;
         public TweenType tweenType = TweenType.Forward;
-        public DG.Tweening.Tween currentTween;
-        public readonly Subject<DG.Tweening.Tween> onStopSubject = new Subject<DG.Tweening.Tween>();
+        public Tween currentTween;
+        public readonly Subject<Tween> onStopSubject = new Subject<Tween>();
         public System.Action onCompleted = null;
 
         public bool IsPlaying => currentTween?.IsPlaying() ?? false;
@@ -65,7 +66,7 @@ namespace Nekoyume.UI.Tween
 
         protected IEnumerator Start()
         {
-            if (!startWithPlay)
+            if (!playAtStart)
             {
                 yield break;
             }
@@ -89,7 +90,7 @@ namespace Nekoyume.UI.Tween
 
         public virtual void Stop()
         {
-            if (currentTween is null)
+            if (currentTween == null)
             {
                 return;
             }
@@ -99,28 +100,28 @@ namespace Nekoyume.UI.Tween
             onStopSubject.OnNext(currentTween);
         }
 
-        public virtual DG.Tweening.Tween PlayForward()
+        public virtual Tween PlayForward()
         {
             return null;
         }
 
-        public virtual DG.Tweening.Tween PlayReverse()
+        public virtual Tween PlayReverse()
         {
             return null;
         }
 
-        public virtual DG.Tweening.Tween PlayRepeat()
+        public virtual Tween PlayRepeat()
         {
             return PlayForward();
         }
 
-        public virtual DG.Tweening.Tween PlayPingPongOnce()
+        public virtual Tween PlayPingPongOnce()
         {
             return PlayForward();
         }
 
 
-        public virtual DG.Tweening.Tween PlayPingPongRepeat()
+        public virtual Tween PlayPingPongRepeat()
         {
             return PlayForward();
         }
@@ -158,13 +159,11 @@ namespace Nekoyume.UI.Tween
             Play();
         }
 
-        protected virtual DG.Tweening.Tween SetEase(bool isReverse = false)
+        protected virtual Tween SetEase(bool isReverse = false)
         {
             return useCustomEaseCurve
                 ? currentTween.SetEase(isReverse ? _reverseEaseCurve : customEaseCurve)
                 : currentTween.SetEase(isReverse ? ReverseEasingFunction(ease) : ease);
-            // ease == Ease.OutBack 27
-            // ease == Ease.InBack 26
         }
 
         /// <summary>
@@ -176,7 +175,13 @@ namespace Nekoyume.UI.Tween
         /// <returns></returns>
         public static Ease ReverseEasingFunction(Ease ease)
         {
-            return (int) ease % 2 == 0 ? ease + 1 : ease - 1;
+            var easingString = ease.ToString();
+            if (easingString.Contains("In") ^ easingString.Contains("Out"))
+            {
+                return (int) ease % 2 == 0 ? ease + 1 : ease - 1;
+            }
+
+            return ease;
         }
     }
 }

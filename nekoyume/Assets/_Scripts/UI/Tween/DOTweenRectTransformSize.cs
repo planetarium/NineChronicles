@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Tween
             _rectTransform = GetComponent<RectTransform>();
             _beginValue = _rectTransform.sizeDelta;
             _endValue = _beginValue * multiplier;
-            if (startWithPlay)
+            if (playAtStart)
             {
                 currentTween = _rectTransform.DOSizeDelta(_beginValue, 0.0f);
             }

@@ -188,8 +188,6 @@ MonoBehaviour:
     m_RotationOrder: 4
   beginValue: 1
   endValue: 0
-  infiniteLoop: 0
-  loopType: 1
 --- !u!114 &5402043068474052087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,8 +542,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  BeginValue: 0
-  EndValue: 1
+  beginValue: 0
+  endValue: 1
+  infiniteLoop: 1
 --- !u!1 &5214974218392538790
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,8 +874,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  BeginValue: 0
-  EndValue: 1
+  beginValue: 0
+  endValue: 1
+  infiniteLoop: 0
 --- !u!1 &5910593226765760475
 GameObject:
   m_ObjectHideFlags: 0

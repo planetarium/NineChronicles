@@ -361,7 +361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 0
+  playAtStart: 1
   startDelay: 0
   duration: 0.5
   tweenType: 0
@@ -389,7 +389,7 @@ MonoBehaviour:
   endValue: -305
   snapping: 0
   isFrom: 1
-  single: 0
+  axisType: 0
 --- !u!1001 &490840626878012615
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -411,6 +411,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_VerticalAlignment
       value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: playAtStart
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
@@ -583,6 +588,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_VerticalAlignment
       value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: playAtStart
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}

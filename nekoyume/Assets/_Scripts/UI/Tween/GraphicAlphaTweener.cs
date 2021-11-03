@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Tween
         {
             base.Awake();
             _graphic = GetComponent<Graphic>();
-            if (startWithPlay)
+            if (playAtStart)
             {
                 _graphic.DOFade(beginValue, 0.0f);
             }

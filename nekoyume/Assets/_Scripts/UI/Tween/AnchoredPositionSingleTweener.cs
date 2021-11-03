@@ -5,15 +5,13 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Tween
 {
-    // todo: `AnchoredPositionSingleTweener`로 바꾸고, 좌표계를 선택할 수 있도록. `RotateSingleTweener` 참고.
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionSingleTweener : DOTweenBase
     {
         public enum AxisType
         {
             X,
-            Y,
-            Z
+            Y
         }
 
         [SerializeField]
@@ -25,7 +23,7 @@ namespace Nekoyume.UI.Tween
         [SerializeField]
         private bool isFrom = false;
 
-        public Single single = Single.Z;
+        public AxisType axisType = AxisType.X;
 
         private RectTransform _rectTransformCache;
         private Vector2? _originAnchoredPositionCache;
@@ -52,13 +50,13 @@ namespace Nekoyume.UI.Tween
             _startPosition = OriginAnchoredPosition;
             _endPosition = OriginAnchoredPosition;
 
-            switch (single)
+            switch (axisType)
             {
-                case Single.X:
+                case AxisType.X:
                     _startPosition.x = isFrom ? endValue : _startPosition.x;
                     _endPosition.x = isFrom ? OriginAnchoredPosition.x : endValue;
                     break;
-                case Single.Y:
+                case AxisType.Y:
                     _startPosition.y = isFrom ? endValue : _startPosition.y;
                     _endPosition.y = isFrom ? OriginAnchoredPosition.y : _endPosition.y;
                     break;
@@ -83,20 +81,9 @@ namespace Nekoyume.UI.Tween
         {
             Stop();
 
-            if (isFrom)
-            {
-                RectTransform.anchoredPosition = OriginAnchoredPosition;
-                currentTween = RectTransform
-                    .DOAnchorPosX(endValue, duration, snapping);
-                SetEase(true);
-            }
-            else
-            {
-                RectTransform.anchoredPosition = new Vector2(endValue, OriginAnchoredPosition.y);
-                currentTween = RectTransform
-                    .DOAnchorPosX(OriginAnchoredPosition.x, duration, snapping);
-                SetEase(true);
-            }
+            RectTransform.anchoredPosition = _endPosition;
+            currentTween = RectTransform.DOAnchorPos(_startPosition, duration, snapping);
+            SetEase(true);
 
             return currentTween.Play();
         }

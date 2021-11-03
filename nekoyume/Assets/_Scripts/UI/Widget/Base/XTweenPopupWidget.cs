@@ -13,7 +13,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            xTweener.single = AnchoredPositionSingleTweener.Single.X;
+            xTweener.axisType = AnchoredPositionSingleTweener.AxisType.X;
         }
 
         public override void Show(bool ignoreShowAnimation = false)
