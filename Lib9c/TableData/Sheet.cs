@@ -9,6 +9,7 @@ using System.Text;
 using Bencodex.Types;
 using JetBrains.Annotations;
 using Nekoyume.Model.State;
+using Serilog;
 #if UNITY_EDITOR
 using Serilog;
 #endif
@@ -149,6 +150,7 @@ namespace Nekoyume.TableData
                 throw new SheetRowNotFoundException(Name, key.ToString());
             }
 
+            Log.Debug("{sheetName}: Key - {value}", Name, key.ToString());
             return false;
         }
 

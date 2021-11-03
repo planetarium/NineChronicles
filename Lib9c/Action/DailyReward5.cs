@@ -5,12 +5,12 @@ using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("daily_reward5")]
     public class DailyReward5 : GameAction
     {
@@ -24,6 +24,8 @@ namespace Nekoyume.Action
             {
                 return states.SetState(avatarAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

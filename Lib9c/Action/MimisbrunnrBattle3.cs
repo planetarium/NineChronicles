@@ -16,6 +16,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle3")]
     public class MimisbrunnrBattle3 : GameAction
     {
@@ -66,6 +67,8 @@ namespace Nekoyume.Action
                 states = states.SetState(avatarAddress, MarkChanged);
                 return states.SetState(WeeklyArenaAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -289,7 +292,7 @@ namespace Nekoyume.Action
                     if (weekly.ContainsKey(avatarAddress))
                     {
                         var info = weekly[avatarAddress];
-                        info.Update(avatarState, characterSheet, costumeStatSheet);
+                        info.UpdateV2(avatarState, characterSheet, costumeStatSheet);
                         weekly.Update(info);
                     }
                     else

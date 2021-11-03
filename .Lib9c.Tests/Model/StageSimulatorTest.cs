@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Model
         }
 
         [Fact]
-        public void Simulate()
+        public void Simulate3()
         {
             var simulator = new StageSimulator(
                 _random,
@@ -44,7 +44,8 @@ namespace Lib9c.Tests.Model
                 1,
                 3,
                 _tableSheets.GetStageSimulatorSheets(),
-                2);
+                2,
+                1);
             simulator.Simulate3();
             var filtered =
                 simulator.Log.Where(e => e.GetType() != typeof(GetReward) || e.GetType() != typeof(DropBox));
@@ -78,7 +79,7 @@ namespace Lib9c.Tests.Model
         }
 
         [Fact]
-        public void SimulateV3()
+        public void Simulate5()
         {
             var simulator = new StageSimulator(
                 _random,
@@ -94,7 +95,33 @@ namespace Lib9c.Tests.Model
 
             while (player.Level == 1)
             {
-                simulator.Simulate();
+                simulator.Simulate5();
+            }
+
+            var player2 = simulator.Player;
+            Assert.Equal(2, player2.Level);
+            Assert.Equal(1, player2.eventMap[(int)QuestEventType.Level]);
+            Assert.True(simulator.Log.OfType<GetExp>().Any());
+        }
+
+        [Fact]
+        public void Simulate()
+        {
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.CostumeStatSheet,
+                2);
+
+            var player = simulator.Player;
+
+            while (player.Level == 1)
+            {
+                simulator.Simulate(1);
             }
 
             var player2 = simulator.Player;

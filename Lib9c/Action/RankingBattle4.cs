@@ -16,6 +16,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("ranking_battle4")]
     public class RankingBattle4 : GameAction
     {
@@ -48,6 +49,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress, EnemyAddress);
 
@@ -171,7 +174,7 @@ namespace Nekoyume.Action
                 weeklyArenaState[EnemyAddress],
                 costumeStatSheet);
 
-            simulator.Simulate();
+            simulator.Simulate3();
 
             sw.Stop();
             Log.Verbose(

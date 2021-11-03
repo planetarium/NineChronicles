@@ -10,8 +10,10 @@ namespace Lib9c.Tests.Action
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
+    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Xunit;
 
@@ -47,7 +49,10 @@ namespace Lib9c.Tests.Action
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, _currency), _currency * 1000)
                 .Add((_recipient, _currency), _currency * 10);
+            var state = ImmutableDictionary<Address, IValue>.Empty
+                .Add(_recipient.Derive(ActivationKey.DeriveKey), true.Serialize());
             var prevState = new State(
+                state: state,
                 balance: balance
             );
             var action = new TransferAsset(
@@ -223,6 +228,39 @@ namespace Lib9c.Tests.Action
             });
 
             Assert.Equal(new[] { _sender }, ex.Minters);
+            Assert.Equal(_sender, ex.Sender);
+            Assert.Equal(_recipient, ex.Recipient);
+        }
+
+        [Fact]
+        public void ExecuteWithUnactivatedRecipient()
+        {
+            var activatedAddress = new ActivatedAccountsState().AddAccount(new PrivateKey().ToAddress());
+            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
+                .Add((_sender, _currency), _currency * 1000)
+                .Add((_recipient, _currency), _currency * 10);
+            var state = ImmutableDictionary<Address, IValue>.Empty
+                .Add(_sender.Derive(ActivationKey.DeriveKey), true.Serialize())
+                .Add(Addresses.ActivatedAccount, activatedAddress.Serialize());
+            var prevState = new State(
+                state: state,
+                balance: balance
+            );
+            var action = new TransferAsset(
+                sender: _sender,
+                recipient: _recipient,
+                amount: _currency * 100
+            );
+            var ex = Assert.Throws<InvalidTransferUnactivatedRecipientException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = prevState,
+                    Signer = _sender,
+                    Rehearsal = false,
+                    BlockIndex = 1,
+                });
+            });
             Assert.Equal(_sender, ex.Sender);
             Assert.Equal(_recipient, ex.Recipient);
         }

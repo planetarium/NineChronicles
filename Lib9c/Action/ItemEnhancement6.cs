@@ -17,6 +17,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("item_enhancement6")]
     public class ItemEnhancement6 : GameAction
     {
@@ -47,6 +48,8 @@ namespace Nekoyume.Action
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -109,7 +112,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var result = new ItemEnhancement.ResultModel
+            var result = new ItemEnhancement7.ResultModel
             {
                 itemUsable = enhancementEquipment,
                 materialItemIdList = new[] { materialId }
@@ -124,7 +127,7 @@ namespace Nekoyume.Action
             }
 
             var enhancementCostSheet = states.GetSheet<EnhancementCostSheet>();
-            var requiredNCG = ItemEnhancement.GetRequiredNCG(enhancementCostSheet, enhancementEquipment.Grade, enhancementEquipment.level + 1);
+            var requiredNCG = ItemEnhancement7.GetRequiredNCG(enhancementCostSheet, enhancementEquipment.Grade, enhancementEquipment.level + 1);
 
             avatarState.actionPoint -= requiredAP;
             result.actionPoint = requiredAP;
@@ -196,7 +199,7 @@ namespace Nekoyume.Action
 
             enhancementEquipment.Unequip();
 
-            enhancementEquipment = ItemEnhancement.UpgradeEquipment(enhancementEquipment);
+            enhancementEquipment = ItemEnhancement7.UpgradeEquipment(enhancementEquipment);
 
             var requiredBlockIndex = ctx.BlockIndex + RequiredBlockCount;
             enhancementEquipment.Update(requiredBlockIndex);

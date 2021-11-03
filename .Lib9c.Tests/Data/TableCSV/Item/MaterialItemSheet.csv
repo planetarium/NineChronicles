@@ -93,10 +93,10 @@ id,_name,item_sub_type,grade,elemental_type
 306043,대지의 수액 덩어리(소),MonsterPart,1,Land
 306044,물의 수액 덩어리(소),MonsterPart,1,Water
 306045,수액 덩어리(대),MonsterPart,3,Normal
-306046,화염의 수액 덩어리(대),MonsterPart,3,Fire
-306047,바람의 수액 덩어리(대),MonsterPart,3,Wind
-306048,대지의 수액 덩어리(대),MonsterPart,3,Land
-306049,물의 수액 덩어리(대),MonsterPart,3,Water
+306046,화염의 수액 덩어리(대),MonsterPart,4,Fire
+306047,바람의 수액 덩어리(대),MonsterPart,4,Wind
+306048,대지의 수액 덩어리(대),MonsterPart,4,Land
+306049,물의 수액 덩어리(대),MonsterPart,4,Water
 306050,유령의 투구,MonsterPart,2,Wind
 306051,유령의 검 조각,MonsterPart,2,Wind
 306052,유령의 혼,MonsterPart,2,Wind
@@ -119,3 +119,4 @@ id,_name,item_sub_type,grade,elemental_type
 306069,화염의 제림니르 철퇴,MonsterPart,2,Fire
 400000,모래시계,Hourglass,4,Normal
 500000,AP 스톤,ApStone,4,Normal
+700000,아레나 시즌0 메달,NormalMaterial,5,Normal

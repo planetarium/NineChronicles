@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Tools.SubCommand
@@ -29,8 +28,11 @@ namespace Lib9c.Tools.SubCommand
             [Argument("GENESIS-BLOCK", Description = "A genesis block containing InitializeStates.")] string genesisBlock
         )
         {
-            Block<NCAction> genesis = Block<NCAction>.Deserialize(File.ReadAllBytes(genesisBlock));
-            var initStates = (InitializeStates)genesis.Transactions.Single().Actions.Single().InnerAction;
+            byte[] genesisBytes = File.ReadAllBytes(genesisBlock);
+            var genesisDict = (Bencodex.Types.Dictionary)_codec.Decode(genesisBytes);
+            IReadOnlyList<Transaction<NCAction>> genesisTxs =
+                BlockMarshaler.UnmarshalBlockTransactions<NCAction>(genesisDict);
+            var initStates = (InitializeStates)genesisTxs.Single().Actions.Single().InnerAction;
             Currency currency = new GoldCurrencyState(initStates.GoldCurrency).Currency;
 
             var action = new TransferAsset(
@@ -46,7 +48,7 @@ namespace Lib9c.Tools.SubCommand
                     action.PlainValue
                 }
             );
-            
+
             byte[] raw = _codec.Encode(bencoded);
             Console.Write(ByteUtil.Hex(raw));
         }
@@ -58,7 +60,7 @@ namespace Lib9c.Tools.SubCommand
             [Argument("TIMESTAMP", Description = "A datetime for new transaction.")] string timestamp = null,
             [Argument("GENESIS-HASH", Description = "A hex-encoded genesis block hash.")] string genesisHash = null,
             [Option("action", new[] { 'a' }, Description = "Hex-encoded actions or a path of the file contained it.")] string[] actions = null,
-            [Option("bytes", new[] { 'b' }, Description = "Print raw bytes instead of hexadecimal.  No trailing LF appended.")] bool bytes = false
+            [Option("bytes", new[] { 'b' }, Description = "Print raw bytes instead of base64.  No trailing LF appended.")] bool bytes = false
         )
         {
             List<NCAction> parsedActions = null;
@@ -70,11 +72,11 @@ namespace Lib9c.Tools.SubCommand
                     {
                         a = File.ReadAllText(a);
                     }
-                    
+
                     var bencoded = (List)_codec.Decode(ByteUtil.ParseHex(a));
                     string type = (Text) bencoded[0];
                     Dictionary plainValue = (Dictionary)bencoded[1];
-                    
+
                     ActionBase action = null;
                     action = type switch
                     {
@@ -83,6 +85,7 @@ namespace Lib9c.Tools.SubCommand
                         nameof(AddRedeemCode) => new AddRedeemCode(),
                         nameof(Nekoyume.Action.MigrationLegacyShop) => new MigrationLegacyShop(),
                         nameof(Nekoyume.Action.MigrationActivatedAccountsState) => new MigrationActivatedAccountsState(),
+                        nameof(Nekoyume.Action.MigrationAvatarState) => new MigrationAvatarState(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -110,7 +113,7 @@ namespace Lib9c.Tools.SubCommand
             }
             else
             {
-                Console.WriteLine(ByteUtil.Hex(raw));
+                Console.WriteLine(Convert.ToBase64String(raw));
             }
         }
 
@@ -179,6 +182,35 @@ namespace Lib9c.Tools.SubCommand
 
             byte[] raw = _codec.Encode(bencoded);
             Console.WriteLine(ByteUtil.Hex(raw));
+        }
+
+        [Command(Description = "Create MigrationAvatarState action and dump it.")]
+        public void MigrationAvatarState(
+        [Argument("directory-path", Description = "path of the directory contained hex-encoded avatar states.")] string directoryPath,
+        [Argument("output-path", Description = "path of the output file dumped action.")] string outputPath
+        )
+        {
+            var files = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
+            var avatarStates = files.Select(a =>
+            {
+                var raw = File.ReadAllText(a);
+                return (Dictionary)_codec.Decode(ByteUtil.ParseHex(raw));
+            }).ToList();
+            var action = new MigrationAvatarState()
+            {
+                avatarStates = avatarStates
+            };
+
+            var encoded = new List(
+                new IValue[]
+                {
+                    (Text) nameof(Nekoyume.Action.MigrationAvatarState),
+                    action.PlainValue
+                }
+            );
+
+            byte[] raw = _codec.Encode(encoded);
+            File.WriteAllText(outputPath, ByteUtil.Hex(raw));
         }
 
         [Command(Description = "Create new transaction with AddRedeemCode action and dump it.")]

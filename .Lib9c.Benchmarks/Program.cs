@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
@@ -16,6 +15,7 @@ using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
 using Nekoyume.BlockChain;
+using Nekoyume.BlockChain.Policy;
 using Serilog;
 using Serilog.Events;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -35,11 +35,40 @@ namespace Lib9c.Benchmarks
 
             string storePath = args[0];
             int limit = int.Parse(args[1]);
-            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().CreateLogger();
+            int offset = 0;
+
+            if (args.Length >= 3)
+            {
+                offset = int.Parse(args[2]);
+            }
+
+            if (limit < 0)
+            {
+                Console.Error.WriteLine("Limit value must be greater than 0. Entered value: {0}", limit);
+                Environment.Exit(1);
+                return;
+            }
+
+            if (offset < 0)
+            {
+                Console.Error.WriteLine("Offset value must be greater than 0. Entered value: {0}", offset);
+                Environment.Exit(1);
+                return;
+            }
+
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Verbose().WriteTo.Console().CreateLogger();
             Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
             var policySource = new BlockPolicySource(Log.Logger, LogEventLevel.Verbose);
             IBlockPolicy<NCAction> policy =
-                policySource.GetPolicy(BlockPolicySource.DifficultyBoundDivisor + 1, 10000);
+                policySource.GetPolicy(
+                    // Explicitly set to lowest possible difficulty.
+                    minimumDifficulty: BlockPolicySource.DifficultyStability,
+                    maxBlockBytesPolicy: null,
+                    minTransactionsPerBlockPolicy: null,
+                    maxTransactionsPerBlockPolicy: null,
+                    maxTransactionsPerSignerPerBlockPolicy: null,
+                    authorizedMinersPolicy: null,
+                    permissionedMinersPolicy: null);
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             var store = new RocksDBStore(storePath);
             if (!(store.GetCanonicalChainId() is Guid chainId))
@@ -57,15 +86,20 @@ namespace Lib9c.Benchmarks
             }
 
             DateTimeOffset started = DateTimeOffset.UtcNow;
-            Block<NCAction> genesis = store.GetBlock<NCAction>(gHash);
-            IKeyValueStore stateRootKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes")),
-                stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
-            var stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
+            Block<NCAction> genesis = store.GetBlock<NCAction>(policy.GetHashAlgorithm, gHash);
+            IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
+            var stateStore = new TrieStateStore(stateKeyValueStore);
             var chain = new BlockChain<NCAction>(policy, stagePolicy, store, stateStore, genesis);
             long height = chain.Tip.Index;
-            BlockHash[] blockHashes = limit < 0
-                ? chain.BlockHashes.SkipWhile((_, i) => i < height + limit).ToArray()
-                : chain.BlockHashes.Take(limit).ToArray();
+            if (offset + limit > (int)height)
+            {
+                Console.Error.WriteLine(
+                    "The sum of the offset and limit is greater than the chain tip index: {0}", height);
+                Environment.Exit(1);
+                return;
+            }
+
+            BlockHash[] blockHashes = store.IterateIndexes(chain.Id, offset, limit).Select((value, i) => value ).ToArray();
             Console.Error.WriteLine(
                 "Executing {0} blocks: {1}-{2} (inclusive).",
                 blockHashes.Length,
@@ -87,7 +121,14 @@ namespace Lib9c.Benchmarks
 
                 IEnumerable<ActionEvaluation> blockEvals =
                 chain.ExecuteActions(block, StateCompleterSet<NCAction>.Reject);
-                SetStates(chain.Id, stateStore, block, blockEvals.ToArray(), buildStateReferences: true);
+                SetStates(
+                    chain.Id,
+                    store,
+                    stateStore,
+                    block,
+                    blockEvals.ToArray(),
+                    buildStateReferences: true
+                );
                 txs += block.Transactions.LongCount();
                 actions += block.Transactions.Sum(tx => tx.Actions.LongCount()) + 1;
             }
@@ -105,6 +146,7 @@ namespace Lib9c.Benchmarks
         // Copied from BlockChain<T>.SetStates().
         private static void SetStates(
             Guid chainId,
+            IStore store,
             IStateStore stateStore,
             Block<NCAction> block,
             IReadOnlyList<ActionEvaluation> actionEvaluations,
@@ -119,10 +161,11 @@ namespace Lib9c.Benchmarks
                     .SelectMany(kv => kv.Value.Select(c => (kv.Key, c))))
                 .ToImmutableHashSet();
 
-            if (!stateStore.ContainsBlockStates(block.Hash))
+            if (!stateStore.ContainsStateRoot(block.StateRootHash))
             {
+                HashDigest<SHA256>? prevStateRootHash = store.GetStateRootHash(block.PreviousHash);
                 var totalDelta = GetTotalDelta(actionEvaluations, ToStateKey, ToFungibleAssetKey);
-                stateStore.SetStates(block, totalDelta);
+                stateStore.Commit(prevStateRootHash, totalDelta);
             }
         }
 

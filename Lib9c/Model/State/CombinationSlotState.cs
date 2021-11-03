@@ -48,11 +48,11 @@ namespace Nekoyume.Model.State
                    blockIndex >= UnlockBlockIndex;
         }
 
-        public void Update(AttachmentActionResult result, long blockIndex, long requiredBlockIndex)
+        public void Update(AttachmentActionResult result, long blockIndex, long unlockBlockIndex)
         {
             Result = result;
             StartBlockIndex = blockIndex;
-            UnlockBlockIndex = requiredBlockIndex;
+            UnlockBlockIndex = unlockBlockIndex;
         }
 
         public void Update(long blockIndex)
@@ -65,6 +65,16 @@ namespace Nekoyume.Model.State
         {
             Update(blockIndex);
             var result = new RapidCombination0.ResultModel((Dictionary) Result.Serialize())
+            {
+                cost = new Dictionary<Material, int> {[material] = count}
+            };
+            Result = result;
+        }
+
+        public void UpdateV2(long blockIndex, Material material, int count)
+        {
+            Update(blockIndex);
+            var result = new RapidCombination5.ResultModel((Dictionary) Result.Serialize())
             {
                 cost = new Dictionary<Material, int> {[material] = count}
             };

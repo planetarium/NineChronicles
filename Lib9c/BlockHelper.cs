@@ -9,7 +9,7 @@ using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -27,7 +27,6 @@ namespace Nekoyume
             IImmutableSet<Address> activatedAccounts = null,
             bool isActivateAdminAddress = false,
             IEnumerable<string> credits = null,
-            int maximumTransactions = 100,
             PrivateKey privateKey = null,
             DateTimeOffset? timestamp = null
         )
@@ -63,13 +62,13 @@ namespace Nekoyume
                 goldDistributions: goldDistributions,
                 pendingActivationStates: pendingActivationStates,
                 authorizedMinersState: authorizedMinersState,
-                creditsState: credits is null ? null : new CreditsState(credits) 
+                creditsState: credits is null ? null : new CreditsState(credits)
             );
             var actions = new PolymorphicAction<ActionBase>[]
             {
                 initialStatesAction,
             };
-            var blockAction = new BlockPolicySource(Log.Logger).GetPolicy(5000000, maximumTransactions).BlockAction;
+            var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
             return
                 BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
                     HashAlgorithmType.Of<SHA256>(),

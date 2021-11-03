@@ -79,6 +79,46 @@ namespace Nekoyume.Model.Item
             return equipment;
         }
 
+        public static ItemUsable CreateItemUsableV2(ItemSheet.Row itemRow, Guid id,
+            long requiredBlockIndex, int level,
+            IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
+        {
+            Equipment equipment = null;
+
+            switch (itemRow.ItemSubType)
+            {
+                // Consumable
+                case ItemSubType.Food:
+                    return new Consumable((ConsumableItemSheet.Row) itemRow, id, requiredBlockIndex);
+                // Equipment
+                case ItemSubType.Weapon:
+                    equipment = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    break;
+                case ItemSubType.Armor:
+                    equipment = new Armor((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    break;
+                case ItemSubType.Belt:
+                    equipment = new Belt((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    break;
+                case ItemSubType.Necklace:
+                    equipment = new Necklace((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    break;
+                case ItemSubType.Ring:
+                    equipment = new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(
+                        itemRow.Id.ToString(CultureInfo.InvariantCulture));
+            }
+
+            for (int i = 0; i < level; ++i)
+            {
+                equipment.LevelUpV2(random, row, isGreatSuccess);
+            }
+
+            return equipment;
+        }
+
         public static ItemBase Deserialize(Dictionary serialized)
         {
             if (serialized.TryGetValue((Text) "item_type", out var type) &&

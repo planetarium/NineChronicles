@@ -36,16 +36,4 @@
     <Content Include="Data/**/*.*" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="Action\ClaimMonsterCollectionReward2Test.cs" />
-    <Compile Remove="Action\CombinationConsumable6Test.cs" />
-    <Compile Remove="Action\ItemEnhancement7Test.cs" />
-    <Compile Remove="Action\RankingBattle5Test.cs" />
-    <Compile Remove="Action\HackAndSlash7Test.cs" />
-    <Compile Remove="Action\CreateAvatar3Test.cs" />
-    <Compile Remove="Action\UpdateSell0Test.cs" />
-    <Compile Remove="Action\Sell9Test.cs" />
-    <Compile Remove="Action\Buy9Test.cs" />
-  </ItemGroup>
-
 </Project>

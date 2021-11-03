@@ -46,7 +46,8 @@ namespace Lib9c.Tests.Model
                 1,
                 1,
                 _tableSheets.GetStageSimulatorSheets(),
-                2
+                2,
+                1
             );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
@@ -68,7 +69,8 @@ namespace Lib9c.Tests.Model
                 1,
                 1,
                 _tableSheets.GetStageSimulatorSheets(),
-                2
+                2,
+                1
             );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
@@ -101,7 +103,8 @@ namespace Lib9c.Tests.Model
                 1,
                 1,
                 _tableSheets.GetStageSimulatorSheets(),
-                2
+                2,
+                1
             );
             var player = simulator.Player;
 
@@ -216,7 +219,8 @@ namespace Lib9c.Tests.Model
                 1,
                 1,
                 _tableSheets.GetStageSimulatorSheets(),
-                2
+                2,
+                1
             );
             var player = simulator.Player;
             Assert.Empty(player.eventMap);

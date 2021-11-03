@@ -19,9 +19,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(2200000)]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("buy8")]
-    public class Buy8 : GameAction
+    public class Buy8 : GameAction, IBuy5
     {
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
@@ -35,9 +35,10 @@ namespace Nekoyume.Action
         public const int ErrorCodeInvalidItemType = 9;
         public const int ErrorCodeDuplicateSell = 10;
 
-        public Address buyerAvatarAddress;
+        public Address buyerAvatarAddress { get; set; }
         public List<(Guid orderId, int errorCode)> errors = new List<(Guid orderId, int errorCode)>();
         public IEnumerable<PurchaseInfo> purchaseInfos;
+        IEnumerable<IPurchaseInfo> IBuy5.purchaseInfos => purchaseInfos.Cast<IPurchaseInfo>();
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -95,6 +96,8 @@ namespace Nekoyume.Action
                     .SetState(buyerQuestListAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress);
 

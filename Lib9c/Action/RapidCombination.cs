@@ -6,6 +6,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -14,7 +15,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("rapid_combination4")]
+    [ActionType("rapid_combination6")]
     public class RapidCombination : GameAction
     {
         public Address avatarAddress;
@@ -78,6 +79,14 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the GameConfigState was failed to load.");
             }
 
+            if (context.BlockIndex < slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock)
+            {
+                throw new AppraiseBlockNotReachedException(
+                    $"{addressesHex}Aborted as Item appraisal block section. " +
+                    $"context block index: {context.BlockIndex}, " +
+                    $"actionable block index : {slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock}");
+            }
+
             var count = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
@@ -88,11 +97,29 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");
             }
 
-            slotState.Update(context.BlockIndex, hourGlass, count);
-            avatarState.UpdateFromRapidCombination(
-                (CombinationConsumable5.ResultModel) slotState.Result,
-                context.BlockIndex
-            );
+            if (slotState.TryGetResultId(out var resultId) &&
+                avatarState.mailBox.All(mail => mail.id != resultId) &&
+                slotState.TryGetMail(
+                    context.BlockIndex,
+                    context.BlockIndex,
+                    out var combinationMail,
+                    out var itemEnhanceMail))
+            {
+                if (combinationMail != null)
+                {
+                    avatarState.Update(combinationMail);
+                }
+                else if (itemEnhanceMail != null)
+                {
+                    avatarState.Update(itemEnhanceMail);
+                }
+            }
+
+            slotState.UpdateV2(context.BlockIndex, hourGlass, count);
+            avatarState.UpdateFromRapidCombinationV2(
+                (RapidCombination5.ResultModel)slotState.Result,
+                context.BlockIndex);
+
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
