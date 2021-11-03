@@ -36,7 +36,7 @@ namespace Nekoyume.BlockChain
         {
         }
 
-        public void Start(ActionRenderer renderer)
+        public override void Start(ActionRenderer renderer)
         {
             _renderer = renderer;
 

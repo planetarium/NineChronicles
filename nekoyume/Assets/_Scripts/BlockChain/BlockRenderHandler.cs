@@ -9,7 +9,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
-using UnityEngine;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.BlockChain

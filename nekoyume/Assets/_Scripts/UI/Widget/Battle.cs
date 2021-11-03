@@ -143,10 +143,11 @@ namespace Nekoyume.UI
             //repeatToggle.isOn = isExitReserved ? false : isRepeat;
             helpButton.gameObject.SetActive(true);
             //repeatToggle.gameObject.SetActive(true);
-            boostEffectObject.SetActive(boostCost > Game.Game.instance
-                .TableSheets.StageSheet.Values.FirstOrDefault(i =>
-                    i.Id == Find<WorldMap>().SelectedStageId).CostAP);
+            var cost = Game.Game.instance
+                .TableSheets.StageSheet.Values.First(i => i.Id == stageId).CostAP;
+            boostEffectObject.SetActive(boostCost > cost);
             exitToggle.gameObject.SetActive(true);
+            exitToggle.isOn = boostCost > cost;
             boostCountText.text = $"<sprite name=UI_main_icon_star><size=75%>{boostCost}</size>";
         }
 

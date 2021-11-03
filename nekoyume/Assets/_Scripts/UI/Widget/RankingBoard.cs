@@ -186,15 +186,6 @@ namespace Nekoyume.UI
                     new WeeklyArenaState((Bencodex.Types.Dictionary)agent.GetState(weeklyArenaAddress));
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
                 UpdateWeeklyCache(States.Instance.WeeklyArenaState);
-
-                for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
-                {
-                    var rankingMapAddress = RankingState.Derive(i);
-                    var rankingMapState = agent.GetState(rankingMapAddress) is Bencodex.Types.Dictionary serialized
-                        ? new RankingMapState(serialized)
-                        : new RankingMapState(rankingMapAddress);
-                    States.Instance.SetRankingMapStates(rankingMapState);
-                }
             });
 
             base.Show(true);
@@ -404,7 +395,6 @@ namespace Nekoyume.UI
         {
             var currentAvatarInventory = States.Instance.CurrentAvatarState.inventory;
 
-            //TODO 소모품장착
             Game.Game.instance.ActionManager.RankingBattle(
                 arenaRankCell.ArenaInfo.AvatarAddress,
                 currentAvatarInventory.Costumes

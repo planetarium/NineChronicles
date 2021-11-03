@@ -43,9 +43,10 @@ namespace Nekoyume.UI
         private List<Costume> _costumes;
         private List<Equipment> _equipments;
         private List<Consumable> _consumables;
+        private int _worldId;
+        private int _stageId;
 
         private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
-        private const int MaxBoostCount = 12;
 
         protected override void Awake()
         {
@@ -57,18 +58,27 @@ namespace Nekoyume.UI
             boostMinusButton.OnClickAsObservable().Subscribe(_ => apSlider.value--);
         }
 
-        public void Show(Stage stage, List<Costume> costumes, List<Equipment> equipments, List<Consumable> consumables)
+        public void Show(
+            Stage stage,
+            List<Costume> costumes,
+            List<Equipment> equipments,
+            List<Consumable> consumables,
+            int maxCount,
+            int worldId,
+            int stageId)
         {
             _stage = stage;
             _costumes = costumes;
             _equipments = equipments;
             _consumables = consumables;
             _player = _stage.GetPlayer(PlayerPosition);
+            _worldId = worldId;
+            _stageId = stageId;
 
             ReactiveAvatarState.ActionPoint.Subscribe(value =>
             {
                 var costOfStage = GetCostOfStage();
-                apSlider.maxValue = value / costOfStage >= MaxBoostCount ? MaxBoostCount : value / costOfStage;
+                apSlider.maxValue = value / costOfStage >= maxCount ? maxCount : value / costOfStage;
                 ownAPText.text = value.ToString();
             }).AddTo(gameObject);
 
@@ -84,7 +94,8 @@ namespace Nekoyume.UI
             ownAPText.text = actionPoint.ToString();
             // Call onValueChanged by Change value
             apSlider.value = 0;
-            apSlider.value = apSlider.maxValue = actionPoint / cost >= MaxBoostCount ? MaxBoostCount : actionPoint / cost;
+            apSlider.value = apSlider.maxValue =
+                actionPoint / cost >= maxCount ? maxCount : actionPoint / cost;
             boostCountText.text = apSlider.value.ToString();
             needAPText.text = (cost * apSlider.value).ToString();
             base.Show();
@@ -98,10 +109,6 @@ namespace Nekoyume.UI
 
         private void BoostQuest()
         {
-            var worldMap = Find<WorldMap>();
-            var worldId = worldMap.SelectedWorldId;
-            var stageId = worldMap.SelectedStageId;
-
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
@@ -113,29 +120,35 @@ namespace Nekoyume.UI
             _stage.IsInStage = true;
             _stage.IsShowHud = true;
 
-            Game.Game.instance.ActionManager
-                .HackAndSlash(
+            if (_stageId >= GameConfig.MimisbrunnrStartStageId)
+            {
+                Game.Game.instance.ActionManager.MimisbrunnrBattle(
+                        _costumes,
+                        _equipments,
+                        _consumables,
+                        _worldId,
+                        _stageId,
+                        (int) apSlider.value
+                    );
+            }
+            else
+            {
+                Game.Game.instance.ActionManager.HackAndSlash(
                     _costumes,
                     _equipments,
                     _consumables,
-                    worldId,
-                    stageId,
-                    (int) apSlider.value
-                )
-                .Subscribe(
-                    _ =>
-                    {
-                        LocalLayerModifier.ModifyAvatarActionPoint(
-                            States.Instance.CurrentAvatarState.address, GetCostOfStage());
-                    }, e => ActionRenderHandler.BackToMain(false, e))
-                .AddTo(this);
+                    _worldId,
+                    _stageId,
+                    (int)apSlider.value
+                );
+            }
         }
 
-        private static int GetCostOfStage()
+        private int GetCostOfStage()
         {
             var selectedStageIdRow =
                 Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(i =>
-                    i.Id == Find<WorldMap>().SelectedStageId);
+                    i.Id == _stageId);
 
             return selectedStageIdRow.CostAP;
         }
