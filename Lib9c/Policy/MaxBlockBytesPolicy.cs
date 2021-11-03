@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain.Policy
                     startIndex: 2_000_001,
                     value: 1024 * 1024 * 10))    // 10 MiB
                 .Add(new SpannedSubPolicy<int>(
-                    startIndex: 3_000_001,
+                    startIndex: 2_680_001,
                     value: 1024 * 100));        // 100 KiB
     }
 }
