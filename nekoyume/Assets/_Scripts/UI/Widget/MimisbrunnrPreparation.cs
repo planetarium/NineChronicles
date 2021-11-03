@@ -99,9 +99,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject coverToBlockClick = null;
 
-        [SerializeField]
-        private Button boostPopupButton;
-
         private Stage _stage;
         private Game.Character.Player _player;
         private EquipmentSlot _weaponSlot;
@@ -200,44 +197,6 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             startButton.OnClickAsObservable().Where(_ => !EnoughActionPoint && !_stage.IsInStage)
-                .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ =>
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
-                .AddTo(gameObject);
-
-            boostPopupButton.OnClickAsObservable()
-                .Where(_ => EnoughActionPoint)
-                .Subscribe(_ =>
-                {
-                    if (!CheckEquipmentElementalType())
-                    {
-                        NotificationSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"));
-                        return;
-                    }
-
-                    var costumes = _player.Costumes;
-                    var equipments = equipmentSlots
-                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                        .Select(slot => (Equipment) slot.Item)
-                        .ToList();
-
-                    var consumables = consumableSlots
-                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                        .Select(slot => (Consumable) slot.Item)
-                        .ToList();
-
-                    _stage.IsExitReserved = false;
-                    _stage.IsRepeatStage = false;
-                    _stage.foodCount = consumables.Count;
-                    ActionRenderHandler.Instance.Pending = true;
-
-                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables, 6,
-                        GameConfig.MimisbrunnrWorldId, _stageId.Value);
-                });
-
-            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughActionPoint && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
@@ -928,14 +887,22 @@ namespace Nekoyume.UI
             _stage.IsRepeatStage = repeat;
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
-            Game.Game.instance.ActionManager.MimisbrunnrBattle(
-                costumes,
-                equipments,
-                consumables,
-                GameConfig.MimisbrunnrWorldId,
-                _stageId.Value,
-                1
-            );
+            Game.Game.instance.ActionManager
+                .MimisbrunnrBattle(
+                    costumes,
+                    equipments,
+                    consumables,
+                    GameConfig.MimisbrunnrWorldId,
+                    _stageId.Value
+                )
+                .Subscribe(
+                    _ =>
+                    {
+                        LocalLayerModifier.ModifyAvatarActionPoint(
+                            States.Instance.CurrentAvatarState.address,
+                            _requiredCost);
+                    }, e => ActionRenderHandler.BackToMain(false, e))
+                .AddTo(this);
         }
 
         public void GoToStage(BattleLog battleLog)

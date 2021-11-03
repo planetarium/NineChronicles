@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics.SymbolStore;
-using System.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -50,27 +48,11 @@ namespace Nekoyume
             return true;
         }
 
-        public static async Task<WeeklyArenaState> GetThisWeekStateAsync(long blockIndex)
-        {
-            if (blockIndex != Game.Game.instance.Agent.BlockIndex)
-            {
-                Debug.LogError(
-                    $"[{nameof(ArenaHelper)}.{nameof(TryGetThisWeekState)}] `{nameof(blockIndex)}`({blockIndex}) not equals with `Game.Game.instance.Agent.BlockIndex`({Game.Game.instance.Agent.BlockIndex})");
-                return null;
-            }
-
-            if (!TryGetThisWeekAddress(blockIndex, out var address))
-                return null;
-
-            var state = await Game.Game.instance.Agent.GetStateAsync(address);
-            return state is null ? null : new WeeklyArenaState(state);
-        }
-
         public static Address GetPrevWeekAddress()
         {
             return GetPrevWeekAddress(Game.Game.instance.Agent.BlockIndex);
         }
-
+        
         public static Address GetPrevWeekAddress(long thisWeekBlockIndex)
         {
             var gameConfigState = States.Instance.GameConfigState;

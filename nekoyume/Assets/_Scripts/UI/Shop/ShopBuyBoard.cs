@@ -108,8 +108,8 @@ namespace Nekoyume.UI
         {
             var wishItems = shopItems.SharedModel.GetWishItems;
             var purchaseInfos = new List<PurchaseInfo>();
-            purchaseInfos.AddRange(wishItems.Select(x => ShopBuy.GetPurchaseInfo(x.OrderId.Value)));
-            Game.Game.instance.ActionManager.Buy(purchaseInfos);
+            purchaseInfos.AddRange(wishItems.Select(x => ShopBuy.GetPurchseInfo(x.OrderId.Value)));
+            Game.Game.instance.ActionManager.Buy(purchaseInfos, wishItems);
 
             if (shopItems.SharedModel.WishItemCount > 0)
             {
@@ -128,6 +128,8 @@ namespace Nekoyume.UI
                 };
                 Mixpanel.Track("Unity/Buy", props);
                 shopItem.Selected.Value = false;
+                var buyerAgentAddress = States.Instance.AgentState.address;
+                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
                 ReactiveShopState.RemoveBuyDigest(shopItem.OrderId.Value);
                 var format = L10nManager.Localize("NOTIFICATION_BUY_START");
                 OneLineSystem.Push(MailType.Auction,

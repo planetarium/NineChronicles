@@ -198,7 +198,9 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
-                .Where(_ => EnoughToPlay)
+                .Where(_ =>
+                    Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value)
+                    && EnoughToPlay)
                 .Subscribe(_ =>
                 {
                     var costumes = _player.Costumes;
@@ -217,13 +219,20 @@ namespace Nekoyume.UI
                     _stage.foodCount = consumables.Count;
                     ActionRenderHandler.Instance.Pending = true;
 
-                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables, 12, _worldId, _stageId.Value);
+                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables);
                 });
 
             boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                .AddTo(gameObject);
+
+            boostPopupButton.OnClickAsObservable()
+                .Where(_ =>
+                    !Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value))
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ => OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_BOOSTER_CONDITIONS_GUIDE")))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
@@ -839,14 +848,23 @@ namespace Nekoyume.UI
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
 
-            Game.Game.instance.ActionManager.HackAndSlash(
-                costumes,
-                equipments,
-                consumables,
-                _worldId,
-                _stageId.Value,
-                1
-            );
+            var playCount = 1;
+            Game.Game.instance.ActionManager
+                .HackAndSlash(
+                    costumes,
+                    equipments,
+                    consumables,
+                    _worldId,
+                    _stageId.Value,
+                    playCount
+                )
+                .Subscribe(
+                    _ =>
+                    {
+                        LocalLayerModifier.ModifyAvatarActionPoint(
+                            States.Instance.CurrentAvatarState.address, _requiredCost);
+                    }, e => ActionRenderHandler.BackToMain(false, e))
+                .AddTo(this);
         }
 
         public void GoToStage(BattleLog battleLog)

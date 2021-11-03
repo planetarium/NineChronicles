@@ -173,7 +173,7 @@ namespace Nekoyume.Game
             var pos = _player.transform.position;
             var castingEffect = Game.instance.Stage.SkillController.Get(pos, ElementalType.Fire);
             castingEffect.Play();
-            AreaAttackCutscene.Show(_player.GetArmorId());
+            AreaAttackCutscene.Show(_player.GetAmorId());
             yield return new WaitForSeconds(0.6f);
             var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
             effect.Play();

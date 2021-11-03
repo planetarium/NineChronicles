@@ -527,23 +527,28 @@ namespace Nekoyume.UI
             // NOTE: Check mimisbrunnr
             if (SharedModel.WorldID > 10000)
             {
-                Game.Game.instance.ActionManager.MimisbrunnrBattle(
-                    player.Costumes,
-                    player.Equipments,
-                    new List<Consumable>(),
-                    SharedModel.WorldID,
-                    SharedModel.StageID + 1,
-                    1);
+                yield return Game.Game.instance.ActionManager
+                    .MimisbrunnrBattle(
+                        player.Costumes,
+                        player.Equipments,
+                        new List<Consumable>(),
+                        SharedModel.WorldID,
+                        SharedModel.StageID + 1)
+                    .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
+                    .Subscribe();
             }
             else
             {
-                yield return Game.Game.instance.ActionManager.HackAndSlash(
-                    player.Costumes,
-                    player.Equipments,
-                    new List<Consumable>(),
-                    SharedModel.WorldID,
-                    SharedModel.StageID + 1,
-                    1);
+                yield return Game.Game.instance.ActionManager
+                    .HackAndSlash(
+                        player.Costumes,
+                        player.Equipments,
+                        new List<Consumable>(),
+                        SharedModel.WorldID,
+                        SharedModel.StageID + 1,
+                        1)
+                    .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
+                    .Subscribe();
             }
         }
 
@@ -589,23 +594,28 @@ namespace Nekoyume.UI
             // NOTE: Check mimisbrunnr
             if (SharedModel.WorldID > 10000)
             {
-                Game.Game.instance.ActionManager.MimisbrunnrBattle(
-                    player.Costumes,
-                    player.Equipments,
-                    new List<Consumable>(),
-                    SharedModel.WorldID,
-                    SharedModel.StageID,
-                    1);
+                yield return Game.Game.instance.ActionManager
+                    .MimisbrunnrBattle(
+                        player.Costumes,
+                        player.Equipments,
+                        new List<Consumable>(),
+                        SharedModel.WorldID,
+                        SharedModel.StageID)
+                    .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
+                    .Subscribe();
             }
             else
             {
-                yield return Game.Game.instance.ActionManager.HackAndSlash(
-                    player.Costumes,
-                    player.Equipments,
-                    new List<Consumable>(),
-                    SharedModel.WorldID,
-                    SharedModel.StageID,
-                    1);
+                yield return Game.Game.instance.ActionManager
+                    .HackAndSlash(
+                        player.Costumes,
+                        player.Equipments,
+                        new List<Consumable>(),
+                        SharedModel.WorldID,
+                        SharedModel.StageID,
+                        1)
+                    .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
+                    .Subscribe();
             }
         }
 

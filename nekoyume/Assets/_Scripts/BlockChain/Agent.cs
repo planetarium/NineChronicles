@@ -83,7 +83,6 @@ namespace Nekoyume.BlockChain
         protected BlockChain<PolymorphicAction<ActionBase>> blocks;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
         protected BaseStore store;
-        private IStagePolicy<PolymorphicAction<ActionBase>> _stagePolicy;
         private IStateStore _stateStore;
         private ImmutableList<Peer> _seedPeers;
         private ImmutableList<Peer> _peerList;
@@ -135,7 +134,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public IEnumerator Initialize(
+        public void Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
             Action<bool> callback)
@@ -143,7 +142,7 @@ namespace Nekoyume.BlockChain
             if (disposed)
             {
                 Debug.Log("Agent Exist");
-                yield return null;
+                return;
             }
 
             InitAgent(callback, privateKey, options);
@@ -183,10 +182,19 @@ namespace Nekoyume.BlockChain
 
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
-            var policy = BlockPolicySource.GetPolicy();
-            _stagePolicy = new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            var policy = BlockPolicySource.GetPolicy(minimumDifficulty, 100);
+            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
+                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
+
+            // 같은 논스를 다시 찍지 않기 위해서 직접 만든 Tx는 유지합니다.
+            ImmutableHashSet<TxId> pendingTxsFromOhters = store.IterateStagedTransactionIds()
+                .Select(tid => store.GetTransaction<PolymorphicAction<ActionBase>>(tid))
+                .Where(tx => tx.Signer != Address)
+                .Select(tx => tx.Id)
+                .ToImmutableHashSet();
+            store.UnstageTransactionIds(pendingTxsFromOhters);
 
             try
             {
@@ -194,7 +202,7 @@ namespace Nekoyume.BlockChain
                 _stateStore = new TrieStateStore(stateKeyValueStore);
                 blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                     policy,
-                    _stagePolicy,
+                    stagePolicy,
                     store,
                     _stateStore,
                     genesisBlock,
@@ -281,11 +289,6 @@ namespace Nekoyume.BlockChain
         public IValue GetState(Address address)
         {
             return blocks.GetState(address);
-        }
-
-        public Task<IValue> GetStateAsync(Address address)
-        {
-            return Task.Run(() => blocks.GetState(address));
         }
 
         public bool IsActionStaged(Guid actionId, out TxId txId)
@@ -638,8 +641,22 @@ namespace Nekoyume.BlockChain
                     $" - LastChecked: {peerState.LastChecked}\n" +
                     $" - Latency: {peerState.Latency}"));
                 Cheat.Display("Peers", peerStateString);
+                StringBuilder log = new StringBuilder($"Staged Transactions : {store.IterateStagedTransactionIds().Count()}\n");
+                var count = 1;
+                foreach (var id in store.IterateStagedTransactionIds())
+                {
+                    var tx = store.GetTransaction<PolymorphicAction<ActionBase>>(id);
+                    log.Append($"[{count++}] Id : {tx.Id}\n");
+                    log.Append($"-Signer : {tx.Signer.ToString()}\n");
+                    log.Append($"-Nonce : {tx.Nonce}\n");
+                    log.Append($"-Timestamp : {tx.Timestamp}\n");
+                    log.Append($"-Actions\n");
+                    log = tx.Actions.Aggregate(log, (current, action) => current.Append($" -{action.InnerAction}\n"));
+                }
 
-                StringBuilder log = new StringBuilder($"Last 10 tips :\n");
+                Cheat.Display("StagedTxs", log.ToString());
+
+                log = new StringBuilder($"Last 10 tips :\n");
                 foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
                 {
                     log.Append($"[{block.Index}] {block.Hash}\n");
@@ -863,7 +880,7 @@ namespace Nekoyume.BlockChain
                     new List<Consumable>(),
                     1,
                     1,
-                    1);
+                    1).ToYieldInstruction();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }
@@ -874,7 +891,7 @@ namespace Nekoyume.BlockChain
             var sleepInterval = new WaitForSeconds(15);
             while (true)
             {
-                var task = Task.Run(async() => await miner.MineBlockAsync(_cancellationTokenSource.Token));
+                var task = Task.Run(async() => await miner.MineBlockAsync(100, _cancellationTokenSource.Token));
                 yield return new WaitUntil(() => task.IsCompleted);
 #if UNITY_EDITOR
                 yield return sleepInterval;
@@ -961,7 +978,8 @@ namespace Nekoyume.BlockChain
                 // 프레임 저하를 막기 위해 별도 스레드로 처리합니다.
                 Task<List<Transaction<PolymorphicAction<ActionBase>>>> getOwnTxs =
                     Task.Run(
-                        () => _stagePolicy.Iterate()
+                        () => store.IterateStagedTransactionIds()
+                            .Select(id => store.GetTransaction<PolymorphicAction<ActionBase>>(id))
                             .Where(tx => tx.Signer.Equals(Address))
                             .ToList()
                     );

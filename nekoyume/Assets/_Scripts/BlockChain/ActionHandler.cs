@@ -1,21 +1,32 @@
 using System.Linq;
-using Lib9c.Renderer;
+using Bencodex.Types;
+using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
     public abstract class ActionHandler
     {
-        public bool Pending { get; set; }
+        public bool Pending;
         public Currency GoldCurrency { get; internal set; }
 
-        public abstract void Start(ActionRenderer renderer);
+        protected bool ValidateEvaluationForAgentState<T>(ActionBase.ActionEvaluation<T> evaluation)
+            where T : ActionBase
+        {
+            if (States.Instance.AgentState is null)
+            {
+                return false;
+            }
+
+            return evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.AgentState.address);
+        }
 
         protected bool HasUpdatedAssetsForCurrentAgent<T>(ActionBase.ActionEvaluation<T> evaluation)
             where T : ActionBase
@@ -106,6 +117,16 @@ namespace Nekoyume.BlockChain
         {
             var state = evaluation.OutputStates.GetGameConfigState();
             States.Instance.SetGameConfigState(state);
+        }
+
+        protected void UpdateRankingMapState<T>(ActionBase.ActionEvaluation<T> evaluation, Address address) where T : ActionBase
+        {
+            var value = evaluation.OutputStates.GetState(address);
+            if (!(value is null))
+            {
+                var state = new RankingMapState((Dictionary) value);
+                States.Instance.SetRankingMapStates(state);
+            }
         }
 
         private static void UpdateAgentState(AgentState state)

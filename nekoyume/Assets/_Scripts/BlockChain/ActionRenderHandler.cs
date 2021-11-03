@@ -52,7 +52,7 @@ namespace Nekoyume.BlockChain
         {
         }
 
-        public override void Start(ActionRenderer renderer)
+        public void Start(ActionRenderer renderer)
         {
             _renderer = renderer;
 
@@ -254,7 +254,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slotState = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (RapidCombination5.ResultModel) slotState.Result;
+                var result = (RapidCombination.ResultModel) slotState.Result;
                 foreach (var pair in result.cost)
                 {
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -326,8 +326,8 @@ namespace Nekoyume.BlockChain
                 }
 
                 var format = L10nManager.Localize(formatKey);
-                NotificationSystem.CancelReserve(result.itemUsable.TradableId);
-                NotificationSystem.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
+                UI.NotificationSystem.CancelReserve(result.itemUsable.TradableId);
+                UI.NotificationSystem.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
 
                 States.Instance.UpdateCombinationSlotState(slotIndex, slotState);
                 UpdateAgentState(eval);
@@ -765,6 +765,7 @@ namespace Nekoyume.BlockChain
                 var log = simulator.Log;
                 Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
 
+
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
                     if (Widget.Find<QuestPreparation>().IsActive())
@@ -838,12 +839,10 @@ namespace Nekoyume.BlockChain
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
                     Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080,
-                    eval.Action.playCount
+                    StageSimulator.ConstructorVersionV100080
                 );
-                simulator.Simulate(eval.Action.playCount);
+                simulator.Simulate(1);
                 BattleLog log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {

@@ -295,6 +295,11 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var baseGuid = _baseItem.ItemId;
+            var materialGuid = _materialItem.ItemId;
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
             var slots = Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
             {
@@ -307,10 +312,22 @@ namespace Nekoyume.UI
                 slots.SetCaching(slotIndex, true, row.SuccessRequiredBlockIndex, itemUsable:_baseItem);
             }
 
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -_costNcg);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                -GameConfig.EnhanceEquipmentCostAP);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                -GameConfig.EnhanceEquipmentCostAP);
+            LocalLayerModifier.RemoveItem(avatarAddress, _baseItem.TradableId,
+                _baseItem.RequiredBlockIndex, 1);
+            LocalLayerModifier.RemoveItem(avatarAddress, _materialItem.TradableId,
+                _materialItem.RequiredBlockIndex, 1);
+
             NotificationSystem.Push(MailType.Workshop,
                 L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"));
 
-            Game.Game.instance.ActionManager.ItemEnhancement(_baseItem, _materialItem, slotIndex, _costNcg);
+            Game.Game.instance.ActionManager
+                .ItemEnhancement(baseGuid, materialGuid, slotIndex)
+                .Subscribe(_ => { }, e => ActionRenderHandler.BackToMain(false, e));
 
             StartCoroutine(CoCombineNPCAnimation(_baseItem, row.SuccessRequiredBlockIndex, () => UpdateState(State.Empty)));
         }

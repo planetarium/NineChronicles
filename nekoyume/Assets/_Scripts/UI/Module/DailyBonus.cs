@@ -188,7 +188,9 @@ namespace Nekoyume.UI.Module
 
         private void GetDailyReward()
         {
-            NotificationSystem.Push(MailType.System, L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
+            UI.NotificationSystem.Push(
+                Nekoyume.Model.Mail.MailType.System,
+                L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
 
             Game.Game.instance.ActionManager.DailyReward();
 
@@ -204,6 +206,11 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator CoGetDailyRewardAnimation()
         {
+            var blockCount = Game.Game.instance.Agent.BlockIndex -
+                States.Instance.CurrentAvatarState.dailyRewardReceivedIndex + 1;
+            LocalLayerModifier.IncreaseAvatarDailyRewardReceivedIndex(
+                States.Instance.CurrentAvatarState.address,
+                blockCount);
             animator.SetTrigger(GetReward);
             VFXController.instance.Create<ItemMoveVFX>(boxImageTransform.position);
 

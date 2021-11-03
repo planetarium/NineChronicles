@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Bencodex;
 using Libplanet;
 using Libplanet.Action;
@@ -51,7 +50,7 @@ namespace Nekoyume.BlockChain
                   var buffer = File.ReadAllBytes(path);
                   var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
                   HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
-                      .GetPolicy()
+                      .GetPolicy(5_000_000, 100) // FIXME: e.g., GetPolicy(IAgent.GetMinimumDifficulty(), IAgent.GetMaxTxCount())
                       .GetHashAlgorithm;
                   return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
               }
@@ -62,32 +61,7 @@ namespace Nekoyume.BlockChain
                   byte[] rawGenesisBlock = client.DownloadData(uri);
                   var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
                   HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
-                      .GetPolicy()
-                      .GetHashAlgorithm;
-                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
-              }
-          }
-
-          public static async Task<Block<PolymorphicAction<ActionBase>>> ImportBlockAsync(string path)
-          {
-              var agent = Game.Game.instance.Agent;
-              if (File.Exists(path))
-              {
-                  var buffer = File.ReadAllBytes(path);
-                  var dict = (Bencodex.Types.Dictionary)_codec.Decode(buffer);
-                  HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
-                      .GetPolicy()
-                      .GetHashAlgorithm;
-                  return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
-              }
-
-              var uri = new Uri(path);
-              using (var client = new WebClient())
-              {
-                  byte[] rawGenesisBlock = await client.DownloadDataTaskAsync(uri);
-                  var dict = (Bencodex.Types.Dictionary)_codec.Decode(rawGenesisBlock);
-                  HashAlgorithmGetter hashAlgorithmGetter = agent.BlockPolicySource
-                      .GetPolicy()
+                      .GetPolicy(5_000_000, 100) // FIXME: e.g., GetPolicy(IAgent.GetMinimumDifficulty(), IAgent.GetMaxTxCount())
                       .GetHashAlgorithm;
                   return BlockMarshaler.UnmarshalBlock<PolymorphicAction<ActionBase>>(hashAlgorithmGetter, dict);
               }

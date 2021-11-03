@@ -213,16 +213,16 @@ namespace Nekoyume.UI.Module
 
         private void Set(bool isBoss, string imageKey)
         {
-            normalImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_04");
+            normalImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_01");
             normalImage.SetNativeSize();
             if (imageKey == "03")
             {
                 //같은 이미지가 사용됨
                 imageKey = "02";
             }
-            disabledImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_04");
+            disabledImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_01");
             disabledImage.SetNativeSize();
-            selectedImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_04");
+            selectedImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_01");
             selectedImage.SetNativeSize();
             bossImage.enabled = isBoss;
             ResetScale();

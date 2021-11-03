@@ -81,9 +81,7 @@ namespace Nekoyume.UI
             rapidCombinationButton.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
-                Game.Game.instance.ActionManager.RapidCombination(_slotState, _slotIndex);
-                Find<CombinationSlotsPopup>()
-                    .SetCaching(_slotIndex, true, slotType: CombinationSlot.SlotType.WaitingReceive);
+                RapidCombination(_slotState, _slotIndex, Game.Game.instance.Agent.BlockIndex);
                 Close();
             });
 
@@ -374,6 +372,18 @@ namespace Nekoyume.UI
         private Information GetInformation(CraftType type)
         {
             return _informations.FirstOrDefault(x => x.Type.Equals(type));
+        }
+
+        private static void RapidCombination(CombinationSlotState state, int slotIndex, long currentBlockIndex)
+        {
+            var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                .First(r => r.ItemSubType == ItemSubType.Hourglass);
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var diff = state.UnlockBlockIndex - currentBlockIndex;
+            var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
+            Game.Game.instance.ActionManager.RapidCombination(avatarAddress, slotIndex);
+            Find<CombinationSlotsPopup>().SetCaching(slotIndex, true, slotType:CombinationSlot.SlotType.WaitingReceive);
         }
     }
 }
