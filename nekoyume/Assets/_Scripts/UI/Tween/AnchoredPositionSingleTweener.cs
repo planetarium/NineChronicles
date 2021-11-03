@@ -9,7 +9,7 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionSingleTweener : DOTweenBase
     {
-        public enum Single
+        public enum AxisType
         {
             X,
             Y,
