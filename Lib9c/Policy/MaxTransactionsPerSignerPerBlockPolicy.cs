@@ -19,8 +19,13 @@ namespace Nekoyume.BlockChain.Policy
 
         public static IVariableSubPolicy<int> Mainnet =>
             Default
+                // Newly introduced to prevent transactions spamming that may result in
+                // the chain grinding to a halt without meaningful state transitions happening.
+                // See https://github.com/planetarium/libplanet/issues/1449.
+                // Issued for v100084.
+                // FIXME: Starting index and value must be finalized accordingly before deployment.
                 .Add(new SpannedSubPolicy<int>(
-                    startIndex: BlockPolicySource.MaxTransactionsPerSignerPerBlockStartIndex,
-                    value: BlockPolicySource.MaxTransactionsPerSignerPerBlock));
+                    startIndex: 3_000_001,
+                    value: 4));
     }
 }
