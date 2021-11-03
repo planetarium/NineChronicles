@@ -166,7 +166,7 @@ namespace Nekoyume.UI.Module
             {
                 toggles[i].gameObject.SetActive(i < SharedViewModel.PageCount.Value);
             }
-            
+
             SharedViewModel.CurrentPageNumber.Value = 1;
 
             SharedViewModel.CurrentPageNumber
@@ -177,8 +177,6 @@ namespace Nekoyume.UI.Module
                         currentPageNumber < SharedViewModel.PageCount.Value);
                 })
                 .AddTo(_disposablesForModel);
-
-            horizontalScrollSnap.ChangePage(SharedViewModel.CurrentPageNumber.Value - 1);
         }
 
         public void Set(int openedStageId = -1, int selectedStageId = -1)

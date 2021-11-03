@@ -1,4 +1,4 @@
-﻿/// Credit BinaryX 
+﻿/// Credit BinaryX
 /// Sourced from - http://forum.unity3d.com/threads/scripts-useful-4-6-scripts-collection.264161/page-2#post-1945602
 /// Updated by ddreaper - removed dependency on a custom ScrollRect script. Now implements drag interfaces and standard Scroll Rect.
 
@@ -177,7 +177,7 @@ namespace UnityEngine.UI.Extensions
                 vscroll.ss = this;
             }
             panelDimensions = gameObject.GetComponent<RectTransform>().rect;
-            
+
             if (StartingScreen < 0)
             {
                 StartingScreen = 0;
@@ -216,9 +216,18 @@ namespace UnityEngine.UI.Extensions
 
         internal void InitialiseChildObjectsFromScene()
         {
-            int childCount = _screensContainer.childCount;
-            ChildObjects = new GameObject[childCount];
+            var childCount = _screensContainer.childCount;
+            var activatedChildCount = 0;
             for (int i = 0; i < childCount; i++)
+            {
+                if (_screensContainer.GetChild(i).gameObject.activeSelf)
+                {
+                    activatedChildCount++;
+                }
+            }
+
+            ChildObjects = new GameObject[activatedChildCount];
+            for (int i = 0; i < activatedChildCount; i++)
             {
                 ChildObjects[i] = _screensContainer.transform.GetChild(i).gameObject;
                 if (MaskArea && ChildObjects[i].activeSelf)
@@ -386,7 +395,7 @@ namespace UnityEngine.UI.Extensions
             else
             {
                 _infiniteOffset = _screensContainer.localPosition.x < 0 ? -_screensContainer.sizeDelta.x * _infiniteWindow : _screensContainer.sizeDelta.x * _infiniteWindow;
-                _infiniteOffset = _infiniteOffset == 0 ? 0 : _infiniteOffset < 0 ? _infiniteOffset - _childSize * _infiniteWindow : _infiniteOffset + _childSize * _infiniteWindow; 
+                _infiniteOffset = _infiniteOffset == 0 ? 0 : _infiniteOffset < 0 ? _infiniteOffset - _childSize * _infiniteWindow : _infiniteOffset + _childSize * _infiniteWindow;
                 target.x = _childPos + _scrollStartPosition + _infiniteOffset;
             }
         }

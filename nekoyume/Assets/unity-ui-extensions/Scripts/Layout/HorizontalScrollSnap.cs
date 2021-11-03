@@ -1,4 +1,4 @@
-/// Credit BinaryX 
+/// Credit BinaryX
 /// Sourced from - http://forum.unity3d.com/threads/scripts-useful-4-6-scripts-collection.264161/page-2#post-1945602
 /// Updated by ddreaper - removed dependency on a custom ScrollRect script. Now implements drag interfaces and standard Scroll Rect.
 
@@ -68,16 +68,25 @@ namespace UnityEngine.UI.Extensions
 
         public void DistributePages()
         {
-            _screens = _screensContainer.childCount;
+            var childCount = _screensContainer.childCount;
+            var activatedChildCount = 0;
+            for (var i = 0; i < childCount; i++)
+            {
+                if (_screensContainer.GetChild(i).gameObject.activeSelf)
+                {
+                    activatedChildCount++;
+                }
+            }
+            _screens = activatedChildCount;
             _scroll_rect.horizontalNormalizedPosition = 0;
 
             float _offset = 0;
             float _dimension = 0;
             Rect panelDimensions = gameObject.GetComponent<RectTransform>().rect;
             float currentXPosition = 0;
-            var pageStepValue = _childSize = (int)panelDimensions.width * ((PageStep == 0) ? 3 : PageStep);
+            var pageStepValue = _childSize = (int)panelDimensions.width * ((PageStep == 0) ? activatedChildCount : PageStep);
 
-            for (int i = 0; i < _screensContainer.transform.childCount; i++)
+            for (int i = 0; i < activatedChildCount; i++)
             {
                 RectTransform child = _screensContainer.transform.GetChild(i).gameObject.GetComponent<RectTransform>();
                 currentXPosition = _offset + i * pageStepValue;
@@ -118,7 +127,7 @@ namespace UnityEngine.UI.Extensions
         }
 
         /// <summary>
-        /// Remove a new child to this Scroll Snap and recalculate it's children 
+        /// Remove a new child to this Scroll Snap and recalculate it's children
         /// *Note, this is an index address (0-x)
         /// </summary>
         /// <param name="index">Index element of child to remove</param>
@@ -129,7 +138,7 @@ namespace UnityEngine.UI.Extensions
         }
 
         /// <summary>
-        /// Remove a new child to this Scroll Snap and recalculate it's children 
+        /// Remove a new child to this Scroll Snap and recalculate it's children
         /// *Note, this is an index address (0-x)
         /// </summary>
         /// <param name="index">Index element of child to remove</param>
@@ -176,10 +185,10 @@ namespace UnityEngine.UI.Extensions
         /// <param name="ChildrenRemoved">Array of child GO's removed</param>
         public void RemoveAllChildren(bool WorldPositionStays, out GameObject[] ChildrenRemoved)
         {
-            var _screenCount = _screensContainer.childCount;
-            ChildrenRemoved = new GameObject[_screenCount];
+            var screenCount = _screensContainer.childCount;
+            ChildrenRemoved = new GameObject[screenCount];
 
-            for (int i = _screenCount - 1; i >= 0; i--)
+            for (int i = screenCount - 1; i >= 0; i--)
             {
                 ChildrenRemoved[i] = _screensContainer.GetChild(i).gameObject;
                 ChildrenRemoved[i].transform.SetParent(null, WorldPositionStays);
@@ -275,7 +284,7 @@ namespace UnityEngine.UI.Extensions
                         _scroll_rect.velocity = Vector3.zero;
                         if (_startPosition.x - _screensContainer.localPosition.x > 0)
                         {
-                            if (_startPosition.x - _screensContainer.localPosition.x > _childSize / 3)
+                            if (_startPosition.x - _screensContainer.localPosition.x > _childSize / _screens)
                             {
                                 ScrollToClosestElement();
                             }
@@ -286,7 +295,7 @@ namespace UnityEngine.UI.Extensions
                         }
                         else
                         {
-                            if (_startPosition.x - _screensContainer.localPosition.x < -_childSize / 3)
+                            if (_startPosition.x - _screensContainer.localPosition.x < -_childSize / _screens)
                             {
                                 ScrollToClosestElement();
                             }
