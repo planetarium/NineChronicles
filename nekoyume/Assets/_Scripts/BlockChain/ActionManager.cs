@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Assets;
@@ -11,13 +12,14 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using UniRx;
 using mixpanel;
+using Nekoyume.Model.State;
 using Nekoyume.UI;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 
 namespace Nekoyume.BlockChain
 {
     /// <summary>
-    /// 게임의 Action을 생성하고 Agent에 넣어주는 역할을 한다.
+    /// Creates an action of the game and puts it in the agent.
     /// </summary>
     public class ActionManager
     {
@@ -37,7 +39,7 @@ namespace Nekoyume.BlockChain
             _agent.EnqueueAction(gameAction);
         }
 
-        private void HandleException(Guid actionId, Exception e)
+        private static void HandleException(Guid actionId, Exception e)
         {
             if (e is TimeoutException)
             {
@@ -94,12 +96,13 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<MimisbrunnrBattle>> MimisbrunnrBattle(
+        public void MimisbrunnrBattle(
             List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
-            int stageId)
+            int stageId,
+            int playCount)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes ??= new List<Costume>();
@@ -115,33 +118,31 @@ namespace Nekoyume.BlockChain
                 stageId = stageId,
                 avatarAddress = avatarAddress,
                 rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
+                playCount = playCount,
             };
             ProcessAction(action);
 
             _lastBattleActionId = action.Id;
 
-            return _renderer.EveryRender<MimisbrunnrBattle>()
+            _renderer.EveryRender<MimisbrunnrBattle>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e =>
+                {
+                    HandleException(action.Id, e);
+                    ActionRenderHandler.BackToMain(false, e);
+                });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
-            Player player,
-            int worldId,
-            int stageId,
-            int playCount)
-        {
-            return HackAndSlash(
-                player.Costumes,
-                player.Equipments,
-                null,
-                worldId,
-                stageId,
-                playCount);
-        }
+        public void HackAndSlash(Player player, int worldId, int stageId, int playCount) => HackAndSlash(
+            player.Costumes,
+            player.Equipments,
+            null,
+            worldId,
+            stageId,
+            playCount);
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Costume> costumes,
@@ -151,7 +152,7 @@ namespace Nekoyume.BlockChain
             int stageId,
             int playCount)
         {
-            Mixpanel.Track("Unity/HackAndSlash", new Value()
+            Mixpanel.Track("Unity/HackAndSlash", new Value
             {
                 ["WorldId"] = worldId,
                 ["StageId"] = stageId,
@@ -183,26 +184,40 @@ namespace Nekoyume.BlockChain
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e =>
+                {
+                    HandleException(action.Id, e);
+                    ActionRenderHandler.BackToMain(false, e);
+                });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(
-            int recipeId, int slotIndex)
+        public void CombinationConsumable(SubRecipeView.RecipeInfo recipeInfo, int slotIndex)
         {
-            Mixpanel.Track("Unity/Create CombinationConsumable", new Value()
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
+            LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
+
+            foreach (var (material, count) in recipeInfo.Materials)
             {
-                ["RecipeId"] = recipeId,
+                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
+            }
+
+            Mixpanel.Track("Unity/Create CombinationConsumable", new Value
+            {
+                ["RecipeId"] = recipeInfo.RecipeId,
             });
 
             var action = new CombinationConsumable
             {
-                recipeId = recipeId,
+                recipeId = recipeInfo.RecipeId,
                 avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<CombinationConsumable>()
+            _renderer.EveryRender<CombinationConsumable>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -210,20 +225,23 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid tradableId,
-                                                                   FungibleAssetValue price,
-                                                                   int count,
-                                                                   ItemSubType itemSubType)
+        public void Sell(ITradableItem tradableItem, int count, FungibleAssetValue price, ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
+            if (!(tradableItem is TradableMaterial))
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,
+                    count);
+            }
+
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
 
             var action = new Sell
             {
                 sellerAvatarAddress = avatarAddress,
-                tradableId = tradableId,
+                tradableId = tradableItem.TradableId,
                 count = count,
                 price = price,
                 itemSubType = itemSubType,
@@ -231,15 +249,15 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<Sell>()
+            _renderer.EveryRender<Sell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
+        public void SellCancellation(
             Address sellerAvatarAddress,
             Guid orderId,
             Guid tradableId,
@@ -254,31 +272,37 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<SellCancellation>()
+            _renderer.EveryRender<SellCancellation>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(
+        public void UpdateSell(
             Guid orderId,
-            Guid tradableId,
-            FungibleAssetValue price,
+            ITradableItem tradableItem,
             int count,
+            FungibleAssetValue price,
             ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
+            if (!(tradableItem is TradableMaterial))
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,
+                    count);
+            }
+
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
 
             var action = new UpdateSell
             {
                 orderId = orderId,
                 updateSellOrderId = Guid.NewGuid(),
-                tradableId = tradableId,
+                tradableId = tradableItem.TradableId,
                 sellerAvatarAddress = avatarAddress,
                 itemSubType = itemSubType,
                 price = price,
@@ -286,17 +310,22 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<UpdateSell>()
+            _renderer.EveryRender<UpdateSell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(IEnumerable<PurchaseInfo> purchaseInfos,
-            List<Nekoyume.UI.Model.ShopItem> shopItems)
+        public void Buy(List<PurchaseInfo> purchaseInfos)
         {
+            var buyerAgentAddress = States.Instance.AgentState.address;
+            foreach (var purchaseInfo in purchaseInfos)
+            {
+                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -purchaseInfo.Price);
+            }
+
             var action = new Buy
             {
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
@@ -304,20 +333,21 @@ namespace Nekoyume.BlockChain
             };
 
             ProcessAction(action);
-            return _renderer.EveryRender<Buy>()
+            _renderer.EveryRender<Buy>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
+        public void DailyReward()
         {
-            // NOTE: 이곳에서 하는 것이 바람직 하지만, 연출 타이밍을 위해 밖에서 한다.
-            // var avatarAddress = States.Instance.CurrentAvatarState.address;
-            // LocalLayerModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
-            // LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
+            var blockCount = Game.Game.instance.Agent.BlockIndex -
+                States.Instance.CurrentAvatarState.dailyRewardReceivedIndex + 1;
+            LocalLayerModifier.IncreaseAvatarDailyRewardReceivedIndex(
+                States.Instance.CurrentAvatarState.address,
+                blockCount);
 
             var action = new DailyReward
             {
@@ -325,7 +355,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<DailyReward>()
+            _renderer.EveryRender<DailyReward>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -333,37 +363,50 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(
-            Guid itemId,
-            Guid materialId,
-            int slotIndex)
+        public void ItemEnhancement(
+            Equipment baseEquipment,
+            Equipment materialEquipment,
+            int slotIndex,
+            BigInteger costNCG)
         {
+            var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -costNCG);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
+            LocalLayerModifier.RemoveItem(avatarAddress, baseEquipment.TradableId,
+                baseEquipment.RequiredBlockIndex, 1);
+            LocalLayerModifier.RemoveItem(avatarAddress, materialEquipment.TradableId,
+                materialEquipment.RequiredBlockIndex, 1);
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false);
-            LocalLayerModifier.SetItemEquip(avatarAddress, materialId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, materialEquipment.NonFungibleId, false);
 
             Mixpanel.Track("Unity/Item Enhancement");
 
             var action = new ItemEnhancement
             {
-                itemId = itemId,
-                materialId = materialId,
+                itemId = baseEquipment.NonFungibleId,
+                materialId = materialEquipment.NonFungibleId,
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<ItemEnhancement>()
+            _renderer.EveryRender<ItemEnhancement>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e =>
+                {
+                    HandleException(action.Id, e);
+                    ActionRenderHandler.BackToMain(false, e);
+                });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
+        public void RankingBattle(
             Address enemyAddress,
             List<Guid> costumeIds,
             List<Guid> equipmentIds,
@@ -371,7 +414,9 @@ namespace Nekoyume.BlockChain
         )
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+            {
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
+            }
 
             Mixpanel.Track("Unity/Ranking Battle");
             var action = new RankingBattle
@@ -386,13 +431,16 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
 
             _lastBattleActionId = action.Id;
-
-            return _renderer.EveryRender<RankingBattle>()
+            _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e =>
+                {
+                    HandleException(action.Id, e);
+                    ActionRenderHandler.BackToMain(false, e);
+                });
         }
 
         public void PatchTableSheet(string tableName, string tableCsv)
@@ -405,26 +453,34 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
-            int recipeId,
-            int slotIndex,
-            int? subRecipeId = null)
+        public void CombinationEquipment(SubRecipeView.RecipeInfo recipeInfo, int slotIndex)
         {
-            Mixpanel.Track("Unity/Create CombinationEquipment", new Value()
+            Mixpanel.Track("Unity/Create CombinationEquipment", new Value
             {
-                ["RecipeId"] = recipeId,
+                ["RecipeId"] = recipeInfo.RecipeId,
             });
+
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
+            LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
+
+            foreach (var (material, count) in recipeInfo.Materials)
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
+            }
 
             var action = new CombinationEquipment
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex,
-                recipeId = recipeId,
-                subRecipeId = subRecipeId,
+                recipeId = recipeInfo.RecipeId,
+                subRecipeId = recipeInfo.SubRecipeId,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<CombinationEquipment>()
+            _renderer.EveryRender<CombinationEquipment>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -432,8 +488,16 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(Address avatarAddress, int slotIndex)
+        public void RapidCombination(CombinationSlotState state, int slotIndex)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                .First(r => r.ItemSubType == ItemSubType.Hourglass);
+            var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+
+            LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
+
             var action = new RapidCombination
             {
                 avatarAddress = avatarAddress,
@@ -441,7 +505,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<RapidCombination>()
+            _renderer.EveryRender<RapidCombination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -449,7 +513,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(string code)
+        public void RedeemCode(string code)
         {
             var action = new RedeemCode(
                 code,
@@ -457,7 +521,7 @@ namespace Nekoyume.BlockChain
             );
             ProcessAction(action);
 
-            return _renderer.EveryRender<RedeemCode>()
+            _renderer.EveryRender<RedeemCode>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -465,22 +529,26 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ChargeActionPoint>> ChargeActionPoint()
+        public void ChargeActionPoint(Material material)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            LocalLayerModifier.RemoveItem(avatarAddress, material.ItemId);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
+
             var action = new ChargeActionPoint
             {
-                avatarAddress = States.Instance.CurrentAvatarState.address
+                avatarAddress = avatarAddress
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<ChargeActionPoint>()
+            _renderer.EveryRender<ChargeActionPoint>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
         }
-
 
         #endregion
     }
