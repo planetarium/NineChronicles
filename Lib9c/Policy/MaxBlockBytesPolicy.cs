@@ -44,5 +44,21 @@ namespace Nekoyume.BlockChain.Policy
                 .Add(new SpannedSubPolicy<int>(
                     startIndex: 3_000_001,
                     value: 1024 * 100));        // 100 KiB
+
+        // Note: For internal testing.
+        public static IVariableSubPolicy<int> Internal =>
+            Default
+                .Add(new SpannedSubPolicy<int>(
+                    startIndex: 0,
+                    value: 1024 * 1024 * 15))   // 15 MiB
+                .Add(new SpannedSubPolicy<int>(
+                    startIndex: 1,
+                    value: 1024 * 100))         // 100 KiB
+                .Add(new SpannedSubPolicy<int>(
+                    startIndex: 2_000_001,
+                    value: 1024 * 1024 * 10))    // 10 MiB
+                .Add(new SpannedSubPolicy<int>(
+                    startIndex: 3_000_001,
+                    value: 1024 * 100));        // 100 KiB
     }
 }

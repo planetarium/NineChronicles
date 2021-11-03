@@ -85,6 +85,11 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance for deployment.
         /// </summary>
+        /// <remarks>
+        /// This is set up to be deployable to 9c-main by default.  To deploy to
+        /// a different environment, such as 9c-internal, with a different policy,
+        /// swap out the subpolicies here.
+        /// </remarks>
         public IBlockPolicy<NCAction> GetPolicy() =>
             GetPolicy(
                 minimumDifficulty: MinimumDifficulty,
