@@ -9,6 +9,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
+using UnityEngine;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.BlockChain
@@ -26,8 +27,9 @@ namespace Nekoyume.BlockChain
 
         public static BlockRenderHandler Instance => Singleton.Value;
 
-        private BlockRenderer _blockRenderer;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
+        private BlockRenderer _blockRenderer;
 
         private BlockRenderHandler()
         {
@@ -35,13 +37,29 @@ namespace Nekoyume.BlockChain
 
         public void Start(BlockRenderer blockRenderer)
         {
+            _blockRenderer = blockRenderer ?? throw new ArgumentNullException(nameof(blockRenderer));
+
             Stop();
-            _blockRenderer = blockRenderer;
-
-            Reorg();
-            UpdateWeeklyArenaState();
-
-            _blockRenderer.BlockSubject.ObserveOnMainThread().Subscribe(UpdateValues).AddTo(_disposables);
+            _blockRenderer.BlockSubject
+                .ObserveOnMainThread()
+                .Subscribe(tuple =>
+                {
+                    Debug.Log($"[{nameof(BlockRenderHandler)}] Render beginning");
+                    UpdateWhenEveryBlockRenderBeginning();
+                }).AddTo(_disposables);
+            _blockRenderer.ReorgSubject
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    Debug.Log($"[{nameof(BlockRenderHandler)}] Reorg beginning");
+                    var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
+                    UI.NotificationSystem.Push(Model.Mail.MailType.System, msg);
+                })
+                .AddTo(_disposables);
+            _blockRenderer.ReorgEndSubject.ObserveOnMainThread().Subscribe(_ =>
+            {
+                Debug.Log($"[{nameof(BlockRenderHandler)}] Reorg end");
+            }).AddTo(_disposables);
         }
 
         public void Stop()
@@ -49,58 +67,7 @@ namespace Nekoyume.BlockChain
             _disposables.DisposeAllAndClear();
         }
 
-        private void Reorg()
-        {
-            _blockRenderer.ReorgSubject
-                .ObserveOnMainThread()
-                .Subscribe(_ =>
-                {
-                    var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
-                    UI.NotificationSystem.Push(Model.Mail.MailType.System, msg);
-                })
-                .AddTo(_disposables);
-        }
-
-        private void UpdateWeeklyArenaState()
-        {
-            _blockRenderer.EveryBlock()
-                .ObserveOnMainThread()
-                .Subscribe(_ =>
-                {
-                    var doNothing = true;
-                    var agent = Game.Game.instance.Agent;
-                    var gameConfigState = States.Instance.GameConfigState;
-                    var challengeCountResetBlockIndex = States.Instance.WeeklyArenaState.ResetIndex;
-                    var currentBlockIndex = agent.BlockIndex;
-                    if (currentBlockIndex % gameConfigState.WeeklyArenaInterval == 0 &&
-                        currentBlockIndex >= gameConfigState.WeeklyArenaInterval)
-                    {
-                        doNothing = false;
-                    }
-
-                    if (currentBlockIndex - challengeCountResetBlockIndex >=
-                        gameConfigState.DailyArenaInterval)
-                    {
-                        doNothing = false;
-                    }
-
-                    if (doNothing)
-                    {
-                        return;
-                    }
-
-                    var weeklyArenaIndex =
-                        (int) currentBlockIndex / gameConfigState.WeeklyArenaInterval;
-                    var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
-                    var weeklyArenaState =
-                        new WeeklyArenaState(
-                            (Bencodex.Types.Dictionary) agent.GetState(weeklyArenaAddress));
-                    States.Instance.SetWeeklyArenaState(weeklyArenaState);
-                })
-                .AddTo(_disposables);
-        }
-
-        private void UpdateValues((NCBlock OldTip, NCBlock NewTip) tuple)
+        private static void UpdateWhenEveryBlockRenderBeginning()
         {
             if (States.Instance.AgentState != null)
             {
@@ -138,6 +105,45 @@ namespace Nekoyume.BlockChain
                     ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
                 });
             }
+
+            UpdateWeeklyArenaState();
+        }
+
+        private static void UpdateWeeklyArenaState()
+        {
+            var doNothing = true;
+            var agent = Game.Game.instance.Agent;
+            var gameConfigState = States.Instance.GameConfigState;
+            var challengeCountResetBlockIndex = States.Instance.WeeklyArenaState.ResetIndex;
+            var currentBlockIndex = agent.BlockIndex;
+            if (currentBlockIndex % gameConfigState.WeeklyArenaInterval == 0 &&
+                currentBlockIndex >= gameConfigState.WeeklyArenaInterval)
+            {
+                doNothing = false;
+            }
+
+            if (currentBlockIndex - challengeCountResetBlockIndex >=
+                gameConfigState.DailyArenaInterval)
+            {
+                doNothing = false;
+            }
+
+            if (doNothing)
+            {
+                return;
+            }
+
+            var weeklyArenaIndex =
+                (int) currentBlockIndex / gameConfigState.WeeklyArenaInterval;
+            var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
+
+            UniTask.Run(() =>
+            {
+                var weeklyArenaState =
+                    new WeeklyArenaState(
+                        (Bencodex.Types.Dictionary) agent.GetState(weeklyArenaAddress));
+                States.Instance.SetWeeklyArenaState(weeklyArenaState);
+            });
         }
     }
 }
