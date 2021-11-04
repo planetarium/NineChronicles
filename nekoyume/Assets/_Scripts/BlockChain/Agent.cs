@@ -143,7 +143,7 @@ namespace Nekoyume.BlockChain
             if (disposed)
             {
                 Debug.Log("Agent Exist");
-                yield return null;
+                yield break;
             }
 
             InitAgent(callback, privateKey, options);
@@ -297,6 +297,9 @@ namespace Nekoyume.BlockChain
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
             blocks.GetBalance(address, currency);
 
+        public Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency) =>
+            Task.Run(() => blocks.GetBalance(address, currency));
+
         #region Mono
 
         public void SendException(Exception exc)
@@ -419,13 +422,16 @@ namespace Nekoyume.BlockChain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
-                if (ArenaHelper.TryGetThisWeekState(BlockIndex, out var weeklyArenaState))
+                Task.Run(async () =>
                 {
-                    States.Instance.SetWeeklyArenaState(weeklyArenaState);
-                }
-                else
-                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
+                    var weeklyArenaState = await ArenaHelper.GetThisWeekStateAsync(BlockIndex);
+                    if (weeklyArenaState is null)
+                    {
+                        throw new FailedToInstantiateStateException<WeeklyArenaState>();
+                    }
 
+                    States.Instance.SetWeeklyArenaState(weeklyArenaState);
+                });
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 BlockRenderHandler.Instance.Start(BlockRenderer);
                 ActionRenderHandler.Instance.Start(ActionRenderer);

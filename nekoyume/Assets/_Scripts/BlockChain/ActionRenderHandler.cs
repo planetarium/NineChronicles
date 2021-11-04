@@ -573,7 +573,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
+        private async void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -581,8 +581,8 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var order = Util.GetOrder(eval.Action.orderId);
-            var itemName = Util.GetItemNameByOrdierId(order.OrderId);
+            var order = await Util.GetOrder(eval.Action.orderId);
+            var itemName = await Util.GetItemNameByOrderId(order.OrderId);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
             LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
@@ -596,14 +596,14 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
+        private async void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
         {
             if (!(eval.Exception is null))
             {
                 return;
             }
 
-            var itemName = Util.GetItemNameByOrdierId(eval.Action.orderId);
+            var itemName = await Util.GetItemNameByOrderId(eval.Action.orderId);
             var format = L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE");
             OneLineSystem.Push(MailType.Auction, string.Format(format, itemName));
             UpdateCurrentAvatarState(eval);
@@ -614,7 +614,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private async void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -636,8 +636,8 @@ namespace Nekoyume.BlockChain
             {
                 foreach (var purchaseInfo in purchaseInfos)
                 {
-                    var order = Util.GetOrder(purchaseInfo.OrderId);
-                    var itemName = Util.GetItemNameByOrdierId(order.OrderId);
+                    var order = await Util.GetOrder(purchaseInfo.OrderId);
+                    var itemName = await Util.GetItemNameByOrderId(order.OrderId);
                     var price = purchaseInfo.Price;
 
                     if (errors.Exists(tuple => tuple.orderId.Equals(purchaseInfo.OrderId)))
@@ -682,8 +682,8 @@ namespace Nekoyume.BlockChain
                         eval.Action.buyerAvatarAddress.ToHex().Substring(0, 4)
                     );
 
-                    var order = Util.GetOrder(purchaseInfo.OrderId);
-                    var itemName = Util.GetItemNameByOrdierId(order.OrderId);
+                    var order = await Util.GetOrder(purchaseInfo.OrderId);
+                    var itemName = await Util.GetItemNameByOrderId(order.OrderId);
                     var taxedPrice = order.Price - order.GetTax();
 
                     LocalLayerModifier.ModifyAgentGold(agentAddress, -taxedPrice);

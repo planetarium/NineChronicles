@@ -104,9 +104,9 @@ namespace Nekoyume.BlockChain
         {
             if (States.Instance.AgentState != null)
             {
-                UniTask.Run(() =>
+                UniTask.Run(async () =>
                 {
-                    var value = Game.Game.instance.Agent.GetBalance(
+                    var value = await Game.Game.instance.Agent.GetBalanceAsync(
                         States.Instance.AgentState.address,
                         States.Instance.GoldBalanceState.Gold.Currency);
                     AgentStateSubject.OnNextGold(value);

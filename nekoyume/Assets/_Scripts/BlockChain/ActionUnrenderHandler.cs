@@ -167,7 +167,7 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private async void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -194,7 +194,7 @@ namespace Nekoyume.BlockChain
                     }
 
                     var price = purchaseInfo.Price;
-                    var order = Util.GetOrder(purchaseInfo.OrderId);
+                    var order = await Util.GetOrder(purchaseInfo.OrderId);
                     var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
                     LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
                     LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
@@ -212,7 +212,7 @@ namespace Nekoyume.BlockChain
                         return;
                     }
 
-                    var order = Util.GetOrder(purchaseInfo.OrderId);
+                    var order = await Util.GetOrder(purchaseInfo.OrderId);
                     var taxedPrice = order.Price - order.GetTax();
                     LocalLayerModifier.ModifyAgentGold(agentAddress, taxedPrice);
                     LocalLayerModifier.RemoveNewMail(avatarAddress, purchaseInfo.OrderId);
@@ -244,7 +244,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
+        private async void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -252,7 +252,7 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var order = Util.GetOrder(eval.Action.orderId);
+            var order = await Util.GetOrder(eval.Action.orderId);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
             UpdateCurrentAvatarState(eval);
