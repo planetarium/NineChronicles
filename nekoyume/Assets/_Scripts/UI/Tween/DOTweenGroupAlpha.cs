@@ -25,10 +25,15 @@ namespace Nekoyume.UI.Tween
             }
         }
 
-        public override DG.Tweening.Tween PlayForward()
+        public override Tween PlayForward()
         {
             _group.DOFade(beginValue, 0.0f);
             currentTween = _group.DOFade(endValue, duration);
+            if (infiniteLoop)
+            {
+                currentTween.SetLoops(-1, LoopType.Incremental);
+            }
+
             if (TweenType.Repeat == tweenType)
             {
                 currentTween = SetEase().OnComplete(() => PlayForward());
