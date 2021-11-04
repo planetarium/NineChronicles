@@ -34,14 +34,5 @@ namespace Lib9c.Renderer
 
         public void RenderReorgEnd(NCBlock oldTip, NCBlock newTip, NCBlock branchpoint) =>
             ReorgEndSubject.OnNext((oldTip, newTip, branchpoint));
-
-        public IObservable<(NCBlock OldTip, NCBlock NewTip)> EveryBlock() =>
-            BlockSubject.AsObservable();
-
-        public IObservable<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)> EveryReorg() =>
-            ReorgSubject.AsObservable();
-
-        public IObservable<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)> EveryReorgEnd() =>
-            ReorgEndSubject.AsObservable();
     }
 }
