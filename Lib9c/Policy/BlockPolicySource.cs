@@ -29,14 +29,6 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long DifficultyStability = 2048;
 
-        // FIXME: We should adjust this value after resolving
-        // https://github.com/planetarium/NineChronicles/issues/777
-        // Previous value is 100 kb (until v100080)
-        public const int MaxBlockBytes = 1024 * 1024 * 10; // 10 Mib
-
-        // Note: The genesis block of 9c-main net weighs 11,085,640 B (11 MiB).
-        public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
-
         /// <summary>
         /// Last index in which restriction will apply.
         /// </summary>
@@ -52,11 +44,6 @@ namespace Nekoyume.BlockChain.Policy
         public const int MinTransactionsPerBlock = 1;
 
         public const int MaxTransactionsPerBlock = 100;
-
-        // FIXME: Should be finalized before release.
-        public const long MaxTransactionsPerSignerPerBlockStartIndex = 3_000_001;
-
-        public const int MaxTransactionsPerSignerPerBlock = 4;
 
         public const long V100080ObsoleteIndex = 2_448_000;
 
@@ -95,25 +82,31 @@ namespace Nekoyume.BlockChain.Policy
                 new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
-        [Obsolete("Left for temporary old API compliance.")]
-        public IBlockPolicy<NCAction> GetPolicy(
-            long minimumDifficulty,
-            int maxTransactionsPerBlock) =>
+        /// <summary>
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for deployment.
+        /// </summary>
+        /// <remarks>
+        /// This is set up to be deployable to 9c-main by default.  To deploy to
+        /// a different environment, such as 9c-internal, with a different policy,
+        /// swap out the subpolicies here.
+        /// </remarks>
+        public IBlockPolicy<NCAction> GetPolicy() =>
             GetPolicy(
-                minimumDifficulty: minimumDifficulty,
+                minimumDifficulty: MinimumDifficulty,
                 maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
-                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Default.Add(
-                    new SpannedSubPolicy<int>(
-                        startIndex: 0,
-                        value: maxTransactionsPerBlock)),
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 
-        public IBlockPolicy<NCAction> GetPolicy() =>
+        /// <summary>
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance identical to the one deployed
+        /// except with lower minimum difficulty for faster testing and benchmarking.
+        /// </summary>
+        public IBlockPolicy<NCAction> GetTestPolicy() =>
             GetPolicy(
-                minimumDifficulty: MinimumDifficulty,
+                minimumDifficulty: DifficultyStability,
                 maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
