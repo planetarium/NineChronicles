@@ -863,7 +863,7 @@ namespace Nekoyume.BlockChain
                     new List<Consumable>(),
                     1,
                     1,
-                    1).ToYieldInstruction();
+                    1);
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }
@@ -961,7 +961,7 @@ namespace Nekoyume.BlockChain
                 // 프레임 저하를 막기 위해 별도 스레드로 처리합니다.
                 Task<List<Transaction<PolymorphicAction<ActionBase>>>> getOwnTxs =
                     Task.Run(
-                        () => _stagePolicy.Iterate(blocks)
+                        () => _stagePolicy.Iterate()
                             .Where(tx => tx.Signer.Equals(Address))
                             .ToList()
                     );

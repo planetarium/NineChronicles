@@ -58,8 +58,14 @@ namespace Nekoyume.UI
             boostMinusButton.OnClickAsObservable().Subscribe(_ => apSlider.value--);
         }
 
-        public void Show(Stage stage, List<Costume> costumes, List<Equipment> equipments,
-            List<Consumable> consumables, int maxCount, int worldId, int stageId)
+        public void Show(
+            Stage stage,
+            List<Costume> costumes,
+            List<Equipment> equipments,
+            List<Consumable> consumables,
+            int maxCount,
+            int worldId,
+            int stageId)
         {
             _stage = stage;
             _costumes = costumes;
@@ -72,8 +78,7 @@ namespace Nekoyume.UI
             ReactiveAvatarState.ActionPoint.Subscribe(value =>
             {
                 var costOfStage = GetCostOfStage();
-                apSlider.maxValue =
-                    value / costOfStage >= maxCount ? maxCount : value / costOfStage;
+                apSlider.maxValue = value / costOfStage >= maxCount ? maxCount : value / costOfStage;
                 ownAPText.text = value.ToString();
             }).AddTo(gameObject);
 
@@ -117,41 +122,25 @@ namespace Nekoyume.UI
 
             if (_stageId >= GameConfig.MimisbrunnrStartStageId)
             {
-                Game.Game.instance.ActionManager
-                    .MimisbrunnrBattle(
+                Game.Game.instance.ActionManager.MimisbrunnrBattle(
                         _costumes,
                         _equipments,
                         _consumables,
                         _worldId,
                         _stageId,
                         (int) apSlider.value
-                    )
-                    .Subscribe(
-                        _ =>
-                        {
-                            LocalLayerModifier.ModifyAvatarActionPoint(
-                                States.Instance.CurrentAvatarState.address, GetCostOfStage());
-                        }, e => ActionRenderHandler.BackToMain(false, e))
-                    .AddTo(this);
+                    );
             }
             else
             {
-                Game.Game.instance.ActionManager
-                .HackAndSlash(
+                Game.Game.instance.ActionManager.HackAndSlash(
                     _costumes,
                     _equipments,
                     _consumables,
                     _worldId,
                     _stageId,
-                    (int) apSlider.value
-                )
-                .Subscribe(
-                    _ =>
-                    {
-                        LocalLayerModifier.ModifyAvatarActionPoint(
-                            States.Instance.CurrentAvatarState.address, GetCostOfStage());
-                    }, e => ActionRenderHandler.BackToMain(false, e))
-                .AddTo(this);
+                    (int)apSlider.value
+                );
             }
         }
 
