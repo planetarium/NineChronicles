@@ -38,9 +38,10 @@ namespace Nekoyume.UI
         [SerializeField] private SpeechBubble speechBubble = null;
         [SerializeField] private Button buyButton = null;
         [SerializeField] private Button closeButton = null;
+        [SerializeField] private Button spineButton = null;
 
         private NPC _npc;
-        private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
+        private static readonly Vector2 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
         private const int NPCId = 300000;
         private const int LimitPrice  = 100000000;
 
@@ -69,6 +70,8 @@ namespace Nekoyume.UI
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             });
+
+            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion_01));
 
             CloseWidget = () =>
             {
@@ -119,6 +122,7 @@ namespace Nekoyume.UI
         public void Show()
         {
             base.Show();
+            ShowNPC();
             Refresh(true);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
@@ -144,7 +148,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
+        private void ShowNPC()
         {
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
@@ -155,7 +159,6 @@ namespace Nekoyume.UI
             _npc.GetComponent<SortingGroup>().sortingLayerName = LayerType.InGameBackground.ToLayerName();
             _npc.GetComponent<SortingGroup>().sortingOrder = 3;
             _npc.SpineController.Appear();
-
             go.SetActive(true);
 
             ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
