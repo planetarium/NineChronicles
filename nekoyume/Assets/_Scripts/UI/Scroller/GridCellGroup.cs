@@ -1,4 +1,4 @@
-using FancyScrollView;
+using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Scroller
 {
