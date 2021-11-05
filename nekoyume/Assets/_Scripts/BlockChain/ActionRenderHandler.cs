@@ -7,8 +7,10 @@ using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Action;
+using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -23,8 +25,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.BlockChain
 {
-    using Nekoyume.Battle;
-    using Nekoyume.Model.BattleStatus;
+    
     using UniRx;
 
     /// <summary>
@@ -44,9 +45,9 @@ namespace Nekoyume.BlockChain
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private ActionRenderer _renderer;
+        private IDisposable _disposableForBattleEnd;
 
-        private IDisposable _disposableForBattleEnd = null;
+        private ActionRenderer _actionRenderer;
 
         private ActionRenderHandler()
         {
@@ -54,7 +55,13 @@ namespace Nekoyume.BlockChain
 
         public override void Start(ActionRenderer renderer)
         {
-            _renderer = renderer;
+            _actionRenderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
+
+            Stop();
+            _actionRenderer.BlockEndSubject.ObserveOnMainThread().Subscribe(_ =>
+            {
+                Debug.Log($"[{nameof(BlockRenderHandler)}] Render actions end");
+            }).AddTo(_disposables);
 
             RewardGold();
             GameConfig();
@@ -94,7 +101,7 @@ namespace Nekoyume.BlockChain
         {
             // FIXME RewardGold의 결과(ActionEvaluation)에서 다른 갱신 주소가 같이 나오고 있는데 더 조사해봐야 합니다.
             // 우선은 HasUpdatedAssetsForCurrentAgent로 다르게 검사해서 우회합니다.
-            _renderer.EveryRender<RewardGold>()
+            _actionRenderer.EveryRender<RewardGold>()
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateAgentState)
@@ -103,148 +110,166 @@ namespace Nekoyume.BlockChain
 
         private void CreateAvatar()
         {
-            _renderer.EveryRender<CreateAvatar>()
+            _actionRenderer.EveryRender<CreateAvatar>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
                     UpdateAgentState(eval);
                     UpdateAvatarState(eval, eval.Action.index);
-                }).AddTo(_disposables);
+                })
+                .AddTo(_disposables);
         }
 
         private void HackAndSlash()
         {
-            _renderer.EveryRender<HackAndSlash>()
+            _actionRenderer.EveryRender<HackAndSlash>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
+                .Subscribe(ResponseHackAndSlash)
+                .AddTo(_disposables);
         }
 
         private void MimisbrunnrBattle()
         {
-            _renderer.EveryRender<MimisbrunnrBattle>()
+            _actionRenderer.EveryRender<MimisbrunnrBattle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseMimisbrunnr).AddTo(_disposables);
+                .Subscribe(ResponseMimisbrunnr)
+                .AddTo(_disposables);
         }
 
         private void CombinationConsumable()
         {
-            _renderer.EveryRender<CombinationConsumable>()
+            _actionRenderer.EveryRender<CombinationConsumable>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseCombinationConsumable).AddTo(_disposables);
+                .Subscribe(ResponseCombinationConsumable)
+                .AddTo(_disposables);
         }
 
         private void Sell()
         {
-            _renderer.EveryRender<Sell>()
+            _actionRenderer.EveryRender<Sell>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseSell).AddTo(_disposables);
+                .Subscribe(ResponseSell)
+                .AddTo(_disposables);
         }
 
         private void SellCancellation()
         {
-            _renderer.EveryRender<SellCancellation>()
+            _actionRenderer.EveryRender<SellCancellation>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseSellCancellation).AddTo(_disposables);
+                .Subscribe(ResponseSellCancellation)
+                .AddTo(_disposables);
         }
 
         private void UpdateSell()
         {
-            _renderer.EveryRender<UpdateSell>()
+            _actionRenderer.EveryRender<UpdateSell>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUpdateSell).AddTo(_disposables);
+                .Subscribe(ResponseUpdateSell)
+                .AddTo(_disposables);
         }
 
         private void Buy()
         {
-            _renderer.EveryRender<Buy>()
+            _actionRenderer.EveryRender<Buy>()
                 .ObserveOnMainThread()
-                .Subscribe(ResponseBuy).AddTo(_disposables);
+                .Subscribe(ResponseBuy)
+                .AddTo(_disposables);
         }
 
         private void ItemEnhancement()
         {
-            _renderer.EveryRender<ItemEnhancement>()
+            _actionRenderer.EveryRender<ItemEnhancement>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
+                .Subscribe(ResponseItemEnhancement)
+                .AddTo(_disposables);
         }
 
         private void DailyReward()
         {
-            _renderer.EveryRender<DailyReward>()
+            _actionRenderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseDailyReward).AddTo(_disposables);
+                .Subscribe(ResponseDailyReward)
+                .AddTo(_disposables);
         }
 
         private void RankingBattle()
         {
-            _renderer.EveryRender<RankingBattle>()
+            _actionRenderer.EveryRender<RankingBattle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseRankingBattle).AddTo(_disposables);
+                .Subscribe(ResponseRankingBattle)
+                .AddTo(_disposables);
         }
 
         private void CombinationEquipment()
         {
-            _renderer.EveryRender<CombinationEquipment>()
+            _actionRenderer.EveryRender<CombinationEquipment>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
+                .Subscribe(ResponseCombinationEquipment)
+                .AddTo(_disposables);
         }
 
         private void RapidCombination()
         {
-            _renderer.EveryRender<RapidCombination>()
+            _actionRenderer.EveryRender<RapidCombination>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseRapidCombination).AddTo(_disposables);
+                .Subscribe(ResponseRapidCombination)
+                .AddTo(_disposables);
         }
 
         private void GameConfig()
         {
-            _renderer.EveryRender(GameConfigState.Address)
+            _actionRenderer.EveryRender(GameConfigState.Address)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateGameConfigState).AddTo(_disposables);
+                .Subscribe(UpdateGameConfigState)
+                .AddTo(_disposables);
         }
 
         private void RedeemCode()
         {
-            _renderer.EveryRender<Action.RedeemCode>()
+            _actionRenderer.EveryRender<Action.RedeemCode>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseRedeemCode).AddTo(_disposables);
+                .Subscribe(ResponseRedeemCode)
+                .AddTo(_disposables);
         }
 
         private void ChargeActionPoint()
         {
-            _renderer.EveryRender<ChargeActionPoint>()
+            _actionRenderer.EveryRender<ChargeActionPoint>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
+                .Subscribe(ResponseChargeActionPoint)
+                .AddTo(_disposables);
         }
 
         private void ClaimMonsterCollectionReward()
         {
-            _renderer.EveryRender<ClaimMonsterCollectionReward>()
+            _actionRenderer.EveryRender<ClaimMonsterCollectionReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseClaimMonsterCollectionReward).AddTo(_disposables);
+                .Subscribe(ResponseClaimMonsterCollectionReward)
+                .AddTo(_disposables);
         }
 
         private void TransferAsset()
         {
-            _renderer.EveryRender<TransferAsset>()
+            _actionRenderer.EveryRender<TransferAsset>()
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseTransferAsset).AddTo(_disposables);
+                .Subscribe(ResponseTransferAsset)
+                .AddTo(_disposables);
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
@@ -573,7 +598,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
+        private async void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -581,8 +606,8 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var order = Util.GetOrder(eval.Action.orderId);
-            var itemName = Util.GetItemNameByOrdierId(order.OrderId);
+            var order = await Util.GetOrder(eval.Action.orderId);
+            var itemName = await Util.GetItemNameByOrderId(order.OrderId);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
             LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
@@ -596,14 +621,14 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
+        private async void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
         {
             if (!(eval.Exception is null))
             {
                 return;
             }
 
-            var itemName = Util.GetItemNameByOrdierId(eval.Action.orderId);
+            var itemName = await Util.GetItemNameByOrderId(eval.Action.orderId);
             var format = L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE");
             OneLineSystem.Push(MailType.Auction, string.Format(format, itemName));
             UpdateCurrentAvatarState(eval);
@@ -614,7 +639,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private async void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -636,8 +661,8 @@ namespace Nekoyume.BlockChain
             {
                 foreach (var purchaseInfo in purchaseInfos)
                 {
-                    var order = Util.GetOrder(purchaseInfo.OrderId);
-                    var itemName = Util.GetItemNameByOrdierId(order.OrderId);
+                    var order = await Util.GetOrder(purchaseInfo.OrderId);
+                    var itemName = await Util.GetItemNameByOrderId(order.OrderId);
                     var price = purchaseInfo.Price;
 
                     if (errors.Exists(tuple => tuple.orderId.Equals(purchaseInfo.OrderId)))
@@ -682,8 +707,8 @@ namespace Nekoyume.BlockChain
                         eval.Action.buyerAvatarAddress.ToHex().Substring(0, 4)
                     );
 
-                    var order = Util.GetOrder(purchaseInfo.OrderId);
-                    var itemName = Util.GetItemNameByOrdierId(order.OrderId);
+                    var order = await Util.GetOrder(purchaseInfo.OrderId);
+                    var itemName = await Util.GetItemNameByOrderId(order.OrderId);
                     var taxedPrice = order.Price - order.GetTax();
 
                     LocalLayerModifier.ModifyAgentGold(agentAddress, -taxedPrice);

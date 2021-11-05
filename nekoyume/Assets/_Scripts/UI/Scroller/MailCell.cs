@@ -59,7 +59,7 @@ namespace Nekoyume.UI.Scroller
             UpdateView();
         }
 
-        private void UpdateView()
+        private async void UpdateView()
         {
             if (_mail is null)
             {
@@ -73,7 +73,7 @@ namespace Nekoyume.UI.Scroller
             unseal.SetActive(!isNew);
             iconImage.overrideSprite = SpriteHelper.GetMailIcon(_mail.MailType);
 
-            content.text = _mail.ToInfo();
+            content.text = await _mail.ToInfo();
             content.color = isNew
                 ? ColorHelper.HexToColorRGB("fff9dd")
                 : ColorHelper.HexToColorRGB("7a7a7a");

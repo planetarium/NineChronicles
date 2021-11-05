@@ -99,9 +99,9 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager
                 .CreateAvatar(_selectedIndex, nickName, _hair,
                     _lens, _ear, _tail)
-                .Subscribe(eval =>
+                .Subscribe(async eval =>
                     {
-                        var avatarState = States.Instance.SelectAvatar(_selectedIndex);
+                        var avatarState = await States.Instance.SelectAvatar(_selectedIndex);
                         StartCoroutine(CreateAndLoginAnimation(avatarState));
                         ActionRenderHandler.RenderQuest(avatarState.address,
                             avatarState.questList.completedQuestIds);
@@ -127,10 +127,10 @@ namespace Nekoyume.UI
             OnDidAvatarStateLoaded(state);
         }
 
-        public void LoginClick()
+        public async void LoginClick()
         {
             btnLogin.SetActive(false);
-            var avatarState = States.Instance.SelectAvatar(_selectedIndex);
+            var avatarState = await States.Instance.SelectAvatar(_selectedIndex);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
         }
