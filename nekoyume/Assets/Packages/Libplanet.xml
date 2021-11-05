@@ -6240,6 +6240,8 @@
             </summary>
             <param name="privateKey">A valid <see cref="T:System.Byte"/>s that encodes an ECDSA private key.
             </param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="privateKey"/> is too short or too long.</exception>
             <remarks>A valid <see cref="T:System.Byte"/> array for a <see cref="T:Libplanet.Crypto.PrivateKey"/> can be encoded
             using <see cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/> property.</remarks>
             <seealso cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/>
@@ -6279,7 +6281,7 @@
             <exception cref="T:System.ArgumentNullException">Thrown when the given <paramref name="hex"/>
             string is <c>null</c>.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the length of the given
-            <paramref name="hex"/> string is an odd number, or it is empty.</exception>
+            <paramref name="hex"/> string is too short or too long.</exception>
             <exception cref="T:System.FormatException">Thrown when the given <paramref name="hex"/> string is
             not a valid hexadecimal string.</exception>
         </member>
@@ -9909,29 +9911,6 @@
             <returns>The state root hash of the block, or <c>null</c> if the block is not found or
             <paramref name="blockHash"/> is <c>null</c>.</returns>
         </member>
-        <member name="T:Libplanet.Store.TrieStateStore">
-            <summary>
-            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
-            </summary>
-            <param name="stateKeyValueStore">The storage to store states. It used by
-            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
-            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
-            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Store.IStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Store.IStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.Dispose">
-            <inheritdoc cref="M:System.IDisposable.Dispose"/>
-        </member>
         <member name="T:Libplanet.Store.Trie.CacheableKeyValueStore">
             <summary>
             The proxy class to cache <see cref="T:Libplanet.Store.Trie.IKeyValueStore"/> operations.
@@ -10144,6 +10123,29 @@
             <summary>
             Wrapper class.
             </summary>
+        </member>
+        <member name="T:Libplanet.Store.TrieStateStore">
+            <summary>
+            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
+            </summary>
+            <param name="stateKeyValueStore">The storage to store states. It used by
+            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
+            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Store.IStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Store.IStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.Dispose">
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>
