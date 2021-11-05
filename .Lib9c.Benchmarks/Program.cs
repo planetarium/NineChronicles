@@ -68,7 +68,6 @@ namespace Lib9c.Benchmarks
                     maxTransactionsPerBlockPolicy: null,
                     maxTransactionsPerSignerPerBlockPolicy: null,
                     authorizedMinersPolicy: null,
-                    authorizedMiningNoOpTxRequiredPolicy: null,
                     permissionedMinersPolicy: null);
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             var store = new RocksDBStore(storePath);

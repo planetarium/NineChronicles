@@ -3,11 +3,17 @@ namespace Lib9c.Tests
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Lib9c.Tests.TestHelper;
     using Libplanet;
+    using Libplanet.Action;
     using Libplanet.Blockchain;
+    using Libplanet.Blockchain.Policies;
     using Libplanet.Crypto;
     using Libplanet.Tx;
+    using Nekoyume.Action;
     using Nekoyume.BlockChain;
+    using Nekoyume.BlockChain.Policy;
+    using Serilog.Core;
     using Xunit;
     using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -202,6 +208,41 @@ namespace Lib9c.Tests
             );
         }
 
+        [Fact]
+        public void CalculateNextTxNonceCorrectWhenTxOverQuota()
+        {
+            var stagePolicy = new StagePolicy(
+                default,
+                2);
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy();
+            BlockChain<PolymorphicAction<ActionBase>> chain =
+                BlockChainHelper.MakeBlockChain(new[] { blockPolicySource.BlockRenderer }, policy, stagePolicy);
+
+            long nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
+            Assert.Equal(0, nextTxNonce);
+            var txA = Transaction<NCAction>.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
+            stagePolicy.Stage(chain, txA);
+
+            nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
+            Assert.Equal(1, nextTxNonce);
+            var txB = Transaction<NCAction>.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
+            stagePolicy.Stage(chain, txB);
+
+            nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
+            Assert.Equal(2, nextTxNonce);
+            var txC = Transaction<NCAction>.Create(nextTxNonce, _accounts[0], default, new NCAction[0]);
+            stagePolicy.Stage(chain, txC);
+
+            nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
+            Assert.Equal(3, nextTxNonce);
+
+            AssertTxs(
+                stagePolicy,
+                txA,
+                txB);
+        }
+
         private void AssertTxs(StagePolicy policy, params Transaction<NCAction>[] txs)
         {
             foreach (Transaction<NCAction> tx in txs)
@@ -211,7 +252,7 @@ namespace Lib9c.Tests
 
             Assert.Equal(
                 txs.ToHashSet(),
-                policy.Iterate(_chain).ToHashSet()
+                policy.Iterate().ToHashSet()
             );
         }
     }
