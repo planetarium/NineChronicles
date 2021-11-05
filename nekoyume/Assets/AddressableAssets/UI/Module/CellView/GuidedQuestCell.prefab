@@ -459,7 +459,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.5
+      scalar: 1
       minScalar: 0.3
       maxCurve:
         serializedVersion: 2
@@ -775,7 +775,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    maxNumParticles: 100
+    maxNumParticles: 200
     size3D: 0
     rotation3D: 0
     gravityModifier:
@@ -842,7 +842,7 @@ ParticleSystem:
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 1, y: 4.5, z: 1}
+    m_Scale: {x: 1, y: 6, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -1478,19 +1478,19 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 1, b: 1, a: 0}
-        key1: {r: 1, g: 1, b: 1, a: 1}
-        key2: {r: 0, g: 0, b: 0, a: 0.827451}
-        key3: {r: 0, g: 0, b: 0, a: 0}
-        key4: {r: 0, g: 0, b: 0, a: 0}
+        key0: {r: 1, g: 0.6183692, b: 0.25943398, a: 0}
+        key1: {r: 1, g: 0.96314245, b: 0.38823533, a: 0.75686276}
+        key2: {r: 1, g: 0.6676412, b: 0.4431373, a: 0.6392157}
+        key3: {r: 0.5, g: 0.2869864, b: 0.14386791, a: 0}
+        key4: {r: 1, g: 1, b: 1, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
         ctime0: 0
-        ctime1: 65535
-        ctime2: 0
-        ctime3: 0
-        ctime4: 0
+        ctime1: 17733
+        ctime2: 26792
+        ctime3: 36237
+        ctime4: 65535
         ctime5: 0
         ctime6: 0
         ctime7: 0
@@ -1503,7 +1503,7 @@ ParticleSystem:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_NumColorKeys: 2
+        m_NumColorKeys: 5
         m_NumAlphaKeys: 4
       minGradient:
         serializedVersion: 2
@@ -5114,9 +5114,9 @@ MonoBehaviour:
   m_Player:
     play: 1
     initialPlayDelay: 0
-    duration: 2.5
+    duration: 5
     loop: 1
-    loopDelay: 0.25
+    loopDelay: 0
     updateMode: 0
 --- !u!1 &2427380961664177173
 GameObject:
