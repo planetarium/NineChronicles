@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using EasingCore;
+using UnityEngine.UI.Extensions.EasingCore;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using UnityEngine;

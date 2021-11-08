@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EasingCore;
-using FancyScrollView;
+using UnityEngine.UI.Extensions.EasingCore;
+using UnityEngine.UI.Extensions;
 using Unity.Mathematics;
 using UnityEngine;
 

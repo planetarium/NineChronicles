@@ -25,9 +25,10 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public void SetByAvatarAddress(Address avatarAddress)
+        public async void SetByAvatarAddress(Address avatarAddress)
         {
-            if (!States.TryGetAvatarState(avatarAddress, out var avatarState))
+            var (exist, avatarState) = await States.TryGetAvatarState(avatarAddress);
+            if (!exist)
             {
                 return;
             }

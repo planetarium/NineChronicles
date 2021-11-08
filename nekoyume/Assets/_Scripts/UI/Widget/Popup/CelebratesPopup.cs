@@ -69,7 +69,7 @@ namespace Nekoyume.UI
         private Blur blur = null;
 
         [SerializeField]
-        private DOTweenTextAlpha textAlphaTweener = null;
+        private GraphicAlphaTweener graphicAlphaTweener = null;
 
         private readonly List<Tweener> _tweeners = new List<Tweener>();
         private readonly WaitForSeconds _waitItemInterval = new WaitForSeconds(0.4f);
@@ -268,7 +268,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             blur.button.interactable = false;
-            textAlphaTweener.Play();
+            graphicAlphaTweener.Play();
             DisappearNPC(ignoreCloseAnimation);
             StopEffects();
 
@@ -417,7 +417,7 @@ namespace Nekoyume.UI
         {
             // 메뉴 연출을 재생합니다.
 
-            textAlphaTweener.PlayReverse();
+            graphicAlphaTweener.PlayReverse();
             yield return _waitForDisappear;
             StartContinueTimer();
             _coShowSomethingCoroutine = null;
@@ -444,7 +444,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            textAlphaTweener.PlayReverse();
+            graphicAlphaTweener.PlayReverse();
             yield return _waitForDisappear;
             StartContinueTimer();
             _coShowSomethingCoroutine = null;
@@ -454,7 +454,7 @@ namespace Nekoyume.UI
         {
             // 장비 레시피 연출을 재생합니다.
 
-            textAlphaTweener.PlayReverse();
+            graphicAlphaTweener.PlayReverse();
             yield return _waitForDisappear;
             StartContinueTimer();
             _coShowSomethingCoroutine = null;
