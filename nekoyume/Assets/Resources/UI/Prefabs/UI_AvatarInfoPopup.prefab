@@ -832,7 +832,7 @@ MonoBehaviour:
   - type: 11
     rectTransform: {fileID: 2985570747773473212}
   tutorialActions: 0b0000000d000000
-  xTweener: {fileID: 3631620526058236361}
+  xTweener: {fileID: 4188335455960542884}
   inventory: {fileID: 6818565741369524415}
   nicknameText: {fileID: 7029173867541258039}
   titleSocket: {fileID: 5160629075317351532}
@@ -1680,7 +1680,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7848676843099464785}
-  - component: {fileID: 3631620526058236361}
+  - component: {fileID: 4188335455960542884}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -1710,7 +1710,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3631620526058236361
+--- !u!114 &4188335455960542884
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1719,16 +1719,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 6766660248117974020}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bacfffa52c78040a2ae4c658801044b7, type: 3}
+  m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startWithPlay: 0
   startDelay: 0
-  end: -400
   duration: 0.5
+  tweenType: 0
+  ease: 27
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  endValue: -400
   snapping: 0
-  showEase: 27
-  closeEase: 26
   isFrom: 1
+  single: 0
 --- !u!1 &6852184725689396515
 GameObject:
   m_ObjectHideFlags: 0
@@ -2097,9 +2119,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0df15b118d3a97a48ae00b35e6d87b18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startValue: 0
-  endValue: 0
+  startWithPlay: 1
+  startDelay: 0
   duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 0
+  endValue: 0
 --- !u!1 &7418896469038730358
 GameObject:
   m_ObjectHideFlags: 0
@@ -2187,9 +2233,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0df15b118d3a97a48ae00b35e6d87b18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startValue: 0
-  endValue: 0
+  startWithPlay: 1
+  startDelay: 0
   duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 0
+  endValue: 0
 --- !u!1 &8116355249288996371
 GameObject:
   m_ObjectHideFlags: 0
@@ -2313,9 +2383,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0df15b118d3a97a48ae00b35e6d87b18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startValue: 0
-  endValue: 0
+  startWithPlay: 1
+  startDelay: 0
   duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 0
+  endValue: 0
 --- !u!1 &8933229177570670026
 GameObject:
   m_ObjectHideFlags: 0

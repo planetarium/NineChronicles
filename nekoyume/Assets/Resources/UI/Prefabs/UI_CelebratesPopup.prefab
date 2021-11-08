@@ -236,8 +236,8 @@ GameObject:
   - component: {fileID: 6900464221636739408}
   - component: {fileID: 1707210236521573194}
   - component: {fileID: 9060184289997753021}
-  - component: {fileID: 5146358653382093102}
   - component: {fileID: 1349717173795309036}
+  - component: {fileID: 8935347880524273400}
   m_Layer: 5
   m_Name: ContinueText
   m_TagString: Untagged
@@ -382,30 +382,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &5146358653382093102
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2447658876172908879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c14ca50aa2eb114686b18d870d6efd2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  StartWithPlay: 0
-  StartDelay: 0
-  Duration: 0.3
-  TweenType_: 0
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 1
-  EndValue: 0
-  ClearOnStop: 0
 --- !u!114 &1349717173795309036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,6 +413,38 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!114 &8935347880524273400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2447658876172908879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 1
+  endValue: 0
+  infiniteLoop: 0
+  loopType: 1
 --- !u!1 &2819663696770485548
 GameObject:
   m_ObjectHideFlags: 0
@@ -2168,7 +2176,7 @@ MonoBehaviour:
   menuImage: {fileID: 1182019081476214649}
   menuText: {fileID: 63448285676529994}
   blur: {fileID: 8183311963919106973}
-  textAlphaTweener: {fileID: 5146358653382093102}
+  graphicAlphaTweener: {fileID: 8935347880524273400}
 --- !u!95 &7685666843681429809
 Animator:
   serializedVersion: 3

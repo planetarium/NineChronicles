@@ -77,7 +77,7 @@ namespace Nekoyume.UI.Module
         private List<GuidedQuestCell> cells = null;
 
         [SerializeField]
-        private AnchoredPositionXTweener showingAndHidingTweener = null;
+        private AnchoredPositionSingleTweener showingAndHidingTweener = null;
 
         #region Subjects
 
@@ -147,7 +147,7 @@ namespace Nekoyume.UI.Module
 
         private void OnDisable()
         {
-            showingAndHidingTweener.KillTween();
+            showingAndHidingTweener.Stop();
         }
 
         #endregion

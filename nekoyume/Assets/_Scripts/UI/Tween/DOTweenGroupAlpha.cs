@@ -1,94 +1,93 @@
 using UnityEngine;
-using DG.Tweening;
 using System.Collections;
 
 namespace Nekoyume.UI.Tween
 {
+    using DG.Tweening;
     [RequireComponent(typeof(CanvasGroup))]
     public class DOTweenGroupAlpha : DOTweenBase
     {
-        public float BeginValue = 0.0f;
-        public float EndValue = 1.0f;
+        public float beginValue = 0.0f;
+        public float endValue = 1.0f;
+
+        [SerializeField]
+        private bool infiniteLoop = false;
+
         private CanvasGroup _group;
 
         protected override void Awake()
         {
             base.Awake();
             _group = GetComponent<CanvasGroup>();
-            if (StartWithPlay)
-                _group.DOFade(BeginValue, 0.0f);
+            if (playAtStart)
+            {
+                _group.DOFade(beginValue, 0.0f);
+            }
         }
 
-        public override void PlayForward()
+        public override Tween PlayForward()
         {
-            _group.DOFade(BeginValue, 0.0f);
-            if (TweenType.Repeat == TweenType_)
+            _group.DOFade(beginValue, 0.0f);
+            currentTween = _group.DOFade(endValue, duration);
+            if (infiniteLoop)
             {
-                currentTween = _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
-                currentTween.onComplete = PlayForward;
+                currentTween.SetLoops(-1, LoopType.Incremental);
             }
-            else if (TweenType.PingPongOnce == TweenType_)
+
+            if (TweenType.Repeat == tweenType)
             {
-                currentTween = _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
-                currentTween.onComplete = PlayReverse;
+                currentTween = SetEase().OnComplete(() => PlayForward());
             }
-            else if (TweenType.PingPongRepeat == TweenType_)
+            else if (TweenType.PingPongOnce == tweenType || TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
-                currentTween.onComplete = PlayReverse;
+                currentTween = SetEase().OnComplete(() => PlayReverse());
             }
             else
             {
-                currentTween = _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_);
-                currentTween.onComplete = OnComplete;
+                currentTween = SetEase().OnComplete(OnComplete);
             }
+
+            return currentTween;
         }
-        
-        public override void PlayReverse()
+
+        public override Tween PlayReverse()
         {
-            _group.DOFade(EndValue, 0.0f);
-            if (TweenType.PingPongOnce == TweenType_)
+            _group.DOFade(endValue, 0.0f);
+            currentTween = _group.DOFade(beginValue, duration);
+            if (TweenType.PingPongOnce == tweenType)
             {
-                currentTween = _group.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_);
-                currentTween.onComplete = OnComplete;
+                currentTween = SetEase().OnComplete(OnComplete);
             }
-            else if (TweenType.PingPongRepeat == TweenType_)
+            else if (TweenType.PingPongRepeat == tweenType)
             {
-                currentTween = _group.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_);
-                currentTween.onComplete = PlayForward;
+                currentTween = SetEase(true).OnComplete(() => PlayForward());
             }
             else
             {
-                currentTween = _group.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_);
-                currentTween.onComplete = OnComplete;
+                currentTween = SetEase(true).OnComplete(OnComplete);
             }
+
+            return currentTween;
         }
 
-        public override void PlayRepeat()
+        public override Tween PlayRepeat()
         {
-            PlayForward();
+            return PlayForward();
         }
 
-        public override void PlayPingPongOnce()
+        public override Tween PlayPingPongOnce()
         {
-            PlayForward();
+            return PlayForward();
         }
 
-        public override void PlayPingPongRepeat()
+        public override Tween PlayPingPongRepeat()
         {
-            PlayForward();
+            return PlayForward();
         }
 
-        protected override IEnumerator CPlayDelayed(float delay)
+        protected override IEnumerator CoPlayDelayed(float delay)
         {
-            _group.DOFade(BeginValue, 0.0f);
+            _group.DOFade(beginValue, 0.0f);
             yield return new WaitForSeconds(delay);
             Play();
         }
