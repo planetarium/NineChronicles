@@ -124,7 +124,6 @@ namespace Nekoyume.UI
                 .FirstOrDefault()?
                 .Goal ?? -1;
 
-            world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, questStageId);
             if (worldModel.IsUnlocked)
             {
                 UnlockWorld(worldModel.GetNextStageIdForPlay(), worldModel.GetNextStageId());
@@ -135,6 +134,7 @@ namespace Nekoyume.UI
             }
 
             base.Show(true);
+            world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, questStageId);
             HelpTooltip.HelpMe(100003, true);
         }
 

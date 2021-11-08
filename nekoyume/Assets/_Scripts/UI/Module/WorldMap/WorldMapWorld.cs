@@ -35,11 +35,23 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        [SerializeField] private HorizontalScrollSnap horizontalScrollSnap = null;
-        [SerializeField] private List<WorldMapPage> pages = null;
-        [SerializeField] private List<Toggle> toggles = null;
-        [SerializeField] private Button previousButton = null;
-        [SerializeField] private Button nextButton = null;
+        [SerializeField]
+        private HorizontalScrollSnap horizontalScrollSnap = null;
+
+        [SerializeField]
+        private List<WorldMapPage> pages = null;
+
+        [SerializeField]
+        private List<Toggle> toggles = null;
+
+        [SerializeField]
+        private Button previousButton = null;
+
+        [SerializeField]
+        private Button nextButton = null;
+
+        [SerializeField]
+        private Transform content = null;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -114,11 +126,15 @@ namespace Nekoyume.UI.Module
             foreach (var page in pages)
             {
                 page.gameObject.SetActive(false);
+                page.transform.SetParent(transform);
+
                 if (nextPageShouldHide)
                 {
                     continue;
                 }
+
                 page.gameObject.SetActive(true);
+                page.transform.SetParent(content);
 
                 var stageCount = page.Stages.Count;
                 var stageModels = new List<WorldMapStage.ViewModel>();
@@ -149,8 +165,11 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
-                var imageKey = worldRow.Id == GameConfig.MimisbrunnrWorldId ? "99" : $"{worldRow.Id:D2}";
-                page.Show(stageModels, imageKey, worldRow.Id == GameConfig.MimisbrunnrWorldId ? 1 : pageIndex);
+                var imageKey = worldRow.Id == GameConfig.MimisbrunnrWorldId
+                    ? "99"
+                    : $"{worldRow.Id:D2}";
+                page.Show(stageModels, imageKey,
+                    worldRow.Id == GameConfig.MimisbrunnrWorldId ? 1 : pageIndex);
                 pageIndex += 1;
                 stageOffset += stageModels.Count;
                 if (stageOffset >= stageRowsCount)
@@ -166,8 +185,6 @@ namespace Nekoyume.UI.Module
             {
                 toggles[i].gameObject.SetActive(i < SharedViewModel.PageCount.Value);
             }
-            
-            SharedViewModel.CurrentPageNumber.Value = 1;
 
             SharedViewModel.CurrentPageNumber
                 .Subscribe(currentPageNumber =>
@@ -237,7 +254,8 @@ namespace Nekoyume.UI.Module
 
         private void SetSelectedStageId(int value, int stageIdToNotify)
         {
-            foreach (var stage in pages.Where(p => p.gameObject.activeSelf).SelectMany(page => page.Stages))
+            foreach (var stage in pages.Where(p => p.gameObject.activeSelf)
+                .SelectMany(page => page.Stages))
             {
                 var stageId = stage.SharedViewModel.stageId;
                 stage.SharedViewModel.Selected.Value = stageId == value;
@@ -248,12 +266,13 @@ namespace Nekoyume.UI.Module
 
         private void SubscribeOnClick(WorldMapStage stage)
         {
-            SetSelectedStageId(stage.SharedViewModel.stageId, Widget.Find<WorldMap>().StageIdToNotify);
+            SetSelectedStageId(stage.SharedViewModel.stageId,
+                Widget.Find<WorldMap>().StageIdToNotify);
         }
 
         private void ToggleOn(int pageNumber)
         {
-            if(toggles.Count < pageNumber)
+            if (toggles.Count < pageNumber)
                 return;
 
             var toggle = toggles[pageNumber - 1];
