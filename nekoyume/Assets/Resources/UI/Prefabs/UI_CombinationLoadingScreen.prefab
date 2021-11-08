@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4495130319120217331}
   - component: {fileID: 6538991087583530236}
   - component: {fileID: 8450438534055216996}
-  - component: {fileID: 3022871231602403312}
+  - component: {fileID: 2552136477636974016}
   - component: {fileID: 5402043068474052087}
   m_Layer: 5
   m_Name: ContinueText
@@ -158,7 +158,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &3022871231602403312
+--- !u!114 &2552136477636974016
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -167,21 +167,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 1351400452316674082}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c14ca50aa2eb114686b18d870d6efd2, type: 3}
+  m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 0
-  StartDelay: 0
-  Duration: 0.3
-  TweenType_: 0
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 1
-  EndValue: 0
-  ClearOnStop: 0
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 1
+  endValue: 0
 --- !u!114 &5402043068474052087
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -520,17 +526,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e20b377b90b84274db63bc9c14107473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 0
-  StartDelay: 0
-  Duration: 0.3
-  TweenType_: 0
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 0
-  EndValue: 1
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 0
+  endValue: 1
+  infiniteLoop: 1
 --- !u!1 &5214974218392538790
 GameObject:
   m_ObjectHideFlags: 0
@@ -844,17 +858,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e20b377b90b84274db63bc9c14107473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 0
-  StartDelay: 0
-  Duration: 0.3
-  TweenType_: 0
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 0
-  EndValue: 1
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 0
+  endValue: 1
+  infiniteLoop: 0
 --- !u!1 &5910593226765760475
 GameObject:
   m_ObjectHideFlags: 0
@@ -1351,12 +1373,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c17785e2b2d9c846a7037abfdbc902b, type: 3}
---- !u!224 &4797255846765648886 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7758710241042155044, guid: 6c17785e2b2d9c846a7037abfdbc902b,
-    type: 3}
-  m_PrefabInstance: {fileID: 2972163676290751954}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8381221411227790039 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6732647702267459333, guid: 6c17785e2b2d9c846a7037abfdbc902b,
@@ -1369,6 +1385,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b6b18c68be4387816c74440debefe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &4797255846765648886 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7758710241042155044, guid: 6c17785e2b2d9c846a7037abfdbc902b,
+    type: 3}
+  m_PrefabInstance: {fileID: 2972163676290751954}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4139844050830216216
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1420,6 +1442,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4104784433019789032, guid: 0a57a4c147156e641be94a1d49d083eb,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4104784433019789032, guid: 0a57a4c147156e641be94a1d49d083eb,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4104784433019789032, guid: 0a57a4c147156e641be94a1d49d083eb,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4104784433019789032, guid: 0a57a4c147156e641be94a1d49d083eb,
         type: 3}

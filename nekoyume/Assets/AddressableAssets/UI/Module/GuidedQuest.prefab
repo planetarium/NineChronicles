@@ -303,7 +303,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6482507596812157862}
   - component: {fileID: 8824049992684031751}
-  - component: {fileID: 1153520454605527093}
+  - component: {fileID: 6018004033734327523}
   m_Layer: 5
   m_Name: GuidedQuest
   m_TagString: Untagged
@@ -348,8 +348,8 @@ MonoBehaviour:
   cells:
   - {fileID: 8948459338718410110}
   - {fileID: 4041911374520933821}
-  showingAndHidingTweener: {fileID: 1153520454605527093}
---- !u!114 &1153520454605527093
+  showingAndHidingTweener: {fileID: 6018004033734327523}
+--- !u!114 &6018004033734327523
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -358,16 +358,38 @@ MonoBehaviour:
   m_GameObject: {fileID: 7506226364245500700}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bacfffa52c78040a2ae4c658801044b7, type: 3}
+  m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playAtStart: 1
   startDelay: 0
-  end: -305
   duration: 0.5
+  tweenType: 0
+  ease: 27
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  endValue: -305
   snapping: 0
-  showEase: 27
-  closeEase: 26
   isFrom: 1
+  axisType: 0
 --- !u!1001 &490840626878012615
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -375,6 +397,31 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6482507596812157862}
     m_Modifications:
+    - target: {fileID: 403619381095496209, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_textAlignment
+      value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 403619381095496209, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 403619381095496209, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: playAtStart
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: startWithPlay
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_Name
@@ -512,6 +559,31 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6482507596812157862}
     m_Modifications:
+    - target: {fileID: 403619381095496209, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_textAlignment
+      value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 403619381095496209, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 403619381095496209, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: playAtStart
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: startWithPlay
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_Name

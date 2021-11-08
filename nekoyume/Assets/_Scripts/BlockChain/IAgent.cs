@@ -25,7 +25,7 @@ namespace Nekoyume.BlockChain
         PrivateKey PrivateKey { get; }
 
         Address Address { get; }
-        
+
         BlockPolicySource BlockPolicySource { get; }
 
         BlockRenderer BlockRenderer { get; }
@@ -54,5 +54,7 @@ namespace Nekoyume.BlockChain
         bool IsActionStaged(Guid actionId, out TxId txId);
 
         FungibleAssetValue GetBalance(Address address, Currency currency);
+
+        Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency);
     }
 }

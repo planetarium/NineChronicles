@@ -1,44 +1,45 @@
+﻿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
-using DG.Tweening;
 
 namespace Nekoyume.UI.Tween
 {
-    public class DOTweenRectTransformMoveTo : DOTweenBase
+    [RequireComponent(typeof(Graphic))]
+    public class GraphicColorTweener : DOTweenBase
     {
-        public Vector3 beginValue = new Vector3();
-        public Vector3 endValue = new Vector3();
-        private RectTransform _transform;
+        [SerializeField]
+        private Color beginValue = Color.white;
+
+        [SerializeField]
+        private Color endValue = Color.black;
+
+        private Graphic _graphic;
 
         protected override void Awake()
         {
             base.Awake();
-            _transform = GetComponent<RectTransform>();
-        }
-
-        public void SetBeginRect(RectTransform rect)
-        {
-            var beginPos = rect.GetWorldPositionOfCenter();
-            beginValue = beginPos;
-            endValue = transform.position;
-            transform.position = beginPos;
+            _graphic = GetComponent<Graphic>();
+            if (playAtStart)
+            {
+                _graphic.DOColor(beginValue, 0.0f);
+            }
         }
 
         public override DG.Tweening.Tween PlayForward()
         {
-            _transform.DOMove(beginValue, 0.0f);
-            currentTween = _transform.DOMove(endValue, duration);
+            _graphic.DOColor(beginValue, 0.0f);
+            currentTween = _graphic.DOColor(endValue, duration);
             if (TweenType.Repeat == tweenType)
             {
-                SetEase().OnComplete(() => PlayForward());
+                currentTween = SetEase().OnComplete(() => PlayForward());
             }
             else if (TweenType.PingPongOnce == tweenType || TweenType.PingPongRepeat == tweenType)
             {
-                SetEase().OnComplete(() => PlayReverse());
+                currentTween = SetEase().OnComplete(() => PlayReverse());
             }
             else
             {
-                SetEase().OnComplete(OnComplete);
+                currentTween = SetEase().OnComplete(OnComplete);
             }
 
             return currentTween;
@@ -46,15 +47,15 @@ namespace Nekoyume.UI.Tween
 
         public override DG.Tweening.Tween PlayReverse()
         {
-            _transform.DOMove(endValue, 0.0f);
-            currentTween = _transform.DOMove(beginValue, duration);
+            _graphic.DOColor(endValue, 0.0f);
+            currentTween = _graphic.DOColor(beginValue, duration);
             if (TweenType.PingPongRepeat == tweenType)
             {
-                SetEase(true).OnComplete(() => PlayForward());
+                currentTween = SetEase(true).OnComplete(() => PlayForward());
             }
             else
             {
-                SetEase(true).OnComplete(OnComplete);
+                currentTween = SetEase(true).OnComplete(OnComplete);
             }
 
             return currentTween;
@@ -70,10 +71,14 @@ namespace Nekoyume.UI.Tween
             return PlayForward();
         }
 
-
         public override DG.Tweening.Tween PlayPingPongRepeat()
         {
             return PlayForward();
+        }
+
+        private void OnDisable()
+        {
+            Stop();
         }
     }
 }

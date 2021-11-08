@@ -360,7 +360,7 @@ namespace Nekoyume.UI
             additionalCpArea.gameObject.SetActive(false);
 
             var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
-            var tweener = cpTextValueTweener.Play(prevCp, currentCp);
+            cpTextValueTweener.Play(prevCp, currentCp);
             if (prevCp < currentCp)
             {
                 additionalCpArea.gameObject.SetActive(true);

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Nekoyume.UI.Tween
 {
     [RequireComponent(typeof(RectTransform))]
-    public class RotateSingleTweener : MonoBehaviour
+    public class RotateSingleTweener : DOTweenBase
     {
         public enum Single
         {
@@ -22,22 +22,14 @@ namespace Nekoyume.UI.Tween
         [SerializeField]
         private Single single = Single.Z;
 
-        // todo: `from` -> `begin`
         [SerializeField]
-        private float from = 0f;
-
-        // todo: `to` -> `end`
-        [SerializeField]
-        private float to = 0f;
+        private float beginValue = 0f;
 
         [SerializeField]
-        private float duration = 1f;
+        private float endValue = 0f;
 
         [SerializeField]
         private RotateMode rotateMode = RotateMode.Fast;
-
-        [SerializeField]
-        private Ease ease = Ease.Linear;
 
         [SerializeField]
         private bool isLoop = true;
@@ -47,10 +39,9 @@ namespace Nekoyume.UI.Tween
 
         private RectTransform _rectTransform;
 
-        protected Tweener Tweener { get; set; }
-
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _rectTransform = GetComponent<RectTransform>();
         }
 
@@ -63,16 +54,16 @@ namespace Nekoyume.UI.Tween
             switch (single)
             {
                 case Single.X:
-                    fromValue.x = from;
-                    toValue.x = to;
+                    fromValue.x = beginValue;
+                    toValue.x = endValue;
                     break;
                 case Single.Y:
-                    fromValue.y = from;
-                    toValue.y = to;
+                    fromValue.y = beginValue;
+                    toValue.y = endValue;
                     break;
                 case Single.Z:
-                    fromValue.z = from;
-                    toValue.z = to;
+                    fromValue.z = beginValue;
+                    toValue.z = endValue;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -87,32 +78,20 @@ namespace Nekoyume.UI.Tween
                 _rectTransform.rotation = Quaternion.Euler(fromValue);
             }
 
+            currentTween = _rectTransform.DOLocalRotate(toValue, duration, rotateMode);
             if (isLoop)
             {
-                Tweener = _rectTransform.DOLocalRotate(toValue, duration, rotateMode)
-                    .SetEase(ease)
-                    .SetLoops(-1, loopType);
+                SetEase().SetLoops(-1, loopType);
             }
             else
             {
-                Tweener = _rectTransform.DOLocalRotate(toValue, duration, rotateMode)
-                    .SetEase(ease);
+                SetEase();
             }
         }
 
         private void OnDisable()
         {
-            KillTween();
-        }
-
-        public void KillTween()
-        {
-            if (Tweener?.IsPlaying() ?? false)
-            {
-                Tweener?.Kill();
-            }
-
-            Tweener = null;
+            Stop();
         }
     }
 }

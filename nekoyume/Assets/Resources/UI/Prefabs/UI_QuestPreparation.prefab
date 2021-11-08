@@ -2678,7 +2678,7 @@ GameObject:
   - component: {fileID: 3881336577669906072}
   - component: {fileID: 264194222718647595}
   - component: {fileID: 3702005703930677272}
-  - component: {fileID: 929442627578666039}
+  - component: {fileID: 4707290559145368056}
   m_Layer: 5
   m_Name: EquipSlotGlow
   m_TagString: Untagged
@@ -2743,7 +2743,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &929442627578666039
+--- !u!114 &4707290559145368056
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2752,21 +2752,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 4948141171438723337}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea01e3caa21d0264cab5f5afa838df19, type: 3}
+  m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 1
-  StartDelay: 0
-  Duration: 1
-  TweenType_: 4
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 0.5
-  EndValue: 1
-  ClearOnStop: 0
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 0.5
+  endValue: 1
+  infiniteLoop: 0
+  loopType: 1
 --- !u!1 &5025754014083994392
 GameObject:
   m_ObjectHideFlags: 0
@@ -3392,7 +3400,7 @@ GameObject:
   - component: {fileID: 7775912007501706911}
   - component: {fileID: 5064747420105962615}
   - component: {fileID: 7171152840029433570}
-  - component: {fileID: 8176425295563055976}
+  - component: {fileID: 3058817973528704575}
   m_Layer: 5
   m_Name: EquipSlotGlow
   m_TagString: Untagged
@@ -3457,7 +3465,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8176425295563055976
+--- !u!114 &3058817973528704575
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3466,21 +3474,29 @@ MonoBehaviour:
   m_GameObject: {fileID: 6387715629849393821}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea01e3caa21d0264cab5f5afa838df19, type: 3}
+  m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StartWithPlay: 1
-  StartDelay: 0
-  Duration: 1
-  TweenType_: 4
-  Ease_: 1
-  CompleteMethod: 
-  ComponentIndex: 0
-  Target: {fileID: 0}
-  CompleteDelay: 0
-  BeginValue: 0.5
-  EndValue: 1
-  ClearOnStop: 0
+  startWithPlay: 1
+  startDelay: 0
+  duration: 1
+  tweenType: 0
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  beginValue: 0.5
+  endValue: 1
+  infiniteLoop: 0
+  loopType: 1
 --- !u!1 &6540206552823349309
 GameObject:
   m_ObjectHideFlags: 0
@@ -4212,7 +4228,7 @@ SpriteRenderer:
   m_Size: {x: 0.89, y: 0.39}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &8385789452819173020
@@ -12136,7 +12152,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
