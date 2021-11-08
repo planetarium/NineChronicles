@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_equipment8")]
+    [ActionType("combination_equipment9")]
     public class CombinationEquipment : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
@@ -335,7 +335,10 @@ namespace Nekoyume.Action
             SkillSheet skillSheet
         )
         {
-            foreach (var optionInfo in subRecipe.Options.OrderByDescending(e => e.Ratio))
+            foreach (var optionInfo in subRecipe.Options
+                .OrderByDescending(e => e.Ratio)
+                .ThenBy(e => e.RequiredBlockIndex)
+                .ThenBy(e => e.Id))
             {
                 if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
                 {
