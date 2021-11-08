@@ -12901,7 +12901,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 1
+  playAtStart: 1
   startDelay: 0
   duration: 1
   tweenType: 0
@@ -13324,7 +13324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 1
+  playAtStart: 1
   startDelay: 0
   duration: 1
   tweenType: 0
@@ -13955,7 +13955,7 @@ PrefabInstance:
         type: 3}
       propertyPath: showingAndHidingTweener
       value: 
-      objectReference: {fileID: 7254304956083598752}
+      objectReference: {fileID: 2095944874584678264}
     - target: {fileID: 4330307022097444192, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
         type: 3}
       propertyPath: m_IsActive
@@ -14095,15 +14095,15 @@ PrefabInstance:
         type: 3}
       propertyPath: showingAndHidingTweener
       value: 
-      objectReference: {fileID: 2347755624991808867}
+      objectReference: {fileID: 6426313838497609659}
     m_RemovedComponents:
     - {fileID: 1153520454605527093, guid: 9c3d233eb0a5b44be817eb9d0d14c468, type: 3}
     - {fileID: 886033140566410569, guid: 9c3d233eb0a5b44be817eb9d0d14c468, type: 3}
     - {fileID: 5220589867227377034, guid: 9c3d233eb0a5b44be817eb9d0d14c468, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 9c3d233eb0a5b44be817eb9d0d14c468, type: 3}
---- !u!114 &2347755624991808867 stripped
+--- !u!114 &6426313838497609659 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2959116522956169796, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
+  m_CorrespondingSourceObject: {fileID: 5812697836815829148, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
     type: 3}
   m_PrefabInstance: {fileID: 685676899623862055}
   m_PrefabAsset: {fileID: 0}
@@ -14113,9 +14113,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7254304956083598752 stripped
+--- !u!114 &2095944874584678264 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7865664764183218823, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
+  m_CorrespondingSourceObject: {fileID: 1482327783071735903, guid: 9c3d233eb0a5b44be817eb9d0d14c468,
     type: 3}
   m_PrefabInstance: {fileID: 685676899623862055}
   m_PrefabAsset: {fileID: 0}
