@@ -215,7 +215,7 @@ namespace Lib9c.Tests
                 default,
                 2);
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy();
             BlockChain<PolymorphicAction<ActionBase>> chain =
                 BlockChainHelper.MakeBlockChain(new[] { blockPolicySource.BlockRenderer }, policy, stagePolicy);
 
