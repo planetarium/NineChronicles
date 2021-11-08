@@ -160,20 +160,20 @@ namespace Nekoyume.Game.Character
 
         private void LateUpdate()
         {
-            if(HudContainer)
+            if (HudContainer)
             {
                 HudContainer.UpdatePosition(gameObject, HUDOffset);
+            }
+
+            if (SpeechBubble)
+            {
+                SpeechBubble.UpdatePosition(gameObject, HUDOffset);
             }
         }
 
         protected virtual void Update()
         {
             _root?.Tick();
-
-            if (SpeechBubble)
-            {
-                SpeechBubble.UpdatePosition(gameObject, HUDOffset);
-            }
         }
 
         private void InitializeHudContainer()
