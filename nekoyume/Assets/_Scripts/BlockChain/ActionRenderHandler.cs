@@ -1105,27 +1105,23 @@ namespace Nekoyume.BlockChain
             if (senderAddress == currentAgentAddress)
             {
                 var amount = eval.Action.Amount;
-                var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_SENDER");
-                var message = string.Format(messageFormat, amount, recipientAddress);
 
-                OneLineSystem.Push(MailType.System, message);
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_SENDER", amount, recipientAddress));
             }
             else if (recipientAddress == currentAgentAddress)
             {
                 var amount = eval.Action.Amount;
-                string message;
                 if (senderAddress == playToEarnRewardAddress)
                 {
-                    var messageFormat = L10nManager.Localize("UI_PLAYTOEARN_NOTIFICATION_FORMAT");
-                    message = string.Format(messageFormat, amount);
+                    OneLineSystem.Push(MailType.System,
+                        L10nManager.Localize("UI_PLAYTOEARN_NOTIFICATION_FORMAT", amount));
                 }
                 else
                 {
-                    var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_RECIPIENT");
-                    message = string.Format(messageFormat, amount, senderAddress);
+                    OneLineSystem.Push(MailType.System,
+                        L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_RECIPIENT", amount, senderAddress));
                 }
-
-                OneLineSystem.Push(MailType.System, message);
             }
             UpdateAgentStateAsync(eval);
         }

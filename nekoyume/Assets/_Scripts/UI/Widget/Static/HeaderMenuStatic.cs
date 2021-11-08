@@ -123,9 +123,8 @@ namespace Nekoyume.UI.Module
                         var requiredStage = _toggleUnlockStages[toggleInfo.Type];
                         if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
                         {
-                            var msg = string.Format(L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
-                                requiredStage);
-                            OneLineSystem.Push(MailType.System, msg);
+                            OneLineSystem.Push(MailType.System,
+                                L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage));
                             toggleInfo.Toggle.isOn = false;
                             return;
                         }
