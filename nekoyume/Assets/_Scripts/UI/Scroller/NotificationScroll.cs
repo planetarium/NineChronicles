@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EasingCore;
+using UnityEngine.UI.Extensions.EasingCore;
+using UnityEngine.UI.Extensions;
 using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
     using UniRx;
 
-    public class NotificationScroll : FancyScrollView.FancyScrollView<
+    public class NotificationScroll : FancyScrollView<
         NotificationCell.ViewModel,
         NotificationScroll.DefaultContext>
     {
@@ -42,7 +43,7 @@ namespace Nekoyume.UI.Scroller
         }
 
         [SerializeField]
-        private FancyScrollView.Scroller scroller = null;
+        private UnityEngine.UI.Extensions.Scroller scroller = null;
 
         [SerializeField]
         private GameObject cellPrefab = null;
