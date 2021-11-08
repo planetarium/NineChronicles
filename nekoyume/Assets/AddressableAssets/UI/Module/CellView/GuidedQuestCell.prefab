@@ -5419,7 +5419,7 @@ GameObject:
   - component: {fileID: 5483001106216337619}
   - component: {fileID: 8854218329090599353}
   - component: {fileID: 7750695606491973167}
-  - component: {fileID: 3449533287891893891}
+  - component: {fileID: 967701233389146875}
   m_Layer: 5
   m_Name: GuidedQuestCell
   m_TagString: Untagged
@@ -5467,7 +5467,7 @@ MonoBehaviour:
   - {fileID: 8329317706174982458}
   - {fileID: 583703139681557103}
   bodyButton: {fileID: 1879522505491201657}
-  showingAndHidingTweener: {fileID: 3449533287891893891}
+  showingAndHidingTweener: {fileID: 967701233389146875}
   inProgressTweener: {fileID: 7750695606491973167}
 --- !u!114 &7750695606491973167
 MonoBehaviour:
@@ -5493,6 +5493,47 @@ MonoBehaviour:
   isFrom: 0
   isLoop: 1
   loopType: 1
+--- !u!114 &967701233389146875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4240006799511237031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playAtStart: 0
+  startDelay: 0
+  duration: 0.5
+  tweenType: 0
+  ease: 27
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  endValue: -304
+  snapping: 0
+  isFrom: 1
+  axisType: 0
 --- !u!1 &4701139390936181325
 GameObject:
   m_ObjectHideFlags: 0
@@ -5569,38 +5610,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-  m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startWithPlay: 1
-  startDelay: 0
-  duration: 0.5
-  tweenType: 0
-  ease: 27
-  completeMethod: 
-  componentIndex: 0
-  target: {fileID: 0}
-  completeDelay: 0
-  useCustomEaseCurve: 0
-  customEaseCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  endValue: -304
-  snapping: 0
-  isFrom: 1
-  single: 0
 --- !u!1 &6650929777205699167
 GameObject:
   m_ObjectHideFlags: 0
