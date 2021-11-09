@@ -29,14 +29,6 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long DifficultyStability = 2048;
 
-        // FIXME: We should adjust this value after resolving
-        // https://github.com/planetarium/NineChronicles/issues/777
-        // Previous value is 100 kb (until v100080)
-        public const int MaxBlockBytes = 1024 * 1024 * 10; // 10 Mib
-
-        // Note: The genesis block of 9c-main net weighs 11,085,640 B (11 MiB).
-        public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
-
         /// <summary>
         /// Last index in which restriction will apply.
         /// </summary>
@@ -53,18 +45,20 @@ namespace Nekoyume.BlockChain.Policy
 
         public const int MaxTransactionsPerBlock = 100;
 
-        // FIXME: Should be finalized before release.
-        public const long MaxTransactionsPerSignerPerBlockStartIndex = 3_000_001;
-
-        public const int MaxTransactionsPerSignerPerBlock = 4;
-
         public const long V100080ObsoleteIndex = 2_448_000;
 
         public const long V100081ObsoleteIndex = 2_550_000;
 
         public const long V100083ObsoleteIndex = 2_680_000;
 
+        // FIXME: Should be finalized before release.
+        // current: 2021. 11. 08. pm 07:30 KST // 2,709,164
+        public const long V100086ObsoleteIndex = 3_000_000;
+
+        public const long PermissionedMiningHardcodedIndex = 2_225_500;
+
         public const long PermissionedMiningStartIndex = 2_225_500;
+
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
@@ -96,7 +90,7 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         /// <summary>
-        /// Creates an <see cref="IBlockPolicy{T}"/> instance for deployment.
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-main deployment.
         /// </summary>
         public IBlockPolicy<NCAction> GetPolicy() =>
             GetPolicy(
@@ -105,6 +99,19 @@ namespace Nekoyume.BlockChain.Policy
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
+
+        /// <summary>
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-internal deployment.
+        /// </summary>
+        public IBlockPolicy<NCAction> GetInternalPolicy() =>
+            GetPolicy(
+                minimumDifficulty: MinimumDifficulty,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Internal,
+                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Internal,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 

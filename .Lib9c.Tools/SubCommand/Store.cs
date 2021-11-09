@@ -39,7 +39,9 @@ namespace Lib9c.Tools.SubCommand
                 Console.WriteLine("Skip copy");
             }
 
+#pragma warning disable 618
             var originStore = new MonoRocksDBStore(originRootPath);
+#pragma warning restore 618
             var distStore = new RocksDBStore(distRootPath);
 
             var totalLength = originStore.CountBlocks();

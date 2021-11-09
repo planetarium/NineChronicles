@@ -37,7 +37,7 @@ namespace Nekoyume.Action
         public Address buyerAvatarAddress { get; set; }
         public List<(Guid orderId, int errorCode)> errors = new List<(Guid orderId, int errorCode)>();
         public IEnumerable<PurchaseInfo> purchaseInfos;
-        IEnumerable<IPurchaseInfo> IBuy5.purchaseInfos => purchaseInfos.Cast<IPurchaseInfo>();
+        IEnumerable<IPurchaseInfo> IBuy5.purchaseInfos => purchaseInfos;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {

@@ -162,7 +162,7 @@ namespace Nekoyume.Action
                 weeklyArenaState[EnemyAddress],
                 costumeStatSheet);
 
-            simulator.Simulate2();
+            simulator.SimulateV1();
 
             sw.Stop();
             Log.Verbose(

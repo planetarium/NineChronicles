@@ -386,6 +386,15 @@ namespace Nekoyume.Model
             Simulator.Log.Add(spawn);
         }
 
+        [Obsolete("Use Spawn")]
+        public virtual void SpawnV1()
+        {
+            InitAIV1();
+            var spawn = new SpawnPlayer((CharacterBase) Clone());
+            Simulator.Log.Add(spawn);
+        }
+
+        [Obsolete("Use Spawn")]
         public virtual void SpawnV2()
         {
             InitAIV2();
@@ -420,6 +429,11 @@ namespace Nekoyume.Model
         public void OverrideSkill(Skill.Skill skill)
         {
             Skills.Clear();
+            Skills.Add(skill);
+        }
+
+        public void AddSkill(Skill.Skill skill)
+        {
             Skills.Add(skill);
         }
 
