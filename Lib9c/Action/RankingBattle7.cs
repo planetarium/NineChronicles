@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -17,9 +17,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
-    [ActionType("ranking_battle6")]
-    public class RankingBattle6 : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100086ObsoleteIndex)]
+    [ActionType("ranking_battle7")]
+    public class RankingBattle7 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
@@ -48,8 +48,8 @@ namespace Nekoyume.Action
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged);
             }
-            
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, ctx);
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100086ObsoleteIndex, context);
 
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
@@ -194,7 +194,7 @@ namespace Nekoyume.Action
                 enemyArenaInfo,
                 costumeStatSheet);
 
-            simulator.SimulateV2();
+            simulator.SimulateV3();
 
             sw.Stop();
             Log.Verbose(

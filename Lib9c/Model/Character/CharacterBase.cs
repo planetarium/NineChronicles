@@ -1,11 +1,8 @@
-// #define TEST_LOG
-
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using BTAI;
-using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Buff;
@@ -141,7 +138,19 @@ namespace Nekoyume.Model
                 BT.Call(Act)
             );
         }
-        
+
+        [Obsolete("Use InitAI")]
+        public void InitAIV1()
+        {
+            SetSkill();
+
+            _root = new Root();
+            _root.OpenBranch(
+                BT.Call(ActV1)
+            );
+        }
+
+        [Obsolete("Use InitAI")]
         public void InitAIV2()
         {
             SetSkill();
@@ -164,7 +173,6 @@ namespace Nekoyume.Model
 
         private void ReduceDurationOfBuffs()
         {
-            // 자신의 기존 버프 턴 조절.
 #pragma warning disable LAA1002
             foreach (var pair in Buffs)
 #pragma warning restore LAA1002
@@ -178,12 +186,15 @@ namespace Nekoyume.Model
             Skills.ReduceCooldown();
         }
 
+        [Obsolete("ReduceSkillCooldown")]
+        private void ReduceSkillCooldownV1()
+        {
+            Skills.ReduceCooldownV1();
+        }
+
         private void UseSkill()
         {
-            // 스킬 선택.
             var selectedSkill = Skills.Select(Simulator.Random);
-
-            // 스킬 사용.
             var usedSkill = selectedSkill.Use(
                 this,
                 Simulator.WaveTurn,
@@ -194,7 +205,39 @@ namespace Nekoyume.Model
                 )
             );
 
-            // 쿨다운 적용.
+            if (!Simulator.SkillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var sheetSkill))
+            {
+                throw new KeyNotFoundException(selectedSkill.SkillRow.Id.ToString(CultureInfo.InvariantCulture));
+            }
+
+            Skills.SetCooldown(selectedSkill.SkillRow.Id, sheetSkill.Cooldown);
+            Simulator.Log.Add(usedSkill);
+
+            foreach (var info in usedSkill.SkillInfos)
+            {
+                if (!info.Target.IsDead)
+                    continue;
+
+                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
+                target?.Die();
+            }
+        }
+
+        [Obsolete("Use UseSkill")]
+        private void UseSkillV1()
+        {
+            var selectedSkill = Skills.SelectV1(Simulator.Random);
+
+            var usedSkill = selectedSkill.Use(
+                this,
+                Simulator.WaveTurn,
+                BuffFactory.GetBuffs(
+                    selectedSkill,
+                    Simulator.SkillBuffSheet,
+                    Simulator.BuffSheet
+                )
+            );
+
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
 
@@ -207,13 +250,12 @@ namespace Nekoyume.Model
                 target?.Die();
             }
         }
-        
+
+        [Obsolete("Use UseSkill")]
         private void UseSkillV2()
         {
-            // 스킬 선택.
             var selectedSkill = Skills.SelectV2(Simulator.Random);
 
-            // 스킬 사용.
             var usedSkill = selectedSkill.Use(
                 this,
                 Simulator.WaveTurn,
@@ -224,7 +266,6 @@ namespace Nekoyume.Model
                 )
             );
 
-            // 쿨다운 적용.
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
 
@@ -242,7 +283,6 @@ namespace Nekoyume.Model
         {
             var isDirtyMySelf = false;
 
-            // 자신의 버프 제거.
             var keyList = Buffs.Keys.ToList();
             foreach (var key in keyList)
             {
@@ -257,7 +297,6 @@ namespace Nekoyume.Model
             if (!isDirtyMySelf)
                 return;
 
-            // 버프를 상태에 반영.
             Stats.SetBuffs(Buffs.Values);
             Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
         }
@@ -359,9 +398,9 @@ namespace Nekoyume.Model
 
         protected virtual void SetSkill()
         {
-            if (!Simulator.SkillSheet.TryGetValue(100000, out var skillRow))
+            if (!Simulator.SkillSheet.TryGetValue(GameConfig.DefaultAttackId, out var skillRow))
             {
-                throw new KeyNotFoundException("100000");
+                throw new KeyNotFoundException(GameConfig.DefaultAttackId.ToString(CultureInfo.InvariantCulture));
             }
 
             var attack = SkillFactory.Get(skillRow, 0, 100);
@@ -384,131 +423,31 @@ namespace Nekoyume.Model
             }
             EndTurn();
         }
-        
+
+        [Obsolete("Use Act")]
+        private void ActV1()
+        {
+            if (IsAlive())
+            {
+                ReduceDurationOfBuffs();
+                ReduceSkillCooldownV1();
+                UseSkillV1();
+                RemoveBuffs();
+            }
+            EndTurn();
+        }
+
+        [Obsolete("Use Act")]
         private void ActV2()
         {
             if (IsAlive())
             {
                 ReduceDurationOfBuffs();
-                ReduceSkillCooldown();
+                ReduceSkillCooldownV1();
                 UseSkillV2();
                 RemoveBuffs();
             }
             EndTurn();
-        }
-    }
-
-    [Serializable]
-    public class Skills : IEnumerable<Skill.Skill>
-    {
-        private readonly List<Skill.Skill> _skills = new List<Skill.Skill>();
-        private Dictionary<int, int> _skillsCooldown = new Dictionary<int, int>();
-
-        public void Add(Skill.Skill skill)
-        {
-            if (skill is null)
-            {
-                return;
-            }
-
-            _skills.Add(skill);
-        }
-
-        public void Clear()
-        {
-            _skills.Clear();
-        }
-
-        public IEnumerator<Skill.Skill> GetEnumerator()
-        {
-            return _skills.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public void SetCooldown(int skillId, int cooldown)
-        {
-            if (_skills.All(e => e.SkillRow.Id != skillId))
-                throw new Exception(
-                    $"[{nameof(Skills)}.{nameof(SetCooldown)}()] Not found {nameof(skillId)}({skillId})");
-
-            _skillsCooldown[skillId] = cooldown;
-        }
-
-        public int GetCooldown(int skillId)
-        {
-            return _skillsCooldown.ContainsKey(skillId)
-                ? _skillsCooldown[skillId]
-                : 0;
-        }
-
-        public void ReduceCooldown()
-        {
-#pragma warning disable LAA1002
-            if (!_skillsCooldown.Any())
-#pragma warning restore LAA1002
-                return;
-
-            foreach (var key in _skillsCooldown.Keys.OrderBy(i => i))
-            {
-                var value = _skillsCooldown[key];
-                if (value <= 1)
-                {
-                    _skillsCooldown.Remove(key);
-                    continue;
-                }
-
-                _skillsCooldown[key] = value - 1;
-            }
-        }
-
-        public Skill.Skill Select(IRandom random)
-        {
-            return PostSelect(random, GetSelectableSkills());
-        }
-        
-        public Skill.Skill SelectV2(IRandom random)
-        {
-            return PostSelectV2(random, GetSelectableSkills());
-        }
-
-        private IEnumerable<Skill.Skill> GetSelectableSkills()
-        {
-            return _skills.Where(skill => !_skillsCooldown.ContainsKey(skill.SkillRow.Id));
-        }
-
-        private Skill.Skill PostSelect(IRandom random, IEnumerable<Skill.Skill> skills)
-        {
-            var selected = skills
-                .Select(skill => new {skill, chance = random.Next(0, 100)})
-                .Where(t => t.skill.Chance > t.chance)
-                .OrderBy(t => t.skill.SkillRow.Id)
-                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.Chance)
-                .Select(t => t.skill)
-                .ToList();
-
-            return selected.Any()
-                ? selected[random.Next(selected.Count)]
-                : throw new Exception($"[{nameof(Skills)}] There is no selected skills");
-        }
-        
-        private Skill.Skill PostSelectV2(IRandom random, IEnumerable<Skill.Skill> skills)
-        {
-            var selected = skills
-                .OrderBy(skill => skill.SkillRow.Id)
-                .Select(skill => new {skill, chance = random.Next(0, 100)})
-                .Where(t => t.skill.Chance > t.chance)
-                .OrderBy(t => t.skill.SkillRow.Id)
-                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.Chance)
-                .Select(t => t.skill)
-                .ToList();
-
-            return selected.Any()
-                ? selected[random.Next(selected.Count)]
-                : throw new Exception($"[{nameof(Skills)}] There is no selected skills");
         }
     }
 }

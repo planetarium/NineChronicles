@@ -298,7 +298,7 @@ namespace Nekoyume.Action
                 new EquipmentItemOptionSheet.Row[0];
             try
             {
-                optionRows = optionSelector.Select(subRecipe.MaxOptionLimit);
+                optionRows = optionSelector.SelectV1(subRecipe.MaxOptionLimit);
             }
             catch (Exception e) when (
                 e is InvalidCountException ||
