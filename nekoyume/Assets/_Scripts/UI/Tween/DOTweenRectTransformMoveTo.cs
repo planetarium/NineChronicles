@@ -6,8 +6,8 @@ namespace Nekoyume.UI.Tween
 {
     public class DOTweenRectTransformMoveTo : DOTweenBase
     {
-        public Vector3 BeginValue = new Vector3();
-        public Vector3 EndValue = new Vector3();
+        public Vector3 beginValue = new Vector3();
+        public Vector3 endValue = new Vector3();
         private RectTransform _transform;
 
         protected override void Awake()
@@ -19,77 +19,61 @@ namespace Nekoyume.UI.Tween
         public void SetBeginRect(RectTransform rect)
         {
             var beginPos = rect.GetWorldPositionOfCenter();
-            BeginValue = beginPos;
-            EndValue = transform.position;
+            beginValue = beginPos;
+            endValue = transform.position;
             transform.position = beginPos;
         }
 
-        public override void PlayForward()
+        public override DG.Tweening.Tween PlayForward()
         {
-            _transform.DOMove(BeginValue, 0.0f);
-            if (TweenType.Repeat == TweenType_)
+            _transform.DOMove(beginValue, 0.0f);
+            currentTween = _transform.DOMove(endValue, duration);
+            if (TweenType.Repeat == tweenType)
             {
-                _transform.DOMove(EndValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = PlayForward;
+                SetEase().OnComplete(() => PlayForward());
             }
-            else if (TweenType.PingPongOnce == TweenType_)
+            else if (TweenType.PingPongOnce == tweenType || TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOMove(EndValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = PlayReverse;
-            }
-            else if (TweenType.PingPongRepeat == TweenType_)
-            {
-                _transform.DOMove(EndValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = PlayReverse;
+                SetEase().OnComplete(() => PlayReverse());
             }
             else
             {
-                _transform.DOMove(EndValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = OnComplete;
+                SetEase().OnComplete(OnComplete);
             }
+
+            return currentTween;
         }
-        
-        public override void PlayReverse()
+
+        public override DG.Tweening.Tween PlayReverse()
         {
-            _transform.DOMove(EndValue, 0.0f);
-            if (TweenType.PingPongOnce == TweenType_)
+            _transform.DOMove(endValue, 0.0f);
+            currentTween = _transform.DOMove(beginValue, duration);
+            if (TweenType.PingPongRepeat == tweenType)
             {
-                _transform.DOMove(BeginValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = OnComplete;
-            }
-            else if (TweenType.PingPongRepeat == TweenType_)
-            {
-                _transform.DOMove(BeginValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = PlayForward;
+                SetEase(true).OnComplete(() => PlayForward());
             }
             else
             {
-                _transform.DOMove(BeginValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = OnComplete;
+                SetEase(true).OnComplete(OnComplete);
             }
+
+            return currentTween;
         }
 
-        public override void PlayRepeat()
+        public override DG.Tweening.Tween PlayRepeat()
         {
-            PlayForward();
+            return PlayForward();
         }
 
-        public override void PlayPingPongOnce()
+        public override DG.Tweening.Tween PlayPingPongOnce()
         {
-            PlayForward();
+            return PlayForward();
         }
 
 
-        public override void PlayPingPongRepeat()
+        public override DG.Tweening.Tween PlayPingPongRepeat()
         {
-            PlayForward();
+            return PlayForward();
         }
     }
 }

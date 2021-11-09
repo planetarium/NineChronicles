@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Scroller
 
         // NOTE: 셀이 더해지고 빠지는 연출이 정해지면 더욱 개선됩니다.
         [SerializeField]
-        private AnchoredPositionXTweener showingAndHidingTweener = null;
+        private AnchoredPositionSingleTweener showingAndHidingTweener = null;
 
         [SerializeField]
         private TransformLocalScaleTweener inProgressTweener = null;
@@ -65,7 +65,7 @@ namespace Nekoyume.UI.Scroller
 
         private void OnDisable()
         {
-            showingAndHidingTweener.KillTween();
+            showingAndHidingTweener.Stop();
         }
 
         #endregion
@@ -119,7 +119,7 @@ namespace Nekoyume.UI.Scroller
                 contentText.gameObject.SetActive(false);
                 effectedContentText.gameObject.SetActive(true);
                 effectedBodyImage.gameObject.SetActive(true);
-                showingAndHidingTweener.KillTween();
+                showingAndHidingTweener.Stop();
                 inProgressTweener.PlayTween();
             }
             else
