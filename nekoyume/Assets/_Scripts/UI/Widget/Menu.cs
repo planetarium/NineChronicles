@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -87,6 +88,18 @@ namespace Nekoyume.UI
             guidedQuest.OnClickCombinationEquipmentQuestCell
                 .Subscribe(tuple => GoToCombinationEquipmentRecipe(tuple.quest.RecipeId))
                 .AddTo(gameObject);
+            AnimationState.Subscribe(stateType =>
+            {
+                var buttonList = new List<Button>
+                {
+                    btnCombination.GetComponent<Button>(),
+                    btnMimisbrunnr.GetComponent<Button>(),
+                    btnQuest.GetComponent<Button>(),
+                    btnRanking.GetComponent<Button>(),
+                    btnShop.GetComponent<Button>()
+                };
+                buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
+            }).AddTo(gameObject);
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
