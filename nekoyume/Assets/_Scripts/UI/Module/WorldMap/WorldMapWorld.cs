@@ -133,8 +133,8 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                page.gameObject.SetActive(true);
                 page.transform.SetParent(content);
+                page.gameObject.SetActive(true);
 
                 var stageCount = page.Stages.Count;
                 var stageModels = new List<WorldMapStage.ViewModel>();
