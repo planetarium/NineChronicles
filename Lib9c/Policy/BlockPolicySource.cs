@@ -51,7 +51,14 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long V100083ObsoleteIndex = 2_680_000;
 
+        // FIXME: Should be finalized before release.
+        // current: 2021. 11. 08. pm 07:30 KST // 2,709,164
+        public const long V100086ObsoleteIndex = 3_000_000;
+
+        public const long PermissionedMiningHardcodedIndex = 2_225_500;
+
         public const long PermissionedMiningStartIndex = 2_225_500;
+
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
@@ -83,13 +90,8 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         /// <summary>
-        /// Creates an <see cref="IBlockPolicy{T}"/> instance for deployment.
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-main deployment.
         /// </summary>
-        /// <remarks>
-        /// This is set up to be deployable to 9c-main by default.  To deploy to
-        /// a different environment, such as 9c-internal, with a different policy,
-        /// swap out the subpolicies here.
-        /// </remarks>
         public IBlockPolicy<NCAction> GetPolicy() =>
             GetPolicy(
                 minimumDifficulty: MinimumDifficulty,
@@ -97,6 +99,19 @@ namespace Nekoyume.BlockChain.Policy
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
+
+        /// <summary>
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-internal deployment.
+        /// </summary>
+        public IBlockPolicy<NCAction> GetInternalPolicy() =>
+            GetPolicy(
+                minimumDifficulty: MinimumDifficulty,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Internal,
+                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Internal,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 

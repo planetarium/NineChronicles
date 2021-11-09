@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash9")]
+    [ActionType("hack_and_slash10")]
     public class HackAndSlash : GameAction
     {
         public List<Guid> costumes;
