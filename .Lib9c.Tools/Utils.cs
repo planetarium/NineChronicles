@@ -48,8 +48,10 @@ namespace Lib9c.Tools
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             IStore store
                 = monorocksdb
-                ? (IStore)new MonoRocksDBStore(storePath)
-                : new RocksDBStore(storePath);
+#pragma warning disable 618
+                    ? (IStore)new MonoRocksDBStore(storePath)
+#pragma warning restore 618
+                    : new RocksDBStore(storePath);
             IKeyValueStore stateKeyValueStore =
                 new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
             IStateStore stateStore = new TrieStateStore(stateKeyValueStore);
