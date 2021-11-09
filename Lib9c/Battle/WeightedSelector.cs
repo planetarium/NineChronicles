@@ -8,7 +8,7 @@ namespace Nekoyume.Battle
 {
     public class WeightedSelector<T>
     {
-        private struct Item
+        private readonly struct Item
         {
             public readonly T Value;
             public readonly decimal Weight;
@@ -21,7 +21,7 @@ namespace Nekoyume.Battle
         }
 
         private readonly IRandom _random;
-        private List<Item> _items;
+        private readonly List<Item> _items;
 
         public int Count => _items.Count;
 
@@ -43,78 +43,7 @@ namespace Nekoyume.Battle
             }
         }
 
-        [Obsolete("Use SelectV2()")]
         public IEnumerable<T> Select(int count)
-        {
-            Validate(count);
-            var result = new List<T>();
-            var weight = 0m;
-            var rnd = _random.Next(1, 100001) * 0.00001m;
-            while (result.Count < count)
-            {
-                foreach (var item in _items.OrderBy(i => i.Weight).ToList())
-                {
-                    weight += item.Weight;
-
-                    if (rnd <= weight)
-                    {
-                        result.Add(item.Value);
-                        _items.Remove(item);
-                    }
-
-                    if (result.Count == count)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        private void Validate(int count)
-        {
-            if (count <= 0)
-            {
-                throw new InvalidCountException();
-            }
-            if (_items.Count <= 0)
-            {
-                throw new ListEmptyException();
-            }
-        }
-
-        [Obsolete("Use SelectV3()")]
-        public IEnumerable<T> SelectV2(int count)
-        {
-            Validate(count);
-            var result = new List<T>();
-            var weight = 0m;
-            var rnd = _random.Next(1, 100001) * 0.00001m;
-            while (result.Count < count)
-            {
-                foreach (var item in _items.OrderBy(i => i.Weight).ToList())
-                {
-                    weight += item.Weight;
-
-                    if (rnd <= weight)
-                    {
-                        result.Add(item.Value);
-                        _items.Remove(item);
-                        weight = 0m;
-                    }
-
-                    if (result.Count == count)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return result;
-        }
-        
-        public IEnumerable<T> SelectV3(int count)
         {
             Validate(count);
             var result = new List<T>();
@@ -144,6 +73,78 @@ namespace Nekoyume.Battle
 
             return result;
         }
+
+        [Obsolete("Use Select")]
+        public IEnumerable<T> SelectV1(int count)
+        {
+            Validate(count);
+            var result = new List<T>();
+            var weight = 0m;
+            var rnd = _random.Next(1, 100001) * 0.00001m;
+            while (result.Count < count)
+            {
+                foreach (var item in _items.OrderBy(i => i.Weight).ToList())
+                {
+                    weight += item.Weight;
+
+                    if (rnd <= weight)
+                    {
+                        result.Add(item.Value);
+                        _items.Remove(item);
+                    }
+
+                    if (result.Count == count)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        [Obsolete("Use Select")]
+        public IEnumerable<T> SelectV2(int count)
+        {
+            Validate(count);
+            var result = new List<T>();
+            var weight = 0m;
+            var rnd = _random.Next(1, 100001) * 0.00001m;
+            while (result.Count < count)
+            {
+                foreach (var item in _items.OrderBy(i => i.Weight).ToList())
+                {
+                    weight += item.Weight;
+
+                    if (rnd <= weight)
+                    {
+                        result.Add(item.Value);
+                        _items.Remove(item);
+                        weight = 0m;
+                    }
+
+                    if (result.Count == count)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private void Validate(int count)
+        {
+            if (count <= 0)
+            {
+                throw new InvalidCountException();
+            }
+
+            if (_items.Count <= 0)
+            {
+                throw new ListEmptyException();
+            }
+        }
     }
 
     public class InvalidCountException : InvalidOperationException
@@ -158,6 +159,5 @@ namespace Nekoyume.Battle
         public ListEmptyException() : base("list is empty. add value first")
         {
         }
-
     }
 }

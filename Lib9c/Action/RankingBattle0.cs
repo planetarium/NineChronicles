@@ -156,7 +156,7 @@ namespace Nekoyume.Action
                 arenaInfo,
                 weeklyArenaState[EnemyAddress]);
 
-            simulator.Simulate2();
+            simulator.SimulateV1();
 
             Result = simulator.Log;
 
