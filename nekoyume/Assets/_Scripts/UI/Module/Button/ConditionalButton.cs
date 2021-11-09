@@ -49,11 +49,6 @@ namespace Nekoyume.UI.Module
             _onClickDisposable?.Dispose();
         }
 
-        private void OnDestroy()
-        {
-            _onClickDisposable?.Dispose();
-        }
-
         public void SetCondition(Func<bool> conditionFunc)
         {
             _conditionFunc = conditionFunc;
