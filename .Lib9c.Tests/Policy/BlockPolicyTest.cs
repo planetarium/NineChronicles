@@ -332,7 +332,7 @@ namespace Lib9c.Tests
                 await blockChain.MineBlock(stranger);
             });
             // Old proof mining still works.
-            new Miner(blockChain, null, minerKeys[0], true).StageProofTransaction();
+            new Miner(blockChain, null, minerKeys[0]).StageProofTransaction();
             await blockChain.MineBlock(minerKeys[0]);
 
             // Index 3. Anyone can mine.
@@ -405,7 +405,7 @@ namespace Lib9c.Tests
                 genesis,
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
-            var minerObj = new Miner(blockChain, null, minerKey, true);
+            var minerObj = new Miner(blockChain, null, minerKey);
 
             var dateTimeOffset = DateTimeOffset.MinValue;
 
