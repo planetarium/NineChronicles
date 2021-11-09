@@ -26,8 +26,10 @@ namespace Lib9c.Tools.SubCommand
             [Option('s', Description = "Path to the chain store.")]
             string storePath,
             [Option('M',
+#pragma warning disable 618
                 Description = "Use legacy " + nameof(MonoRocksDBStore) + " instead of " +
-                    nameof(RocksDBStore) + ".")]
+#pragma warning restore 618
+                              nameof(RocksDBStore) + ".")]
             bool monorocksdb = false,
             [Option(
                 'b',
