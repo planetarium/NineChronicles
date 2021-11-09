@@ -52,7 +52,7 @@ namespace Nekoyume.BlockChain.Policy
         public const long V100083ObsoleteIndex = 2_680_000;
 
         // FIXME: Finalize before release
-        public const long V100085ObsoleteIndex = 3_000_000;
+        public const long V100086ObsoleteIndex = 3_000_000;
 
         public const long PermissionedMiningStartIndex = 2_225_500;
 

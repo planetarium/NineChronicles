@@ -17,7 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100085ObsoleteIndex)]
+    [ActionObsolete(BlockPolicySource.V100086ObsoleteIndex)]
     [ActionType("combination_equipment8")]
     public class CombinationEquipment8 : GameAction
     {
@@ -78,7 +78,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress);
             }
             
-            CheckObsolete(BlockPolicySource.V100085ObsoleteIndex, context);
+            CheckObsolete(BlockPolicySource.V100086ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
