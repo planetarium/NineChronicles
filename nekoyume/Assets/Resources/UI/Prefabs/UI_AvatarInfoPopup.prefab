@@ -1722,7 +1722,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 0
+  playAtStart: 1
   startDelay: 0
   duration: 0.5
   tweenType: 0
@@ -1750,7 +1750,7 @@ MonoBehaviour:
   endValue: -400
   snapping: 0
   isFrom: 1
-  single: 0
+  axisType: 0
 --- !u!1 &6852184725689396515
 GameObject:
   m_ObjectHideFlags: 0
@@ -2119,7 +2119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0df15b118d3a97a48ae00b35e6d87b18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 1
+  playAtStart: 1
   startDelay: 0
   duration: 1
   tweenType: 0
@@ -2233,7 +2233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0df15b118d3a97a48ae00b35e6d87b18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 1
+  playAtStart: 1
   startDelay: 0
   duration: 1
   tweenType: 0
@@ -2383,7 +2383,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0df15b118d3a97a48ae00b35e6d87b18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 1
+  playAtStart: 1
   startDelay: 0
   duration: 1
   tweenType: 0
@@ -2440,9 +2440,9 @@ RectTransform:
   m_Father: {fileID: 2153415479715188534}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -150}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 60}
   m_SizeDelta: {x: 300, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &9116854531601914239
