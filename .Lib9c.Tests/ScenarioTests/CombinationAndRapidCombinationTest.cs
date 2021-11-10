@@ -1,6 +1,5 @@
 ﻿namespace Lib9c.Tests.ScenarioTests
 {
-    using System;
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
@@ -96,22 +95,49 @@
             }
         }
 
+        // [Theory]
+        // [InlineData(new[] { 1 })]
+        // [InlineData(new[] { 1, 2 })]
+        // [InlineData(new[] { 1, 3 })]
+        // [InlineData(new[] { 1, 4 })]
+        // [InlineData(new[] { 1, 2, 3 })]
+        // [InlineData(new[] { 1, 2, 4 })]
+        // [InlineData(new[] { 1, 3, 4 })]
+        // [InlineData(new[] { 1, 2, 3, 4 })]
+        // public void FindRandomSeedForCase(int[] optionNumbers)
+        // {
+        //     for (var i = 0; i < 100; i++)
+        //     {
+        //         try
+        //         {
+        //             Case(i, optionNumbers);
+        //         }
+        //         catch
+        //         {
+        //             continue;
+        //         }
+        //
+        //         Log.Debug(i.ToString());
+        //         break;
+        //     }
+        // }
         [Theory]
-        [InlineData(0, new[] { 1 })]
-        [InlineData(12, new[] { 1, 2 })]
-        [InlineData(2, new[] { 1, 3 })]
+        [InlineData(1, new[] { 1 })]
+        [InlineData(14, new[] { 1, 2 })]
+        [InlineData(0, new[] { 1, 3 })]
         [InlineData(9, new[] { 1, 4 })]
         [InlineData(17, new[] { 1, 2, 3 })]
         [InlineData(13, new[] { 1, 2, 4 })]
-        [InlineData(180, new[] { 1, 3, 4 })]
-        [InlineData(160, new[] { 1, 2, 3, 4 })]
+        [InlineData(5, new[] { 1, 3, 4 })]
+        [InlineData(12, new[] { 1, 2, 3, 4 })]
         public void Case(int randomSeed, int[] optionNumbers)
         {
             var gameConfigState = _initialState.GetGameConfigState();
             Assert.NotNull(gameConfigState);
 
-            var recipeRow = _tableSheets.EquipmentItemRecipeSheet.OrderedList.First(e => e.SubRecipeIds.Any());
-            var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheetV2[recipeRow.SubRecipeIds.First()];
+            var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheetV2.OrderedList.First(e => e.Options.Count == 4);
+            var recipeRow =
+                _tableSheets.EquipmentItemRecipeSheet.OrderedList.First(e => e.SubRecipeIds.Contains(subRecipeRow.Id));
             var combinationEquipmentAction = new CombinationEquipment
             {
                 avatarAddress = _avatarAddress,
@@ -168,10 +194,15 @@
             var optionSheet = _tableSheets.EquipmentItemOptionSheet;
             var mainAdditionalStatMin = 0;
             var mainAdditionalStatMax = 0;
-            var requiredBlockIndex = recipeRow.RequiredBlockIndex;
+            var requiredBlockIndex = recipeRow.RequiredBlockIndex + subRecipeRow.RequiredBlockIndex;
+            var orderedOptions = subRecipeRow.Options
+                .OrderByDescending(e => e.Ratio)
+                .ThenBy(e => e.RequiredBlockIndex)
+                .ThenBy(e => e.Id)
+                .ToArray();
             foreach (var optionNumber in optionNumbers)
             {
-                var optionInfo = subRecipeRow.Options[optionNumber - 1];
+                var optionInfo = orderedOptions[optionNumber - 1];
                 requiredBlockIndex += optionInfo.RequiredBlockIndex;
                 var optionRow = optionSheet[optionInfo.Id];
                 if (optionRow.StatMin > 0 || optionRow.StatMax > 0)
