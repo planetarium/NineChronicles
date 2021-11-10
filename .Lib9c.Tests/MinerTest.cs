@@ -37,7 +37,7 @@ namespace Lib9c.Tests
             );
 
             var minerKey = new PrivateKey();
-            var miner = new Miner(blockChain, null, minerKey, false);
+            var miner = new Miner(blockChain, null, minerKey);
             Block<NCAction> mined = await miner.MineBlockAsync(default);
             Transaction<NCAction> tx = Assert.Single(mined.Transactions);
 
