@@ -36,13 +36,6 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long AuthorizedMinersPolicyInterval = 50;
 
-        /// <summary>
-        /// First index in which restriction will apply.
-        /// </summary>
-        public const long MinTransactionsPerBlockStartIndex = 2_173_701;
-
-        public const int MinTransactionsPerBlock = 1;
-
         public const int MaxTransactionsPerBlock = 100;
 
         public const long V100080ObsoleteIndex = 2_448_000;
@@ -54,8 +47,6 @@ namespace Nekoyume.BlockChain.Policy
         // FIXME: Should be finalized before release.
         // current: 2021. 11. 08. pm 07:30 KST // 2,709,164
         public const long V100086ObsoleteIndex = 3_000_000;
-
-        public const long PermissionedMiningHardcodedIndex = 2_225_500;
 
         public const long PermissionedMiningStartIndex = 2_225_500;
 
