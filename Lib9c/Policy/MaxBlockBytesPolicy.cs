@@ -42,7 +42,7 @@ namespace Nekoyume.BlockChain.Policy
                 // Note: Reverting back to the previous limit.  Issued for v100086.
                 // FIXME: Starting index must be finalized accordingly before deployment.
                 .Add(new SpannedSubPolicy<int>(
-                    startIndex: BlockPolicySource.V100086ObsoleteIndex,
+                    startIndex: 2_800_001,
                     value: 1024 * 100));        // 100 KiB
 
         // Note: For internal testing.
@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain.Policy
                     startIndex: 2_000_001,
                     value: 1024 * 1024 * 10))    // 10 MiB
                 .Add(new SpannedSubPolicy<int>(
-                    startIndex: BlockPolicySource.V100086ObsoleteIndex,
+                    startIndex: 2_800_001,
                     value: 1024 * 100));        // 100 KiB
     }
 }
