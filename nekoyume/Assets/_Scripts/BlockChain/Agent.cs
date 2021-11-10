@@ -160,7 +160,6 @@ namespace Nekoyume.BlockChain
             bool development,
             AppProtocolVersion appProtocolVersion,
             IEnumerable<PublicKey> trustedAppProtocolVersionSigners,
-            int minimumDifficulty,
             string storageType = null,
             string genesisBlockPath = null)
         {
@@ -180,8 +179,6 @@ namespace Nekoyume.BlockChain
                 appProtocolVersion,
                 appProtocolVersion.Token
             );
-
-            Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
             var policy = BlockPolicySource.GetPolicy();
             _stagePolicy = new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -354,7 +351,6 @@ namespace Nekoyume.BlockChain
             AppProtocolVersion = appProtocolVersion.Version;
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
-            var minimumDifficulty = options.MinimumDifficulty;
             Init(
                 privateKey,
                 storagePath,
@@ -366,7 +362,6 @@ namespace Nekoyume.BlockChain
                 development,
                 appProtocolVersion,
                 trustedAppProtocolVersionSigners,
-                minimumDifficulty,
                 storageType,
                 genesisBlockPath
             );
