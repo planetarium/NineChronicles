@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Module
                 expired.SetActive(false);
             }
             _disposables.DisposeAllAndClear();
-            ItemBaseLoadingTask.Dispose();
+            ItemBaseLoadingTask?.Dispose();
         }
 
         private void SetBg(float alpha)
