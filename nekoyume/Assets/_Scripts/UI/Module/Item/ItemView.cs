@@ -131,12 +131,10 @@ namespace Nekoyume.UI.Module
             Model.EnhancementEffectEnabled
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
-            var tagData = optionTagData.GetOptionTagData(row.Grade);
-            Model.HasOptions.Subscribe(hasOptions => SetOptionTag(hasOptions, tagData))
-                .AddTo(_disposablesAtSetData);
             Model.Dimmed.SubscribeTo(disable).AddTo(_disposablesAtSetData);
             Model.Selected.SubscribeTo(selection).AddTo(_disposablesAtSetData);
             UpdateView();
+            SetOptionTag(Model.ItemBase.Value);
         }
 
         public void SetData(TViewModel model, bool isConsumable)
@@ -177,12 +175,10 @@ namespace Nekoyume.UI.Module
             Model.EnhancementEffectEnabled
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
-            var tagData = optionTagData.GetOptionTagData(row.Grade);
-            Model.HasOptions.Subscribe(hasOptions => SetOptionTag(hasOptions, tagData))
-                .AddTo(_disposablesAtSetData);
             Model.Selected.SubscribeTo(selection).AddTo(_disposablesAtSetData);
 
             UpdateView();
+            SetOptionTag(Model.ItemBase.Value);
         }
 
         public void SetDataExceptOptionTag(TViewModel model)
@@ -250,19 +246,25 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        protected void SetOptionTag(bool hasOptions, OptionTagData data)
+        protected void SetOptionTag(ItemBase itemBase)
         {
-            if (!hasOptions)
-            {
-                optionTagBg.gameObject.SetActive(false);
-                return;
-            }
-
+            optionTagBg.gameObject.SetActive(false);
             if (Model is null)
             {
                 return;
             }
 
+            if (!(itemBase is Equipment equipment))
+            {
+                return;
+            }
+
+            if (equipment.GetOptionCountFromCombination() <= 0)
+            {
+                return;
+            }
+
+            var data = optionTagData.GetOptionTagData(itemBase.Grade);
             foreach (var image in optionTagImages)
             {
                 image.gameObject.SetActive(false);
@@ -272,7 +274,7 @@ namespace Nekoyume.UI.Module
             optionTagBg.hue = data.GradeHsvHue;
             optionTagBg.saturation = data.GradeHsvSaturation;
             optionTagBg.value = data.GradeHsvValue;
-            var optionInfo = new ItemOptionInfo(Model.ItemBase.Value as Equipment);
+            var optionInfo = new ItemOptionInfo(equipment);
 
             var optionCount = optionInfo.StatOptions.Sum(x => x.count);
             var index = 0;
