@@ -45,8 +45,8 @@ namespace Nekoyume.BlockChain.Policy
         public const long V100083ObsoleteIndex = 2_680_000;
 
         // FIXME: Should be finalized before release.
-        // current: 2021. 11. 08. pm 07:30 KST // 2,709,164
-        public const long V100086ObsoleteIndex = 3_000_000;
+        // current: 2021. 11. 10. pm 05:17 KST // 2,723,122
+        public const long V100086ObsoleteIndex = 2_800_001;
 
         public const long PermissionedMiningStartIndex = 2_225_500;
 

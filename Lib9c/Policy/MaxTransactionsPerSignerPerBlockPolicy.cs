@@ -25,14 +25,14 @@ namespace Nekoyume.BlockChain.Policy
                 // Issued for v100086.
                 // FIXME: Starting index and value must be finalized accordingly before deployment.
                 .Add(new SpannedSubPolicy<int>(
-                    startIndex: 2_800_001,
+                    startIndex: BlockPolicySource.V100086ObsoleteIndex,
                     value: 4));
 
         // Note: For internal testing.
         public static IVariableSubPolicy<int> Internal =>
             Default
                 .Add(new SpannedSubPolicy<int>(
-                    startIndex: 2_800_001,
+                    startIndex: BlockPolicySource.V100086ObsoleteIndex,
                     value: 4));
     }
 }
