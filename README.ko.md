@@ -16,7 +16,7 @@ Nine Chronicles
  1. [Unity Hub] 설치
  1. Unity 2020.3.4f1 버전 설치
  1. 저장소 클론
-    ```    
+    ```
     git clone https://github.com/planetarium/NineChronicles.git
     ```
  1. 터미널에서 클론한 디렉터리로 들어가서 아래 명령 실행
@@ -33,7 +33,6 @@ Nine Chronicles
  - `--host`              : 사용할 Host 이름을 지정합니다.
  - `--port`              : 사용할 Port를 지정합니다.
  - `--no-miner`          : 마이닝을 사용하지 않습니다.
- - `--minimum-difficulty`: 네트워크에서 합의된 최소 블록 채굴 난이도를 설정합니다.
  - `--peer`              : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
  - `--ice-servers`       : NAT 우회에 사용할 TURN 서버 정보를 지정합니다. 지정하는 서버가 여럿일 경우 `--ice-servers serverA serverB` 와 같이 추가할 수 있습니다.
  - `--genesis-block-path`: 제네시스 블록 위치를 지정합니다. http(s)로 된 경로도 지원하며, 지정하지 않은 경우엔 `Assets/StreamingAssets/genesis-block`을 사용합니다.
@@ -84,7 +83,7 @@ $ /Applications/Unity/Hub/Editor/2020.3.4f1/Unity.app/Contents/MacOS/Unity -quit
 
 #### 읽기 순서
 
-통신을 하기 위한 피어 목록은 다음과 같은 순서로 로드합니다.  
+통신을 하기 위한 피어 목록은 다음과 같은 순서로 로드합니다.
 
 1. 실행 시 커맨드라인 인자 (`--peer`)
 2. (Windows 기준) `%USERPROFILE%\AppData\LocalLow\Planetarium` 에 있는 `peers.dat`
@@ -96,7 +95,7 @@ $ /Applications/Unity/Hub/Editor/2020.3.4f1/Unity.app/Contents/MacOS/Unity -quit
 
 피어 목록은 평문(Plain Text) 형식으로 저장되며 한 줄마다 한 노드의 정보를 `공개키,호스트명,포트,버전` 형태로 적습니다.
 
-예시) 
+예시)
 
 ```
    02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1,nekoyume1.koreacentral.cloudapp.azure.com,58598
@@ -104,7 +103,7 @@ $ /Applications/Unity/Hub/Editor/2020.3.4f1/Unity.app/Contents/MacOS/Unity -quit
 ```
 
 - 호스트명과 포트는 외부에서 접속 가능한 것이어야 합니다.
-    - 실행시 인자(`—host`)를 지정하지 않은 경우에는 자동으로 STUN/TURN에 의해 릴레이 되므로 실제 호스트명과 포트가 달라질 수 있습니다. 
+    - 실행시 인자(`—host`)를 지정하지 않은 경우에는 자동으로 STUN/TURN에 의해 릴레이 되므로 실제 호스트명과 포트가 달라질 수 있습니다.
       즉, 피어 목록에 기술되는 노드는 반드시 `--host`를 통해 호스트명을 지정하여 실행되어야 합니다.
 - 공개키는 `Swarm` 객체 생성시 사용한 개인키(`PrivateKey`)로부터 유도된 것을 16진수로 부호화한 것입니다.
 
