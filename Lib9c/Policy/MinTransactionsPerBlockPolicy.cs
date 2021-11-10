@@ -19,10 +19,10 @@ namespace Nekoyume.BlockChain.Policy
 
         public static IVariableSubPolicy<int> Mainnet =>
             Default
-                // To prevent selfish mining, we define a consensus that blocks with
-                // no transactions are not accepted starting from hard coded index.
+                // Note: Introduced to prevent selfish mining where certain miners were
+                // only mining empty blocks.  Issued for v100050.
                 .Add(new SpannedSubPolicy<int>(
-                    startIndex: BlockPolicySource.MinTransactionsPerBlockStartIndex,
+                    startIndex: 2_173_701,
                     value: 1));
     }
 }
