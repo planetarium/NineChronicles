@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -86,11 +87,11 @@ namespace Nekoyume.State
         /// 최초로 할당하거나 기존과 다른 주소의 에이전트를 할당하면, 모든 아바타 상태를 새롭게 할당된다.
         /// </summary>
         /// <param name="state"></param>
-        public void SetAgentState(AgentState state)
+        public async UniTask SetAgentStateAsync(AgentState state)
         {
             if (state is null)
             {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetAgentState)}] {nameof(state)} is null.");
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetAgentStateAsync)}] {nameof(state)} is null.");
                 return;
             }
 
@@ -108,7 +109,7 @@ namespace Nekoyume.State
 
             foreach (var pair in AgentState.avatarAddresses)
             {
-                AddOrReplaceAvatarState(pair.Value, pair.Key);
+                await AddOrReplaceAvatarState(pair.Value, pair.Key);
             }
         }
 
@@ -132,7 +133,7 @@ namespace Nekoyume.State
             var (exist, avatarState) = await TryGetAvatarState(avatarAddress, true);
             if (exist)
             {
-                AddOrReplaceAvatarState(avatarState, index, initializeReactiveState);
+                await AddOrReplaceAvatarState(avatarState, index, initializeReactiveState);
 
             }
 
@@ -285,7 +286,7 @@ namespace Nekoyume.State
                 }
 
                 SetCombinationSlotStates(curAvatarState);
-                AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
+                await AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
             }
 
             if (Game.Game.instance.Agent is RPCAgent agent)

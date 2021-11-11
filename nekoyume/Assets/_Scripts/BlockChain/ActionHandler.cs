@@ -110,7 +110,7 @@ namespace Nekoyume.BlockChain
 
         private static void UpdateAgentState(AgentState state)
         {
-            States.Instance.SetAgentState(state);
+            States.Instance.SetAgentStateAsync(state);
         }
 
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
