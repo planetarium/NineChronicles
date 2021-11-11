@@ -348,7 +348,7 @@ namespace Nekoyume.UI
             StartCoroutine(StartSynopsis(skipPrologue));
         }
 
-        public void End()
+        public async void End()
         {
             PlayerFactory.Create();
 
@@ -361,7 +361,7 @@ namespace Nekoyume.UI
 
                 try
                 {
-                    State.States.Instance.SelectAvatar(index);
+                    await State.States.Instance.SelectAvatar(index);
                     Game.Event.OnRoomEnter.Invoke(false);
                 }
                 catch (KeyNotFoundException e)

@@ -118,9 +118,9 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
-        private void UpdateAvatarState(AvatarState avatarState, int index)
+        private async void UpdateAvatarState(AvatarState avatarState, int index)
         {
-            States.Instance.AddOrReplaceAvatarStateAsync(avatarState, index);
+            await States.Instance.AddOrReplaceAvatarStateAsync(avatarState, index);
         }
 
         public void UpdateCurrentAvatarState(AvatarState avatarState)

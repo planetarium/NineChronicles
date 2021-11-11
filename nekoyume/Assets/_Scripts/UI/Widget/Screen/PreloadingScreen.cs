@@ -39,7 +39,7 @@ namespace Nekoyume.UI
             videoPlayer.loopPointReached += OnShowVideoEnded;
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
+        public override async void Close(bool ignoreCloseAnimation = false)
         {
             videoPlayer.Stop();
             if (!GameConfig.IsEditor)
@@ -74,8 +74,8 @@ namespace Nekoyume.UI
                             }
                             else
                             {
-                                States.Instance.SelectAvatar(index);
-                                Game.Event.OnRoomEnter.Invoke(false);    
+                                await States.Instance.SelectAvatar(index);
+                                Game.Event.OnRoomEnter.Invoke(false);
                             }
                         }
                         catch (KeyNotFoundException e)
