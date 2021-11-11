@@ -55,6 +55,7 @@ namespace Nekoyume.UI
 
         [SerializeField] private RequiredItemRecipeView requiredItemRecipeView = null;
 
+        [SerializeField] private ConditionalCostButton button = null;
         [SerializeField] private Button combineButton = null;
         [SerializeField] private GameObject buttonEnabledObject = null;
         [SerializeField] private TextMeshProUGUI costText = null;
@@ -88,6 +89,17 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 CombineCurrentRecipe();
             });
+
+            button.SetCondition(() => CheckSubmittable(out _, out _));
+            button.OnClick = state =>
+            {
+                if (state == ConditionalButton.State.Disabled)
+                {
+                    return;
+                }
+
+                CombineCurrentRecipe();
+            };
         }
 
         public void SetData(SheetRow<int> recipeRow, List<int> subrecipeIds)
@@ -156,10 +168,6 @@ namespace Nekoyume.UI
         {
             _selectedIndex = index;
             UpdateInformation(index);
-
-            costText.text = _selectedRecipeInfo.CostNCG.ToString();
-
-            buttonEnabledObject.SetActive(true);
         }
 
         private void UpdateInformation(int index)
@@ -257,6 +265,8 @@ namespace Nekoyume.UI
 
             var submittable = CheckSubmittable(out _, out _);
             buttonDisabledImage.enabled = !submittable;
+            button.SetCost((int) _selectedRecipeInfo.CostNCG);
+            button.UpdateObjects();
         }
 
         private void SetOptions(

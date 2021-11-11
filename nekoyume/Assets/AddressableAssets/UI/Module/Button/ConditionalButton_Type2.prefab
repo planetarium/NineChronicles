@@ -247,7 +247,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3909500369725347631}
   - component: {fileID: 912322862478729830}
-  - component: {fileID: 8525429839195393294}
+  - component: {fileID: 6277880972764344563}
   - component: {fileID: 2840644199905785920}
   - component: {fileID: 92083928856404291}
   m_Layer: 5
@@ -288,7 +288,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 720262293263368155}
   m_CullTransparentMesh: 0
---- !u!114 &8525429839195393294
+--- !u!114 &6277880972764344563
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -297,13 +297,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 720262293263368155}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Script: {fileID: 11500000, guid: c22add615a659c84aa7fcb639b695a00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   normalObject: {fileID: 1578378680608659336}
   conditionalObject: {fileID: 14600963724961033}
   disabledObject: {fileID: 4966569406589180211}
   conditionInfoKey: 
+  costTexts:
+  - {fileID: 9093920311051570104}
+  - {fileID: 5305516194599188957}
+  - {fileID: 6489889789450648385}
+  costType: 0
 --- !u!114 &2840644199905785920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7079,10 +7084,10 @@ RectTransform:
   m_Father: {fileID: 2289454837665031795}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 88, y: -13}
-  m_SizeDelta: {x: 48, y: 26}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 88, y: 0}
+  m_SizeDelta: {x: 48, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &7140410056152640721
 CanvasRenderer:

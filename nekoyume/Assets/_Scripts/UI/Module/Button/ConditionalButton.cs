@@ -1,15 +1,21 @@
 using System;
-using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.L10n;
     using UniRx;
 
     public class ConditionalButton : MonoBehaviour
     {
+        public enum State
+        {
+            Normal,
+            Conditional,
+            Disabled
+        }
+
         [SerializeField]
         private GameObject normalObject = null;
 
@@ -22,11 +28,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private string conditionInfoKey = null;
 
-        public System.Action OnClick { protected get; set; }
+        public System.Action<State> OnClick { protected get; set; }
 
-        private Button _activatedButton = null;
+        protected readonly ReactiveProperty<State> CurrentState = new ReactiveProperty<State>();
+
+        private Button _button = null;
         private Func<bool> _conditionFunc = null;
-        private IDisposable _onClickDisposable = null;
         private bool _interactable = true;
 
         public bool Interactable
@@ -39,64 +46,66 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void OnEnable()
+        protected virtual void Awake()
         {
-            UpdateObjects();
+            _button = GetComponent<Button>();
+            _button.onClick.AddListener(OnClickButton);
         }
 
-        private void OnDisable()
+        protected virtual bool CheckCondition()
         {
-            _onClickDisposable?.Dispose();
+            return _conditionFunc?.Invoke() ?? false;
         }
 
         public void SetCondition(Func<bool> conditionFunc)
         {
             _conditionFunc = conditionFunc;
-            UpdateObjects();
         }
 
         public void UpdateObjects()
         {
             if (_interactable)
             {
-                var condition = _conditionFunc?.Invoke() ?? false;
+                var condition = CheckCondition();
 
                 if (condition)
                 {
                     normalObject.SetActive(true);
                     conditionalObject.SetActive(false);
-                    _activatedButton = normalObject.GetComponent<Button>();
-                    _onClickDisposable?.Dispose();
-                    _onClickDisposable = _activatedButton
-                        .OnClickAsObservable()
-                        .Subscribe(_ => OnClick?.Invoke());
+                    CurrentState.Value = State.Normal;
                 }
                 else
                 {
                     normalObject.SetActive(false);
                     conditionalObject.SetActive(true);
-                    _activatedButton = conditionalObject.GetComponent<Button>();
-                    _onClickDisposable?.Dispose();
-                    if (!string.IsNullOrEmpty(conditionInfoKey))
-                    {
-                        _onClickDisposable = _activatedButton
-                            .OnClickAsObservable()
-                            .Subscribe(_ =>
-                                NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize(conditionInfoKey)));
-                    }
+                    CurrentState.Value = State.Conditional;
                 }
             }
             else
             {
                 normalObject.SetActive(false);
                 conditionalObject.SetActive(false);
-                _activatedButton = disabledObject.GetComponent<Button>();
-                _onClickDisposable?.Dispose();
-                _onClickDisposable = _activatedButton
-                    .OnClickAsObservable()
-                    .Subscribe();
+                CurrentState.Value = State.Disabled;
             }
             disabledObject.SetActive(!_interactable);
+        }
+
+        private void OnClickButton()
+        {
+            OnClick?.Invoke(CurrentState.Value);
+
+            switch (CurrentState.Value)
+            {
+                case State.Normal:
+                    UpdateObjects();
+                    break;
+                case State.Conditional:
+                    if (!string.IsNullOrEmpty(conditionInfoKey))
+                        NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize(conditionInfoKey));
+                    break;
+                case State.Disabled:
+                    break;
+            }
         }
     }
 }
