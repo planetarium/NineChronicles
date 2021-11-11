@@ -109,7 +109,7 @@ namespace Nekoyume.State
 
             foreach (var pair in AgentState.avatarAddresses)
             {
-                await AddOrReplaceAvatarState(pair.Value, pair.Key);
+                await AddOrReplaceAvatarStateAsync(pair.Value, pair.Key);
             }
         }
 
@@ -125,7 +125,7 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextGold(GoldBalanceState.Gold);
         }
 
-        public async Task<AvatarState> AddOrReplaceAvatarState(
+        public async Task<AvatarState> AddOrReplaceAvatarStateAsync(
             Address avatarAddress,
             int index,
             bool initializeReactiveState = true)
@@ -133,7 +133,7 @@ namespace Nekoyume.State
             var (exist, avatarState) = await TryGetAvatarState(avatarAddress, true);
             if (exist)
             {
-                await AddOrReplaceAvatarState(avatarState, index, initializeReactiveState);
+                await AddOrReplaceAvatarStateAsync(avatarState, index, initializeReactiveState);
 
             }
 
@@ -209,11 +209,11 @@ namespace Nekoyume.State
         /// <param name="state"></param>
         /// <param name="index"></param>
         /// <param name="initializeReactiveState"></param>
-        public async Task<AvatarState> AddOrReplaceAvatarState(AvatarState state, int index, bool initializeReactiveState = true)
+        public async Task<AvatarState> AddOrReplaceAvatarStateAsync(AvatarState state, int index, bool initializeReactiveState = true)
         {
             if (state is null)
             {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(AddOrReplaceAvatarState)}] {nameof(state)} is null.");
+                Debug.LogWarning($"[{nameof(States)}.{nameof(AddOrReplaceAvatarStateAsync)}] {nameof(state)} is null.");
                 return null;
             }
 
@@ -286,7 +286,7 @@ namespace Nekoyume.State
                 }
 
                 SetCombinationSlotStates(curAvatarState);
-                await AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
+                await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
             }
 
             if (Game.Game.instance.Agent is RPCAgent agent)

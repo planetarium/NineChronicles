@@ -120,7 +120,7 @@ namespace Nekoyume.BlockChain
 
         private void UpdateAvatarState(AvatarState avatarState, int index)
         {
-            States.Instance.AddOrReplaceAvatarState(avatarState, index);
+            States.Instance.AddOrReplaceAvatarStateAsync(avatarState, index);
         }
 
         public void UpdateCurrentAvatarState(AvatarState avatarState)
