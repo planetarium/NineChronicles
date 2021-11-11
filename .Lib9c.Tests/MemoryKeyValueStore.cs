@@ -27,6 +27,14 @@ namespace Lib9c.Tests
             Dictionary[key] = value;
         }
 
+        public void Set(IDictionary<byte[], byte[]> values)
+        {
+            foreach (KeyValuePair<byte[], byte[]> kv in values)
+            {
+                Dictionary[kv.Key] = kv.Value;
+            }
+        }
+
         public void Delete(byte[] key)
         {
             Dictionary.Remove(key);
