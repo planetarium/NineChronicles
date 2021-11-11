@@ -256,7 +256,7 @@ namespace Nekoyume.UI
             }).ToObservable().SubscribeOnMainThread().Subscribe(async avatarState =>
             {
                 Debug.Log("CombinationMail LocalLayer task completed");
-                await States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
+                await States.Instance.AddOrReplaceAvatarStateAsync(avatarState, States.Instance.CurrentAvatarKey);
             });
             // ~LocalLayer
 
@@ -370,7 +370,7 @@ namespace Nekoyume.UI
             }).ToObservable().SubscribeOnMainThread().Subscribe(async avatarState =>
             {
                 Debug.Log("ItemEnhanceMail LocalLayer task completed");
-                await States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
+                await States.Instance.AddOrReplaceAvatarStateAsync(avatarState, States.Instance.CurrentAvatarKey);
             });
             // ~LocalLayer
 
