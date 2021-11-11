@@ -553,7 +553,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            await States.Instance.AddOrReplaceAvatarState(
+            await States.Instance.AddOrReplaceAvatarStateAsync(
                 avatarAddress,
                 outKey,
                 isCurrentAvatarState);
