@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet.Assets;
 using Nekoyume.Action;
@@ -118,10 +119,8 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
-        private async void UpdateAvatarState(AvatarState avatarState, int index)
-        {
+        private async Task UpdateAvatarState(AvatarState avatarState, int index) =>
             await States.Instance.AddOrReplaceAvatarStateAsync(avatarState, index);
-        }
 
         public void UpdateCurrentAvatarState(AvatarState avatarState)
         {
