@@ -57,9 +57,6 @@ namespace Nekoyume.UI
 
         [SerializeField] private ConditionalCostButton button = null;
         [SerializeField] private Button combineButton = null;
-        [SerializeField] private GameObject buttonEnabledObject = null;
-        [SerializeField] private TextMeshProUGUI costText = null;
-        [SerializeField] private Image buttonDisabledImage = null;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
@@ -263,7 +260,6 @@ namespace Nekoyume.UI
             _selectedRecipeInfo = recipeInfo;
 
             var submittable = CheckSubmittable(out _, out _);
-            buttonDisabledImage.enabled = !submittable;
             button.SetCost((int) _selectedRecipeInfo.CostNCG);
             button.UpdateObjects();
         }
