@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet.Assets;
 using Nekoyume.Action;
@@ -52,11 +53,11 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
-        protected void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        protected async Task UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
-            UpdateAgentState(GetAgentState(evaluation));
+            await UpdateAgentState(GetAgentState(evaluation));
             try
             {
                 UpdateGoldBalanceState(GetGoldBalanceState(evaluation));
@@ -67,7 +68,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        protected void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
+        protected async Task UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
         {
             Debug.LogFormat("Called UpdateAvatarState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
@@ -81,17 +82,17 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.AgentState.avatarAddresses[index];
             if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
             {
-                UpdateAvatarState(avatarState, index);
+                await UpdateAvatarState(avatarState, index);
             }
         }
 
-        protected void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        protected async Task UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
             {
-                UpdateCurrentAvatarState(avatarState);
+                await UpdateCurrentAvatarState(avatarState);
             }
         }
 
@@ -109,20 +110,18 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGameConfigState(state);
         }
 
-        private static void UpdateAgentState(AgentState state)
-        {
+        private static UniTask UpdateAgentState(AgentState state) =>
             States.Instance.SetAgentStateAsync(state);
-        }
 
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
         {
             States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
-        private async Task UpdateAvatarState(AvatarState avatarState, int index) =>
-            await States.Instance.AddOrReplaceAvatarStateAsync(avatarState, index);
+        private Task UpdateAvatarState(AvatarState avatarState, int index) =>
+            States.Instance.AddOrReplaceAvatarStateAsync(avatarState, index);
 
-        public void UpdateCurrentAvatarState(AvatarState avatarState)
+        public async Task UpdateCurrentAvatarState(AvatarState avatarState)
         {
             // When in battle, do not immediately update the AvatarState, but pending it.
             if (Pending)
@@ -150,7 +149,7 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            UpdateAvatarState(avatarState, States.Instance.CurrentAvatarKey);
+            await UpdateAvatarState(avatarState, States.Instance.CurrentAvatarKey);
         }
     }
 }
