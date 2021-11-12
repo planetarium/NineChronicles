@@ -90,7 +90,6 @@ namespace Nekoyume.UI
                 CombineCurrentRecipe();
             });
 
-            button.SetCondition(() => CheckSubmittable(out _, out _));
             button.OnClick = state =>
             {
                 if (state == ConditionalButton.State.Disabled)

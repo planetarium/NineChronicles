@@ -54,7 +54,7 @@ namespace Nekoyume.UI.Module
 
         protected virtual bool CheckCondition()
         {
-            return _conditionFunc?.Invoke() ?? false;
+            return _conditionFunc?.Invoke() ?? true;
         }
 
         public void SetCondition(Func<bool> conditionFunc)
@@ -90,7 +90,7 @@ namespace Nekoyume.UI.Module
             disabledObject.SetActive(!_interactable);
         }
 
-        private void OnClickButton()
+        protected virtual void OnClickButton()
         {
             OnClick?.Invoke(CurrentState.Value);
 
