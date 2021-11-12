@@ -62,6 +62,7 @@ namespace Lib9c.Benchmarks
             IBlockPolicy<NCAction> policy =
                 policySource.GetPolicy(
                     // Explicitly set to lowest possible difficulty.
+                    hashAlgorithmTypePolicy: null,
                     minimumDifficulty: BlockPolicySource.DifficultyStability,
                     maxBlockBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
