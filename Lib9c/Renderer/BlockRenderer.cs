@@ -26,39 +26,13 @@ namespace Lib9c.Renderer
         public readonly Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)> ReorgEndSubject =
             new Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>();
 
-        public void RenderBlock(
-            NCBlock oldTip,
-            NCBlock newTip
-        )
-        {
+        public void RenderBlock(NCBlock oldTip, NCBlock newTip) =>
             BlockSubject.OnNext((oldTip, newTip));
-        }
 
-        public void RenderReorg(
-            NCBlock oldTip,
-            NCBlock newTip,
-            NCBlock branchpoint
-        )
-        {
+        public void RenderReorg(NCBlock oldTip, NCBlock newTip, NCBlock branchpoint) =>
             ReorgSubject.OnNext((oldTip, newTip, branchpoint));
-        }
 
-        public void RenderReorgEnd(
-            NCBlock oldTip,
-            NCBlock newTip,
-            NCBlock branchpoint
-        ) =>
+        public void RenderReorgEnd(NCBlock oldTip, NCBlock newTip, NCBlock branchpoint) =>
             ReorgEndSubject.OnNext((oldTip, newTip, branchpoint));
-
-        public IObservable<(NCBlock OldTip, NCBlock NewTip)> EveryBlock() =>
-            BlockSubject.AsObservable();
-
-        public IObservable<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>
-            EveryReorg() =>
-            ReorgSubject.AsObservable();
-
-        public IObservable<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>
-            EveryReorgEnd() =>
-            ReorgEndSubject.AsObservable();
     }
 }

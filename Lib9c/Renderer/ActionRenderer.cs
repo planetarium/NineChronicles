@@ -29,13 +29,8 @@ namespace Lib9c.Renderer
         public readonly Subject<(NCBlock OldTip, NCBlock NewTip)> BlockEndSubject =
             new Subject<(NCBlock OldTip, NCBlock NewTip)>();
 
-        public void RenderAction(
-            IAction action,
-            IActionContext context,
-            IAccountStateDelta nextStates
-        )
-        {
-            ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>()
+        public void RenderAction(IAction action, IActionContext context, IAccountStateDelta nextStates) =>
+            ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
                 Action = GetActionBase(action),
                 Signer = context.Signer,
@@ -44,15 +39,9 @@ namespace Lib9c.Renderer
                 PreviousStates = context.PreviousStates,
                 RandomSeed = context.Random.Seed
             });
-        }
 
-        public void UnrenderAction(
-            IAction action,
-            IActionContext context,
-            IAccountStateDelta nextStates
-        )
-        {
-            ActionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
+        public void UnrenderAction(IAction action, IActionContext context, IAccountStateDelta nextStates) =>
+            ActionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
                 Action = GetActionBase(action),
                 Signer = context.Signer,
@@ -61,7 +50,6 @@ namespace Lib9c.Renderer
                 PreviousStates = context.PreviousStates,
                 RandomSeed = context.Random.Seed
             });
-        }
 
         public void RenderActionError(
             IAction action,
@@ -70,7 +58,7 @@ namespace Lib9c.Renderer
         )
         {
             Log.Error(exception, "{action} execution failed.", action);
-            ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>()
+            ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
                 Action = GetActionBase(action),
                 Signer = context.Signer,
@@ -82,13 +70,8 @@ namespace Lib9c.Renderer
             });
         }
 
-        public void UnrenderActionError(
-            IAction action,
-            IActionContext context,
-            Exception exception
-        )
-        {
-            ActionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
+        public void UnrenderActionError(IAction action, IActionContext context, Exception exception) =>
+            ActionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>
             {
                 Action = GetActionBase(action),
                 Signer = context.Signer,
@@ -98,110 +81,89 @@ namespace Lib9c.Renderer
                 PreviousStates = context.PreviousStates,
                 RandomSeed = context.Random.Seed
             });
-        }
 
-        public void RenderBlock(
-            NCBlock oldTip,
-            NCBlock newTip
-        )
+        [Obsolete("Use BlockRenderer.RenderBlock(oldTip, newTip)")]
+        public void RenderBlock(NCBlock oldTip, NCBlock newTip)
         {
             // RenderBlock should be handled by BlockRenderer
         }
 
-        public void RenderBlockEnd(
-            NCBlock oldTip,
-            NCBlock newTip
-        )
+        public void RenderBlockEnd(NCBlock oldTip, NCBlock newTip)
         {
             BlockEndSubject.OnNext((oldTip, newTip));
         }
 
-        public void RenderReorg(
-            NCBlock oldTip,
-            NCBlock newTip,
-            NCBlock branchpoint
-        )
+        [Obsolete("Use BlockRenderer.RenderReorg(oldTip, newTip, branchpoint)")]
+        public void RenderReorg(NCBlock oldTip, NCBlock newTip, NCBlock branchpoint)
         {
             // RenderReorg should be handled by BlockRenderer
         }
 
-        public void RenderReorgEnd(
-            NCBlock oldTip,
-            NCBlock newTip,
-            NCBlock branchpoint
-        )
+        [Obsolete("Use BlockRenderer.RenderReorgEnd(oldTip, newTip, branchpoint)")]
+        public void RenderReorgEnd(NCBlock oldTip, NCBlock newTip, NCBlock branchpoint)
         {
             // RenderReorgEnd should be handled by BlockRenderer
         }
 
-        public IObservable<ActionEvaluation<T>> EveryRender<T>()
-            where T : ActionBase
-        {
-            return ActionRenderSubject.AsObservable().Where(
-                eval => eval.Action is T
-            ).Select(eval => new ActionEvaluation<T>
-            {
-                Action = (T)eval.Action,
-                Signer = eval.Signer,
-                BlockIndex = eval.BlockIndex,
-                OutputStates = eval.OutputStates,
-                Exception = eval.Exception,
-                PreviousStates = eval.PreviousStates,
-                RandomSeed = eval.RandomSeed
-            });
-        }
+        public IObservable<ActionEvaluation<T>> EveryRender<T>() where T : ActionBase =>
+            ActionRenderSubject
+                .AsObservable()
+                .Where(eval => eval.Action is T)
+                .Select(eval => new ActionEvaluation<T>
+                {
+                    Action = (T)eval.Action,
+                    Signer = eval.Signer,
+                    BlockIndex = eval.BlockIndex,
+                    OutputStates = eval.OutputStates,
+                    Exception = eval.Exception,
+                    PreviousStates = eval.PreviousStates,
+                    RandomSeed = eval.RandomSeed
+                });
 
-        public IObservable<ActionEvaluation<T>> EveryUnrender<T>()
-            where T : ActionBase
-        {
-            return ActionUnrenderSubject.AsObservable().Where(
-                eval => eval.Action is T
-            ).Select(eval => new ActionEvaluation<T>
-            {
-                Action = (T)eval.Action,
-                Signer = eval.Signer,
-                BlockIndex = eval.BlockIndex,
-                OutputStates = eval.OutputStates,
-                Exception = eval.Exception,
-                PreviousStates = eval.PreviousStates,
-                RandomSeed = eval.RandomSeed
-            });
-        }
+        public IObservable<ActionEvaluation<T>> EveryUnrender<T>() where T : ActionBase =>
+            ActionUnrenderSubject
+                .AsObservable()
+                .Where(eval => eval.Action is T)
+                .Select(eval => new ActionEvaluation<T>
+                {
+                    Action = (T)eval.Action,
+                    Signer = eval.Signer,
+                    BlockIndex = eval.BlockIndex,
+                    OutputStates = eval.OutputStates,
+                    Exception = eval.Exception,
+                    PreviousStates = eval.PreviousStates,
+                    RandomSeed = eval.RandomSeed
+                });
 
-        public IObservable<ActionEvaluation<ActionBase>> EveryRender(Address updatedAddress)
-        {
-            return ActionRenderSubject.AsObservable().Where(
-                eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress)
-            ).Select(eval => new ActionEvaluation<ActionBase>
-            {
-                Action = eval.Action,
-                Signer = eval.Signer,
-                BlockIndex = eval.BlockIndex,
-                OutputStates = eval.OutputStates,
-                Exception = eval.Exception,
-                PreviousStates = eval.PreviousStates,
-                RandomSeed = eval.RandomSeed
-            });
-        }
+        public IObservable<ActionEvaluation<ActionBase>> EveryRender(Address updatedAddress) =>
+            ActionRenderSubject
+                .AsObservable()
+                .Where(eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress))
+                .Select(eval => new ActionEvaluation<ActionBase>
+                {
+                    Action = eval.Action,
+                    Signer = eval.Signer,
+                    BlockIndex = eval.BlockIndex,
+                    OutputStates = eval.OutputStates,
+                    Exception = eval.Exception,
+                    PreviousStates = eval.PreviousStates,
+                    RandomSeed = eval.RandomSeed
+                });
 
-        public IObservable<ActionEvaluation<ActionBase>> EveryUnrender(Address updatedAddress)
-        {
-            return ActionUnrenderSubject.AsObservable().Where(
-                eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress)
-            ).Select(eval => new ActionEvaluation<ActionBase>
-            {
-                Action = eval.Action,
-                Signer = eval.Signer,
-                BlockIndex = eval.BlockIndex,
-                OutputStates = eval.OutputStates,
-                Exception = eval.Exception,
-                PreviousStates = eval.PreviousStates,
-                RandomSeed = eval.RandomSeed
-            });
-        }
-
-        public IObservable<(NCBlock OldTip, NCBlock NewTip)> EveryBlockEnd() =>
-            BlockEndSubject.AsObservable();
+        public IObservable<ActionEvaluation<ActionBase>> EveryUnrender(Address updatedAddress) =>
+            ActionUnrenderSubject
+                .AsObservable()
+                .Where(eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress))
+                .Select(eval => new ActionEvaluation<ActionBase>
+                {
+                    Action = eval.Action,
+                    Signer = eval.Signer,
+                    BlockIndex = eval.BlockIndex,
+                    OutputStates = eval.OutputStates,
+                    Exception = eval.Exception,
+                    PreviousStates = eval.PreviousStates,
+                    RandomSeed = eval.RandomSeed
+                });
 
         private static ActionBase GetActionBase(IAction action)
         {
@@ -209,6 +171,7 @@ namespace Lib9c.Renderer
             {
                 return polymorphicAction.InnerAction;
             }
+
             return (ActionBase)action;
         }
     }
