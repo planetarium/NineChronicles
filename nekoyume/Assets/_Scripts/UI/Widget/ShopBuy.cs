@@ -102,9 +102,9 @@ namespace Nekoyume.UI
             Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
-            var task = Task.Run(() =>
+            var task = Task.Run(async () =>
             {
-                ReactiveShopState.InitAndUpdateBuyDigests();
+                await ReactiveShopState.InitAndUpdateBuyDigests();
                 return true;
             });
 
@@ -207,9 +207,12 @@ namespace Nekoyume.UI
             Find<ItemCountAndPricePopup>().Pop(SharedModel.ItemCountAndPricePopup.Value);
         }
 
-        private void Buy(ShopItem shopItem)
+        private async void Buy(ShopItem shopItem)
         {
-            var purchaseInfos = new List<PurchaseInfo> {GetPurchaseInfo(shopItem.OrderId.Value)};
+            var purchaseInfos = new List<PurchaseInfo>
+            {
+                await GetPurchaseInfo(shopItem.OrderId.Value)
+            };
             Game.Game.instance.ActionManager.Buy(purchaseInfos);
 
             var countProps = new Value {["Count"] = 1,};
@@ -288,9 +291,9 @@ namespace Nekoyume.UI
             }
         }
 
-        public static PurchaseInfo GetPurchaseInfo(System.Guid orderId)
+        public static async Task<PurchaseInfo> GetPurchaseInfo(System.Guid orderId)
         {
-            var order = Util.GetOrder(orderId);
+            var order = await Util.GetOrder(orderId);
             return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
                 order.SellerAvatarAddress, order.ItemSubType, order.Price);
         }

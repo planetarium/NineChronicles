@@ -84,16 +84,17 @@ namespace Nekoyume.UI.Scroller
         private void Awake()
         {
             characterView.OnClickCharacterIcon
-                .Subscribe(avatarState =>
+                .Subscribe(async avatarState =>
                 {
-                    avatarState ??= States.TryGetAvatarState(ArenaInfo.AvatarAddress, out var state)
-                        ? state
-                        : null;
                     if (avatarState is null)
                     {
-                        return;
+                        var (exist, state) = await States.TryGetAvatarState(ArenaInfo.AvatarAddress);
+                        avatarState = exist ? state : null;
+                        if (avatarState is null)
+                        {
+                            return;
+                        }
                     }
-
                     Widget.Find<FriendInfoPopup>().Show(avatarState);
                 })
                 .AddTo(gameObject);
