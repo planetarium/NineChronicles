@@ -1,5 +1,7 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using mixpanel;
 using Nekoyume.Action;
@@ -104,12 +106,16 @@ namespace Nekoyume.UI
                                                BuyMultiple);
         }
 
-        private void BuyMultiple()
+        private async void BuyMultiple()
         {
             var wishItems = shopItems.SharedModel.GetWishItems;
-            var purchaseInfos = new List<PurchaseInfo>();
-            purchaseInfos.AddRange(wishItems.Select(x => ShopBuy.GetPurchaseInfo(x.OrderId.Value)));
-            Game.Game.instance.ActionManager.Buy(purchaseInfos);
+            var purchaseInfos = new ConcurrentBag<PurchaseInfo>();
+            Parallel.ForEach(wishItems, item =>
+            {
+                var purchaseInfo = ShopBuy.GetPurchaseInfo(item.OrderId.Value).Result;
+                purchaseInfos.Add(purchaseInfo);
+            });
+            Game.Game.instance.ActionManager.Buy(purchaseInfos.ToList());
 
             if (shopItems.SharedModel.WishItemCount > 0)
             {

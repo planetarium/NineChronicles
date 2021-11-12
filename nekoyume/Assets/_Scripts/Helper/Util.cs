@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Bencodex.Types;
 using Lib9c.Model.Order;
 using Nekoyume.Model.Item;
@@ -54,10 +55,10 @@ namespace Nekoyume.Helper
             return sb.ToString();
         }
 
-        public static Order GetOrder(Guid orderId)
+        public static async Task<Order> GetOrder(Guid orderId)
         {
             var address = Order.DeriveAddress(orderId);
-            var state = Game.Game.instance.Agent.GetState(address);
+            var state = await Game.Game.instance.Agent.GetStateAsync(address);
             if (state is Dictionary dictionary)
             {
                 return OrderFactory.Deserialize(dictionary);
@@ -66,16 +67,16 @@ namespace Nekoyume.Helper
             return null;
         }
 
-        public static string GetItemNameByOrdierId(Guid orderId, bool isNonColored = false)
+        public static async Task<string> GetItemNameByOrderId(Guid orderId, bool isNonColored = false)
         {
-            var order = GetOrder(orderId);
+            var order = await GetOrder(orderId);
             if (order == null)
             {
                 return string.Empty;
             }
 
             var address = Addresses.GetItemAddress(order.TradableId);
-            var state = Game.Game.instance.Agent.GetState(address);
+            var state = await Game.Game.instance.Agent.GetStateAsync(address);
             if (state is Dictionary dictionary)
             {
                 var itemBase = ItemFactory.Deserialize(dictionary);
@@ -85,10 +86,10 @@ namespace Nekoyume.Helper
             return string.Empty;
         }
 
-        public static ItemBase GetItemBaseByTradableId(Guid tradableId, long requiredBlockExpiredIndex)
+        public static async Task<ItemBase> GetItemBaseByTradableId(Guid tradableId, long requiredBlockExpiredIndex)
         {
             var address = Addresses.GetItemAddress(tradableId);
-            var state = Game.Game.instance.Agent.GetState(address);
+            var state = await Game.Game.instance.Agent.GetStateAsync(address);
             if (state is Dictionary dictionary)
             {
                 var itemBase = ItemFactory.Deserialize(dictionary);
