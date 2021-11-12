@@ -20,27 +20,27 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10132001,무거운 검(물),Weapon,3,Water,13,ATK,196,2,10132001
 10133001,무거운 검(땅),Weapon,3,Land,14,ATK,908,2,10133001
 10134001,무거운 검(바람),Weapon,3,Wind,15,ATK,967,2,10134001
-10140000,전쟁 검,Weapon,4,Normal,11,ATK,513,2,10140000
-10141000,전쟁 검(불),Weapon,4,Fire,12,ATK,522,2,10141000
-10142000,전쟁 검(물),Weapon,4,Water,13,ATK,532,2,10142000
-10143000,전쟁 검(땅),Weapon,4,Land,14,ATK,813,2,10143000
-10144000,전쟁 검(바람),Weapon,4,Wind,15,ATK,1018,2,10144000
-10140001,아스가르드의 검,Weapon,4,Normal,11,ATK,838,2,10140001
-10141001,아스가르드의 검(불),Weapon,4,Fire,12,ATK,855,2,10141001
-10142001,아스가르드의 검(물),Weapon,4,Water,13,ATK,871,2,10142001
-10143001,아스가르드의 검(땅),Weapon,4,Land,14,ATK,1330,2,10143001
-10144001,아스가르드의 검(바람),Weapon,4,Wind,15,ATK,1659,2,10144001
-10150000,다인슬레이프,Weapon,5,Normal,16,ATK,1582,2,10150000
-10151000,다인슬레이프(불),Weapon,5,Fire,17,ATK,1607,2,10151000
-10152000,다인슬레이프(물),Weapon,5,Water,18,ATK,1632,2,10152000
-10153000,다인슬레이프(땅),Weapon,5,Land,19,ATK,2489,2,10153000
-10154000,다인슬레이프(바람),Weapon,5,Wind,20,ATK,3098,2,10154000
-10150001,수르트의 검,Weapon,5,Normal,16,ATK,2266,2,10150001
-10151001,수르트의 검(불),Weapon,5,Fire,17,ATK,2299,2,10151001
-10152001,수르트의 검(물),Weapon,5,Water,18,ATK,2333,2,10152001
-10153001,수르트의 검(땅),Weapon,5,Land,19,ATK,3554,2,10153001
-10154001,수르트의 검(바람),Weapon,5,Wind,20,ATK,4420,2,10154001
-10155000,발키리의 검,Weapon,5,Normal,15,ATK,3036,2,10155000
+10140000,전쟁 검,Weapon,4,Normal,11,ATK,493,2,10140000
+10141000,전쟁 검(불),Weapon,4,Fire,12,ATK,499,2,10141000
+10142000,전쟁 검(물),Weapon,4,Water,13,ATK,506,2,10142000
+10143000,전쟁 검(땅),Weapon,4,Land,14,ATK,769,2,10143000
+10144000,전쟁 검(바람),Weapon,4,Wind,15,ATK,954,2,10144000
+10140001,아스가르드의 검,Weapon,4,Normal,11,ATK,765,2,10140001
+10141001,아스가르드의 검(불),Weapon,4,Fire,12,ATK,782,2,10141001
+10142001,아스가르드의 검(물),Weapon,4,Water,13,ATK,798,2,10142001
+10143001,아스가르드의 검(땅),Weapon,4,Land,14,ATK,1221,2,10143001
+10144001,아스가르드의 검(바람),Weapon,4,Wind,15,ATK,1525,2,10144001
+10150000,다인슬레이프,Weapon,5,Normal,16,ATK,1493,2,10150000
+10151000,다인슬레이프(불),Weapon,5,Fire,17,ATK,1518,2,10151000
+10152000,다인슬레이프(물),Weapon,5,Water,18,ATK,1543,2,10152000
+10153000,다인슬레이프(땅),Weapon,5,Land,19,ATK,2355,2,10153000
+10154000,다인슬레이프(바람),Weapon,5,Wind,20,ATK,2934,2,10154000
+10150001,수르트의 검,Weapon,5,Normal,16,ATK,2157,2,10150001
+10151001,수르트의 검(불),Weapon,5,Fire,17,ATK,2190,2,10151001
+10152001,수르트의 검(물),Weapon,5,Water,18,ATK,2223,2,10152001
+10153001,수르트의 검(땅),Weapon,5,Land,19,ATK,3390,2,10153001
+10154001,수르트의 검(바람),Weapon,5,Wind,20,ATK,4219,2,10154001
+10155000,발키리의 검,Weapon,5,Normal,15,ATK,2902,2,10155000
 10200000,누더기 옷,Armor,0,Normal,0,HP,30,2,Character/Player/10200000
 10210000,옷,Armor,1,Normal,1,HP,180,2,Character/Player/10210000
 10211000,천 옷(불),Armor,1,Fire,2,HP,222,2,Character/Player/10211000
@@ -62,27 +62,27 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10232001,헤르메스의 옷(물),Armor,3,Water,13,HP,3141,2,Character/Player/10232001
 10233001,헤르메스의 옷(땅),Armor,3,Land,14,HP,11482,2,Character/Player/10233001
 10234001,헤르메스의 옷(바람),Armor,3,Wind,15,HP,10044,2,Character/Player/10234001
-10240000,전쟁 갑옷,Armor,4,Normal,11,HP,6944,2,Character/Player/10240000
-10241000,전쟁 갑옷(불),Armor,4,Fire,12,HP,7093,2,Character/Player/10241000
-10242000,전쟁 갑옷(물),Armor,4,Water,13,HP,7242,2,Character/Player/10242000
-10243000,전쟁 갑옷(땅),Armor,4,Land,14,HP,11086,2,Character/Player/10243000
-10244000,전쟁 갑옷(바람),Armor,4,Wind,15,HP,13851,2,Character/Player/10244000
-10240001,아스가르드의 갑옷,Armor,4,Normal,11,HP,11451,2,Character/Player/10240001
-10241001,아스가르드의 갑옷(불),Armor,4,Fire,12,HP,11664,2,Character/Player/10241001
-10242001,아스가르드의 갑옷(물),Armor,4,Water,13,HP,11877,2,Character/Player/10242001
-10243001,아스가르드의 갑옷(땅),Armor,4,Land,14,HP,18134,2,Character/Player/10243001
-10244001,아스가르드의 갑옷(바람),Armor,4,Wind,15,HP,22656,2,Character/Player/10244001
-10250000,전설의 갑옷,Armor,5,Normal,11,HP,16890,2,Character/Player/10250000
-10251000,전설의 갑옷(불),Armor,5,Fire,12,HP,17187,2,Character/Player/10251000
-10252000,전설의 갑옷(물),Armor,5,Water,13,HP,17485,2,Character/Player/10252000
-10253000,전설의 갑옷(땅),Armor,5,Land,14,HP,26674,2,Character/Player/10253000
-10254000,전설의 갑옷(바람),Armor,5,Wind,15,HP,33283,2,Character/Player/10254000
-10250001,고대의 갑옷,Armor,5,Normal,11,HP,31484,2,Character/Player/10250001
-10251001,고대의 갑옷(불),Armor,5,Fire,12,HP,31985,2,Character/Player/10251001
-10252001,고대의 갑옷(물),Armor,5,Water,13,HP,32486,2,Character/Player/10252001
-10253001,고대의 갑옷(땅),Armor,5,Land,14,HP,49481,2,Character/Player/10253001
-10254001,고대의 갑옷(바람),Armor,5,Wind,15,HP,61522,2,Character/Player/10254001
-10255000,천상의 고양이,Armor,5,Normal,11,HP,44865,2,Character/Player/10235000
+10240000,전쟁 갑옷,Armor,4,Normal,11,HP,6895,2,Character/Player/10240000
+10241000,전쟁 갑옷(불),Armor,4,Fire,12,HP,6994,2,Character/Player/10241000
+10242000,전쟁 갑옷(물),Armor,4,Water,13,HP,7093,2,Character/Player/10242000
+10243000,전쟁 갑옷(땅),Armor,4,Land,14,HP,10788,2,Character/Player/10243000
+10244000,전쟁 갑옷(바람),Armor,4,Wind,15,HP,13395,2,Character/Player/10244000
+10240001,아스가르드의 갑옷,Armor,4,Normal,11,HP,10358,2,Character/Player/10240001
+10241001,아스가르드의 갑옷(불),Armor,4,Fire,12,HP,10571,2,Character/Player/10241001
+10242001,아스가르드의 갑옷(물),Armor,4,Water,13,HP,10783,2,Character/Player/10242001
+10243001,아스가르드의 갑옷(땅),Armor,4,Land,14,HP,16494,2,Character/Player/10243001
+10244001,아스가르드의 갑옷(바람),Armor,4,Wind,15,HP,20647,2,Character/Player/10244001
+10250000,전설의 갑옷,Armor,5,Normal,11,HP,15550,2,Character/Player/10250000
+10251000,전설의 갑옷(불),Armor,5,Fire,12,HP,15848,2,Character/Player/10251000
+10252000,전설의 갑옷(물),Armor,5,Water,13,HP,16146,2,Character/Player/10252000
+10253000,전설의 갑옷(땅),Armor,5,Land,14,HP,24665,2,Character/Player/10253000
+10254000,전설의 갑옷(바람),Armor,5,Wind,15,HP,30823,2,Character/Player/10254000
+10250001,고대의 갑옷,Armor,5,Normal,11,HP,29843,2,Character/Player/10250001
+10251001,고대의 갑옷(불),Armor,5,Fire,12,HP,30345,2,Character/Player/10251001
+10252001,고대의 갑옷(물),Armor,5,Water,13,HP,30846,2,Character/Player/10252001
+10253001,고대의 갑옷(땅),Armor,5,Land,14,HP,47020,2,Character/Player/10253001
+10254001,고대의 갑옷(바람),Armor,5,Wind,15,HP,58509,2,Character/Player/10254001
+10255000,천상의 고양이,Armor,5,Normal,11,HP,42856,2,Character/Player/10235000
 10310000,허리끈,Belt,1,Normal,1,SPD,46,2,10310000
 10311000,허리끈(불),Belt,1,Fire,2,SPD,62,2,10311000
 10312000,허리끈(물),Belt,1,Water,3,SPD,69,2,10312000
@@ -97,17 +97,17 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10331000,견고한 벨트(불),Belt,3,Fire,12,SPD,359,2,10331000
 10332000,견고한 벨트(물),Belt,3,Water,13,SPD,425,2,10332000
 10333000,견고한 벨트(땅),Belt,3,Land,14,SPD,1701,2,10333000
-10334000,견고한 벨트(바람),Belt,3,Wind,15,SPD,7187,2,10334000
+10334000,견고한 벨트(바람),Belt,3,Wind,15,SPD,6875,2,10334000
 10340000,전쟁 벨트,Belt,4,Normal,11,SPD,1215,2,10340000
 10341000,전쟁 벨트(불),Belt,4,Fire,12,SPD,1262,2,10341000
 10342000,전쟁 벨트(물),Belt,4,Water,13,SPD,2292,2,10342000
 10343000,전쟁 벨트(땅),Belt,4,Land,14,SPD,2292,2,10343000
 10344000,전쟁 벨트(바람),Belt,4,Wind,15,SPD,2292,2,10344000
-10350000,전설의 벨트,Belt,5,Normal,11,SPD,4305,2,10350000
-10351000,전설의 벨트(불),Belt,5,Fire,12,SPD,4384,2,10351000
-10352000,전설의 벨트(물),Belt,5,Water,13,SPD,4462,2,10352000
-10353000,전설의 벨트(땅),Belt,5,Land,14,SPD,6810,2,10353000
-10354000,전설의 벨트(바람),Belt,5,Wind,15,SPD,8484,2,10354000
+10350000,전설의 벨트,Belt,5,Normal,11,SPD,3993,2,10350000
+10351000,전설의 벨트(불),Belt,5,Fire,12,SPD,4071,2,10351000
+10352000,전설의 벨트(물),Belt,5,Water,13,SPD,4149,2,10352000
+10353000,전설의 벨트(땅),Belt,5,Land,14,SPD,6341,2,10353000
+10354000,전설의 벨트(바람),Belt,5,Wind,15,SPD,7910,2,10354000
 10410000,얇은 목걸이,Necklace,1,Normal,1,HIT,70,0,10410000
 10411000,얇은 목걸이(불),Necklace,1,Fire,2,HIT,81,0,10411000
 10412000,얇은 목걸이(물),Necklace,1,Water,3,HIT,99,0,10412000
@@ -128,11 +128,11 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10442000,전사의 목걸이(물),Necklace,4,Water,13,HIT,2039,0,10442000
 10443000,전사의 목걸이(땅),Necklace,4,Land,14,HIT,3058,0,10443000
 10444000,전사의 목걸이(바람),Necklace,4,Wind,15,HIT,3745,0,10444000
-10450000,전설의 목걸이,Necklace,5,Normal,11,HIT,6038,0,10450000
-10451000,전설의 목걸이(불),Necklace,5,Fire,12,HIT,6138,0,10451000
-10452000,전설의 목걸이(물),Necklace,5,Water,13,HIT,6239,0,10452000
-10453000,전설의 목걸이(땅),Necklace,5,Land,14,HIT,9509,0,10453000
-10454000,전설의 목걸이(바람),Necklace,5,Wind,15,HIT,11851,0,10454000
+10450000,전설의 목걸이,Necklace,5,Normal,11,HIT,5636,0,10450000
+10451000,전설의 목걸이(불),Necklace,5,Fire,12,HIT,5736,0,10451000
+10452000,전설의 목걸이(물),Necklace,5,Water,13,HIT,5837,0,10452000
+10453000,전설의 목걸이(땅),Necklace,5,Land,14,HIT,8906,0,10453000
+10454000,전설의 목걸이(바람),Necklace,5,Wind,15,HIT,11113,0,10454000
 10510000,얇은 반지,Ring,1,Normal,1,DEF,8,0,10510000
 10511000,얇은 반지(불),Ring,1,Fire,2,DEF,9,0,10511000
 10512000,얇은 반지(물),Ring,1,Water,3,DEF,11,0,10512000
@@ -148,16 +148,16 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10532000,마나 반지(물),Ring,3,Water,13,DEF,74,0,10532000
 10533000,마나 반지(땅),Ring,3,Land,14,DEF,251,0,10533000
 10534000,마나 반지(바람),Ring,3,Wind,15,DEF,270,0,10534000
-10540000,전사의 반지,Ring,4,Normal,11,DEF,282,0,10540000
-10541000,전사의 반지(불),Ring,4,Fire,12,DEF,288,0,10541000
-10542000,전사의 반지(물),Ring,4,Water,13,DEF,294,0,10542000
-10543000,전사의 반지(땅),Ring,4,Land,14,DEF,450,0,10543000
-10544000,전사의 반지(바람),Ring,4,Wind,15,DEF,562,0,10544000
-10550000,전설의 반지,Ring,5,Normal,11,DEF,729,0,10550000
-10551000,전설의 반지(불),Ring,5,Fire,12,DEF,741,0,10551000
-10552000,전설의 반지(물),Ring,5,Water,13,DEF,754,0,10552000
-10553000,전설의 반지(땅),Ring,5,Land,14,DEF,1149,0,10553000
-10554000,전설의 반지(바람),Ring,5,Wind,15,DEF,1430,0,10554000
+10540000,전사의 반지,Ring,4,Normal,11,DEF,263,0,10540000
+10541000,전사의 반지(불),Ring,4,Fire,12,DEF,266,0,10541000
+10542000,전사의 반지(물),Ring,4,Water,13,DEF,269,0,10542000
+10543000,전사의 반지(땅),Ring,4,Land,14,DEF,409,0,10543000
+10544000,전사의 반지(바람),Ring,4,Wind,15,DEF,507,0,10544000
+10550000,전설의 반지,Ring,5,Normal,11,DEF,684,0,10550000
+10551000,전설의 반지(불),Ring,5,Fire,12,DEF,697,0,10551000
+10552000,전설의 반지(물),Ring,5,Water,13,DEF,709,0,10552000
+10553000,전설의 반지(땅),Ring,5,Land,14,DEF,1082,0,10553000
+10554000,전설의 반지(바람),Ring,5,Wind,15,DEF,1348,0,10554000
 11320000,블루 사파이어 벨트,Belt,2,Normal,6,SPD,176,2,11320000
 11420000,블루 사파이어 목걸이,Necklace,2,Normal,6,HIT,227,0,11420000
 11520000,블루 사파이어 반지,Ring,2,Normal,6,DEF,50,0,11520000
