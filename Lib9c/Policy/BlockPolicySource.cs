@@ -36,13 +36,6 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long AuthorizedMinersPolicyInterval = 50;
 
-        /// <summary>
-        /// First index in which restriction will apply.
-        /// </summary>
-        public const long MinTransactionsPerBlockStartIndex = 2_173_701;
-
-        public const int MinTransactionsPerBlock = 1;
-
         public const int MaxTransactionsPerBlock = 100;
 
         public const long V100080ObsoleteIndex = 2_448_000;
@@ -51,7 +44,10 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long V100083ObsoleteIndex = 2_680_000;
 
+        public const long V100086ObsoleteIndex = 2_800_001;
+
         public const long PermissionedMiningStartIndex = 2_225_500;
+
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
@@ -83,13 +79,8 @@ namespace Nekoyume.BlockChain.Policy
         }
 
         /// <summary>
-        /// Creates an <see cref="IBlockPolicy{T}"/> instance for deployment.
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-main deployment.
         /// </summary>
-        /// <remarks>
-        /// This is set up to be deployable to 9c-main by default.  To deploy to
-        /// a different environment, such as 9c-internal, with a different policy,
-        /// swap out the subpolicies here.
-        /// </remarks>
         public IBlockPolicy<NCAction> GetPolicy() =>
             GetPolicy(
                 minimumDifficulty: MinimumDifficulty,
@@ -97,6 +88,19 @@ namespace Nekoyume.BlockChain.Policy
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
+
+        /// <summary>
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-internal deployment.
+        /// </summary>
+        public IBlockPolicy<NCAction> GetInternalPolicy() =>
+            GetPolicy(
+                minimumDifficulty: MinimumDifficulty,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Internal,
+                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Internal,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 

@@ -22,6 +22,7 @@ namespace Nekoyume
         public const float PlayerSpeechBreakTime = 2f;
         public const int MimisbrunnrWorldId = 10001;
         public const int MimisbrunnrStartStageId = 10000001;
+        public const int DefaultAttackId = 100000;
 
         //TODO 온체인으로 옮겨야함.
         // re: 그렇네요. 가장 확인된 방법은 테이블로 빼는 방법이네요.
