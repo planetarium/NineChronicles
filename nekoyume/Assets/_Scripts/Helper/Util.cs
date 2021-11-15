@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
@@ -58,13 +59,16 @@ namespace Nekoyume.Helper
         public static async Task<Order> GetOrder(Guid orderId)
         {
             var address = Order.DeriveAddress(orderId);
-            var state = await Game.Game.instance.Agent.GetStateAsync(address);
-            if (state is Dictionary dictionary)
+            return await UniTask.Run(async () =>
             {
-                return OrderFactory.Deserialize(dictionary);
-            }
+                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                if (state is Dictionary dictionary)
+                {
+                    return OrderFactory.Deserialize(dictionary);
+                }
 
-            return null;
+                return null;
+            });
         }
 
         public static async Task<string> GetItemNameByOrderId(Guid orderId, bool isNonColored = false)
@@ -76,29 +80,37 @@ namespace Nekoyume.Helper
             }
 
             var address = Addresses.GetItemAddress(order.TradableId);
-            var state = await Game.Game.instance.Agent.GetStateAsync(address);
-            if (state is Dictionary dictionary)
+            return await UniTask.Run(async () =>
             {
-                var itemBase = ItemFactory.Deserialize(dictionary);
-                return isNonColored ? itemBase.GetLocalizedNonColoredName() : itemBase.GetLocalizedName();
-            }
+                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                if (state is Dictionary dictionary)
+                {
+                    var itemBase = ItemFactory.Deserialize(dictionary);
+                    return isNonColored
+                        ? itemBase.GetLocalizedNonColoredName()
+                        : itemBase.GetLocalizedName();
+                }
 
-            return string.Empty;
+                return string.Empty;
+            });
         }
 
         public static async Task<ItemBase> GetItemBaseByTradableId(Guid tradableId, long requiredBlockExpiredIndex)
         {
             var address = Addresses.GetItemAddress(tradableId);
-            var state = await Game.Game.instance.Agent.GetStateAsync(address);
-            if (state is Dictionary dictionary)
+            return await UniTask.Run(async () =>
             {
-                var itemBase = ItemFactory.Deserialize(dictionary);
-                var tradableItem = itemBase as ITradableItem;
-                tradableItem.RequiredBlockIndex = requiredBlockExpiredIndex;
-                return tradableItem as ItemBase;
-            }
+                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                if (state is Dictionary dictionary)
+                {
+                    var itemBase = ItemFactory.Deserialize(dictionary);
+                    var tradableItem = itemBase as ITradableItem;
+                    tradableItem.RequiredBlockIndex = requiredBlockExpiredIndex;
+                    return tradableItem as ItemBase;
+                }
 
-            return null;
+                return null;
+            });
         }
 
         public static ItemBase CreateItemBaseByItemId(int itemId)

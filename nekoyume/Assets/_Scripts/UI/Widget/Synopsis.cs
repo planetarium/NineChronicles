@@ -14,6 +14,7 @@ using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.L10n;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Libplanet;
 
 namespace Nekoyume.UI
@@ -115,7 +116,7 @@ namespace Nekoyume.UI
             {
                 if (skipAll)
                 {
-                    End();
+                    yield return End();
                     yield break;
                 }
 
@@ -296,7 +297,7 @@ namespace Nekoyume.UI
                 }
                 script.image.transform.parent.gameObject.SetActive(false);
             }
-            End();
+            yield return End();
 
             yield return null;
         }
@@ -348,7 +349,7 @@ namespace Nekoyume.UI
             StartCoroutine(StartSynopsis(skipPrologue));
         }
 
-        public void End()
+        public async Task End()
         {
             PlayerFactory.Create();
 
@@ -361,7 +362,7 @@ namespace Nekoyume.UI
 
                 try
                 {
-                    State.States.Instance.SelectAvatar(index);
+                    await State.States.Instance.SelectAvatar(index);
                     Game.Event.OnRoomEnter.Invoke(false);
                 }
                 catch (KeyNotFoundException e)

@@ -25,7 +25,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.BlockChain
 {
-    
+
     using UniRx;
 
     /// <summary>
@@ -104,7 +104,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<RewardGold>()
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateAgentState)
+                .Subscribe(async eval => await UpdateAgentState(eval))
                 .AddTo(_disposables);
         }
 
@@ -113,10 +113,10 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<CreateAvatar>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
+                .Subscribe(async eval =>
                 {
-                    UpdateAgentState(eval);
-                    UpdateAvatarState(eval, eval.Action.index);
+                    await UpdateAgentState(eval);
+                    await UpdateAvatarState(eval, eval.Action.index);
                 })
                 .AddTo(_disposables);
         }

@@ -143,7 +143,7 @@ namespace Nekoyume.UI
             login.Show();
         }
 
-        private void Init(int index)
+        private async void Init(int index)
         {
             _selectedIndex = index;
             Player player;
@@ -156,7 +156,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                States.Instance.SelectAvatar(_selectedIndex);
+                await States.Instance.SelectAvatar(_selectedIndex);
                 player = new Player(
                     States.Instance.CurrentAvatarState,
                     tableSheets.CharacterSheet,
