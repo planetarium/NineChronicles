@@ -961,7 +961,7 @@ namespace Nekoyume.BlockChain
             var key = "UI_REDEEM_CODE_INVALID_CODE";
             if (eval.Exception is null)
             {
-                Widget.Find<CodeRewardPopup>().Show(eval.OutputStates.GetRedeemCodeState());
+                Widget.Find<CodeRewardPopup>().Show(eval.Action.Code, eval.OutputStates.GetRedeemCodeState());
                 key = "UI_REDEEM_CODE_SUCCESS";
                 UpdateCurrentAvatarState(eval);
             }
