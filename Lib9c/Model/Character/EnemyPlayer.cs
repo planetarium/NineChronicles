@@ -16,28 +16,28 @@ namespace Nekoyume.Model
         }
 
         public EnemyPlayer(
-            AvatarState avatarState, 
-            CharacterSheet characterSheet, 
-            CharacterLevelSheet characterLevelSheet, 
+            AvatarState avatarState,
+            CharacterSheet characterSheet,
+            CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
         ) : base(
-            avatarState, 
-            characterSheet, 
-            characterLevelSheet, 
+            avatarState,
+            characterSheet,
+            characterLevelSheet,
             equipmentItemSetEffectSheet
         )
         {
         }
 
         public EnemyPlayer(
-            int level, 
-            CharacterSheet characterSheet, 
-            CharacterLevelSheet characterLevelSheet, 
+            int level,
+            CharacterSheet characterSheet,
+            CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
         ) : base(
-            level, 
-            characterSheet, 
-            characterLevelSheet, 
+            level,
+            characterSheet,
+            characterLevelSheet,
             equipmentItemSetEffectSheet
         )
         {
@@ -54,7 +54,16 @@ namespace Nekoyume.Model
             var spawn = new SpawnEnemyPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
-        
+
+        [Obsolete("Use Spawn")]
+        public override void SpawnV1()
+        {
+            InitAIV1();
+            var spawn = new SpawnEnemyPlayer((CharacterBase) Clone());
+            Simulator.Log.Add(spawn);
+        }
+
+        [Obsolete("Use Spawn")]
         public override void SpawnV2()
         {
             InitAIV2();

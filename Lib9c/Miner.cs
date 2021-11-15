@@ -38,8 +38,6 @@ namespace Nekoyume.BlockChain
             new Address("B892052f1E10bf700143dd9bEcd81E31CD7f7095"),
         }.ToImmutableHashSet();
 
-        public bool AuthorizedMiner { get; }
-
         public Address Address => _privateKey.ToAddress();
 
         public Transaction<NCAction> StageProofTransaction()
@@ -66,14 +64,6 @@ namespace Nekoyume.BlockChain
             Block<NCAction> block = null;
             try
             {
-                if (AuthorizedMiner)
-                {
-                    _chain
-                        .GetStagedTransactionIds()
-                        .Select(txid => _chain.GetTransaction(txid)).ToList()
-                        .ForEach(tx => _chain.UnstageTransaction(tx));
-                }
-
                 IEnumerable<Transaction<NCAction>> bannedTxs = _chain.GetStagedTransactionIds()
                     .Select(txId => _chain.GetTransaction(txId))
                     .Where(tx => _bannedAccounts.Contains(tx.Signer));
@@ -142,14 +132,12 @@ namespace Nekoyume.BlockChain
         public Miner(
             BlockChain<NCAction> chain,
             Swarm<NCAction> swarm,
-            PrivateKey privateKey,
-            bool authorizedMiner
+            PrivateKey privateKey
         )
         {
             _chain = chain ?? throw new ArgumentNullException(nameof(chain));
             _swarm = swarm;
             _privateKey = privateKey;
-            AuthorizedMiner = authorizedMiner;
         }
 
         public static IComparer<Transaction<NCAction>> GetProofTxPriority(

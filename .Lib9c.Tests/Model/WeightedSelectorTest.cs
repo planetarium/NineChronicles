@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Model
             {
                 var selector = GetSelector();
                 var selector2 = GetSelector();
-                var ids = selector.Select(1);
+                var ids = selector.SelectV1(1);
                 var ids2 = selector2.SelectV2(1);
                 foreach (var id in ids)
                 {
@@ -79,7 +79,7 @@ namespace Lib9c.Tests.Model
             {
                 var selector = GetSelector();
                 var selector2 = GetSelector();
-                var ids = selector.Select(2);
+                var ids = selector.SelectV1(2);
                 var ids2 = selector2.SelectV2(2);
                 foreach (var id in ids)
                 {
@@ -125,14 +125,14 @@ namespace Lib9c.Tests.Model
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
-        public void SelectV3(int count)
+        public void Select(int count)
         {
             var i = 0;
             var result = new Dictionary<int, int>();
             while (i < 10000)
             {
                 var selector3 = GetSelector();
-                var ids = selector3.SelectV3(count);
+                var ids = selector3.Select(count);
                 foreach (var id in ids)
                 {
                     if (result.ContainsKey(id))

@@ -36,13 +36,6 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long AuthorizedMinersPolicyInterval = 50;
 
-        /// <summary>
-        /// First index in which restriction will apply.
-        /// </summary>
-        public const long MinTransactionsPerBlockStartIndex = 2_173_701;
-
-        public const int MinTransactionsPerBlock = 1;
-
         public const int MaxTransactionsPerBlock = 100;
 
         public const long V100080ObsoleteIndex = 2_448_000;
@@ -51,7 +44,10 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long V100083ObsoleteIndex = 2_680_000;
 
+        public const long V100086ObsoleteIndex = 2_800_001;
+
         public const long PermissionedMiningStartIndex = 2_225_500;
+
 
         public static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 

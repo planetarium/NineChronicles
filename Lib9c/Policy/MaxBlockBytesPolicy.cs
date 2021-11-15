@@ -34,15 +34,15 @@ namespace Nekoyume.BlockChain.Policy
                     value: 1024 * 100))         // 100 KiB
                 // Note: Temporary limit increase for resolving
                 // https://github.com/planetarium/NineChronicles/issues/777.
-                // Issued for v100081.
-                // FIXME: Starting index must be finalized accordingly before deployment.
+                // Issued for v100081.  Temporary ad hoc increase was introduced
+                // around 2_500_000.
                 .Add(new SpannedSubPolicy<int>(
                     startIndex: 2_000_001,
                     value: 1024 * 1024 * 10))    // 10 MiB
-                // Note: Reverting back to the previous limit.  Issued for v100084.
+                // Note: Reverting back to the previous limit.  Issued for v100086.
                 // FIXME: Starting index must be finalized accordingly before deployment.
                 .Add(new SpannedSubPolicy<int>(
-                    startIndex: 3_000_001,
+                    startIndex: 2_800_001,
                     value: 1024 * 100));        // 100 KiB
 
         // Note: For internal testing.
@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain.Policy
                     startIndex: 2_000_001,
                     value: 1024 * 1024 * 10))    // 10 MiB
                 .Add(new SpannedSubPolicy<int>(
-                    startIndex: 2_680_001,
+                    startIndex: 2_800_001,
                     value: 1024 * 100));        // 100 KiB
     }
 }

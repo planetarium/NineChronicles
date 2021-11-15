@@ -6,6 +6,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
@@ -16,8 +17,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_equipment9")]
-    public class CombinationEquipment : GameAction
+    [ActionObsolete(BlockPolicySource.V100086ObsoleteIndex)]
+    [ActionType("combination_equipment8")]
+    public class CombinationEquipment8 : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
 
@@ -75,6 +77,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress);
             }
+            
+            CheckObsolete(BlockPolicySource.V100086ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -335,10 +339,7 @@ namespace Nekoyume.Action
             SkillSheet skillSheet
         )
         {
-            foreach (var optionInfo in subRecipe.Options
-                .OrderByDescending(e => e.Ratio)
-                .ThenBy(e => e.RequiredBlockIndex)
-                .ThenBy(e => e.Id))
+            foreach (var optionInfo in subRecipe.Options.OrderByDescending(e => e.Ratio))
             {
                 if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
                 {

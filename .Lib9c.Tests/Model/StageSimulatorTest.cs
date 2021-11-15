@@ -46,7 +46,7 @@ namespace Lib9c.Tests.Model
                 _tableSheets.GetStageSimulatorSheets(),
                 2,
                 1);
-            simulator.Simulate3();
+            simulator.SimulateV2();
             var filtered =
                 simulator.Log.Where(e => e.GetType() != typeof(GetReward) || e.GetType() != typeof(DropBox));
             Assert.Equal(typeof(WaveTurnEnd), filtered.Last().GetType());
@@ -74,7 +74,7 @@ namespace Lib9c.Tests.Model
             var player = simulator.Player;
             Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);
 
-            var player2 = simulator.Simulate3();
+            var player2 = simulator.SimulateV2();
             Assert.Equal(row.Stat, player2.Stats.OptionalStats.ATK);
         }
 
@@ -95,7 +95,33 @@ namespace Lib9c.Tests.Model
 
             while (player.Level == 1)
             {
-                simulator.Simulate5();
+                simulator.SimulateV4();
+            }
+
+            var player2 = simulator.Player;
+            Assert.Equal(2, player2.Level);
+            Assert.Equal(1, player2.eventMap[(int)QuestEventType.Level]);
+            Assert.True(simulator.Log.OfType<GetExp>().Any());
+        }
+
+        [Fact]
+        public void Simulate6()
+        {
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.CostumeStatSheet,
+                2);
+
+            var player = simulator.Player;
+
+            while (player.Level == 1)
+            {
+                simulator.SimulateV5(1);
             }
 
             var player2 = simulator.Player;
