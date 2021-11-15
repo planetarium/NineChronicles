@@ -221,12 +221,12 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
-    "jp.setchi.fancyscrollview": {
-      "version": "https://github.com/setchi/FancyScrollView.git#upm",
+    "com.unity.uiextensions": {
+      "version": "2.2.7",
       "depth": 0,
-      "source": "git",
+      "source": "registry",
       "dependencies": {},
-      "hash": "18c1db90a91f5965260e6a216d9ec6aea51c4968"
+      "url": "https://package.openupm.com"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

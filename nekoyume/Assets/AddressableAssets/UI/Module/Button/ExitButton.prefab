@@ -360,11 +360,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startWithPlay: 1
+  startDelay: 0
+  duration: 0.85
+  tweenType: 4
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   beginValue: 0
   endValue: 1
-  duration: 0.85
   infiniteLoop: 1
-  ease: 1
   loopType: 1
 --- !u!114 &3704473706306165485
 MonoBehaviour:
@@ -612,6 +635,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -774,11 +798,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startWithPlay: 1
+  startDelay: 0
+  duration: 0.85
+  tweenType: 4
+  ease: 1
+  completeMethod: 
+  componentIndex: 0
+  target: {fileID: 0}
+  completeDelay: 0
+  useCustomEaseCurve: 0
+  customEaseCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   beginValue: 0
   endValue: 1
-  duration: 0.85
   infiniteLoop: 1
-  ease: 1
   loopType: 1
 --- !u!114 &3186371061617910132
 MonoBehaviour:
@@ -796,6 +843,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 2
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -961,6 +1009,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 2
   l10nKey: 
   fontMaterialIndexInitialized: 0

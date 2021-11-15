@@ -222,7 +222,7 @@ namespace Nekoyume.BlockChain
                     (Dictionary)state
                 ).Currency;
 
-                States.Instance.SetAgentState(
+                await States.Instance.SetAgentStateAsync(
                     await GetStateAsync(Address) is Bencodex.Types.Dictionary agentDict
                         ? new AgentState(agentDict)
                         : new AgentState(Address));
