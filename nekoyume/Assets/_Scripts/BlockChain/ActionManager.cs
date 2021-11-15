@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Lib9c.Renderer;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
@@ -14,8 +14,6 @@ using UniRx;
 using mixpanel;
 using Nekoyume.Model.State;
 using Nekoyume.UI;
-using UnityEngine;
-using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 
 namespace Nekoyume.BlockChain
@@ -29,11 +27,17 @@ namespace Nekoyume.BlockChain
 
         private readonly IAgent _agent;
 
+        private readonly ActionRenderer _renderer;
+
         private Guid _lastBattleActionId;
 
-        public static ActionManager Instance => Game.Game.instance.ActionManager;
+        public static bool IsLastBattleActionId(Guid actionId) =>
+            actionId == Game.Game.instance.ActionManager._lastBattleActionId;
 
-        public static bool IsLastBattleActionId(Guid actionId) => actionId == Instance._lastBattleActionId;
+        private void ProcessAction(GameAction gameAction)
+        {
+            _agent.EnqueueAction(gameAction);
+        }
 
         private static void HandleException(Guid actionId, Exception e)
         {
@@ -47,16 +51,8 @@ namespace Nekoyume.BlockChain
 
         public ActionManager(IAgent agent)
         {
-            _agent = agent ?? throw new ArgumentNullException(nameof(agent));
-        }
-
-        private void ProcessAction<T>(T gameAction) where T : GameAction
-        {
-            var actionType =
-                (ActionTypeAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(ActionTypeAttribute));
-            Debug.Log($"[{nameof(ActionManager)}] {nameof(ProcessAction)}() called. \"{actionType.TypeIdentifier}\"");
-
-            _agent.EnqueueAction(gameAction);
+            _agent = agent;
+            _renderer = agent.ActionRenderer;
         }
 
         #region Actions
@@ -80,7 +76,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _agent.ActionRenderer.EveryRender<CreateAvatar>()
+            return _renderer.EveryRender<CreateAvatar>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -128,7 +124,7 @@ namespace Nekoyume.BlockChain
 
             _lastBattleActionId = action.Id;
 
-            _agent.ActionRenderer.EveryRender<MimisbrunnrBattle>()
+            _renderer.EveryRender<MimisbrunnrBattle>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -183,7 +179,7 @@ namespace Nekoyume.BlockChain
 
             _lastBattleActionId = action.Id;
 
-            return _agent.ActionRenderer.EveryRender<HackAndSlash>()
+            return _renderer.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -221,7 +217,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            _agent.ActionRenderer.EveryRender<CombinationConsumable>()
+            _renderer.EveryRender<CombinationConsumable>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -253,7 +249,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            _agent.ActionRenderer.EveryRender<Sell>()
+            _renderer.EveryRender<Sell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -276,7 +272,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            _agent.ActionRenderer.EveryRender<SellCancellation>()
+            _renderer.EveryRender<SellCancellation>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -314,7 +310,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            _agent.ActionRenderer.EveryRender<UpdateSell>()
+            _renderer.EveryRender<UpdateSell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -337,7 +333,7 @@ namespace Nekoyume.BlockChain
             };
 
             ProcessAction(action);
-            _agent.ActionRenderer.EveryRender<Buy>()
+            _renderer.EveryRender<Buy>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -359,7 +355,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            _agent.ActionRenderer.EveryRender<DailyReward>()
+            _renderer.EveryRender<DailyReward>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -398,7 +394,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            _agent.ActionRenderer.EveryRender<ItemEnhancement>()
+            _renderer.EveryRender<ItemEnhancement>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -435,7 +431,7 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
 
             _lastBattleActionId = action.Id;
-            _agent.ActionRenderer.EveryRender<RankingBattle>()
+            _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -484,7 +480,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            _agent.ActionRenderer.EveryRender<CombinationEquipment>()
+            _renderer.EveryRender<CombinationEquipment>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -509,7 +505,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            _agent.ActionRenderer.EveryRender<RapidCombination>()
+            _renderer.EveryRender<RapidCombination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -525,7 +521,7 @@ namespace Nekoyume.BlockChain
             );
             ProcessAction(action);
 
-            _agent.ActionRenderer.EveryRender<RedeemCode>()
+            _renderer.EveryRender<RedeemCode>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
@@ -546,7 +542,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            _agent.ActionRenderer.EveryRender<ChargeActionPoint>()
+            _renderer.EveryRender<ChargeActionPoint>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()

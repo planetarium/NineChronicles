@@ -44,9 +44,9 @@ namespace Nekoyume.BlockChain
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private IDisposable _disposableForBattleEnd;
+        private ActionRenderer _renderer;
 
-        private ActionRenderer _actionRenderer;
+        private IDisposable _disposableForBattleEnd = null;
 
         private ActionRenderHandler()
         {
@@ -54,13 +54,7 @@ namespace Nekoyume.BlockChain
 
         public override void Start(ActionRenderer renderer)
         {
-            _actionRenderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
-
-            Stop();
-            _actionRenderer.BlockEndSubject.ObserveOnMainThread().Subscribe(_ =>
-            {
-                Debug.Log($"[{nameof(BlockRenderHandler)}] Render actions end");
-            }).AddTo(_disposables);
+            _renderer = renderer;
 
             RewardGold();
             GameConfig();
@@ -100,7 +94,7 @@ namespace Nekoyume.BlockChain
         {
             // FIXME RewardGold의 결과(ActionEvaluation)에서 다른 갱신 주소가 같이 나오고 있는데 더 조사해봐야 합니다.
             // 우선은 HasUpdatedAssetsForCurrentAgent로 다르게 검사해서 우회합니다.
-            _actionRenderer.EveryRender<RewardGold>()
+            _renderer.EveryRender<RewardGold>()
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateAgentState)
@@ -109,7 +103,7 @@ namespace Nekoyume.BlockChain
 
         private void CreateAvatar()
         {
-            _actionRenderer.EveryRender<CreateAvatar>()
+            _renderer.EveryRender<CreateAvatar>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
@@ -121,7 +115,7 @@ namespace Nekoyume.BlockChain
 
         private void HackAndSlash()
         {
-            _actionRenderer.EveryRender<HackAndSlash>()
+            _renderer.EveryRender<HackAndSlash>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
@@ -129,7 +123,7 @@ namespace Nekoyume.BlockChain
 
         private void MimisbrunnrBattle()
         {
-            _actionRenderer.EveryRender<MimisbrunnrBattle>()
+            _renderer.EveryRender<MimisbrunnrBattle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMimisbrunnr).AddTo(_disposables);
@@ -137,7 +131,7 @@ namespace Nekoyume.BlockChain
 
         private void CombinationConsumable()
         {
-            _actionRenderer.EveryRender<CombinationConsumable>()
+            _renderer.EveryRender<CombinationConsumable>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationConsumable).AddTo(_disposables);
@@ -145,7 +139,7 @@ namespace Nekoyume.BlockChain
 
         private void Sell()
         {
-            _actionRenderer.EveryRender<Sell>()
+            _renderer.EveryRender<Sell>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSell).AddTo(_disposables);
@@ -153,7 +147,7 @@ namespace Nekoyume.BlockChain
 
         private void SellCancellation()
         {
-            _actionRenderer.EveryRender<SellCancellation>()
+            _renderer.EveryRender<SellCancellation>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
@@ -161,7 +155,7 @@ namespace Nekoyume.BlockChain
 
         private void UpdateSell()
         {
-            _actionRenderer.EveryRender<UpdateSell>()
+            _renderer.EveryRender<UpdateSell>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUpdateSell).AddTo(_disposables);
@@ -169,14 +163,14 @@ namespace Nekoyume.BlockChain
 
         private void Buy()
         {
-            _actionRenderer.EveryRender<Buy>()
+            _renderer.EveryRender<Buy>()
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy).AddTo(_disposables);
         }
 
         private void ItemEnhancement()
         {
-            _actionRenderer.EveryRender<ItemEnhancement>()
+            _renderer.EveryRender<ItemEnhancement>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
@@ -184,7 +178,7 @@ namespace Nekoyume.BlockChain
 
         private void DailyReward()
         {
-            _actionRenderer.EveryRender<DailyReward>()
+            _renderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseDailyReward).AddTo(_disposables);
@@ -192,7 +186,7 @@ namespace Nekoyume.BlockChain
 
         private void RankingBattle()
         {
-            _actionRenderer.EveryRender<RankingBattle>()
+            _renderer.EveryRender<RankingBattle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
@@ -200,7 +194,7 @@ namespace Nekoyume.BlockChain
 
         private void CombinationEquipment()
         {
-            _actionRenderer.EveryRender<CombinationEquipment>()
+            _renderer.EveryRender<CombinationEquipment>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
@@ -208,7 +202,7 @@ namespace Nekoyume.BlockChain
 
         private void RapidCombination()
         {
-            _actionRenderer.EveryRender<RapidCombination>()
+            _renderer.EveryRender<RapidCombination>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination).AddTo(_disposables);
@@ -216,14 +210,14 @@ namespace Nekoyume.BlockChain
 
         private void GameConfig()
         {
-            _actionRenderer.EveryRender(GameConfigState.Address)
+            _renderer.EveryRender(GameConfigState.Address)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateGameConfigState).AddTo(_disposables);
         }
 
         private void RedeemCode()
         {
-            _actionRenderer.EveryRender<Action.RedeemCode>()
+            _renderer.EveryRender<Action.RedeemCode>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRedeemCode).AddTo(_disposables);
@@ -231,7 +225,7 @@ namespace Nekoyume.BlockChain
 
         private void ChargeActionPoint()
         {
-            _actionRenderer.EveryRender<ChargeActionPoint>()
+            _renderer.EveryRender<ChargeActionPoint>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
@@ -239,7 +233,7 @@ namespace Nekoyume.BlockChain
 
         private void ClaimMonsterCollectionReward()
         {
-            _actionRenderer.EveryRender<ClaimMonsterCollectionReward>()
+            _renderer.EveryRender<ClaimMonsterCollectionReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimMonsterCollectionReward).AddTo(_disposables);
@@ -247,7 +241,7 @@ namespace Nekoyume.BlockChain
 
         private void TransferAsset()
         {
-            _actionRenderer.EveryRender<TransferAsset>()
+            _renderer.EveryRender<TransferAsset>()
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset).AddTo(_disposables);
