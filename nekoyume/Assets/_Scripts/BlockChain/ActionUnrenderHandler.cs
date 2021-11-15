@@ -28,9 +28,9 @@ namespace Nekoyume.BlockChain
 
         public static readonly ActionUnrenderHandler Instance = Singleton.Value;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private ActionRenderer _renderer;
 
-        private ActionRenderer _actionRenderer;
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private ActionUnrenderHandler()
         {
@@ -38,7 +38,7 @@ namespace Nekoyume.BlockChain
 
         public override void Start(ActionRenderer renderer)
         {
-            _actionRenderer = renderer;
+            _renderer = renderer;
 
             RewardGold();
             TransferAsset();
@@ -76,7 +76,7 @@ namespace Nekoyume.BlockChain
 
         private void RewardGold()
         {
-            _actionRenderer.EveryUnrender<RewardGold>()
+            _renderer.EveryUnrender<RewardGold>()
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(onNext: eval =>
@@ -99,7 +99,7 @@ namespace Nekoyume.BlockChain
 
         private void Buy()
         {
-            _actionRenderer.EveryUnrender<Buy>()
+            _renderer.EveryUnrender<Buy>()
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy)
                 .AddTo(_disposables);
@@ -107,7 +107,7 @@ namespace Nekoyume.BlockChain
 
         private void Sell()
         {
-            _actionRenderer.EveryUnrender<Sell>()
+            _renderer.EveryUnrender<Sell>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSell)
@@ -116,7 +116,7 @@ namespace Nekoyume.BlockChain
 
         private void SellCancellation()
         {
-            _actionRenderer.EveryUnrender<SellCancellation>()
+            _renderer.EveryUnrender<SellCancellation>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation)
@@ -124,7 +124,7 @@ namespace Nekoyume.BlockChain
         }
         private void UpdateSell()
         {
-            _actionRenderer.EveryUnrender<UpdateSell>()
+            _renderer.EveryUnrender<UpdateSell>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUpdateSell)
@@ -133,7 +133,7 @@ namespace Nekoyume.BlockChain
 
         private void DailyReward()
         {
-            _actionRenderer.EveryUnrender<DailyReward>()
+            _renderer.EveryUnrender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseDailyReward)
@@ -142,7 +142,7 @@ namespace Nekoyume.BlockChain
 
         private void ClaimMonsterCollectionReward()
         {
-            _actionRenderer.EveryUnrender<ClaimMonsterCollectionReward>()
+            _renderer.EveryUnrender<ClaimMonsterCollectionReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimMonsterCollectionReward)
@@ -151,7 +151,7 @@ namespace Nekoyume.BlockChain
 
         private void TransferAsset()
         {
-            _actionRenderer.EveryUnrender<TransferAsset>()
+            _renderer.EveryUnrender<TransferAsset>()
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
@@ -160,7 +160,7 @@ namespace Nekoyume.BlockChain
 
         private void ItemEnhancement()
         {
-            _actionRenderer.EveryUnrender<ItemEnhancement>()
+            _renderer.EveryUnrender<ItemEnhancement>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement)
