@@ -135,8 +135,14 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
-                    HandleException(action.Id, e);
-                    ActionRenderHandler.BackToMain(false, e);
+                    try
+                    {
+                        HandleException(action.Id, e);
+                    }
+                    catch (Exception inner)
+                    {
+                        ActionRenderHandler.BackToMain(false, inner);
+                    }
                 });
         }
 
@@ -190,8 +196,14 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
-                    HandleException(action.Id, e);
-                    ActionRenderHandler.BackToMain(false, e);
+                    try
+                    {
+                        HandleException(action.Id, e);
+                    }
+                    catch (Exception inner)
+                    {
+                        ActionRenderHandler.BackToMain(false, inner);
+                    }
                 });
         }
 
@@ -405,8 +417,14 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
-                    HandleException(action.Id, e);
-                    ActionRenderHandler.BackToMain(false, e);
+                    try
+                    {
+                        HandleException(action.Id, e);
+                    }
+                    catch (Exception inner)
+                    {
+                        ActionRenderHandler.BackToMain(false, inner);
+                    }
                 });
         }
 
@@ -440,11 +458,7 @@ namespace Nekoyume.BlockChain
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e =>
-                {
-                    HandleException(action.Id, e);
-                    ActionRenderHandler.BackToMain(false, e);
-                });
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public void PatchTableSheet(string tableName, string tableCsv)
