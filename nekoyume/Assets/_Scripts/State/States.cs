@@ -134,7 +134,6 @@ namespace Nekoyume.State
             if (exist)
             {
                 await AddOrReplaceAvatarStateAsync(avatarState, index, initializeReactiveState);
-
             }
 
             return null;
@@ -232,9 +231,12 @@ namespace Nekoyume.State
                 _avatarStates.Add(index, state);
             }
 
-            return index == CurrentAvatarKey
-                ? await SelectAvatarAsync(index, initializeReactiveState)
-                : state;
+            if (index == CurrentAvatarKey)
+            {
+                return await UniTask.Run(async () => await SelectAvatarAsync(index, initializeReactiveState));
+            }
+
+            return state;
         }
 
         /// <summary>
@@ -279,14 +281,17 @@ namespace Nekoyume.State
             if (isNew)
             {
                 _combinationSlotStates.Clear();
-                var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
-                if (!exist)
+                await UniTask.Run(async () =>
                 {
-                    return null;
-                }
+                    var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
+                    if (!exist)
+                    {
+                        return;
+                    }
 
-                SetCombinationSlotStates(curAvatarState);
-                await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
+                    SetCombinationSlotStates(curAvatarState);
+                    await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
+                });
             }
 
             if (Game.Game.instance.Agent is RPCAgent agent)
@@ -307,7 +312,7 @@ namespace Nekoyume.State
             UpdateCurrentAvatarState(null);
         }
 
-        private async void SetCombinationSlotStates(AvatarState avatarState)
+        private void SetCombinationSlotStates(AvatarState avatarState)
         {
             if (avatarState is null)
             {
@@ -316,7 +321,7 @@ namespace Nekoyume.State
             }
 
             LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
-            for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
+            Parallel.For(0, avatarState.combinationSlotAddresses.Count, i =>
             {
                 var slotAddress = avatarState.address.Derive(
                     string.Format(
@@ -325,9 +330,10 @@ namespace Nekoyume.State
                         i
                     )
                 );
-                var state = new CombinationSlotState((Dictionary) await Game.Game.instance.Agent.GetStateAsync(slotAddress));
+                var state = new CombinationSlotState(
+                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
                 UpdateCombinationSlotState(i, state);
-            }
+            });
         }
 
         public void UpdateCombinationSlotState(int index, CombinationSlotState state)

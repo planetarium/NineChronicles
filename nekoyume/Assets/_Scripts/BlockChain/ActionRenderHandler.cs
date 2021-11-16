@@ -25,7 +25,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.BlockChain
 {
-    
+
     using UniRx;
 
     /// <summary>
@@ -104,7 +104,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<RewardGold>()
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateAgentState)
+                .Subscribe(async eval => await UpdateAgentStateAsync(eval))
                 .AddTo(_disposables);
         }
 
@@ -113,10 +113,10 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<CreateAvatar>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
+                .Subscribe(async eval =>
                 {
-                    UpdateAgentState(eval);
-                    UpdateAvatarState(eval, eval.Action.index);
+                    await UpdateAgentStateAsync(eval);
+                    await UpdateAvatarState(eval, eval.Action.index);
                 })
                 .AddTo(_disposables);
         }
@@ -355,8 +355,8 @@ namespace Nekoyume.BlockChain
                 NotificationSystem.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
 
                 States.Instance.UpdateCombinationSlotState(slotIndex, slotState);
-                UpdateAgentState(eval);
-                UpdateCurrentAvatarState(eval);
+                UpdateAgentStateAsync(eval);
+                UpdateCurrentAvatarStateAsync(eval);
             }
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
@@ -395,8 +395,8 @@ namespace Nekoyume.BlockChain
                         gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
 
                 States.Instance.UpdateCombinationSlotState(slotIndex, slot);
-                UpdateAgentState(eval);
-                UpdateCurrentAvatarState(eval);
+                UpdateAgentStateAsync(eval);
+                UpdateCurrentAvatarStateAsync(eval);
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
 
                 if (!(nextQuest is null))
@@ -481,8 +481,8 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 States.Instance.UpdateCombinationSlotState(slotIndex, slot);
-                UpdateAgentState(eval);
-                UpdateCurrentAvatarState(eval);
+                UpdateAgentStateAsync(eval);
+                UpdateCurrentAvatarStateAsync(eval);
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
                 // Notify
@@ -527,8 +527,8 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 States.Instance.UpdateCombinationSlotState(slotIndex, slot);
-                UpdateAgentState(eval);
-                UpdateCurrentAvatarState(eval);
+                UpdateAgentStateAsync(eval);
+                UpdateCurrentAvatarStateAsync(eval);
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
                 // Notify
@@ -589,7 +589,7 @@ namespace Nekoyume.BlockChain
 
                 OneLineSystem.Push(MailType.Auction, message);
 
-                UpdateCurrentAvatarState(eval);
+                UpdateCurrentAvatarStateAsync(eval);
                 var shopSell = Widget.Find<ShopSell>();
                 if (shopSell.isActiveAndEnabled)
                 {
@@ -613,7 +613,7 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
             OneLineSystem.Push(MailType.Auction, string.Format(format, itemName));
-            UpdateCurrentAvatarState(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             var shopSell = Widget.Find<ShopSell>();
             if (shopSell.isActiveAndEnabled)
             {
@@ -631,7 +631,7 @@ namespace Nekoyume.BlockChain
             var itemName = await Util.GetItemNameByOrderId(eval.Action.orderId);
             var format = L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE");
             OneLineSystem.Push(MailType.Auction, string.Format(format, itemName));
-            UpdateCurrentAvatarState(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             var shopSell = Widget.Find<ShopSell>();
             if (shopSell.isActiveAndEnabled)
             {
@@ -722,8 +722,8 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
+            UpdateAgentStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -739,7 +739,7 @@ namespace Nekoyume.BlockChain
             {
                 LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                     eval.Action.avatarAddress);
-                UpdateCurrentAvatarState(eval);
+                UpdateCurrentAvatarStateAsync(eval);
                 UI.NotificationSystem.Push(MailType.System, L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"));
             }
         }
@@ -761,7 +761,7 @@ namespace Nekoyume.BlockChain
                         {
                             var task = UniTask.Run(() =>
                             {
-                                UpdateCurrentAvatarState(eval);
+                                UpdateCurrentAvatarStateAsync(eval);
                                 UpdateWeeklyArenaState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
@@ -842,7 +842,7 @@ namespace Nekoyume.BlockChain
                         {
                             var task = UniTask.Run(() =>
                             {
-                                UpdateCurrentAvatarState(eval);
+                                UpdateCurrentAvatarStateAsync(eval);
                                 UpdateWeeklyArenaState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
@@ -922,8 +922,8 @@ namespace Nekoyume.BlockChain
                         {
                             var task = UniTask.Run(() =>
                             {
-                                UpdateAgentState(eval);
-                                UpdateCurrentAvatarState(eval);
+                                UpdateAgentStateAsync(eval);
+                                UpdateCurrentAvatarStateAsync(eval);
                                 UpdateWeeklyArenaState(eval);
                                 _disposableForBattleEnd = null;
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
@@ -962,9 +962,9 @@ namespace Nekoyume.BlockChain
             var key = "UI_REDEEM_CODE_INVALID_CODE";
             if (eval.Exception is null)
             {
-                Widget.Find<CodeRewardPopup>().Show(eval.OutputStates.GetRedeemCodeState());
+                Widget.Find<CodeRewardPopup>().Show(eval.Action.Code, eval.OutputStates.GetRedeemCodeState());
                 key = "UI_REDEEM_CODE_SUCCESS";
-                UpdateCurrentAvatarState(eval);
+                UpdateCurrentAvatarStateAsync(eval);
             }
             else
             {
@@ -993,7 +993,7 @@ namespace Nekoyume.BlockChain
                     GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
                 }
 
-                UpdateCurrentAvatarState(eval);
+                UpdateCurrentAvatarStateAsync(eval);
             }
         }
 
@@ -1055,8 +1055,8 @@ namespace Nekoyume.BlockChain
                 MailType.System,
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"));
 
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
+            UpdateAgentStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -1097,7 +1097,7 @@ namespace Nekoyume.BlockChain
 
                 OneLineSystem.Push(MailType.System, message);
             }
-            UpdateAgentState(eval);
+            UpdateAgentStateAsync(eval);
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

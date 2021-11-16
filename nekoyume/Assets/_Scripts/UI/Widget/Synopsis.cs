@@ -13,8 +13,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.L10n;
-using System.Collections.Generic;
-using Libplanet;
+using System.Threading.Tasks;
+using Nekoyume.Helper;
 
 namespace Nekoyume.UI
 {
@@ -115,7 +115,7 @@ namespace Nekoyume.UI
             {
                 if (skipAll)
                 {
-                    End();
+                    yield return End();
                     yield break;
                 }
 
@@ -296,7 +296,7 @@ namespace Nekoyume.UI
                 }
                 script.image.transform.parent.gameObject.SetActive(false);
             }
-            End();
+            yield return End();
 
             yield return null;
         }
@@ -348,27 +348,13 @@ namespace Nekoyume.UI
             StartCoroutine(StartSynopsis(skipPrologue));
         }
 
-        public void End()
+        private async Task End()
         {
             PlayerFactory.Create();
-
-            if (PlayerPrefs.HasKey(LoginDetail.RecentlyLoggedInAvatarKey))
+            if (Util.TryGetStoredSlotIndex(out var slotIndex))
             {
-                var recentlyLoggedAddress = PlayerPrefs.GetString(LoginDetail.RecentlyLoggedInAvatarKey);
-                var matchingAddress = State.States.Instance.AgentState.avatarAddresses
-                    .FirstOrDefault(pair => pair.Value.ToString().Equals(recentlyLoggedAddress));
-                var index = matchingAddress.Equals(default(KeyValuePair<int, Address>)) ? -1 : matchingAddress.Key;
-
-                try
-                {
-                    State.States.Instance.SelectAvatarAsync(index);
-                    Game.Event.OnRoomEnter.Invoke(false);
-                }
-                catch (KeyNotFoundException e)
-                {
-                    Debug.LogWarning(e.Message);
-                    EnterLogin();
-                }
+                await States.Instance.SelectAvatarAsync(slotIndex);
+                Game.Event.OnRoomEnter.Invoke(false);
             }
             else
             {

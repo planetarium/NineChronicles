@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Assets;
@@ -100,7 +101,10 @@ namespace Nekoyume.State
         {
             if (_sellDigests != null)
             {
-                _sellDigests = await GetSellOrderDigests();
+                await UniTask.Run(async () =>
+                {
+                    _sellDigests = await GetSellOrderDigests();
+                });
             }
         }
 

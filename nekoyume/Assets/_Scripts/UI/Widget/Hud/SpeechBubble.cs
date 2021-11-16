@@ -14,7 +14,7 @@ namespace Nekoyume.UI
         public string localizationKey;
         public Transform bubbleContainer;
         public Image[] bubbleImages;
-        public TextMeshProUGUI textSize;
+        public RectTransform contentSize;
         public TextMeshProUGUI tempText;
         public TextMeshProUGUI realText;
         public float speechSpeedInterval = 0.02f;
@@ -62,7 +62,7 @@ namespace Nekoyume.UI
             _tweenMoveBy?.Kill();
             _tweenMoveBy = null;
             bubbleContainer?.DOKill();
-            textSize.transform?.DOKill();
+            contentSize?.DOKill();
         }
 
         public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
@@ -149,9 +149,9 @@ namespace Nekoyume.UI
                 else
                     SetBubbleImage(0);
 
-                tempText.text = textSize.text = speech;
-                textSize.rectTransform.DOScale(0.0f, 0.0f);
-                textSize.rectTransform.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
+                tempText.text = speech;
+                contentSize.DOScale(0.0f, 0.0f);
+                contentSize.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
 
                 if (_tweenScale is null ||
                     !_tweenScale.IsActive() ||
@@ -171,9 +171,9 @@ namespace Nekoyume.UI
                 {
                     _tweenMoveBy = DOTween.Sequence();
                     _tweenMoveBy.Append(
-                        textSize.transform.DOBlendableLocalMoveBy(new Vector3(0.0f, 6.0f), 1.4f));
+                        contentSize.DOBlendableLocalMoveBy(new Vector3(0.0f, 6.0f), 1.4f));
                     _tweenMoveBy.Append(
-                        textSize.transform.DOBlendableLocalMoveBy(new Vector3(0.0f, -6.0f), 1.4f));
+                        contentSize.DOBlendableLocalMoveBy(new Vector3(0.0f, -6.0f), 1.4f));
                     _tweenMoveBy.SetLoops(_forceFixed ? -1 : 3);
                     _tweenMoveBy.Play();
                     _tweenMoveBy.onComplete = () => _tweenMoveBy = null;
@@ -206,7 +206,7 @@ namespace Nekoyume.UI
                 yield return new WaitWhile(() => forceFixed);
 
                 realText.text = string.Empty;
-                textSize.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
+                contentSize.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
                 yield return new WaitForSeconds(bubbleTweenTime);
             }
 
