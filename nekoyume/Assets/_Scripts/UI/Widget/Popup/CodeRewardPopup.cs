@@ -1,81 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bencodex.Types;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class CodeRewardPopup : PopupWidget
     {
-        [SerializeField] private CodeRewardEffector effector = null;
+        [SerializeField]
+        private CodeRewardEffector effector;
 
-        private Dictionary<string, List<(ItemBase, int)>> _codeRewards =
+        [SerializeField]
+        private Button button;
+
+        [SerializeField]
+        private TextMeshProUGUI count;
+
+        private readonly Dictionary<string, List<(ItemBase, int)>> _codeRewards =
             new Dictionary<string, List<(ItemBase, int)>>();
 
-        private const string SEALED_CODES = "SealedCodes";
-
         private RedeemCodeState _state = null;
-
-        private RedeemCodeState State
-        {
-            get
-            {
-                if (_state == null)
-                {
-                    _state = new RedeemCodeState(
-                        (Dictionary) Game.Game.instance.Agent.GetState(Addresses.RedeemCode));
-                }
-
-                return _state;
-            }
-            set => _state = value;
-        }
-
-        [Serializable]
-        public class SealedCodes
-        {
-            public List<string> Codes;
-
-            public SealedCodes(List<string> codes)
-            {
-                Codes = codes;
-            }
-        }
 
         protected override void Awake()
         {
             base.Awake();
-            UpdateRewardButton();
+            button.onClick.AddListener(OnClickButton);
         }
 
-        public void Show(RedeemCodeState state)
+        public void Show(string sealedCode, RedeemCodeState state)
         {
-            State = state;
-            UpdateRewardButton();
+            _codeRewards.Add(sealedCode, GetItems(state, sealedCode));
+            UpdateButton(_codeRewards.Count);
             base.Show();
-        }
-
-        private void UpdateRewardButton()
-        {
-            _codeRewards = GetSealedCodes()
-                .Where(sealedCode => !string.IsNullOrEmpty(sealedCode))
-                .ToDictionary(sealedCode => sealedCode,
-                    sealedCode => GetItems(State, sealedCode));
-
-            if (_codeRewards.Any())
-            {
-                Find<CodeRewardButton>().Show(OnClickButton, _codeRewards.Count);
-            }
-            else
-            {
-                Find<CodeRewardButton>().Close();
-            }
         }
 
         private void OnClickButton()
@@ -86,11 +49,16 @@ namespace Nekoyume.UI
             }
 
             var reward = _codeRewards.First();
-            if (RedeemCode(reward.Key))
-            {
-                effector.Play(reward.Value);
-                UpdateRewardButton();
-            }
+            effector.gameObject.SetActive(true);
+            effector.Play(reward.Value);
+            _codeRewards.Remove(reward.Key);
+            UpdateButton(_codeRewards.Count);
+        }
+
+        private void UpdateButton(int value)
+        {
+            count.text = value.ToString();
+            button.gameObject.SetActive(value > 0);
         }
 
         private static List<(ItemBase, int)> GetItems(RedeemCodeState redeemCodeState, string redeemCode)
@@ -113,56 +81,12 @@ namespace Nekoyume.UI
             var row = tableSheets.RedeemRewardSheet.OrderedList.First(r => r.Id == reward.RewardId);
             var itemRewards = row.Rewards
                 .Where(r => r.Type == RewardType.Item && r.ItemId.HasValue)
-                .Select(r => (ItemFactory.CreateItem(itemSheet[r.ItemId.Value], new Cheat.DebugRandom()), r.Quantity))
+                .Select(r => (
+                    ItemFactory.CreateItem(itemSheet[r.ItemId.Value], new Cheat.DebugRandom()),
+                    r.Quantity))
                 .ToList();
 
             return itemRewards;
-        }
-
-        private bool RedeemCode(string redeemCode)
-        {
-            var codes = GetSealedCodes();
-            var code = codes.FirstOrDefault(x => x == redeemCode);
-            if (code == null)
-            {
-                Debug.Log($"Code doesn't exist : {redeemCode}");
-                return false;
-            }
-
-            codes.Remove(code);
-            var sealedCodes = new SealedCodes(codes);
-            var json = JsonUtility.ToJson(sealedCodes);
-            PlayerPrefs.SetString(SEALED_CODES, json);
-            return true;
-        }
-
-        public void AddSealedCode(string redeemCode)
-        {
-            var codes = GetSealedCodes();
-            if (codes.Exists(x => x == redeemCode))
-            {
-                Debug.Log($"Code already exists : {redeemCode}");
-                return;
-            }
-
-            codes.Add(redeemCode);
-
-            var sealedCodes = new SealedCodes(codes);
-            var json = JsonUtility.ToJson(sealedCodes);
-            PlayerPrefs.SetString(SEALED_CODES, json);
-        }
-
-        private List<string> GetSealedCodes()
-        {
-            if (!PlayerPrefs.HasKey(SEALED_CODES))
-            {
-                var newStates = JsonUtility.ToJson(new SealedCodes(new List<string> { }));
-                PlayerPrefs.SetString(SEALED_CODES, newStates);
-            }
-
-            var states = PlayerPrefs.GetString(SEALED_CODES);
-            var codes = JsonUtility.FromJson<SealedCodes>(states).Codes;
-            return codes != null ? codes.ToList() : new List<string>();
         }
     }
 }
