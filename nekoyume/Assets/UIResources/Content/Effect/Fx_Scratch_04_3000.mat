@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Fx_Scratch_04_3000
-  m_Shader: {fileID: 4800000, guid: 217b35cce3fdf0346927e5e248f73565, type: 3}
+  m_Shader: {fileID: 4800000, guid: ecfa8f5732b504ef98fba10aa18d0326, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
@@ -31,7 +31,14 @@ Material:
         m_Texture: {fileID: 2800000, guid: ea4f6234ea59ed0428d5dcce390f4890, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Floats: []
+    m_Floats:
+    - _ColorMask: 15
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
     m_Colors:
+    - _ClipRect: {r: -32767, g: -32767, b: 32767, a: 32767}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
