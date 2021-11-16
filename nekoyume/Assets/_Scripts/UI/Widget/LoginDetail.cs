@@ -101,7 +101,7 @@ namespace Nekoyume.UI
                     _lens, _ear, _tail)
                 .Subscribe(async eval =>
                     {
-                        var avatarState = await States.Instance.SelectAvatar(_selectedIndex);
+                        var avatarState = await States.Instance.SelectAvatarAsync(_selectedIndex);
                         StartCoroutine(CreateAndLoginAnimation(avatarState));
                         ActionRenderHandler.RenderQuest(avatarState.address,
                             avatarState.questList.completedQuestIds);
@@ -130,7 +130,7 @@ namespace Nekoyume.UI
         public async void LoginClick()
         {
             btnLogin.SetActive(false);
-            var avatarState = await States.Instance.SelectAvatar(_selectedIndex);
+            var avatarState = await States.Instance.SelectAvatarAsync(_selectedIndex);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
         }
@@ -156,7 +156,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                States.Instance.SelectAvatar(_selectedIndex);
+                States.Instance.SelectAvatarAsync(_selectedIndex);
                 player = new Player(
                     States.Instance.CurrentAvatarState,
                     tableSheets.CharacterSheet,

@@ -246,7 +246,7 @@ namespace Nekoyume.UI
                     1,
                     false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
-                var (exist, avatarState) = await States.TryGetAvatarState(avatarAddress);
+                var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);
                 if (!exist)
                 {
                     return null;
@@ -360,7 +360,7 @@ namespace Nekoyume.UI
                     1,
                     false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, false);
-                var (exist, avatarState) = await States.TryGetAvatarState(avatarAddress);
+                var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);
                 if (!exist)
                 {
                     return null;

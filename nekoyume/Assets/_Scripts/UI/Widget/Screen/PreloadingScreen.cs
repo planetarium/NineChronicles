@@ -74,7 +74,7 @@ namespace Nekoyume.UI
                             }
                             else
                             {
-                                States.Instance.SelectAvatar(index);
+                                States.Instance.SelectAvatarAsync(index);
                                 Game.Event.OnRoomEnter.Invoke(false);    
                             }
                         }

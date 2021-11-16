@@ -361,7 +361,7 @@ namespace Nekoyume.UI
 
                 try
                 {
-                    State.States.Instance.SelectAvatar(index);
+                    State.States.Instance.SelectAvatarAsync(index);
                     Game.Event.OnRoomEnter.Invoke(false);
                 }
                 catch (KeyNotFoundException e)
