@@ -814,14 +814,14 @@ namespace Nekoyume.BlockChain
                 {
                     Widget.Find<StageLoadingEffect>().Close();
                 }
+
                 if (Widget.Find<BattleResultPopup>().IsActive())
                 {
                     showLoadingScreen = true;
                     Widget.Find<BattleResultPopup>().Close();
                 }
 
-                var exc = eval.Exception.InnerException;
-                BackToMain(showLoadingScreen, exc);
+                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException);
             }
         }
 
@@ -894,14 +894,14 @@ namespace Nekoyume.BlockChain
                 {
                     Widget.Find<StageLoadingEffect>().Close();
                 }
+
                 if (Widget.Find<BattleResultPopup>().IsActive())
                 {
                     showLoadingScreen = true;
                     Widget.Find<BattleResultPopup>().Close();
                 }
 
-                var exc = eval.Exception.InnerException;
-                BackToMain(showLoadingScreen, exc);
+                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException);
             }
         }
 
@@ -946,13 +946,14 @@ namespace Nekoyume.BlockChain
                 {
                     Widget.Find<ArenaBattleLoadingScreen>().Close();
                 }
+
                 if (Widget.Find<RankingBattleResultPopup>().IsActive())
                 {
                     showLoadingScreen = true;
                     Widget.Find<RankingBattleResultPopup>().Close();
                 }
 
-                BackToMain(showLoadingScreen, eval.Exception.InnerException);
+                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException);
             }
         }
 
@@ -1126,40 +1127,6 @@ namespace Nekoyume.BlockChain
 
                 LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
             }
-        }
-
-        public static void BackToMain(bool showLoadingScreen, Exception exc)
-        {
-            Debug.LogException(exc);
-
-            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
-            Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
-            Game.Game.instance.Stage.OnRoomEnterEnd
-                .First()
-                .Subscribe(_ => PopupError(key, code, errorMsg));
-
-            MainCanvas.instance.InitWidgetInMain();
-        }
-
-        public static void PopupError(Exception exc)
-        {
-            Debug.LogException(exc);
-            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
-            PopupError(key, code, errorMsg);
-        }
-
-        private static void PopupError(string key, string code, string errorMsg)
-        {
-            errorMsg = errorMsg == string.Empty
-                ? string.Format(
-                    L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
-                    L10nManager.Localize(key),
-                    code)
-                : errorMsg;
-            Widget
-                .Find<TitleOneButtonSystem>()
-                .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
-                    L10nManager.Localize("UI_OK"), false);
         }
 
         private static ItemBase GetItem(IAccountStateDelta state, Guid tradableId)
