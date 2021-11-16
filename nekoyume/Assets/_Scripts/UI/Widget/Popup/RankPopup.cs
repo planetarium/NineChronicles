@@ -82,7 +82,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private Blur blur = null;
 
-        public const int RankingBoardDisplayCount = 10;
+        public const int RankingBoardDisplayCount = 100;
 
         private readonly Dictionary<RankCategory, Toggle> _toggleMap = new Dictionary<RankCategory, Toggle>();
 
