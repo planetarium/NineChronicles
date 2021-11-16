@@ -847,14 +847,13 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 yield return waitForSeconds;
-
                 yield return Game.Game.instance.ActionManager.HackAndSlash(
                     new List<Costume>(),
                     new List<Equipment>(),
                     new List<Consumable>(),
                     1,
                     1,
-                    1);
+                    1).StartAsCoroutine();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }

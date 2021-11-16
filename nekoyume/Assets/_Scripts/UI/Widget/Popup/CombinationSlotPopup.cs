@@ -81,9 +81,11 @@ namespace Nekoyume.UI
             rapidCombinationButton.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
-                Game.Game.instance.ActionManager.RapidCombination(_slotState, _slotIndex);
-                Find<CombinationSlotsPopup>()
-                    .SetCaching(_slotIndex, true, slotType: CombinationSlot.SlotType.WaitingReceive);
+                Game.Game.instance.ActionManager.RapidCombination(_slotState, _slotIndex).Subscribe();
+                Find<CombinationSlotsPopup>().SetCaching(
+                    _slotIndex,
+                    true,
+                    slotType: CombinationSlot.SlotType.WaitingReceive);
                 Close();
             });
 

@@ -36,7 +36,7 @@ namespace Nekoyume.UI
             var code = codeField.text.Trim();
             Close();
             Find<CodeRewardPopup>().AddSealedCode(code);
-            Game.Game.instance.ActionManager.RedeemCode(code);
+            Game.Game.instance.ActionManager.RedeemCode(code).Subscribe();
             NotificationSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_REQUEST_REDEEM_CODE"));
             OnRequested.Invoke();
         }
