@@ -458,7 +458,17 @@ namespace Nekoyume.BlockChain
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e =>
+                {
+                    try
+                    {
+                        HandleException(action.Id, e);
+                    }
+                    catch (Exception inner)
+                    {
+                        ActionRenderHandler.BackToMain(false, inner);
+                    }
+                });
         }
 
         public void PatchTableSheet(string tableName, string tableCsv)
