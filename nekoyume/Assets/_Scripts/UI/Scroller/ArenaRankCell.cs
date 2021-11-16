@@ -88,7 +88,7 @@ namespace Nekoyume.UI.Scroller
                 {
                     if (avatarState is null)
                     {
-                        var (exist, state) = await States.TryGetAvatarState(ArenaInfo.AvatarAddress);
+                        var (exist, state) = await States.TryGetAvatarStateAsync(ArenaInfo.AvatarAddress);
                         avatarState = exist ? state : null;
                         if (avatarState is null)
                         {

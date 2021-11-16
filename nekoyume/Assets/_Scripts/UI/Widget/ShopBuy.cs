@@ -213,7 +213,7 @@ namespace Nekoyume.UI
             {
                 await GetPurchaseInfo(shopItem.OrderId.Value)
             };
-            Game.Game.instance.ActionManager.Buy(purchaseInfos);
+            Game.Game.instance.ActionManager.Buy(purchaseInfos).Subscribe();
 
             var countProps = new Value {["Count"] = 1,};
             Mixpanel.Track("Unity/Number of Purchased Items", countProps);

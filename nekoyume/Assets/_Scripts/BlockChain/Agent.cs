@@ -841,20 +841,19 @@ namespace Nekoyume.BlockChain
             );
             Debug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
 
-            States.Instance.SelectAvatar(avatarIndex);
+            yield return States.Instance.SelectAvatarAsync(avatarIndex).ToCoroutine();
             var waitForSeconds = new WaitForSeconds(TxProcessInterval);
 
             while (true)
             {
                 yield return waitForSeconds;
-
                 yield return Game.Game.instance.ActionManager.HackAndSlash(
                     new List<Costume>(),
                     new List<Equipment>(),
                     new List<Consumable>(),
                     1,
                     1,
-                    1);
+                    1).StartAsCoroutine();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }

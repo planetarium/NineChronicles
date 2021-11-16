@@ -353,7 +353,7 @@ namespace Nekoyume.UI
             PlayerFactory.Create();
             if (Util.TryGetStoredSlotIndex(out var slotIndex))
             {
-                await States.Instance.SelectAvatar(slotIndex);
+                await States.Instance.SelectAvatarAsync(slotIndex);
                 Game.Event.OnRoomEnter.Invoke(false);
             }
             else

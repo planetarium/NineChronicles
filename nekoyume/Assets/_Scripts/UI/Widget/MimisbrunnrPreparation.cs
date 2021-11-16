@@ -935,7 +935,7 @@ namespace Nekoyume.UI
                 GameConfig.MimisbrunnrWorldId,
                 _stageId.Value,
                 1
-            );
+            ).Subscribe();
         }
 
         public void GoToStage(BattleLog battleLog)

@@ -63,7 +63,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        await States.Instance.SelectAvatar(slotIndex);
+                        await States.Instance.SelectAvatarAsync(slotIndex);
                         Game.Event.OnRoomEnter.Invoke(false);
                     }
                 }

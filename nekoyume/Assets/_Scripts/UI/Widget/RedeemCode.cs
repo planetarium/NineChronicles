@@ -5,6 +5,8 @@ using UnityEngine.Events;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class RedeemCode : Widget
     {
         public TextMeshProUGUI title;
@@ -34,7 +36,7 @@ namespace Nekoyume.UI
         {
             var code = codeField.text.Trim();
             Close();
-            Game.Game.instance.ActionManager.RedeemCode(code);
+            Game.Game.instance.ActionManager.RedeemCode(code).Subscribe();
             NotificationSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_REQUEST_REDEEM_CODE"));
             OnRequested.Invoke();
         }

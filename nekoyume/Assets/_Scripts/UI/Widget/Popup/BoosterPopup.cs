@@ -123,13 +123,13 @@ namespace Nekoyume.UI
             if (_stageId >= GameConfig.MimisbrunnrStartStageId)
             {
                 Game.Game.instance.ActionManager.MimisbrunnrBattle(
-                        _costumes,
-                        _equipments,
-                        _consumables,
-                        _worldId,
-                        _stageId,
-                        (int) apSlider.value
-                    );
+                    _costumes,
+                    _equipments,
+                    _consumables,
+                    _worldId,
+                    _stageId,
+                    (int)apSlider.value
+                ).Subscribe();
             }
             else
             {
@@ -140,7 +140,7 @@ namespace Nekoyume.UI
                     _worldId,
                     _stageId,
                     (int)apSlider.value
-                );
+                ).Subscribe();
             }
         }
 

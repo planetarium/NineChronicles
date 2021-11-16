@@ -116,7 +116,7 @@ namespace Nekoyume.UI
                 var purchaseInfo = await ShopBuy.GetPurchaseInfo(item.OrderId.Value);
                 purchaseInfos.Add(purchaseInfo);
             }
-            Game.Game.instance.ActionManager.Buy(purchaseInfos.ToList());
+            Game.Game.instance.ActionManager.Buy(purchaseInfos.ToList()).Subscribe();
 
             if (shopItems.SharedModel.WishItemCount > 0)
             {
