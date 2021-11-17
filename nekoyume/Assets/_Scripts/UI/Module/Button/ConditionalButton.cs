@@ -5,6 +5,8 @@ using Nekoyume.L10n;
 
 namespace Nekoyume.UI.Module
 {
+    using System.Collections.Generic;
+    using TMPro;
     using UniRx;
 
     public class ConditionalButton : MonoBehaviour
@@ -28,9 +30,24 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private string conditionInfoKey = null;
 
+        [SerializeField]
+        private List<TextMeshProUGUI> texts = null;
+
         public System.Action<State> OnClick { protected get; set; }
 
-        protected readonly ReactiveProperty<State> CurrentState = new ReactiveProperty<State>();
+        public string Text
+        {
+            get => texts[0].text;
+            set
+            {
+                foreach (var text in texts)
+                {
+                    text.text = value;
+                }
+            }
+        }
+
+        public readonly ReactiveProperty<State> CurrentState = new ReactiveProperty<State>();
 
         private Button _button = null;
         private Func<bool> _conditionFunc = null;
@@ -62,7 +79,7 @@ namespace Nekoyume.UI.Module
             _conditionFunc = conditionFunc;
         }
 
-        public void UpdateObjects()
+        public State UpdateObjects()
         {
             if (_interactable)
             {
@@ -88,6 +105,7 @@ namespace Nekoyume.UI.Module
                 CurrentState.Value = State.Disabled;
             }
             disabledObject.SetActive(!_interactable);
+            return CurrentState.Value;
         }
 
         protected virtual void OnClickButton()
