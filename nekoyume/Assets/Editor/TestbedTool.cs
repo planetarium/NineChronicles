@@ -49,8 +49,8 @@ public class TestbedTool : EditorWindow
         var objectField = EditorQueryHelper.FindByName<ObjectField>(root, "the-uxml-field");
         objectField.allowSceneObjects = true;
         objectField.objectType = typeof(TestbedToolScriptableObject);
-        objectField.value =
-            Resources.Load<TestbedToolScriptableObject>("ScriptableObject/TestbedSell");
+        var asset = AssetDatabase.LoadAssetAtPath<TestbedToolScriptableObject>("Assets/Editor/TestbedSell.asset");
+        objectField.value = asset;
         EditorQueryHelper.FindByName<Button>(root, "sell-export-button").clickable.clicked +=
             OnClickSellExport;
         EditorQueryHelper.FindByName<Button>(root, "sell-import-button").clickable.clicked +=
