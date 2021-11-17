@@ -351,7 +351,7 @@ namespace Nekoyume.UI
         private async Task End()
         {
             PlayerFactory.Create();
-            if (Util.TryGetStoredSlotIndex(out var slotIndex))
+            if (Util.TryGetStoredAvatarSlotIndex(out var slotIndex))
             {
                 await States.Instance.SelectAvatarAsync(slotIndex);
                 Game.Event.OnRoomEnter.Invoke(false);

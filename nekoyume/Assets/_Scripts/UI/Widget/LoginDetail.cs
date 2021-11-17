@@ -374,7 +374,7 @@ namespace Nekoyume.UI
 
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
         {
-            Util.SaveSlotIndex(_selectedIndex);
+            Util.SaveAvatarSlotIndex(_selectedIndex);
             if (_isCreateMode)
             {
                 Close();
