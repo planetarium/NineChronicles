@@ -51,11 +51,11 @@ namespace Nekoyume.UI
             {
                 PlayerFactory.Create();
 
-                if (Util.TryGetStoredSlotIndex(out var slotIndex))
+                if (Util.TryGetStoredSlotIndex(out var slotIndex) &&
+                    States.Instance.AvatarStates.ContainsKey(slotIndex))
                 {
                     var avatarState = States.Instance.AvatarStates[slotIndex];
-                    if (avatarState is null ||
-                        avatarState?.inventory == null ||
+                    if (avatarState?.inventory == null ||
                         avatarState.questList == null ||
                         avatarState.worldInformation == null)
                     {
