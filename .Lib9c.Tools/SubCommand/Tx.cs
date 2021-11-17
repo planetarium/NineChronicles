@@ -213,12 +213,9 @@ namespace Lib9c.Tools.SubCommand
             File.WriteAllText(outputPath, ByteUtil.Hex(raw));
         }
 
-        [Command(Description = "Create new transaction with AddRedeemCode action and dump it.")]
+        [Command(Description = "Create AddRedeemCode action and dump it.")]
         public void AddRedeemCode(
-            [Argument("PRIVATE-KEY", Description = "A hex-encoded private key for signing.")] string privateKey,
-            [Argument("NONCE", Description = "A nonce for new transaction.")] long nonce,
-            [Argument("TABLE-PATH", Description = "A table file path for RedeemCodeListSheet")] string tablePath,
-            [Argument("GENESIS-HASH", Description = "A hex-encoded genesis block hash.")] string genesisHash
+            [Argument("TABLE-PATH", Description = "A table file path for RedeemCodeListSheet")] string tablePath
         )
         {
             var tableCsv = File.ReadAllText(tablePath);
@@ -226,16 +223,14 @@ namespace Lib9c.Tools.SubCommand
             {
                 redeemCsv = tableCsv
             };
-
-            Transaction<NCAction> tx = Transaction<NCAction>.Create(
-                nonce: nonce,
-                privateKey: new PrivateKey(ByteUtil.ParseHex(privateKey)),
-                genesisHash: (genesisHash is null) ? default : BlockHash.FromString(genesisHash),
-                timestamp: default,
-                actions: new List<NCAction>{ action }
+            var encoded = new List(
+                new IValue[]
+                {
+                    (Text) nameof(Nekoyume.Action.AddRedeemCode),
+                    action.PlainValue
+                }
             );
-            byte[] raw = tx.Serialize(true);
-
+            byte[] raw = _codec.Encode(encoded);
             Console.WriteLine(ByteUtil.Hex(raw));
         }
     }

@@ -25,12 +25,6 @@ namespace Lib9c.Tools.SubCommand
             bool verbose,
             [Option('s', Description = "Path to the chain store.")]
             string storePath,
-            [Option('M',
-#pragma warning disable 618
-                Description = "Use legacy " + nameof(MonoRocksDBStore) + " instead of " +
-#pragma warning restore 618
-                              nameof(RocksDBStore) + ".")]
-            bool monorocksdb = false,
             [Option(
                 'b',
                 Description = "Optional block hash/index offset to query balances at.  " +
@@ -45,7 +39,7 @@ namespace Lib9c.Tools.SubCommand
             using Logger logger = Utils.ConfigureLogger(verbose);
             TextWriter stderr = Console.Error;
             (BlockChain<NCAction> chain, IStore store) =
-                Utils.GetBlockChain(logger, storePath, monorocksdb, chainId);
+                Utils.GetBlockChain(logger, storePath, chainId);
 
             Block<NCAction> offset = Utils.ParseBlockOffset(chain, block);
             stderr.WriteLine("The offset block: #{0} {1}.", offset.Index, offset.Hash);

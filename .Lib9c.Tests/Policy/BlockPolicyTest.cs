@@ -45,7 +45,7 @@ namespace Lib9c.Tests
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                10_000, null, null, null, null, null, null);
+                10_000, null, null, null, null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -138,6 +138,7 @@ namespace Lib9c.Tests
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 10_000,
+                hashAlgorithmTypePolicy: null,
                 maxBlockBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: null,
@@ -195,7 +196,7 @@ namespace Lib9c.Tests
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                10_000, null, null, null, null, null, null);
+                10_000, null, null, null, null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -242,7 +243,7 @@ namespace Lib9c.Tests
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                10_000, null, null, null, null, null, null);
+                10_000, null, null, null, null, null, null, null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -290,6 +291,7 @@ namespace Lib9c.Tests
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 10_000,
+                hashAlgorithmTypePolicy: null,
                 maxBlockBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: null,
@@ -378,6 +380,7 @@ namespace Lib9c.Tests
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 4096,
+                hashAlgorithmTypePolicy: null,
                 maxBlockBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: null,
@@ -515,6 +518,7 @@ namespace Lib9c.Tests
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 10_000,
+                hashAlgorithmTypePolicy: null,
                 maxBlockBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy
@@ -595,7 +599,7 @@ namespace Lib9c.Tests
                 Timestamp = DateTimeOffset.MinValue,
                 Transactions = GenerateTransactions(11),
             }.Mine(policy.GetHashAlgorithm(3)).Evaluate(adminPrivateKey, blockChain);
-            Assert.Throws<BlockExceedingTransactionsException>(() => blockChain.Append(block3));
+            Assert.Throws<InvalidBlockTxCountException>(() => blockChain.Append(block3));
             Assert.Equal(3, blockChain.Count);
             Assert.False(blockChain.ContainsBlock(block3.Hash));
         }
@@ -620,6 +624,7 @@ namespace Lib9c.Tests
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 10_000,
+                hashAlgorithmTypePolicy: null,
                 maxBlockBytesPolicy: null,
                 minTransactionsPerBlockPolicy: null,
                 maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy
@@ -691,7 +696,7 @@ namespace Lib9c.Tests
             }.Mine(policy.GetHashAlgorithm(2)).Evaluate(adminPrivateKey, blockChain);
 
             // Subpolicy kicks in.
-            Assert.Throws<BlockPolicyViolationException>(() => blockChain.Append(block2));
+            Assert.Throws<InvalidBlockTxCountPerSignerException>(() => blockChain.Append(block2));
             Assert.Equal(2, blockChain.Count);
             Assert.False(blockChain.ContainsBlock(block2.Hash));
             // Since failed, roll back nonce.
@@ -737,6 +742,7 @@ namespace Lib9c.Tests
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 10_000,
+                    hashAlgorithmTypePolicy: null,
                     maxBlockBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
                     maxTransactionsPerBlockPolicy: null,
@@ -817,6 +823,7 @@ namespace Lib9c.Tests
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 10_000,
+                    hashAlgorithmTypePolicy: null,
                     maxBlockBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
                     maxTransactionsPerBlockPolicy: null,
@@ -931,6 +938,7 @@ namespace Lib9c.Tests
 
             var policy = (BlockPolicy)blockPolicySource.GetPolicy(
                     minimumDifficulty: 10_000,
+                    hashAlgorithmTypePolicy: null,
                     maxBlockBytesPolicy: null,
                     minTransactionsPerBlockPolicy: null,
                     maxTransactionsPerBlockPolicy: null,
