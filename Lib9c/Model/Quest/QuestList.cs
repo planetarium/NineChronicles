@@ -66,6 +66,7 @@ namespace Nekoyume.Model.Quest
         public const string QuestsKey = "q";
         private readonly List<Quest> _quests;
 
+        // FIXME: Consider removing the `_listVersion` field.
         public const string ListVersionKey = "v";
         private int _listVersion = 1;
         public int ListVersion => _listVersion;
@@ -106,37 +107,47 @@ namespace Nekoyume.Model.Quest
                 ? listVersion.ToInteger()
                 : 1;
 
-            switch (_listVersion)
+            if (_listVersion == 1)
             {
-                case 1:
-                {
-                    _quests = serialized.TryGetValue((Text) QuestsKeyDeprecated, out var questsValue)
-                        ? questsValue.ToList(Quest.Deserialize)
-                        : new List<Quest>();
+                _quests = serialized.TryGetValue((Text) QuestsKeyDeprecated, out var questsValue)
+                    ? questsValue.ToList(Quest.Deserialize)
+                    : new List<Quest>();
 
-                    completedQuestIds = serialized.TryGetValue((Text) CompletedQuestIdsKeyDeprecated, out var idsValue)
-                        ? idsValue.ToList(StateExtensions.ToInteger)
-                        : new List<int>();
-                    break;
-                }
-                case 2:
-                {
-                    _quests = serialized.TryGetValue((Text) QuestsKey, out var q)
-                        ? q.ToList(Quest.Deserialize)
-                        : new List<Quest>();
-
-                    completedQuestIds = serialized.TryGetValue((Text) CompletedQuestIdsKey, out var cqi)
-                        ? cqi.ToList(StateExtensions.ToInteger)
-                        : new List<int>();
-                    break;
-                }
+                completedQuestIds = serialized.TryGetValue((Text) CompletedQuestIdsKeyDeprecated, out var idsValue)
+                    ? idsValue.ToList(StateExtensions.ToInteger)
+                    : new List<int>();
             }
+            else
+            {
+                _quests = serialized.TryGetValue((Text) QuestsKey, out var q)
+                    ? q.ToList(Quest.Deserialize)
+                    : new List<Quest>();
+
+                completedQuestIds = serialized.TryGetValue((Text) CompletedQuestIdsKey, out var cqi)
+                    ? cqi.ToList(StateExtensions.ToInteger)
+                    : new List<int>();
+            }
+        }
+
+        public void UpdateList(
+            QuestSheet questSheet,
+            QuestRewardSheet questRewardSheet,
+            QuestItemRewardSheet questItemRewardSheet,
+            EquipmentItemRecipeSheet equipmentItemRecipeSheet)
+        {
+            UpdateListV1(
+                _listVersion + 1,
+                questSheet,
+                questRewardSheet,
+                questItemRewardSheet,
+                equipmentItemRecipeSheet);
         }
 
         /// <exception cref="UpdateListVersionException"></exception>
         /// <exception cref="UpdateListQuestsCountException"></exception>
         /// <exception cref="Exception"></exception>
-        public void UpdateList(
+        [Obsolete("Use UpdateList()")]
+        public void UpdateListV1(
             int listVersion,
             QuestSheet questSheet,
             QuestRewardSheet questRewardSheet,
@@ -258,7 +269,8 @@ namespace Nekoyume.Model.Quest
             }
         }
 
-        public CollectionMap UpdateGeneralQuest(IEnumerable<QuestEventType> types,
+        public CollectionMap UpdateGeneralQuest(
+            IEnumerable<QuestEventType> types,
             CollectionMap eventMap)
         {
             foreach (var type in types)
