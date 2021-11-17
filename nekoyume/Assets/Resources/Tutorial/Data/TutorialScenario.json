@@ -554,9 +554,11 @@
       "data": {
         "presetId": 1,
         "targetType": "GuidedQuestButton",
+        "targetPositionOffset": { "x": 0, "y": 0 },
+        "targetSizeOffset": { "x": 1, "y": 1 },
         "actionType": "TutorialActionClickGuidedQuestWorldStage2",
         "emojiType": "Reaction",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_027",
         "arrowAdditionalDelay" : 1.5
       }
