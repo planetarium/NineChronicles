@@ -147,7 +147,7 @@ namespace Nekoyume.Helper
             return count;
         }
 
-        public static bool TryGetStoredSlotIndex(out int slotIndex)
+        public static bool TryGetStoredAvatarSlotIndex(out int slotIndex)
         {
             if (Game.Game.instance.Agent is null)
             {
@@ -163,7 +163,7 @@ namespace Nekoyume.Helper
             return hasKey;
         }
 
-        public static void SaveSlotIndex(int slotIndex)
+        public static void SaveAvatarSlotIndex(int slotIndex)
         {
             if (Game.Game.instance.Agent is null)
             {
