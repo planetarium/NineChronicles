@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using DG.Tweening.Core;
@@ -353,8 +354,16 @@ namespace Nekoyume.UI
             PlayerFactory.Create();
             if (Util.TryGetStoredAvatarSlotIndex(out var slotIndex))
             {
-                await States.Instance.SelectAvatarAsync(slotIndex);
-                Game.Event.OnRoomEnter.Invoke(false);
+                try
+                {
+                    await States.Instance.SelectAvatarAsync(slotIndex);
+                    Game.Event.OnRoomEnter.Invoke(false);
+                }
+                catch (KeyNotFoundException e)
+                {
+                    Debug.LogWarning(e.Message);
+                    EnterLogin();
+                }
             }
             else
             {
