@@ -40,6 +40,9 @@ namespace Nekoyume.Model.Item
         public static TradableMaterial CreateTradableMaterial(MaterialItemSheet.Row row)
             => new TradableMaterial(row);
 
+        public static TradableMaterial CreateTradableMaterial(MaterialItemSheet.Row row, Guid tradableId)
+            => new TradableMaterial(row, tradableId);
+
         public static ItemUsable CreateItemUsable(ItemSheet.Row itemRow, Guid id,
             long requiredBlockIndex, int level = 0)
         {
