@@ -201,7 +201,7 @@ namespace Nekoyume.BlockChain
                     {
                         HandleException(action.Id, e);
                     }
-                    catch (ActionTimeoutException e2)
+                    catch (Exception e2)
                     {
                         Game.Game.BackToMain(false, e2);
                     }
@@ -471,7 +471,7 @@ namespace Nekoyume.BlockChain
                     {
                         HandleException(action.Id, e);
                     }
-                    catch (ActionTimeoutException e2)
+                    catch (Exception e2)
                     {
                         Game.Game.BackToMain(false, e2);
                     }
