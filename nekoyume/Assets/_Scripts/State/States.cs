@@ -289,7 +289,7 @@ namespace Nekoyume.State
                         return;
                     }
 
-                    SetCombinationSlotStates(curAvatarState);
+                    await SetCombinationSlotStatesAsync(curAvatarState);
                     await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
                 });
             }
@@ -312,7 +312,7 @@ namespace Nekoyume.State
             UpdateCurrentAvatarState(null);
         }
 
-        private void SetCombinationSlotStates(AvatarState avatarState)
+        private async UniTask SetCombinationSlotStatesAsync(AvatarState avatarState)
         {
             if (avatarState is null)
             {
@@ -321,7 +321,7 @@ namespace Nekoyume.State
             }
 
             LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
-            Parallel.For(0, avatarState.combinationSlotAddresses.Count, i =>
+            for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
             {
                 var slotAddress = avatarState.address.Derive(
                     string.Format(
@@ -330,10 +330,10 @@ namespace Nekoyume.State
                         i
                     )
                 );
-                var state = new CombinationSlotState(
-                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
+                var stateValue = await Game.Game.instance.Agent.GetStateAsync(slotAddress);
+                var state = new CombinationSlotState((Dictionary) stateValue);
                 UpdateCombinationSlotState(i, state);
-            });
+            }
         }
 
         public void UpdateCombinationSlotState(int index, CombinationSlotState state)
