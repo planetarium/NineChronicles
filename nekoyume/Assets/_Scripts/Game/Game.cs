@@ -30,7 +30,6 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Serialization;
 using Menu = Nekoyume.UI.Menu;
 
-
 namespace Nekoyume.Game
 {
     using Nekoyume.GraphQL;
@@ -440,6 +439,7 @@ namespace Nekoyume.Game
             );
         }
 
+        // FIXME: Leave one between this or CoSyncTableSheets()
         private IEnumerator CoInitializeTableSheets()
         {
             yield return null;
@@ -459,6 +459,36 @@ namespace Nekoyume.Game
                 csv[asset.name] = asset.text;
             }
             TableSheets = new TableSheets(csv);
+        }
+
+        // FIXME: Leave one between this or CoInitializeTableSheets()
+        private IEnumerator CoSyncTableSheets()
+        {
+            yield return null;
+            var request =
+                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            yield return request;
+            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+            {
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
+                    AddressableAssetsContainerPath);
+            }
+
+            var task = Task.Run(() =>
+            {
+                List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
+                var csv = new ConcurrentDictionary<string, string>();
+                Parallel.ForEach(csvAssets, asset =>
+                {
+                    if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
+                    {
+                        var table = tableCsv.ToDotnetString();
+                        csv[asset.name] = table;
+                    }
+                });
+                TableSheets = new TableSheets(csv);
+            });
+            yield return new WaitUntil(() => task.IsCompleted);
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()
@@ -688,35 +718,6 @@ namespace Nekoyume.Game
             };
 
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
-        }
-
-        private IEnumerator CoSyncTableSheets()
-        {
-            yield return null;
-            var request =
-                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            yield return request;
-            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
-            {
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
-                    AddressableAssetsContainerPath);
-            }
-
-            var task = Task.Run(() =>
-            {
-                List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
-                var csv = new ConcurrentDictionary<string, string>();
-                Parallel.ForEach(csvAssets, asset =>
-                {
-                    if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
-                    {
-                        var table = tableCsv.ToDotnetString();
-                        csv[asset.name] = table;
-                    }
-                });
-                TableSheets = new TableSheets(csv);
-            });
-            yield return new WaitUntil(() => task.IsCompleted);
         }
 
         private async void UploadLog(string logString, string stackTrace, LogType type)
