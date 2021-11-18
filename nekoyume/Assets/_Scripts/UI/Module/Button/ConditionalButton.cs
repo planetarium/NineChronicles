@@ -33,7 +33,11 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<TextMeshProUGUI> texts = null;
 
-        public System.Action<State> OnClick { protected get; set; }
+        public readonly Subject<State> OnClickSubject = new Subject<State>();
+
+        public readonly Subject<Unit> OnSubmitSubject = new Subject<Unit>();
+
+        public bool IsSubmittable => _interactable && CurrentState.Value == State.Normal;
 
         public string Text
         {
@@ -81,36 +85,63 @@ namespace Nekoyume.UI.Module
 
         public State UpdateObjects()
         {
+            var condition = CheckCondition();
+            SetSubmittable(condition);
+
             if (_interactable)
             {
-                var condition = CheckCondition();
-
-                if (condition)
-                {
-                    normalObject.SetActive(true);
-                    conditionalObject.SetActive(false);
-                    CurrentState.Value = State.Normal;
-                }
-                else
-                {
-                    normalObject.SetActive(false);
-                    conditionalObject.SetActive(true);
-                    CurrentState.Value = State.Conditional;
-                }
+                UpdateState(condition ? State.Normal : State.Conditional);
             }
             else
             {
-                normalObject.SetActive(false);
-                conditionalObject.SetActive(false);
-                CurrentState.Value = State.Disabled;
+                UpdateState(State.Disabled);
             }
+
             disabledObject.SetActive(!_interactable);
             return CurrentState.Value;
         }
 
+        public void SetSubmittable(bool value)
+        {
+            if (_interactable)
+            {
+                UpdateState(value ? State.Normal : State.Conditional);
+            }
+            else
+            {
+                UpdateState(State.Disabled);
+            }
+        }
+
+        public void UpdateState(State state)
+        {
+            switch (CurrentState.Value)
+            {
+                case State.Normal:
+                    normalObject.SetActive(true);
+                    conditionalObject.SetActive(false);
+                    CurrentState.Value = State.Normal;
+                    break;
+                case State.Conditional:
+                    normalObject.SetActive(false);
+                    conditionalObject.SetActive(true);
+                    CurrentState.Value = State.Conditional;
+                    break;
+                case State.Disabled:
+                    normalObject.SetActive(false);
+                    conditionalObject.SetActive(false);
+                    CurrentState.Value = State.Disabled;
+                    break;
+            }
+        }
+
         protected virtual void OnClickButton()
         {
-            OnClick?.Invoke(CurrentState.Value);
+            OnClickSubject.OnNext(CurrentState.Value);
+            if (IsSubmittable)
+            {
+                OnSubmitSubject.OnNext(default);
+            }
 
             switch (CurrentState.Value)
             {

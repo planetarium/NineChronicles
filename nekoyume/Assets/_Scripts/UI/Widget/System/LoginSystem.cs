@@ -99,13 +99,11 @@ namespace Nekoyume.UI
             findPassphraseField.placeholder.GetComponent<Text>().text =
                 L10nManager.Localize("UI_LOGIN_ENTER_PRIVATE_KEY");
             submitButton.Text = L10nManager.Localize("UI_GAME_START");
-            submitButton.OnClick = value =>
-            {
-                if (value == ConditionalButton.State.Normal)
-                    Submit();
-            };
-            base.Awake();
+            submitButton.OnSubmitSubject
+                .Subscribe(_ => Submit())
+                .AddTo(gameObject);
 
+            base.Awake();
             SubmitWidget = Submit;
         }
         private void SubscribeState(States states)
@@ -263,7 +261,7 @@ namespace Nekoyume.UI
 
         public void Submit()
         {
-            if (submitButton.CurrentState.Value != ConditionalButton.State.Normal)
+            if (!submitButton.IsSubmittable)
             {
                 return;
             }

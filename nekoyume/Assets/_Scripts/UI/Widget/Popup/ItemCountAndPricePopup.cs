@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Module;
     using UniRx;
 
     public class ItemCountAndPricePopup : ItemCountPopup<Model.ItemCountAndPricePopup>
@@ -34,7 +35,8 @@ namespace Nekoyume.UI
                     }
 
                     var isBelowMinimumPrice = price < Model.Shop.MinimumPrice;
-                    submitButton.SetSubmittable(!isBelowMinimumPrice);
+                    submitButton.UpdateState(isBelowMinimumPrice ?
+                        ConditionalButton.State.Conditional : ConditionalButton.State.Normal);
 
                     _data.Price.Value =
                         new FungibleAssetValue(_data.Price.Value.Currency, price, 0);
