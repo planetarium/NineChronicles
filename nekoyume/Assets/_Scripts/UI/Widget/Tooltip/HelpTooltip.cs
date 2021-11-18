@@ -113,13 +113,13 @@ namespace Nekoyume.UI
         private SimpleTextMeshProUGUIPool textPool = null;
 
         [SerializeField]
-        private SubmitButton previousButton = null;
+        private Button previousButton = null;
 
         [SerializeField]
-        private SubmitButton nextButton = null;
+        private Button nextButton = null;
 
         [SerializeField]
-        private SubmitButton gotItButton = null;
+        private Button gotItButton = null;
 
         [SerializeField]
         private TransformLocalScaleTweener showingTweener = null;
@@ -221,15 +221,15 @@ namespace Nekoyume.UI
                 .ThrottleFirst(throttleDuration)
                 .Subscribe(OnClickBackground)
                 .AddTo(gameObject);
-            previousButton.OnSubmitClick
+            previousButton.OnClickAsObservable()
                 .ThrottleFirst(throttleDuration)
                 .Subscribe(OnClickPrevious)
                 .AddTo(gameObject);
-            nextButton.OnSubmitClick
+            nextButton.OnClickAsObservable()
                 .ThrottleFirst(throttleDuration)
                 .Subscribe(OnClickNext)
                 .AddTo(gameObject);
-            gotItButton.OnSubmitClick
+            gotItButton.OnClickAsObservable()
                 .ThrottleFirst(throttleDuration)
                 .Subscribe(OnClickGotIt)
                 .AddTo(gameObject);
@@ -272,9 +272,9 @@ namespace Nekoyume.UI
 
         private void UpdateButtons()
         {
-            nextButton.Hide();
-            previousButton.Hide();
-            gotItButton.Hide();
+            nextButton.gameObject.SetActive(false);
+            previousButton.gameObject.SetActive(false);
+            gotItButton.gameObject.SetActive(false);
 
             if (_viewModel is null ||
                 _pageIndex < 0 ||
@@ -285,16 +285,16 @@ namespace Nekoyume.UI
 
             if (_pageIndex > 0)
             {
-                previousButton.Show();
+                previousButton.gameObject.SetActive(true);
             }
 
             if (_pageIndex < _viewModel.pages.Length - 1)
             {
-                nextButton.Show();
+                nextButton.gameObject.SetActive(true);
             }
             else
             {
-                gotItButton.Show();
+                gotItButton.gameObject.SetActive(true);
             }
         }
 
@@ -545,21 +545,18 @@ namespace Nekoyume.UI
             ThankYou();
         }
 
-        private void OnClickPrevious(SubmitButton button)
+        private void OnClickPrevious(Unit unit)
         {
-            AudioController.PlayClick();
             TrySetPage(_pageIndex - 1);
         }
 
-        private void OnClickNext(SubmitButton button)
+        private void OnClickNext(Unit unit)
         {
-            AudioController.PlayClick();
             TrySetPage(_pageIndex + 1);
         }
 
-        private static void OnClickGotIt(SubmitButton button)
+        private static void OnClickGotIt(Unit unit)
         {
-            AudioController.PlayClick();
             ThankYou();
         }
 
