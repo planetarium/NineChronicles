@@ -30,7 +30,6 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Serialization;
 using Menu = Nekoyume.UI.Menu;
 
-
 namespace Nekoyume.Game
 {
     using Nekoyume.GraphQL;
