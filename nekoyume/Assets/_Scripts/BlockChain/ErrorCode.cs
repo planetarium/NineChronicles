@@ -5,17 +5,18 @@ using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using PackageExtensions.Mixpanel;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
-    public class ErrorCode
+    public static class ErrorCode
     {
         public static (string, string, string) GetErrorCode(Exception exc)
         {
             var key = "ERROR_UNKNOWN";
             var code = "99";
-            var errorMsg = String.Empty;
+            var errorMsg = string.Empty;
             switch (exc)
             {
                 case RequiredBlockIndexException _:
@@ -130,12 +131,9 @@ namespace Nekoyume.BlockChain
                     break;
             }
 
-            var props = new Value
-            {
-                ["code"] = code,
-                ["key"] = key,
-            };
-            Mixpanel.Track("Unity/Error", props);
+            Mixpanel.Track("Unity/Error", MixpanelValueFactory.GetValue(
+                ("code", code),
+                ("key", key)));
 
             errorMsg = errorMsg == string.Empty
                 ? string.Format(
