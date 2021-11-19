@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using DG.Tweening.Core;
@@ -13,9 +14,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.L10n;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Libplanet;
+using Nekoyume.Helper;
 
 namespace Nekoyume.UI
 {
@@ -349,20 +349,14 @@ namespace Nekoyume.UI
             StartCoroutine(StartSynopsis(skipPrologue));
         }
 
-        public async Task End()
+        private async Task End()
         {
             PlayerFactory.Create();
-
-            if (PlayerPrefs.HasKey(LoginDetail.RecentlyLoggedInAvatarKey))
+            if (Util.TryGetStoredAvatarSlotIndex(out var slotIndex))
             {
-                var recentlyLoggedAddress = PlayerPrefs.GetString(LoginDetail.RecentlyLoggedInAvatarKey);
-                var matchingAddress = State.States.Instance.AgentState.avatarAddresses
-                    .FirstOrDefault(pair => pair.Value.ToString().Equals(recentlyLoggedAddress));
-                var index = matchingAddress.Equals(default(KeyValuePair<int, Address>)) ? -1 : matchingAddress.Key;
-
                 try
                 {
-                    await State.States.Instance.SelectAvatar(index);
+                    await States.Instance.SelectAvatarAsync(slotIndex);
                     Game.Event.OnRoomEnter.Invoke(false);
                 }
                 catch (KeyNotFoundException e)

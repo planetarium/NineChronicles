@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Module
 
         public async void SetByAvatarAddress(Address avatarAddress)
         {
-            var (exist, avatarState) = await States.TryGetAvatarState(avatarAddress);
+            var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);
             if (!exist)
             {
                 return;

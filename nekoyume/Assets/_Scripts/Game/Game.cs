@@ -326,9 +326,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            ActionRenderHandler.BackToMain(
-                showLoadingScreen,
-                new UnableToRenderWhenSyncingBlocksException());
+            BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
         }
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
@@ -394,9 +392,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            ActionRenderHandler.BackToMain(
-                showLoadingScreen,
-                new UnableToRenderWhenSyncingBlocksException());
+            BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
         }
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
@@ -524,6 +520,40 @@ namespace Nekoyume.Game
 
                 yield return null;
             }
+        }
+
+        public static void BackToMain(bool showLoadingScreen, Exception exc)
+        {
+            Debug.LogException(exc);
+
+            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
+            Event.OnRoomEnter.Invoke(showLoadingScreen);
+            instance.Stage.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ => PopupError(key, code, errorMsg));
+
+            MainCanvas.instance.InitWidgetInMain();
+        }
+
+        public static void PopupError(Exception exc)
+        {
+            Debug.LogException(exc);
+            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
+            PopupError(key, code, errorMsg);
+        }
+
+        private static void PopupError(string key, string code, string errorMsg)
+        {
+            errorMsg = errorMsg == string.Empty
+                ? string.Format(
+                    L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                    L10nManager.Localize(key),
+                    code)
+                : errorMsg;
+            Widget
+                .Find<TitleOneButtonSystem>()
+                .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                    L10nManager.Localize("UI_OK"), false);
         }
 
         public static void Quit()

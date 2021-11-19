@@ -1,6 +1,5 @@
 using Nekoyume.Game.Item;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.UI;
 using UniRx;
 using UnityEngine.Events;
 using Enemy = Nekoyume.Game.Character.Enemy;
@@ -11,46 +10,23 @@ namespace Nekoyume.Game
     public static class Event
     {
         public static readonly UnityEvent OnNestEnter = new UnityEvent();
-        public class RoomEnter : UnityEvent<bool>
-        {
-        }
-        public static readonly RoomEnter OnRoomEnter = new RoomEnter();
+        public static readonly UnityEvent<bool> OnRoomEnter = new UnityEvent<bool>();
         public static readonly UnityEvent OnPlayerDead = new UnityEvent();
 
-        public class EnemyDead : UnityEvent<Enemy>
-        {
-        }
-        public static readonly EnemyDead OnEnemyDeadStart = new EnemyDead();
+        public static readonly UnityEvent<Enemy> OnEnemyDeadStart = new UnityEvent<Enemy>();
 
         public static readonly Subject<Player> OnUpdatePlayerEquip = new Subject<Player>();
         public static readonly Subject<Player> OnUpdatePlayerStatus = new Subject<Player>();
 
-        public class GetItem : UnityEvent<DropItem>
-        {
-        }
-        public static readonly GetItem OnGetItem = new GetItem();
+        public static readonly UnityEvent<DropItem> OnGetItem = new UnityEvent<DropItem>();
 
+        public static readonly UnityEvent<int> OnLoginDetail = new UnityEvent<int>();
 
-        public class LoginDetail : UnityEvent<int>
-        {
-        }
-        public static readonly LoginDetail OnLoginDetail = new LoginDetail();
+        public static readonly UnityEvent<BattleLog> OnStageStart = new UnityEvent<BattleLog>();
+        public static readonly UnityEvent<BattleLog> OnRankingBattleStart = new UnityEvent<BattleLog>();
 
-        public class StageStart : UnityEvent<BattleLog>
-        {
-        }
-        public static readonly StageStart OnStageStart = new StageStart();
-        public static readonly StageStart OnRankingBattleStart = new StageStart();
+        public static readonly UnityEvent<int> OnWaveStart = new UnityEvent<int>();
 
-        public class WaveStart : UnityEvent<int>
-        {
-        }
-
-        public static readonly WaveStart OnWaveStart = new WaveStart();
-
-        public class PlayerTurnEnd : UnityEvent<int>
-        {
-        }
-        public static readonly PlayerTurnEnd OnPlayerTurnEnd = new PlayerTurnEnd();
+        public static readonly UnityEvent<int> OnPlayerTurnEnd = new UnityEvent<int>();
     }
 }

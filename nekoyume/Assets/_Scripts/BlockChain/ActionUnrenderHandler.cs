@@ -92,7 +92,7 @@ namespace Nekoyume.BlockChain
                         Debug.Log($"Action unrender: {nameof(RewardGold)} | {e}");
                     }
 
-                    UpdateAgentState(eval);
+                    UpdateAgentStateAsync(eval);
                 })
                 .AddTo(_disposables);
         }
@@ -219,8 +219,8 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
+            UpdateAgentStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -236,7 +236,7 @@ namespace Nekoyume.BlockChain
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var count = eval.Action.count;
             LocalLayerModifier.RemoveItem(avatarAddress, itemId, blockIndex, count);
-            UpdateCurrentAvatarState(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             var shopSell = Widget.Find<ShopSell>();
             if (shopSell.isActiveAndEnabled)
             {
@@ -255,7 +255,7 @@ namespace Nekoyume.BlockChain
             var order = await Util.GetOrder(eval.Action.orderId);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
-            UpdateCurrentAvatarState(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             var shopSell = Widget.Find<ShopSell>();
             if (shopSell.isActiveAndEnabled)
             {
@@ -270,7 +270,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            UpdateCurrentAvatarState(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             var shopSell = Widget.Find<ShopSell>();
             if (shopSell.isActiveAndEnabled)
             {
@@ -306,7 +306,7 @@ namespace Nekoyume.BlockChain
             }
 
             ReactiveAvatarState.UpdateDailyRewardReceivedIndex(avatarState.dailyRewardReceivedIndex);
-            UpdateCurrentAvatarState(avatarState);
+            UpdateCurrentAvatarStateAsync(avatarState);
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
@@ -332,8 +332,8 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
+            UpdateAgentStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -388,8 +388,8 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
             // ~LocalLayer
 
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
+            UpdateAgentStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -407,7 +407,7 @@ namespace Nekoyume.BlockChain
             if (recipientAddress == currentAgentAddress ||
                 senderAddress == currentAgentAddress)
             {
-                UpdateAgentState(eval);
+                UpdateAgentStateAsync(eval);
             }
         }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,7 +6,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Model.Item;
-using Nekoyume.UI;
+using UnityEngine;
 
 namespace Nekoyume.Helper
 {
@@ -15,6 +14,7 @@ namespace Nekoyume.Helper
     {
         public const int VisibleEnhancementEffectLevel = 10;
         private const int BlockPerSecond = 12;
+        private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
 
         public static string GetBlockToTime(int block)
         {
@@ -145,6 +145,35 @@ namespace Nekoyume.Helper
             }
 
             return count;
+        }
+
+        public static bool TryGetStoredAvatarSlotIndex(out int slotIndex)
+        {
+            if (Game.Game.instance.Agent is null)
+            {
+                Debug.LogError("[Util.TryGetStoredSlotIndex] agent is null");
+                slotIndex = 0;
+                return false;
+            }
+
+            var agentAddress = Game.Game.instance.Agent.Address;
+            var key = $"{StoredSlotIndex}{agentAddress}";
+            var hasKey = PlayerPrefs.HasKey(key);
+            slotIndex = hasKey ? PlayerPrefs.GetInt(key) : 0;
+            return hasKey;
+        }
+
+        public static void SaveAvatarSlotIndex(int slotIndex)
+        {
+            if (Game.Game.instance.Agent is null)
+            {
+                Debug.LogError("[Util.SaveSlotIndex] agent is null");
+                return;
+            }
+
+            var agentAddress = Game.Game.instance.Agent.Address;
+            var key = $"{StoredSlotIndex}{agentAddress}";
+            PlayerPrefs.SetInt(key, slotIndex);
         }
     }
 }
