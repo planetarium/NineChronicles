@@ -24,6 +24,7 @@ namespace Nekoyume.UI
             Quest,
             Mimisbrunnr,
         }
+<<<<<<< HEAD
 
         [SerializeField]
         private HelpButton stageHelpButton;
@@ -50,7 +51,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI closeButtonText;
 
         [SerializeField]
-        private SubmitButton submitButton;
+        private ConditionalButton submitButton;
 
         [SerializeField]
         private WorldMapWorld world;
@@ -77,7 +78,7 @@ namespace Nekoyume.UI
             base.Initialize();
             monstersAreaText.text = L10nManager.Localize("UI_WORLD_MAP_MONSTERS");
             rewardsAreaText.text = L10nManager.Localize("UI_REWARDS");
-            submitButton.SetSubmitText(L10nManager.Localize("UI_WORLD_MAP_ENTER"));
+            submitButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
 
             var tooltip = Find<ItemInformationTooltip>();
             foreach (var view in rewardsAreaItemViews)
@@ -102,7 +103,7 @@ namespace Nekoyume.UI
                 }).AddTo(gameObject);
             }
 
-            submitButton.OnSubmitClick
+            submitButton.OnSubmitSubject
                 .Subscribe(_ => GoToPreparation())
                 .AddTo(gameObject);
         }

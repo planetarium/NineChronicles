@@ -220,7 +220,8 @@ namespace Nekoyume.UI
 
         public void CheckRetypePassphrase()
         {
-            var vaild = submitButton.UpdateObjects() == ConditionalButton.State.Normal;
+            submitButton.UpdateObjects();
+            var vaild = submitButton.IsSubmittable;
             correctText.gameObject.SetActive(vaild);
             incorrectText.gameObject.SetActive(!vaild);
             retypeText.gameObject.SetActive(!vaild);

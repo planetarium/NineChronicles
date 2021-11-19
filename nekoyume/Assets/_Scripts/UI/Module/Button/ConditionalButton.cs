@@ -83,22 +83,11 @@ namespace Nekoyume.UI.Module
             _conditionFunc = conditionFunc;
         }
 
-        public State UpdateObjects()
+        public void UpdateObjects()
         {
             var condition = CheckCondition();
             SetSubmittable(condition);
-
-            if (_interactable)
-            {
-                UpdateState(condition ? State.Normal : State.Conditional);
-            }
-            else
-            {
-                UpdateState(State.Disabled);
-            }
-
             disabledObject.SetActive(!_interactable);
-            return CurrentState.Value;
         }
 
         public void SetSubmittable(bool value)

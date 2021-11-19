@@ -66,6 +66,12 @@ namespace Nekoyume
         public static IDisposable SubscribeTo(this IObservable<string> source, SubmitButton text) =>
             source.SubscribeWithState(text, (x, t) => t.SetSubmitText(x));
 
+        public static IDisposable SubscribeTo(this IObservable<string> source, ConditionalButton text) =>
+            source.SubscribeWithState(text, (x, t) => t.Text = x);
+
+        public static IDisposable SubscribeTo(this IObservable<string> source, TextButton text) =>
+            source.SubscribeWithState(text, (x, t) => t.Text = x);
+
         public static IDisposable SubscribeToPrice(this IObservable<FungibleAssetValue> source, TextMeshProUGUI text) =>
             source.SubscribeWithState(text, (x, t) => t.text = x.GetQuantityString());
 
