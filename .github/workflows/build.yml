@@ -29,14 +29,17 @@ jobs:
           elif [ "$targetPlatform" == "macOS" ]; then
             echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-mac-mono-0.11" >> $GITHUB_ENV
           fi
+
       - uses: actions/checkout@v2
         with:
           lfs: true
           submodules: true
+
       - uses: actions/cache@v2
         with:
           path: ${{ matrix.projectPath }}/Library
           key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v4
+
       - name: Build Unity Player using docker
         run: |
           docker run \
@@ -45,6 +48,7 @@ jobs:
             -v "${{ github.workspace }}":"${{ github.workspace }}" \
             unityci/editor:${DOCKER_IMAGE_TAG} \
             scripts/build-player.sh ${{ matrix.targetPlatform }}
+
       - uses: actions/upload-artifact@v2
         with:
           name: 9c-${{ matrix.targetPlatform }}
@@ -63,18 +67,22 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') }}
     steps:
       - uses: actions/checkout@v2
+
       - id: download_player
         uses: actions/download-artifact@v2
         with:
           name: 9c-${{ matrix.targetPlatform }}
           path: /tmp/player
+
       - name: Set up Python # FIXME: 나중에 내장 파이썬 버전이 3.7 이상으로 올라가면 삭제할 것
         uses: actions/setup-python@v2
         with:
           python-version: 3.8.6
+
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '3.1.201'
+
       - name: Pack
         run: |
           set -evx
@@ -100,15 +108,18 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
+
       - uses: chrnorm/deployment-action@releases/v1
         id: build_artifact
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           description: 'Build artifact'
           environment: build-artifact
+
       - run: mv /tmp/package ./package  # s3-upload-action이 상대 경로만 지원
         if: success()
         shell: bash
+
       - uses: shallwefootball/s3-upload-action@master
         if: success()
         with:
@@ -117,6 +128,7 @@ jobs:
           aws_bucket: 9c-artifacts
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - if: success()
         uses: chrnorm/deployment-status@releases/v1
         with:
