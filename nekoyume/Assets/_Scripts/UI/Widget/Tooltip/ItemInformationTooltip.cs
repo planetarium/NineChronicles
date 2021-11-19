@@ -121,9 +121,6 @@ namespace Nekoyume.UI
             Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
             Model.SubmitButtonText.SubscribeTo(submitButton).AddTo(_disposablesForModel);
             Model.SubmitButtonEnabled.Subscribe(submitButton.SetSubmittable).AddTo(_disposablesForModel);
-
-            Model.SubmitButtonText.SubscribeTo(submitButton).AddTo(_disposablesForModel);
-            Model.SubmitButtonEnabled.Subscribe(submitButton.SetSubmittable).AddTo(_disposablesForModel);
             Model.OnSubmitClick.Subscribe(onSubmit).AddTo(_disposablesForModel);
             if (onClose != null)
             {
