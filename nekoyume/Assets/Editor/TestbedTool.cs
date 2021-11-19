@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Text;
 using Editor;
@@ -15,9 +14,7 @@ public class TestbedTool : EditorWindow
     {
         get
         {
-            var path =
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "planetarium", "testbed");
+            const string path = "Assets/_Scripts/Lib9c/lib9c/Lib9c.DevExtensions/Data/";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
