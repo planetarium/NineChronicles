@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Bencodex.Types;
 using Lib9c.DevExtensions.Model;
 using Lib9c.Model.Order;
@@ -38,11 +39,11 @@ namespace Lib9c.DevExtensions.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            var path =
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "planetarium", "testbed");
-            var fullPath = $"{path}\\TestbedSell.json";
-            var data = TestbedHelper.LoadJsonFile<TestbedSell>(fullPath);
+            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+            path = path.Replace(".Lib9c.Tests\\bin\\Debug\\netcoreapp3.1",
+                            "Lib9c.DevExtensions\\Data\\TestbedSell.json");
+            path = path.Replace("file:\\", "");
+            var data = TestbedHelper.LoadJsonFile<TestbedSell>(path);
             var addedItemInfos = data.Items
                 .Select(item => new TestbedHelper.AddedItemInfo(
                     context.Random.GenerateRandomGuid(),
