@@ -1,7 +1,6 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Tween
 {
@@ -36,6 +35,14 @@ namespace Nekoyume.UI.Tween
         private Coroutine _coroutine = null;
 
         private Vector2 _originalPos;
+
+        private float LeftInXPosition => _originalPos.x;
+
+        private float LeftOutXPosition => -content.rectTransform.rect.width;
+
+        private float RightInXPosition => LeftOutXPosition + _rectTransform.rect.width;
+
+        private float RightOutXPosition => _rectTransform.rect.width;
 
         private float _realAnimationTime;
 
@@ -87,25 +94,17 @@ namespace Nekoyume.UI.Tween
             }
 
             _originalPos = content.rectTransform.anchoredPosition;
-
-            var xDiff = content.rectTransform.rect.width - _rectTransform.rect.width;
-            var targetX = _originalPos.x - xDiff - _rectTransform.rect.width; /*isInfiniteScroll ?
-                _originalPos.x - xDiff - _rectTransform.rect.width
-                 :
-                _originalPos.x - xDiff;*/
-
+            var rightOutX = RightOutXPosition;
+            var rightInX = RightInXPosition;
+            var leftOutX = LeftOutXPosition;
+            var leftInX = LeftInXPosition;
             var elapsedTime = 0f;
 
             yield return new WaitForSeconds(startDelay);
             while (gameObject.activeSelf)
             {
                 var t = curve.Evaluate(elapsedTime / _realAnimationTime);
-                var xPos = Mathf.Lerp(
-                    isInfiniteScroll ?
-                    _originalPos.x + _rectTransform.rect.width :
-                    _originalPos.x,
-                    targetX,
-                    t);
+                var xPos = Mathf.Lerp(isInfiniteScroll ? rightOutX : leftInX,  isInfiniteScroll ? leftOutX : rightInX, t);
                 content.rectTransform.anchoredPosition = new Vector2(xPos, _originalPos.y);
 
                 elapsedTime += Time.deltaTime;
@@ -113,16 +112,15 @@ namespace Nekoyume.UI.Tween
                 {
                     if (isInfiniteScroll)
                     {
-                        content.rectTransform.anchoredPosition =
-                            new Vector2(_originalPos.x + _rectTransform.rect.width, _originalPos.y);
+                        content.rectTransform.anchoredPosition = new Vector2(rightOutX, _originalPos.y);
                         elapsedTime = 0f;
                         yield return new WaitForSeconds(startDelay);
                     }
                     else
                     {
-                        content.rectTransform.anchoredPosition = new Vector2(targetX, _originalPos.y);
                         yield return new WaitForSeconds(endDelay);
-                        content.rectTransform.anchoredPosition = new Vector2(_originalPos.x, _originalPos.y);
+                        //content.rectTransform.anchoredPosition = new Vector2(leftOutX, _originalPos.y);
+                        content.rectTransform.anchoredPosition = new Vector2(leftInX, _originalPos.y);
                         elapsedTime = 0f;
                         yield return new WaitForSeconds(startDelay);
                     }
