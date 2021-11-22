@@ -342,7 +342,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Mixpanel.Track("Unity/Synopsis Start");
+            Analyzer.Instance.Track("Unity/Synopsis Start");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
             var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
             skipButton.SetActive(skipPrologue);
@@ -370,7 +370,7 @@ namespace Nekoyume.UI
                 EnterLogin();
             }
 
-            Mixpanel.Track("Unity/Synopsis End");
+            Analyzer.Instance.Track("Unity/Synopsis End");
             Close();
         }
 

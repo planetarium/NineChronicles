@@ -156,7 +156,7 @@ namespace Nekoyume.UI
 
             if (worldId == 1)
             {
-                Mixpanel.Track("Unity/Click Yggdrasil");
+                Analyzer.Instance.Track("Unity/Click Yggdrasil");
             }
 
             Push();

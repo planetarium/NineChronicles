@@ -62,7 +62,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Mixpanel.Track("Unity/LoginImpression");
+            Analyzer.Instance.Track("Unity/LoginImpression");
 
             for (var i = 0; i < slots.Length; i++)
             {

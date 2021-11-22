@@ -473,11 +473,9 @@ namespace Nekoyume.Game
 
         protected override void OnApplicationQuit()
         {
-            if (Mixpanel.IsInitialized())
-            {
-                Mixpanel.Track("Unity/Player Quit");
-                Mixpanel.Flush();
-            }
+            Analyzer.Instance.Track("Unity/Player Quit");
+            Analyzer.Instance.Flush();
+
             _logsClient?.Dispose();
         }
 

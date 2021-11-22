@@ -131,9 +131,10 @@ namespace Nekoyume.BlockChain
                     break;
             }
 
-            Mixpanel.Track("Unity/Error", MixpanelValueFactory.GetValue(
+            Analyzer.Instance.Track(
+                "Unity/Error",
                 ("code", code),
-                ("key", key)));
+                ("key", key));
 
             errorMsg = errorMsg == string.Empty
                 ? string.Format(
