@@ -106,6 +106,13 @@ namespace Nekoyume.UI.Model
                     ConsumableRecipeMap[key] = model;
                 }
 
+                var first = group.RecipeIds.FirstOrDefault();
+                if (!consumableRecipeSheet.TryGetValue(first, out var firstRecipe))
+                {
+                    continue;
+                }
+                model.StatType = firstRecipe.GetUniqueStat().StatType;
+
                 foreach (var recipeId in group.RecipeIds)
                 {
                     if (!consumableRecipeSheet.TryGetValue(recipeId, out var recipe))
@@ -113,7 +120,6 @@ namespace Nekoyume.UI.Model
                         continue;
                     }
 
-                    model.StatType = recipe.GetUniqueStat().StatType;
                     model.Rows.Add(recipe);
                 }
             }
