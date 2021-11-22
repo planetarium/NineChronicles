@@ -3,13 +3,16 @@ using UnityEngine;
 
 namespace PackageExtensions.Mixpanel
 {
-    public static class MixpanelValueFactory
+    public class MixpanelValueFactory
     {
-        private static bool _initialized;
-        private static string _clientHost;
-        private static string _clientHash;
+        private const string _clientHostKey = "client-host";
+        private const string _clientHashKey = "client-hash";
+        
+        private bool _initialized;
+        private string _clientHost;
+        private string _clientHash;
 
-        private static void Initialize()
+        private void Initialize()
         {
             if (_initialized)
             {
@@ -21,21 +24,28 @@ namespace PackageExtensions.Mixpanel
             _initialized = true;
         }
 
-        public static Value GetValue(params (string key, string value)[] properties)
+        public Value GetValue(params (string key, string value)[] properties)
         {
             Initialize();
 
-            var value = new Value
+            var result = new Value
             {
-                ["client-host"] = _clientHost,
-                ["client-hash"] = _clientHash,
+                [_clientHostKey] = _clientHost,
+                [_clientHashKey] = _clientHash,
             };
 
-            foreach (var (key, v) in properties)
+            foreach (var (key, value) in properties)
             {
-                value[key] = v;
+                result[key] = value;
             }
 
+            return result;
+        }
+
+        public Value UpdateValue(Value value)
+        {
+            value[_clientHostKey] = _clientHost;
+            value[_clientHashKey] = _clientHash;
             return value;
         }
     }
