@@ -57,41 +57,93 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
+        private static InvalidBlockHashAlgorithmTypeException ValidateHashAlgorithmTypeRaw(
+            Block<NCAction> block,
+            IVariableSubPolicy<HashAlgorithmType> hashAlgorithmTypePolicy)
+        {
+            HashAlgorithmType hashAlgorithm = hashAlgorithmTypePolicy.Getter(block.Index);
+
+            if (!block.HashAlgorithm.Equals(hashAlgorithm))
+            {
+                return new InvalidBlockHashAlgorithmTypeException(
+                    $"The hash algorithm type of block #{block.Index} {block.Hash} " +
+                    $"does not match {hashAlgorithm}: {block.HashAlgorithm}",
+                    hashAlgorithm);
+            }
+
+            return null;
+        }
+
+        private static InvalidBlockBytesLengthException ValidateBlockBytesRaw(
+            Block<NCAction> block,
+            IVariableSubPolicy<int> maxBlockBytesPolicy)
+        {
+            int maxBlockBytes = maxBlockBytesPolicy.Getter(block.Index);
+
+            if (block.BytesLength > maxBlockBytes)
+            {
+                return new InvalidBlockBytesLengthException(
+                    $"The size of block #{block.Index} {block.Hash} is too large " +
+                    $"where the maximum number of bytes allowed is {maxBlockBytes}: " +
+                    $"{block.BytesLength}",
+                    block.BytesLength);
+            }
+
+            return null;
+        }
+
         private static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
             Block<NCAction> block,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
-            IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
-            IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy)
+            IVariableSubPolicy<int> maxTransactionsPerBlockPolicy)
         {
             int minTransactionsPerBlock =
                 minTransactionsPerBlockPolicy.Getter(block.Index);
             int maxTransactionsPerBlock =
                 maxTransactionsPerBlockPolicy.Getter(block.Index);
-            int maxTransactionsPerSignerPerBlock =
-                maxTransactionsPerSignerPerBlockPolicy.Getter(block.Index);
 
             if (block.Transactions.Count < minTransactionsPerBlock)
             {
-                return new BlockPolicyViolationException(
+                return new InvalidBlockTxCountException(
                     $"Block #{block.Index} {block.Hash} should include " +
                     $"at least {minTransactionsPerBlock} transaction(s): " +
-                    $"{block.Transactions.Count}");
+                    $"{block.Transactions.Count}",
+                    block.Transactions.Count);
             }
             else if (block.Transactions.Count > maxTransactionsPerBlock)
             {
-                return new BlockPolicyViolationException(
+                return new InvalidBlockTxCountException(
                     $"Block #{block.Index} {block.Hash} should include " +
                     $"at most {maxTransactionsPerBlock} transaction(s): " +
-                    $"{block.Transactions.Count}");
+                    $"{block.Transactions.Count}",
+                    block.Transactions.Count);
             }
-            else if (block.Transactions
+
+            return null;
+        }
+
+        private static BlockPolicyViolationException ValidateTxCountPerSignerPerBlockRaw(
+            Block<NCAction> block,
+            IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy)
+        {
+            int maxTransactionsPerSignerPerBlock =
+                maxTransactionsPerSignerPerBlockPolicy.Getter(block.Index);
+            var groups = block.Transactions
                 .GroupBy(tx => tx.Signer)
-                .Any(group => group.Count() > maxTransactionsPerSignerPerBlock))
+                .Where(group => group.Count() > maxTransactionsPerSignerPerBlock);
+            var offendingGroup = groups.FirstOrDefault();
+
+            if (!(offendingGroup is null))
             {
-                return new BlockPolicyViolationException(
-                    $"Block #{block.Index} {block.Hash} includes too many transactions " +
-                    $"from a single signer where the maximum number of allowed by " +
-                    $"a single signer per block is {maxTransactionsPerSignerPerBlock}.");
+                int offendingGroupCount = offendingGroup.Count();
+                return new InvalidBlockTxCountPerSignerException(
+                    $"Block #{block.Index} {block.Hash} includes too many " +
+                    $"transactions from signer {offendingGroup.Key} where " +
+                    $"the maximum number of transactions allowed by a single signer " +
+                    $"per block is {maxTransactionsPerSignerPerBlock}: " +
+                    $"{offendingGroupCount}",
+                    offendingGroup.Key,
+                    offendingGroupCount);
             }
 
             return null;
