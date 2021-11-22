@@ -4,8 +4,8 @@ namespace Lib9c.Tests.Action
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
     using Libplanet;
+    using MessagePack;
     using Nekoyume.Action;
-    using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -98,12 +98,15 @@ namespace Lib9c.Tests.Action
             using (var ms = new MemoryStream())
             {
                 formatter.Serialize(ms, exc);
-
                 ms.Seek(0, SeekOrigin.Begin);
                 var deserialized = formatter.Deserialize(ms);
                 Exception exception = (Exception)Convert.ChangeType(deserialized, type);
                 Assert.Equal(exc.Message, exception.Message);
             }
+
+            var b = MessagePackSerializer.Serialize(exc);
+            var des = MessagePackSerializer.Deserialize<Exception>(b);
+            Assert.Equal(exc.Message, des.Message);
         }
 
         private static void AssertAdminState(AdminState adminState, AdminState adminState2)

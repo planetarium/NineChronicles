@@ -35,7 +35,7 @@ namespace Nekoyume.Action
         public abstract void LoadPlainValue(IValue plainValue);
         public abstract IAccountStateDelta Execute(IActionContext context);
 
-        private struct AccountStateDelta : IAccountStateDelta
+        public struct AccountStateDelta : IAccountStateDelta
         {
             private IImmutableDictionary<Address, IValue> _states;
             private IImmutableDictionary<(Address, Currency), BigInteger> _balances;
@@ -203,6 +203,8 @@ namespace Nekoyume.Action
 
             public int RandomSeed { get; set; }
 
+            public Dictionary<string, IValue> Extra { get; set; }
+
             public ActionEvaluation(SerializationInfo info, StreamingContext ctx)
             {
                 Action = FromBytes((byte[])info.GetValue("action", typeof(byte[])));
@@ -212,6 +214,7 @@ namespace Nekoyume.Action
                 Exception = (Exception)info.GetValue("exc", typeof(Exception));
                 PreviousStates = new AccountStateDelta((byte[])info.GetValue("previousStates", typeof(byte[])));
                 RandomSeed = info.GetInt32("randomSeed");
+                Extra = new Dictionary<string, IValue>();
             }
 
             public void GetObjectData(SerializationInfo info, StreamingContext context)

@@ -117,7 +117,8 @@ namespace Lib9c.Renderer
                     OutputStates = eval.OutputStates,
                     Exception = eval.Exception,
                     PreviousStates = eval.PreviousStates,
-                    RandomSeed = eval.RandomSeed
+                    RandomSeed = eval.RandomSeed,
+                    Extra = eval.Extra,
                 });
 
         public IObservable<ActionEvaluation<T>> EveryUnrender<T>() where T : ActionBase =>
@@ -147,7 +148,8 @@ namespace Lib9c.Renderer
                     OutputStates = eval.OutputStates,
                     Exception = eval.Exception,
                     PreviousStates = eval.PreviousStates,
-                    RandomSeed = eval.RandomSeed
+                    RandomSeed = eval.RandomSeed,
+                    Extra = eval.Extra,
                 });
 
         public IObservable<ActionEvaluation<ActionBase>> EveryUnrender(Address updatedAddress) =>
@@ -162,7 +164,8 @@ namespace Lib9c.Renderer
                     OutputStates = eval.OutputStates,
                     Exception = eval.Exception,
                     PreviousStates = eval.PreviousStates,
-                    RandomSeed = eval.RandomSeed
+                    RandomSeed = eval.RandomSeed,
+                    Extra = eval.Extra,
                 });
 
         private static ActionBase GetActionBase(IAction action)
