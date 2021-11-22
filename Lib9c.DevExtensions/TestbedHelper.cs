@@ -19,10 +19,10 @@ namespace Lib9c.DevExtensions
 {
     public static class TestbedHelper
     {
-        public readonly struct AddedItemInfo
+        public class AddedItemInfo
         {
             public Guid OrderId { get; }
-            public Guid TradableId { get; }
+            public Guid TradableId { get; set; }
 
             public AddedItemInfo(Guid orderId, Guid tradableId)
             {
@@ -124,10 +124,9 @@ namespace Lib9c.DevExtensions
                 case ItemSubType.ApStone:
                     if (materialItemSheet.TryGetValue(item.ID, out var materialRow))
                     {
-                        var material =
-                            ItemFactory.CreateTradableMaterial(materialRow,
-                                addedItemInfo.TradableId);
+                        var material = ItemFactory.CreateTradableMaterial(materialRow);
                         avatarState.inventory.AddItem(material, item.Count);
+                        addedItemInfo.TradableId = material.TradableId;
                     }
 
                     break;

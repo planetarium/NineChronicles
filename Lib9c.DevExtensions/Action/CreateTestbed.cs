@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using Bencodex.Types;
 using Lib9c.DevExtensions.Model;
@@ -17,6 +18,7 @@ using static Lib9c.SerializeKeys;
 using Libplanet.Crypto;
 using Nekoyume;
 using Nekoyume.Action;
+using Nekoyume.Model.Item;
 
 namespace Lib9c.DevExtensions.Action
 {
@@ -26,6 +28,34 @@ namespace Lib9c.DevExtensions.Action
     {
         private int _slotIndex = 0;
         private PrivateKey _privateKey = new PrivateKey();
+        public Result result = new Result();
+        public List<Order> Orders = new List<Order>();
+
+        [Serializable]
+        public class Result
+        {
+            public Address SellerAgentAddress;
+            public Address SellerAvatarAddress;
+            public List<ItemInfos> ItemInfos;
+        }
+
+        public class ItemInfos
+        {
+            public Guid OrderId;
+            public Guid TradableId;
+            public ItemSubType ItemSubType;
+            public BigInteger Price;
+            public int Count;
+
+            public ItemInfos(Guid orderId, Guid tradableId, ItemSubType itemSubType, BigInteger price, int count)
+            {
+                OrderId = orderId;
+                TradableId = tradableId;
+                ItemSubType = itemSubType;
+                Price = price;
+                Count = count;
+            }
+        }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
@@ -189,6 +219,7 @@ namespace Lib9c.DevExtensions.Action
                     data.Items[i].ItemSubType,
                     data.Items[i].Count);
 
+                Orders.Add(order);
                 order.Validate(avatarState, data.Items[i].Count);
                 var tradableItem = order.Sell(avatarState);
 
@@ -213,6 +244,18 @@ namespace Lib9c.DevExtensions.Action
                     .SetState(shopAddress, shardedShopState.Serialize());
             }
 
+            result.SellerAgentAddress = agentAddress;
+            result.SellerAvatarAddress = avatarAddress;
+            result.ItemInfos = new List<ItemInfos>();
+            for (var i = 0; i < data.Items.Length; i++)
+            {
+                result.ItemInfos.Add(new ItemInfos(
+                    addedItemInfos[i].OrderId,
+                    addedItemInfos[i].TradableId,
+                    data.Items[i].ItemSubType,
+                    data.Items[i].Price,
+                    data.Items[i].Count));
+            }
             return states;
         }
     }

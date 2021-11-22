@@ -38,11 +38,6 @@ namespace Nekoyume.Model.Item
             TradableId = DeriveTradableId(ItemId);
         }
 
-        public TradableMaterial(MaterialItemSheet.Row data, Guid tradableId) : base(data)
-        {
-            TradableId = tradableId;
-        }
-
         public TradableMaterial(Dictionary serialized) : base(serialized)
         {
             RequiredBlockIndex = serialized.ContainsKey(RequiredBlockIndexKey)
