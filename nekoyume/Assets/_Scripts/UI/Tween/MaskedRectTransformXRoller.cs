@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Tween
 {
+    using UniRx;
     public class MaskedRectTransformXRoller : MonoBehaviour
     {
         private enum PauseTiming
@@ -60,9 +61,22 @@ namespace Nekoyume.UI.Tween
 
         private float _realAnimationTime;
 
+        public BoolReactiveProperty isSelected = new BoolReactiveProperty(true);
+
         private void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
+            isSelected.Subscribe(b =>
+            {
+                if (b && _coroutine is null)
+                {
+                    OnEnable();
+                }
+                else if (!b && !(_coroutine is null))
+                {
+                    KillTween();
+                }
+            });
         }
 
         private void OnEnable()
