@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -6,6 +7,13 @@ namespace Nekoyume.UI.Tween
 {
     public class MaskedRectTransformXRoller : MonoBehaviour
     {
+        private enum PauseTiming
+        {
+            Left,
+            Middle,
+            Right
+        }
+
         [SerializeField]
         private bool isInfiniteScroll = false;
 
@@ -29,6 +37,12 @@ namespace Nekoyume.UI.Tween
 
         [SerializeField] [Range(0f, 1f)]
         private float animationSpeed;
+
+        [SerializeField]
+        private PauseTiming pauseTiming;
+
+        [SerializeField]
+        private float pauseTime;
 
         private RectTransform _rectTransform = null;
 
@@ -99,6 +113,14 @@ namespace Nekoyume.UI.Tween
             var leftOutX = LeftOutXPosition;
             var leftInX = LeftInXPosition;
             var elapsedTime = 0f;
+            var wasPaused = false;
+            var pauseTime = pauseTiming switch
+            {
+                PauseTiming.Left => (rightInX - leftOutX) / (rightOutX - leftOutX),
+                PauseTiming.Middle => ((leftOutX + rightOutX) / 2 - leftOutX) / (rightOutX - leftOutX),
+                PauseTiming.Right => (leftInX - leftOutX) / (rightOutX - leftOutX),
+                _ => throw new ArgumentOutOfRangeException()
+            };
 
             yield return new WaitForSeconds(startDelay);
             while (gameObject.activeSelf)
@@ -108,8 +130,15 @@ namespace Nekoyume.UI.Tween
                 content.rectTransform.anchoredPosition = new Vector2(xPos, _originalPos.y);
 
                 elapsedTime += Time.deltaTime;
+                if (t >= pauseTime && !wasPaused && isInfiniteScroll)
+                {
+                    yield return new WaitForSeconds(this.pauseTime);
+                    wasPaused = true;
+                }
+
                 if (elapsedTime > _realAnimationTime)
                 {
+                    wasPaused = false;
                     if (isInfiniteScroll)
                     {
                         content.rectTransform.anchoredPosition = new Vector2(rightOutX, _originalPos.y);
@@ -119,7 +148,6 @@ namespace Nekoyume.UI.Tween
                     else
                     {
                         yield return new WaitForSeconds(endDelay);
-                        //content.rectTransform.anchoredPosition = new Vector2(leftOutX, _originalPos.y);
                         content.rectTransform.anchoredPosition = new Vector2(leftInX, _originalPos.y);
                         elapsedTime = 0f;
                         yield return new WaitForSeconds(startDelay);
