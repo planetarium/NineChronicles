@@ -72,7 +72,7 @@
                 timestamp: timestamp ?? DateTimeOffset.MinValue);
         }
 
-        public static MakeInitStateResult MakeInitState()
+        public static MakeInitialStateResult MakeInitialState()
         {
             var goldCurrencyState = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
             var ranking = new RankingState();
@@ -141,7 +141,7 @@
                 Rehearsal = false,
             });
 
-            return new MakeInitStateResult(
+            return new MakeInitialStateResult(
                 nextState,
                 action,
                 agentState,

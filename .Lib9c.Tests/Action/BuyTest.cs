@@ -819,7 +819,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_With_Testbed()
         {
-            var result = BlockChainHelper.MakeInitState();
+            var result = BlockChainHelper.MakeInitialState();
             var testbed = result.GetTestbed();
             var nextState = result.GetState();
             var data = TestbedHelper.LoadData<TestbedSell>("TestbedSell");

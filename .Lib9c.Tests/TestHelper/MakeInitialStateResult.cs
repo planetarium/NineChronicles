@@ -6,7 +6,7 @@
     using Libplanet.Assets;
     using Nekoyume.Model.State;
 
-    public class MakeInitStateResult
+    public class MakeInitialStateResult
     {
         private readonly IAccountStateDelta _state;
         private readonly CreateTestbed _testbed;
@@ -18,7 +18,7 @@
         private readonly FungibleAssetValue _agentCurrencyGold;
         private readonly FungibleAssetValue _currencyGold;
 
-        public MakeInitStateResult(
+        public MakeInitialStateResult(
             IAccountStateDelta state,
             CreateTestbed testbed,
             AgentState agentState,
