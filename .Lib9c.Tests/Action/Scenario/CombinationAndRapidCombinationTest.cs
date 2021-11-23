@@ -94,6 +94,7 @@
             }
         }
 
+        // NOTE: Do not remove.
         // [Theory]
         // [InlineData(new[] { 1 })]
         // [InlineData(new[] { 1, 2 })]
@@ -105,36 +106,41 @@
         // [InlineData(new[] { 1, 2, 3, 4 })]
         // public void FindRandomSeedForCase(int[] optionNumbers)
         // {
-        //     for (var i = 0; i < 100; i++)
+        //     var randomSeed = 0;
+        //     while (randomSeed < 100000)
         //     {
         //         try
         //         {
-        //             Case(i, optionNumbers);
+        //             Case(randomSeed, optionNumbers);
         //         }
         //         catch
         //         {
+        //             randomSeed++;
         //             continue;
         //         }
         //
-        //         Log.Debug(i.ToString());
+        //         Log.Debug(randomSeed.ToString());
         //         break;
         //     }
         // }
         [Theory]
-        [InlineData(1, new[] { 1 })]
-        [InlineData(14, new[] { 1, 2 })]
-        [InlineData(0, new[] { 1, 3 })]
+        [InlineData(6, new[] { 1 })]
+        [InlineData(0, new[] { 1, 2 })]
+        [InlineData(7, new[] { 1, 3 })]
         [InlineData(9, new[] { 1, 4 })]
-        [InlineData(17, new[] { 1, 2, 3 })]
-        [InlineData(13, new[] { 1, 2, 4 })]
+        [InlineData(2, new[] { 1, 2, 3 })]
+        [InlineData(1, new[] { 1, 2, 4 })]
         [InlineData(5, new[] { 1, 3, 4 })]
-        [InlineData(12, new[] { 1, 2, 3, 4 })]
+        [InlineData(18, new[] { 1, 2, 3, 4 })]
         public void Case(int randomSeed, int[] optionNumbers)
         {
             var gameConfigState = _initialState.GetGameConfigState();
             Assert.NotNull(gameConfigState);
 
-            var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheetV2.OrderedList.First(e => e.Options.Count == 4);
+            var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheetV2.OrderedList.First(e =>
+                e.Options.Count == 4 &&
+                e.RequiredBlockIndex > GameConfig.RequiredAppraiseBlock &&
+                e.RequiredGold == 0);
             var recipeRow =
                 _tableSheets.EquipmentItemRecipeSheet.OrderedList.First(e => e.SubRecipeIds.Contains(subRecipeRow.Id));
             var combinationEquipmentAction = new CombinationEquipment
@@ -236,12 +242,6 @@
             Assert.True(mainAdditionalStatValue <= mainAdditionalStatMax + 1);
             Assert.Equal(requiredBlockIndex, slot0State.RequiredBlockIndex);
 
-            // FIXME
-            // https://github.com/planetarium/lib9c/pull/517#discussion_r679218764
-            // The tests after this line should be finished. However, since then the logic is being developed by
-            // different developers in different branches. I wrote a test beforehand, but it's failing.
-            // I plan to move to another branch after this PR is merged and finish writing the tests.
-            return;
             if (requiredBlockIndex == 0)
             {
                 return;
@@ -256,7 +256,8 @@
             inventoryState = new Inventory((List)inventoryValue);
             Assert.False(inventoryState.TryGetFungibleItems(hourglassRow.ItemId, out _));
 
-            var hourglassCount = (int)requiredBlockIndex * gameConfigState.HourglassPerBlock;
+            var diff = slot0State.RequiredBlockIndex - GameConfig.RequiredAppraiseBlock;
+            var hourglassCount = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
             inventoryState.AddFungibleItem(
                 ItemFactory.CreateMaterial(_tableSheets.MaterialItemSheet, hourglassRow.Id),
                 hourglassCount);
@@ -273,7 +274,7 @@
             nextState = rapidCombinationAction.Execute(new ActionContext
             {
                 PreviousStates = nextState,
-                BlockIndex = 1,
+                BlockIndex = GameConfig.RequiredAppraiseBlock,
                 Random = random,
                 Signer = _agentAddress,
             });
