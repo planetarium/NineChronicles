@@ -28,6 +28,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private SpeechBubble speechBubble = null;
 
+        [SerializeField]
+        private Button spineButton;
+
         private NPC _npc = null;
         private const int NPCID = 300001;
         protected override void Awake()
@@ -62,6 +65,7 @@ namespace Nekoyume.UI
             };
 
             speechBubble.SetKey("SPEECH_COMBINE_EQUIPMENT_");
+            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Greeting_01));
         }
 
         public override void Show(bool ignoreShowAnimation = false)

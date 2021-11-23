@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -137,6 +139,25 @@ namespace Editor
                     ? options | BuildOptions.Development | BuildOptions.AllowDebugging
                     : options,
             };
+
+            if (EditorUserBuildSettings.development)
+            {
+                if ((buildPlayerOptions.options & BuildOptions.Development) != 0 ||
+                    (buildPlayerOptions.options & BuildOptions.AllowDebugging) != 0)
+                {
+                    var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+                    var preDefines = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+                    var newDefines = preDefines.Split( ';' ).ToList();
+                    newDefines.AddRange(newDefines);
+                    if (!newDefines.Exists(x => x.Equals("LIB9C_DEV_EXTENSIONS")))
+                    {
+                        newDefines.Add("LIB9C_DEV_EXTENSIONS");
+                    }
+
+                    PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,
+                        string.Join(";", newDefines.ToArray()));
+                }
+            }
 
             var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
             var summary = report.summary;

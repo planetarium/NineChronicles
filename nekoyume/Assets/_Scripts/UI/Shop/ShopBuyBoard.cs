@@ -110,12 +110,13 @@ namespace Nekoyume.UI
         {
             var wishItems = shopItems.SharedModel.GetWishItems;
             var purchaseInfos = new ConcurrentBag<PurchaseInfo>();
-            Parallel.ForEach(wishItems, item =>
+
+            await foreach (var item in wishItems.ToAsyncEnumerable())
             {
-                var purchaseInfo = ShopBuy.GetPurchaseInfo(item.OrderId.Value).Result;
+                var purchaseInfo = await ShopBuy.GetPurchaseInfo(item.OrderId.Value);
                 purchaseInfos.Add(purchaseInfo);
-            });
-            Game.Game.instance.ActionManager.Buy(purchaseInfos.ToList());
+            }
+            Game.Game.instance.ActionManager.Buy(purchaseInfos.ToList()).Subscribe();
 
             if (shopItems.SharedModel.WishItemCount > 0)
             {

@@ -708,7 +708,7 @@ namespace Nekoyume.Game
 
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
-                ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
+                ActionRenderHandler.Instance.UpdateCurrentAvatarStateAsync(AvatarState);
             }
 
             yield return null;

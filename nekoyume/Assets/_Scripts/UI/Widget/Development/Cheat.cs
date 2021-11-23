@@ -5,7 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Bencodex.Types;
+using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
+using Libplanet.Crypto;
+using Libplanet.KeyStore;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
@@ -193,7 +197,7 @@ namespace Nekoyume
         {
             var tableName = GetTableName();
             var csv = LocalTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text;
-            Game.Game.instance.ActionManager.PatchTableSheet(tableName, csv);
+            Game.Game.instance.ActionManager.PatchTableSheet(tableName, csv).Subscribe();
         }
 
         private string GetTableName()
@@ -217,7 +221,7 @@ namespace Nekoyume
             CloseWidget = null;
         }
 
-#if UNITY_EDITOR
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         protected override void Update()
         {
             UpdateInput();

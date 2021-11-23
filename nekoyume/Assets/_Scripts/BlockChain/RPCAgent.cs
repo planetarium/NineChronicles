@@ -222,7 +222,7 @@ namespace Nekoyume.BlockChain
                     (Dictionary)state
                 ).Currency;
 
-                States.Instance.SetAgentState(
+                await States.Instance.SetAgentStateAsync(
                     await GetStateAsync(Address) is Bencodex.Types.Dictionary agentDict
                         ? new AgentState(agentDict)
                         : new AgentState(Address));
@@ -240,6 +240,7 @@ namespace Nekoyume.BlockChain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
+                // FIXME: BlockIndex may not initialized.
                 var weeklyArenaState = await ArenaHelper.GetThisWeekStateAsync(BlockIndex);
                 if (weeklyArenaState is null)
                 {

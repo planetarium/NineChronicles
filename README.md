@@ -59,7 +59,6 @@ To launch Nine Chronicles from the Unity editor, please follow the [step-by-step
  - `--host`              : host name.
  - `--port`              : port name.
  - `--no-miner`          : disable mining.
- - `--minimum-difficulty`: configure minimum mining difficulty accepted by the network.
  - `--peer`              : add peer. Multiple peers can be added with `--peer peerA peerB ... `.
  - `--ice-servers`       : TURN server information used for NAT traversal. Multiple servers can be added with `--ice-servers serverA serverB`.
  - `--genesis-block-path`: path of genesis block. Supports http(s) paths and uses `Assets/StreamingAssets/genesis-block` if not provided.

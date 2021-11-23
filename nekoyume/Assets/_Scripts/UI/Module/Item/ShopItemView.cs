@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using System.Threading;
+    using System.Threading.Tasks;
     using UniRx;
 
     public class ShopItemView : CountableItemView<ShopItem>
@@ -18,6 +20,9 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private long _expiredBlockIndex;
+
+        public Task<Nekoyume.Model.Item.ItemBase> ItemBaseLoadingTask { get; private set; } = null;
+        private CancellationTokenSource _cancellationTokenSource = null;
 
         public override void SetData(ShopItem model)
         {
@@ -42,6 +47,19 @@ namespace Nekoyume.UI.Module
                     .Subscribe(SetExpired)
                     .AddTo(_disposables);
             }
+
+            _cancellationTokenSource = new CancellationTokenSource();
+            ItemBaseLoadingTask = Task.Run(async () =>
+            {
+                var item = await Util.GetItemBaseByTradableId(model.TradableId.Value, model.ExpiredBlockIndex.Value);
+                return item;
+            }, _cancellationTokenSource.Token);
+
+            ItemBaseLoadingTask.ToObservable()
+                .ObserveOnMainThread()
+                .First()
+                .Subscribe(item => SetOptionTag(item))
+                .AddTo(_disposables);
         }
 
         public override void Clear()
@@ -61,6 +79,7 @@ namespace Nekoyume.UI.Module
                 expired.SetActive(false);
             }
             _disposables.DisposeAllAndClear();
+            _cancellationTokenSource?.Cancel();
         }
 
         private void SetBg(float alpha)

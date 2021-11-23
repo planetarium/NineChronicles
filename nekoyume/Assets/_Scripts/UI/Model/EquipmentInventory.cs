@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Item;
@@ -68,9 +68,14 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            foreach (var item in inventory.Equipments)
+            foreach (var item in inventory.Items)
             {
-                AddItem(item);
+                if (!(item.item is Equipment equipment) || item.Locked)
+                {
+                    continue;
+                }
+
+                AddItem(equipment);
             }
 
             State.SetValueAndForceNotify(State.Value);

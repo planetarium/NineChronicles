@@ -30,7 +30,6 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Serialization;
 using Menu = Nekoyume.UI.Menu;
 
-
 namespace Nekoyume.Game
 {
     using Nekoyume.GraphQL;
@@ -326,9 +325,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            ActionRenderHandler.BackToMain(
-                showLoadingScreen,
-                new UnableToRenderWhenSyncingBlocksException());
+            BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
         }
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
@@ -394,9 +391,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            ActionRenderHandler.BackToMain(
-                showLoadingScreen,
-                new UnableToRenderWhenSyncingBlocksException());
+            BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
         }
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
@@ -444,6 +439,7 @@ namespace Nekoyume.Game
             );
         }
 
+        // FIXME: Leave one between this or CoSyncTableSheets()
         private IEnumerator CoInitializeTableSheets()
         {
             yield return null;
@@ -463,6 +459,36 @@ namespace Nekoyume.Game
                 csv[asset.name] = asset.text;
             }
             TableSheets = new TableSheets(csv);
+        }
+
+        // FIXME: Leave one between this or CoInitializeTableSheets()
+        private IEnumerator CoSyncTableSheets()
+        {
+            yield return null;
+            var request =
+                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            yield return request;
+            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+            {
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
+                    AddressableAssetsContainerPath);
+            }
+
+            var task = Task.Run(() =>
+            {
+                List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
+                var csv = new ConcurrentDictionary<string, string>();
+                Parallel.ForEach(csvAssets, asset =>
+                {
+                    if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
+                    {
+                        var table = tableCsv.ToDotnetString();
+                        csv[asset.name] = table;
+                    }
+                });
+                TableSheets = new TableSheets(csv);
+            });
+            yield return new WaitUntil(() => task.IsCompleted);
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()
@@ -524,6 +550,40 @@ namespace Nekoyume.Game
 
                 yield return null;
             }
+        }
+
+        public static void BackToMain(bool showLoadingScreen, Exception exc)
+        {
+            Debug.LogException(exc);
+
+            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
+            Event.OnRoomEnter.Invoke(showLoadingScreen);
+            instance.Stage.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ => PopupError(key, code, errorMsg));
+
+            MainCanvas.instance.InitWidgetInMain();
+        }
+
+        public static void PopupError(Exception exc)
+        {
+            Debug.LogException(exc);
+            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
+            PopupError(key, code, errorMsg);
+        }
+
+        private static void PopupError(string key, string code, string errorMsg)
+        {
+            errorMsg = errorMsg == string.Empty
+                ? string.Format(
+                    L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                    L10nManager.Localize(key),
+                    code)
+                : errorMsg;
+            Widget
+                .Find<TitleOneButtonSystem>()
+                .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                    L10nManager.Localize("UI_OK"), false);
         }
 
         public static void Quit()
@@ -658,35 +718,6 @@ namespace Nekoyume.Game
             };
 
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
-        }
-
-        private IEnumerator CoSyncTableSheets()
-        {
-            yield return null;
-            var request =
-                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            yield return request;
-            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
-            {
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
-                    AddressableAssetsContainerPath);
-            }
-
-            var task = Task.Run(() =>
-            {
-                List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
-                var csv = new ConcurrentDictionary<string, string>();
-                Parallel.ForEach(csvAssets, asset =>
-                {
-                    if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
-                    {
-                        var table = tableCsv.ToDotnetString();
-                        csv[asset.name] = table;
-                    }
-                });
-                TableSheets = new TableSheets(csv);
-            });
-            yield return new WaitUntil(() => task.IsCompleted);
         }
 
         private async void UploadLog(string logString, string stackTrace, LogType type)

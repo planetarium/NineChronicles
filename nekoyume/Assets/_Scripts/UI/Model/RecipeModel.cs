@@ -95,21 +95,31 @@ namespace Nekoyume.UI.Model
 
             foreach (var group in groups)
             {
+                var key = group.Key;
+                if (!ConsumableRecipeMap.TryGetValue(key, out var model))
+                {
+                    var name = L10nManager.Localize($"ITEM_GROUPNAME_{key}");
+                    model = new RecipeRow.Model(name, group.Grade)
+                    {
+                        ItemSubType = ItemSubType.Food,
+                    };
+                    ConsumableRecipeMap[key] = model;
+                }
+
+                var first = group.RecipeIds.FirstOrDefault();
+                if (!consumableRecipeSheet.TryGetValue(first, out var firstRecipe))
+                {
+                    continue;
+                }
+                model.StatType = firstRecipe.GetUniqueStat().StatType;
+
                 foreach (var recipeId in group.RecipeIds)
                 {
-                    var recipe = consumableRecipeSheet[recipeId];
-                    var key = group.Key;
-
-                    if (!ConsumableRecipeMap.TryGetValue(key, out var model))
+                    if (!consumableRecipeSheet.TryGetValue(recipeId, out var recipe))
                     {
-                        var name = L10nManager.Localize($"ITEM_GROUPNAME_{group.Key}");
-                        model = new RecipeRow.Model(name, group.Grade)
-                        {
-                            ItemSubType = ItemSubType.Food,
-                            StatType = recipe.GetUniqueStat().StatType
-                        };
-                        ConsumableRecipeMap[key] = model;
+                        continue;
                     }
+
                     model.Rows.Add(recipe);
                 }
             }
