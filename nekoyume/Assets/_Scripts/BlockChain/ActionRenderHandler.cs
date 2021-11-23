@@ -23,6 +23,9 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+using Lib9c.DevExtensions.Action;
+#endif
 namespace Nekoyume.BlockChain
 {
 
@@ -90,6 +93,9 @@ namespace Nekoyume.BlockChain
             RedeemCode();
             ChargeActionPoint();
             ClaimMonsterCollectionReward();
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+            Testbed();
+#endif
         }
 
         public void Stop()
@@ -1149,5 +1155,29 @@ namespace Nekoyume.BlockChain
 
             public int Seed => throw new NotImplementedException();
         }
+
+
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+        private void Testbed()
+        {
+            _actionRenderer.EveryRender<CreateTestbed>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseTestbed)
+                .AddTo(_disposables);
+        }
+
+        private void ResponseTestbed(ActionBase.ActionEvaluation<CreateTestbed> eval)
+        {
+            Debug.LogError($"[CreateTestbed] Response :");
+            if (eval.Exception is null)
+            {
+            }
+            else
+            {
+
+            }
+        }
+#endif
     }
 }
