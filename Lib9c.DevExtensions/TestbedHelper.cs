@@ -183,15 +183,8 @@ namespace Lib9c.DevExtensions
             return data;
         }
 
-        private static string GetDataPath(string fileName)
-        {
-            var path = Path.GetFullPath($"..{Path.DirectorySeparatorChar}");
-            var separator = Path.DirectorySeparatorChar;
-            path = path.Replace(
-                $".Lib9c.Tests{separator}bin{separator}Debug{separator}",
-                $"Lib9c.DevExtensions{separator}Data{separator}{fileName}.json");
-            return path;
-        }
+        private static string GetDataPath(string fileName) =>
+            Path.Combine("..", "..", "..", "..", "Lib9c.DevExtensions", "Data", $"{fileName}.json");
 
         private static T LoadJsonFile<T>(string path)
         {
