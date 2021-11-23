@@ -1247,7 +1247,7 @@ MonoBehaviour:
   - {fileID: 6991427288357171642}
   - {fileID: 3155384903425914966}
   - {fileID: 873482831755142431}
-  receiveButton: {fileID: 0}
+  receiveButton: {fileID: 421133725201710473}
 --- !u!222 &2075681916752197807
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2421,6 +2421,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5930319360302304924}
     m_Modifications:
+    - target: {fileID: 861949034201126773, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_PROGRESS
+      objectReference: {fileID: 0}
     - target: {fileID: 1925281264920820847, guid: 4bc425b6a451d495a87d6ff37b4a1029,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2531,6 +2536,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConditionalButton_Type3
       objectReference: {fileID: 0}
+    - target: {fileID: 6278566912089420281, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_RECEIVED
+      objectReference: {fileID: 0}
+    - target: {fileID: 6938098714094323340, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_RECEIVE
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4bc425b6a451d495a87d6ff37b4a1029, type: 3}
 --- !u!224 &5779297107235749240 stripped
@@ -2539,6 +2554,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5369356206088077591}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &421133725201710473 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5718414708290026654, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+    type: 3}
+  m_PrefabInstance: {fileID: 5369356206088077591}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8844156012522901002
 PrefabInstance:
   m_ObjectHideFlags: 0

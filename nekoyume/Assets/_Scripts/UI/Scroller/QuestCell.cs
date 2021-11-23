@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Scroller
         private SimpleCountableItemView[] rewardViews = null;
 
         [SerializeField]
-        private SubmitButton receiveButton = null;
+        private ConditionalButton receiveButton = null;
 
         private QuestModel _quest = null;
 
@@ -51,11 +51,7 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            receiveButton.SetSubmitText(
-                L10nManager.Localize("UI_PROGRESS"),
-                L10nManager.Localize("UI_RECEIVE"));
-            receiveButton.SetSubmitTextColor(ColorHelper.HexToColorRGB("955c4a"));
-            receiveButton.OnSubmitClick
+            receiveButton.OnSubmitSubject
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(OnReceiveClick)
                 .AddTo(gameObject);
@@ -69,7 +65,7 @@ namespace Nekoyume.UI.Scroller
             UpdateView();
         }
 
-        private void OnReceiveClick(SubmitButton submitButton)
+        private void OnReceiveClick(Unit unit)
         {
             var questWidget = Widget.Find<QuestPopup>();
             questWidget.EnqueueCompletedQuest(_quest);
@@ -133,7 +129,7 @@ namespace Nekoyume.UI.Scroller
                     titleText.color = ColorHelper.HexToColorRGB("ffa78b");
                     contentText.color = ColorHelper.HexToColorRGB("955c4a");
                     progressText.color = ColorHelper.HexToColorRGB("e0a491");
-                    receiveButton.Show();
+                    receiveButton.gameObject.SetActive(true);
                     receiveButton.SetSubmittable(true);
                 }
                 else
@@ -144,7 +140,7 @@ namespace Nekoyume.UI.Scroller
                     titleText.color = ColorHelper.HexToColorRGB("614037");
                     contentText.color = ColorHelper.HexToColorRGB("38251e");
                     progressText.color = ColorHelper.HexToColorRGB("282828");
-                    receiveButton.Hide();
+                    receiveButton.gameObject.SetActive(false);
                 }
             }
             else
@@ -154,7 +150,7 @@ namespace Nekoyume.UI.Scroller
                 titleText.color = ColorHelper.HexToColorRGB("ffa78b");
                 contentText.color = ColorHelper.HexToColorRGB("955c4a");
                 progressText.color = ColorHelper.HexToColorRGB("e0a491");
-                receiveButton.Show();
+                receiveButton.gameObject.SetActive(true);
                 receiveButton.SetSubmittable(false);
             }
 
@@ -195,7 +191,7 @@ namespace Nekoyume.UI.Scroller
             titleText.color = ColorHelper.HexToColorRGB("614037");
             contentText.color = ColorHelper.HexToColorRGB("38251e");
             progressText.color = ColorHelper.HexToColorRGB("282828");
-            receiveButton.Hide();
+            receiveButton.gameObject.SetActive(false);
         }
     }
 }
