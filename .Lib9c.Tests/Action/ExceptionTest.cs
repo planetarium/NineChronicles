@@ -3,8 +3,10 @@ namespace Lib9c.Tests.Action
     using System;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
+    using Lib9c.Formatters;
     using Libplanet;
     using MessagePack;
+    using MessagePack.Resolvers;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
@@ -12,6 +14,16 @@ namespace Lib9c.Tests.Action
 
     public class ExceptionTest
     {
+        public ExceptionTest()
+        {
+            var resolver = MessagePack.Resolvers.CompositeResolver.Create(
+                NineChroniclesResolver.Instance,
+                StandardResolver.Instance
+            );
+            var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
+            MessagePackSerializer.DefaultOptions = options;
+        }
+
         [Theory]
         [InlineData(typeof(InvalidTradableIdException))]
         [InlineData(typeof(AlreadyReceivedException))]
