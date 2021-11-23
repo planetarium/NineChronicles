@@ -19,8 +19,8 @@ namespace PackageExtensions.Mixpanel
                 return;
             }
 
-            _clientHost = Resources.Load<TextAsset>("MixpanelClientHost")?.text ?? "empty";
-            _clientHash = Resources.Load<TextAsset>("MixpanelClientHash")?.text ?? "empty";
+            _clientHost = Resources.Load<TextAsset>("MixpanelClientHost")?.text ?? "no-host";
+            _clientHash = Resources.Load<TextAsset>("MixpanelClientHash")?.text ?? "no-hash";
             _initialized = true;
         }
 
