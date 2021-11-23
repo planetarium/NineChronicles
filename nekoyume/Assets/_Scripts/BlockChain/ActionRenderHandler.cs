@@ -661,7 +661,11 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var errors = eval.Action.errors.ToList();
+            var errorList = (List)eval.Extra[nameof(Action.Buy.errors)];
+            List<(Guid orderId, int errorCode)> errors = errorList
+                .Cast<List>()
+                .Select(t => (t[0].ToGuid(), t[1].ToInteger()))
+                .ToList();
             var purchaseInfos = eval.Action.purchaseInfos;
             if (eval.Action.buyerAvatarAddress == avatarAddress) // buyer
             {
@@ -939,10 +943,30 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
+                var ead = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyAvatarState)];
+                var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
+                var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
+                var enemyAvatarState = new AvatarState(ead);
+                var arenaInfo = new ArenaInfo(aid);
+                var enemyInfo = new ArenaInfo(eid);
+
+                var simulator = new RankingSimulator(
+                    new LocalRandom(eval.RandomSeed),
+                    States.Instance.CurrentAvatarState,
+                    enemyAvatarState,
+                    eval.Action.consumableIds,
+                    Game.Game.instance.TableSheets.GetRankingSimulatorSheets(),
+                    Action.RankingBattle.StageId,
+                    arenaInfo,
+                    enemyInfo,
+                    Game.Game.instance.TableSheets.CostumeStatSheet
+                );
+                simulator.Simulate();
+                var log = simulator.Log;
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
                 {
-                    Widget.Find<RankingBoard>().GoToStage(eval.Action.Result);
+                    Widget.Find<RankingBoard>().GoToStage(log);
                 }
             }
             else
