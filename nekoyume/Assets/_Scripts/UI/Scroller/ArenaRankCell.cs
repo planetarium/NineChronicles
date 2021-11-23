@@ -64,7 +64,7 @@ namespace Nekoyume.UI.Scroller
         private Button avatarInfoButton = null;
 
         [SerializeField]
-        private SubmitButton challengeButton = null;
+        private ConditionalButton challengeButton = null;
 
         private RectTransform _rectTransformCache;
         private bool _isCurrentUser;
@@ -109,7 +109,7 @@ namespace Nekoyume.UI.Scroller
                 })
                 .AddTo(gameObject);
 
-            challengeButton.OnSubmitClick
+            challengeButton.OnSubmitSubject
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ =>
                 {
