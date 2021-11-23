@@ -77,6 +77,12 @@ namespace Nekoyume.UI.Tween
             KillTween();
         }
 
+        public void SetText(string str)
+        {
+            content.text = str;
+            OnEnable();
+        }
+
         private void KillTween()
         {
             if (_coroutine is null)
