@@ -1,9 +1,8 @@
-﻿namespace Lib9c.Tests.ScenarioTests
+﻿namespace Lib9c.Tests.Action.Scenario
 {
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
-    using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
