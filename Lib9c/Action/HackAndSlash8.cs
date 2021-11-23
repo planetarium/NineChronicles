@@ -180,7 +180,7 @@ namespace Nekoyume.Action
             var questSheet = states.GetQuestSheet();
             if (questList.Count() < questSheet.Count)
             {
-                questList.UpdateList(
+                questList.UpdateListV1(
                     2,
                     questSheet,
                     states.GetSheet<QuestRewardSheet>(),

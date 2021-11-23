@@ -39,19 +39,13 @@ namespace Lib9c.Tools
         public static (BlockChain<NCAction> Chain, IStore Store) GetBlockChain(
             ILogger logger,
             string storePath,
-            bool monorocksdb = false,
             Guid? chainId = null
         )
         {
             var policySource = new BlockPolicySource(logger);
             IBlockPolicy<NCAction> policy = policySource.GetPolicy();
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
-            IStore store
-                = monorocksdb
-#pragma warning disable 618
-                    ? (IStore)new MonoRocksDBStore(storePath)
-#pragma warning restore 618
-                    : new RocksDBStore(storePath);
+            IStore store = new RocksDBStore(storePath);
             IKeyValueStore stateKeyValueStore =
                 new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
             IStateStore stateStore = new TrieStateStore(stateKeyValueStore);
