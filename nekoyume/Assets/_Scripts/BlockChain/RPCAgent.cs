@@ -18,6 +18,7 @@ using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using MagicOnion.Client;
+using MessagePack;
 using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
 using Nekoyume.Helper;
@@ -327,30 +328,14 @@ namespace Nekoyume.BlockChain
 
         public void OnRender(byte[] evaluation)
         {
-            var formatter = new BinaryFormatter();
-            using (var compressed = new MemoryStream(evaluation))
-            using (var decompressed = new MemoryStream())
-            using (var df = new DeflateStream(compressed, CompressionMode.Decompress))
-            {
-                df.CopyTo(decompressed);
-                decompressed.Seek(0, SeekOrigin.Begin);
-                var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(decompressed);
-                ActionRenderer.ActionRenderSubject.OnNext(ev);
-            }
+            var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(evaluation).ToActionEvaluation();
+            ActionRenderer.ActionRenderSubject.OnNext(ev);
         }
 
         public void OnUnrender(byte[] evaluation)
         {
-            var formatter = new BinaryFormatter();
-            using (var compressed = new MemoryStream(evaluation))
-            using (var decompressed = new MemoryStream())
-            using (var df = new DeflateStream(compressed, CompressionMode.Decompress))
-            {
-                df.CopyTo(decompressed);
-                decompressed.Seek(0, SeekOrigin.Begin);
-                var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(decompressed);
-                ActionRenderer.ActionUnrenderSubject.OnNext(ev);
-            }
+            var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(evaluation).ToActionEvaluation();
+            ActionRenderer.ActionUnrenderSubject.OnNext(ev);
         }
 
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
