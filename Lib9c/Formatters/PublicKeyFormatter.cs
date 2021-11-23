@@ -17,7 +17,13 @@ namespace Lib9c.Formatters
         {
             options.Security.DepthStep(ref reader);
 
-            return new PublicKey(reader.ReadBytes()?.ToArray() ?? throw new InvalidOperationException());
+            var bytes = reader.ReadBytes();
+            if (bytes is null)
+            {
+                throw new NullReferenceException($"ReadBytes from serialized {nameof(PublicKey)} is null.");
+            }
+
+            return new PublicKey(bytes.Value.ToArray());
         }
     }
 }

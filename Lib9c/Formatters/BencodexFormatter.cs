@@ -18,7 +18,13 @@ namespace Lib9c.Formatters
         {
             options.Security.DepthStep(ref reader);
 
-            return (T)new Codec().Decode(reader.ReadBytes()?.ToArray() ?? throw new InvalidOperationException());
+            var bytes = reader.ReadBytes();
+            if (bytes is null)
+            {
+                throw new NullReferenceException($"ReadBytes from serialized {typeof(T).Name} is null.");
+            }
+
+            return (T)new Codec().Decode(bytes.Value.ToArray());
         }
     }
 }

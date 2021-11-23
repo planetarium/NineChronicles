@@ -55,8 +55,13 @@ namespace Lib9c.Formatters
         {
             options.Security.DepthStep(ref reader);
 
-            IValue value = new Codec().Decode(reader.ReadBytes()?.ToArray() ?? throw new InvalidOperationException());
-            return new ActionBase.AccountStateDelta(value);
+            var bytes = reader.ReadBytes();
+            if (bytes is null)
+            {
+                throw new NullReferenceException($"ReadBytes from serialized {nameof(IAccountStateDelta)} is null.");
+            }
+
+            return new ActionBase.AccountStateDelta(new Codec().Decode(bytes.Value.ToArray()));
         }
     }
 }
