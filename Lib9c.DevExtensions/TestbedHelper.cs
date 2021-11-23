@@ -176,7 +176,24 @@ namespace Lib9c.DevExtensions
             }
         }
 
-        public static T LoadJsonFile<T>(string path)
+        public static T LoadData<T>(string fileName)
+        {
+            var path = GetDataPath(fileName);
+            var data = LoadJsonFile<T>(path);
+            return data;
+        }
+
+        private static string GetDataPath(string fileName)
+        {
+            var path = Path.GetFullPath($"..{Path.DirectorySeparatorChar}");
+            var separator = Path.DirectorySeparatorChar;
+            path = path.Replace(
+                $".Lib9c.Tests{separator}bin{separator}Debug{separator}",
+                $"Lib9c.DevExtensions{separator}Data{separator}{fileName}.json");
+            return path;
+        }
+
+        private static T LoadJsonFile<T>(string path)
         {
             var fileStream = new FileStream(path, FileMode.Open);
             var data = new byte[fileStream.Length];
@@ -186,5 +203,8 @@ namespace Lib9c.DevExtensions
             var result = JsonConvert.DeserializeObject<T>(jsonData);
             return result;
         }
+
+
+
     }
 }

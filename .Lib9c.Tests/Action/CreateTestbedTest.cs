@@ -17,31 +17,19 @@
         public void Execute()
         {
             var result = BlockChainHelper.MakeInitState();
-            var action = new CreateTestbed();
-            var nextState = action.Execute(new ActionContext()
+            var testbed = result.GetTestbed();
+            var nextState = result.GetState();
+            var data = TestbedHelper.LoadData<TestbedSell>("TestbedSell");
+
+            Assert.Equal(testbed.Orders.Count(), testbed.result.ItemInfos.Count);
+
+            for (var i = 0; i < testbed.Orders.Count; i++)
             {
-                BlockIndex = 0,
-                PreviousStates = result.GetState(),
-                Random = new TestRandom(),
-                Rehearsal = false,
-            });
-
-            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
-            path = path.Replace(
-                ".Lib9c.Tests\\bin\\Debug\\netcoreapp3.1",
-                "Lib9c.DevExtensions\\Data\\TestbedSell.json");
-            path = path.Replace("file:\\", string.Empty);
-            var data = TestbedHelper.LoadJsonFile<TestbedSell>(path);
-
-            Assert.Equal(action.Orders.Count(), action.result.ItemInfos.Count);
-
-            for (var i = 0; i < action.Orders.Count; i++)
-            {
-                Assert.Equal(data.Items[i].ItemSubType, action.Orders[i].ItemSubType);
+                Assert.Equal(data.Items[i].ItemSubType, testbed.Orders[i].ItemSubType);
             }
 
             var purchaseInfos = new List<PurchaseInfo>();
-            foreach (var order in action.Orders)
+            foreach (var order in testbed.Orders)
             {
                 var purchaseInfo = new PurchaseInfo(
                     order.OrderId,

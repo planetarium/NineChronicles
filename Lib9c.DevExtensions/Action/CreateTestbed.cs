@@ -69,11 +69,7 @@ namespace Lib9c.DevExtensions.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
-            path = path.Replace(".Lib9c.Tests\\bin\\Debug\\netcoreapp3.1",
-                            "Lib9c.DevExtensions\\Data\\TestbedSell.json");
-            path = path.Replace("file:\\", "");
-            var data = TestbedHelper.LoadJsonFile<TestbedSell>(path);
+            var data = TestbedHelper.LoadData<TestbedSell>("TestbedSell");
             var addedItemInfos = data.Items
                 .Select(item => new TestbedHelper.AddedItemInfo(
                     context.Random.GenerateRandomGuid(),

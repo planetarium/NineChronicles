@@ -822,12 +822,7 @@ namespace Lib9c.Tests.Action
             var result = BlockChainHelper.MakeInitState();
             var testbed = result.GetTestbed();
             var nextState = result.GetState();
-            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
-            path = path.Replace(
-                ".Lib9c.Tests\\bin\\Debug\\netcoreapp3.1",
-                "Lib9c.DevExtensions\\Data\\TestbedSell.json");
-            path = path.Replace("file:\\", string.Empty);
-            var data = TestbedHelper.LoadJsonFile<TestbedSell>(path);
+            var data = TestbedHelper.LoadData<TestbedSell>("TestbedSell");
 
             Assert.Equal(testbed.Orders.Count(), testbed.result.ItemInfos.Count);
             for (var i = 0; i < testbed.Orders.Count; i++)
