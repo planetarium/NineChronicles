@@ -12,25 +12,25 @@ namespace Tests.EditMode.Battle
         {
             var challengerRating = 10000;
             var defenderRating = challengerRating + Math.Abs(ArenaScoreHelper.DifferLowerLimit);
-            var score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Win);
+            var score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Win, out var defenderScore);
             Assert.AreEqual(ArenaScoreHelper.WinScoreMax, score);
-            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Lose);
+            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Lose, out defenderScore);
             Assert.AreEqual(ArenaScoreHelper.LoseScoreMin, score);
             defenderRating++;
-            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Win);
+            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Win, out defenderScore);
             Assert.AreEqual(ArenaScoreHelper.WinScoreMax, score);
-            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Lose);
+            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Lose, out defenderScore);
             Assert.AreEqual(ArenaScoreHelper.LoseScoreMin, score);
 
             defenderRating = challengerRating - Math.Abs(ArenaScoreHelper.DifferUpperLimit);
-            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Win);
+            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Win, out defenderScore);
             Assert.AreEqual(ArenaScoreHelper.WinScoreMin, score);
-            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Lose);
+            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Lose, out defenderScore);
             Assert.AreEqual(ArenaScoreHelper.LoseScoreMax, score);
             defenderRating--;
-            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Win);
+            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Win, out defenderScore);
             Assert.AreEqual(ArenaScoreHelper.WinScoreMin, score);
-            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Lose);
+            score = ArenaScoreHelper.GetScore(challengerRating, defenderRating, BattleLog.Result.Lose, out defenderScore);
             Assert.AreEqual(ArenaScoreHelper.LoseScoreMax, score);
         }
     }
