@@ -33,7 +33,7 @@ namespace Lib9c.Tests.Model
                 _tableSheets.EquipmentItemSubRecipeSheet
             ).ToList();
 
-            for (var i = 0; i < list.Count() - 1; i++)
+            for (var i = 0; i < list.Count - 1; i++)
             {
                 var quest = list[i];
                 var next = list[i + 1];
@@ -44,7 +44,7 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void UpdateItemTypeCollectQuestDeterministic()
         {
-            var expectedItemIds = new List<int>()
+            var expectedItemIds = new List<int>
             {
                 303000,
                 303100,
@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Model
                 306040,
             };
 
-            var itemIds = new List<int>()
+            var itemIds = new List<int>
             {
                 400000,
             };
@@ -114,6 +114,46 @@ namespace Lib9c.Tests.Model
             Assert.Equal(previousQuestSheetCount + questCountToAdd, questSheet.Count);
 
             questList.UpdateList(
+                questSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet);
+            Assert.Equal(2, questList.ListVersion);
+            Assert.Equal(questSheet.Count, questList.Count());
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(99)]
+        public void UpdateListV1(int questCountToAdd)
+        {
+            var questList = new QuestList(
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet
+            );
+
+            Assert.Equal(1, questList.ListVersion);
+            Assert.Equal(_tableSheets.QuestSheet.Count, questList.Count());
+
+            var questSheet = _tableSheets.QuestSheet;
+            Assert.NotNull(questSheet.First);
+            var patchedSheet = new WorldQuestSheet();
+            var patchedSheetCsvSb = new StringBuilder().AppendLine("id,goal,quest_reward_id");
+            for (var i = questCountToAdd; i > 0; i--)
+            {
+                patchedSheetCsvSb.AppendLine($"{990000 + i - 1},10,{questSheet.First.QuestRewardId}");
+            }
+
+            patchedSheet.Set(patchedSheetCsvSb.ToString());
+            Assert.Equal(questCountToAdd, patchedSheet.Count);
+            var previousQuestSheetCount = questSheet.Count;
+            questSheet.Set(patchedSheet);
+            Assert.Equal(previousQuestSheetCount + questCountToAdd, questSheet.Count);
+
+            questList.UpdateListV1(
                 2,
                 questSheet,
                 _tableSheets.QuestRewardSheet,
@@ -139,7 +179,7 @@ namespace Lib9c.Tests.Model
 
             Assert.Equal(1, questList.ListVersion);
             Assert.Throws<UpdateListVersionException>(() =>
-                questList.UpdateList(
+                questList.UpdateListV1(
                     listVersion,
                     _tableSheets.QuestSheet,
                     _tableSheets.QuestRewardSheet,
@@ -160,7 +200,7 @@ namespace Lib9c.Tests.Model
 
             Assert.Equal(1, questList.ListVersion);
             Assert.Throws<UpdateListQuestsCountException>(() =>
-                questList.UpdateList(
+                questList.UpdateListV1(
                     2,
                     _tableSheets.QuestSheet,
                     _tableSheets.QuestRewardSheet,
