@@ -104,22 +104,20 @@ namespace Nekoyume.UI.Module
 
         public void UpdateState(State state)
         {
-            switch (CurrentState.Value)
+            CurrentState.Value = state;
+            switch (state)
             {
                 case State.Normal:
                     normalObject.SetActive(true);
                     conditionalObject.SetActive(false);
-                    CurrentState.Value = State.Normal;
                     break;
                 case State.Conditional:
                     normalObject.SetActive(false);
                     conditionalObject.SetActive(true);
-                    CurrentState.Value = State.Conditional;
                     break;
                 case State.Disabled:
                     normalObject.SetActive(false);
                     conditionalObject.SetActive(false);
-                    CurrentState.Value = State.Disabled;
                     break;
             }
         }
