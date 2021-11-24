@@ -12,6 +12,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using mixpanel;
 using Nekoyume.ActionExtensions;
+using Nekoyume.Game;
 using Nekoyume.Model.State;
 using Nekoyume.UI;
 using UnityEngine;
@@ -84,7 +85,7 @@ namespace Nekoyume.BlockChain
                 tail = tail,
                 name = nickName,
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<CreateAvatar>()
@@ -131,7 +132,7 @@ namespace Nekoyume.BlockChain
                 rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
                 playCount = playCount,
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
             _lastBattleActionId = action.Id;
@@ -193,7 +194,7 @@ namespace Nekoyume.BlockChain
                 avatarAddress = avatarAddress,
                 rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
             _lastBattleActionId = action.Id;
@@ -241,7 +242,7 @@ namespace Nekoyume.BlockChain
                 avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex,
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
@@ -279,7 +280,7 @@ namespace Nekoyume.BlockChain
                 itemSubType = itemSubType,
                 orderId = Guid.NewGuid(),
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
@@ -304,7 +305,7 @@ namespace Nekoyume.BlockChain
                 sellerAvatarAddress = sellerAvatarAddress,
                 itemSubType = itemSubType,
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
@@ -344,7 +345,7 @@ namespace Nekoyume.BlockChain
                 price = price,
                 count = count,
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
@@ -369,7 +370,7 @@ namespace Nekoyume.BlockChain
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
                 purchaseInfos = purchaseInfos
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<Buy>()
@@ -392,7 +393,7 @@ namespace Nekoyume.BlockChain
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
@@ -433,7 +434,7 @@ namespace Nekoyume.BlockChain
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
@@ -477,7 +478,7 @@ namespace Nekoyume.BlockChain
                 equipmentIds = equipmentIds,
                 consumableIds = consumableIds
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
             _lastBattleActionId = action.Id;
@@ -508,7 +509,7 @@ namespace Nekoyume.BlockChain
                 TableName = tableName,
                 TableCsv = tableCsv,
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<PatchTableSheet>()
@@ -546,7 +547,7 @@ namespace Nekoyume.BlockChain
                 recipeId = recipeInfo.RecipeId,
                 subRecipeId = recipeInfo.SubRecipeId,
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
@@ -575,7 +576,7 @@ namespace Nekoyume.BlockChain
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
@@ -593,7 +594,7 @@ namespace Nekoyume.BlockChain
                 code,
                 States.Instance.CurrentAvatarState.address
             );
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
@@ -616,7 +617,7 @@ namespace Nekoyume.BlockChain
             {
                 avatarAddress = avatarAddress
             };
-            action.PayCost(Game.Game.instance.States, Game.Game.instance.TableSheets);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
