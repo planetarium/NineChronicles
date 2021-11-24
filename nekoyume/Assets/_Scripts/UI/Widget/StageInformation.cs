@@ -24,7 +24,6 @@ namespace Nekoyume.UI
             Quest,
             Mimisbrunnr,
         }
-<<<<<<< HEAD
 
         [SerializeField]
         private HelpButton stageHelpButton;
