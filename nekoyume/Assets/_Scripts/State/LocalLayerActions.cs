@@ -1,26 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using UnityEngine;
 
 namespace Nekoyume.State
 {
+    // NOTE: Consider how to directly use the Tx list staged in the Tx pool.
     /// <summary>
     /// Register `GameAction` information for adjust `States`.
     /// </summary>
-    public static class LocalLayerActions
+    public class LocalLayerActions
     {
+        public static LocalLayerActions Instance => Game.Game.instance.LocalLayerActions;
+
         private class Info
         {
-            public Action<States, TableSheets> payCostAction;
+            public Action<IAgent, States, TableSheets> payCostAction;
             public long createdBlockIndex;
             public bool isRendered;
         }
 
-        private static readonly Stack<Info> _reusableInfoPool = new Stack<Info>();
+        private readonly Stack<Info> _reusableInfoPool = new Stack<Info>();
 
-        private static readonly Dictionary<Guid, Info> _infos = new Dictionary<Guid, Info>();
+        private readonly Dictionary<Guid, Info> _infos = new Dictionary<Guid, Info>();
 
         /// <summary>
         /// Register `GameAction` information.
@@ -29,9 +33,9 @@ namespace Nekoyume.State
         /// <param name="payCostAction">Pay the cost if `GameAction` has.</param>
         /// <param name="createdBlockIndex">Block index when `GameAction` created in ActionManager.</param>
         /// <param name="isRendered">Set `true` when this `GameAction` already rendered by `IActionRenderer`</param>
-        public static void Register(
+        public void Register(
             Guid gameActionId,
-            Action<States, TableSheets> payCostAction,
+            Action<IAgent, States, TableSheets> payCostAction,
             long createdBlockIndex,
             bool isRendered = false)
         {
@@ -51,7 +55,7 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="gameActionId">`GameAction.Id`</param>
         /// <param name="isRendered">Set `True` when rendered. Set `False` when unrendered.</param>
-        public static void SetRendered(Guid gameActionId, bool isRendered)
+        public void SetRendered(Guid gameActionId, bool isRendered)
         {
             if (!TryGetRegisteredInfo(gameActionId, out var info))
             {
@@ -66,13 +70,14 @@ namespace Nekoyume.State
         /// <summary>
         /// Pay the cost of registered `GameAction`s which is not rendered.
         /// </summary>
+        /// <param name="agent"></param>
         /// <param name="states">Source `States`</param>
         /// <param name="tableSheets"></param>
-        public static void PayCost(States states, TableSheets tableSheets)
+        public void PayCost(IAgent agent, States states, TableSheets tableSheets)
         {
             foreach (var info in _infos.Values.Where(e => !e.isRendered))
             {
-                info.payCostAction(states, tableSheets);
+                info.payCostAction(agent, states, tableSheets);
             }
         }
 
@@ -80,7 +85,7 @@ namespace Nekoyume.State
         /// Unregister the registered `GameAction` information which is created before `blockIndex`.
         /// </summary>
         /// <param name="blockIndex"></param>
-        public static void UnregisterCreatedBefore(long blockIndex)
+        public void UnregisterCreatedBefore(long blockIndex)
         {
             foreach (var gameActionId in _infos
                 .Where(pair => pair.Value.createdBlockIndex < blockIndex)
@@ -93,7 +98,7 @@ namespace Nekoyume.State
             }
         }
 
-        public static void UnregisterAll()
+        public void UnregisterAll()
         {
             var infos = _infos.Values.ToArray();
             _infos.Clear();
@@ -103,7 +108,7 @@ namespace Nekoyume.State
             }
         }
 
-        private static bool TryGetRegisteredInfo(Guid gameActionId, out Info info)
+        private bool TryGetRegisteredInfo(Guid gameActionId, out Info info)
         {
             if (_infos.ContainsKey(gameActionId))
             {
@@ -115,17 +120,11 @@ namespace Nekoyume.State
             return false;
         }
 
-        private static Info GetNewInfo(Action<States, TableSheets> payCostAction, long createdBlockIndex,
+        private Info GetNewInfo(Action<IAgent, States, TableSheets> payCostAction, long createdBlockIndex,
             bool isRendered = false)
         {
-            // FIXME
             var info = _reusableInfoPool.Count == 0
-                ? new Info
-                {
-                    payCostAction = payCostAction,
-                    createdBlockIndex = createdBlockIndex,
-                    isRendered = isRendered,
-                }
+                ? new Info()
                 : _reusableInfoPool.Pop();
 
             info.payCostAction = payCostAction;
