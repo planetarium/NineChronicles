@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -17,8 +17,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle9")]
-    public class RankingBattle : GameAction
+    [ActionType("ranking_battle8")]
+    public class RankingBattle8 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
@@ -196,7 +196,7 @@ namespace Nekoyume.Action
                 enemyArenaInfo,
                 costumeStatSheet);
 
-            simulator.Simulate();
+            simulator.SimulateV4();
 
             sw.Stop();
             Log.Verbose(

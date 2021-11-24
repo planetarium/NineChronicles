@@ -170,6 +170,30 @@ namespace Nekoyume.Model.State
             return Score - current;
         }
 
+        [Obsolete("Use Update()")]
+        public int UpdateV4(ArenaInfo enemyInfo, BattleLog.Result result)
+        {
+            DailyChallengeCount--;
+            switch (result)
+            {
+                case BattleLog.Result.Win:
+                    ArenaRecord.Win++;
+                    break;
+                case BattleLog.Result.Lose:
+                    ArenaRecord.Lose++;
+                    break;
+                case BattleLog.Result.TimeOver:
+                    ArenaRecord.Draw++;
+                    return 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(result), result, null);
+            }
+
+            var earnedScore = ArenaScoreHelper.GetScoreV2(Score, enemyInfo.Score, result);
+            Score = Math.Max(1000, Score + earnedScore);
+            return earnedScore;
+        }
+
         public int Update(ArenaInfo enemyInfo, BattleLog.Result result)
         {
             DailyChallengeCount--;
@@ -188,8 +212,10 @@ namespace Nekoyume.Model.State
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
 
-            var earnedScore = ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result);
+            var earnedScore =
+                ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result, out var enemyScore);
             Score = Math.Max(1000, Score + earnedScore);
+            enemyInfo.Score = Math.Max(1000, enemyInfo.Score + enemyScore);
             return earnedScore;
         }
 

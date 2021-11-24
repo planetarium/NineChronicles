@@ -64,7 +64,8 @@ namespace Nekoyume.Battle
         /// winScore
         /// loseScore
         /// </summary>
-        private static readonly IOrderedEnumerable<(int differ, int winScore, int loseScore)> CachedScore =
+        [Obsolete("Use CachedScore")]
+        private static readonly IOrderedEnumerable<(int differ, int winScore, int loseScore)> CachedScoreV2 =
             new List<(int differ, int winScore, int loseScore)>
             {
                 (-500, 60, -5),
@@ -80,28 +81,49 @@ namespace Nekoyume.Battle
                 (500, 2, -30),
             }.OrderBy(tuple => tuple.differ);
 
-        public static int GetScore(int challengerRating, int defenderRating, BattleLog.Result result)
+        /// <summary>
+        /// differ: (challenger rate - defender rate)
+        /// winScore
+        /// loseScore
+        /// </summary>
+        private static readonly IOrderedEnumerable<(int differ, int winScore, int loseScore, int defenderScore)> CachedScore =
+            new List<(int differ, int winScore, int loseScore, int defenderScore)>
+            {
+                (-500, 60, -5, 0),
+                (-400, 50, -5, 0),
+                (-300, 40, -6, 0),
+                (-200, 30, -6, 0),
+                (-100, 25, -8, 0),
+                (0, 20, -8, 0),
+                (100, 15, -10, 0),
+                (200, 15, -10, 0),
+                (300, 8, -20, 0),
+                (400, 4, -25, 0),
+                (500, 2, -30, 0),
+            }.OrderBy(tuple => tuple.differ);
+
+        public static int GetScore(int challengerRating, int defenderRating, BattleLog.Result result, out int defenderScore)
         {
             if (challengerRating < 0 ||
                 defenderRating < 0 ||
                 result == BattleLog.Result.TimeOver)
             {
-                return 0;
+                return defenderScore = 0;
             }
 
             var differ = challengerRating - defenderRating;
-            foreach (var (differ2, winScore, loseScore) in CachedScore)
+            foreach (var (differ2, winScore, loseScore, defenderScore2) in CachedScore)
             {
                 if (differ >= differ2)
                 {
                     continue;
                 }
 
-                return result == BattleLog.Result.Win
-                    ? winScore
-                    : loseScore;
+                defenderScore = defenderScore2;
+                return result == BattleLog.Result.Win ? winScore : loseScore;
             }
 
+            defenderScore = 0; // Temporary value
             return result == BattleLog.Result.Win
                 ? 1
                 : -30;
@@ -150,6 +172,34 @@ namespace Nekoyume.Battle
             return result == BattleLog.Result.Win
                 ? WinScoreMin
                 : LoseScoreMax;
+        }
+
+        [Obsolete("Use GetScore()")]
+        public static int GetScoreV2(int challengerRating, int defenderRating, BattleLog.Result result)
+        {
+            if (challengerRating < 0 ||
+                defenderRating < 0 ||
+                result == BattleLog.Result.TimeOver)
+            {
+                return 0;
+            }
+
+            var differ = challengerRating - defenderRating;
+            foreach (var (differ2, winScore, loseScore) in CachedScoreV2)
+            {
+                if (differ >= differ2)
+                {
+                    continue;
+                }
+
+                return result == BattleLog.Result.Win
+                    ? winScore
+                    : loseScore;
+            }
+
+            return result == BattleLog.Result.Win
+                ? 1
+                : -30;
         }
     }
 }
