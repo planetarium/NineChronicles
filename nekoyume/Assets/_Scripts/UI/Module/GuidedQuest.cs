@@ -74,10 +74,10 @@ namespace Nekoyume.UI.Module
         private static readonly ViewModel SharedViewModel = new ViewModel();
 
         [SerializeField]
-        private List<GuidedQuestCell> cells = null;
+        private List<GuidedQuestCell> cells;
 
         [SerializeField]
-        private AnchoredPositionSingleTweener showingAndHidingTweener = null;
+        private AnchoredPositionSingleTweener showingAndHidingTweener;
 
         #region Subjects
 
@@ -158,8 +158,6 @@ namespace Nekoyume.UI.Module
         /// GuidedQuest를 초기화하면서 노출시킵니다.
         /// 이미 초기화되어 있다면 `avatarState` 인자에 따라 재초기화를 하거나 새로운 가이드 퀘스트를 더하는 AddNewGuidedQuest 상태로 진입합니다.
         /// </summary>
-        /// <param name="avatarState"></param>
-        /// <param name="ignoreAnimation"></param>
         public void Show(AvatarState avatarState, System.Action onComplete = null, bool ignoreAnimation = false)
         {
             if (avatarState is null)
@@ -467,7 +465,7 @@ namespace Nekoyume.UI.Module
 
         private static WorldQuest GetTargetWorldQuest(QuestList questList)
         {
-            #pragma warning disable 0162
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (GameConfig.RequireClearedStageLevel.UIMainMenuStage > 0)
             {
                 if (SharedViewModel.avatarState is null ||
@@ -478,7 +476,6 @@ namespace Nekoyume.UI.Module
                     return null;
                 }
             }
-            #pragma warning restore 0162
 
             var targetQuest = questList?
                 .OfType<WorldQuest>()
@@ -506,11 +503,16 @@ namespace Nekoyume.UI.Module
                 return null;
             }
 
+            var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
             return questList?
                 .OfType<CombinationEquipmentQuest>()
-                .Where(quest => !quest.Complete &&
-                                quest.StageId <= lastClearedStageId)
-                .OrderBy(quest => quest.StageId)
+                .Select(quest => recipeSheet.TryGetValue(quest.RecipeId, out var recipeRow)
+                    ? (quest, unlockStageId: recipeRow.UnlockStage)
+                    : (quest, unlockStageId: int.MaxValue))
+                .Where(tuple => !tuple.quest.Complete &&
+                                tuple.unlockStageId <= lastClearedStageId)
+                .OrderBy(tuple => tuple.unlockStageId)
+                .Select(tuple => tuple.quest)
                 .FirstOrDefault();
         }
 

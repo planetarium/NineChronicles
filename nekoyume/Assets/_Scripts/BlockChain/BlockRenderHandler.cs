@@ -82,9 +82,9 @@ namespace Nekoyume.BlockChain
 
             if (States.Instance.CurrentAvatarState != null)
             {
-                UniTask.Run(() =>
+                UniTask.Run(async () =>
                 {
-                    var value = Game.Game.instance.Agent.GetState(States.Instance.CurrentAvatarState.address);
+                    var value = await Game.Game.instance.Agent.GetStateAsync(States.Instance.CurrentAvatarState.address);
                     if (!(value is Bencodex.Types.Dictionary dict))
                     {
                         return;
@@ -137,11 +137,11 @@ namespace Nekoyume.BlockChain
                 (int) currentBlockIndex / gameConfigState.WeeklyArenaInterval;
             var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
 
-            UniTask.Run(() =>
+            UniTask.Run(async () =>
             {
                 var weeklyArenaState =
                     new WeeklyArenaState(
-                        (Bencodex.Types.Dictionary) agent.GetState(weeklyArenaAddress));
+                        (Bencodex.Types.Dictionary) await agent.GetStateAsync(weeklyArenaAddress));
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
             });
         }

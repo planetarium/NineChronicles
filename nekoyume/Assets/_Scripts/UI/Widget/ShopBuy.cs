@@ -69,13 +69,8 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() =>
             {
                 CleanUpWishListAlertPopup(Close);
-                Game.Event.OnRoomEnter.Invoke(true);
             });
-            CloseWidget = () =>
-            {
-                Close();
-                Game.Event.OnRoomEnter.Invoke(true);
-            };
+            CloseWidget = () => CleanUpWishListAlertPopup(Close);
         }
 
         public override void Initialize()
@@ -145,6 +140,7 @@ namespace Nekoyume.UI
             _npc?.gameObject.SetActive(false);
             shopItems.Close();
             Find<ItemCountAndPricePopup>().Close();
+            Game.Event.OnRoomEnter.Invoke(true);
             Close(true);
         }
 
@@ -213,7 +209,7 @@ namespace Nekoyume.UI
             {
                 await GetPurchaseInfo(shopItem.OrderId.Value)
             };
-            Game.Game.instance.ActionManager.Buy(purchaseInfos);
+            Game.Game.instance.ActionManager.Buy(purchaseInfos).Subscribe();
 
             var countProps = new Value {["Count"] = 1,};
             Mixpanel.Track("Unity/Number of Purchased Items", countProps);

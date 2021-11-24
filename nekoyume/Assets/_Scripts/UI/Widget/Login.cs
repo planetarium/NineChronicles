@@ -33,8 +33,8 @@ namespace Nekoyume.UI
             _objectPool = Game.Game.instance.Stage.objectPool;
 
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
-            Game.Event.OnRoomEnter.AddListener(b => ClearPlayers());
-            Game.Event.OnRoomEnter.AddListener(b => ReactiveShopState.InitSellDigests());
+            Game.Event.OnRoomEnter.AddListener(_ => ClearPlayers());
+            Game.Event.OnRoomEnter.AddListener(_ => ReactiveShopState.InitSellDigests());
             CloseWidget = null;
         }
 

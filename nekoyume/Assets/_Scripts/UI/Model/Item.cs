@@ -13,7 +13,6 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> Enhancement = new ReactiveProperty<string>();
         public readonly ReactiveProperty<bool> EnhancementEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> EnhancementEffectEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> HasOptions = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> Dimmed = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> ActiveSelf = new ReactiveProperty<bool>(true);
@@ -40,11 +39,6 @@ namespace Nekoyume.UI.Model
                 EnhancementEnabled.Value = false;
                 EnhancementEffectEnabled.Value = false;
             }
-
-            if (equipment != null)
-            {
-                HasOptions.Value = equipment.GetOptionCountFromCombination() > 0;
-            }
         }
 
         public virtual void Dispose()
@@ -54,7 +48,6 @@ namespace Nekoyume.UI.Model
             Enhancement.Dispose();
             EnhancementEnabled.Dispose();
             EnhancementEffectEnabled.Dispose();
-            HasOptions.Dispose();
             Dimmed.Dispose();
             ActiveSelf.Dispose();
             Selected.Dispose();

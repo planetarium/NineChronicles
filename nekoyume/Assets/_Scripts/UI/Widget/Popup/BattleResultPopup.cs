@@ -527,13 +527,13 @@ namespace Nekoyume.UI
             // NOTE: Check mimisbrunnr
             if (SharedModel.WorldID > 10000)
             {
-                Game.Game.instance.ActionManager.MimisbrunnrBattle(
+                yield return Game.Game.instance.ActionManager.MimisbrunnrBattle(
                     player.Costumes,
                     player.Equipments,
                     new List<Consumable>(),
                     SharedModel.WorldID,
                     SharedModel.StageID + 1,
-                    1);
+                    1).StartAsCoroutine();
             }
             else
             {
@@ -543,7 +543,7 @@ namespace Nekoyume.UI
                     new List<Consumable>(),
                     SharedModel.WorldID,
                     SharedModel.StageID + 1,
-                    1);
+                    1).StartAsCoroutine();
             }
         }
 
@@ -589,13 +589,13 @@ namespace Nekoyume.UI
             // NOTE: Check mimisbrunnr
             if (SharedModel.WorldID > 10000)
             {
-                Game.Game.instance.ActionManager.MimisbrunnrBattle(
+                yield return Game.Game.instance.ActionManager.MimisbrunnrBattle(
                     player.Costumes,
                     player.Equipments,
                     new List<Consumable>(),
                     SharedModel.WorldID,
                     SharedModel.StageID,
-                    1);
+                    1).StartAsCoroutine();
             }
             else
             {
@@ -605,7 +605,7 @@ namespace Nekoyume.UI
                     new List<Consumable>(),
                     SharedModel.WorldID,
                     SharedModel.StageID,
-                    1);
+                    1).StartAsCoroutine();
             }
         }
 

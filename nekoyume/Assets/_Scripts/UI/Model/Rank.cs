@@ -108,7 +108,7 @@ namespace Nekoyume.UI.Model
                 .Select(async rankingInfo =>
                 {
                     var (exist, avatarState) =
-                        await States.TryGetAvatarState(rankingInfo.AvatarAddress);
+                        await States.TryGetAvatarStateAsync(rankingInfo.AvatarAddress);
                     if (!exist)
                     {
                         return null;
@@ -184,7 +184,7 @@ namespace Nekoyume.UI.Model
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarState(address);
+                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
                     if (!exist)
                     {
                         return null;
@@ -230,7 +230,7 @@ namespace Nekoyume.UI.Model
 
                 var addressString = myRecord.AvatarAddress.Substring(2);
                 var address = new Address(addressString);
-                var (exist, avatarState) = await States.TryGetAvatarState(address);
+                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
                 if (!exist)
                 {
                     continue;
@@ -269,7 +269,7 @@ namespace Nekoyume.UI.Model
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarState(address);
+                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
                     if (!exist)
                     {
                         return null;
@@ -316,7 +316,7 @@ namespace Nekoyume.UI.Model
 
                 var addressString = myRecord.AvatarAddress.Substring(2);
                 var address = new Address(addressString);
-                var (exist, avatarState) = await States.TryGetAvatarState(address);
+                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
                 if (!exist)
                 {
                     continue;
@@ -354,7 +354,7 @@ namespace Nekoyume.UI.Model
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarState(address);
+                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
                     if (!exist)
                     {
                         return null;
@@ -399,7 +399,7 @@ namespace Nekoyume.UI.Model
 
                 var addressString = myRecord.AvatarAddress.Substring(2);
                 var address = new Address(addressString);
-                var (exist, avatarState) = await States.TryGetAvatarState(address);
+                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
                 if (!exist)
                 {
                     continue;
@@ -445,7 +445,7 @@ namespace Nekoyume.UI.Model
                     {
                         var addressString = e.AvatarAddress.Substring(2);
                         var address = new Address(addressString);
-                        var (exist, avatarState) = await States.TryGetAvatarState(address);
+                        var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
                         if (!exist)
                         {
                             return null;
@@ -494,7 +494,7 @@ namespace Nekoyume.UI.Model
 
                     var addressString = myRecord.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarState(address);
+                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
                     if (!exist)
                     {
                         continue;

@@ -499,18 +499,6 @@ namespace Nekoyume.BlockChain
                     Debug.LogErrorFormat("RocksDB is not available. DefaultStore will be used. {0}", e);
                 }
             }
-            else if (storageType == "monorocksdb")
-            {
-                try
-                {
-                    store = new MonoRocksDBStore(path);
-                    Debug.Log("MonoRocksDB is initialized.");
-                }
-                catch (TypeInitializationException e)
-                {
-                    Debug.LogErrorFormat("RocksDB is not available. DefaultStore will be used. {0}", e);
-                }
-            }
             else
             {
                 Debug.Log($"Storage Type {storageType} is not supported. DefaultStore will be used.");
@@ -841,20 +829,19 @@ namespace Nekoyume.BlockChain
             );
             Debug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
 
-            States.Instance.SelectAvatar(avatarIndex);
+            yield return States.Instance.SelectAvatarAsync(avatarIndex).ToCoroutine();
             var waitForSeconds = new WaitForSeconds(TxProcessInterval);
 
             while (true)
             {
                 yield return waitForSeconds;
-
                 yield return Game.Game.instance.ActionManager.HackAndSlash(
                     new List<Costume>(),
                     new List<Equipment>(),
                     new List<Consumable>(),
                     1,
                     1,
-                    1);
+                    1).StartAsCoroutine();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }
