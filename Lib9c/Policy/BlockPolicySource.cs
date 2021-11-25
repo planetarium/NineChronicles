@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
-using Lib9c.DevExtensions;
-using Lib9c.DevExtensions.Model;
 using Lib9c.Renderer;
 using Libplanet.Blocks;
 using Libplanet.Blockchain;
