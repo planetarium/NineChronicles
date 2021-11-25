@@ -42,6 +42,7 @@ jobs:
       
       - name: inject mixpanel client data
         run: |
+          chmod +x .github/bin/inject-mixpanel-client-data.sh
           .github/bin/inject-mixpanel-client-data.sh \
           "$GITHUB_SHA"
 
