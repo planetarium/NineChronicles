@@ -16,6 +16,7 @@ namespace Nekoyume.TableData
         [Serializable]
         public class Row : ItemSheet.Row, ISerializable
         {
+            private static readonly Codec _codec = new Codec();
             public HashDigest<SHA256> ItemId { get; private set; }
             public override ItemType ItemType => ItemType.Material;
 
@@ -23,7 +24,7 @@ namespace Nekoyume.TableData
 
             public Row(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
-                ItemId = HashDigest<SHA256>.DeriveFrom(serialized.EncodeIntoChunks().SelectMany(b => b).ToArray());
+                ItemId = HashDigest<SHA256>.DeriveFrom(_codec.Encode(serialized));
             }
 
             protected Row(SerializationInfo info, StreamingContext context)
@@ -39,7 +40,7 @@ namespace Nekoyume.TableData
             public override void Set(IReadOnlyList<string> fields)
             {
                 base.Set(fields);
-                ItemId = HashDigest<SHA256>.DeriveFrom(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
+                ItemId = HashDigest<SHA256>.DeriveFrom(_codec.Encode(Serialize()));
             }
         }
 

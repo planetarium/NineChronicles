@@ -290,6 +290,10 @@ namespace Nekoyume.Action
                         p[LegacySellerAvatarAddressKey].Equals(sellerAvatarSerialized) &&
                         p[LegacySellerAgentAddressKey].Equals(sellerAgentSerialized));
 
+                // Since Bencodex 0.4, Dictionary/List are reference types; so their default values
+                // are not a empty container, but a null reference:
+                productSerialized = productSerialized ?? Dictionary.Empty;
+
                 bool fromLegacy = false;
                 if (productSerialized.Equals(Dictionary.Empty))
                 {

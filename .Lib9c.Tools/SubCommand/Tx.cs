@@ -42,11 +42,8 @@ namespace Lib9c.Tools.SubCommand
             );
 
             var bencoded = new List(
-                new IValue[]
-                {
-                    (Text) nameof(TransferAsset),
-                    action.PlainValue
-                }
+                (Text)nameof(TransferAsset),
+                action.PlainValue
             );
 
             byte[] raw = _codec.Encode(bencoded);
@@ -140,11 +137,8 @@ namespace Lib9c.Tools.SubCommand
             };
 
             var bencoded = new List(
-                new IValue[]
-                {
-                    (Text) nameof(PatchTableSheet),
-                    action.PlainValue
-                }
+                (Text)nameof(PatchTableSheet),
+                action.PlainValue
             );
 
             byte[] raw = _codec.Encode(bencoded);
@@ -157,11 +151,8 @@ namespace Lib9c.Tools.SubCommand
             var action = new MigrationLegacyShop();
 
             var bencoded = new List(
-                new IValue[]
-                {
-                    (Text) nameof(Nekoyume.Action.MigrationLegacyShop),
-                    action.PlainValue
-                }
+                (Text)nameof(Nekoyume.Action.MigrationLegacyShop),
+                action.PlainValue
             );
 
             byte[] raw = _codec.Encode(bencoded);
@@ -173,11 +164,8 @@ namespace Lib9c.Tools.SubCommand
         {
             var action = new MigrationActivatedAccountsState();
             var bencoded = new List(
-                new IValue[]
-                {
-                    (Text) nameof(Nekoyume.Action.MigrationActivatedAccountsState),
-                    action.PlainValue
-                }
+                (Text)nameof(Nekoyume.Action.MigrationActivatedAccountsState),
+                action.PlainValue
             );
 
             byte[] raw = _codec.Encode(bencoded);
@@ -202,11 +190,8 @@ namespace Lib9c.Tools.SubCommand
             };
 
             var encoded = new List(
-                new IValue[]
-                {
-                    (Text) nameof(Nekoyume.Action.MigrationAvatarState),
-                    action.PlainValue
-                }
+                (Text)nameof(Nekoyume.Action.MigrationAvatarState),
+                action.PlainValue
             );
 
             byte[] raw = _codec.Encode(encoded);
@@ -224,11 +209,8 @@ namespace Lib9c.Tools.SubCommand
                 redeemCsv = tableCsv
             };
             var encoded = new List(
-                new IValue[]
-                {
-                    (Text) nameof(Nekoyume.Action.AddRedeemCode),
-                    action.PlainValue
-                }
+                (Text)nameof(Nekoyume.Action.AddRedeemCode),
+                action.PlainValue
             );
             byte[] raw = _codec.Encode(encoded);
             Console.WriteLine(ByteUtil.Hex(raw));
