@@ -19,6 +19,8 @@ namespace Nekoyume.ActionExtensions
             States states,
             TableSheets tableSheets)
         {
+            // NOTE: ignore now
+            return;
             if (action is null)
             {
                 throw new ArgumentNullException(nameof(action));

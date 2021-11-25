@@ -13,6 +13,8 @@ namespace Nekoyume.ActionExtensions
     {
         public static void PayCost(this ItemEnhancement action, IAgent agent, States states, TableSheets tableSheets)
         {
+            // NOTE: ignore now
+            return;
             if (action is null)
             {
                 throw new ArgumentNullException(nameof(action));
