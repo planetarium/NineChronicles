@@ -329,7 +329,7 @@ MonoBehaviour:
   challengeCountTextContainer: {fileID: 8851711274831921416}
   challengeCountText: {fileID: 7975780283971658723}
   avatarInfoButton: {fileID: 4748097948779289977}
-  challengeButton: {fileID: 0}
+  challengeButton: {fileID: 140719492482906566}
 --- !u!225 &6352535224322201035
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2071,6 +2071,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4bc425b6a451d495a87d6ff37b4a1029, type: 3}
+--- !u!114 &140719492482906566 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5718414708290026654, guid: 4bc425b6a451d495a87d6ff37b4a1029,
+    type: 3}
+  m_PrefabInstance: {fileID: 5667793613880575320}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6061833412233509175 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1925281264920820847, guid: 4bc425b6a451d495a87d6ff37b4a1029,
