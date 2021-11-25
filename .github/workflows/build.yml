@@ -39,6 +39,11 @@ jobs:
         with:
           path: ${{ matrix.projectPath }}/Library
           key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v4
+      
+      - name: inject mixpanel client data
+        run: |
+          .github/bin/inject-mixpanel-client-data.sh \
+          "$GITHUB_SHA"
 
       - name: Build Unity Player using docker
         run: |
