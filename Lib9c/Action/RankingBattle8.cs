@@ -17,6 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100089ObsoleteIndex)]
     [ActionType("ranking_battle8")]
     public class RankingBattle8 : GameAction
     {
