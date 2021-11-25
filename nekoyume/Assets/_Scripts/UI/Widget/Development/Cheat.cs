@@ -5,7 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Bencodex.Types;
+using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
+using Libplanet.Crypto;
+using Libplanet.KeyStore;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
@@ -217,7 +221,7 @@ namespace Nekoyume
             CloseWidget = null;
         }
 
-#if UNITY_EDITOR
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         protected override void Update()
         {
             UpdateInput();

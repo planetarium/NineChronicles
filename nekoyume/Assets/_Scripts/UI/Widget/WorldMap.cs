@@ -179,8 +179,7 @@ namespace Nekoyume.UI
             SelectedWorldStageBegin = worldRow.StageBegin;
             SelectedStageId = stageId;
 
-            var stageInfo = Find<UI.StageInformation>();
-            SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world);
+            var stageInfo = Find<StageInformation>();
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Quest);
         }
 

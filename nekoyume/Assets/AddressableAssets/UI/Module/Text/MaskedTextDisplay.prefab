@@ -153,6 +153,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -272,8 +273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isInfiniteScroll: 0
-  contentRect: {fileID: 8990862484493702198}
-  targetAnimationTime: 10
+  content: {fileID: 8990862484493702195}
   curve:
     serializedVersion: 2
     m_Curve:
@@ -300,6 +300,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   startDelay: 1.5
   endDelay: 1.5
+  targetAnimationTime: 10
+  useAnimationSpeed: 0
+  animationSpeed: 0
 --- !u!114 &8990862485258832140
 MonoBehaviour:
   m_ObjectHideFlags: 0

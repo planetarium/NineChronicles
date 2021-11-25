@@ -17,6 +17,10 @@ using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
 
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+using Lib9c.DevExtensions.Action;
+#endif
+
 namespace Nekoyume.BlockChain
 {
     using UniRx;
@@ -597,6 +601,29 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+        public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
+        {
+            var action = new CreateTestbed();
+            ProcessAction(action);
+            return _agent.ActionRenderer.EveryRender<CreateTestbed>()
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout)
+                .DoOnError(e =>
+                {
+                    try
+                    {
+                        HandleException(action.Id, e);
+                    }
+                    catch (Exception e2)
+                    {
+                        Game.Game.BackToMain(false, e2);
+                    }
+                });
+        }
+#endif
         #endregion
     }
 }
