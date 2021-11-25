@@ -174,12 +174,6 @@ namespace Nekoyume.BlockChain
                 ["PlayCount"] = playCount,
             });
 
-
-            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
-            {
-                throw new NullReferenceException(nameof(weeklyArenaAddress));
-            }
-
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes ??= new List<Costume>();
             equipments ??= new List<Equipment>();
