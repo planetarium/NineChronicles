@@ -8,12 +8,21 @@
         <engine:VisualElement name="canvas" class="row canvas-background">
             <engine:VisualElement name="container" class="column container-background">
                 <engine:VisualElement name="container" class="row">
-                    <editor:ObjectField name="the-uxml-field" class="object-field" picking-mode="Position"/>
+                    <editor:ObjectField name="sell-field" class="object-field" picking-mode="Position"/>
                 </engine:VisualElement>
 
                 <engine:VisualElement name="container" class="row">
                     <engine:Button name="sell-export-button" class="button" text="export"/>
                     <engine:Button name="sell-import-button" class="button" text="import"/>
+                </engine:VisualElement>
+
+                <engine:VisualElement name="container" class="row">
+                    <editor:ObjectField name="create-avatar-field" class="object-field" picking-mode="Position"/>
+                </engine:VisualElement>
+
+                <engine:VisualElement name="container" class="row">
+                    <engine:Button name="create-avatar-export-button" class="button" text="export"/>
+                    <engine:Button name="create-avatar-import-button" class="button" text="import"/>
                 </engine:VisualElement>
 
             </engine:VisualElement>
