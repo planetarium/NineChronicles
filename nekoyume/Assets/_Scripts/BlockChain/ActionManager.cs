@@ -6,11 +6,11 @@ using System.Numerics;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
-using mixpanel;
 using Nekoyume.ActionExtensions;
 using Nekoyume.Game;
 using Nekoyume.Model.State;
@@ -171,7 +171,7 @@ namespace Nekoyume.BlockChain
             int stageId,
             int playCount)
         {
-            Mixpanel.Track("Unity/HackAndSlash", new Value
+            Analyzer.Instance.Track("Unity/HackAndSlash", new Value
             {
                 ["WorldId"] = worldId,
                 ["StageId"] = stageId,
@@ -231,7 +231,7 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, material, count);
             }
 
-            Mixpanel.Track("Unity/Create CombinationConsumable", new Value
+            Analyzer.Instance.Track("Unity/Create CombinationConsumable", new Value
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
             });
@@ -425,7 +425,7 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.SetItemEquip(avatarAddress, baseEquipment.NonFungibleId, false);
             LocalLayerModifier.SetItemEquip(avatarAddress, materialEquipment.NonFungibleId, false);
 
-            Mixpanel.Track("Unity/Item Enhancement");
+            Analyzer.Instance.Track("Unity/Item Enhancement");
 
             var action = new ItemEnhancement
             {
@@ -468,7 +468,7 @@ namespace Nekoyume.BlockChain
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
 
-            Mixpanel.Track("Unity/Ranking Battle");
+            Analyzer.Instance.Track("Unity/Ranking Battle");
             var action = new RankingBattle
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
@@ -524,7 +524,7 @@ namespace Nekoyume.BlockChain
             SubRecipeView.RecipeInfo recipeInfo,
             int slotIndex)
         {
-            Mixpanel.Track("Unity/Create CombinationEquipment", new Value
+            Analyzer.Instance.Track("Unity/Create CombinationEquipment", new Value
             {
                 ["RecipeId"] = recipeInfo.RecipeId,
             });
