@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mixpanel
   m_EditorClassIdentifier: 
   ShowDebug: 0
-  ManualInitialization: 0
+  ManualInitialization: 1
   APIHostAddress: https://api.mixpanel.com/
   RuntimeToken: 80a1e14b57d050536185c7459d45195a
   DebugToken: 

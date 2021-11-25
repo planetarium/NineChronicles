@@ -212,10 +212,10 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager.Buy(purchaseInfos).Subscribe();
 
             var countProps = new Value {["Count"] = 1,};
-            Mixpanel.Track("Unity/Number of Purchased Items", countProps);
+            Analyzer.Instance.Track("Unity/Number of Purchased Items", countProps);
 
             var buyProps = new Value {["Price"] = shopItem.Price.Value.GetQuantityString(),};
-            Mixpanel.Track("Unity/Buy", buyProps);
+            Analyzer.Instance.Track("Unity/Buy", buyProps);
 
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             shopItem.Selected.Value = false;
