@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.DevExtensions;
+using Lib9c.DevExtensions.Model;
 using Lib9c.Renderer;
 using Libplanet.Blocks;
 using Libplanet.Blockchain;
@@ -146,8 +148,9 @@ namespace Nekoyume.BlockChain.Policy
             IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
             IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
-#if UNITY_EDITOR
-            return new DebugPolicy();
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+            var data = TestbedHelper.LoadData<TestbedCreateAvatar>("TestbedCreateAvatar");
+             return new DebugPolicy(data.BlockDifficulty);
 #else
             hashAlgorithmTypePolicy = hashAlgorithmTypePolicy
                 ?? HashAlgorithmTypePolicy.Default;

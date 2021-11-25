@@ -4,20 +4,10 @@ using Nekoyume.Model.Item;
 namespace Lib9c.DevExtensions.Model
 {
     [Serializable]
-    public class TestbedSell
+    public class TestbedSell : BaseTestbedModel
     {
-        public Avatar avatar;
+        public Avatar Avatar;
         public Item[] Items;
-
-        public TestbedSell()
-        {
-        }
-
-        public TestbedSell(TestbedSell data)
-        {
-            avatar = data.avatar;
-            Items = data.Items;
-        }
     }
 
     [Serializable]

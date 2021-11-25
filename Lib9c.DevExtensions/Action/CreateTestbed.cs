@@ -149,7 +149,7 @@ namespace Lib9c.DevExtensions.Action
 
             var rankingState = context.PreviousStates.GetRankingState();
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
-            avatarState = TestbedHelper.CreateAvatarState(data.avatar.Name,
+            avatarState = TestbedHelper.CreateAvatarState(data.Avatar.Name,
                 agentAddress,
                 avatarAddress,
                 context.BlockIndex,

@@ -330,6 +330,9 @@ namespace Nekoyume.Action
 
         protected void CheckPermission(IActionContext ctx)
         {
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+            return;
+#endif
             if (TryGetAdminState(ctx, out AdminState policy))
             {
                 if (ctx.BlockIndex > policy.ValidUntil)

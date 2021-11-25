@@ -1,11 +1,8 @@
-using Nekoyume.Model.Item;
-using System.Collections.Generic;
-
 namespace Nekoyume
 {
     public static class GameConfig
     {
-#if UNITY_EDITOR
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public const bool IsEditor = true;
 #else
         public const bool IsEditor = false;

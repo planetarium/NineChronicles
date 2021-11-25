@@ -7,6 +7,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
+using Lib9c.DevExtensions;
+using Lib9c.DevExtensions.Model;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
@@ -174,20 +176,25 @@ namespace Nekoyume.Action
                 name
             );
 
-            if (GameConfig.IsEditor)
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+            var data = TestbedHelper.LoadData<TestbedCreateAvatar>("TestbedCreateAvatar");
+            var costumeItemSheet = ctx.PreviousStates.GetSheet<CostumeItemSheet>();
+            var equipmentItemSheet = ctx.PreviousStates.GetSheet<EquipmentItemSheet>();
+            AddItemsForTest(
+                avatarState: avatarState,
+                random: ctx.Random,
+                costumeItemSheet: costumeItemSheet,
+                materialItemSheet: materialItemSheet,
+                equipmentItemSheet: equipmentItemSheet,
+                data.MaterialCount,
+                data.TradableMaterialCount);
+
+            var skillSheet = ctx.PreviousStates.GetSheet<SkillSheet>();
+            var optionSheet = ctx.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
+
+            var items = data.CustomEquipmentItems;
+            foreach (var item in items)
             {
-                var costumeItemSheet = ctx.PreviousStates.GetSheet<CostumeItemSheet>();
-                var equipmentItemSheet = ctx.PreviousStates.GetSheet<EquipmentItemSheet>();
-                AddItemsForTest(
-                    avatarState: avatarState,
-                    random: ctx.Random,
-                    costumeItemSheet: costumeItemSheet,
-                    materialItemSheet: materialItemSheet,
-                    equipmentItemSheet: equipmentItemSheet);
-
-                var skillSheet = ctx.PreviousStates.GetSheet<SkillSheet>();
-                var optionSheet = ctx.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
-
                 AddCustomEquipment(
                     avatarState: avatarState,
                     random: ctx.Random,
@@ -195,12 +202,13 @@ namespace Nekoyume.Action
                     equipmentItemSheet: equipmentItemSheet,
                     equipmentItemOptionSheet: optionSheet,
                     // Set level of equipment here.
-                    level: 2,
+                    level: item.Level,
                     // Set recipeId of target equipment here.
-                    recipeId: 10110000,
+                    recipeId: item.ID,
                     // Add optionIds here.
-                    7, 9, 11);
+                    item.OptionIds);
             }
+#endif
 
             return avatarState;
         }
@@ -210,8 +218,9 @@ namespace Nekoyume.Action
             IRandom random,
             CostumeItemSheet costumeItemSheet,
             MaterialItemSheet materialItemSheet,
-            EquipmentItemSheet equipmentItemSheet
-        )
+            EquipmentItemSheet equipmentItemSheet,
+            int materialCount,
+            int tradableMaterialCount)
         {
             foreach (var row in costumeItemSheet.OrderedList)
             {
@@ -220,12 +229,12 @@ namespace Nekoyume.Action
 
             foreach (var row in materialItemSheet.OrderedList)
             {
-                avatarState.inventory.AddItem2(ItemFactory.CreateMaterial(row), 10);
+                avatarState.inventory.AddItem2(ItemFactory.CreateMaterial(row), materialCount);
 
                 if (row.ItemSubType == ItemSubType.Hourglass ||
                     row.ItemSubType == ItemSubType.ApStone)
                 {
-                    avatarState.inventory.AddItem2(ItemFactory.CreateTradableMaterial(row), 100);
+                    avatarState.inventory.AddItem2(ItemFactory.CreateTradableMaterial(row), tradableMaterialCount);
                 }
             }
 

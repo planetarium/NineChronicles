@@ -12,9 +12,16 @@ namespace Nekoyume.BlockChain.Policy
 {
     public class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
     {
+        public DebugPolicy(long blockDifficulty)
+        {
+            _blockDifficulty = blockDifficulty;
+        }
+
         public IComparer<IBlockExcerpt> CanonicalChainComparer { get; } = new TotalDifficultyComparer();
 
         public IAction BlockAction { get; } = new RewardGold();
+
+        private readonly long _blockDifficulty;
 
         public TxPolicyViolationException ValidateNextBlockTx(
             BlockChain<PolymorphicAction<ActionBase>> blockChain,
@@ -32,7 +39,7 @@ namespace Nekoyume.BlockChain.Policy
 
         public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blockChain)
         {
-            return blockChain.Count > 0 ? 1 : 0;
+            return blockChain.Count > 0 ? _blockDifficulty : 0;
         }
 
         public int GetMaxBlockBytes(long index) => int.MaxValue;
