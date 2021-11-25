@@ -55,7 +55,8 @@ namespace Lib9c.Tests.Action
             byte[] nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
             PublicKey pubKey = new PrivateKey().PublicKey;
             Address address = PendingActivationState.DeriveAddress(nonce, pubKey);
-            var pv = default(List).Add(new List(new IValue[] { address.Serialize(), (Binary)nonce, pubKey.Serialize() }));
+            var pv = new List()
+                .Add(new List(address.Serialize(), (Binary)nonce, pubKey.Serialize()));
 
             var action = new CreatePendingActivations();
             action.LoadPlainValue(pv);

@@ -74,8 +74,8 @@ namespace Lib9c.Tools.SubCommand
                     }
 
                     var bencoded = (List)_codec.Decode(ByteUtil.ParseHex(a));
-                    string type = (Text) bencoded[0];
-                    Dictionary plainValue = (Dictionary)bencoded[1];
+                    string type = (Text)bencoded[0];
+                    IValue plainValue = bencoded[1];
 
                     ActionBase action = null;
                     action = type switch
