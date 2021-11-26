@@ -47,8 +47,6 @@ namespace Nekoyume.Game
         public States States { get; private set; }
 
         public LocalLayer LocalLayer { get; private set; }
-        
-        public LocalLayerActions LocalLayerActions { get; private set; }
 
         public IAgent Agent { get; private set; }
         
@@ -109,7 +107,6 @@ namespace Nekoyume.Game
 
             States = new States();
             LocalLayer = new LocalLayer();
-            LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
         }
 

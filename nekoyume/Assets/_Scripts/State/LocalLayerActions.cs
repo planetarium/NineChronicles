@@ -13,7 +13,20 @@ namespace Nekoyume.State
     /// </summary>
     public class LocalLayerActions
     {
-        public static LocalLayerActions Instance => Game.Game.instance.LocalLayerActions;
+        #region Singleton
+
+        private static class Singleton
+        {
+            internal static readonly LocalLayerActions Value = new LocalLayerActions();
+        }
+
+        public static LocalLayerActions Instance => Singleton.Value;
+
+        private LocalLayerActions()
+        {
+        }
+
+        #endregion
 
         private class Info
         {
