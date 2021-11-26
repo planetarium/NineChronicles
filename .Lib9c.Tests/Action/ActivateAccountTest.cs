@@ -49,7 +49,7 @@ namespace Lib9c.Tests.Action
                     BlockIndex = 1,
                 });
 
-                Assert.Equal(default(Null), nextState.GetState(pendingActivation.address));
+                Assert.Equal(Null.Value, nextState.GetState(pendingActivation.address));
                 Assert.True(nextState.GetState(activatedAddress).ToBoolean());
             }
             else

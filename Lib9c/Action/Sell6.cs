@@ -226,6 +226,10 @@ namespace Nekoyume.Action
                     });
             }
 
+            // Since Bencodex 0.4, Dictionary/List are reference types; so their default values
+            // are not a empty container, but a null reference:
+            serializedProductDictionary = serializedProductDictionary ?? Dictionary.Empty;
+
             // Remove expired ShopItem to prevent copy.
             if (!serializedProductDictionary.Equals(BxDictionary.Empty))
             {
