@@ -18,8 +18,8 @@ namespace Nekoyume.UI
     {
         public TextMeshProUGUI title;
         public TextMeshProUGUI content;
-        public SubmitButton submitButton;
-        public TextMeshProUGUI labelNo;
+        public TextButton buttonYes;
+        public TextButton buttonNo;
         public GameObject titleBorder;
         public ConfirmDelegate CloseCallback { get; set; }
         public Blur blur;
@@ -30,6 +30,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
+            buttonNo.OnClick = No;
             CloseWidget = NoWithoutCallback;
             SubmitWidget = Yes;
         }
@@ -45,7 +46,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true, float blurSize = 1, bool submittable = true)
+            bool localize = true, float blurSize = 1)
         {
             if (gameObject.activeSelf)
             {
@@ -54,12 +55,12 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Set(title, content, labelYes, labelNo, localize, blurSize, submittable);
+            Set(title, content, labelYes, labelNo, localize, blurSize);
             Show();
         }
 
         public void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true, float blurSize = 1, bool submittable = true)
+            bool localize = true, float blurSize = 1)
         {
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
@@ -67,21 +68,20 @@ namespace Nekoyume.UI
                 if (titleExists)
                     this.title.text = L10nManager.Localize(title);
                 this.content.text = L10nManager.Localize(content);
-                submitButton.SetSubmitText(L10nManager.Localize(labelYes));
-                this.labelNo.text = L10nManager.Localize(labelNo);
+                buttonYes.Text = L10nManager.Localize(labelYes);
+                buttonNo.Text = L10nManager.Localize(labelNo);
             }
             else
             {
                 this.title.text = title;
                 this.content.text = content;
-                submitButton.SetSubmitText(labelYes);
-                this.labelNo.text = labelNo;
+                buttonYes.Text = labelYes;
+                buttonNo.Text = labelNo;
             }
 
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
             this.blurSize = blurSize;
-            submitButton.SetSubmittableWithoutInteractable(submittable);
         }
 
         public void Yes()
@@ -92,7 +92,6 @@ namespace Nekoyume.UI
             }
 
             base.Close();
-            AudioController.PlayClick();
             CloseCallback?.Invoke(ConfirmResult.Yes);
         }
 
@@ -104,7 +103,6 @@ namespace Nekoyume.UI
             }
 
             base.Close();
-            AudioController.PlayClick();
             CloseCallback?.Invoke(ConfirmResult.No);
         }
 
@@ -116,7 +114,6 @@ namespace Nekoyume.UI
             }
 
             base.Close();
-            AudioController.PlayClick();
         }
     }
 }
