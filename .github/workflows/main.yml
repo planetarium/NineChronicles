@@ -3,6 +3,7 @@ name: main
 on:
   push:
     branches: []
+    tags: []
   pull_request:
     branches: []
 
@@ -13,7 +14,19 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
-    - run: |
+    - name: Check if .Libplanet refers to a tagged commit
+      if: |
+        github.event_name == 'push' && (
+          github.ref == 'refs/heads/main' ||
+          startsWith(github.ref, 'refs/heads/rc-') ||
+          startsWith(github.ref, 'refs/tags/')
+        ) ||
+        github.event_name == 'pull_request' && (
+          github.head_ref == 'refs/heads/main' ||
+          startsWith(github.head_ref, 'refs/heads/rc-') ||
+          startsWith(github.head_ref, 'refs/tags/')
+        )
+      run: |
         set -e
         pushd .Libplanet/
         git fetch origin 'refs/tags/*:refs/tags/*'
