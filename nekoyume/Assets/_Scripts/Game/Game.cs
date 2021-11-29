@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
+using Lib9c.Formatters;
+using MessagePack;
+using MessagePack.Resolvers;
 #if !UNITY_EDITOR
 using Libplanet;
 using Libplanet.Crypto;
@@ -134,6 +137,13 @@ namespace Nekoyume.Game
         private IEnumerator Start()
         {
             Debug.Log("[Game] Start() invoked");
+            var resolver = MessagePack.Resolvers.CompositeResolver.Create(
+                NineChroniclesResolver.Instance,
+                StandardResolver.Instance
+            );
+            var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
+            MessagePackSerializer.DefaultOptions = options;
+
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
