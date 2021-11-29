@@ -139,7 +139,7 @@ namespace Nekoyume.BlockChain.Policy
         internal IBlockPolicy<NCAction> GetPolicy(
             long minimumDifficulty,
             IVariableSubPolicy<HashAlgorithmType> hashAlgorithmTypePolicy,
-            IVariableSubPolicy<int> maxBlockBytesPolicy,
+            IVariableSubPolicy<long> maxBlockBytesPolicy,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
@@ -331,7 +331,7 @@ namespace Nekoyume.BlockChain.Policy
             BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock,
             IVariableSubPolicy<HashAlgorithmType> hashAlgorithmTypePolicy,
-            IVariableSubPolicy<int> maxBlockBytesPolicy,
+            IVariableSubPolicy<long> maxBlockBytesPolicy,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,

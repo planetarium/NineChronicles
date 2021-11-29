@@ -22,7 +22,7 @@ namespace Nekoyume.Model.State
         public static IValue Serialize<T>(Func<T, IValue> serializer, T? value)
             where T : struct
         {
-            return value is T v ? serializer(v) : default(Null);
+            return value is T v ? serializer(v) : Null.Value;
         }
 
         public static T? Deserialize<T>(Func<IValue, T> deserializer, IValue serialized)

@@ -8,6 +8,7 @@ using Libplanet.Blocks;
 using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
+using static Libplanet.Blocks.BlockMarshaler;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Nekoyume.BlockChain.Policy
@@ -76,17 +77,18 @@ namespace Nekoyume.BlockChain.Policy
 
         private static InvalidBlockBytesLengthException ValidateBlockBytesRaw(
             Block<NCAction> block,
-            IVariableSubPolicy<int> maxBlockBytesPolicy)
+            IVariableSubPolicy<long> maxBlockBytesPolicy)
         {
-            int maxBlockBytes = maxBlockBytesPolicy.Getter(block.Index);
+            long maxBlockBytes = maxBlockBytesPolicy.Getter(block.Index);
+            long blockBytes = block.MarshalBlock().EncodingLength;
 
-            if (block.BytesLength > maxBlockBytes)
+            if (blockBytes > maxBlockBytes)
             {
                 return new InvalidBlockBytesLengthException(
                     $"The size of block #{block.Index} {block.Hash} is too large " +
                     $"where the maximum number of bytes allowed is {maxBlockBytes}: " +
-                    $"{block.BytesLength}",
-                    block.BytesLength);
+                    $"{blockBytes}",
+                    blockBytes);
             }
 
             return null;

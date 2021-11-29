@@ -94,6 +94,10 @@ namespace Nekoyume.Action
                 .Select(p => (BxDictionary) p)
                 .FirstOrDefault(p => p[LegacyProductIdKey].Equals(productIdSerialized));
 
+            // Since Bencodex 0.4, Dictionary/List are reference types; so their default values
+            // are not a empty container, but a null reference:
+            productSerialized = productSerialized ?? Dictionary.Empty;
+
             var backwardCompatible = false;
             if (productSerialized.Equals(BxDictionary.Empty))
             {

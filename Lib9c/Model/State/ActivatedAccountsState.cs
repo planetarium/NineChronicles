@@ -50,16 +50,11 @@ namespace Nekoyume.Model.State
             Accounts = Accounts.Remove(account);
         }
 
-        public override IValue Serialize()
-        {
-            var values = new Dictionary<IKey, IValue>
-            {
-                [(Text)"accounts"] = Accounts.Select(a => a.Serialize()).Serialize()
-            };
-#pragma warning disable LAA1002
-            return new Dictionary(values.Union((Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
-        }
+        public override IValue Serialize() =>
+            ((Dictionary)base.Serialize()).SetItem(
+                "accounts",
+                Accounts.Select(a => a.Serialize()).Serialize()
+            );
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
