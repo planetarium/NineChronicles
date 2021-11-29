@@ -42,7 +42,7 @@ namespace Nekoyume.BlockChain.Policy
             return blockChain.Count > 0 ? _blockDifficulty : 0;
         }
 
-        public int GetMaxBlockBytes(long index) => int.MaxValue;
+        public long GetMaxBlockBytes(long index) => long.MaxValue;
 
         public HashAlgorithmType GetHashAlgorithm(long index) =>
             HashAlgorithmType.Of<SHA256>();

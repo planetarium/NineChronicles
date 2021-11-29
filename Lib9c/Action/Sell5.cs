@@ -221,6 +221,10 @@ namespace Nekoyume.Action
                         ((BxDictionary) p[productKey])[itemIdKey].Equals(serializedTradeId));
             }
 
+            // Since Bencodex 0.4, Dictionary/List are reference types; so their default values
+            // are not a empty container, but a null reference:
+            serializedProductDictionary = serializedProductDictionary ?? Dictionary.Empty;
+
             ShopItem shopItem;
             // Register new ShopItem
             if (serializedProductDictionary.Equals(BxDictionary.Empty))

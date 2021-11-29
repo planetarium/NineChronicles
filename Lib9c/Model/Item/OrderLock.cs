@@ -22,8 +22,9 @@ namespace Nekoyume.Model.Item
             OrderId = serialized[1].ToGuid();
         }
 
-        public IValue Serialize() => new List()
-            .Add(Type.Serialize())
-            .Add(OrderId.Serialize());
+        public IValue Serialize() => new List(
+            Type.Serialize(),
+            OrderId.Serialize()
+        );
     }
 }

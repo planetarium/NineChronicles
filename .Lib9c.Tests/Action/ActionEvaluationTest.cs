@@ -191,16 +191,7 @@ namespace Lib9c.Tests.Action
                 DailyReward _ => new DailyReward(),
                 InitializeStates _ => new InitializeStates
                 {
-                    Ranking = default,
-                    Shop = default,
                     TableSheets = new Dictionary<string, string>(),
-                    GameConfig = default,
-                    RedeemCode = default,
-                    AdminAddress = default,
-                    ActivatedAccounts = default,
-                    GoldCurrency = default,
-                    GoldDistributions = default,
-                    PendingActivations = default,
                     AuthorizedMiners = Dictionary.Empty,
                     Credits = Dictionary.Empty,
                 },

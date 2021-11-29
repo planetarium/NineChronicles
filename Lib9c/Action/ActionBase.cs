@@ -26,7 +26,7 @@ namespace Nekoyume.Action
     [Serializable]
     public abstract class ActionBase : IAction
     {
-        public static readonly IValue MarkChanged = default(Null);
+        public static readonly IValue MarkChanged = Null.Value;
 
         // FIXME GoldCurrencyState 에 정의된 것과 다른데 괜찮을지 점검해봐야 합니다.
         protected static readonly Currency GoldCurrencyMock = new Currency();
@@ -63,8 +63,9 @@ namespace Nekoyume.Action
 
             public AccountStateDelta(Dictionary states, List balances)
             {
+                // This assumes `states` consists of only Binary keys:
                 _states = states.ToImmutableDictionary(
-                    kv => new Address(kv.Key.EncodeAsByteArray()),
+                    kv => new Address((Binary)kv.Key),
                     kv => kv.Value
                 );
 
