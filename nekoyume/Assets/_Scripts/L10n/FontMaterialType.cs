@@ -34,5 +34,7 @@ namespace Nekoyume.L10n
 	DiceCount,
 	ButtonMain,
 	ButtonMainDisable,
+	PopupTitleRed,
+	PopupTitleYellow,
     }
 }
