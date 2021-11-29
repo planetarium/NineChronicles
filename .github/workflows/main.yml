@@ -17,7 +17,7 @@ jobs:
         set -e
         pushd .Libplanet/
         git fetch origin 'refs/tags/*:refs/tags/*'
-        if ! git describe --exact-match; then
+        if ! git describe --tags --exact-match; then
           echo "The unreleased Libplanet shouldn't be used." > /dev/stderr
           exit 1
         fi
