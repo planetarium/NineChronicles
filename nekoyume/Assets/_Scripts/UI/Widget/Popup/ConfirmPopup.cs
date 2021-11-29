@@ -31,6 +31,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             buttonNo.OnClick = No;
+            buttonYes.OnClick = Yes;
             CloseWidget = NoWithoutCallback;
             SubmitWidget = Yes;
         }
