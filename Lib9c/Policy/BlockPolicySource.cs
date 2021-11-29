@@ -15,11 +15,17 @@ using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Events;
+using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
 #endif
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+using Lib9c.DevExtensions;
+using Lib9c.DevExtensions.Model;
+#endif
 
 namespace Nekoyume.BlockChain.Policy
 {

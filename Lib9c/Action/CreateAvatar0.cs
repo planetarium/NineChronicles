@@ -15,6 +15,11 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
 
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+using Lib9c.DevExtensions;
+using Lib9c.DevExtensions.Model;
+#endif
+
 namespace Nekoyume.Action
 {
     [Serializable]
