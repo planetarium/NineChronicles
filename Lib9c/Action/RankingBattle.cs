@@ -30,6 +30,9 @@ namespace Nekoyume.Action
         public List<Guid> equipmentIds;
         public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
+        public AvatarState EnemyAvatarState;
+        public ArenaInfo ArenaInfo;
+        public ArenaInfo EnemyArenaInfo;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -180,6 +183,8 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Validate ArenaInfo: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
+            ArenaInfo = new ArenaInfo((Dictionary)weeklyArenaState[avatarAddress].Serialize());
+            EnemyArenaInfo = new ArenaInfo((Dictionary)weeklyArenaState[enemyAddress].Serialize());
             var simulator = new RankingSimulator(
                 ctx.Random,
                 avatarState,
@@ -241,6 +246,7 @@ namespace Nekoyume.Action
 
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            EnemyAvatarState = enemyAvatarState;
             return states;
         }
 

@@ -3,15 +3,27 @@ namespace Lib9c.Tests.Action
     using System;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
+    using Lib9c.Formatters;
     using Libplanet;
+    using MessagePack;
+    using MessagePack.Resolvers;
     using Nekoyume.Action;
-    using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
 
     public class ExceptionTest
     {
+        public ExceptionTest()
+        {
+            var resolver = MessagePack.Resolvers.CompositeResolver.Create(
+                NineChroniclesResolver.Instance,
+                StandardResolver.Instance
+            );
+            var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
+            MessagePackSerializer.DefaultOptions = options;
+        }
+
         [Theory]
         [InlineData(typeof(InvalidTradableIdException))]
         [InlineData(typeof(AlreadyReceivedException))]
@@ -98,12 +110,15 @@ namespace Lib9c.Tests.Action
             using (var ms = new MemoryStream())
             {
                 formatter.Serialize(ms, exc);
-
                 ms.Seek(0, SeekOrigin.Begin);
                 var deserialized = formatter.Deserialize(ms);
                 Exception exception = (Exception)Convert.ChangeType(deserialized, type);
                 Assert.Equal(exc.Message, exception.Message);
             }
+
+            var b = MessagePackSerializer.Serialize(exc);
+            var des = MessagePackSerializer.Deserialize<Exception>(b);
+            Assert.Equal(exc.Message, des.Message);
         }
 
         private static void AssertAdminState(AdminState adminState, AdminState adminState2)
