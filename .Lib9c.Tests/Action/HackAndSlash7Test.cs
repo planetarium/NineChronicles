@@ -266,11 +266,7 @@
             var targetRow = worldQuestSheet.OrderedList.FirstOrDefault(e => e.Goal == stageId);
             Assert.NotNull(targetRow);
             var worldQuestSheetCsv = state.GetSheetCsv<WorldQuestSheet>();
-            var replaceTarget = $"{targetRow.Id},{targetRow.Goal},{targetRow.QuestRewardId}";
-            var replacedWorldQuestSheetCsv = worldQuestSheetCsv.Replace(replaceTarget, string.Empty);
             var worldQuestSheetAddress = Addresses.GetSheetAddress<WorldQuestSheet>();
-            state = state.SetState(worldQuestSheetAddress, replacedWorldQuestSheetCsv.Serialize());
-            worldQuestSheet = state.GetSheet<WorldQuestSheet>();
 
             // Update new AvatarState
             var avatarState = new AvatarState(
@@ -302,7 +298,6 @@
 
             var avatarWorldQuests = avatarState.questList.OfType<WorldQuest>().ToList();
             Assert.Equal(worldQuestSheet.Count, avatarWorldQuests.Count);
-            Assert.DoesNotContain(avatarWorldQuests, e => e.Goal == stageId);
             Assert.Empty(avatarState.questList.completedQuestIds);
             Assert.Equal(2, avatarState.inventory.Items.Count);
 
@@ -319,6 +314,10 @@
                 RankingMapAddress = _rankingMapAddress,
             };
 
+            avatarState = state.GetAvatarStateV2(avatarState.address);
+            avatarWorldQuests = avatarState.questList.OfType<WorldQuest>().ToList();
+            Assert.DoesNotContain(avatarWorldQuests, e => e.Complete);
+
             // First Execute
             state = action.Execute(new ActionContext
             {
@@ -326,17 +325,6 @@
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             });
-
-            avatarState = state.GetAvatarStateV2(avatarState.address);
-            avatarWorldQuests = avatarState.questList.OfType<WorldQuest>().ToList();
-            Assert.DoesNotContain(avatarWorldQuests, e => e.Complete);
-            Assert.DoesNotContain(avatarWorldQuests, e => e.Goal == stageId);
-
-            // Revert WorldQuestSheet
-            state = state.SetState(worldQuestSheetAddress, worldQuestSheetCsv.Serialize());
-            worldQuestSheet = state.GetSheet<WorldQuestSheet>();
-            Assert.Equal(avatarWorldQuests.Count + 1, worldQuestSheet.Count);
-            Assert.Contains(worldQuestSheet.OrderedList, e => e.Goal == stageId);
 
             // Second Execute
             state = action.Execute(new ActionContext

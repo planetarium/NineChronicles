@@ -74,9 +74,9 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(0, 1, 1000, true)]
-        [InlineData(3, 4, 0, true)]
+        [InlineData(3, 4, 990, true)]
         [InlineData(0, 1, 1000, false)]
-        [InlineData(3, 4, 0, false)]
+        [InlineData(3, 4, 990, false)]
         public void Execute(int level, int expectedLevel, int expectedGold, bool backward)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);

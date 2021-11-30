@@ -265,7 +265,7 @@
             Assert.NotNull(targetRow);
             var worldQuestSheetCsv = state.GetSheetCsv<WorldQuestSheet>();
             var replaceTarget = $"{targetRow.Id},{targetRow.Goal},{targetRow.QuestRewardId}";
-            var replacedWorldQuestSheetCsv = worldQuestSheetCsv.Replace(replaceTarget, string.Empty);
+            var replacedWorldQuestSheetCsv = worldQuestSheetCsv.Replace(replaceTarget, $"_{string.Empty}");
             var worldQuestSheetAddress = Addresses.GetSheetAddress<WorldQuestSheet>();
             state = state.SetState(worldQuestSheetAddress, replacedWorldQuestSheetCsv.Serialize());
             worldQuestSheet = state.GetSheet<WorldQuestSheet>();

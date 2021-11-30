@@ -117,7 +117,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithSubRecipe()
         {
-            var row = _tableSheets.EquipmentItemRecipeSheet.Values.First(r => r.SubRecipeIds.Any());
+            var rowList = _tableSheets.EquipmentItemRecipeSheet.Values.ToList();
+            var row = rowList[1];
             var subRecipeId = row.SubRecipeIds.First();
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
@@ -194,7 +195,7 @@ namespace Lib9c.Tests.Action
             var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem2(material, count: row.MaterialCount);
 
-            var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheet.Values.First(r => r.Id == subRecipeId);
+            var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheetV2.Values.First(r => r.Id == subRecipeId);
             foreach (var materialInfo in subRecipeRow.Materials)
             {
                 materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
@@ -284,7 +285,7 @@ namespace Lib9c.Tests.Action
             var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem2(material, count: row.MaterialCount);
 
-            var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheet.Values.First(r => r.Id == subRecipeId);
+            var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheetV2.Values.First(r => r.Id == subRecipeId);
             foreach (var materialInfo in subRecipeRow.Materials)
             {
                 materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];

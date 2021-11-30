@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
                 _avatarState.inventory.AddItem2(subMaterial, count: materialInfo.Count);
             }
 
-            const int requiredStage = 19;
+            const int requiredStage = 21;
             for (var i = 1; i < requiredStage + 1; i++)
             {
                 _avatarState.worldInformation.ClearStage(

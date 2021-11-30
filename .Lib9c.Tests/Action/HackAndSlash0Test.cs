@@ -74,7 +74,7 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(1, 1, 1, false)]
-        [InlineData(100, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true)]
+        [InlineData(300, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true)]
         public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
