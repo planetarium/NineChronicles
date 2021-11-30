@@ -19,6 +19,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private IconAndButton[] uiBySystemType;
 
+        [SerializeField]
+        private Blur blur;
+
         private TextButton _confirmButton = null;
 
         private TextButton _cancelButton = null;
@@ -29,7 +32,6 @@ namespace Nekoyume.UI
 
         public System.Action ConfirmCallback { get; set; }
         public System.Action CancelCallback { get; set; }
-        private SystemType _nowType;
 
         protected override void Awake()
         {
@@ -50,12 +52,21 @@ namespace Nekoyume.UI
             {
                 ui.gameObject.SetActive(false);
             }
+            if (blur)
+            {
+                blur.Close();
+            }
             base.Close(ignoreCloseAnimation);
         }
 
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true, bool hasConfirmButton = true, SystemType type = SystemType.Error)
         {
+            if (blur)
+            {
+                blur.Show();
+            }
+
             if (gameObject.activeSelf)
             {
                 Close(true);
@@ -70,11 +81,6 @@ namespace Nekoyume.UI
         private void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true, bool hasConfirmButton = true, SystemType type = SystemType.Error)
         {
-            foreach (var ui in uiBySystemType)
-            {
-                ui.gameObject.SetActive(false);
-            }
-
             SetUIByType(type);
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
@@ -120,7 +126,6 @@ namespace Nekoyume.UI
             _contentText = uiBySystemType[(int) type].contentText;
             _titleText = uiBySystemType[(int) type].titleText;
             uiBySystemType[(int) type].gameObject.SetActive(true);
-            _nowType = type;
         }
     }
 }
