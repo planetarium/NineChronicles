@@ -82,6 +82,7 @@
             }
 
             var sheets = TableSheetsImporter.ImportSheets();
+            var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(0);
             var initialState = new Tests.Action.State()
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
                 .SetState(
@@ -92,7 +93,8 @@
                     Addresses.GameConfig,
                     new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize()
                 )
-                .SetState(Addresses.Ranking, ranking.Serialize());
+                .SetState(Addresses.Ranking, ranking.Serialize())
+                .SetState(weeklyArenaAddress, new WeeklyArenaState(0).Serialize());
 
             foreach (var (key, value) in sheets)
             {
@@ -132,7 +134,10 @@
                 .MintAsset(GoldCurrencyState.Address, initCurrencyGold)
                 .TransferAsset(Addresses.GoldCurrency, agentAddress,  agentCurrencyGold);
 
-            var action = new CreateTestbed();
+            var action = new CreateTestbed
+            {
+                weeklyArenaAddress = weeklyArenaAddress,
+            };
             var nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
