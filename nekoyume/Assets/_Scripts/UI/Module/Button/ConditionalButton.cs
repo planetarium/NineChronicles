@@ -19,6 +19,9 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
+        private Button button = null;
+
+        [SerializeField]
         private GameObject normalObject = null;
 
         [SerializeField]
@@ -26,6 +29,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private GameObject disabledObject = null;
+
+        [SerializeField]
+        private GameObject effectOverlay = null;
 
         [SerializeField]
         private string conditionInfoKey = null;
@@ -53,7 +59,6 @@ namespace Nekoyume.UI.Module
 
         public readonly ReactiveProperty<State> CurrentState = new ReactiveProperty<State>();
 
-        private Button _button = null;
         private Func<bool> _conditionFunc = null;
         private bool _interactable = true;
 
@@ -69,8 +74,7 @@ namespace Nekoyume.UI.Module
 
         protected virtual void Awake()
         {
-            _button = GetComponent<Button>();
-            _button.onClick.AddListener(OnClickButton);
+            button.onClick.AddListener(OnClickButton);
         }
 
         protected virtual bool CheckCondition()
@@ -86,23 +90,23 @@ namespace Nekoyume.UI.Module
         public void UpdateObjects()
         {
             var condition = CheckCondition();
-            SetSubmittable(condition);
+            SetConditionalState(condition);
             disabledObject.SetActive(!_interactable);
         }
 
-        public void SetSubmittable(bool value)
+        public void SetConditionalState(bool value)
         {
             if (_interactable)
             {
-                UpdateState(value ? State.Normal : State.Conditional);
+                SetState(value ? State.Normal : State.Conditional);
             }
             else
             {
-                UpdateState(State.Disabled);
+                SetState(State.Disabled);
             }
         }
 
-        public void UpdateState(State state)
+        public void SetState(State state)
         {
             CurrentState.Value = state;
             switch (state)
@@ -110,14 +114,18 @@ namespace Nekoyume.UI.Module
                 case State.Normal:
                     normalObject.SetActive(true);
                     conditionalObject.SetActive(false);
+                    button.interactable = true;
                     break;
                 case State.Conditional:
                     normalObject.SetActive(false);
                     conditionalObject.SetActive(true);
+                    button.interactable = true;
                     break;
                 case State.Disabled:
                     normalObject.SetActive(false);
                     conditionalObject.SetActive(false);
+                    effectOverlay.SetActive(false);
+                    button.interactable = false;
                     break;
             }
         }

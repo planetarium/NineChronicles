@@ -157,7 +157,7 @@ namespace Nekoyume.UI
             {
                 ["HelpPopupId"] = id,
             };
-            Mixpanel.Track("Unity/Click HelpPopup", props);
+            Analyzer.Instance.Track("Unity/Click HelpPopup", props);
 
 #pragma warning disable 618
             Instance.Show();

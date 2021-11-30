@@ -130,7 +130,7 @@ namespace Nekoyume.UI.Scroller
                     contentText.color = ColorHelper.HexToColorRGB("955c4a");
                     progressText.color = ColorHelper.HexToColorRGB("e0a491");
                     receiveButton.gameObject.SetActive(true);
-                    receiveButton.SetSubmittable(true);
+                    receiveButton.Interactable = true;
                 }
                 else
                 {
@@ -151,7 +151,7 @@ namespace Nekoyume.UI.Scroller
                 contentText.color = ColorHelper.HexToColorRGB("955c4a");
                 progressText.color = ColorHelper.HexToColorRGB("e0a491");
                 receiveButton.gameObject.SetActive(true);
-                receiveButton.SetSubmittable(false);
+                receiveButton.Interactable = false;
             }
 
             var itemMap = _quest.Reward.ItemMap;

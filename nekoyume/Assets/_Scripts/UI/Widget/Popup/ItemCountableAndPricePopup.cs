@@ -124,6 +124,7 @@ namespace Nekoyume.UI
                 }).AddTo(_disposablesForAwake);
             }
 
+            reregisterButton.Text = L10nManager.Localize("UI_REREGISTER");
             reregisterButton.OnSubmitSubject
                 .Subscribe(_ =>
                 {
@@ -198,8 +199,8 @@ namespace Nekoyume.UI
                 {
                     totalPrice.text = value.GetQuantityString();
                     var isValid = IsValid();
-                    submitButton.SetSubmittable(isValid);
-                    reregisterButton.SetSubmittable(isValid);
+                    submitButton.Interactable = isValid;
+                    reregisterButton.Interactable = isValid;
                     positiveMessage.SetActive(isValid);
                     warningMessage.SetActive(!isValid);
                 })

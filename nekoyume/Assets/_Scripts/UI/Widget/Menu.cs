@@ -142,7 +142,7 @@ namespace Nekoyume.UI
             {
                 ["StageID"] = stageId,
             };
-            Mixpanel.Track("Unity/Click Guided Quest Enter Dungeon", props);
+            Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", props);
         }
 
         public void GoToStage(BattleLog battleLog)
@@ -154,7 +154,7 @@ namespace Nekoyume.UI
 
         private void GoToCombinationEquipmentRecipe(int recipeId)
         {
-            Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
+            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment");
 
             CombinationClickInternal(() => Find<Craft>().Show(recipeId));
         }

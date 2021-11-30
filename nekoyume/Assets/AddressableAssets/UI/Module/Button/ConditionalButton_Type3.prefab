@@ -731,7 +731,6 @@ RectTransform:
   - {fileID: 5483269420289765167}
   - {fileID: 105508142914084638}
   - {fileID: 8923905789107274729}
-  - {fileID: 7569362391894026279}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -760,9 +759,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  button: {fileID: 8928492100869035181}
   normalObject: {fileID: 8313786517335402731}
   conditionalObject: {fileID: 6022025817023840083}
   disabledObject: {fileID: 355461153799763971}
+  effectOverlay: {fileID: 6387448829685765285}
   conditionInfoKey: 
   texts:
   - {fileID: 4791061184244252715}
@@ -1157,7 +1158,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8394007451006322099}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1307,7 +1308,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7569362391894026279
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1315,13 +1316,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7856570142292137824}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 205677935801621567}
-  m_Father: {fileID: 1925281264920820847}
-  m_RootOrder: 4
+  m_Father: {fileID: 8394007451006322099}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -1357,6 +1358,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 7569362391894026279}
   - {fileID: 1381315966600267184}
   m_Father: {fileID: 1925281264920820847}
   m_RootOrder: 0

@@ -612,7 +612,7 @@ namespace Nekoyume.Game
                 ["CP"] = cp,
                 ["FoodCount"] = foodCount
             };
-            Mixpanel.Track("Unity/Stage End", props);
+            Analyzer.Instance.Track("Unity/Stage End", props);
         }
 
         private IEnumerator CoSlideBg()

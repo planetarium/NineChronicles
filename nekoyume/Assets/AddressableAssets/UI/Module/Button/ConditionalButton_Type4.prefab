@@ -236,9 +236,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  button: {fileID: 3269068318677096556}
   normalObject: {fileID: 2726631436888056874}
   conditionalObject: {fileID: 370694304147616658}
   disabledObject: {fileID: 5933679543188075714}
+  effectOverlay: {fileID: 1014073854197422180}
   conditionInfoKey: 
   texts:
   - {fileID: 1498349374040689898}

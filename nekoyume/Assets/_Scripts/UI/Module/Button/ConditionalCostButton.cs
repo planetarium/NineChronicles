@@ -1,3 +1,4 @@
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -12,37 +13,47 @@ namespace Nekoyume.UI.Module
     {
         public enum CostType
         {
+            None,
             NCG,
-            ActionPoint
+            ActionPoint,
+            Hourglass
         }
 
         [SerializeField]
         private List<TextMeshProUGUI> costTexts = null;
 
-        [SerializeField]
-        private CostType costType = CostType.NCG;
+        private CostType _costType = CostType.NCG;
 
-        private int _cost;
+        private int _cost = int.MaxValue;
 
-        public void SetCost(int value)
+        public void SetCost(CostType costType, int value)
         {
             _cost = value;
+            _costType = costType;
             foreach (var text in costTexts)
             {
                 text.text = value.ToString();
             }
+            UpdateObjects();
         }
 
         protected override bool CheckCondition()
         {
-            switch (costType)
+            switch (_costType)
             {
+                case CostType.None:
+                    Debug.LogError("Cost not set!");
+                    return false;
                 case CostType.NCG:
                     return States.Instance.GoldBalanceState.Gold.MajorUnit >= _cost
                         && base.CheckCondition();
                 case CostType.ActionPoint:
                     return States.Instance.CurrentAvatarState.actionPoint >= _cost
                         && base.CheckCondition();
+                case CostType.Hourglass:
+                    var inventory = States.Instance.CurrentAvatarState.inventory;
+                    var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
+                    return count >= _cost && base.CheckCondition();
                 default:
                     return base.CheckCondition();
             }
@@ -50,7 +61,7 @@ namespace Nekoyume.UI.Module
 
         protected override void OnClickButton()
         {
-            switch (costType)
+            switch (_costType)
             {
                 case CostType.NCG:
                     if (States.Instance.GoldBalanceState.Gold.MajorUnit < _cost)
@@ -63,6 +74,15 @@ namespace Nekoyume.UI.Module
                     if (States.Instance.CurrentAvatarState.actionPoint < _cost)
                     {
                         OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_NOT_ENOUGH_AP"));
+                        return;
+                    }
+                    break;
+                case CostType.Hourglass:
+                    var inventory = States.Instance.CurrentAvatarState.inventory;
+                    var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
+                    if (count < _cost)
+                    {
+                        OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"));
                         return;
                     }
                     break;
