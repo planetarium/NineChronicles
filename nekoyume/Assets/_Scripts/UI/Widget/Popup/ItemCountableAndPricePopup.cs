@@ -124,6 +124,7 @@ namespace Nekoyume.UI
                 }).AddTo(_disposablesForAwake);
             }
 
+            reregisterButton.Text = L10nManager.Localize("UI_REREGISTER");
             reregisterButton.OnSubmitSubject
                 .Subscribe(_ =>
                 {
