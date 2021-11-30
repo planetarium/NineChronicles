@@ -3,6 +3,7 @@ using System.Text;
 using Editor;
 using Lib9c.DevExtensions.Model;
 using Nekoyume;
+using Nekoyume.Game.ScriptableObject;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -43,21 +44,65 @@ public class TestbedTool : EditorWindow
         var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/TestbedTool.uss");
         root.styleSheets.Add(styleSheet);
 
-        var objectField = EditorQueryHelper.FindByName<ObjectField>(root, "the-uxml-field");
-        objectField.allowSceneObjects = true;
-        objectField.objectType = typeof(TestbedToolScriptableObject);
-        var asset = AssetDatabase.LoadAssetAtPath<TestbedToolScriptableObject>("Assets/Editor/TestbedSell.asset");
-        objectField.value = asset;
+        // for testbed sell
+        var sellObjectField = EditorQueryHelper.FindByName<ObjectField>(root, "sell-field");
+        sellObjectField.allowSceneObjects = true;
+        sellObjectField.objectType = typeof(TestbedSellScriptableObject);
+        var sell =
+            AssetDatabase.LoadAssetAtPath<TestbedSellScriptableObject>(
+                "Assets/Editor/TestbedSell.asset");
+        sellObjectField.value = sell;
         EditorQueryHelper.FindByName<Button>(root, "sell-export-button").clickable.clicked +=
             OnClickSellExport;
         EditorQueryHelper.FindByName<Button>(root, "sell-import-button").clickable.clicked +=
             OnClickSellImport;
+
+        // for testbed createavatar
+        var createAvatarObjectField =
+            EditorQueryHelper.FindByName<ObjectField>(root, "create-avatar-field");
+        createAvatarObjectField.allowSceneObjects = true;
+        createAvatarObjectField.objectType = typeof(TestbedCreateAvatarScriptableObject);
+        var createAvatar =
+            AssetDatabase.LoadAssetAtPath<TestbedCreateAvatarScriptableObject>(
+                "Assets/Editor/TestbedCreateAvatar.asset");
+        createAvatarObjectField.value = createAvatar;
+        EditorQueryHelper.FindByName<Button>(root, "create-avatar-export-button").clickable
+                .clicked +=
+            OnClickCreateAvatarExport;
+        EditorQueryHelper.FindByName<Button>(root, "create-avatar-import-button").clickable
+                .clicked +=
+            OnClickCreateAvatarImport;
     }
 
     private void OnClickSellExport()
     {
-        Debug.Log("[OnClickExport]");
-        var path = $"{DataPath}\\TestbedSell.json";
+        Debug.Log("[OnClickSellExport]");
+        Export<TestbedSellScriptableObject, TestbedSell>("TestbedSell", "sell-field");
+    }
+
+    private void OnClickCreateAvatarExport()
+    {
+        Debug.Log("[OnClickCreateAvatarExport]");
+        Export<TestbedCreateAvatarScriptableObject, TestbedCreateAvatar>(
+            "TestbedCreateAvatar", "create-avatar-field");
+    }
+
+    private void OnClickSellImport()
+    {
+        Debug.Log("[OnClickImport]");
+        Import<TestbedSellScriptableObject, TestbedSell>("sell-field");
+    }
+
+    private void OnClickCreateAvatarImport()
+    {
+        Debug.Log("[OnClickImport]");
+        Import<TestbedCreateAvatarScriptableObject, TestbedCreateAvatar>("create-avatar-field");
+    }
+
+    private void Export<T1, T2>(string fileName, string objectFieldName)
+        where T1 : BaseTestbedScriptableObject<T2> where T2 : BaseTestbedModel
+    {
+        var path = $"{DataPath}\\{fileName}.json";
         AssetDatabase.Refresh();
         if (!File.Exists(path))
         {
@@ -67,27 +112,27 @@ public class TestbedTool : EditorWindow
         }
 
         var objectField =
-            EditorQueryHelper.FindByName<ObjectField>(rootVisualElement, "the-uxml-field");
-        var scriptableObject = objectField.value as TestbedToolScriptableObject;
-        var json = JsonUtility.ToJson(scriptableObject.data, true);
+            EditorQueryHelper.FindByName<ObjectField>(rootVisualElement, $"{objectFieldName}");
+        var scriptableObject = objectField.value as T1;
+        var json = JsonUtility.ToJson(scriptableObject.Data, true);
         SaveJsonFile(path, json);
         ConfirmPopup("Alert", "Save success", $"PATH : {path}");
     }
 
-    private void OnClickSellImport()
+    private void Import<T1, T2>(string objectFieldName)
+        where T1 : BaseTestbedScriptableObject<T2> where T2 : BaseTestbedModel
     {
-        Debug.Log("[OnClickImport]");
         var path = EditorUtility.OpenFilePanel("Load data", DataPath, "json");
         if (path.Length <= 0)
         {
             return;
         }
 
-        var data = LoadJsonFile<TestbedSell>(path);
         var objectField =
-            EditorQueryHelper.FindByName<ObjectField>(rootVisualElement, "the-uxml-field");
-        var scriptableObject = objectField.value as TestbedToolScriptableObject;
-        scriptableObject.data = data;
+            EditorQueryHelper.FindByName<ObjectField>(rootVisualElement, $"{objectFieldName}");
+        var scriptableObject = objectField.value as T1;
+        var data = LoadJsonFile<T2>(path);
+        scriptableObject.Data = data;
         AssetDatabase.Refresh();
         ConfirmPopup("Alert", "Load success");
     }
@@ -100,7 +145,7 @@ public class TestbedTool : EditorWindow
         fileStream.Close();
     }
 
-    private T LoadJsonFile<T>(string path)
+    private T LoadJsonFile<T>(string path) where T : BaseTestbedModel
     {
         var fileStream = new FileStream(path, FileMode.Open);
         var data = new byte[fileStream.Length];

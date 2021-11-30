@@ -55,11 +55,13 @@ namespace Nekoyume.Game.Entrance
             {
                 stageLoadingScreen.Close();
             }
+
             var battle = Widget.Find<UI.Battle>();
             if (battle.IsActive())
             {
                 battle.Close(true);
             }
+
             var battleResult = Widget.Find<BattleResultPopup>();
             if (battleResult.IsActive())
             {
@@ -71,6 +73,13 @@ namespace Nekoyume.Game.Entrance
             {
                 loadingScreen.Close();
             }
+
+            var arenaBattleLoadingScreen = Widget.Find<ArenaBattleLoadingScreen>();
+            if (arenaBattleLoadingScreen.IsActive())
+            {
+                arenaBattleLoadingScreen.Close();
+            }
+
             ActionRenderHandler.Instance.Pending = false;
             yield return new WaitForSeconds(1.0f);
 
