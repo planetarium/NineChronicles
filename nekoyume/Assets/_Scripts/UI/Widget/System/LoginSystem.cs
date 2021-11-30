@@ -454,21 +454,17 @@ namespace Nekoyume.UI
             {
                 case States.ResetPassphrase:
                 case States.CreatePassword:
-                    submitButton.SetCondition(CheckPasswordVaildInCreate);
-                    submitButton.UpdateObjects();
+                    submitButton.Interactable = CheckPasswordVaildInCreate();
                     break;
                 case States.Login:
-                    submitButton.SetCondition(() => !string.IsNullOrEmpty(loginField.text));
-                    submitButton.UpdateObjects();
+                    submitButton.Interactable = !string.IsNullOrEmpty(loginField.text);
                     break;
                 case States.FindPassphrase:
-                    submitButton.SetCondition(() => !string.IsNullOrEmpty(findPassphraseField.text));
-                    submitButton.UpdateObjects();
+                    submitButton.Interactable = !string.IsNullOrEmpty(findPassphraseField.text);
                     break;
                 case States.CreateAccount:
                 case States.Show:
-                    submitButton.SetCondition(null);
-                    submitButton.UpdateObjects();
+                    submitButton.Interactable = true;
                     break;
                 case States.Failed:
                     break;
