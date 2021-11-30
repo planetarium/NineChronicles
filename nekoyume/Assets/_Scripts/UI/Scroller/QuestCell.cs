@@ -130,7 +130,7 @@ namespace Nekoyume.UI.Scroller
                     contentText.color = ColorHelper.HexToColorRGB("955c4a");
                     progressText.color = ColorHelper.HexToColorRGB("e0a491");
                     receiveButton.gameObject.SetActive(true);
-                    receiveButton.SetSubmittable(true);
+                    receiveButton.Interactable = true;
                 }
                 else
                 {
@@ -140,7 +140,7 @@ namespace Nekoyume.UI.Scroller
                     titleText.color = ColorHelper.HexToColorRGB("614037");
                     contentText.color = ColorHelper.HexToColorRGB("38251e");
                     progressText.color = ColorHelper.HexToColorRGB("282828");
-                    receiveButton.gameObject.SetActive(false);
+                    receiveButton.Interactable = false;
                 }
             }
             else
@@ -151,7 +151,7 @@ namespace Nekoyume.UI.Scroller
                 contentText.color = ColorHelper.HexToColorRGB("955c4a");
                 progressText.color = ColorHelper.HexToColorRGB("e0a491");
                 receiveButton.gameObject.SetActive(true);
-                receiveButton.SetSubmittable(false);
+                receiveButton.Interactable = false;
             }
 
             var itemMap = _quest.Reward.ItemMap;
