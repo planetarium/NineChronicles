@@ -45,7 +45,7 @@ namespace Lib9c.Tests.Types
         [InlineData(1)]
         private void DeterministicWhenSerializationWithInteger(int caseIndex)
         {
-            Bencodex.Types.List targetList;
+            Bencodex.Types.List targetList = Bencodex.Types.List.Empty;
             switch (caseIndex)
             {
                 case 0:
@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Types
         [InlineData(1)]
         private void DeterministicWhenSerializationWithAddress(int caseIndex)
         {
-            Bencodex.Types.List targetList;
+            Bencodex.Types.List targetList = Bencodex.Types.List.Empty;
             switch (caseIndex)
             {
                 case 0:

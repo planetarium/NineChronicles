@@ -106,7 +106,7 @@ namespace Lib9c.Tests.Action
 
                 if (level == 0)
                 {
-                    Assert.Equal(default(Null), nextState.GetState(monsterCollectionAddress));
+                    Assert.Equal(Null.Value, nextState.GetState(monsterCollectionAddress));
                 }
                 else
                 {

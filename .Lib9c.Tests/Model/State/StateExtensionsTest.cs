@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Model.State
                 StateExtensions.Serialize((BigInteger?)456)
             );
             Assert.Equal(
-                default(Bencodex.Types.Null),
+                Bencodex.Types.Null.Value,
                 StateExtensions.Serialize((BigInteger?)null)
             );
         }
@@ -39,7 +39,7 @@ namespace Lib9c.Tests.Model.State
             );
             Assert.Equal(
                 (BigInteger?)null,
-                default(Bencodex.Types.Null).ToNullableBigInteger()
+                Bencodex.Types.Null.Value.ToNullableBigInteger()
             );
         }
     }

@@ -15,11 +15,17 @@ using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Events;
+using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
 #endif
-using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+using Lib9c.DevExtensions;
+using Lib9c.DevExtensions.Model;
+#endif
 
 namespace Nekoyume.BlockChain.Policy
 {
@@ -139,15 +145,16 @@ namespace Nekoyume.BlockChain.Policy
         internal IBlockPolicy<NCAction> GetPolicy(
             long minimumDifficulty,
             IVariableSubPolicy<HashAlgorithmType> hashAlgorithmTypePolicy,
-            IVariableSubPolicy<int> maxBlockBytesPolicy,
+            IVariableSubPolicy<long> maxBlockBytesPolicy,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,
             IVariableSubPolicy<ImmutableHashSet<Address>> authorizedMinersPolicy,
             IVariableSubPolicy<ImmutableHashSet<Address>> permissionedMinersPolicy)
         {
-#if UNITY_EDITOR
-            return new DebugPolicy();
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+            var data = TestbedHelper.LoadData<TestbedCreateAvatar>("TestbedCreateAvatar");
+             return new DebugPolicy(data.BlockDifficulty);
 #else
             hashAlgorithmTypePolicy = hashAlgorithmTypePolicy
                 ?? HashAlgorithmTypePolicy.Default;
@@ -331,7 +338,7 @@ namespace Nekoyume.BlockChain.Policy
             BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock,
             IVariableSubPolicy<HashAlgorithmType> hashAlgorithmTypePolicy,
-            IVariableSubPolicy<int> maxBlockBytesPolicy,
+            IVariableSubPolicy<long> maxBlockBytesPolicy,
             IVariableSubPolicy<int> minTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerBlockPolicy,
             IVariableSubPolicy<int> maxTransactionsPerSignerPerBlockPolicy,

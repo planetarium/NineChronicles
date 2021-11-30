@@ -150,6 +150,10 @@ namespace Nekoyume.Action
                     ((Dictionary) p[productKey])[itemIdKey].Equals(nonFungibleItem.NonFungibleId.Serialize()));
 #pragma warning restore LAA1002
 
+            // Since Bencodex 0.4, Dictionary/List are reference types; so their default values
+            // are not a empty container, but a null reference:
+            productSerialized = productSerialized ?? Dictionary.Empty;
+
             // Register new ShopItem
             if (productSerialized.Equals(Dictionary.Empty))
             {
