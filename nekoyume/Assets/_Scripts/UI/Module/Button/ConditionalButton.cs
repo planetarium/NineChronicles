@@ -90,11 +90,11 @@ namespace Nekoyume.UI.Module
         public void UpdateObjects()
         {
             var condition = CheckCondition();
-            SetSubmittable(condition);
+            SetConditionalState(condition);
             disabledObject.SetActive(!_interactable);
         }
 
-        public void SetSubmittable(bool value)
+        public void SetConditionalState(bool value)
         {
             if (_interactable)
             {
