@@ -33,8 +33,8 @@ namespace Nekoyume.UI
             _objectPool = Game.Game.instance.Stage.objectPool;
 
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
-            Game.Event.OnRoomEnter.AddListener(b => ClearPlayers());
-            Game.Event.OnRoomEnter.AddListener(b => ReactiveShopState.InitSellDigests());
+            Game.Event.OnRoomEnter.AddListener(_ => ClearPlayers());
+            Game.Event.OnRoomEnter.AddListener(_ => ReactiveShopState.InitSellDigests());
             CloseWidget = null;
         }
 
@@ -62,7 +62,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Mixpanel.Track("Unity/LoginImpression");
+            Analyzer.Instance.Track("Unity/LoginImpression");
 
             for (var i = 0; i < slots.Length; i++)
             {

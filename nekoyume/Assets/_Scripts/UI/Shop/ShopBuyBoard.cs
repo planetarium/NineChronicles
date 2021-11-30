@@ -1,5 +1,7 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using mixpanel;
 using Nekoyume.Action;
@@ -104,12 +106,17 @@ namespace Nekoyume.UI
                                                BuyMultiple);
         }
 
-        private void BuyMultiple()
+        private async void BuyMultiple()
         {
             var wishItems = shopItems.SharedModel.GetWishItems;
-            var purchaseInfos = new List<PurchaseInfo>();
-            purchaseInfos.AddRange(wishItems.Select(x => ShopBuy.GetPurchaseInfo(x.OrderId.Value)));
-            Game.Game.instance.ActionManager.Buy(purchaseInfos);
+            var purchaseInfos = new ConcurrentBag<PurchaseInfo>();
+
+            await foreach (var item in wishItems.ToAsyncEnumerable())
+            {
+                var purchaseInfo = await ShopBuy.GetPurchaseInfo(item.OrderId.Value);
+                purchaseInfos.Add(purchaseInfo);
+            }
+            Game.Game.instance.ActionManager.Buy(purchaseInfos.ToList()).Subscribe();
 
             if (shopItems.SharedModel.WishItemCount > 0)
             {
@@ -117,7 +124,7 @@ namespace Nekoyume.UI
                 {
                     ["Count"] = shopItems.SharedModel.WishItemCount,
                 };
-                Mixpanel.Track("Unity/Number of Purchased Items", props);
+                Analyzer.Instance.Track("Unity/Number of Purchased Items", props);
             }
 
             foreach (var shopItem in shopItems.SharedModel.GetWishItems)
@@ -126,7 +133,7 @@ namespace Nekoyume.UI
                 {
                     ["Price"] = shopItem.Price.Value.GetQuantityString(),
                 };
-                Mixpanel.Track("Unity/Buy", props);
+                Analyzer.Instance.Track("Unity/Buy", props);
                 shopItem.Selected.Value = false;
                 ReactiveShopState.RemoveBuyDigest(shopItem.OrderId.Value);
                 var format = L10nManager.Localize("NOTIFICATION_BUY_START");

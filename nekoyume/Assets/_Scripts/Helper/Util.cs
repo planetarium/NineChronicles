@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Model.Item;
-using Nekoyume.UI;
+using UnityEngine;
 
 namespace Nekoyume.Helper
 {
@@ -13,6 +14,7 @@ namespace Nekoyume.Helper
     {
         public const int VisibleEnhancementEffectLevel = 10;
         private const int BlockPerSecond = 12;
+        private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
 
         public static string GetBlockToTime(int block)
         {
@@ -54,50 +56,61 @@ namespace Nekoyume.Helper
             return sb.ToString();
         }
 
-        public static Order GetOrder(Guid orderId)
+        public static async Task<Order> GetOrder(Guid orderId)
         {
             var address = Order.DeriveAddress(orderId);
-            var state = Game.Game.instance.Agent.GetState(address);
-            if (state is Dictionary dictionary)
+            return await UniTask.Run(async () =>
             {
-                return OrderFactory.Deserialize(dictionary);
-            }
+                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                if (state is Dictionary dictionary)
+                {
+                    return OrderFactory.Deserialize(dictionary);
+                }
 
-            return null;
+                return null;
+            });
         }
 
-        public static string GetItemNameByOrdierId(Guid orderId, bool isNonColored = false)
+        public static async Task<string> GetItemNameByOrderId(Guid orderId, bool isNonColored = false)
         {
-            var order = GetOrder(orderId);
+            var order = await GetOrder(orderId);
             if (order == null)
             {
                 return string.Empty;
             }
 
             var address = Addresses.GetItemAddress(order.TradableId);
-            var state = Game.Game.instance.Agent.GetState(address);
-            if (state is Dictionary dictionary)
+            return await UniTask.Run(async () =>
             {
-                var itemBase = ItemFactory.Deserialize(dictionary);
-                return isNonColored ? itemBase.GetLocalizedNonColoredName() : itemBase.GetLocalizedName();
-            }
+                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                if (state is Dictionary dictionary)
+                {
+                    var itemBase = ItemFactory.Deserialize(dictionary);
+                    return isNonColored
+                        ? itemBase.GetLocalizedNonColoredName()
+                        : itemBase.GetLocalizedName();
+                }
 
-            return string.Empty;
+                return string.Empty;
+            });
         }
 
-        public static ItemBase GetItemBaseByTradableId(Guid tradableId, long requiredBlockExpiredIndex)
+        public static async Task<ItemBase> GetItemBaseByTradableId(Guid tradableId, long requiredBlockExpiredIndex)
         {
             var address = Addresses.GetItemAddress(tradableId);
-            var state = Game.Game.instance.Agent.GetState(address);
-            if (state is Dictionary dictionary)
+            return await UniTask.Run(async () =>
             {
-                var itemBase = ItemFactory.Deserialize(dictionary);
-                var tradableItem = itemBase as ITradableItem;
-                tradableItem.RequiredBlockIndex = requiredBlockExpiredIndex;
-                return tradableItem as ItemBase;
-            }
+                var state = await Game.Game.instance.Agent.GetStateAsync(address);
+                if (state is Dictionary dictionary)
+                {
+                    var itemBase = ItemFactory.Deserialize(dictionary);
+                    var tradableItem = itemBase as ITradableItem;
+                    tradableItem.RequiredBlockIndex = requiredBlockExpiredIndex;
+                    return tradableItem as ItemBase;
+                }
 
-            return null;
+                return null;
+            });
         }
 
         public static ItemBase CreateItemBaseByItemId(int itemId)
@@ -132,6 +145,35 @@ namespace Nekoyume.Helper
             }
 
             return count;
+        }
+
+        public static bool TryGetStoredAvatarSlotIndex(out int slotIndex)
+        {
+            if (Game.Game.instance.Agent is null)
+            {
+                Debug.LogError("[Util.TryGetStoredSlotIndex] agent is null");
+                slotIndex = 0;
+                return false;
+            }
+
+            var agentAddress = Game.Game.instance.Agent.Address;
+            var key = $"{StoredSlotIndex}{agentAddress}";
+            var hasKey = PlayerPrefs.HasKey(key);
+            slotIndex = hasKey ? PlayerPrefs.GetInt(key) : 0;
+            return hasKey;
+        }
+
+        public static void SaveAvatarSlotIndex(int slotIndex)
+        {
+            if (Game.Game.instance.Agent is null)
+            {
+                Debug.LogError("[Util.SaveSlotIndex] agent is null");
+                return;
+            }
+
+            var agentAddress = Game.Game.instance.Agent.Address;
+            var key = $"{StoredSlotIndex}{agentAddress}";
+            PlayerPrefs.SetInt(key, slotIndex);
         }
     }
 }

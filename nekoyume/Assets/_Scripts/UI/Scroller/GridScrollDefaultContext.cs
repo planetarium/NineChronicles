@@ -1,5 +1,5 @@
 using System;
-using FancyScrollView;
+using UnityEngine.UI.Extensions;
 using UnityEngine;
 
 namespace Nekoyume.UI.Scroller

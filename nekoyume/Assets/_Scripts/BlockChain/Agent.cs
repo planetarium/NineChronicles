@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AsyncIO;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Action;
@@ -40,9 +41,7 @@ using Nekoyume.UI;
 using NetMQ;
 using Serilog;
 using Serilog.Events;
-using UniRx;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Nekoyume.BlockChain
 {
@@ -53,7 +52,7 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class Agent : MonoBehaviour, IDisposable, IAgent
     {
-        private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/";
+        private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us.planetarium.dev:3478/";
 
         private const int MaxSeed = 3;
 
@@ -71,9 +70,6 @@ namespace Nekoyume.BlockChain
         private const int SwarmDialTimeout = 5000;
         private const int SwarmLinger = 1 * 1000;
         private const string QueuedActionsFileName = "queued_actions.dat";
-
-        private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(15);
 
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
@@ -108,7 +104,7 @@ namespace Nekoyume.BlockChain
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
-        public event EventHandler PreloadEnded;
+        public event Func<UniTask> PreloadEndedAsync;
         public event EventHandler<long> TipChanged;
         public static event Action<Guid> OnEnqueueOwnGameAction;
         public static event Action<bool> OnHasOwnTx;
@@ -143,7 +139,7 @@ namespace Nekoyume.BlockChain
             if (disposed)
             {
                 Debug.Log("Agent Exist");
-                yield return null;
+                yield break;
             }
 
             InitAgent(callback, privateKey, options);
@@ -160,7 +156,6 @@ namespace Nekoyume.BlockChain
             bool development,
             AppProtocolVersion appProtocolVersion,
             IEnumerable<PublicKey> trustedAppProtocolVersionSigners,
-            int minimumDifficulty,
             string storageType = null,
             string genesisBlockPath = null)
         {
@@ -180,8 +175,6 @@ namespace Nekoyume.BlockChain
                 appProtocolVersion,
                 appProtocolVersion.Token
             );
-
-            Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
             var policy = BlockPolicySource.GetPolicy();
             _stagePolicy = new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -297,6 +290,9 @@ namespace Nekoyume.BlockChain
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
             blocks.GetBalance(address, currency);
 
+        public Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency) =>
+            Task.Run(() => blocks.GetBalance(address, currency));
+
         #region Mono
 
         public void SendException(Exception exc)
@@ -351,7 +347,6 @@ namespace Nekoyume.BlockChain
             AppProtocolVersion = appProtocolVersion.Version;
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
-            var minimumDifficulty = options.MinimumDifficulty;
             Init(
                 privateKey,
                 storagePath,
@@ -363,7 +358,6 @@ namespace Nekoyume.BlockChain
                 development,
                 appProtocolVersion,
                 trustedAppProtocolVersionSigners,
-                minimumDifficulty,
                 storageType,
                 genesisBlockPath
             );
@@ -379,22 +373,18 @@ namespace Nekoyume.BlockChain
                     loadingScreen.Message = GetLoadingScreenMessage(state);
                 }
             };
-            PreloadEnded += (_, __) =>
-            {
-                Assert.IsNotNull(GetState(RankingState.Address));
-                Assert.IsNotNull(GetState(ShopState.Address));
-                Assert.IsNotNull(GetState(GameConfigState.Address));
 
+            PreloadEndedAsync += async () =>
+            {
                 // 에이전트의 상태를 한 번 동기화 한다.
-                Currency goldCurrency = new GoldCurrencyState(
-                    (Dictionary) GetState(GoldCurrencyState.Address)
-                ).Currency;
-                States.Instance.SetAgentState(
-                    GetState(Address) is Bencodex.Types.Dictionary agentDict
+                Currency goldCurrency =
+                    new GoldCurrencyState((Dictionary)await GetStateAsync(GoldCurrencyState.Address)).Currency;
+                await States.Instance.SetAgentStateAsync(
+                    await GetStateAsync(Address) is Bencodex.Types.Dictionary agentDict
                         ? new AgentState(agentDict)
                         : new AgentState(Address));
-                States.Instance.SetGoldBalanceState(
-                    new GoldBalanceState(Address, GetBalance(Address, goldCurrency)));
+                States.Instance.SetGoldBalanceState(new GoldBalanceState(Address,
+                    await GetBalanceAsync(Address, goldCurrency)));
 
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
@@ -402,15 +392,13 @@ namespace Nekoyume.BlockChain
                 for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
                 {
                     var address = RankingState.Derive(i);
-                    var mapState = GetState(address) is Bencodex.Types.Dictionary serialized
+                    var mapState = await GetStateAsync(address) is Bencodex.Types.Dictionary serialized
                         ? new RankingMapState(serialized)
                         : new RankingMapState(address);
                     States.Instance.SetRankingMapStates(mapState);
                 }
 
-                // 상점의 상태를 한 번 동기화 한다.
-
-                if (GetState(GameConfigState.Address) is Dictionary configDict)
+                if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
                 {
                     States.Instance.SetGameConfigState(new GameConfigState(configDict));
                 }
@@ -419,12 +407,13 @@ namespace Nekoyume.BlockChain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
-                if (ArenaHelper.TryGetThisWeekState(BlockIndex, out var weeklyArenaState))
+                var weeklyArenaState = await ArenaHelper.GetThisWeekStateAsync(BlockIndex);
+                if (weeklyArenaState is null)
                 {
-                    States.Instance.SetWeeklyArenaState(weeklyArenaState);
-                }
-                else
                     throw new FailedToInstantiateStateException<WeeklyArenaState>();
+                }
+
+                States.Instance.SetWeeklyArenaState(weeklyArenaState);
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 BlockRenderHandler.Instance.Start(BlockRenderer);
@@ -440,6 +429,7 @@ namespace Nekoyume.BlockChain
                 LoadQueuedActions();
                 TipChanged += (___, index) => { BlockIndexSubject.OnNext(index); };
             };
+
             _miner = options.NoMiner ? null : CoMiner();
             _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
 
@@ -503,18 +493,6 @@ namespace Nekoyume.BlockChain
                 {
                     store = new RocksDBStore(path);
                     Debug.Log("RocksDB is initialized.");
-                }
-                catch (TypeInitializationException e)
-                {
-                    Debug.LogErrorFormat("RocksDB is not available. DefaultStore will be used. {0}", e);
-                }
-            }
-            else if (storageType == "monorocksdb")
-            {
-                try
-                {
-                    store = new MonoRocksDBStore(path);
-                    Debug.Log("MonoRocksDB is initialized.");
                 }
                 catch (TypeInitializationException e)
                 {
@@ -629,6 +607,7 @@ namespace Nekoyume.BlockChain
             Widget.Create<BattleSimulator>(true);
             Widget.Create<CombinationSimulator>(true);
             Widget.Create<Cheat>(true);
+            Widget.Create<TestbedEditor>(true);
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);
@@ -735,7 +714,8 @@ namespace Nekoyume.BlockChain
                     index - existingBlocks
                 );
             }
-            PreloadEnded?.Invoke(this, null);
+
+            yield return PreloadEndedAsync?.Invoke().ToCoroutine();
 
             var swarmStartTask = Task.Run(async () =>
             {
@@ -764,7 +744,7 @@ namespace Nekoyume.BlockChain
             {
                 await _swarm.WaitForRunningAsync();
 
-                BlockRenderer.EveryBlock()
+                BlockRenderer.BlockSubject
                     .ObserveOnMainThread()
                     .Subscribe(TipChangedHandler);
 
@@ -850,27 +830,26 @@ namespace Nekoyume.BlockChain
             );
             Debug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
 
-            States.Instance.SelectAvatar(avatarIndex);
+            yield return States.Instance.SelectAvatarAsync(avatarIndex).ToCoroutine();
             var waitForSeconds = new WaitForSeconds(TxProcessInterval);
 
             while (true)
             {
                 yield return waitForSeconds;
-
                 yield return Game.Game.instance.ActionManager.HackAndSlash(
                     new List<Costume>(),
                     new List<Equipment>(),
                     new List<Consumable>(),
                     1,
                     1,
-                    1);
+                    1).StartAsCoroutine();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }
 
         private IEnumerator CoMiner()
         {
-            var miner = new Miner(blocks, _swarm, PrivateKey, false);
+            var miner = new Miner(blocks, _swarm, PrivateKey);
             var sleepInterval = new WaitForSeconds(15);
             while (true)
             {
@@ -961,7 +940,7 @@ namespace Nekoyume.BlockChain
                 // 프레임 저하를 막기 위해 별도 스레드로 처리합니다.
                 Task<List<Transaction<PolymorphicAction<ActionBase>>>> getOwnTxs =
                     Task.Run(
-                        () => _stagePolicy.Iterate(blocks)
+                        () => _stagePolicy.Iterate()
                             .Where(tx => tx.Signer.Equals(Address))
                             .ToList()
                     );

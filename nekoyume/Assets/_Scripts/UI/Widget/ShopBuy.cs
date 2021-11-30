@@ -69,13 +69,8 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() =>
             {
                 CleanUpWishListAlertPopup(Close);
-                Game.Event.OnRoomEnter.Invoke(true);
             });
-            CloseWidget = () =>
-            {
-                Close();
-                Game.Event.OnRoomEnter.Invoke(true);
-            };
+            CloseWidget = () => CleanUpWishListAlertPopup(Close);
         }
 
         public override void Initialize()
@@ -102,9 +97,9 @@ namespace Nekoyume.UI
             Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
-            var task = Task.Run(() =>
+            var task = Task.Run(async () =>
             {
-                ReactiveShopState.InitAndUpdateBuyDigests();
+                await ReactiveShopState.InitAndUpdateBuyDigests();
                 return true;
             });
 
@@ -145,6 +140,7 @@ namespace Nekoyume.UI
             _npc?.gameObject.SetActive(false);
             shopItems.Close();
             Find<ItemCountAndPricePopup>().Close();
+            Game.Event.OnRoomEnter.Invoke(true);
             Close(true);
         }
 
@@ -207,16 +203,19 @@ namespace Nekoyume.UI
             Find<ItemCountAndPricePopup>().Pop(SharedModel.ItemCountAndPricePopup.Value);
         }
 
-        private void Buy(ShopItem shopItem)
+        private async void Buy(ShopItem shopItem)
         {
-            var purchaseInfos = new List<PurchaseInfo> {GetPurchaseInfo(shopItem.OrderId.Value)};
-            Game.Game.instance.ActionManager.Buy(purchaseInfos);
+            var purchaseInfos = new List<PurchaseInfo>
+            {
+                await GetPurchaseInfo(shopItem.OrderId.Value)
+            };
+            Game.Game.instance.ActionManager.Buy(purchaseInfos).Subscribe();
 
             var countProps = new Value {["Count"] = 1,};
-            Mixpanel.Track("Unity/Number of Purchased Items", countProps);
+            Analyzer.Instance.Track("Unity/Number of Purchased Items", countProps);
 
             var buyProps = new Value {["Price"] = shopItem.Price.Value.GetQuantityString(),};
-            Mixpanel.Track("Unity/Buy", buyProps);
+            Analyzer.Instance.Track("Unity/Buy", buyProps);
 
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             shopItem.Selected.Value = false;
@@ -288,9 +287,9 @@ namespace Nekoyume.UI
             }
         }
 
-        public static PurchaseInfo GetPurchaseInfo(System.Guid orderId)
+        public static async Task<PurchaseInfo> GetPurchaseInfo(System.Guid orderId)
         {
-            var order = Util.GetOrder(orderId);
+            var order = await Util.GetOrder(orderId);
             return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
                 order.SellerAvatarAddress, order.ItemSubType, order.Price);
         }

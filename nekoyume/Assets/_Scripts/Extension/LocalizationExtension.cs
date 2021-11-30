@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -21,7 +22,7 @@ namespace Nekoyume
 {
     public static class LocalizationExtension
     {
-        public static string ToInfo(this MailModel mail)
+        public static async Task<string> ToInfo(this MailModel mail)
         {
             switch (mail)
             {
@@ -116,23 +117,23 @@ namespace Nekoyume
                 }
 
                 case OrderBuyerMail orderBuyerMail:
-                    var buyerItemName = Util.GetItemNameByOrdierId(orderBuyerMail.OrderId, true);
+                    var buyerItemName = await Util.GetItemNameByOrderId(orderBuyerMail.OrderId, true);
                     return string.Format(L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
                         buyerItemName);
 
                 case OrderSellerMail orderSellerMail:
-                    var order = Util.GetOrder(orderSellerMail.OrderId);
-                    var sellerItemName = Util.GetItemNameByOrdierId(orderSellerMail.OrderId, true);
+                    var order = await Util.GetOrder(orderSellerMail.OrderId);
+                    var sellerItemName = await Util.GetItemNameByOrderId(orderSellerMail.OrderId, true);
                     var taxedPrice = order.Price - order.GetTax();
                     return string.Format(L10nManager.Localize("UI_SELLER_MAIL_FORMAT"), taxedPrice, sellerItemName);
 
                 case OrderExpirationMail orderExpirationMail:
-                    var expiredItemName = Util.GetItemNameByOrdierId(orderExpirationMail.OrderId, true);
+                    var expiredItemName = await Util.GetItemNameByOrderId(orderExpirationMail.OrderId, true);
                     return string.Format(L10nManager.Localize("UI_SELL_EXPIRATION_MAIL_FORMAT"),
                         expiredItemName);
 
                 case CancelOrderMail cancelOrderMail:
-                    var cancelItemName = Util.GetItemNameByOrdierId(cancelOrderMail.OrderId, true);
+                    var cancelItemName = await Util.GetItemNameByOrderId(cancelOrderMail.OrderId, true);
                     return string.Format(L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
                         cancelItemName);
 

@@ -176,14 +176,14 @@ namespace Nekoyume.UI
             _npc.gameObject.SetActive(true);
             _npc.SpineController.Appear();
 
-            await UniTask.Run(() =>
+            await UniTask.Run(async () =>
             {
                 var agent = Game.Game.instance.Agent;
                 var gameConfigState = States.Instance.GameConfigState;
                 var weeklyArenaIndex = (int)agent.BlockIndex / gameConfigState.WeeklyArenaInterval;
                 var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
                 var weeklyArenaState =
-                    new WeeklyArenaState((Bencodex.Types.Dictionary)agent.GetState(weeklyArenaAddress));
+                    new WeeklyArenaState((Bencodex.Types.Dictionary) await agent.GetStateAsync(weeklyArenaAddress));
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
                 UpdateWeeklyCache(States.Instance.WeeklyArenaState);
             });
@@ -404,7 +404,7 @@ namespace Nekoyume.UI
                     .Where(i => i.equipped)
                     .Select(i => i.ItemId).ToList(),
                 new List<Guid>()
-            );
+            ).Subscribe();
             Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
         }
 
@@ -490,9 +490,10 @@ namespace Nekoyume.UI
             }
 
             _weeklyCachedInfo = infos
-                .Select(tuple =>
+                .Select(async tuple =>
                 {
-                    if (!States.TryGetAvatarState(tuple.arenaInfo.AvatarAddress, out var avatarState))
+                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(tuple.arenaInfo.AvatarAddress);
+                    if (!exist)
                     {
                         return (0, null);
                     }
@@ -505,6 +506,7 @@ namespace Nekoyume.UI
 #pragma warning restore 618
                     return tuple;
                 })
+                .Select(t => t.AsTask().Result)
                 .Where(tuple => tuple.rank > 0)
                 .ToList();
         }

@@ -360,7 +360,7 @@ namespace Nekoyume.UI
             additionalCpArea.gameObject.SetActive(false);
 
             var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
-            var tweener = cpTextValueTweener.Play(prevCp, currentCp);
+            cpTextValueTweener.Play(prevCp, currentCp);
             if (prevCp < currentCp)
             {
                 additionalCpArea.gameObject.SetActive(true);
@@ -724,7 +724,7 @@ namespace Nekoyume.UI
             }
 
             NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize("UI_CHARGE_AP"));
-            Game.Game.instance.ActionManager.ChargeActionPoint(material);
+            Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
 
             var address = States.Instance.CurrentAvatarState.address;
             if (GameConfigStateSubject.ActionPointState.ContainsKey(address))

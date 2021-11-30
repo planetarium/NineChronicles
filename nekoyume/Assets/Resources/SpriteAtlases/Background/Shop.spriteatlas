@@ -51,20 +51,16 @@ SpriteAtlas:
     - {fileID: 2800000, guid: 22d8d926513703449893654b931c051b, type: 3}
     - {fileID: 2800000, guid: a110528bb14fa684f98bab576d5f7dbd, type: 3}
     - {fileID: 2800000, guid: 306baad223013f045bc9c8306e1dc52b, type: 3}
-    - {fileID: 2800000, guid: 435639e1fa6805f4d8eba1f7eb1e1c2e, type: 3}
-    - {fileID: 2800000, guid: d461d7d18f7f1ba4d89aeff69f02d1ac, type: 3}
     - {fileID: 2800000, guid: 1155a6f9c61e8e14eb38706a44025cb9, type: 3}
     - {fileID: 2800000, guid: f5697c5701f468c46b57c5156c196676, type: 3}
     - {fileID: 2800000, guid: 6d38ab3bc8ea4984db6f757f648ccc80, type: 3}
     - {fileID: 2800000, guid: 7e86fb33362efd947b272614c5f394f8, type: 3}
-    totalSpriteSurfaceArea: 1260498
+    totalSpriteSurfaceArea: 1259084
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: d461d7d18f7f1ba4d89aeff69f02d1ac, type: 3}
-  - {fileID: 21300000, guid: 435639e1fa6805f4d8eba1f7eb1e1c2e, type: 3}
   - {fileID: 21300000, guid: e5013db263106014c8256cf416787afb, type: 3}
   - {fileID: 21300000, guid: 306baad223013f045bc9c8306e1dc52b, type: 3}
   - {fileID: 21300000, guid: 7e86fb33362efd947b272614c5f394f8, type: 3}
@@ -78,8 +74,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3163f17b4cdd56c4396099047f07cccc, type: 3}
   - {fileID: 21300000, guid: a110528bb14fa684f98bab576d5f7dbd, type: 3}
   m_PackedSpriteNamesToIndex:
-  - bg_shop_02_top_sell
-  - bg_shop_02_top_buy
   - bg_shop_02_bottom
   - bg_shop_02_top_02
   - bg_shop_07

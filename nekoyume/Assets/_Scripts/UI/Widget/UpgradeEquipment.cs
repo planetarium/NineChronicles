@@ -310,7 +310,7 @@ namespace Nekoyume.UI
             NotificationSystem.Push(MailType.Workshop,
                 L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"));
 
-            Game.Game.instance.ActionManager.ItemEnhancement(_baseItem, _materialItem, slotIndex, _costNcg);
+            Game.Game.instance.ActionManager.ItemEnhancement(_baseItem, _materialItem, slotIndex, _costNcg).Subscribe();
 
             StartCoroutine(CoCombineNPCAnimation(_baseItem, row.SuccessRequiredBlockIndex, () => UpdateState(State.Empty)));
         }

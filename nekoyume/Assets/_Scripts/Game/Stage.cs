@@ -612,7 +612,7 @@ namespace Nekoyume.Game
                 ["CP"] = cp,
                 ["FoodCount"] = foodCount
             };
-            Mixpanel.Track("Unity/Stage End", props);
+            Analyzer.Instance.Track("Unity/Stage End", props);
         }
 
         private IEnumerator CoSlideBg()
@@ -708,7 +708,7 @@ namespace Nekoyume.Game
 
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
-                ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
+                ActionRenderHandler.Instance.UpdateCurrentAvatarStateAsync(AvatarState);
             }
 
             yield return null;

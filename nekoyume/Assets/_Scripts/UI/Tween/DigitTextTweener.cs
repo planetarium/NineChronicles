@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -6,60 +5,46 @@ using UnityEngine;
 namespace Nekoyume.UI.Tween
 {
     [RequireComponent(typeof(TextMeshProUGUI))]
-    public class DigitTextTweener : MonoBehaviour
+    public class DigitTextTweener : DOTweenBase
     {
         public TweenCallback onComplete = null;
 
-        public int startValue = 0;
+        public int beginValue = 0;
 
         public int endValue = 0;
 
-        [SerializeField]
-        protected float duration = 0.0f;
+        private TextMeshProUGUI _text = null;
 
-        private TextMeshProUGUI text = null;
-
-        protected Tweener Tweener { get; set; }
-
-        private void Awake()
+        protected override void Awake()
         {
-            text = GetComponent<TextMeshProUGUI>();
+            base.Awake();
+            _text = GetComponent<TextMeshProUGUI>();
         }
 
         private void OnDisable()
         {
-            KillTween();
+            Stop();
         }
 
-        public Tweener Play()
+        public override void Play()
         {
-            KillTween();
+            Stop();
 
-            Tweener = DOTween.To(
-                () => startValue,
-                value => text.text = value.ToString(),
+            currentTween = DOTween.To(
+                () => beginValue,
+                value => _text.text = value.ToString(),
                 endValue,
                 duration);
-            Tweener.onComplete = onComplete;
-            return Tweener;
+
+            SetEase().OnComplete(onComplete);
         }
 
-        public Tweener Play(int startValue, int endValue)
+        public void Play(int beginValue, int endValue)
         {
-            this.startValue = startValue;
+            this.beginValue = beginValue;
             this.endValue = endValue;
 
-            return Play();
-        }
-
-        public void KillTween()
-        {
-            if (Tweener?.IsPlaying() ?? false)
-            {
-                Tweener?.Kill();
-            }
-
-            Tweener = null;
+            Play();
         }
     }
 }

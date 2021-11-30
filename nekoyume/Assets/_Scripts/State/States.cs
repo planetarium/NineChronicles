@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -85,11 +87,11 @@ namespace Nekoyume.State
         /// 최초로 할당하거나 기존과 다른 주소의 에이전트를 할당하면, 모든 아바타 상태를 새롭게 할당된다.
         /// </summary>
         /// <param name="state"></param>
-        public void SetAgentState(AgentState state)
+        public async UniTask SetAgentStateAsync(AgentState state)
         {
             if (state is null)
             {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetAgentState)}] {nameof(state)} is null.");
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetAgentStateAsync)}] {nameof(state)} is null.");
                 return;
             }
 
@@ -107,7 +109,7 @@ namespace Nekoyume.State
 
             foreach (var pair in AgentState.avatarAddresses)
             {
-                AddOrReplaceAvatarState(pair.Value, pair.Key);
+                await AddOrReplaceAvatarStateAsync(pair.Value, pair.Key);
             }
         }
 
@@ -123,36 +125,45 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextGold(GoldBalanceState.Gold);
         }
 
-        public AvatarState AddOrReplaceAvatarState(
+        public async UniTask<AvatarState> AddOrReplaceAvatarStateAsync(
             Address avatarAddress,
             int index,
-            bool initializeReactiveState = true) =>
-            TryGetAvatarState(avatarAddress, true, out var avatarState)
-                ? AddOrReplaceAvatarState(avatarState, index, initializeReactiveState)
-                : null;
-
-        public static bool TryGetAvatarState(Address address, out AvatarState avatarState) =>
-            TryGetAvatarState(address, false, out avatarState);
-
-        public static bool TryGetAvatarState(Address address, bool allowBrokenState, out AvatarState avatarState)
+            bool initializeReactiveState = true)
         {
+            var (exist, avatarState) = await TryGetAvatarStateAsync(avatarAddress, true);
+            if (exist)
+            {
+                await AddOrReplaceAvatarStateAsync(avatarState, index, initializeReactiveState);
+            }
+
+            return null;
+        }
+
+        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address) =>
+            await TryGetAvatarStateAsync(address, false);
+
+
+        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address, bool allowBrokenState)
+        {
+            AvatarState avatarState = null;
+            bool exist = false;
             try
             {
-                avatarState = GetAvatarState(address, allowBrokenState);
-                return true;
+                avatarState = await GetAvatarStateAsync(address, allowBrokenState);
+                exist = true;
             }
             catch (Exception e)
             {
                 Debug.LogWarning($"{e.GetType().FullName}: {e.Message} address({address.ToHex()})\n{e.StackTrace}");
-                avatarState = null;
-                return false;
             }
+
+            return (exist, avatarState);
         }
 
-        private static AvatarState GetAvatarState(Address address, bool allowBrokenState)
+        private static async UniTask<AvatarState> GetAvatarStateAsync(Address address, bool allowBrokenState)
         {
             var agent = Game.Game.instance.Agent;
-            var avatarStateValue = agent.GetState(address);
+            var avatarStateValue = await agent.GetStateAsync(address);
             if (!(avatarStateValue is Bencodex.Types.Dictionary dict))
             {
                 Debug.LogWarning("Failed to get AvatarState");
@@ -172,7 +183,7 @@ namespace Nekoyume.State
             })
             {
                 var address2 = address.Derive(key);
-                var value = agent.GetState(address2);
+                var value = await agent.GetStateAsync(address2);
                 if (value is null)
                 {
                     if (allowBrokenState &&
@@ -197,11 +208,11 @@ namespace Nekoyume.State
         /// <param name="state"></param>
         /// <param name="index"></param>
         /// <param name="initializeReactiveState"></param>
-        public AvatarState AddOrReplaceAvatarState(AvatarState state, int index, bool initializeReactiveState = true)
+        public async UniTask<AvatarState> AddOrReplaceAvatarStateAsync(AvatarState state, int index, bool initializeReactiveState = true)
         {
             if (state is null)
             {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(AddOrReplaceAvatarState)}] {nameof(state)} is null.");
+                Debug.LogWarning($"[{nameof(States)}.{nameof(AddOrReplaceAvatarStateAsync)}] {nameof(state)} is null.");
                 return null;
             }
 
@@ -220,9 +231,12 @@ namespace Nekoyume.State
                 _avatarStates.Add(index, state);
             }
 
-            return index == CurrentAvatarKey
-                ? SelectAvatar(index, initializeReactiveState)
-                : state;
+            if (index == CurrentAvatarKey)
+            {
+                return await UniTask.Run(async () => await SelectAvatarAsync(index, initializeReactiveState));
+            }
+
+            return state;
         }
 
         /// <summary>
@@ -250,7 +264,7 @@ namespace Nekoyume.State
         /// <param name="initializeReactiveState"></param>
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
-        public AvatarState SelectAvatar(int index, bool initializeReactiveState = true)
+        public async UniTask<AvatarState> SelectAvatarAsync(int index, bool initializeReactiveState = true)
         {
             if (!_avatarStates.ContainsKey(index))
             {
@@ -267,13 +281,17 @@ namespace Nekoyume.State
             if (isNew)
             {
                 _combinationSlotStates.Clear();
-                if (!TryGetAvatarState(avatarState.address, out var curAvatarState))
+                await UniTask.Run(async () =>
                 {
-                    return null;
-                }
+                    var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
+                    if (!exist)
+                    {
+                        return;
+                    }
 
-                SetCombinationSlotStates(curAvatarState);
-                AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
+                    await SetCombinationSlotStatesAsync(curAvatarState);
+                    await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
+                });
             }
 
             if (Game.Game.instance.Agent is RPCAgent agent)
@@ -294,7 +312,7 @@ namespace Nekoyume.State
             UpdateCurrentAvatarState(null);
         }
 
-        private void SetCombinationSlotStates(AvatarState avatarState)
+        private async UniTask SetCombinationSlotStatesAsync(AvatarState avatarState)
         {
             if (avatarState is null)
             {
@@ -312,7 +330,8 @@ namespace Nekoyume.State
                         i
                     )
                 );
-                var state = new CombinationSlotState((Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
+                var stateValue = await Game.Game.instance.Agent.GetStateAsync(slotAddress);
+                var state = new CombinationSlotState((Dictionary) stateValue);
                 UpdateCombinationSlotState(i, state);
             }
         }

@@ -3,7 +3,6 @@ using Nekoyume.BlockChain;
 using Nekoyume.State;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
-using UniRx;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using Nekoyume.UI.Module;
@@ -13,6 +12,7 @@ using Nekoyume.Model.State;
 using System.Collections;
 using mixpanel;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 
 namespace Nekoyume.UI
@@ -47,7 +47,6 @@ namespace Nekoyume.UI
         private int _ear;
         private int _tail;
 
-        public const string RecentlyLoggedInAvatarKey = "RecentlyLoggedInAvatarAddress";
         private const int HairCount = 7;
         private const int LensCount = 6;
         private const int EarCount = 10;
@@ -73,7 +72,7 @@ namespace Nekoyume.UI
 
         public void CreateClick()
         {
-            Mixpanel.Track("Unity/Create Click");
+            Analyzer.Instance.Track("Unity/Create Click");
             var inputBox = Find<InputBoxPopup>();
             inputBox.CloseCallback = result =>
             {
@@ -93,22 +92,22 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Mixpanel.Track("Unity/Choose Nickname");
+            Analyzer.Instance.Track("Unity/Choose Nickname");
             Find<GrayLoadingScreen>().Show();
 
             Game.Game.instance.ActionManager
                 .CreateAvatar(_selectedIndex, nickName, _hair,
                     _lens, _ear, _tail)
-                .Subscribe(eval =>
+                .Subscribe(async eval =>
                     {
-                        var avatarState = States.Instance.SelectAvatar(_selectedIndex);
+                        var avatarState = await States.Instance.SelectAvatarAsync(_selectedIndex);
                         StartCoroutine(CreateAndLoginAnimation(avatarState));
                         ActionRenderHandler.RenderQuest(avatarState.address,
                             avatarState.questList.completedQuestIds);
                     },
                     e =>
                     {
-                        ActionRenderHandler.PopupError(e);
+                        Game.Game.PopupError(e);
                         Find<GrayLoadingScreen>().Close();
                     });
             AudioController.PlayClick();
@@ -127,10 +126,10 @@ namespace Nekoyume.UI
             OnDidAvatarStateLoaded(state);
         }
 
-        public void LoginClick()
+        public async void LoginClick()
         {
             btnLogin.SetActive(false);
-            var avatarState = States.Instance.SelectAvatar(_selectedIndex);
+            var avatarState = await States.Instance.SelectAvatarAsync(_selectedIndex);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
         }
@@ -143,7 +142,7 @@ namespace Nekoyume.UI
             login.Show();
         }
 
-        private void Init(int index)
+        private async void Init(int index)
         {
             _selectedIndex = index;
             Player player;
@@ -156,7 +155,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                States.Instance.SelectAvatar(_selectedIndex);
+                await States.Instance.SelectAvatarAsync(_selectedIndex);
                 player = new Player(
                     States.Instance.CurrentAvatarState,
                     tableSheets.CharacterSheet,
@@ -368,14 +367,14 @@ namespace Nekoyume.UI
             player.UpdateTailByCustomizeIndex(_tail);
         }
 
-        public void BackClick()
+        private void BackClick()
         {
             BackToLogin();
         }
 
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
         {
-            PlayerPrefs.SetString(RecentlyLoggedInAvatarKey, avatarState.address.ToString());
+            Util.SaveAvatarSlotIndex(_selectedIndex);
             if (_isCreateMode)
             {
                 Close();

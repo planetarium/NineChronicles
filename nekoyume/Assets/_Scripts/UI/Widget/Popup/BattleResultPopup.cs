@@ -527,13 +527,13 @@ namespace Nekoyume.UI
             // NOTE: Check mimisbrunnr
             if (SharedModel.WorldID > 10000)
             {
-                Game.Game.instance.ActionManager.MimisbrunnrBattle(
+                yield return Game.Game.instance.ActionManager.MimisbrunnrBattle(
                     player.Costumes,
                     player.Equipments,
                     new List<Consumable>(),
                     SharedModel.WorldID,
                     SharedModel.StageID + 1,
-                    1);
+                    1).StartAsCoroutine();
             }
             else
             {
@@ -543,7 +543,7 @@ namespace Nekoyume.UI
                     new List<Consumable>(),
                     SharedModel.WorldID,
                     SharedModel.StageID + 1,
-                    1);
+                    1).StartAsCoroutine();
             }
         }
 
@@ -584,18 +584,18 @@ namespace Nekoyume.UI
             };
             var eventKey = SharedModel.ClearedWaveNumber == 3 ? "Repeat" : "Retry";
             var eventName = $"Unity/Stage Exit {eventKey}";
-            Mixpanel.Track(eventName, props);
+            Analyzer.Instance.Track(eventName, props);
 
             // NOTE: Check mimisbrunnr
             if (SharedModel.WorldID > 10000)
             {
-                Game.Game.instance.ActionManager.MimisbrunnrBattle(
+                yield return Game.Game.instance.ActionManager.MimisbrunnrBattle(
                     player.Costumes,
                     player.Equipments,
                     new List<Consumable>(),
                     SharedModel.WorldID,
                     SharedModel.StageID,
-                    1);
+                    1).StartAsCoroutine();
             }
             else
             {
@@ -605,7 +605,7 @@ namespace Nekoyume.UI
                     new List<Consumable>(),
                     SharedModel.WorldID,
                     SharedModel.StageID,
-                    1);
+                    1).StartAsCoroutine();
             }
         }
 
@@ -652,7 +652,7 @@ namespace Nekoyume.UI
             };
             var eventKey = Game.Game.instance.Stage.IsExitReserved ? "Quit" : "Main";
             var eventName = $"Unity/Stage Exit {eventKey}";
-            Mixpanel.Track(eventName, props);
+            Analyzer.Instance.Track(eventName, props);
 
             Find<Battle>().Close();
             Game.Event.OnRoomEnter.Invoke(true);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using DG.Tweening.Core;
@@ -13,8 +14,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.L10n;
-using System.Collections.Generic;
-using Libplanet;
+using System.Threading.Tasks;
+using Nekoyume.Helper;
 
 namespace Nekoyume.UI
 {
@@ -115,7 +116,7 @@ namespace Nekoyume.UI
             {
                 if (skipAll)
                 {
-                    End();
+                    yield return End();
                     yield break;
                 }
 
@@ -296,7 +297,7 @@ namespace Nekoyume.UI
                 }
                 script.image.transform.parent.gameObject.SetActive(false);
             }
-            End();
+            yield return End();
 
             yield return null;
         }
@@ -341,27 +342,21 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Mixpanel.Track("Unity/Synopsis Start");
+            Analyzer.Instance.Track("Unity/Synopsis Start");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
             var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
             skipButton.SetActive(skipPrologue);
             StartCoroutine(StartSynopsis(skipPrologue));
         }
 
-        public void End()
+        private async Task End()
         {
             PlayerFactory.Create();
-
-            if (PlayerPrefs.HasKey(LoginDetail.RecentlyLoggedInAvatarKey))
+            if (Util.TryGetStoredAvatarSlotIndex(out var slotIndex))
             {
-                var recentlyLoggedAddress = PlayerPrefs.GetString(LoginDetail.RecentlyLoggedInAvatarKey);
-                var matchingAddress = State.States.Instance.AgentState.avatarAddresses
-                    .FirstOrDefault(pair => pair.Value.ToString().Equals(recentlyLoggedAddress));
-                var index = matchingAddress.Equals(default(KeyValuePair<int, Address>)) ? -1 : matchingAddress.Key;
-
                 try
                 {
-                    State.States.Instance.SelectAvatar(index);
+                    await States.Instance.SelectAvatarAsync(slotIndex);
                     Game.Event.OnRoomEnter.Invoke(false);
                 }
                 catch (KeyNotFoundException e)
@@ -375,7 +370,7 @@ namespace Nekoyume.UI
                 EnterLogin();
             }
 
-            Mixpanel.Track("Unity/Synopsis End");
+            Analyzer.Instance.Track("Unity/Synopsis End");
             Close();
         }
 

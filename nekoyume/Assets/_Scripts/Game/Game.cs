@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
-#if !UNITY_EDITOR
-using Libplanet;
-using Libplanet.Crypto;
-#endif
-using mixpanel;
+using Lib9c.Formatters;
+using MessagePack;
+using MessagePack.Resolvers;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
@@ -23,13 +21,8 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
-using Nekoyume.UI.Module;
-using UniRx;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.Serialization;
 using Menu = Nekoyume.UI.Menu;
-
 
 namespace Nekoyume.Game
 {
@@ -54,8 +47,12 @@ namespace Nekoyume.Game
         public States States { get; private set; }
 
         public LocalLayer LocalLayer { get; private set; }
+        
+        public LocalLayerActions LocalLayerActions { get; private set; }
 
         public IAgent Agent { get; private set; }
+        
+        public Analyzer Analyzer { get; private set; }
 
         public Stage Stage => stage;
 
@@ -100,23 +97,6 @@ namespace Nekoyume.Game
 
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
 
-#if !UNITY_EDITOR
-            // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
-            Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
-
-            if (!(_options.PrivateKey is null))
-            {
-                var privateKey = new PrivateKey(ByteUtil.ParseHex(_options.PrivateKey));
-                Address address = privateKey.ToAddress();
-                Mixpanel.Identify(address.ToString());
-            }
-
-            Mixpanel.Init();
-            Mixpanel.Track("Unity/Started");
-
-            Debug.Log("[Game] Awake() Mixpanel initialized");
-#endif
-
             if (_options.RpcClient)
             {
                 Agent = GetComponent<RPCAgent>();
@@ -129,12 +109,20 @@ namespace Nekoyume.Game
 
             States = new States();
             LocalLayer = new LocalLayer();
+            LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
         }
 
         private IEnumerator Start()
         {
             Debug.Log("[Game] Start() invoked");
+            var resolver = MessagePack.Resolvers.CompositeResolver.Create(
+                NineChroniclesResolver.Instance,
+                StandardResolver.Instance
+            );
+            var options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
+            MessagePackSerializer.DefaultOptions = options;
+
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
@@ -174,6 +162,8 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
+            Analyzer = new Analyzer().Initialize(Agent.Address.ToString());
+            Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
@@ -326,9 +316,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            ActionRenderHandler.BackToMain(
-                showLoadingScreen,
-                new UnableToRenderWhenSyncingBlocksException());
+            BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
         }
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
@@ -394,9 +382,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            ActionRenderHandler.BackToMain(
-                showLoadingScreen,
-                new UnableToRenderWhenSyncingBlocksException());
+            BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
         }
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
@@ -444,6 +430,7 @@ namespace Nekoyume.Game
             );
         }
 
+        // FIXME: Leave one between this or CoSyncTableSheets()
         private IEnumerator CoInitializeTableSheets()
         {
             yield return null;
@@ -463,6 +450,36 @@ namespace Nekoyume.Game
                 csv[asset.name] = asset.text;
             }
             TableSheets = new TableSheets(csv);
+        }
+
+        // FIXME: Leave one between this or CoInitializeTableSheets()
+        private IEnumerator CoSyncTableSheets()
+        {
+            yield return null;
+            var request =
+                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            yield return request;
+            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+            {
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
+                    AddressableAssetsContainerPath);
+            }
+
+            var task = Task.Run(() =>
+            {
+                List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
+                var csv = new ConcurrentDictionary<string, string>();
+                Parallel.ForEach(csvAssets, asset =>
+                {
+                    if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
+                    {
+                        var table = tableCsv.ToDotnetString();
+                        csv[asset.name] = table;
+                    }
+                });
+                TableSheets = new TableSheets(csv);
+            });
+            yield return new WaitUntil(() => task.IsCompleted);
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()
@@ -499,11 +516,12 @@ namespace Nekoyume.Game
 
         protected override void OnApplicationQuit()
         {
-            if (Mixpanel.IsInitialized())
+            if (Analyzer.Instance != null)
             {
-                Mixpanel.Track("Unity/Player Quit");
-                Mixpanel.Flush();
+                Analyzer.Instance.Track("Unity/Player Quit");
+                Analyzer.Instance.Flush();   
             }
+
             _logsClient?.Dispose();
         }
 
@@ -524,6 +542,40 @@ namespace Nekoyume.Game
 
                 yield return null;
             }
+        }
+
+        public static void BackToMain(bool showLoadingScreen, Exception exc)
+        {
+            Debug.LogException(exc);
+
+            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
+            Event.OnRoomEnter.Invoke(showLoadingScreen);
+            instance.Stage.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ => PopupError(key, code, errorMsg));
+
+            MainCanvas.instance.InitWidgetInMain();
+        }
+
+        public static void PopupError(Exception exc)
+        {
+            Debug.LogException(exc);
+            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
+            PopupError(key, code, errorMsg);
+        }
+
+        private static void PopupError(string key, string code, string errorMsg)
+        {
+            errorMsg = errorMsg == string.Empty
+                ? string.Format(
+                    L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                    L10nManager.Localize(key),
+                    code)
+                : errorMsg;
+            Widget
+                .Find<TitleOneButtonSystem>()
+                .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                    L10nManager.Localize("UI_OK"), false);
         }
 
         public static void Quit()
@@ -658,35 +710,6 @@ namespace Nekoyume.Game
             };
 
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
-        }
-
-        private IEnumerator CoSyncTableSheets()
-        {
-            yield return null;
-            var request =
-                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            yield return request;
-            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
-            {
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
-                    AddressableAssetsContainerPath);
-            }
-
-            var task = Task.Run(() =>
-            {
-                List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
-                var csv = new ConcurrentDictionary<string, string>();
-                Parallel.ForEach(csvAssets, asset =>
-                {
-                    if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
-                    {
-                        var table = tableCsv.ToDotnetString();
-                        csv[asset.name] = table;
-                    }
-                });
-                TableSheets = new TableSheets(csv);
-            });
-            yield return new WaitUntil(() => task.IsCompleted);
         }
 
         private async void UploadLog(string logString, string stackTrace, LogType type)

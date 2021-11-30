@@ -8,7 +8,6 @@ using Nekoyume.Battle;
 using System.Threading.Tasks;
 using Nekoyume.GraphQL;
 using Libplanet;
-using Cysharp.Threading.Tasks;
 
 using Debug = UnityEngine.Debug;
 using Nekoyume.Model.Item;
@@ -106,9 +105,11 @@ namespace Nekoyume.UI.Model
             AbilityRankingInfos = _rankingInfoSet
                 .OrderByDescending(i => i.Level)
                 .Take(displayCount)
-                .Select(rankingInfo =>
+                .Select(async rankingInfo =>
                 {
-                    if (!States.TryGetAvatarState(rankingInfo.AvatarAddress, out var avatarState))
+                    var (exist, avatarState) =
+                        await States.TryGetAvatarStateAsync(rankingInfo.AvatarAddress);
+                    if (!exist)
                     {
                         return null;
                     }
@@ -119,6 +120,7 @@ namespace Nekoyume.UI.Model
                         Cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet),
                     };
                 })
+                .Select(t => t?.Result)
                 .Where(e => e != null)
                 .ToList()
                 .OrderByDescending(i => i.Cp)
@@ -178,11 +180,12 @@ namespace Nekoyume.UI.Model
             }
 
             StageRankingInfos = response.StageRanking
-                .Select(e =>
+                .Select(async e =>
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    if (!States.TryGetAvatarState(address, out var avatarState))
+                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
+                    if (!exist)
                     {
                         return null;
                     }
@@ -194,6 +197,7 @@ namespace Nekoyume.UI.Model
                         Rank = e.Ranking,
                     };
                 })
+                .Select(t => t?.Result)
                 .Where(e => e != null)
                 .ToList();
 
@@ -226,7 +230,8 @@ namespace Nekoyume.UI.Model
 
                 var addressString = myRecord.AvatarAddress.Substring(2);
                 var address = new Address(addressString);
-                if (!States.TryGetAvatarState(address, out var avatarState))
+                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
+                if (!exist)
                 {
                     continue;
                 }
@@ -260,11 +265,12 @@ namespace Nekoyume.UI.Model
             }
 
             MimisbrunnrRankingInfos = response.StageRanking
-                .Select(e =>
+                .Select(async e =>
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    if (!States.TryGetAvatarState(address, out var avatarState))
+                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
+                    if (!exist)
                     {
                         return null;
                     }
@@ -277,6 +283,7 @@ namespace Nekoyume.UI.Model
                         Rank = e.Ranking,
                     };
                 })
+                .Select(t => t?.Result)
                 .Where(e => e != null)
                 .ToList();
 
@@ -309,7 +316,8 @@ namespace Nekoyume.UI.Model
 
                 var addressString = myRecord.AvatarAddress.Substring(2);
                 var address = new Address(addressString);
-                if (!States.TryGetAvatarState(address, out var avatarState))
+                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
+                if (!exist)
                 {
                     continue;
                 }
@@ -342,11 +350,12 @@ namespace Nekoyume.UI.Model
             }
 
             CraftRankingInfos = response.CraftRanking
-                .Select(e =>
+                .Select(async e =>
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    if (!States.TryGetAvatarState(address, out var avatarState))
+                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
+                    if (!exist)
                     {
                         return null;
                     }
@@ -358,6 +367,7 @@ namespace Nekoyume.UI.Model
                         Rank = e.Ranking,
                     };
                 })
+                .Select(t => t?.Result)
                 .Where(e => e != null)
                 .ToList();
 
@@ -389,7 +399,8 @@ namespace Nekoyume.UI.Model
 
                 var addressString = myRecord.AvatarAddress.Substring(2);
                 var address = new Address(addressString);
-                if (!States.TryGetAvatarState(address, out var avatarState))
+                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
+                if (!exist)
                 {
                     continue;
                 }
@@ -430,11 +441,12 @@ namespace Nekoyume.UI.Model
                 }
 
                 EquipmentRankingInfosMap[subType] = response.EquipmentRanking
-                    .Select(e =>
+                    .Select(async e =>
                     {
                         var addressString = e.AvatarAddress.Substring(2);
                         var address = new Address(addressString);
-                        if (!States.TryGetAvatarState(address, out var avatarState))
+                        var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
+                        if (!exist)
                         {
                             return null;
                         }
@@ -448,6 +460,7 @@ namespace Nekoyume.UI.Model
                             EquipmentId = e.EquipmentId,
                         };
                     })
+                    .Select(t => t?.Result)
                     .Where(e => e != null)
                     .ToList();
 
@@ -481,7 +494,8 @@ namespace Nekoyume.UI.Model
 
                     var addressString = myRecord.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    if (!States.TryGetAvatarState(address, out var avatarState))
+                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
+                    if (!exist)
                     {
                         continue;
                     }

@@ -18,8 +18,6 @@ namespace Updater.Common
 
         public bool NoTrustedStateValidators { get; set; }
 
-        public int MinimumDifficulty { get; set; }
-
         public string GenesisBlockPath { get; set; }
 
         public string[] TrustedAppProtocolVersionSigners { get; set; }

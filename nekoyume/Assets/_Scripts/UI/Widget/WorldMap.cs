@@ -156,7 +156,7 @@ namespace Nekoyume.UI
 
             if (worldId == 1)
             {
-                Mixpanel.Track("Unity/Click Yggdrasil");
+                Analyzer.Instance.Track("Unity/Click Yggdrasil");
             }
 
             Push();
@@ -179,8 +179,7 @@ namespace Nekoyume.UI
             SelectedWorldStageBegin = worldRow.StageBegin;
             SelectedStageId = stageId;
 
-            var stageInfo = Find<UI.StageInformation>();
-            SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world);
+            var stageInfo = Find<StageInformation>();
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Quest);
         }
 

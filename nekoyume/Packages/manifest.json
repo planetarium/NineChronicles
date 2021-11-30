@@ -7,7 +7,8 @@
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2.2.5",
     "com.demigiant.dotween": "1.2.42",
     "com.elringus.spriteglow": "https://github.com/Elringus/SpriteGlow.git#package",
-    "com.mixpanel.unity": "https://github.com/mixpanel/mixpanel-unity.git#v2.2.0",
+    "com.laicasaane.texttyper": "3.1.0",
+    "com.mixpanel.unity": "https://github.com/mixpanel/mixpanel-unity.git#master",
     "com.neuecc.unirx": "https://github.com/starikcetin/unirx.git#f93af89f2aafeccfc7aff9dee2cecc6d60ede06b",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.addressables": "1.16.16",
@@ -24,7 +25,7 @@
     "com.unity.textmeshpro": "3.0.1",
     "com.unity.timeline": "1.4.7",
     "com.unity.ugui": "1.0.0",
-    "jp.setchi.fancyscrollview": "https://github.com/setchi/FancyScrollView.git#upm",
+    "com.unity.uiextensions": "2.2.7",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -55,8 +56,7 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0",
-    "com.laicasaane.texttyper": "3.1.0"
+    "com.unity.modules.xr": "1.0.0"
   },
   "scopedRegistries": [
     {
@@ -66,7 +66,8 @@
         "com.brunomikoski.animationsequencer",
         "com.demigiant.dotween",
         "com.laicasaane.texttyper",
-        "com.openupm"
+        "com.openupm",
+        "com.unity.uiextensions"
       ]
     }
   ]

@@ -2250,12 +2250,10 @@
             are required for action execution and rendering.
             <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.
             </param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockBytesLengthException">Thrown when the given <paramref
-            name="block"/> is too long in bytes (according to <see
-            cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>).</exception>
-            <exception cref="T:Libplanet.Blocks.BlockExceedingTransactionsException">Thrown when the given <paramref
-            name="block"/> has too many transactions (according to <see
-            cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>).</exception>
+            <exception cref="T:Libplanet.Blocks.BlockPolicyViolationException">Thrown when given
+            <paramref name="block"/> does not satisfy any of the constraints
+            validated by <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0})"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.
+            </exception>
             <exception cref="T:Libplanet.Blocks.InvalidBlockException">Thrown when the given <paramref name="block"/>
             is invalid, in itself or according to the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the
@@ -2367,7 +2365,7 @@
             by the same address, those with greater nonce never comes before those with
             lesser nonce.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset},System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Nullable{System.Threading.CancellationToken})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset},System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Nullable{System.Threading.CancellationToken})">
             <summary>
             <para>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
@@ -2381,9 +2379,11 @@
             <param name="miner">The miner's <see cref="T:Libplanet.Crypto.PublicKey"/> that mines the block.</param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to append the mined block immediately after mining.</param>
+            <param name="maxBlockBytes">The maximum number of bytes a block can have.
+            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.</param>
             <param name="maxTransactions">The maximum number of transactions that a block can
-            accept.  See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>
-            method.</param>
+            accept.  See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>.
+            </param>
             <param name="maxTransactionsPerSigner">The maximum number of transactions
             that a block can accept per signer.  See also
             <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerSignerPerBlock(System.Int64)"/>.</param>
@@ -2395,16 +2395,18 @@
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.DateTimeOffset,System.Boolean,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.DateTimeOffset,System.Boolean,System.Int32,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
             <summary>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
             <param name="miner">The miner's <see cref="T:Libplanet.Crypto.PublicKey"/> that mines the block.</param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to append the mined block immediately after mining.</param>
+            <param name="maxBlockBytes">The maximum number of bytes a block can have.
+            See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.</param>
             <param name="maxTransactions">The maximum number of transactions that a block can
-            accept.  See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>
-            method.</param>
+            accept.  See also <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>.
+            </param>
             <param name="maxTransactionsPerSigner">The maximum number of transactions
             that a block can accept per signer.  See also
             <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerSignerPerBlock(System.Int64)"/>.</param>
@@ -2416,12 +2418,13 @@
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.GatherTransactionsToMine(Libplanet.Blocks.BlockMetadata,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GatherTransactionsToMine(Libplanet.Blocks.BlockMetadata,System.Int32,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}})">
             <summary>
             Gathers <see cref="T:Libplanet.Tx.Transaction`1"/>s for mining a next block
             from the current set of staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
             <param name="metadata">The metadata of the block to be mined.</param>
+            <param name="maxBlockBytes">The maximum number of bytes a block can have.</param>
             <param name="maxTransactions">The maximum number of <see cref="T:Libplanet.Tx.Transaction`1"/>s
             allowed.</param>
             <param name="maxTransactionsPerSigner">The maximum number of
@@ -2645,8 +2648,9 @@
             a <see cref="T:Libplanet.Tx.Transaction`1"/> follows the policy.  Set to a constant function of
             <c>null</c> by default.</param>
             <param name="validateNextBlock">The predicate that determines if
-            a <see cref="T:Libplanet.Blocks.Block`1"/> follows the policy.  Set to a constant function of
-            <c>null</c> by default.</param>
+            a <see cref="T:Libplanet.Blocks.Block`1"/> follows the policy.  Set to a default implementation
+            where block's hash algorithm type, bytes count, and transactions count are validated.
+            </param>
             <param name="canonicalChainComparer">The custom rule to determine which is the canonical
             chain.  If omitted, <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> is used by default.</param>
             <param name="hashAlgorithmGetter">Configures <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetHashAlgorithm(System.Int64)"/>.
@@ -2953,13 +2957,21 @@
             <returns>A staged transaction if found.  If it had never staged <c>null</c> is
             returned.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Iterate(Libplanet.Blockchain.BlockChain{`0})">
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Iterate">
             <summary>
             Enumerates all staged transaction IDs.
             </summary>
-            <param name="blockChain">The chain of the stage to enumerate.</param>
             <returns>Staged transactions.  The earliest staged transaction goes first,
             and the latest staged transaction goes last.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.GetNextTxNonce(Libplanet.Address,System.Int64)">
+            <summary>
+            Get the next transaction nonce according for the <paramref name="address"/>.
+            </summary>
+            <param name="address"><see cref="T:Libplanet.Address"/> to get transaction.</param>
+            <param name="minedTxs">Receives the expected latest nonce of the
+            <paramref name="address"/> being looked up on the blockchain.</param>
+            <returns>The next transaction nonce.</returns>
         </member>
         <member name="T:Libplanet.Blockchain.Policies.VolatileStagePolicy`1">
             <summary>
@@ -3002,8 +3014,11 @@
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
             <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Iterate(Libplanet.Blockchain.BlockChain{`0})">
-            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Iterate(Libplanet.Blockchain.BlockChain{`0})"/>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Iterate">
+            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Iterate"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.GetNextTxNonce(Libplanet.Address,System.Int64)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.GetNextTxNonce(Libplanet.Address,System.Int64)"/>
         </member>
         <member name="T:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1">
             <summary>
@@ -4671,24 +4686,6 @@
             its <see cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>.</exception>
             <seealso cref="M:Libplanet.Blocks.BlockContent`1.#ctor(Libplanet.Blocks.IBlockContent{`0})"/>
         </member>
-        <member name="T:Libplanet.Blocks.BlockExceedingTransactionsException">
-            <summary>
-            The exception that is thrown when a <see cref="T:Libplanet.Blocks.Block`1"/> has too many
-            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> (i.e., more than the number specified by
-            <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>).
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockExceedingTransactionsException.ActualTransactions">
-            <summary>
-            The actual number of transactions in the block.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockExceedingTransactionsException.MaxTransactionsPerBlock">
-            <summary>
-            The maximum allowed number of transactions per block.
-            </summary>
-            <seealso cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxTransactionsPerBlock(System.Int64)"/>
-        </member>
         <member name="T:Libplanet.Blocks.BlockExcerptExtensions">
             <summary>
             The extension methods for <see cref="T:Libplanet.Blocks.IBlockExcerpt"/>.
@@ -4893,34 +4890,6 @@
         </member>
         <member name="M:Libplanet.Blocks.BlockHeader.ToString">
             <inheritdoc cref="M:System.Object.ToString"/>
-        </member>
-        <member name="T:Libplanet.Blocks.BlockInsufficientTxsException">
-            <summary>
-            The exception that is thrown when a <see cref="T:Libplanet.Blocks.Block`1"/>'s
-            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> Count is too small.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Blocks.BlockInsufficientTxsException.#ctor(System.Int32,System.Int32,System.String)">
-            <summary>
-            Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockBytesLengthException"/> class.
-            </summary>
-            <param name="transactionCount">The invalid <see cref="T:Libplanet.Blocks.Block`1"/>'s
-            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> Count.  It is automatically included to the
-            <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="minTransactionsPerBlock">The minimum allowed transactions.  It is
-            automatically included to the <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="message">The message that describes the error.</param>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockInsufficientTxsException.TransactionCount">
-            <summary>
-            The bytes length of the actual block.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blocks.BlockInsufficientTxsException.MinTransactionsPerBlock">
-            <summary>
-            The maximum allowed length of a block in bytes.
-            </summary>
-            <seealso cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>
         </member>
         <member name="T:Libplanet.Blocks.BlockMarshaler">
             <summary>
@@ -5181,21 +5150,6 @@
             hash algorithm.</param>
             <returns>The hash algorithm to be used for proof-of-work on the block.</returns>
         </member>
-        <member name="M:Libplanet.Blocks.HashAlgorithmTable.ToHashAlgorithmGetter(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Int64,Libplanet.HashAlgorithmType}})">
-            <summary>
-            Creates a <see cref="T:Libplanet.Blocks.HashAlgorithmGetter"/> delegate from a <paramref name="table"/>.
-            </summary>
-            <param name="table">A table with block index offsets and their corresponding
-            <see cref="T:Libplanet.HashAlgorithmType"/>.  For example, <c>0: SHA1, 10: SHA256, 100: SHA512</c>
-            means <c>i =&gt; i >= 100 ? HashAlgorithmType.Of&lt;SHA512&gt;() : i >= 10 ?
-            HashAlgorithmType.Of&lt;SHA256&gt;() : HashAlgorithmType.Of&lt;SHA1&gt;()</c>.
-            (Note that 0 means <em>otherwise</em>.)  It must contain at least one entry with
-            index 0, because it is the last fallback.</param>
-            <returns>A corresponding <see cref="T:Libplanet.Blocks.HashAlgorithmGetter"/>.</returns>
-            <exception cref="T:System.ArgumentException">Thrown when <paramref name="table"/> has no
-            the last fallback entry with index 0, or there are entries with duplicate indices.
-            </exception>
-        </member>
         <member name="T:Libplanet.Blocks.IBlockContent`1">
             <summary>
             A common interface for blocks that do not have any proofs, but have their metadata and
@@ -5338,32 +5292,17 @@
         </member>
         <member name="T:Libplanet.Blocks.InvalidBlockBytesLengthException">
             <summary>
-            The exception that is thrown when a <see cref="T:Libplanet.Blocks.Block`1"/>'s
-            <see cref="P:Libplanet.Blocks.Block`1.BytesLength"/> (i.e., the length of bytes in its serialized format)
-            is too long.
+            An exception thrown when <see cref="P:Libplanet.Blocks.Block`1.BytesLength"/>
+            does not follow the constraint provided by <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockBytesLengthException.#ctor(System.Int32,System.Int32,System.String)">
+        <member name="M:Libplanet.Blocks.InvalidBlockBytesLengthException.#ctor(System.String,System.Int32)">
             <summary>
             Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockBytesLengthException"/> class.
             </summary>
-            <param name="blockBytesLength">The invalid <see cref="T:Libplanet.Blocks.Block`1"/>'s
-            <see cref="P:Libplanet.Blocks.Block`1.BytesLength"/>.  It is automatically included to the
-            <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="maxBlockBytesLength">The maximum allowed length of bytes.  It is
-            automatically included to the <see cref="P:System.Exception.Message"/> string.</param>
             <param name="message">The message that describes the error.</param>
-        </member>
-        <member name="P:Libplanet.Blocks.InvalidBlockBytesLengthException.BlockBytesLength">
-            <summary>
-            The bytes length of the actual block.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blocks.InvalidBlockBytesLengthException.MaxBlockBytesLength">
-            <summary>
-            The maximum allowed length of a block in bytes.
-            </summary>
-            <seealso cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>
+            <param name="bytesLength">The invalid <see cref="P:Libplanet.Blocks.Block`1.BytesLength"/>
+            according to <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.</param>
         </member>
         <member name="T:Libplanet.Blocks.InvalidBlockException">
             <summary>
@@ -5376,6 +5315,20 @@
         </member>
         <member name="M:Libplanet.Blocks.InvalidBlockException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc cref="M:System.Exception.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
+        </member>
+        <member name="T:Libplanet.Blocks.InvalidBlockHashAlgorithmTypeException">
+            <summary>
+            An exception thrown when <see cref="P:Libplanet.Blocks.Block`1.HashAlgorithm"/>
+            does not match the one provided by <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockHashAlgorithmTypeException.#ctor(System.String,Libplanet.HashAlgorithmType)">
+            <summary>
+            Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockTxCountException"/> class.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="hashAlgorithm">The invalid <see cref="P:Libplanet.Blocks.Block`1.HashAlgorithm"/>
+            according to <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.</param>
         </member>
         <member name="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException">
             <summary>
@@ -5493,6 +5446,36 @@
             <summary>
             The hash recorded as <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>>.
             </summary>
+        </member>
+        <member name="T:Libplanet.Blocks.InvalidBlockTxCountException">
+            <summary>
+            An exception thrown when the count of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>
+            does not follow the constraint provided by <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockTxCountException.#ctor(System.String,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockTxCountException"/> class.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="txCount">The invalid count of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>
+            according to <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.</param>
+        </member>
+        <member name="T:Libplanet.Blocks.InvalidBlockTxCountPerSignerException">
+            <summary>
+            An exception thrown when the count of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>
+            does not follow the constraint provided by <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockTxCountPerSignerException.#ctor(System.String,Libplanet.Address,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockTxCountPerSignerException"/> class.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+            <param name="signer">An offending <see cref="T:Libplanet.Address"/> with too many
+            <see cref="T:Libplanet.Tx.Transaction`1"/>'s in a <see cref="T:Libplanet.Blocks.Block`1"/>.</param>
+            <param name="txCount">The invalid count of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>
+            by <paramref name="signer"/> according to the <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.</param>
         </member>
         <member name="M:Libplanet.Blocks.InvalidBlockTxHashException.#ctor(System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
             <summary>
@@ -6229,6 +6212,8 @@
             </summary>
             <param name="privateKey">A valid <see cref="T:System.Byte"/>s that encodes an ECDSA private key.
             </param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="privateKey"/> is too short or too long.</exception>
             <remarks>A valid <see cref="T:System.Byte"/> array for a <see cref="T:Libplanet.Crypto.PrivateKey"/> can be encoded
             using <see cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/> property.</remarks>
             <seealso cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/>
@@ -6268,7 +6253,7 @@
             <exception cref="T:System.ArgumentNullException">Thrown when the given <paramref name="hex"/>
             string is <c>null</c>.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the length of the given
-            <paramref name="hex"/> string is an odd number, or it is empty.</exception>
+            <paramref name="hex"/> string is too short or too long.</exception>
             <exception cref="T:System.FormatException">Thrown when the given <paramref name="hex"/> string is
             not a valid hexadecimal string.</exception>
         </member>
@@ -8001,7 +7986,7 @@
         <member name="P:Libplanet.Net.Messages.Message.Identity">
             <summary>
             <c>byte[]</c>-typed identity of the message.
-            If a message B is the reply of the message A,
+            If message B is a reply to message A,
             B's identity must be set to A's identity.
             </summary>
         </member>
@@ -8030,6 +8015,12 @@
             <summary>
             The body of the message.
             </summary>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
+            <inheritdoc cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageCodec.Decode(System.Byte[],System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion},System.Nullable{System.TimeSpan})">
+            <inheritdoc cref="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion},System.Nullable{System.TimeSpan})"/>
         </member>
         <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
             <inheritdoc cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)"/>
@@ -8565,8 +8556,8 @@
             <summary>
             Waits until this <see cref="T:Libplanet.Net.Swarm`1"/> instance gets started to run.
             </summary>
-            <seealso cref="M:Libplanet.Net.Transports.NetMQTransport.WaitForRunningAsync"/>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.NetMQTransport.Running"/>
+            <seealso cref="M:Libplanet.Net.Transports.ITransport.WaitForRunningAsync"/>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.ITransport.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.Int32,System.Int32,System.Int32,System.Threading.CancellationToken)">
@@ -8641,6 +8632,17 @@
             <returns>An awaitable task without value.</returns>
             <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
             not <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.BroadcastBlock(Libplanet.Blocks.Block{`0})">
+            <summary>
+            Broadcasts the given block to peers.
+            <para>The message is immediately broadcasted, and it is done if the same block has
+            already been broadcasted before.</para>
+            </summary>
+            <param name="block">The block to broadcast to peers.</param>
+            <remarks>It does not have to be called manually, because <see cref="T:Libplanet.Net.Swarm`1"/> in
+            itself watches <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/> for <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> changes and
+            immediately broadcasts updates if anything changes.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.GetPeerChainStateAsync(System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
@@ -8769,6 +8771,21 @@
             <returns><c>true</c> if the corresponding <see cref="T:Libplanet.Blocks.Block`1"/> to
             <paramref name="target"/> is needed, otherwise, <c>false</c>.</returns>
         </member>
+        <member name="T:Libplanet.Net.SwarmOptions.TransportType">
+            <summary>
+            <c>Enum</c> represents the type of the <see cref="T:Libplanet.Net.Transports.ITransport"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.SwarmOptions.TransportType.NetMQTransport">
+            <summary>
+            NetMQ based transport.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.SwarmOptions.TransportType.TcpTransport">
+            <summary>
+            TCP based transport.
+            </summary>
+        </member>
         <member name="P:Libplanet.Net.SwarmOptions.MaxTimeout">
             <summary>
             The maximum timeout used in <see cref="T:Libplanet.Net.Swarm`1"/>.
@@ -8870,6 +8887,11 @@
             peers.
             </summary>
         </member>
+        <member name="P:Libplanet.Net.SwarmOptions.Type">
+            <summary>
+            The type of <see cref="T:Libplanet.Net.Transports.ITransport"/> used in <see cref="T:Libplanet.Net.Swarm`1"/>.
+            </summary>
+        </member>
         <member name="T:Libplanet.Net.Transports.BoundPeerExtensions">
             <summary>
             This extension class activates transport-oriented methods on <see cref="T:Libplanet.Net.BoundPeer"/>.
@@ -8878,11 +8900,25 @@
         </member>
         <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.QueryAppProtocolVersion(Libplanet.Net.BoundPeer,System.Nullable{System.TimeSpan})">
             <summary>
-            Queries <see cref="T:Libplanet.Net.AppProtocolVersion"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>.
+            Queries <see cref="T:Libplanet.Net.AppProtocolVersion"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>
+            specialized for NetMQ based transport.
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to query
             <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
             <param name="timeout">Timeout value for request.</param>
+            <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.QueryAppProtocolVersionTcp(Libplanet.Net.BoundPeer,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Queries <see cref="T:Libplanet.Net.AppProtocolVersion"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>
+            specialized for TCP based transport.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to query
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
+            <param name="timeout">Timeout value for request.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
             <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
         </member>
         <member name="T:Libplanet.Net.Transports.ITransport">
@@ -8891,9 +8927,9 @@
             and <see cref="T:Libplanet.Net.Peer"/> managing.
             </summary>
         </member>
-        <member name="E:Libplanet.Net.Transports.ITransport.ProcessMessageHandler">
+        <member name="P:Libplanet.Net.Transports.ITransport.ProcessMessageHandler">
             <summary>
-            The <see cref="T:System.EventHandler"/> invoked when a message that is not
+            The list of tasks invoked when a message that is not
             a reply is received. To handle reply, please use <see cref=
             "M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/>.
             </summary>
@@ -8914,24 +8950,22 @@
             </summary>
             <value>Gets the value indicates whether the instance is running.</value>
         </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.MessageHistory">
+            <summary>
+            A fixed sized queue that keeps history of <see cref="T:Libplanet.Net.Messages.Message"/> received.
+            It saves at most 30 recent <see cref="T:Libplanet.Net.Messages.Message"/>s.
+            </summary>
+        </member>
         <member name="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)">
             <summary>
-            Initiates transport layer.
+            Initiates and runs transport layer.
             </summary>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
-        </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.RunAsync(System.Threading.CancellationToken)">
-            <summary>
-            Starts running transport layer. To <see cref="M:Libplanet.Net.Transports.ITransport.RunAsync(System.Threading.CancellationToken)"/>, you should call
-            <see cref="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)"/> first.
-            </summary>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
         </member>
         <member name="M:Libplanet.Net.Transports.ITransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
@@ -8943,6 +8977,15 @@
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.WaitForRunningAsync">
+            <summary>
+            Waits until this <see cref="T:Libplanet.Net.Transports.ITransport"/> instance gets started to run.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.ITransport.Running"/>
+            property becomes <c>true</c>.</returns>
         </member>
         <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
             <summary>
@@ -8954,6 +8997,8 @@
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
         </member>
         <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
@@ -8968,6 +9013,8 @@
             operation should be canceled.</param>
             <returns>The replies of the <paramref name="message"/>
             sent by <paramref name="peer"/>.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
         </member>
         <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
             <summary>
@@ -8985,6 +9032,8 @@
             operation should be canceled.</param>
             <returns>The replies of the <paramref name="message"/>
             sent by <paramref name="peer"/>.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
         </member>
         <member name="M:Libplanet.Net.Transports.ITransport.BroadcastMessage(System.Nullable{Libplanet.Address},Libplanet.Net.Messages.Message)">
             <summary>
@@ -8993,8 +9042,10 @@
             <param name="except">An <see cref="T:Libplanet.Address"/> to exclude from broadcasting.
             If <c>null</c> is given, no peers will be excluded.</param>
             <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to broadcast.</param>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
         </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.ReplyMessage(Libplanet.Net.Messages.Message)">
+        <member name="M:Libplanet.Net.Transports.ITransport.ReplyMessageAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
             <summary>
             Replies message.
             </summary>
@@ -9004,6 +9055,12 @@
             <paramref name="message"/>.
             </remarks>
             <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to reply.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
         </member>
         <member name="T:Libplanet.Net.Transports.NetMQTransport">
             <summary>
@@ -9054,7 +9111,7 @@
             <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
             <paramref name="iceServers"/> are <c>null</c>.</exception>
         </member>
-        <member name="E:Libplanet.Net.Transports.NetMQTransport.ProcessMessageHandler">
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.ProcessMessageHandler">
             <inheritdoc />
         </member>
         <member name="P:Libplanet.Net.Transports.NetMQTransport.AsPeer">
@@ -9066,10 +9123,10 @@
         <member name="P:Libplanet.Net.Transports.NetMQTransport.Running">
             <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.Running"/>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.MessageHistory">
+            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.MessageHistory"/>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.RunAsync(System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
@@ -9079,12 +9136,7 @@
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.WaitForRunningAsync">
-            <summary>
-            Waits until this <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance gets started to run.
-            </summary>
-            <seealso cref="M:Libplanet.Net.Swarm`1.WaitForRunningAsync"/>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.NetMQTransport.Running"/>
-            property becomes <c>true</c>.</returns>
+            <inheritdoc cref="M:Libplanet.Net.Transports.ITransport.WaitForRunningAsync"/>
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
             <inheritdoc />
@@ -9098,8 +9150,23 @@
         <member name="M:Libplanet.Net.Transports.NetMQTransport.BroadcastMessage(System.Nullable{Libplanet.Address},Libplanet.Net.Messages.Message)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.ReplyMessage(Libplanet.Net.Messages.Message)">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.ReplyMessageAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
             <inheritdoc />
+        </member>
+        <member name="P:Libplanet.Net.Transports.TcpTransport.ProcessMessageHandler">
+            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.ProcessMessageHandler"/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.TcpTransport.AsPeer">
+            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.AsPeer"/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.TcpTransport.LastMessageTimestamp">
+            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.Running"/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.TcpTransport.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc cref="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)"/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.TcpTransport.WaitForRunningAsync">
+            <inheritdoc cref="M:Libplanet.Net.Transports.ITransport.WaitForRunningAsync"/>
         </member>
         <member name="T:Libplanet.Nonce">
             <summary>
@@ -9834,7 +9901,7 @@
             The internal bytes encoding of raw state keys.
             </summary>
         </member>
-        <member name="M:Libplanet.Store.StateStoreExtensions.Commit(Libplanet.Store.IStateStore,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue},System.Boolean)">
+        <member name="M:Libplanet.Store.StateStoreExtensions.Commit(Libplanet.Store.IStateStore,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
             <summary>
             Records <paramref name="rawStatesDelta"/> which is based on the previous state
             root, and returns the new state root.
@@ -9844,9 +9911,6 @@
             <param name="previousStateRootHash">The state root hash on which
             the <paramref name="rawStatesDelta"/> is based.</param>
             <param name="rawStatesDelta">The raw states delta to be recorded.</param>
-            <param name="rehearsal">If turned on, the <paramref name="rawStatesDelta"/> is not
-            recorded to the <paramref name="stateStore"/>, but only shadow trie root is returned.
-            Turned off by default.</param>
             <returns>The new state root.</returns>
         </member>
         <member name="M:Libplanet.Store.StateStoreExtensions.GetState(Libplanet.Store.IStateStore,System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
@@ -9959,6 +10023,12 @@
             An interface to access key-value store.
             </summary>
         </member>
+        <member name="M:Libplanet.Store.Trie.IKeyValueStore.Set(System.Collections.Generic.IDictionary{System.Byte[],System.Byte[]})">
+            <summary>
+            Sets all values in the given dictionary.
+            </summary>
+            <param name="values">A values to set.</param>
+        </member>
         <member name="M:Libplanet.Store.Trie.IKeyValueStore.ListKeys">
             <summary>
             Lists all keys that have been stored in the storage.
@@ -10004,11 +10074,10 @@
             set <paramref name="value"/> to it and return true. If not, set <paramref name="value"/>
             to null and return false.</returns>
         </member>
-        <member name="M:Libplanet.Store.Trie.ITrie.Commit(System.Boolean)">
+        <member name="M:Libplanet.Store.Trie.ITrie.Commit">
             <summary>
             Cleans up and stores the <see cref="T:Libplanet.Store.Trie.ITrie"/> in storage.
             </summary>
-            <param name="rehearsal">Whether to store nodes.</param>
             <returns>Returns new committed <see cref="T:Libplanet.Store.Trie.ITrie"/>.</returns>
         </member>
         <member name="T:Libplanet.Store.Trie.MemoryKeyValueStore">
@@ -10060,7 +10129,7 @@
         <member name="M:Libplanet.Store.Trie.MerkleTrie.TryGet(System.Byte[],Bencodex.Types.IValue@)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.Trie.MerkleTrie.Commit(System.Boolean)">
+        <member name="M:Libplanet.Store.Trie.MerkleTrie.Commit">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.Trie.MerkleTrie.GetNode(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">

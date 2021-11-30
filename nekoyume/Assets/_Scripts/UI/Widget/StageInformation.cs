@@ -24,18 +24,42 @@ namespace Nekoyume.UI
             Quest,
             Mimisbrunnr,
         }
-        [SerializeField] private HelpButton stageHelpButton = null;
-        [SerializeField] private TextMeshProUGUI titleText = null;
-        [SerializeField] private TextMeshProUGUI monstersAreaText = null;
-        [SerializeField] private List<VanillaCharacterView> monstersAreaCharacterViews = null;
-        [SerializeField] private TextMeshProUGUI rewardsAreaText = null;
-        [SerializeField] private List<StageRewardItemView> rewardsAreaItemViews = null;
-        [SerializeField]private TextMeshProUGUI expText = null;
-        [SerializeField]private TextMeshProUGUI closeButtonText = null;
-        [SerializeField] private SubmitButton submitButton = null;
-        [SerializeField] private WorldMapWorld world = null;
-        [SerializeField] private GameObject buttonNotification = null;
-        [SerializeField] private Button closeButton;
+
+        [SerializeField]
+        private HelpButton stageHelpButton;
+
+        [SerializeField]
+        private TextMeshProUGUI titleText;
+
+        [SerializeField]
+        private TextMeshProUGUI monstersAreaText;
+
+        [SerializeField]
+        private List<VanillaCharacterView> monstersAreaCharacterViews;
+
+        [SerializeField]
+        private TextMeshProUGUI rewardsAreaText;
+
+        [SerializeField]
+        private List<StageRewardItemView> rewardsAreaItemViews;
+
+        [SerializeField]
+        private TextMeshProUGUI expText;
+
+        [SerializeField]
+        private TextMeshProUGUI closeButtonText;
+
+        [SerializeField]
+        private SubmitButton submitButton;
+
+        [SerializeField]
+        private WorldMapWorld world;
+
+        [SerializeField]
+        private GameObject buttonNotification;
+
+        [SerializeField]
+        private Button closeButton;
 
         private WorldMap.ViewModel _sharedViewModel;
         private StageType _stageType = StageType.None;
@@ -89,21 +113,24 @@ namespace Nekoyume.UI
             {
                 Game.Event.OnRoomEnter.Invoke(true);
             }
+
             base.Close(true);
         }
 
         public void Show(WorldMap.ViewModel viewModel, WorldSheet.Row worldRow, StageType stageType)
         {
             _sharedViewModel = viewModel;
+            UpdateStageInformation(_sharedViewModel.SelectedStageId.Value, States.Instance.CurrentAvatarState.level);
+            _sharedViewModel.WorldInformation.TryGetWorld(worldRow.Id, out var worldModel);
             _sharedViewModel.SelectedStageId
                 .Subscribe(stageId => UpdateStageInformation(
                     stageId,
                     States.Instance.CurrentAvatarState?.level ?? 1)
                 )
                 .AddTo(gameObject);
-            _sharedViewModel.WorldInformation.TryGetWorld(worldRow.Id, out var worldModel);
+
             closeButtonText.text = L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}");
-            UpdateStageInformation(_sharedViewModel.SelectedStageId.Value, States.Instance.CurrentAvatarState.level);
+
             if (_sharedViewModel.SelectedStageId.Value == 1)
             {
                 stageHelpButton.Show();
@@ -124,10 +151,17 @@ namespace Nekoyume.UI
                 .FirstOrDefault()?
                 .Goal ?? -1;
 
-            world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, questStageId);
             if (worldModel.IsUnlocked)
             {
-                UnlockWorld(worldModel.GetNextStageIdForPlay(), worldModel.GetNextStageId());
+                var openedStageId = worldModel.GetNextStageIdForPlay();
+                if (worldModel.StageEnd < worldRow.StageEnd &&
+                    openedStageId == worldModel.StageEnd &&
+                    openedStageId == worldModel.StageClearedId)
+                {
+                    openedStageId += 1;
+                }
+
+                UnlockWorld(openedStageId, worldModel.GetNextStageId());
             }
             else
             {
@@ -135,19 +169,43 @@ namespace Nekoyume.UI
             }
 
             base.Show(true);
+            world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, questStageId);
             HelpTooltip.HelpMe(100003, true);
         }
 
         private void UpdateStageInformation(int stageId, int characterLevel)
         {
+            var worldInfo = _sharedViewModel.WorldInformation;
             var isSubmittable = false;
-            if (!(_sharedViewModel.WorldInformation is null))
+            if (!(worldInfo is null))
             {
-                if (!_sharedViewModel.WorldInformation.TryGetWorldByStageId(stageId, out var world))
-                    throw new ArgumentException(nameof(stageId));
-
-                isSubmittable = world.IsPlayable(stageId);
+                if (worldInfo.TryGetWorldByStageId(stageId, out var innerWorld))
+                {
+                    isSubmittable = innerWorld.IsPlayable(stageId);
+                }
+                else
+                {
+                    // NOTE: Consider expanding the world.
+                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
+                    {
+                        worldInfo.UpdateWorld(worldRow);
+                        if (worldInfo.TryGetWorldByStageId(stageId, out var world2))
+                        {
+                            isSubmittable = world2.IsPlayable(stageId);
+                        }
+                        else
+                        {
+                            throw new ArgumentException(nameof(stageId));
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException(nameof(stageId));
+                    }
+                }
             }
+
+            submitButton.SetSubmittable(isSubmittable);
 
             var stageWaveSheet = Game.Game.instance.TableSheets.StageWaveSheet;
             stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);
@@ -189,7 +247,6 @@ namespace Nekoyume.UI
             var exp = StageRewardExpHelper.GetExp(characterLevel, stageId);
             expText.text = $"EXP +{exp}";
 
-            submitButton.SetSubmittable(isSubmittable);
             buttonNotification.SetActive(stageId == Find<WorldMap>().StageIdToNotify);
         }
 

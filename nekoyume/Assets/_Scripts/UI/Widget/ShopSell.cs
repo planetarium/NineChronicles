@@ -38,9 +38,10 @@ namespace Nekoyume.UI
         [SerializeField] private SpeechBubble speechBubble = null;
         [SerializeField] private Button buyButton = null;
         [SerializeField] private Button closeButton = null;
+        [SerializeField] private Button spineButton = null;
 
         private NPC _npc;
-        private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
+        private static readonly Vector2 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
         private const int NPCId = 300000;
         private const int LimitPrice  = 100000000;
 
@@ -69,6 +70,8 @@ namespace Nekoyume.UI
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             });
+
+            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion_01));
 
             CloseWidget = () =>
             {
@@ -119,6 +122,7 @@ namespace Nekoyume.UI
         public void Show()
         {
             base.Show();
+            ShowNPC();
             Refresh(true);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
@@ -144,7 +148,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
+        private void ShowNPC()
         {
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
@@ -155,7 +159,6 @@ namespace Nekoyume.UI
             _npc.GetComponent<SortingGroup>().sortingLayerName = LayerType.InGameBackground.ToLayerName();
             _npc.GetComponent<SortingGroup>().sortingOrder = 3;
             _npc.SpineController.Appear();
-
             go.SetActive(true);
 
             ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
@@ -322,8 +325,8 @@ namespace Nekoyume.UI
             var totalPrice = data.TotalPrice.Value;
             var count = data.Count.Value;
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-            Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType);
-            Mixpanel.Track("Unity/Sell");
+            Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType).Subscribe();
+            Analyzer.Instance.Track("Unity/Sell");
             ResponseSell();
         }
 
@@ -362,8 +365,8 @@ namespace Nekoyume.UI
                 tradableItem,
                 count,
                 totalPrice,
-                itemSubType);
-            Mixpanel.Track("Unity/UpdateSell");
+                itemSubType).Subscribe();
+            Analyzer.Instance.Track("Unity/UpdateSell");
             ResponseSell();
         }
 
@@ -463,12 +466,12 @@ namespace Nekoyume.UI
             var digest = ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, price, count);
             if (digest != null)
             {
-                Mixpanel.Track("Unity/Sell Cancellation");
+                Analyzer.Instance.Track("Unity/Sell Cancellation");
                 Game.Game.instance.ActionManager.SellCancellation(
                     avatarAddress,
                     digest.OrderId,
                     digest.TradableId,
-                    subType);
+                    subType).Subscribe();
                 ResponseSellCancellation(digest.OrderId, digest.TradableId);
             }
         }
@@ -526,10 +529,10 @@ namespace Nekoyume.UI
             Refresh();
         }
 
-        private void ResponseSellCancellation(Guid orderId, Guid tradableId)
+        private async void ResponseSellCancellation(Guid orderId, Guid tradableId)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            var itemName = Util.GetItemNameByOrdierId(orderId);
+            var itemName = await Util.GetItemNameByOrderId(orderId);
             ReactiveShopState.RemoveSellDigest(orderId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");

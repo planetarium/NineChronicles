@@ -33,7 +33,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStartPrologue()
         {
-            Mixpanel.Track("Unity/Prologuebattle Start");
+            Analyzer.Instance.Track("Unity/Prologuebattle Start");
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             ActionCamera.instance.InPrologue = true;
             AudioController.instance.PlayMusic(AudioController.MusicCode.PrologueBattle);
@@ -173,7 +173,7 @@ namespace Nekoyume.Game
             var pos = _player.transform.position;
             var castingEffect = Game.instance.Stage.SkillController.Get(pos, ElementalType.Fire);
             castingEffect.Play();
-            AreaAttackCutscene.Show(_player.GetAmorId());
+            AreaAttackCutscene.Show(_player.GetArmorId());
             yield return new WaitForSeconds(0.6f);
             var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
             effect.Play();

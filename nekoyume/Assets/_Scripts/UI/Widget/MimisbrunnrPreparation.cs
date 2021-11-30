@@ -276,7 +276,7 @@ namespace Nekoyume.UI
             consumableTitleText.text = L10nManager.Localize("UI_EQUIP_CONSUMABLES");
             costumeTitleText.text = equipmentTitleText.text = L10nManager.Localize("UI_EQUIP_EQUIPMENTS");
 
-            Mixpanel.Track("Unity/Click Stage");
+            Analyzer.Instance.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
             _stage.IsRepeatStage = false;
             repeatToggle.isOn = false;
@@ -935,7 +935,7 @@ namespace Nekoyume.UI
                 GameConfig.MimisbrunnrWorldId,
                 _stageId.Value,
                 1
-            );
+            ).Subscribe();
         }
 
         public void GoToStage(BattleLog battleLog)
