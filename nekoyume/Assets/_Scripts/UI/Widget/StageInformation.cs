@@ -205,7 +205,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            submitButton.SetSubmittable(isSubmittable);
+            submitButton.Interactable = isSubmittable;
 
             var stageWaveSheet = Game.Game.instance.TableSheets.StageWaveSheet;
             stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);

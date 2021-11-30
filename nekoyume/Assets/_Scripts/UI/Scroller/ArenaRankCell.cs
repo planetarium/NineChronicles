@@ -210,11 +210,11 @@ namespace Nekoyume.UI.Scroller
 
                 if (itemData.currentAvatarArenaInfo is null)
                 {
-                    challengeButton.SetSubmittable(true);
+                    challengeButton.SetConditionalState(true);
                 }
                 else
                 {
-                    challengeButton.SetSubmittable(itemData.currentAvatarArenaInfo.DailyChallengeCount > 0);
+                    challengeButton.SetConditionalState(itemData.currentAvatarArenaInfo.DailyChallengeCount > 0);
                 }
             }
 

@@ -199,8 +199,8 @@ namespace Nekoyume.UI
                 {
                     totalPrice.text = value.GetQuantityString();
                     var isValid = IsValid();
-                    submitButton.SetSubmittable(isValid);
-                    reregisterButton.SetSubmittable(isValid);
+                    submitButton.Interactable = (isValid);
+                    reregisterButton.Interactable = isValid;
                     positiveMessage.SetActive(isValid);
                     warningMessage.SetActive(!isValid);
                 })
