@@ -33,7 +33,7 @@ namespace Nekoyume.UI
         private EquipmentInventory inventory;
 
         [SerializeField]
-        private Button upgradeButton;
+        private ConditionalCostButton upgradeButton;
 
         [SerializeField]
         private Button closeButton;
@@ -58,9 +58,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI nextLevelText;
-
-        [SerializeField]
-        private TextMeshProUGUI costText;
 
         [SerializeField]
         private TextMeshProUGUI materialGuideText;
@@ -115,7 +112,9 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            upgradeButton.onClick.AddListener(Action);
+            upgradeButton.OnSubmitSubject
+                .Subscribe(_ => Action())
+                .AddTo(gameObject);
             closeButton.onClick.AddListener(Close);
             CloseWidget = Close;
         }
@@ -435,7 +434,6 @@ namespace Nekoyume.UI
 
         private void ClearInformation()
         {
-            costText.text = "0";
             itemNameText.text = string.Empty;
             currentLevelText.text = string.Empty;
             nextLevelText.text = string.Empty;
@@ -458,8 +456,7 @@ namespace Nekoyume.UI
         private void UpdateInformation(EnhancementCostSheetV2.Row row, Equipment equipment)
         {
             ClearInformation();
-            costText.text = row.Cost.ToString();
-            costText.color = GetNcgColor(row.Cost);
+            upgradeButton.SetCost(ConditionalCostButton.CostType.NCG, (int) row.Cost);
             itemNameText.text = equipment.GetLocalizedName();
             currentLevelText.text = $"+{equipment.level}";
             nextLevelText.text = $"+{equipment.level + 1}";

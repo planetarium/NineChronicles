@@ -263,8 +263,7 @@ namespace Nekoyume.UI
             _selectedRecipeInfo = recipeInfo;
 
             var submittable = CheckSubmittable(out _, out _);
-            button.SetCost((int) _selectedRecipeInfo.CostNCG);
-            button.UpdateObjects();
+            button.SetCost(ConditionalCostButton.CostType.NCG, (int) _selectedRecipeInfo.CostNCG);
         }
 
         private void SetOptions(
