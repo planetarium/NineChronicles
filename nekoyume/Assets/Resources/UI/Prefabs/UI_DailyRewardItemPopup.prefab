@@ -1307,9 +1307,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  button: {fileID: 4979997259114752901}
   normalObject: {fileID: 705721542366199436}
   conditionalObject: {fileID: 4875955165814963716}
   disabledObject: {fileID: 6653492528016062873}
+  effectOverlay: {fileID: 0}
   conditionInfoKey: 
   texts:
   - {fileID: 8836945622092456840}

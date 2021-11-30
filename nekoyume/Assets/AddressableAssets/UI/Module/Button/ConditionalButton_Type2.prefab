@@ -332,9 +332,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c22add615a659c84aa7fcb639b695a00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  button: {fileID: 2840644199905785920}
   normalObject: {fileID: 1578378680608659336}
   conditionalObject: {fileID: 14600963724961033}
   disabledObject: {fileID: 4966569406589180211}
+  effectOverlay: {fileID: 2682501188305712238}
   conditionInfoKey: 
   texts:
   - {fileID: 1048486395209867171}

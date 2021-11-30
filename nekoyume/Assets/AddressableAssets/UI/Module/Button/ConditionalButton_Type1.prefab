@@ -605,9 +605,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd36e9ecf7775ae45bc40a208c43fc92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  button: {fileID: 8928492100869035181}
   normalObject: {fileID: 8313786517335402731}
   conditionalObject: {fileID: 4335541434132140550}
   disabledObject: {fileID: 355461153799763971}
+  effectOverlay: {fileID: 6387448829685765285}
   conditionInfoKey: 
   texts:
   - {fileID: 4791061184244252715}

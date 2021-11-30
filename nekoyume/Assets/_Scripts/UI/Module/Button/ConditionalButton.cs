@@ -19,6 +19,9 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
+        private Button button = null;
+
+        [SerializeField]
         private GameObject normalObject = null;
 
         [SerializeField]
@@ -26,6 +29,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private GameObject disabledObject = null;
+
+        [SerializeField]
+        private GameObject effectOverlay = null;
 
         [SerializeField]
         private string conditionInfoKey = null;
@@ -53,7 +59,6 @@ namespace Nekoyume.UI.Module
 
         public readonly ReactiveProperty<State> CurrentState = new ReactiveProperty<State>();
 
-        private Button _button = null;
         private Func<bool> _conditionFunc = null;
         private bool _interactable = true;
 
@@ -69,8 +74,7 @@ namespace Nekoyume.UI.Module
 
         protected virtual void Awake()
         {
-            _button = GetComponent<Button>();
-            _button.onClick.AddListener(OnClickButton);
+            button.onClick.AddListener(OnClickButton);
         }
 
         protected virtual bool CheckCondition()
@@ -110,14 +114,20 @@ namespace Nekoyume.UI.Module
                 case State.Normal:
                     normalObject.SetActive(true);
                     conditionalObject.SetActive(false);
+                    effectOverlay.SetActive(true);
+                    button.interactable = true;
                     break;
                 case State.Conditional:
                     normalObject.SetActive(false);
                     conditionalObject.SetActive(true);
+                    effectOverlay.SetActive(false);
+                    button.interactable = true;
                     break;
                 case State.Disabled:
                     normalObject.SetActive(false);
                     conditionalObject.SetActive(false);
+                    effectOverlay.SetActive(false);
+                    button.interactable = false;
                     break;
             }
         }
