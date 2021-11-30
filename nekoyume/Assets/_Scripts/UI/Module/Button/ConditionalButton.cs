@@ -114,13 +114,11 @@ namespace Nekoyume.UI.Module
                 case State.Normal:
                     normalObject.SetActive(true);
                     conditionalObject.SetActive(false);
-                    effectOverlay.SetActive(true);
                     button.interactable = true;
                     break;
                 case State.Conditional:
                     normalObject.SetActive(false);
                     conditionalObject.SetActive(true);
-                    effectOverlay.SetActive(false);
                     button.interactable = true;
                     break;
                 case State.Disabled:
