@@ -52,6 +52,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
             }
 
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100089ObsoleteIndex, context);
+
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
             {

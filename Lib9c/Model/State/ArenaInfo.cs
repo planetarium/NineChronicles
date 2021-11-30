@@ -212,11 +212,11 @@ namespace Nekoyume.Model.State
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
 
-            var earnedScore =
-                ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result, out var enemyScore);
-            Score = Math.Max(1000, Score + earnedScore);
-            enemyInfo.Score = Math.Max(1000, enemyInfo.Score + enemyScore);
-            return earnedScore;
+            var score =
+                ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result);
+            Score = Math.Max(1000, Score + score.challengerScore);
+            enemyInfo.Score = Math.Max(1000, enemyInfo.Score + score.defenderScore);
+            return score.challengerScore;
         }
 
         public void Activate()
