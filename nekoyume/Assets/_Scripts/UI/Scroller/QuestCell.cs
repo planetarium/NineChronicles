@@ -140,7 +140,7 @@ namespace Nekoyume.UI.Scroller
                     titleText.color = ColorHelper.HexToColorRGB("614037");
                     contentText.color = ColorHelper.HexToColorRGB("38251e");
                     progressText.color = ColorHelper.HexToColorRGB("282828");
-                    receiveButton.Interactable = false;
+                    receiveButton.gameObject.SetActive(false);
                 }
             }
             else
