@@ -1,6 +1,7 @@
 using Bencodex;
 using Bencodex.Types;
 using Cocona;
+using CsvHelper;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Blocks;
@@ -10,6 +11,8 @@ using Nekoyume.Action;
 using Nekoyume.Model.State;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -71,8 +74,8 @@ namespace Lib9c.Tools.SubCommand
                     }
 
                     var bencoded = (List)_codec.Decode(ByteUtil.ParseHex(a));
-                    string type = (Text) bencoded[0];
-                    Dictionary plainValue = (Dictionary)bencoded[1];
+                    string type = (Text)bencoded[0];
+                    IValue plainValue = bencoded[1];
 
                     ActionBase action = null;
                     action = type switch
@@ -83,6 +86,7 @@ namespace Lib9c.Tools.SubCommand
                         nameof(Nekoyume.Action.MigrationLegacyShop) => new MigrationLegacyShop(),
                         nameof(Nekoyume.Action.MigrationActivatedAccountsState) => new MigrationActivatedAccountsState(),
                         nameof(Nekoyume.Action.MigrationAvatarState) => new MigrationAvatarState(),
+                        nameof(Nekoyume.Action.CreatePendingActivations) => new CreatePendingActivations(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -212,6 +216,37 @@ namespace Lib9c.Tools.SubCommand
                 (Text)nameof(Nekoyume.Action.AddRedeemCode),
                 action.PlainValue
             );
+            byte[] raw = _codec.Encode(encoded);
+            Console.WriteLine(ByteUtil.Hex(raw));
+        }
+
+        [Command(Description = "Create CreatePendingActivations action and dump it.")]
+        public void CreatePendingActivations(
+            [Argument("CSV-PATH", Description = "A csv file path for CreatePendingActivations")] string csvPath
+        )
+        {
+            var RecordType = new
+            {
+                NonceHex = string.Empty,
+                PublicKeyHex = string.Empty,
+            };
+            using var reader = new StreamReader(csvPath);
+            using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+            var activations =
+                csv.GetRecords(RecordType)
+                    .Select(r => new PendingActivationState(
+                        ByteUtil.ParseHex(r.NonceHex),
+                        new PublicKey(ByteUtil.ParseHex(r.PublicKeyHex).ToImmutableArray()))
+                    )
+                    .ToList();
+            var action = new CreatePendingActivations(activations);
+            var encoded = new List(
+               new IValue[]
+               {
+                    (Text) nameof(Nekoyume.Action.CreatePendingActivations),
+                    action.PlainValue
+               }
+           );
             byte[] raw = _codec.Encode(encoded);
             Console.WriteLine(ByteUtil.Hex(raw));
         }

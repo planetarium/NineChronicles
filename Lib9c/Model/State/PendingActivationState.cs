@@ -20,18 +20,18 @@ namespace Nekoyume.Model.State
         public PublicKey PublicKey { get; }
 
         public PendingActivationState(byte[] nonce, PublicKey publicKey)
-            : base (DeriveAddress(nonce, publicKey))
+            : base(DeriveAddress(nonce, publicKey))
         {
             Nonce = nonce;
             PublicKey = publicKey;
         }
 
-        private static Address DeriveAddress(byte[] nonce, PublicKey publicKey)
+        internal static Address DeriveAddress(byte[] nonce, PublicKey publicKey)
         {
             return BaseAddress.Derive(nonce.Concat(publicKey.Format(true)).ToArray());
         }
 
-        public PendingActivationState(Dictionary serialized) 
+        public PendingActivationState(Dictionary serialized)
             : base(serialized)
         {
             Nonce = (Binary)serialized["nonce"];
@@ -39,7 +39,7 @@ namespace Nekoyume.Model.State
         }
 
         protected PendingActivationState(SerializationInfo info, StreamingContext context)
-            : this((Dictionary) new Codec().Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
+            : this((Dictionary)new Codec().Decode((byte[])info.GetValue("serialized", typeof(byte[]))))
         {
         }
 
@@ -47,8 +47,8 @@ namespace Nekoyume.Model.State
         {
             var values = new Dictionary<IKey, IValue>
             {
-                [(Text) "nonce"] = (Binary) Nonce,
-                [(Text) "public_key"] = PublicKey.Serialize(),
+                [(Text)"nonce"] = (Binary)Nonce,
+                [(Text)"public_key"] = PublicKey.Serialize(),
             };
 
 #pragma warning disable LAA1002
