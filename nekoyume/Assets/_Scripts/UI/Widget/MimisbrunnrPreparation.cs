@@ -25,6 +25,7 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class MimisbrunnrPreparation : Widget
@@ -202,7 +203,9 @@ namespace Nekoyume.UI
             startButton.OnClickAsObservable().Where(_ => !EnoughActionPoint && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                    OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("ERROR_ACTION_POINT"),
+                    NotificationCell.NotificationType.Alert))
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
@@ -212,8 +215,9 @@ namespace Nekoyume.UI
                     if (!CheckEquipmentElementalType())
                     {
                         NotificationSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"));
+                            MailType.UnlockCondition,
+                            L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"),
+                            NotificationCell.NotificationType.Information);
                         return;
                     }
 
@@ -240,7 +244,9 @@ namespace Nekoyume.UI
             boostPopupButton.OnClickAsObservable().Where(_ => !EnoughActionPoint && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                    OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("ERROR_ACTION_POINT"),
+                    NotificationCell.NotificationType.Alert))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
@@ -594,8 +600,9 @@ namespace Nekoyume.UI
             if (!CheckEquipmentElementalType())
             {
                 NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"));
+                    MailType.UnlockCondition,
+                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"),
+                    NotificationCell.NotificationType.Information);
 
                 return;
             }

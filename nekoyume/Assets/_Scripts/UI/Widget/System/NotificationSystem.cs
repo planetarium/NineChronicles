@@ -61,7 +61,7 @@ namespace Nekoyume.UI
         public static void Push(
             MailType mailType,
             string message,
-            NotificationCell.NotificationType notificationType = NotificationCell.NotificationType.Information)
+            NotificationCell.NotificationType notificationType)
         {
             AddQueue.Enqueue(new NotificationCell.ViewModel
             {
@@ -211,7 +211,9 @@ namespace Nekoyume.UI
                 .Where(i => i.requiredBlockIndex <= blockIndex)
                 .ToList())
             {
-                Push(reservationModel.mailType, reservationModel.message);
+                Push(reservationModel.mailType,
+                    reservationModel.message,
+                    NotificationCell.NotificationType.Notification);
                 ReservationList.Remove(reservationModel);
             }
         }

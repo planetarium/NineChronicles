@@ -144,6 +144,10 @@ namespace Nekoyume.Helper
                     result = Resources.Load<Sprite>(
                         string.Format(MailIconPathFormat, "icon_mail_system"));
                     break;
+                case MailType.UnlockCondition:
+                    result = Resources.Load<Sprite>(
+                        string.Format(MailIconPathFormat, "icon_mail_unlockCondition"));
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mailType), mailType, null);
             }

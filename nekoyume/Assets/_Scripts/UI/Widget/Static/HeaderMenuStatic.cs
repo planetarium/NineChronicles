@@ -16,6 +16,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class HeaderMenuStatic : StaticWidget
@@ -123,8 +124,9 @@ namespace Nekoyume.UI.Module
                         var requiredStage = _toggleUnlockStages[toggleInfo.Type];
                         if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
                         {
-                            OneLineSystem.Push(MailType.System,
-                                L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage));
+                            OneLineSystem.Push(MailType.UnlockCondition,
+                                L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
+                                NotificationCell.NotificationType.Information);
                             toggleInfo.Toggle.isOn = false;
                             return;
                         }

@@ -14,6 +14,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.BlockChain
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
     using NCAction = PolymorphicAction<ActionBase>;
     using NCBlock = Block<PolymorphicAction<ActionBase>>;
@@ -53,7 +54,7 @@ namespace Nekoyume.BlockChain
                 {
                     Debug.Log($"[{nameof(BlockRenderHandler)}] Reorg beginning");
                     var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
-                    UI.NotificationSystem.Push(Model.Mail.MailType.System, msg);
+                    UI.NotificationSystem.Push(Model.Mail.MailType.System, msg, NotificationCell.NotificationType.Alert);
                 })
                 .AddTo(_disposables);
             _blockRenderer.ReorgEndSubject.ObserveOnMainThread().Subscribe(_ =>

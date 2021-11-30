@@ -4,6 +4,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers
@@ -61,7 +62,8 @@ namespace Nekoyume.State.Modifiers
                 if (worldRow is null)
                 {
                     NotificationSystem.Push(MailType.System,
-                        L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"));
+                        L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"),
+                        NotificationCell.NotificationType.Information);
                     continue;
                 }
 

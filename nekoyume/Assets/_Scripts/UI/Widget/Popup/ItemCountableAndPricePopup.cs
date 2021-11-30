@@ -12,6 +12,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class ItemCountableAndPricePopup : ItemCountPopup<Model.ItemCountableAndPricePopup>
@@ -134,8 +135,10 @@ namespace Nekoyume.UI
 
             notificationButton.OnClickAsObservable().Subscribe(_ =>
             {
-                OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize("NOTIFICATION_QUANTITY_CANNOT_CHANGED"));
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_QUANTITY_CANNOT_CHANGED"),
+                    NotificationCell.NotificationType.Information);
             }).AddTo(_disposablesForAwake);
 
             CloseWidget = () =>

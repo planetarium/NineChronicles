@@ -18,6 +18,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class CombinationSlot : MonoBehaviour
@@ -336,7 +337,10 @@ namespace Nekoyume.UI.Module
                 case SlotType.Empty:
                     if (Game.Game.instance.Stage.IsInStage)
                     {
-                        UI.NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize("UI_BLOCK_EXIT"));
+                        UI.NotificationSystem.Push(
+                            Nekoyume.Model.Mail.MailType.System,
+                            L10nManager.Localize("UI_BLOCK_EXIT"),
+                            NotificationCell.NotificationType.Alert);
                         return;
                     }
 
@@ -353,7 +357,8 @@ namespace Nekoyume.UI.Module
 
                 case SlotType.Appraise:
                     UI.NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
-                        L10nManager.Localize("UI_COMBINATION_NOTIFY_IDENTIFYING"));
+                        L10nManager.Localize("UI_COMBINATION_NOTIFY_IDENTIFYING"),
+                        NotificationCell.NotificationType.Information);
                     break;
             }
         }

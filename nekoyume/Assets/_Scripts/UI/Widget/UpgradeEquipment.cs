@@ -25,6 +25,7 @@ using EquipmentInventory = Nekoyume.UI.Module.EquipmentInventory;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class UpgradeEquipment : Widget
@@ -284,14 +285,14 @@ namespace Nekoyume.UI
         {
             if (!IsInteractableButton(_baseItem, _materialItem))
             {
-                NotificationSystem.Push(MailType.System, errorMessage);
+                NotificationSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
                 return;
             }
 
             if (States.Instance.GoldBalanceState.Gold.MajorUnit < _costNcg)
             {
                 errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
-                NotificationSystem.Push(MailType.System, errorMessage);
+                NotificationSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
                 return;
             }
 
@@ -308,7 +309,8 @@ namespace Nekoyume.UI
             }
 
             NotificationSystem.Push(MailType.Workshop,
-                L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"));
+                L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
+                NotificationCell.NotificationType.Information);
 
             Game.Game.instance.ActionManager.ItemEnhancement(_baseItem, _materialItem, slotIndex, _costNcg).Subscribe();
 
