@@ -94,15 +94,15 @@ namespace Nekoyume.UI.Module
         {
             if (_interactable)
             {
-                UpdateState(value ? State.Normal : State.Conditional);
+                SetState(value ? State.Normal : State.Conditional);
             }
             else
             {
-                UpdateState(State.Disabled);
+                SetState(State.Disabled);
             }
         }
 
-        public void UpdateState(State state)
+        public void SetState(State state)
         {
             CurrentState.Value = state;
             switch (state)

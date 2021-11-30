@@ -95,7 +95,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForSetData);
             _data.SubmitText.Subscribe(text => submitButton.Text = text)
                 .AddTo(_disposablesForSetData);
-            _data.Submittable.Subscribe(value => submitButton.UpdateState(value ?
+            _data.Submittable.Subscribe(value => submitButton.SetState(value ?
                 ConditionalButton.State.Normal : ConditionalButton.State.Conditional))
                 .AddTo(_disposablesForSetData);
             _data.InfoText.Subscribe(value =>

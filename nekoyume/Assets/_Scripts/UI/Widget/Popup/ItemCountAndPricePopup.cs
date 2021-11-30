@@ -35,7 +35,7 @@ namespace Nekoyume.UI
                     }
 
                     var isBelowMinimumPrice = price < Model.Shop.MinimumPrice;
-                    submitButton.UpdateState(isBelowMinimumPrice ?
+                    submitButton.SetState(isBelowMinimumPrice ?
                         ConditionalButton.State.Conditional : ConditionalButton.State.Normal);
 
                     _data.Price.Value =
