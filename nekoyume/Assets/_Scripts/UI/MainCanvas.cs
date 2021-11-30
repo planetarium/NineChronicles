@@ -186,6 +186,7 @@ namespace Nekoyume.UI
                 Widget.Create<VersionSystem>(true),
                 Widget.Create<OneButtonSystem>(),
                 Widget.Create<TwoButtonSystem>(),
+                Widget.Create<HasIconAndButtonSystem>(),
             };
 
             foreach (var value in firstWidgets)
