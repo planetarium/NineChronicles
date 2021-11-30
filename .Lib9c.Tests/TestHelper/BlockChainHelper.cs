@@ -1,9 +1,14 @@
 ﻿namespace Lib9c.Tests.TestHelper
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Linq;
+    using Lib9c.DevExtensions.Action;
     using Lib9c.Renderer;
+    using Lib9c.Tests.Action;
     using Libplanet;
+    using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
     using Libplanet.Blocks;
@@ -14,6 +19,7 @@
     using Nekoyume.Action;
     using Nekoyume.Model;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
     public static class BlockChainHelper
@@ -64,6 +70,87 @@
                 credits: null,
                 privateKey: privateKey,
                 timestamp: timestamp ?? DateTimeOffset.MinValue);
+        }
+
+        public static MakeInitialStateResult MakeInitialState()
+        {
+            var goldCurrencyState = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
+            var ranking = new RankingState();
+            for (var i = 0; i < RankingState.RankingMapCapacity; i++)
+            {
+                ranking.RankingMap[RankingState.Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
+            }
+
+            var sheets = TableSheetsImporter.ImportSheets();
+            var initialState = new Tests.Action.State()
+                .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
+                .SetState(
+                    Addresses.GoldDistribution,
+                    GoldDistributionTest.Fixture.Select(v => v.Serialize()).Serialize()
+                )
+                .SetState(
+                    Addresses.GameConfig,
+                    new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize()
+                )
+                .SetState(Addresses.Ranking, ranking.Serialize());
+
+            foreach (var (key, value) in sheets)
+            {
+                initialState = initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
+            var tableSheets = new TableSheets(sheets);
+            var rankingMapAddress = new PrivateKey().ToAddress();
+
+            var agentAddress = new PrivateKey().ToAddress();
+            var agentState = new AgentState(agentAddress);
+
+            var avatarAddress = new PrivateKey().ToAddress();
+            var avatarState = new AvatarState(
+                avatarAddress,
+                agentAddress,
+                0,
+                tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                rankingMapAddress)
+            {
+                worldInformation = new WorldInformation(
+                    0,
+                    tableSheets.WorldSheet,
+                    GameConfig.RequireClearedStageLevel.ActionsInShop),
+            };
+            agentState.avatarAddresses[0] = avatarAddress;
+
+            var initCurrencyGold = goldCurrencyState.Currency * 100000000000;
+            var agentCurrencyGold = goldCurrencyState.Currency * 1000;
+            var remainCurrencyGold = initCurrencyGold - agentCurrencyGold;
+            initialState = initialState
+                .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
+                .SetState(agentAddress, agentState.Serialize())
+                .SetState(avatarAddress, avatarState.Serialize())
+                .SetState(Addresses.Shop, new ShopState().Serialize())
+                .MintAsset(GoldCurrencyState.Address, initCurrencyGold)
+                .TransferAsset(Addresses.GoldCurrency, agentAddress,  agentCurrencyGold);
+
+            var action = new CreateTestbed();
+            var nextState = action.Execute(new ActionContext()
+            {
+                BlockIndex = 0,
+                PreviousStates = initialState,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            });
+
+            return new MakeInitialStateResult(
+                nextState,
+                action,
+                agentState,
+                avatarState,
+                goldCurrencyState,
+                rankingMapAddress,
+                tableSheets,
+                remainCurrencyGold,
+                agentCurrencyGold);
         }
     }
 }
