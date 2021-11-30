@@ -44,8 +44,7 @@ namespace Lib9c.Formatters
             var plainValue = (Dictionary)value;
             var typeStr = plainValue["type_id"];
             var innerAction = (ActionBase)Activator.CreateInstance(Types[(Text)typeStr]);
-            var values = (Dictionary)plainValue["values"];
-            innerAction.LoadPlainValue(values);
+            innerAction.LoadPlainValue(plainValue["values"]);
             return new NCAction(innerAction);
         }
     }
