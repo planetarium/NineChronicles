@@ -677,7 +677,7 @@ namespace Nekoyume.UI
         public static void ShowRefillConfirmPopup(CountableItem item)
         {
             var confirm = Find<HasIconAndButtonSystem>();
-            confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT", "UI_OK", "UI_CANCEL",
+            confirm.ShowWithTwoButton("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT", "UI_OK", "UI_CANCEL",
                 true, true, HasIconAndButtonSystem.SystemType.Information);
             confirm.ConfirmCallback = () => ChargeActionPoint(item);
             confirm.CancelCallback = () => confirm.Close();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
@@ -59,7 +60,25 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
+        public void Show(string title, string content, string labelYes = "UI_OK",
+            bool localize = true, SystemType type = SystemType.Error)
+        {
+            if (blur)
+            {
+                blur.Show();
+            }
+
+            if (gameObject.activeSelf)
+            {
+                Close(true);
+                ShowWithTwoButton(title, content, labelYes, "", localize, false, type);
+                return;
+            }
+
+            Set(title, content, labelYes, "", localize, false, type);
+        }
+
+        public void ShowWithTwoButton(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true, bool hasConfirmButton = true, SystemType type = SystemType.Error)
         {
             if (blur)
@@ -70,12 +89,46 @@ namespace Nekoyume.UI
             if (gameObject.activeSelf)
             {
                 Close(true);
-                Show(title, content, labelYes, labelNo, localize, hasConfirmButton, type);
+                ShowWithTwoButton(title, content, labelYes, labelNo, localize, hasConfirmButton, type);
                 return;
             }
 
             Set(title, content, labelYes, labelNo, localize, hasConfirmButton, type);
             Show();
+        }
+
+        public void ShowByBlockDownloadFail(long index)
+        {
+            var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
+                L10nManager.Localize("BLOCK_DOWNLOAD"));
+
+            Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                L10nManager.Localize("UI_OK"), false, SystemType.BlockChainError);
+            StartCoroutine(CoCheckBlockIndex(index));
+#if UNITY_EDITOR
+            CancelCallback = UnityEditor.EditorApplication.ExitPlaymode;
+#else
+            CancelCallback = () => Application.Quit(21);
+#endif
+        }
+
+        public void SetCancelCallbackToExit()
+        {
+            CancelCallback = () =>
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                CloseCallback = UnityEngine.Application.Quit;
+#endif
+            };
+        }
+
+        private IEnumerator CoCheckBlockIndex(long blockIndex)
+        {
+            yield return new WaitWhile(() => Game.Game.instance.Agent.BlockIndex == blockIndex);
+            CancelCallback = null;
+            Close();
         }
 
         private void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
