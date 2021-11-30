@@ -37,11 +37,11 @@ public class TestbedTool : EditorWindow
         var root = rootVisualElement;
 
         var visualTree =
-            AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/TestbedTool.uxml");
+            AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Editor/Testbed/TestbedTool.uxml");
         var labelFromUxml = visualTree.Instantiate();
         root.Add(labelFromUxml);
 
-        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/TestbedTool.uss");
+        var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Editor/Testbed/TestbedTool.uss");
         root.styleSheets.Add(styleSheet);
 
         // for testbed sell
@@ -50,21 +50,21 @@ public class TestbedTool : EditorWindow
         sellObjectField.objectType = typeof(TestbedSellScriptableObject);
         var sell =
             AssetDatabase.LoadAssetAtPath<TestbedSellScriptableObject>(
-                "Assets/Editor/TestbedSell.asset");
+                "Assets/Editor/Testbed/TestbedSell.asset");
         sellObjectField.value = sell;
         EditorQueryHelper.FindByName<Button>(root, "sell-export-button").clickable.clicked +=
             OnClickSellExport;
         EditorQueryHelper.FindByName<Button>(root, "sell-import-button").clickable.clicked +=
             OnClickSellImport;
 
-        // for testbed createavatar
+        // for testbed create avatar
         var createAvatarObjectField =
             EditorQueryHelper.FindByName<ObjectField>(root, "create-avatar-field");
         createAvatarObjectField.allowSceneObjects = true;
         createAvatarObjectField.objectType = typeof(TestbedCreateAvatarScriptableObject);
         var createAvatar =
             AssetDatabase.LoadAssetAtPath<TestbedCreateAvatarScriptableObject>(
-                "Assets/Editor/TestbedCreateAvatar.asset");
+                "Assets/Editor/Testbed/TestbedCreateAvatar.asset");
         createAvatarObjectField.value = createAvatar;
         EditorQueryHelper.FindByName<Button>(root, "create-avatar-export-button").clickable
                 .clicked +=
@@ -72,6 +72,22 @@ public class TestbedTool : EditorWindow
         EditorQueryHelper.FindByName<Button>(root, "create-avatar-import-button").clickable
                 .clicked +=
             OnClickCreateAvatarImport;
+        
+        // for testbed weekly arena
+        var weeklyArenaObjectField =
+            EditorQueryHelper.FindByName<ObjectField>(root, "weekly-arena-field");
+        weeklyArenaObjectField.allowSceneObjects = true;
+        weeklyArenaObjectField.objectType = typeof(TestbedWeeklyArenaScriptableObject);
+        var weeklyArena =
+            AssetDatabase.LoadAssetAtPath<TestbedWeeklyArenaScriptableObject>(
+                "Assets/Editor/Testbed/TestbedWeeklyArena.asset");
+        weeklyArenaObjectField.value = weeklyArena;
+        EditorQueryHelper.FindByName<Button>(root, "weekly-arena-export-button").clickable
+                .clicked +=
+            OnClickWeeklyArenaExport;
+        EditorQueryHelper.FindByName<Button>(root, "weekly-arena-import-button").clickable
+                .clicked +=
+            OnClickWeeklyArenaImport;
     }
 
     private void OnClickSellExport()
@@ -87,6 +103,13 @@ public class TestbedTool : EditorWindow
             "TestbedCreateAvatar", "create-avatar-field");
     }
 
+    private void OnClickWeeklyArenaExport()
+    {
+        Debug.Log("[OnClickWeeklyArenaExport]");
+        Export<TestbedWeeklyArenaScriptableObject, TestbedWeeklyArena>(
+            "TestbedWeeklyArena", "weekly-arena-field");
+    }
+
     private void OnClickSellImport()
     {
         Debug.Log("[OnClickImport]");
@@ -99,10 +122,16 @@ public class TestbedTool : EditorWindow
         Import<TestbedCreateAvatarScriptableObject, TestbedCreateAvatar>("create-avatar-field");
     }
 
+    private void OnClickWeeklyArenaImport()
+    {
+        Debug.Log("[OnClickImport]");
+        Import<TestbedWeeklyArenaScriptableObject, TestbedWeeklyArena>("weekly-arena-field");
+    }
+
     private void Export<T1, T2>(string fileName, string objectFieldName)
         where T1 : BaseTestbedScriptableObject<T2> where T2 : BaseTestbedModel
     {
-        var path = $"{DataPath}\\{fileName}.json";
+        var path = Path.Combine(DataPath, $"{fileName}.json");
         AssetDatabase.Refresh();
         if (!File.Exists(path))
         {

@@ -25,6 +25,15 @@
                     <engine:Button name="create-avatar-import-button" class="button" text="import"/>
                 </engine:VisualElement>
 
+                <engine:VisualElement name="container" class="row">
+                    <editor:ObjectField name="weekly-arena-field" class="object-field" picking-mode="Position"/>
+                </engine:VisualElement>
+
+                <engine:VisualElement name="container" class="row">
+                    <engine:Button name="weekly-arena-export-button" class="button" text="export"/>
+                    <engine:Button name="weekly-arena-import-button" class="button" text="import"/>
+                </engine:VisualElement>
+
             </engine:VisualElement>
         </engine:VisualElement>
 </engine:UXML>
