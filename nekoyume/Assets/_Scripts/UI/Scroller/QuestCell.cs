@@ -3,7 +3,6 @@ using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -15,6 +14,7 @@ using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
+    using Nekoyume.L10n;
     using UniRx;
 
     public class QuestCell : RectCell<QuestModel, QuestScroll.ContextModel>
@@ -55,6 +55,14 @@ namespace Nekoyume.UI.Scroller
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(OnReceiveClick)
                 .AddTo(gameObject);
+
+            receiveButton.SetText(
+                ConditionalButton.State.Normal,
+                L10nManager.Localize("UI_RECEIVE"));
+
+            receiveButton.SetText(
+                ConditionalButton.State.Disabled,
+                L10nManager.Localize("UI_PROGRESS"));
         }
 
         #endregion

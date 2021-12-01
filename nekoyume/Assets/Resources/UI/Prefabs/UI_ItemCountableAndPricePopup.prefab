@@ -6005,7 +6005,7 @@ GameObject:
   - component: {fileID: 5999716979284190453}
   - component: {fileID: 5569570029054119725}
   m_Layer: 5
-  m_Name: Normal
+  m_Name: CancelButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6113,7 +6113,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 82320430492465076, guid: e9cba050c7b3a4e4abfe0bafa6b118d9,
+      - m_Target: {fileID: 82062621171652306, guid: 20685b2c4d92f4fdca84e0ed92709c09,
           type: 3}
         m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
         m_MethodName: Play
@@ -6139,7 +6139,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 6494172629076164390}
-  button: {fileID: 5999716979284190453}
 --- !u!1 &8157778773654011592
 GameObject:
   m_ObjectHideFlags: 0

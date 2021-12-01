@@ -1144,8 +1144,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 4670086213380171865}
   normalObject: {fileID: 5208300966086054943}
+  normalText: {fileID: 8744405165787708639}
   conditionalObject: {fileID: 7545097809271751591}
+  conditionalText: {fileID: 7580108491995122979}
   disabledObject: {fileID: 4596416969279276279}
+  disabledText: {fileID: 411511002073010539}
   effectOverlay: {fileID: 7170817156671662161}
   conditionInfoKey: 
   texts:

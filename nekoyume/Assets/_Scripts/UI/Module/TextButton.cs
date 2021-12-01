@@ -9,9 +9,8 @@ namespace Nekoyume.UI.Module
     {
         [SerializeField]
         private TextMeshProUGUI text = null;
-        
-        [SerializeField]
-        private Button button = null;
+
+        private Button _button = null;
 
         public System.Action OnClick { get; set; } = null;
 
@@ -25,8 +24,8 @@ namespace Nekoyume.UI.Module
 
         protected void Awake()
         {
-            button = GetComponent<Button>();
-            button.onClick.AddListener(() => OnClick?.Invoke());
+            _button = GetComponent<Button>();
+            _button.onClick.AddListener(() => OnClick?.Invoke());
         }
 
         #endregion

@@ -613,12 +613,6 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);
-                var peerStateString = string.Join("\n", _swarm.PeersStates.Select(peerState =>
-                    $"Address: {peerState.Peer.Address}\n" +
-                    $" - LastUpdated: {peerState.LastUpdated}\n" +
-                    $" - LastChecked: {peerState.LastChecked}\n" +
-                    $" - Latency: {peerState.Latency}"));
-                Cheat.Display("Peers", peerStateString);
 
                 StringBuilder log = new StringBuilder($"Last 10 tips :\n");
                 foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())

@@ -1,6 +1,3 @@
-﻿
-using Nekoyume.EnumType;
-using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
