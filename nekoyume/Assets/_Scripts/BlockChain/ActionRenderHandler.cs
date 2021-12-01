@@ -22,23 +22,19 @@ using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-
+using Nekoyume.Game;
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
 #endif
+
 namespace Nekoyume.BlockChain
 {
-
     using UniRx;
 
-    /// <summary>
-    /// 현상태 : 각 액션의 랜더 단계에서 즉시 게임 정보에 반영시킴. 아바타를 선택하지 않은 상태에서 이전에 성공시키지 못한 액션을 재수행하고
-    ///       이를 핸들링하면, 즉시 게임 정보에 반영시길 수 없기 때문에 에러가 발생함.
-    /// 참고 : 이후 언랜더 처리를 고려한 해법이 필요함.
-    /// 해법 1: 랜더 단계에서 얻는 `eval` 자체 혹은 변경점을 queue에 넣고, 게임의 상태에 따라 꺼내 쓰도록.
-    /// </summary>
     public class ActionRenderHandler : ActionHandler
     {
+        #region Singleton
+
         private static class Singleton
         {
             internal static readonly ActionRenderHandler Value = new ActionRenderHandler();
@@ -46,25 +42,22 @@ namespace Nekoyume.BlockChain
 
         public static ActionRenderHandler Instance => Singleton.Value;
 
+        private ActionRenderHandler()
+        {
+        }
+
+        #endregion
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private IDisposable _disposableForBattleEnd;
 
         private ActionRenderer _actionRenderer;
 
-        private ActionRenderHandler()
-        {
-        }
-
         public override void Start(ActionRenderer renderer)
         {
-            _actionRenderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
-
             Stop();
-            _actionRenderer.BlockEndSubject.ObserveOnMainThread().Subscribe(_ =>
-            {
-                Debug.Log($"[{nameof(BlockRenderHandler)}] Render actions end");
-            }).AddTo(_disposables);
+            _actionRenderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 
             RewardGold();
             GameConfig();

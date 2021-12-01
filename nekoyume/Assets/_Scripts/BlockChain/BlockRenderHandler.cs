@@ -107,10 +107,6 @@ namespace Nekoyume.BlockChain
             }
 
             UpdateWeeklyArenaState();
-            
-            // NOTE: Unregister actions created before 300 blocks for optimization.
-            // 300 * 12s = 3600s = 1h
-            LocalLayerActions.Instance.UnregisterCreatedBefore(Game.Game.instance.Agent.BlockIndex - 1000);
         }
 
         private static void UpdateWeeklyArenaState()

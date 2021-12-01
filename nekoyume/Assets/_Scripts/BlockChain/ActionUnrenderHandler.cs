@@ -38,6 +38,7 @@ namespace Nekoyume.BlockChain
 
         public override void Start(ActionRenderer renderer)
         {
+            Stop();
             _actionRenderer = renderer;
 
             RewardGold();
@@ -122,6 +123,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseSellCancellation)
                 .AddTo(_disposables);
         }
+
         private void UpdateSell()
         {
             _actionRenderer.EveryUnrender<UpdateSell>()
