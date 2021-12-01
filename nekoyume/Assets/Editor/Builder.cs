@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Lib9c.DevExtensions;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
@@ -13,6 +14,8 @@ namespace Editor
         public static readonly string PlayerName = PlayerSettings.productName;
 
         public const string BuildBasePath = "Build";
+
+        public const bool isDevelopment = false;
 
         [MenuItem("Build/Standalone/Windows + macOS + Linux")]
         public static void BuildAll()
@@ -83,7 +86,7 @@ namespace Editor
         public static void BuildWindowsDevelopment()
         {
             Debug.Log("Build Windows Development");
-            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development | BuildOptions.AllowDebugging, "Windows");
+            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development | BuildOptions.AllowDebugging, "Windows", true);
         }
 
         [MenuItem("Build/Development/Linux")]
@@ -120,7 +123,8 @@ namespace Editor
         private static void Build(
             BuildTarget buildTarget,
             BuildOptions options = BuildOptions.None,
-            string targetDirName = null)
+            string targetDirName = null,
+            bool isDevelopment = false)
         {
             string[] scenes = { "Assets/_Scenes/Game.unity" };
 
@@ -140,20 +144,26 @@ namespace Editor
                     : options,
             };
 
-            if (EditorUserBuildSettings.development)
+            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var preDefines = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+            var newDefines = preDefines.Split( ';' ).ToList();
+            if (isDevelopment)
             {
-                if ((buildPlayerOptions.options & BuildOptions.Development) != 0 ||
-                    (buildPlayerOptions.options & BuildOptions.AllowDebugging) != 0)
-                {
-                    var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-                    var preDefines = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-                    var newDefines = preDefines.Split( ';' ).ToList();
-                    newDefines.AddRange(newDefines);
-                    if (!newDefines.Exists(x => x.Equals("LIB9C_DEV_EXTENSIONS")))
-                    {
-                        newDefines.Add("LIB9C_DEV_EXTENSIONS");
-                    }
+                CopyJsonDataFile("TestbedSell");
+                CopyJsonDataFile("TestbedCreateAvatar");
 
+                if (!newDefines.Exists(x => x.Equals("LIB9C_DEV_EXTENSIONS")))
+                {
+                    newDefines.Add("LIB9C_DEV_EXTENSIONS");
+                    PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,
+                        string.Join(";", newDefines.ToArray()));
+                }
+            }
+            else
+            {
+                if (newDefines.Exists(x => x.Equals("LIB9C_DEV_EXTENSIONS")))
+                {
+                    newDefines.Remove("LIB9C_DEV_EXTENSIONS");
                     PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,
                         string.Join(";", newDefines.ToArray()));
                 }
@@ -171,6 +181,13 @@ namespace Editor
                     Debug.LogError("Build failed");
                     break;
             }
+        }
+
+        private static void CopyJsonDataFile(string fileName)
+        {
+            var sourcePath = TestbedHelper.GetDataPath(fileName);
+            var destPath = Path.Combine(Application.streamingAssetsPath, $"{fileName}.json");
+            File.Copy(sourcePath, destPath, true);
         }
 
         [PostProcessBuild(0)]

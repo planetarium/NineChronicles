@@ -632,7 +632,11 @@ namespace Nekoyume.BlockChain
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
-            var action = new CreateTestbed();
+            var action = new CreateTestbed
+            {
+                weeklyArenaAddress = WeeklyArenaState.DeriveAddress(
+                    (int)Game.Game.instance.Agent.BlockIndex / States.Instance.GameConfigState.WeeklyArenaInterval)
+            };
             ProcessAction(action);
             return _agent.ActionRenderer.EveryRender<CreateTestbed>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
