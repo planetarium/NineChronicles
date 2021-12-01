@@ -117,6 +117,8 @@ namespace Nekoyume.BlockChain
         private const string InstrumentationKey = "953da29a-95f7-4f04-9efe-d48c42a1b53a";
 
         public bool disposed;
+        
+        private BlockChainBehaviour _blockChainBehaviour;
 
         static Agent()
         {
@@ -314,9 +316,10 @@ namespace Nekoyume.BlockChain
 
         protected void OnDestroy()
         {
-            BlockRenderHandler.Instance.Stop();
-            ActionRenderHandler.Instance.Stop();
-            ActionUnrenderHandler.Instance.Stop();
+            // BlockRenderHandler.Instance.Stop();
+            // ActionRenderHandler.Instance.Stop();
+            // ActionUnrenderHandler.Instance.Stop();
+            _blockChainBehaviour.Stop();
             Dispose();
         }
 
@@ -416,9 +419,11 @@ namespace Nekoyume.BlockChain
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
-                BlockRenderHandler.Instance.Start(BlockRenderer);
-                ActionRenderHandler.Instance.Start(ActionRenderer);
-                ActionUnrenderHandler.Instance.Start(ActionRenderer);
+                // BlockRenderHandler.Instance.Start(BlockRenderer);
+                // ActionRenderHandler.Instance.Start(ActionRenderer);
+                // ActionUnrenderHandler.Instance.Start(ActionRenderer);
+                _blockChainBehaviour = new BlockChainBehaviour(BlockRenderer, ActionRenderer);
+                _blockChainBehaviour.Start();
 
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);

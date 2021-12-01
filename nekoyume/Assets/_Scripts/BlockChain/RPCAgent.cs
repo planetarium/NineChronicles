@@ -90,6 +90,8 @@ namespace Nekoyume.BlockChain
 
         public BlockHash BlockTipHash { get; private set; }
 
+        private BlockChainBehaviour _blockChainBehaviour;
+
         public IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -181,9 +183,10 @@ namespace Nekoyume.BlockChain
 
         private async void OnDestroy()
         {
-            BlockRenderHandler.Instance.Stop();
-            ActionRenderHandler.Instance.Stop();
-            ActionUnrenderHandler.Instance.Stop();
+            // BlockRenderHandler.Instance.Stop();
+            // ActionRenderHandler.Instance.Stop();
+            // ActionUnrenderHandler.Instance.Stop();
+            _blockChainBehaviour.Stop();
 
             StopAllCoroutines();
             if (!(_hub is null))
@@ -263,9 +266,11 @@ namespace Nekoyume.BlockChain
             }
 
             // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
-            BlockRenderHandler.Instance.Start(BlockRenderer);
-            ActionRenderHandler.Instance.Start(ActionRenderer);
-            ActionUnrenderHandler.Instance.Start(ActionRenderer);
+            // BlockRenderHandler.Instance.Start(BlockRenderer);
+            // ActionRenderHandler.Instance.Start(ActionRenderer);
+            // ActionUnrenderHandler.Instance.Start(ActionRenderer);
+            _blockChainBehaviour = new BlockChainBehaviour(BlockRenderer, ActionRenderer);
+            _blockChainBehaviour.Start();
 
             UpdateSubscribeAddresses();
             callback?.Invoke(true);
