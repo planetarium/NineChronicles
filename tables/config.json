@@ -1,0 +1,334 @@
+{
+    "$schema": "https://raw.githubusercontent.com/YongHee-Kim/GameDataManager.jl/main/data/config.json",
+    "name": "NineChronicles",
+    "environment": {
+        "xlsx": "./xlsx",
+        "out": "./json",
+        "localize": "./localization"
+    },
+    "xlsxtables": {
+        "GameConfig.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "GameConfigSheet.json"
+                }
+            ]
+        },
+        "MonsterCollection.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "MonsterCollectionSheet.json"
+                },
+                {
+                    "name": "RewardSheet",
+                    "out": "MonsterCollectionRewardSheet.json"
+                }
+            ]
+        },
+        "Redeem.xlsx": {
+            "workSheets": [
+                {
+                    "name": "RewardSheet",
+                    "out": "RedeemRewardSheet.json"
+                },
+                {
+                    "name": "CodeListSheet",
+                    "out": "RedeemCodeListSheet.json"
+                }
+            ]
+        },
+        "WeeklyArena.xlsx": {
+            "workSheets": [
+                {
+                    "name": "RewardSheet",
+                    "out": "WeeklyArenaRewardSheet.json"
+                }
+            ]
+        },
+        "Character/Character.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "CharacterSheet.json",
+                    "localize": {
+                        "keycolumn": "/id"
+                    }    
+                },
+                {
+                    "name": "LevelSheet",
+                    "out": "CharacterLevelSheet.json"
+                }
+            ]
+        },
+        "Cost/Enhancement.xlsx": {
+            "workSheets": [
+                {
+                    "name": "CostSheet",
+                    "out": "EnhancementCostSheet.json"
+                },
+                {
+                    "name": "CostSheetV2",
+                    "out": "EnhancementCostSheetV2.json"
+                }
+            ]
+        },
+        "Item/ConsumableItem.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "ConsumableItemSheet.json",
+                    "localize": {}    
+                },
+                {
+                    "name": "RecipeSheet",
+                    "out": "ConsumableItemRecipeSheet.json"
+                }
+            ]
+        },
+        "Item/Costume.xlsx": {
+            "workSheets": [
+                {
+                    "name": "ItemSheet",
+                    "out": "ContumeItemSheet.json",
+                    "localize": {
+                        "keycolumn": "/id"
+                    },
+                    "kwargs": {
+                        "start_line": 2
+                    }                    
+                },
+                {
+                    "name": "StatSheet",
+                    "out": "ContumeStatSheet.json"
+                }
+            ]
+        },
+        "Item/EquipmentItem.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "EquipmentItemSheet.json",
+                    "localize": {
+                        "keycolumn": "/id"
+                    }    
+                },
+                {
+                    "name": "SetEffectSheet",
+                    "out": "EquipmentItemSetEffectSheet.json"
+                },
+                {
+                    "name": "OptionSheet",
+                    "out": "EquipmentItemOptionSheet.json"
+                },
+                {
+                    "name": "RecipeSheet",
+                    "out": "EquipmentItemRecipeSheet.json"
+                },
+                {
+                    "name": "SubRecipeSheet",
+                    "out": "EquipmentItemSubRecipeSheet.json"
+                },
+                {
+                    "name": "SubRecipeSheetV2",
+                    "out": "EquipmentItemSubRecipeSheetV2.json"
+                }
+            ]
+        },
+        "Item/Item.xlsx": {
+            "workSheets": [
+                {
+                    "name": "RequirementSheet",
+                    "out": "ItemRequirementSheet.json"
+                },
+                {
+                    "name": "ConfigForGradeSheet",
+                    "out": "ItemConfigForGradeSheet.json"
+                }
+            ]
+        },
+        "Item/MaterialItem.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "MaterialItemSheet.json",
+                    "localize": {
+                        "keycolumn": "/id"
+                    }              
+                }
+            ]
+        },
+        "Quest/CollectQuest.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "CollectQuestSheet.json"           
+                }
+            ]
+        },
+        "Quest/Combination.xlsx": {
+            "workSheets": [
+                {
+                    "name": "QuestSheet",
+                    "out": "CombinationQuestSheet.json"          
+                },
+                {
+                    "name": "EquipmentQuestSheet",
+                    "out": "CombinationEquipmentQuestSheet.json"          
+                }
+            ]
+        },
+        "Quest/GeneralQuest.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "GeneralQuestSheet.json"        
+                }
+            ]
+        },
+        "Quest/GoldQuest.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "GoldQuestSheet.json"        
+                }
+            ]
+        },
+        "Quest/ItemEnhancementQuest.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "ItemEnhancementQuestSheet.json"         
+                }
+            ]
+        },
+        "Quest/ItemGradeQuest.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "ItemGradeQuestSheet.json"           
+                }
+            ]
+        },
+        "Quest/ItemTypeCollectQuest.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "ItemTypeCollectQuestSheet.json"          
+                }
+            ]
+        },
+        "Quest/MonsterQuest.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "ItemTypeCollectQuestSheet.json"       
+                }
+            ]
+        },
+        "Quest/QuestItemReward.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "QuestItemRewardSheet.json"      
+                }
+            ]
+        },
+        "Quest/QuestReward.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "QuestRewardSheet.json"           
+                }
+            ]
+        },
+        "Quest/TradeQuest.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "TradeQuestSheet.json"         
+                }
+            ]
+        },
+        "Quest/WorldQuest.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "WorldQuestSheet.json"          
+                }
+            ]
+        },
+        "Skill/Buff.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "BuffSheet.json",
+                    "localize": {
+                        "keycolumn": "/id"
+                    }            
+                }
+            ]
+        },
+        "Skill/EnemySkill.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "EnemySkillSheet.json"          
+                }
+            ]
+        },
+        "Skill/Skill.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "SkillSheet.json",
+                    "localize": {
+                        "keycolumn": "/id"
+                    }            
+                },
+                {
+                    "name": "BuffSheet",
+                    "out": "SkillBuffSheet.json"          
+                }
+            ]
+        },
+        "WorldAndStage/Mimisbrunnr.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "MimisbrunnrSheet.json"     
+                }
+            ]
+        },
+        "WorldAndStage/Stage.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "StageSheet.json"
+                },
+                {
+                    "name": "WaveSheet",
+                    "out": "StageWaveSheet.json"          
+                },
+                {
+                    "name": "DialogSheet",
+                    "out": "StageDialogSheet.json"          
+                }
+            ]
+        },        
+        "WorldAndStage/World.xlsx": {
+            "workSheets": [
+                {
+                    "name": "Sheet",
+                    "out": "WorldSheet.json"          
+                },
+                {
+                    "name": "UnlockSheet",
+                    "out": "WorldUnlockSheet.json"          
+                }
+            ]
+        }
+    }
+
+}
