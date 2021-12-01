@@ -69,9 +69,491 @@
             <typeparam name="TA">An element type of the first comparer.</typeparam>
             <typeparam name="TB">An element type of the second comparer.</typeparam>
         </member>
+        <member name="T:Bencodex.Misc.FingerprintComparer">
+            <summary>
+            Compares two <see cref="T:Bencodex.Types.Fingerprint"/> values.  There is no meaning for the order,
+            but it just purposes to make the order deterministic.
+            </summary>
+        </member>
+        <member name="M:Bencodex.Misc.FingerprintComparer.Compare(Bencodex.Types.Fingerprint,Bencodex.Types.Fingerprint)">
+            <inheritdoc cref="M:System.Collections.Generic.IComparer`1.Compare(`0,`0)"/>
+        </member>
+        <member name="T:Bencodex.Misc.ImmutableByteArrayExtensions">
+            <summary>
+            Extension methods on <see cref="T:System.Collections.Immutable.ImmutableArray`1"/> of <see cref="T:System.Byte"/>s.
+            </summary>
+        </member>
+        <member name="M:Bencodex.Misc.ImmutableByteArrayExtensions.Hex(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <summary>
+            Converts the given <paramref name="bytes"/> into a string of hexadecimal digits.
+            </summary>
+            <param name="bytes">The byte array to convert.</param>
+            <returns>The hexadecimal digits.  Alphabets are all lowercase.</returns>
+        </member>
+        <member name="M:Bencodex.Misc.ImmutableByteArrayExtensions.ParseHex(System.String)">
+            <summary>
+            Parses the given <paramref name="hex"/> string into the bytes.
+            </summary>
+            <param name="hex">The hexadecimal digits to convert.</param>
+            <returns>The converted byte array.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the length of
+            <paramref name="hex"/> string is an odd number.</exception>
+            <exception cref="T:System.FormatException">Thrown when the <paramref name="hex"/>
+            string contains non-hexadecimal digits.</exception>
+        </member>
+        <member name="T:Bencodex.Misc.KeyComparer">
+            <summary>
+            Compares two <see cref="T:Bencodex.Types.IKey"/> values.  The order is according to the Bencodex
+            specification on dictionary keys.
+            </summary>
+        </member>
+        <member name="F:Bencodex.Misc.KeyComparer.Instance">
+            <summary>
+            The singleton instance of <see cref="T:Bencodex.Misc.KeyComparer"/>.
+            </summary>
+        </member>
+        <member name="M:Bencodex.Misc.KeyComparer.Compare(Bencodex.Types.IKey,Bencodex.Types.IKey)">
+            <inheritdoc cref="M:System.Collections.Generic.IComparer`1.Compare(`0,`0)"/>
+        </member>
+        <member name="P:Bencodex.Types.Binary.Kind">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Kind"/>
+        </member>
+        <member name="P:Bencodex.Types.Binary.Fingerprint">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Fingerprint"/>
+        </member>
+        <member name="P:Bencodex.Types.Binary.EncodingLength">
+            <inheritdoc cref="P:Bencodex.Types.IValue.EncodingLength"/>
+        </member>
+        <member name="P:Bencodex.Types.Binary.Inspection">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Inspection"/>
+        </member>
+        <member name="M:Bencodex.Types.Binary.Inspect(System.Boolean)">
+            <inheritdoc cref="M:Bencodex.Types.IValue.Inspect(System.Boolean)"/>
+        </member>
+        <member name="M:Bencodex.Types.Binary.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
+        </member>
         <member name="T:Bencodex.Types.Boolean">
             <summary>Represents a Bencodex Boolean true (i.e., <c>t</c>)
             or false (i.e., <c>f</c>).</summary>
+        </member>
+        <member name="P:Bencodex.Types.Boolean.Kind">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Kind"/>
+        </member>
+        <member name="P:Bencodex.Types.Boolean.Fingerprint">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Fingerprint"/>
+        </member>
+        <member name="P:Bencodex.Types.Boolean.EncodingLength">
+            <inheritdoc cref="P:Bencodex.Types.IValue.EncodingLength"/>
+        </member>
+        <member name="P:Bencodex.Types.Boolean.Inspection">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Inspection"/>
+        </member>
+        <member name="M:Bencodex.Types.Boolean.Inspect(System.Boolean)">
+            <inheritdoc cref="M:Bencodex.Types.IValue.Inspect(System.Boolean)"/>
+        </member>
+        <member name="M:Bencodex.Types.Boolean.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
+        </member>
+        <member name="T:Bencodex.Types.Dictionary">
+            <summary>
+            Represents Bencodex dictionaries.
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.Dictionary.Empty">
+            <summary>
+            The empty dictionary.
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.Dictionary.EmptyFingerprint">
+            <summary>
+            The singleton fingerprint for empty dictionaries.
+            </summary>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.IKey,Bencodex.Types.IValue}})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value <paramref name="pairs"/>.
+            </summary>
+            <param name="pairs">Key-value pairs to include.  If there are duplicated keys,
+            later pairs overwrite earlier ones.</param>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.IKey,Bencodex.Types.IndirectValue}},Bencodex.Types.IndirectValue.Loader)">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Dictionary"/> instance with key-value
+            <paramref name="indirectPairs"/>. (Note that only values can be indirect.)
+            </summary>
+            <param name="indirectPairs">Key-value pairs to include.  Values can be either loaded or
+            unloaded.  If there are duplicated keys, later pairs overwrite earlier ones.</param>
+            <param name="loader">The <see cref="T:Bencodex.Types.IndirectValue.Loader"/> delegate invoked when
+            unloaded values are needed.</param>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Count">
+            <inheritdoc cref="P:System.Collections.Generic.IReadOnlyCollection`1.Count"/>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Keys">
+            <inheritdoc cref="P:System.Collections.Generic.IReadOnlyDictionary`2.Keys"/>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Values">
+            <inheritdoc cref="P:System.Collections.Generic.IReadOnlyDictionary`2.Values"/>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Kind">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Kind"/>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Fingerprint">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Fingerprint"/>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.EncodingLength">
+            <inheritdoc cref="P:Bencodex.Types.IValue.EncodingLength"/>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Inspection">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Inspection"/>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Item(Bencodex.Types.IKey)">
+            <inheritdoc cref="P:System.Collections.Generic.IReadOnlyDictionary`2.Item(`0)"/>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Item(Bencodex.Types.Text)">
+            <summary>
+            Gets the element that has the specified text key in the read-only dictionary.
+            </summary>
+            <param name="key">The text key to locate.</param>
+            <returns>The element that has the specified key in the read-only dictionary.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="key" />
+            is not found.</exception>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Item(System.String)">
+            <summary>
+            Gets the element that has the specified string key in the read-only dictionary.
+            </summary>
+            <param name="key">The string key to locate.  This key is automatically turned into
+            a <see cref="T:Bencodex.Types.Text"/> instance.</param>
+            <returns>The element that has the specified key in the read-only dictionary.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="key" />
+            is not found.</exception>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Item(Bencodex.Types.Binary)">
+            <summary>
+            Gets the element that has the specified binary key in the read-only dictionary.
+            </summary>
+            <param name="key">The binary key to locate.</param>
+            <returns>The element that has the specified key in the read-only dictionary.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="key" />
+            is not found.</exception>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Item(System.Collections.Immutable.ImmutableArray{System.Byte})">
+            <summary>
+            Gets the element that has the specified bytes key in the read-only dictionary.
+            </summary>
+            <param name="key">The bytes key to locate.  This key is automatically turned into
+            a <see cref="T:Bencodex.Types.Binary"/> instance.</param>
+            <returns>The element that has the specified key in the read-only dictionary.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="key" />
+            is not found.</exception>
+        </member>
+        <member name="P:Bencodex.Types.Dictionary.Item(System.Byte[])">
+            <summary>
+            Gets the element that has the specified bytes key in the read-only dictionary.
+            </summary>
+            <param name="key">The bytes key to locate.  This key is automatically turned into
+            a <see cref="T:Bencodex.Types.Binary"/> instance.</param>
+            <returns>The element that has the specified key in the read-only dictionary.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="key" />
+            is not found.</exception>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.GetEnumerator">
+            <inheritdoc cref="M:System.Collections.Generic.IEnumerable`1.GetEnumerator"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc cref="M:System.Collections.IEnumerable.GetEnumerator"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.EnumerateIndirectValues">
+            <summary>
+            Enumerates pairs of keys and <see cref="T:Bencodex.Types.IndirectValue"/>s in the dictionary.
+            </summary>
+            <returns>An enumerable of pairs of keys and <see cref="T:Bencodex.Types.IndirectValue"/>s, which can be
+            either loaded or offloaded.</returns>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.ContainsKey(Bencodex.Types.IKey)">
+            <inheritdoc cref="M:System.Collections.Generic.IReadOnlyDictionary`2.ContainsKey(`0)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.ContainsKey(Bencodex.Types.Text)">
+            <summary>Determines whether the dictionary contains the specified text key.</summary>
+            <param name="key">The text key to locate.</param>
+            <returns><see langword="true" /> if the dictionary contains the specified key;
+            otherwise, <see langword="false" />.</returns>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.ContainsKey(System.String)">
+            <summary>Determines whether the dictionary contains the specified string key.</summary>
+            <param name="key">The string key to locate.</param>
+            <returns><see langword="true" /> if the dictionary contains the specified key;
+            otherwise, <see langword="false" />.</returns>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.ContainsKey(Bencodex.Types.Binary)">
+            <summary>Determines whether the dictionary contains the specified binary key.</summary>
+            <param name="key">The binary key to locate.</param>
+            <returns><see langword="true" /> if the dictionary contains the specified key;
+            otherwise, <see langword="false" />.</returns>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.ContainsKey(System.Collections.Immutable.ImmutableArray{System.Byte})">
+            <summary>Determines whether the dictionary contains the specified bytes key.</summary>
+            <param name="key">The bytes key to locate.</param>
+            <returns><see langword="true" /> if the dictionary contains the specified key;
+            otherwise, <see langword="false" />.</returns>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.ContainsKey(System.Byte[])">
+            <summary>Determines whether the dictionary contains the specified bytes key.</summary>
+            <param name="key">The bytes key to locate.</param>
+            <returns><see langword="true" /> if the dictionary contains the specified key;
+            otherwise, <see langword="false" />.</returns>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.TryGetValue(Bencodex.Types.IKey,Bencodex.Types.IValue@)">
+            <inheritdoc cref="M:System.Collections.Generic.IReadOnlyDictionary`2.TryGetValue(`0,`1@)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.Add(Bencodex.Types.IKey,Bencodex.Types.IValue)">
+            <inheritdoc cref="M:System.Collections.Immutable.IImmutableDictionary`2.Add(`0,`1)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.AddRange(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.IKey,Bencodex.Types.IValue}})">
+            <inheritdoc cref="M:System.Collections.Immutable.IImmutableDictionary`2.AddRange(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{`0,`1}})"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.Clear">
+            <inheritdoc cref="M:System.Collections.Immutable.IImmutableDictionary`2.Clear"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.Contains(System.Collections.Generic.KeyValuePair{Bencodex.Types.IKey,Bencodex.Types.IValue})">
+            <inheritdoc
+            cref="M:System.Collections.Immutable.IImmutableDictionary`2.Contains(System.Collections.Generic.KeyValuePair{`0,`1})"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.Remove(Bencodex.Types.IKey)">
+            <inheritdoc cref="M:System.Collections.Immutable.IImmutableDictionary`2.Remove(`0)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.RemoveRange(System.Collections.Generic.IEnumerable{Bencodex.Types.IKey})">
+            <inheritdoc cref="M:System.Collections.Immutable.IImmutableDictionary`2.RemoveRange(System.Collections.Generic.IEnumerable{`0})"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.SetItem(Bencodex.Types.IKey,Bencodex.Types.IValue)">
+            <inheritdoc cref="M:System.Collections.Immutable.IImmutableDictionary`2.SetItem(`0,`1)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.SetItems(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Bencodex.Types.IKey,Bencodex.Types.IValue}})">
+            <inheritdoc cref="M:System.Collections.Immutable.IImmutableDictionary`2.SetItems(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{`0,`1}})"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.TryGetKey(Bencodex.Types.IKey,Bencodex.Types.IKey@)">
+            <inheritdoc cref="M:System.Collections.Immutable.IImmutableDictionary`2.TryGetKey(`0,`0@)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.Equals(System.Object)">
+            <inheritdoc cref="M:System.Object.Equals(System.Object)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.Equals(Bencodex.Types.Dictionary)">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.System#IEquatable{System#Collections#Immutable#IImmutableDictionary{Bencodex#Types#IKey,Bencodex#Types#IValue}}#Equals(System.Collections.Immutable.IImmutableDictionary{Bencodex.Types.IKey,Bencodex.Types.IValue})">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.System#IEquatable{Bencodex#Types#IValue}#Equals(Bencodex.Types.IValue)">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.GetHashCode">
+            <inheritdoc cref="M:System.Object.GetHashCode"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.Inspect(System.Boolean)">
+            <inheritdoc cref="M:Bencodex.Types.IValue.Inspect(System.Boolean)"/>
+        </member>
+        <member name="M:Bencodex.Types.Dictionary.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
+        </member>
+        <member name="T:Bencodex.Types.Fingerprint">
+            <summary>
+            Represents a unique fingerprint of a Bencodex value.
+            </summary>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.#ctor(Bencodex.Types.ValueKind@,System.Int64@)">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Fingerprint"/> value.
+            </summary>
+            <param name="kind">The Bencodex type of the value.</param>
+            <param name="encodingLength">The byte length of encoded value.</param>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.#ctor(Bencodex.Types.ValueKind@,System.Int64@,System.Collections.Generic.IReadOnlyList{System.Byte})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Fingerprint"/> value.
+            </summary>
+            <param name="kind">The Bencodex type of the value.</param>
+            <param name="encodingLength">The byte length of encoded value.</param>
+            <param name="digest">The digest of the value.  It can be empty, but cannot be
+            <c>null</c>.</param>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.#ctor(Bencodex.Types.ValueKind@,System.Int64@,System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.Fingerprint"/> value.
+            </summary>
+            <param name="kind">The Bencodex type of the value.</param>
+            <param name="encodingLength">The byte length of encoded value.</param>
+            <param name="digest">The digest of the value.  It can be empty, but cannot be
+            <c>null</c>.</param>
+        </member>
+        <member name="P:Bencodex.Types.Fingerprint.Kind">
+            <summary>
+            The Bencodex type of the value.
+            </summary>
+        </member>
+        <member name="P:Bencodex.Types.Fingerprint.EncodingLength">
+            <summary>
+            The byte length of encoded value.
+            </summary>
+        </member>
+        <member name="P:Bencodex.Types.Fingerprint.Digest">
+            <summary>
+            The digest of the value.  It can be empty, but cannot be <c>null</c>.
+            <para>Digests are usually hash digests of their original values, but not necessarily.
+            If a value's original representation itself is enough compact, the representation can
+            be used as its digest too.</para>
+            </summary>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.op_Equality(Bencodex.Types.Fingerprint@,Bencodex.Types.Fingerprint@)">
+            <summary>
+            Tests if two <see cref="T:Bencodex.Types.Fingerprint"/> values are equal.
+            </summary>
+            <param name="a">A <see cref="T:Bencodex.Types.Fingerprint"/> value to compare.</param>
+            <param name="b">Another <see cref="T:Bencodex.Types.Fingerprint"/> value to compare.</param>
+            <returns><c>true</c> if two values are equal.  Otherwise <c>false</c>.</returns>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.op_Inequality(Bencodex.Types.Fingerprint,Bencodex.Types.Fingerprint)">
+            <summary>
+            Tests if two <see cref="T:Bencodex.Types.Fingerprint"/> values are not equal.
+            </summary>
+            <param name="a">A <see cref="T:Bencodex.Types.Fingerprint"/> value to compare.</param>
+            <param name="b">Another <see cref="T:Bencodex.Types.Fingerprint"/> value to compare.</param>
+            <returns><c>false</c> if two values are equal.  Otherwise <c>true</c>.</returns>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.Deserialize(System.Byte[])">
+            <summary>
+            Deserialized the serialized fingerprint bytes.
+            </summary>
+            <param name="serialized">The bytes made by <see cref="M:Bencodex.Types.Fingerprint.Serialize"/> method.</param>
+            <returns>The deserialized <see cref="T:Bencodex.Types.Fingerprint"/> value.</returns>
+            <exception cref="T:System.FormatException">Thrown when the <paramref name="serialized"/> bytes
+            is invalid.</exception>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.Equals(Bencodex.Types.Fingerprint)">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.Equals(System.Object)">
+            <inheritdoc cref="M:System.Object.Equals(System.Object)"/>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.GetHashCode">
+            <inheritdoc cref="M:System.Object.GetHashCode"/>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.GetDigest">
+            <summary>
+            Gets the digest array of the value.
+            </summary>
+            <returns>The hash digest of the value.  It can be either empty or 20 bytes.</returns>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.Serialize">
+            <summary>
+            Serializes the fingerprint into bytes.
+            <para>You can round-trip a <see cref="T:Bencodex.Types.Fingerprint"/> value by serializing it to a byte array,
+            and then deserializing it using the <see cref="M:Bencodex.Types.Fingerprint.Deserialize(System.Byte[])"/> method.</para>
+            </summary>
+            <returns>The serialized bytes.  For the equivalent fingerprint, the equivalent bytes
+            is returned.</returns>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc cref="M:System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
+        </member>
+        <member name="M:Bencodex.Types.Fingerprint.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
+        </member>
+        <member name="T:Bencodex.Types.IKey">
+            <summary>
+            Represents Bencodex values which can be keys of a Bencodex <see cref="T:Bencodex.Types.Dictionary"/>.
+            <para>It does not have extra ability over <see cref="T:Bencodex.Types.IValue"/>, but just purposes to
+            group types can be keys of a Bencodex <see cref="T:Bencodex.Types.Dictionary"/>.</para>
+            </summary>
+            <seealso cref="T:Bencodex.Types.Binary"/>
+            <seealso cref="T:Bencodex.Types.Text"/>
+        </member>
+        <member name="T:Bencodex.Types.IndirectValue">
+            <summary>
+            An indirection to <see cref="T:Bencodex.Types.IValue"/>, which can be loaded when it is needed.
+            </summary>
+        </member>
+        <member name="M:Bencodex.Types.IndirectValue.#ctor(Bencodex.Types.IValue)">
+            <summary>
+            Creates an <see cref="T:Bencodex.Types.IndirectValue"/> with the <paramref name="loadedValue"/>.
+            </summary>
+            <param name="loadedValue">The value already loaded on the memory.</param>
+        </member>
+        <member name="M:Bencodex.Types.IndirectValue.#ctor(Bencodex.Types.Fingerprint@)">
+            <summary>
+            Creates an <see cref="T:Bencodex.Types.IndirectValue"/> with the <paramref name="fingerprint"/> of
+            the value to load when it is needed.
+            </summary>
+            <param name="fingerprint">The <see cref="P:Bencodex.Types.IValue.Fingerprint"/> of
+            the <see cref="T:Bencodex.Types.IValue"/> to load when it is needed.</param>
+        </member>
+        <member name="T:Bencodex.Types.IndirectValue.Loader">
+            <summary>
+            A delegate to load a value by its <paramref name="fingerprint"/>.
+            </summary>
+            <param name="fingerprint">The <see cref="P:Bencodex.Types.IValue.Fingerprint"/> of
+            the <see cref="T:Bencodex.Types.IValue"/> to load.</param>
+            <returns>The loaded <see cref="T:Bencodex.Types.IValue"/>.</returns>
+        </member>
+        <member name="P:Bencodex.Types.IndirectValue.LoadedValue">
+            <summary>
+            The value if it is loaded on the memory.  It can be <c>null</c> if not loaded yet.
+            </summary>
+        </member>
+        <member name="P:Bencodex.Types.IndirectValue.Fingerprint">
+            <summary>
+            The <see cref="P:Bencodex.Types.IValue.Fingerprint"/> of the <see cref="T:Bencodex.Types.IValue"/>.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Thrown when the <see cref="T:Bencodex.Types.IndirectValue"/>
+            is an uninitialized default value.</exception>
+        </member>
+        <member name="P:Bencodex.Types.IndirectValue.Type">
+            <summary>
+            The type of the value that this <see cref="T:Bencodex.Types.IndirectValue"/> refers to.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Thrown when the <see cref="T:Bencodex.Types.IndirectValue"/>
+            is an uninitialized default value.</exception>
+        </member>
+        <member name="P:Bencodex.Types.IndirectValue.EncodingLength">
+            <summary>
+            The encoding length of the value that this <see cref="T:Bencodex.Types.IndirectValue"/> refers to.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Thrown when the <see cref="T:Bencodex.Types.IndirectValue"/>
+            is an uninitialized default value.</exception>
+        </member>
+        <member name="M:Bencodex.Types.IndirectValue.GetValue(Bencodex.Types.IndirectValue.Loader@)">
+            <summary>
+            Gets the value.
+            <para>If it is not loaded on the memory yet, the value is loaded first using
+            the <paramref name="loader"/>.</para>
+            </summary>
+            <param name="loader">The loading implementation.  If the value is already loaded
+            on the memory, this delegate may not be invoked.  If it is <c>null</c>, the value must
+            be already loaded (through <see cref="M:Bencodex.Types.IndirectValue.#ctor(Bencodex.Types.IValue)"/> constructor).</param>
+            <returns>The loaded value.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the value is not loaded but no
+            <paramref name="loader"/> is present.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown when the <see cref="T:Bencodex.Types.IndirectValue"/>
+            is an uninitialized default value.</exception>
+        </member>
+        <member name="P:Bencodex.Types.Integer.Kind">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Kind"/>
+        </member>
+        <member name="P:Bencodex.Types.Integer.Fingerprint">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Fingerprint"/>
+        </member>
+        <member name="P:Bencodex.Types.Integer.EncodingLength">
+            <inheritdoc cref="P:Bencodex.Types.IValue.EncodingLength"/>
+        </member>
+        <member name="P:Bencodex.Types.Integer.Inspection">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Inspection"/>
+        </member>
+        <member name="M:Bencodex.Types.Integer.Inspect(System.Boolean)">
+            <inheritdoc cref="M:Bencodex.Types.IValue.Inspect(System.Boolean)"/>
+        </member>
+        <member name="M:Bencodex.Types.Integer.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
         </member>
         <member name="T:Bencodex.Types.IValue">
             <summary>Represents a possible value in Bencodex representation.
@@ -84,26 +566,146 @@
             <seealso cref="T:Bencodex.Types.List"/>
             <seealso cref="T:Bencodex.Types.Dictionary"/>
         </member>
-        <member name="P:Bencodex.Types.IValue.Inspection">
-            <summary>A JSON-like human-readable representation for
-            debugging.</summary>
-            <returns>A JSON-like representation.</returns>
-        </member>
-        <member name="M:Bencodex.Types.IValue.EncodeIntoChunks">
-            <summary>Encodes the value into <c cref="T:System.Byte">Byte</c>
-            arrays.</summary>
-            <returns><c cref="T:System.Byte">Byte</c> arrays of Bencodex
-            representation of the value.</returns>
-            <seealso cref="M:Bencodex.Codec.Encode(Bencodex.Types.IValue)"/>
-            <seealso cref="M:Bencodex.Codec.Encode(Bencodex.Types.IValue,System.IO.Stream)"/>
-        </member>
-        <member name="M:Bencodex.Types.IValue.EncodeToStream(System.IO.Stream)">
-            <summary>Writes the encoded value into <paramref name="stream"/>.
+        <member name="P:Bencodex.Types.IValue.Kind">
+            <summary>
+            The Bencodex type identifier.
             </summary>
-            <param name="stream">A stream to write the encoded value.</param>
-            <seealso cref="M:Bencodex.Codec.Encode(Bencodex.Types.IValue)"/>
-            <seealso cref="M:Bencodex.Codec.Encode(Bencodex.Types.IValue,System.IO.Stream)"/>
-            <seealso cref="M:Bencodex.Types.IValue.EncodeIntoChunks"/>
+        </member>
+        <member name="P:Bencodex.Types.IValue.Fingerprint">
+            <summary>
+            A unique identifier of the value.  Can be used for efficient determining of two values
+            that may be a deep tree.
+            </summary>
+        </member>
+        <member name="P:Bencodex.Types.IValue.EncodingLength">
+            <summary>The number of bytes used for serializing the value.</summary>
+        </member>
+        <member name="P:Bencodex.Types.IValue.Inspection">
+            <summary>A human-readable representation for debugging.</summary>
+            <returns>A human-readable representation.</returns>
+            <remarks>This property is deprecated.  Use <see cref="M:Bencodex.Types.IValue.Inspect(System.Boolean)"/>
+            method instead.</remarks>
+        </member>
+        <member name="M:Bencodex.Types.IValue.Inspect(System.Boolean)">
+            <summary>
+            Gets a human-readable representation for debugging.
+            <para>Unloaded values may be omitted.</para>
+            </summary>
+            <param name="loadAll">Load all unloaded values before showing them.  This option
+            is applied to subtrees recursively.</param>
+            <returns>A human-readable representation for debugging, which looks similar to Python's
+            literal syntax.  However, if a value is a complex tree and contains any unloaded
+            subvalues, these are omitted and their fingerprints are shown instead.</returns>
+        </member>
+        <member name="T:Bencodex.Types.List">
+            <summary>
+            Represents Bencodex lists.
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.List.Empty">
+            <summary>
+            The empty list.
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.List.EmptyFingerprint">
+            <summary>
+            The singleton fingerprint for empty lists.
+            </summary>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(Bencodex.Types.IValue[])">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{Bencodex.Types.IValue})">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="elements"/>.
+            </summary>
+            <param name="elements">The element values to include.</param>
+        </member>
+        <member name="M:Bencodex.Types.List.#ctor(System.Collections.Generic.IEnumerable{Bencodex.Types.IndirectValue},Bencodex.Types.IndirectValue.Loader)">
+            <summary>
+            Creates a <see cref="T:Bencodex.Types.List"/> instance with <paramref name="indirectValues"/> and
+            a <paramref name="loader"/> used for loading unloaded values.
+            </summary>
+            <param name="indirectValues">The loaded and unloaded values to include.</param>
+            <param name="loader">The <see cref="T:Bencodex.Types.IndirectValue.Loader"/> delegate invoked when
+            unloaded values are needed.</param>
+        </member>
+        <member name="P:Bencodex.Types.List.Kind">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Kind"/>
+        </member>
+        <member name="P:Bencodex.Types.List.Fingerprint">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Fingerprint"/>
+        </member>
+        <member name="P:Bencodex.Types.List.EncodingLength">
+            <inheritdoc cref="P:Bencodex.Types.IValue.EncodingLength"/>
+        </member>
+        <member name="P:Bencodex.Types.List.Inspection">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Inspection"/>
+        </member>
+        <member name="P:Bencodex.Types.List.Count">
+            <inheritdoc cref="P:System.Collections.Generic.IReadOnlyCollection`1.Count"/>
+        </member>
+        <member name="P:Bencodex.Types.List.Item(System.Int32)">
+            <inheritdoc cref="P:System.Collections.Generic.IReadOnlyList`1.Item(System.Int32)"/>
+        </member>
+        <member name="M:Bencodex.Types.List.Equals(Bencodex.Types.List)">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Bencodex.Types.List.EnumerateIndirectValues">
+            <summary>
+            Enumerates <see cref="T:Bencodex.Types.IndirectValue"/>s in the list.
+            </summary>
+            <returns>An enumerable of <see cref="T:Bencodex.Types.IndirectValue"/>s, which can be either loaded or
+            offloaded.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Equals(System.Object)">
+            <inheritdoc cref="M:System.Object.Equals(System.Object)"/>
+        </member>
+        <member name="M:Bencodex.Types.List.GetHashCode">
+            <inheritdoc cref="M:System.Object.GetHashCode"/>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(Bencodex.Types.IValue)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.String)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Text"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.Boolean)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Boolean"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.Numerics.BigInteger)">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Integer"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Add(System.Byte[])">
+            <summary>Makes a copy of the list, and adds the specified <paramref name="value"/>
+            to the end of the copied list.</summary>
+            <param name="value">The value to add to the list.  It is automatically turned into
+            a Bencodex <see cref="T:Bencodex.Types.Binary"/> instance.</param>
+            <returns>A new list with the value added.</returns>
+        </member>
+        <member name="M:Bencodex.Types.List.Inspect(System.Boolean)">
+            <inheritdoc cref="M:Bencodex.Types.IValue.Inspect(System.Boolean)"/>
+        </member>
+        <member name="M:Bencodex.Types.List.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
         </member>
         <member name="T:Bencodex.Types.Null">
             <summary>Represents a Bencodex null value (i.e., <c>n</c>).</summary>
@@ -112,6 +714,87 @@
             <summary>
             Represents a <see cref="T:Bencodex.Types.Null"/> instance.  Recommends to prefer this over using
             the default constructor or a <c>default</c> keyword.  This field is read-only.
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.Null.SingletonFingerprint">
+            <summary>
+            The singleton fingerprint for the <see cref="T:Bencodex.Types.Null"/> value.
+            </summary>
+        </member>
+        <member name="P:Bencodex.Types.Null.Kind">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Kind"/>
+        </member>
+        <member name="P:Bencodex.Types.Null.Fingerprint">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Fingerprint"/>
+        </member>
+        <member name="P:Bencodex.Types.Null.EncodingLength">
+            <inheritdoc cref="P:Bencodex.Types.IValue.EncodingLength"/>
+        </member>
+        <member name="P:Bencodex.Types.Null.Inspection">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Inspection"/>
+        </member>
+        <member name="M:Bencodex.Types.Null.Inspect(System.Boolean)">
+            <inheritdoc cref="M:Bencodex.Types.IValue.Inspect(System.Boolean)"/>
+        </member>
+        <member name="M:Bencodex.Types.Null.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
+        </member>
+        <member name="P:Bencodex.Types.Text.Kind">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Kind"/>
+        </member>
+        <member name="P:Bencodex.Types.Text.Fingerprint">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Fingerprint"/>
+        </member>
+        <member name="P:Bencodex.Types.Text.EncodingLength">
+            <inheritdoc cref="P:Bencodex.Types.IValue.EncodingLength"/>
+        </member>
+        <member name="P:Bencodex.Types.Text.Inspection">
+            <inheritdoc cref="P:Bencodex.Types.IValue.Inspection"/>
+        </member>
+        <member name="M:Bencodex.Types.Text.Inspect(System.Boolean)">
+            <inheritdoc cref="M:Bencodex.Types.IValue.Inspect(System.Boolean)"/>
+        </member>
+        <member name="M:Bencodex.Types.Text.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
+        </member>
+        <member name="T:Bencodex.Types.ValueKind">
+            <summary>
+            The value to identify types of Bencodex values.
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.ValueKind.Null">
+            <summary>
+            Null (<c>n</c>).
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.ValueKind.Boolean">
+            <summary>
+            True (<c>t</c>) or false (<c>f</c>).
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.ValueKind.Integer">
+            <summary>
+            Integers (<c>i...e</c>).
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.ValueKind.Binary">
+            <summary>
+            Byte strings (<c>N:...</c>).
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.ValueKind.Text">
+            <summary>
+            Unicode strings (<c>uN:...</c>).
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.ValueKind.List">
+            <summary>
+            Lists (<c>l...e</c>).
+            </summary>
+        </member>
+        <member name="F:Bencodex.Types.ValueKind.Dictionary">
+            <summary>
+            Dictionaries (<c>d...e</c>).
             </summary>
         </member>
     </members>
