@@ -16,7 +16,6 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using mixpanel;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
@@ -55,13 +54,10 @@ namespace Nekoyume.UI
         private EquipmentSlots costumeSlots = null;
 
         [SerializeField]
-        private Button startButton = null;
+        private ConditionalCostButton startButton = null;
 
         [SerializeField]
         private TextMeshProUGUI equipmentTitleText = null;
-
-        [SerializeField]
-        private TextMeshProUGUI requiredPointText = null;
 
         [SerializeField]
         private TextMeshProUGUI closeButtonText = null;
@@ -124,7 +120,7 @@ namespace Nekoyume.UI
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            (startButton.interactable || !CanStartBattle);
+            (startButton.Interactable || !CanStartBattle);
 
         private bool EnoughActionPoint =>
             States.Instance.CurrentAvatarState.actionPoint >= _requiredCost;
@@ -196,16 +192,9 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            startButton.OnClickAsObservable().Where(_ => EnoughActionPoint)
-                .Subscribe(_ => BattleClick(repeatToggle.isOn))
-                .AddTo(gameObject);
-
-            startButton.OnClickAsObservable().Where(_ => !EnoughActionPoint && !_stage.IsInStage)
+            startButton.OnSubmitSubject.Where(_ => !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ =>
-                    OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize("ERROR_ACTION_POINT"),
-                    NotificationCell.NotificationType.Alert))
+                .Subscribe(_ => BattleClick(repeatToggle.isOn))
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
@@ -346,7 +335,7 @@ namespace Nekoyume.UI
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification(GetElementalTypes());
             startButton.gameObject.SetActive(true);
-            startButton.interactable = true;
+            startButton.Interactable = true;
             coverToBlockClick.SetActive(false);
             HelpTooltip.HelpMe(100020, true);
         }
@@ -556,7 +545,6 @@ namespace Nekoyume.UI
             else
             {
                 SetBattleStartButton(false);
-                requiredPointText.color = Color.red;
             }
         }
 
@@ -564,8 +552,6 @@ namespace Nekoyume.UI
         {
             if (interactable)
             {
-                requiredPointText.color = RequiredActionPointOriginColor;
-
                 foreach (var particle in particles)
                 {
                     particle.Play();
@@ -573,8 +559,6 @@ namespace Nekoyume.UI
             }
             else
             {
-                requiredPointText.color = DimmedColor;
-
                 foreach (var particle in particles)
                 {
                     particle.Stop();
@@ -590,7 +574,7 @@ namespace Nekoyume.UI
             if (stage is null)
                 return;
             _requiredCost = stage.CostAP;
-            requiredPointText.text = _requiredCost.ToString();
+            startButton.SetCost(ConditionalCostButton.CostType.ActionPoint, _requiredCost);
         }
 
         #endregion
@@ -609,13 +593,13 @@ namespace Nekoyume.UI
 
             if (_stage.IsInStage)
             {
-                startButton.interactable = false;
+                startButton.Interactable = false;
                 return;
             }
 
             _stage.IsInStage = true;
             StartCoroutine(CoBattleClick(repeat));
-            startButton.interactable = false;
+            startButton.Interactable = false;
             repeatToggle.interactable = false;
             coverToBlockClick.SetActive(true);
         }

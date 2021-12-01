@@ -1,14 +1,17 @@
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class OneButtonSystem : SystemWidget
     {
-        public SubmitButton confirmButton;
-        public TextMeshProUGUI contentText;
+        [SerializeField]
+        private TextButton confirmButton = null;
+
+        [SerializeField]
+        private TextMeshProUGUI contentText = null;
 
         private System.Action _confirmCallback;
 
@@ -18,7 +21,7 @@ namespace Nekoyume.UI
 
             SubmitWidget = Confirm;
             CloseWidget = Confirm;
-            confirmButton.OnSubmitClick.Subscribe(_ => Confirm()).AddTo(gameObject);
+            confirmButton.OnClick = Confirm;
         }
 
         public override void Show(bool ignoreStartAnimation = false)
@@ -26,22 +29,19 @@ namespace Nekoyume.UI
             base.Show(ignoreStartAnimation);
         }
 
-        public void Show(string content, string confirm, System.Action confirmCallback)
+        public void Show(string content, string confirmText, System.Action confirmCallback)
         {
             if (gameObject.activeSelf)
             {
                 Close(true);
-                Show(content, confirm, confirmCallback);
+                Show(content, confirmText, confirmCallback);
                 return;
             }
 
             var fixedcontent = content.Replace("\\n", "\n");
             contentText.text = fixedcontent;
-
             _confirmCallback = confirmCallback;
-
-            confirmButton.SetSubmitText(confirm);
-            confirmButton.SetSubmittableWithoutInteractable(true);
+            confirmButton.Text = confirmText;
 
             Show();
         }
