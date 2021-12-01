@@ -5,6 +5,8 @@ using Nekoyume.L10n;
 
 namespace Nekoyume.UI.Module
 {
+    using System.Collections.Generic;
+    using TMPro;
     using UniRx;
 
     public class ConditionalButton : MonoBehaviour
@@ -17,22 +19,69 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
+        private Button button = null;
+
+        [SerializeField]
         private GameObject normalObject = null;
+
+        [SerializeField]
+        private TextMeshProUGUI normalText = null;
 
         [SerializeField]
         private GameObject conditionalObject = null;
 
         [SerializeField]
+        private TextMeshProUGUI conditionalText = null;
+
+        [SerializeField]
         private GameObject disabledObject = null;
+
+        [SerializeField]
+        private TextMeshProUGUI disabledText = null;
+
+        [SerializeField]
+        private GameObject effectOverlay = null;
 
         [SerializeField]
         private string conditionInfoKey = null;
 
-        public System.Action<State> OnClick { protected get; set; }
+        public readonly Subject<State> OnClickSubject = new Subject<State>();
 
-        protected readonly ReactiveProperty<State> CurrentState = new ReactiveProperty<State>();
+        public readonly Subject<Unit> OnSubmitSubject = new Subject<Unit>();
 
-        private Button _button = null;
+        public bool IsSubmittable => _interactable && CurrentState.Value == State.Normal;
+
+        public string Text
+        {
+            get
+            {
+                if (!CurrentState.HasValue)
+                {
+                    return normalText.text;
+                }
+
+                switch (CurrentState.Value)
+                {
+                    case State.Normal:
+                        return normalText.text;
+                    case State.Conditional:
+                        return conditionalText.text;
+                    case State.Disabled:
+                        return disabledText.text;
+                    default:
+                        return normalText.text;
+                }
+            }
+            set
+            {
+                normalText.text = value;
+                conditionalText.text = value;
+                disabledText.text = value;
+            }
+        }
+
+        public readonly ReactiveProperty<State> CurrentState = new ReactiveProperty<State>();
+
         private Func<bool> _conditionFunc = null;
         private bool _interactable = true;
 
@@ -48,8 +97,7 @@ namespace Nekoyume.UI.Module
 
         protected virtual void Awake()
         {
-            _button = GetComponent<Button>();
-            _button.onClick.AddListener(OnClickButton);
+            button.onClick.AddListener(OnClickButton);
         }
 
         protected virtual bool CheckCondition()
@@ -62,37 +110,72 @@ namespace Nekoyume.UI.Module
             _conditionFunc = conditionFunc;
         }
 
+        public void SetText(State state, string text)
+        {
+            switch (state)
+            {
+                case State.Normal:
+                    normalText.text = text;
+                    break;
+                case State.Conditional:
+                    conditionalText.text = text;
+                    break;
+                case State.Disabled:
+                    disabledText.text = text;
+                    break;
+            }
+        }
+
         public void UpdateObjects()
+        {
+            var condition = CheckCondition();
+            SetConditionalState(condition);
+            disabledObject.SetActive(!_interactable);
+        }
+
+        public void SetConditionalState(bool value)
         {
             if (_interactable)
             {
-                var condition = CheckCondition();
-
-                if (condition)
-                {
-                    normalObject.SetActive(true);
-                    conditionalObject.SetActive(false);
-                    CurrentState.Value = State.Normal;
-                }
-                else
-                {
-                    normalObject.SetActive(false);
-                    conditionalObject.SetActive(true);
-                    CurrentState.Value = State.Conditional;
-                }
+                SetState(value ? State.Normal : State.Conditional);
             }
             else
             {
-                normalObject.SetActive(false);
-                conditionalObject.SetActive(false);
-                CurrentState.Value = State.Disabled;
+                SetState(State.Disabled);
             }
-            disabledObject.SetActive(!_interactable);
+        }
+
+        public void SetState(State state)
+        {
+            CurrentState.Value = state;
+            switch (state)
+            {
+                case State.Normal:
+                    normalObject.SetActive(true);
+                    conditionalObject.SetActive(false);
+                    button.interactable = true;
+                    break;
+                case State.Conditional:
+                    normalObject.SetActive(false);
+                    conditionalObject.SetActive(true);
+                    button.interactable = true;
+                    break;
+                case State.Disabled:
+                    normalObject.SetActive(false);
+                    conditionalObject.SetActive(false);
+                    effectOverlay.SetActive(false);
+                    button.interactable = false;
+                    break;
+            }
         }
 
         protected virtual void OnClickButton()
         {
-            OnClick?.Invoke(CurrentState.Value);
+            OnClickSubject.OnNext(CurrentState.Value);
+            if (IsSubmittable)
+            {
+                OnSubmitSubject.OnNext(default);
+            }
 
             switch (CurrentState.Value)
             {

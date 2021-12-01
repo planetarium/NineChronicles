@@ -58,10 +58,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI timeText;
 
         [SerializeField]
-        private TextMeshProUGUI hourglassCountText;
-
-        [SerializeField]
-        private Button rapidCombinationButton;
+        private ConditionalCostButton rapidCombinationButton;
 
         [SerializeField]
         private Button bgButton;
@@ -78,16 +75,18 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            rapidCombinationButton.onClick.AddListener(() =>
-            {
-                AudioController.PlayClick();
-                Game.Game.instance.ActionManager.RapidCombination(_slotState, _slotIndex).Subscribe();
-                Find<CombinationSlotsPopup>().SetCaching(
-                    _slotIndex,
-                    true,
-                    slotType: CombinationSlot.SlotType.WaitingReceive);
-                Close();
-            });
+            rapidCombinationButton.OnSubmitSubject
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Game.Game.instance.ActionManager.RapidCombination(_slotState, _slotIndex).Subscribe();
+                    Find<CombinationSlotsPopup>().SetCaching(
+                        _slotIndex,
+                        true,
+                        slotType: CombinationSlot.SlotType.WaitingReceive);
+                    Close();
+                })
+                .AddTo(gameObject);
 
             bgButton.onClick.AddListener(() =>
             {
@@ -340,15 +339,7 @@ namespace Nekoyume.UI
             var diff = state.UnlockBlockIndex - currentBlockIndex;
             var cost =
                 RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-            var count = Util.GetHourglassCount(inventory, currentBlockIndex);
-            hourglassCountText.text = cost.ToString();
-            var isEnable = count >= cost;
-            hourglassCountText.color = isEnable
-                ? Palette.GetColor(ColorType.ButtonEnabled)
-                : Palette.GetColor(ColorType.TextDenial);
-
-            rapidCombinationButton.interactable = isEnable;
+            rapidCombinationButton.SetCost(ConditionalCostButton.CostType.Hourglass, cost);
         }
 
         private void UpdateItemInformation(ItemUsable item)
