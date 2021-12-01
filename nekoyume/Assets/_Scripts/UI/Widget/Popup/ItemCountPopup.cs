@@ -43,10 +43,7 @@ namespace Nekoyume.UI
             if (cancelButton != null)
             {
                 cancelButton.OnClick = () =>
-                {
                     _data?.OnClickCancel.OnNext(_data);
-                    AudioController.PlayCancel();
-                };
                 cancelButton.Text = L10nManager.Localize("UI_CANCEL");
                 CloseWidget = cancelButton.OnClick;
             }
