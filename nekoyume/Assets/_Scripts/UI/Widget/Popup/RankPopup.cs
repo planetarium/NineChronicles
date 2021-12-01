@@ -301,6 +301,12 @@ namespace Nekoyume.UI
             IEnumerable<T> rankingInfos)
             where T : RankingModel
         {
+            if (rankingInfos is null)
+            {
+                Find<Alert>().Show("UI_ERROR", "UI_RANKING_CATEGORY_ERROR");
+                rankingInfos = new List<T>();
+            }
+
             var states = States.Instance;
             if (myRecordMap.TryGetValue(states.CurrentAvatarKey, out var rankingInfo))
             {
