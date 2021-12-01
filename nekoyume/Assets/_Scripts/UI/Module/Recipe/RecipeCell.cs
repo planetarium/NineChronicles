@@ -76,16 +76,16 @@ namespace Nekoyume.UI.Module
                             if (diff > UnlockConditionDisplayRange)
                             {
                                 OneLineSystem.Push(
-                                    MailType.UnlockCondition,
+                                    MailType.System,
                                     L10nManager.Localize("UI_RECIPE_LOCK_GUIDE"),
-                                    NotificationCell.NotificationType.Information);
+                                    NotificationCell.NotificationType.UnlockCondition);
                             }
                             else
                             {
                                 OneLineSystem.Push(
-                                    MailType.UnlockCondition,
+                                    MailType.System,
                                     L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE", equipmentRow.UnlockStage),
-                                    NotificationCell.NotificationType.Information);
+                                    NotificationCell.NotificationType.UnlockCondition);
                             }
                         }
                     }

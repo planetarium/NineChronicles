@@ -215,9 +215,9 @@ namespace Nekoyume.UI
                     if (!CheckEquipmentElementalType())
                     {
                         NotificationSystem.Push(
-                            MailType.UnlockCondition,
+                            MailType.System,
                             L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"),
-                            NotificationCell.NotificationType.Information);
+                            NotificationCell.NotificationType.UnlockCondition);
                         return;
                     }
 
@@ -600,9 +600,9 @@ namespace Nekoyume.UI
             if (!CheckEquipmentElementalType())
             {
                 NotificationSystem.Push(
-                    MailType.UnlockCondition,
+                    MailType.System,
                     L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"),
-                    NotificationCell.NotificationType.Information);
+                    NotificationCell.NotificationType.UnlockCondition);
 
                 return;
             }

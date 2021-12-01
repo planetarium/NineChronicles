@@ -33,6 +33,7 @@ namespace Nekoyume.UI.Scroller
             Information,
             Notification,
             Alert,
+            UnlockCondition,
         }
 
         public class ViewModel
@@ -131,28 +132,31 @@ namespace Nekoyume.UI.Scroller
                     throw new ArgumentOutOfRangeException();
             }
 
-            informationContent.root
-                .SetActive(_viewModel.notificationType == NotificationType.Information);
+            informationContent.root.SetActive(
+                _viewModel.notificationType == NotificationType.Information ||
+                _viewModel.notificationType == NotificationType.UnlockCondition);
             notificationContent.root
                 .SetActive(_viewModel.notificationType == NotificationType.Notification);
             alertContent.root
                 .SetActive(_viewModel.notificationType == NotificationType.Alert);
 
+            var iconSprite = _viewModel.notificationType == NotificationType.UnlockCondition ?
+                Resources.Load<Sprite>("UI/Icons/Mail/icon_mail_unlockCondition") :
+                SpriteHelper.GetMailIcon(_viewModel.mailType);
+
             switch (_viewModel.notificationType)
             {
+                case NotificationType.UnlockCondition:
                 case NotificationType.Information:
-                    informationContent.iconImage.overrideSprite
-                        = SpriteHelper.GetMailIcon(_viewModel.mailType);
+                    informationContent.iconImage.overrideSprite = iconSprite;
                     informationContent.messageText.text = _viewModel.message;
                     break;
                 case NotificationType.Notification:
-                    notificationContent.iconImage.overrideSprite
-                        = SpriteHelper.GetMailIcon(_viewModel.mailType);
+                    notificationContent.iconImage.overrideSprite = iconSprite;
                     notificationContent.messageText.text = _viewModel.message;
                     break;
                 case NotificationType.Alert:
-                    alertContent.iconImage.overrideSprite
-                        = SpriteHelper.GetMailIcon(_viewModel.mailType);
+                    alertContent.iconImage.overrideSprite = iconSprite;
                     alertContent.messageText.text = _viewModel.message;
                     break;
             }
