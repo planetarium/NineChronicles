@@ -25,19 +25,25 @@ namespace Nekoyume.UI.Module
         private GameObject normalObject = null;
 
         [SerializeField]
+        private TextMeshProUGUI normalText = null;
+
+        [SerializeField]
         private GameObject conditionalObject = null;
 
         [SerializeField]
+        private TextMeshProUGUI conditionalText = null;
+
+        [SerializeField]
         private GameObject disabledObject = null;
+
+        [SerializeField]
+        private TextMeshProUGUI disabledText = null;
 
         [SerializeField]
         private GameObject effectOverlay = null;
 
         [SerializeField]
         private string conditionInfoKey = null;
-
-        [SerializeField]
-        private List<TextMeshProUGUI> texts = null;
 
         public readonly Subject<State> OnClickSubject = new Subject<State>();
 
@@ -47,13 +53,30 @@ namespace Nekoyume.UI.Module
 
         public string Text
         {
-            get => texts[0].text;
+            get
+            {
+                if (!CurrentState.HasValue)
+                {
+                    return normalText.text;
+                }
+
+                switch (CurrentState.Value)
+                {
+                    case State.Normal:
+                        return normalText.text;
+                    case State.Conditional:
+                        return conditionalText.text;
+                    case State.Disabled:
+                        return disabledText.text;
+                    default:
+                        return normalText.text;
+                }
+            }
             set
             {
-                foreach (var text in texts)
-                {
-                    text.text = value;
-                }
+                normalText.text = value;
+                conditionalText.text = value;
+                disabledText.text = value;
             }
         }
 
@@ -85,6 +108,22 @@ namespace Nekoyume.UI.Module
         public void SetCondition(Func<bool> conditionFunc)
         {
             _conditionFunc = conditionFunc;
+        }
+
+        public void SetText(State state, string text)
+        {
+            switch (state)
+            {
+                case State.Normal:
+                    normalText.text = text;
+                    break;
+                case State.Conditional:
+                    conditionalText.text = text;
+                    break;
+                case State.Disabled:
+                    disabledText.text = text;
+                    break;
+            }
         }
 
         public void UpdateObjects()
