@@ -1193,7 +1193,6 @@ namespace Nekoyume.BlockChain
 
         private void ResponseTestbed(ActionBase.ActionEvaluation<CreateTestbed> eval)
         {
-            Debug.LogError($"[CreateTestbed] Response :");
             if (eval.Exception is null)
             {
             }
