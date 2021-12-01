@@ -2,6 +2,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.UI.Scroller;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -66,14 +67,20 @@ namespace Nekoyume.UI.Module
                 case CostType.NCG:
                     if (States.Instance.GoldBalanceState.Gold.MajorUnit < _cost)
                     {
-                        OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_NOT_ENOUGH_NCG"));
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                            NotificationCell.NotificationType.Alert);
                         return;
                     }
                     break;
                 case CostType.ActionPoint:
                     if (States.Instance.CurrentAvatarState.actionPoint < _cost)
                     {
-                        OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_NOT_ENOUGH_AP"));
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_AP"),
+                            NotificationCell.NotificationType.Alert);
                         return;
                     }
                     break;
@@ -82,7 +89,10 @@ namespace Nekoyume.UI.Module
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
                     if (count < _cost)
                     {
-                        OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"));
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"),
+                            NotificationCell.NotificationType.Alert);
                         return;
                     }
                     break;

@@ -11,6 +11,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using UniRx;
 using TimeSpan = System.TimeSpan;
+using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI
 {
@@ -62,7 +63,10 @@ namespace Nekoyume.UI
 
             addressCopyButton.OnClickAsObservable().ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_COPIED")))
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_COPIED"),
+                        NotificationCell.NotificationType.Notification))
                 .AddTo(addressCopyButton);
 
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard())
@@ -70,7 +74,10 @@ namespace Nekoyume.UI
 
             privateKeyCopyButton.OnClickAsObservable().ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_COPIED")))
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_COPIED"),
+                        NotificationCell.NotificationType.Notification))
                 .AddTo(privateKeyCopyButton);
 
             redeemCode.OnRequested.AddListener(() =>

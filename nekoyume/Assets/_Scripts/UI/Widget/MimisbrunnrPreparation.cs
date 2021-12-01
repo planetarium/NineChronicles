@@ -16,7 +16,6 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using mixpanel;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
@@ -25,6 +24,7 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class MimisbrunnrPreparation : Widget
@@ -205,7 +205,8 @@ namespace Nekoyume.UI
                     {
                         NotificationSystem.Push(
                             MailType.System,
-                            L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"));
+                            L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"),
+                            NotificationCell.NotificationType.UnlockCondition);
                         return;
                     }
 
@@ -232,7 +233,9 @@ namespace Nekoyume.UI
             boostPopupButton.OnClickAsObservable().Where(_ => !EnoughActionPoint && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                    OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("ERROR_ACTION_POINT"),
+                    NotificationCell.NotificationType.Alert))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
@@ -582,7 +585,8 @@ namespace Nekoyume.UI
             {
                 NotificationSystem.Push(
                     MailType.System,
-                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"));
+                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"),
+                    NotificationCell.NotificationType.UnlockCondition);
 
                 return;
             }
