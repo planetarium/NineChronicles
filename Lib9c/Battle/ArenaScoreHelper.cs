@@ -87,20 +87,20 @@ namespace Nekoyume.Battle
         /// loseScore
         /// defenderWinScore
         /// </summary>
-        private static readonly IOrderedEnumerable<(int differ, int winScore, int loseScore, int defenderWinScore)> CachedScore =
-            new List<(int differ, int winScore, int loseScore, int defenderWinScore)>
+        private static readonly IOrderedEnumerable<(int differ, int winScore, int defenderLoseScore, int loseScore)>
+            CachedScore = new List<(int differ, int winScore, int defenderLoseScore, int loseScore)>
             {
-                (-500, 60, -5, 0),
-                (-400, 50, -5, 0),
-                (-300, 40, -3, 0),
-                (-200, 30, -2, 0),
-                (-100, 25, -2, 0),
-                (0, 20, -2, 1),
-                (100, 15, -2, 1),
-                (200, 15, -2, 0),
-                (300, 8, -2, 0),
-                (400, 4, -5, 0),
-                (500, 2, -5, 0),
+                (-500, 60, -2, -5),
+                (-400, 45, -2, -5),
+                (-300, 35, -2, -3),
+                (-200, 25, -1, -2),
+                (-100, 22, -1, -2),
+                (0, 20, -1, -1),
+                (100, 15, -1, -2),
+                (200, 10, 0, -2),
+                (300, 8, 0, -5),
+                (400, 4, 0, -5),
+                (500, 2, 0, -5),
             }.OrderBy(tuple => tuple.differ);
 
         public static (int challengerScore, int defenderScore) GetScore(int challengerRating, int defenderRating, BattleLog.Result result)
@@ -113,7 +113,7 @@ namespace Nekoyume.Battle
             }
 
             var differ = challengerRating - defenderRating;
-            foreach (var (differ2, winScore, loseScore, defenderWinScore) in CachedScore)
+            foreach (var (differ2, winScore, defenderLoseScore, loseScore) in CachedScore)
             {
                 if (differ >= differ2)
                 {
@@ -122,10 +122,10 @@ namespace Nekoyume.Battle
 
                 if (result == BattleLog.Result.Win)
                 {
-                    return (winScore, 0);
+                    return (winScore, defenderLoseScore);
                 }
 
-                return (loseScore, defenderWinScore);
+                return (loseScore, 0);
             }
 
             return result == BattleLog.Result.Win

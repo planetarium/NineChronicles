@@ -58,31 +58,28 @@ namespace Lib9c.Tests
         }
 
         [Theory]
-        [InlineData(1000, int.MaxValue, 60, 0, -5, 0)]
-        [InlineData(1000, 1501, 60, 0, -5, 0)]
-        [InlineData(1000, 1401, 50, 0, -5, 0)]
-        [InlineData(1000, 1301, 40, 0, -3, 0)]
-        [InlineData(1000, 1201, 30, 0, -2, 0)]
-        [InlineData(1000, 1101, 25, 0, -2, 0)]
-        [InlineData(1000, 1001, 20, 0, -2, 1)]
-        [InlineData(1000, 1000, 15, 0, -2, 1)]
-        [InlineData(1000, 900, 15, 0, -2, 0)]
-        [InlineData(1000, 800, 8, 0, -2, 0)]
-        [InlineData(1000, 700, 4, 0, -5, 0)]
-        [InlineData(1000, 600, 2, 0, -5, 0)]
-        [InlineData(1000, 500, 1, 0, -5, 0)]
-        [InlineData(1000, 0, 1, 0, -5, 0)]
-        [InlineData(1000, int.MinValue, 0, 0, 0, 0)]
-        public void GetScore(int challengerScore, int defenderScore, int win, int timeOver, int lose, int defenderWinScore)
+        [InlineData(1000, int.MaxValue, 60, -2, -5)]
+        [InlineData(1000, 1501, 60, -2, -5)]
+        [InlineData(1000, 1401, 45, -2, -5)]
+        [InlineData(1000, 1301, 35, -2, -3)]
+        [InlineData(1000, 1201, 25, -1, -2)]
+        [InlineData(1000, 1101, 22, -1, -2)]
+        [InlineData(1000, 1001, 20, -1, -1)]
+        [InlineData(1000, 1000, 15, -1, -2)]
+        [InlineData(1000, 900, 10, 0, -2)]
+        [InlineData(1000, 800, 8, 0, -5)]
+        [InlineData(1000, 700, 4, 0, -5)]
+        [InlineData(1000, 600, 2, 0, -5)]
+        [InlineData(1000, 500, 1, 0, -5)]
+        [InlineData(1000, 0, 1, 0, -5)]
+        [InlineData(1000, int.MinValue, 0, 0, 0)]
+        public void GetScore(int challengerScore, int defenderScore, int win, int defenderLoseScore, int lose)
         {
             var result = ArenaScoreHelper.GetScore(challengerScore, defenderScore, Result.Win);
             Assert.Equal(win, result.challengerScore);
-            result = ArenaScoreHelper.GetScore(challengerScore, defenderScore, Result.TimeOver);
-            Assert.Equal(timeOver, result.challengerScore);
-            Assert.Equal(timeOver, result.defenderScore);
+            Assert.Equal(defenderLoseScore, result.defenderScore);
             result = ArenaScoreHelper.GetScore(challengerScore, defenderScore, Result.Lose);
             Assert.Equal(lose, result.challengerScore);
-            Assert.Equal(defenderWinScore, result.defenderScore);
         }
     }
 }
