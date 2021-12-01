@@ -72,7 +72,7 @@ namespace Nekoyume.UI
 
         public void CreateClick()
         {
-            Mixpanel.Track("Unity/Create Click");
+            Analyzer.Instance.Track("Unity/Create Click");
             var inputBox = Find<InputBoxPopup>();
             inputBox.CloseCallback = result =>
             {
@@ -92,7 +92,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Mixpanel.Track("Unity/Choose Nickname");
+            Analyzer.Instance.Track("Unity/Choose Nickname");
             Find<GrayLoadingScreen>().Show();
 
             Game.Game.instance.ActionManager

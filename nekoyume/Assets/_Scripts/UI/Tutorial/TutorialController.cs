@@ -170,7 +170,7 @@ namespace Nekoyume.UI
                 {
                     ["Id"] = id,
                 };
-                Mixpanel.Track("Unity/Tutorial progress", props);
+                Analyzer.Instance.Track("Unity/Tutorial progress", props);
             }
 
             var prefsKey = $"TUTORIAL_PROGRESS";

@@ -52,7 +52,7 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class Agent : MonoBehaviour, IDisposable, IAgent
     {
-        private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/";
+        private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us.planetarium.dev:3478/";
 
         private const int MaxSeed = 3;
 
@@ -611,12 +611,6 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);
-                var peerStateString = string.Join("\n", _swarm.PeersStates.Select(peerState =>
-                    $"Address: {peerState.Peer.Address}\n" +
-                    $" - LastUpdated: {peerState.LastUpdated}\n" +
-                    $" - LastChecked: {peerState.LastChecked}\n" +
-                    $" - Latency: {peerState.Latency}"));
-                Cheat.Display("Peers", peerStateString);
 
                 StringBuilder log = new StringBuilder($"Last 10 tips :\n");
                 foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
