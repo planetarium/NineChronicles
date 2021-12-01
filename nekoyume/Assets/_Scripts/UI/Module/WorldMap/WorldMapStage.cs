@@ -213,7 +213,7 @@ namespace Nekoyume.UI.Module
 
         private void Set(bool isBoss, string imageKey)
         {
-            normalImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_04");
+            normalImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_01");
             normalImage.SetNativeSize();
             if (imageKey == "03")
             {
