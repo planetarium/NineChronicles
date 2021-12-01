@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "world_id": 1,
+    "stage_id": 50,
+    "world_id_to_unlock": 2
+  },
+  {
+    "id": 2,
+    "world_id": 2,
+    "stage_id": 100,
+    "world_id_to_unlock": 3
+  },
+  {
+    "id": 3,
+    "world_id": 3,
+    "stage_id": 150,
+    "world_id_to_unlock": 4
+  },
+  {
+    "id": 4,
+    "world_id": 2,
+    "stage_id": 100,
+    "world_id_to_unlock": 10001
+  },
+  {
+    "id": 5,
+    "world_id": 4,
+    "stage_id": 200,
+    "world_id_to_unlock": 5
+  }
+]

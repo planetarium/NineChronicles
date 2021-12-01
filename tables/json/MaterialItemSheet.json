@@ -1,0 +1,898 @@
+[
+  {
+    "id": 100000,
+    "_name": "보물상자",
+    "item_sub_type": "NormalMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 301000,
+    "_name": "핏빛 보석",
+    "item_sub_type": "NormalMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302000,
+    "_name": "쌀",
+    "item_sub_type": "FoodMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302001,
+    "_name": "생선",
+    "item_sub_type": "FoodMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302002,
+    "_name": "깡통",
+    "item_sub_type": "FoodMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302003,
+    "_name": "달걀",
+    "item_sub_type": "FoodMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302004,
+    "_name": "암염",
+    "item_sub_type": "FoodMaterial",
+    "grade": 3,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302005,
+    "_name": "올리브유",
+    "item_sub_type": "FoodMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302006,
+    "_name": "허브",
+    "item_sub_type": "FoodMaterial",
+    "grade": 4,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302007,
+    "_name": "비린내 나는 고기",
+    "item_sub_type": "FoodMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302008,
+    "_name": "맛있어 보이는 고기",
+    "item_sub_type": "FoodMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302009,
+    "_name": "일품급 고기",
+    "item_sub_type": "FoodMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302010,
+    "_name": "고급 암염",
+    "item_sub_type": "FoodMaterial",
+    "grade": 4,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302011,
+    "_name": "고급 허브",
+    "item_sub_type": "FoodMaterial",
+    "grade": 5,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302012,
+    "_name": "새우",
+    "item_sub_type": "FoodMaterial",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302013,
+    "_name": "치킨",
+    "item_sub_type": "FoodMaterial",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302014,
+    "_name": "토마토 소스",
+    "item_sub_type": "FoodMaterial",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302015,
+    "_name": "장작",
+    "item_sub_type": "FoodMaterial",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302016,
+    "_name": "아몬드",
+    "item_sub_type": "FoodMaterial",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302017,
+    "_name": "꿀",
+    "item_sub_type": "FoodMaterial",
+    "grade": 3,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 302018,
+    "_name": "간장",
+    "item_sub_type": "FoodMaterial",
+    "grade": 4,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303000,
+    "_name": "녹슨 칼",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303001,
+    "_name": "버려진 검",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303002,
+    "_name": "단단한 검",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 3,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303003,
+    "_name": "영험한 기운의 검",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 4,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303004,
+    "_name": "전설의 검",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 5,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303100,
+    "_name": "낡은 옷",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303101,
+    "_name": "버려진 옷",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303102,
+    "_name": "단단한 옷",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 3,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303103,
+    "_name": "영험한 기운의 갑옷",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 4,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303104,
+    "_name": "전설의 옷",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 5,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303200,
+    "_name": "낡은 끈",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303201,
+    "_name": "버려진 허리띠",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303202,
+    "_name": "단단한 벨트",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 3,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303203,
+    "_name": "영험한 기운의 벨트",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 4,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303204,
+    "_name": "전설의 벨트",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 5,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303300,
+    "_name": "낡은 목걸이",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303301,
+    "_name": "버려진 목걸이",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303302,
+    "_name": "단단한 목걸이",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 3,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303303,
+    "_name": "영험한 기운의 목걸이",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 4,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303304,
+    "_name": "전설의 목걸이",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 5,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303400,
+    "_name": "낡은 반지",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303401,
+    "_name": "버려진 반지",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303402,
+    "_name": "단단한 반지",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 3,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303403,
+    "_name": "영험한 기운의 반지",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 4,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 303404,
+    "_name": "전설의 반지",
+    "item_sub_type": "EquipmentMaterial",
+    "grade": 5,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 304000,
+    "_name": "불의 정수",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 304001,
+    "_name": "대지의 정수",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 304002,
+    "_name": "물의 정수",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 304003,
+    "_name": "바람의 정수",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Wind"
+  },
+  {
+    "id": 305000,
+    "_name": "얼음의 염료",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 305001,
+    "_name": "불의 염료",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 305002,
+    "_name": "숲의 염료",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 305003,
+    "_name": "요정의 염료",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 305004,
+    "_name": "여신의 염료",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 306000,
+    "_name": "차가운 씨앗 껍질",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306001,
+    "_name": "작은 잎사귀",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306002,
+    "_name": "시들지 않는 잎사귀",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306003,
+    "_name": "빛나는 액체",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306004,
+    "_name": "부드러운 줄기",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306005,
+    "_name": "물컹한 씨앗",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306006,
+    "_name": "푸른 빛의 꽃",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306007,
+    "_name": "푸른 열매",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306008,
+    "_name": "영혼의 결정",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306009,
+    "_name": "작은 돌멩이",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306010,
+    "_name": "부서진 돌날",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306011,
+    "_name": "부드러운 솜털",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306012,
+    "_name": "희귀한 돌조각",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306013,
+    "_name": "낡은 칼자루",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306014,
+    "_name": "대지의 열매",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306015,
+    "_name": "부서진 마법석",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306016,
+    "_name": "대지의 정령석",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306017,
+    "_name": "어둠의 휘장",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306018,
+    "_name": "마력의 구슬",
+    "item_sub_type": "MonsterPart",
+    "grade": 4,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306019,
+    "_name": "여우 가죽",
+    "item_sub_type": "MonsterPart",
+    "grade": 4,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306020,
+    "_name": "여우의 송곳니",
+    "item_sub_type": "MonsterPart",
+    "grade": 4,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306021,
+    "_name": "대지의 창 날",
+    "item_sub_type": "MonsterPart",
+    "grade": 5,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306022,
+    "_name": "대지의 견장",
+    "item_sub_type": "MonsterPart",
+    "grade": 5,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306023,
+    "_name": "나무껍질",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306024,
+    "_name": "나무조각",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306025,
+    "_name": "단단한 껍질",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306026,
+    "_name": "두꺼운 천조각",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306027,
+    "_name": "날카로운 무기 조각",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306028,
+    "_name": "하얀 가루",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306029,
+    "_name": "단단한 쇳조각",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306030,
+    "_name": "반짝이는 돌",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306031,
+    "_name": "단단한 쇠사슬",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306032,
+    "_name": "화염의 부러진 지팡이",
+    "item_sub_type": "MonsterPart",
+    "grade": 4,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306033,
+    "_name": "화염의 제림니르 도끼",
+    "item_sub_type": "MonsterPart",
+    "grade": 4,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306034,
+    "_name": "화염의 제림니르 철퇴",
+    "item_sub_type": "MonsterPart",
+    "grade": 4,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306035,
+    "_name": "수액 덩어리",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 306036,
+    "_name": "화염의 수액 덩어리",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306037,
+    "_name": "바람의 수액 덩어리",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Wind"
+  },
+  {
+    "id": 306038,
+    "_name": "대지의 수액 덩어리",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306039,
+    "_name": "물의 수액 덩어리",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306040,
+    "_name": "수액 덩어리(소)",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 306041,
+    "_name": "화염의 수액 덩어리(소)",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306042,
+    "_name": "바람의 수액 덩어리(소)",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Wind"
+  },
+  {
+    "id": 306043,
+    "_name": "대지의 수액 덩어리(소)",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306044,
+    "_name": "물의 수액 덩어리(소)",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306045,
+    "_name": "수액 덩어리(대)",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 306046,
+    "_name": "화염의 수액 덩어리(대)",
+    "item_sub_type": "MonsterPart",
+    "grade": 4,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306047,
+    "_name": "바람의 수액 덩어리(대)",
+    "item_sub_type": "MonsterPart",
+    "grade": 4,
+    "elemental_type": "Wind"
+  },
+  {
+    "id": 306048,
+    "_name": "대지의 수액 덩어리(대)",
+    "item_sub_type": "MonsterPart",
+    "grade": 4,
+    "elemental_type": "Land"
+  },
+  {
+    "id": 306049,
+    "_name": "물의 수액 덩어리(대)",
+    "item_sub_type": "MonsterPart",
+    "grade": 4,
+    "elemental_type": "Water"
+  },
+  {
+    "id": 306050,
+    "_name": "가벼운 천 조각",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Wind"
+  },
+  {
+    "id": 306051,
+    "_name": "희귀한 원석",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Wind"
+  },
+  {
+    "id": 306052,
+    "_name": "영웅의 증표",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Wind"
+  },
+  {
+    "id": 306053,
+    "_name": "날카로운 발톱",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Wind"
+  },
+  {
+    "id": 306054,
+    "_name": "원한이 깃든 장식",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Wind"
+  },
+  {
+    "id": 306055,
+    "_name": "고대의 마법서",
+    "item_sub_type": "MonsterPart",
+    "grade": 3,
+    "elemental_type": "Wind"
+  },
+  {
+    "id": 306056,
+    "_name": "브론즈 엠블렘",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 306057,
+    "_name": "실버 엠블렘",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 306058,
+    "_name": "화염의 나무둔기",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306059,
+    "_name": "화염의 작은 투구",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306060,
+    "_name": "화염의 멧돼지뿔",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306061,
+    "_name": "화염의 허리가방",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306062,
+    "_name": "화염의 둔기 조각",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306063,
+    "_name": "화염의 하얀 털다발",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306064,
+    "_name": "화염의 큰 멧돼지뿔",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306065,
+    "_name": "화염의 무거운 견장",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306066,
+    "_name": "화염의 달궈진 쇠사슬",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306067,
+    "_name": "화염의 부러진 지팡이",
+    "item_sub_type": "MonsterPart",
+    "grade": 1,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306068,
+    "_name": "화염의 제림니르 도끼",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 306069,
+    "_name": "화염의 제림니르 철퇴",
+    "item_sub_type": "MonsterPart",
+    "grade": 2,
+    "elemental_type": "Fire"
+  },
+  {
+    "id": 400000,
+    "_name": "모래시계",
+    "item_sub_type": "Hourglass",
+    "grade": 4,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 500000,
+    "_name": "AP 스톤",
+    "item_sub_type": "ApStone",
+    "grade": 4,
+    "elemental_type": "Normal"
+  },
+  {
+    "id": 700000,
+    "_name": "아레나 시즌0 메달",
+    "item_sub_type": "NormalMaterial",
+    "grade": 5,
+    "elemental_type": "Normal"
+  }
+]

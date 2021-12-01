@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1000000,
+    "goal": 100,
+    "quest_reward_id": 12,
+    "type": "Buy"
+  },
+  {
+    "id": 1000001,
+    "goal": 1000,
+    "quest_reward_id": 21,
+    "type": "Buy"
+  },
+  {
+    "id": 1000003,
+    "goal": 10000,
+    "quest_reward_id": 15,
+    "type": "Buy"
+  },
+  {
+    "id": 1000004,
+    "goal": 100,
+    "quest_reward_id": 19,
+    "type": "Sell"
+  },
+  {
+    "id": 1000005,
+    "goal": 1000,
+    "quest_reward_id": 21,
+    "type": "Sell"
+  },
+  {
+    "id": 1000006,
+    "goal": 10000,
+    "quest_reward_id": 15,
+    "type": "Sell"
+  }
+]

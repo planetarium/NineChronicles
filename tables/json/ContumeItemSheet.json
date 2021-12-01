@@ -1,0 +1,416 @@
+[
+  {
+    "id": "40100000",
+    "$_name": "발키리",
+    "item_sub_type": "FullCostume",
+    "grade": 4,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40100000._name"
+  },
+  {
+    "id": "40100001",
+    "$_name": "새벽의 사자",
+    "item_sub_type": "FullCostume",
+    "grade": 3,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40100001._name"
+  },
+  {
+    "id": "40100002",
+    "$_name": "헬라의 환영",
+    "item_sub_type": "FullCostume",
+    "grade": 5,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40100002._name"
+  },
+  {
+    "id": "40100003",
+    "$_name": "어둠의 발키리",
+    "item_sub_type": "FullCostume",
+    "grade": 5,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40100003._name"
+  },
+  {
+    "id": "40100004",
+    "$_name": "천상의 고양이",
+    "item_sub_type": "FullCostume",
+    "grade": 2,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40100004._name"
+  },
+  {
+    "id": "40100005",
+    "$_name": "창술사 루이",
+    "item_sub_type": "FullCostume",
+    "grade": 4,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40100005._name"
+  },
+  {
+    "id": "40100006",
+    "$_name": "창술사 루시",
+    "item_sub_type": "FullCostume",
+    "grade": 5,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40100006._name"
+  },
+  {
+    "id": "40200001",
+    "$_name": "갈색 머리카락",
+    "item_sub_type": "HairCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40200001._name"
+  },
+  {
+    "id": "40200002",
+    "$_name": "파란색 머리카락",
+    "item_sub_type": "HairCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40200002._name"
+  },
+  {
+    "id": "40200003",
+    "$_name": "초록색 머리카락",
+    "item_sub_type": "HairCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40200003._name"
+  },
+  {
+    "id": "40200004",
+    "$_name": "빨간색 머리카락",
+    "item_sub_type": "HairCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40200004._name"
+  },
+  {
+    "id": "40200005",
+    "$_name": "흰색 머리카락",
+    "item_sub_type": "HairCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40200005._name"
+  },
+  {
+    "id": "40200006",
+    "$_name": "노란색 머리카락",
+    "item_sub_type": "HairCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40200006._name"
+  },
+  {
+    "id": "40200007",
+    "$_name": "검은색 머리카락",
+    "item_sub_type": "HairCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40200007._name"
+  },
+  {
+    "id": "40300001",
+    "$_name": "갈색 귀",
+    "item_sub_type": "EarCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40300001._name"
+  },
+  {
+    "id": "40300002",
+    "$_name": "검은색 귀",
+    "item_sub_type": "EarCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40300002._name"
+  },
+  {
+    "id": "40300003",
+    "$_name": "갈색 표범 무늬 귀",
+    "item_sub_type": "EarCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40300003._name"
+  },
+  {
+    "id": "40300004",
+    "$_name": "회색 표범 무늬 귀",
+    "item_sub_type": "EarCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40300004._name"
+  },
+  {
+    "id": "40300005",
+    "$_name": "흰색 귀",
+    "item_sub_type": "EarCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40300005._name"
+  },
+  {
+    "id": "40300006",
+    "$_name": "검붉은색 귀",
+    "item_sub_type": "EarCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40300006._name"
+  },
+  {
+    "id": "40300007",
+    "$_name": "흰털 갈색 귀",
+    "item_sub_type": "EarCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40300007._name"
+  },
+  {
+    "id": "40300008",
+    "$_name": "흰털 파란색 귀",
+    "item_sub_type": "EarCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40300008._name"
+  },
+  {
+    "id": "40300009",
+    "$_name": "흰털 회색 귀",
+    "item_sub_type": "EarCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40300009._name"
+  },
+  {
+    "id": "40300010",
+    "$_name": "흰털 파란 유령 귀",
+    "item_sub_type": "EarCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40300010._name"
+  },
+  {
+    "id": "40400001",
+    "$_name": "빨간색 눈",
+    "item_sub_type": "EyeCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40400001._name"
+  },
+  {
+    "id": "40400002",
+    "$_name": "파란색 눈",
+    "item_sub_type": "EyeCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40400002._name"
+  },
+  {
+    "id": "40400003",
+    "$_name": "초록색 눈",
+    "item_sub_type": "EyeCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40400003._name"
+  },
+  {
+    "id": "40400004",
+    "$_name": "보라색 눈",
+    "item_sub_type": "EyeCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40400004._name"
+  },
+  {
+    "id": "40400005",
+    "$_name": "흰색 눈",
+    "item_sub_type": "EyeCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40400005._name"
+  },
+  {
+    "id": "40400006",
+    "$_name": "노란색 눈",
+    "item_sub_type": "EyeCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40400006._name"
+  },
+  {
+    "id": "40500001",
+    "$_name": "꼬리",
+    "item_sub_type": "TailCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40500001._name"
+  },
+  {
+    "id": "40500002",
+    "$_name": "검흰색 꼬리",
+    "item_sub_type": "TailCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40500002._name"
+  },
+  {
+    "id": "40500003",
+    "$_name": "갈색 표범 무늬 꼬리",
+    "item_sub_type": "TailCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40500003._name"
+  },
+  {
+    "id": "40500004",
+    "$_name": "회색 표범 무늬 꼬리",
+    "item_sub_type": "TailCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40500004._name"
+  },
+  {
+    "id": "40500005",
+    "$_name": "흰색 꼬리",
+    "item_sub_type": "TailCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40500005._name"
+  },
+  {
+    "id": "40500006",
+    "$_name": "검은색 꼬리",
+    "item_sub_type": "TailCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40500006._name"
+  },
+  {
+    "id": "40500007",
+    "$_name": "빨간색 꼬리",
+    "item_sub_type": "TailCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40500007._name"
+  },
+  {
+    "id": "40500008",
+    "$_name": "파란색 꼬리",
+    "item_sub_type": "TailCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40500008._name"
+  },
+  {
+    "id": "40500009",
+    "$_name": "회색 꼬리",
+    "item_sub_type": "TailCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40500009._name"
+  },
+  {
+    "id": "40500010",
+    "$_name": "파란 유령 꼬리",
+    "item_sub_type": "TailCostume",
+    "grade": 1,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.40500010._name"
+  },
+  {
+    "id": "49900001",
+    "$_name": "전설의 모험가",
+    "item_sub_type": "Title",
+    "grade": 4,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.49900001._name"
+  },
+  {
+    "id": "49900002",
+    "$_name": "최초의 전사",
+    "item_sub_type": "Title",
+    "grade": 5,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.49900002._name"
+  },
+  {
+    "id": "49900003",
+    "$_name": "Yggdrasil Champion",
+    "item_sub_type": "Title",
+    "grade": 5,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.49900003._name"
+  },
+  {
+    "id": "49900004",
+    "$_name": "Yggdrasil Challenger",
+    "item_sub_type": "Title",
+    "grade": 4,
+    "elemental_type": "Normal",
+    "spine_resource_path": " ",
+    "_name": "$gamedata.ContumeItemSheet.49900004._name"
+  },
+  {
+    "id": "49900005",
+    "$_name": "Sushi Frontier",
+    "item_sub_type": "Title",
+    "grade": 5,
+    "elemental_type": "Normal",
+    "spine_resource_path": " ",
+    "_name": "$gamedata.ContumeItemSheet.49900005._name"
+  },
+  {
+    "id": "49900006",
+    "$_name": "Yggdrasil Warrior",
+    "item_sub_type": "Title",
+    "grade": 3,
+    "elemental_type": "Normal",
+    "spine_resource_path": null,
+    "_name": "$gamedata.ContumeItemSheet.49900006._name"
+  }
+]
