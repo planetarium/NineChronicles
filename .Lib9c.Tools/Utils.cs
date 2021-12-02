@@ -36,7 +36,12 @@ namespace Lib9c.Tools
             return logConfig.CreateLogger();
         }
 
-        public static (BlockChain<NCAction> Chain, IStore Store) GetBlockChain(
+        public static (
+            BlockChain<NCAction> Chain,
+            IStore Store,
+            IKeyValueStore StateKVStore,
+            IStateStore StateStore
+        ) GetBlockChain(
             ILogger logger,
             string storePath,
             Guid? chainId = null
@@ -81,7 +86,7 @@ namespace Lib9c.Tools
                 stateStore,
                 genesis
             );
-            return (chain, store);
+            return (chain, store, stateKeyValueStore, stateStore);
         }
 
         public static Address ParseAddress(string address)
