@@ -1,0 +1,34 @@
+{
+    "BlockDifficulty": 200000,
+    "TradableMaterialCount": 9999,
+    "MaterialCount": 10,
+    "CustomEquipmentItems": [
+        {
+            "ID": 10143001,
+            "Level": 10,
+            "OptionIds": [
+                7,
+                9,
+                11
+            ]
+        },
+        {
+            "ID": 10143001,
+            "Level": 11,
+            "OptionIds": [
+                7,
+                9,
+                10
+            ]
+        },
+        {
+            "ID": 10143001,
+            "Level": 12,
+            "OptionIds": [
+                7,
+                9,
+                10
+            ]
+        }
+    ]
+}

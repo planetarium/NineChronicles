@@ -9,6 +9,7 @@ using mixpanel;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI
 {
@@ -50,7 +51,10 @@ namespace Nekoyume.UI
                  avatarState.questList == null ||
                  avatarState.worldInformation == null))
             {
-                NotificationSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_CHARACTER_IS_BEING_RESTORED"));
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_CHARACTER_IS_BEING_RESTORED"),
+                    NotificationCell.NotificationType.Alert);
                 return;
             }
 

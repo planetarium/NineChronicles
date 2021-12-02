@@ -246,7 +246,7 @@ namespace Nekoyume.UI
         {
             if (!equipmentSubRecipeView.CheckSubmittable(out var errorMessage, out var slotIndex))
             {
-                OneLineSystem.Push(MailType.System, errorMessage);
+                OneLineSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
                 return;
             }
 
@@ -274,7 +274,7 @@ namespace Nekoyume.UI
         {
             if (!consumableSubRecipeView.CheckSubmittable(out var errorMessage, out var slotIndex))
             {
-                OneLineSystem.Push(MailType.System, errorMessage);
+                OneLineSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
                 return;
             }
 

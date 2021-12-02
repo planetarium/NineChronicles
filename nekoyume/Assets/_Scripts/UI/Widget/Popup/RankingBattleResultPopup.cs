@@ -14,23 +14,34 @@ namespace Nekoyume.UI
 {
     public class RankingBattleResultPopup : PopupWidget
     {
-        public CanvasGroup canvasGroup;
-        public GameObject victoryImageContainer;
-        public GameObject defeatImageContainer;
-        public Button submitButton;
-        public TextMeshProUGUI submitButtonText;
-        public TextMeshProUGUI scoreText;
-        public List<SimpleCountableItemView> rewards;
+        [SerializeField]
+        private CanvasGroup canvasGroup = null;
+
+        [SerializeField]
+        private GameObject victoryImageContainer = null;
+
+        [SerializeField]
+        private GameObject defeatImageContainer = null;
+
+        [SerializeField]
+        private TextButton submitButton = null;
+
+        [SerializeField]
+        private TextMeshProUGUI scoreText = null;
+
+        [SerializeField]
+        private List<SimpleCountableItemView> rewards = null;
 
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, .25f, 10f);
 
         protected override void Awake()
         {
             base.Awake();
-            submitButtonText.text = L10nManager.Localize("UI_BACK_TO_ARENA");
+            submitButton.Text = L10nManager.Localize("UI_BACK_TO_ARENA");
 
             CloseWidget = null;
             SubmitWidget = BackToRanking;
+            submitButton.OnClick = BackToRanking;
         }
 
         public void Show(BattleLog log, IReadOnlyList<CountableItem> reward)

@@ -28,12 +28,29 @@ namespace Nekoyume.UI.Scroller
             Remove
         }
 
+        public enum NotificationType
+        {
+            Information,
+            Notification,
+            Alert,
+            UnlockCondition,
+        }
+
         public class ViewModel
         {
             public AnimationState animationState = AnimationState.New;
             public MailType mailType;
+            public NotificationType notificationType = NotificationType.Information;
             public string message;
             public float addedTime;
+        }
+
+        [Serializable]
+        public struct Content
+        {
+            public GameObject root;
+            public Image iconImage;
+            public TextMeshProUGUI messageText;
         }
 
         [SerializeField]
@@ -43,10 +60,13 @@ namespace Nekoyume.UI.Scroller
         private BaseTweener[] removeTweeners = null;
 
         [SerializeField]
-        private Image iconImage = null;
+        private Content informationContent;
 
         [SerializeField]
-        private TextMeshProUGUI messageText = null;
+        private Content notificationContent;
+
+        [SerializeField]
+        private Content alertContent;
 
         private ViewModel _viewModel;
 
@@ -112,8 +132,34 @@ namespace Nekoyume.UI.Scroller
                     throw new ArgumentOutOfRangeException();
             }
 
-            iconImage.overrideSprite = SpriteHelper.GetMailIcon(_viewModel.mailType);
-            messageText.text = _viewModel.message;
+            informationContent.root.SetActive(
+                _viewModel.notificationType == NotificationType.Information ||
+                _viewModel.notificationType == NotificationType.UnlockCondition);
+            notificationContent.root
+                .SetActive(_viewModel.notificationType == NotificationType.Notification);
+            alertContent.root
+                .SetActive(_viewModel.notificationType == NotificationType.Alert);
+
+            var iconSprite = _viewModel.notificationType == NotificationType.UnlockCondition ?
+                Resources.Load<Sprite>("UI/Icons/Mail/icon_mail_unlockCondition") :
+                SpriteHelper.GetMailIcon(_viewModel.mailType);
+
+            switch (_viewModel.notificationType)
+            {
+                case NotificationType.UnlockCondition:
+                case NotificationType.Information:
+                    informationContent.iconImage.overrideSprite = iconSprite;
+                    informationContent.messageText.text = _viewModel.message;
+                    break;
+                case NotificationType.Notification:
+                    notificationContent.iconImage.overrideSprite = iconSprite;
+                    notificationContent.messageText.text = _viewModel.message;
+                    break;
+                case NotificationType.Alert:
+                    alertContent.iconImage.overrideSprite = iconSprite;
+                    alertContent.messageText.text = _viewModel.message;
+                    break;
+            }
         }
 
         public override void UpdatePosition(float position)

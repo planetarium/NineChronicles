@@ -18,13 +18,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI informationText = null;
         [SerializeField]
-        private Button cancelButton = null;
-        [SerializeField]
-        private TextMeshProUGUI cancelButtonText = null;
+        private TextButton cancelButton = null;
         [SerializeField]
         private SimpleCountableItemView itemView = null;
         [SerializeField]
-        protected SubmitButton submitButton = null;
+        protected ConditionalButton submitButton = null;
 
         protected T _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
@@ -36,11 +34,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            if (cancelButtonText != null)
-            {
-                cancelButtonText.text = L10nManager.Localize("UI_CANCEL");
-            }
-            submitButton.SetSubmitText(L10nManager.Localize("UI_OK"));
+            submitButton.Text = L10nManager.Localize("UI_OK");
             if (informationText != null)
             {
                 informationText.text = L10nManager.Localize("UI_RETRIEVE_INFO");
@@ -48,25 +42,20 @@ namespace Nekoyume.UI
 
             if (cancelButton != null)
             {
-                cancelButton.OnClickAsObservable()
-                    .Subscribe(_ =>
-                    {
-                        _data?.OnClickCancel.OnNext(_data);
-                        AudioController.PlayCancel();
-                    })
-                    .AddTo(_disposablesForAwake);
-                CloseWidget = cancelButton.onClick.Invoke;
+                cancelButton.OnClick = () =>
+                    _data?.OnClickCancel.OnNext(_data);
+                cancelButton.Text = L10nManager.Localize("UI_CANCEL");
+                CloseWidget = cancelButton.OnClick;
             }
 
-            submitButton.OnSubmitClick
+            submitButton.OnSubmitSubject
                 .Subscribe(_ =>
                 {
                     _data?.OnClickSubmit.OnNext(_data);
-                    AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
 
-            SubmitWidget = () => submitButton.OnSubmitClick.OnNext(submitButton);
+            SubmitWidget = () => submitButton.OnSubmitSubject.OnNext(default);
         }
 
         protected override void OnDestroy()
@@ -101,9 +90,10 @@ namespace Nekoyume.UI
             _data = data;
             _data.TitleText.Subscribe(value => titleText.text = value)
                 .AddTo(_disposablesForSetData);
-            _data.SubmitText.Subscribe(submitButton.SetSubmitText)
+            _data.SubmitText.Subscribe(text => submitButton.Text = text)
                 .AddTo(_disposablesForSetData);
-            _data.Submittable.Subscribe(value => submitButton.SetSubmittable(value))
+            _data.Submittable.Subscribe(value => submitButton.SetState(value ?
+                ConditionalButton.State.Normal : ConditionalButton.State.Conditional))
                 .AddTo(_disposablesForSetData);
             _data.InfoText.Subscribe(value =>
                 {

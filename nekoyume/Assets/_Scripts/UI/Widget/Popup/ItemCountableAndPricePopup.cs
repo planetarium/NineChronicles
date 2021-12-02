@@ -12,6 +12,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class ItemCountableAndPricePopup : ItemCountPopup<Model.ItemCountableAndPricePopup>
@@ -24,7 +25,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button removeCountButton = null;
         [SerializeField] private Button resetPriceButton = null;
         [SerializeField] private Button notificationButton = null;
-        [SerializeField] private SubmitButton reregisterButton = null;
+        [SerializeField] private ConditionalButton reregisterButton = null;
         [SerializeField] private List<Button> addPriceButton = null;
 
         [SerializeField] private TextMeshProUGUI totalPrice;
@@ -124,18 +125,20 @@ namespace Nekoyume.UI
                 }).AddTo(_disposablesForAwake);
             }
 
-            reregisterButton.OnSubmitClick
+            reregisterButton.Text = L10nManager.Localize("UI_REREGISTER");
+            reregisterButton.OnSubmitSubject
                 .Subscribe(_ =>
                 {
                     _data?.OnClickReregister.OnNext(_data);
-                    AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
 
             notificationButton.OnClickAsObservable().Subscribe(_ =>
             {
-                OneLineSystem.Push(MailType.System,
-                    L10nManager.Localize("NOTIFICATION_QUANTITY_CANNOT_CHANGED"));
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("NOTIFICATION_QUANTITY_CANNOT_CHANGED"),
+                    NotificationCell.NotificationType.Information);
             }).AddTo(_disposablesForAwake);
 
             CloseWidget = () =>
@@ -199,8 +202,8 @@ namespace Nekoyume.UI
                 {
                     totalPrice.text = value.GetQuantityString();
                     var isValid = IsValid();
-                    submitButton.SetSubmittable(isValid);
-                    reregisterButton.SetSubmittable(isValid);
+                    submitButton.Interactable = isValid;
+                    reregisterButton.Interactable = isValid;
                     positiveMessage.SetActive(isValid);
                     warningMessage.SetActive(!isValid);
                 })
@@ -264,11 +267,11 @@ namespace Nekoyume.UI
         {
             if (isSell)
             {
-                SubmitWidget = () => submitButton.OnSubmitClick.OnNext(submitButton);
+                SubmitWidget = () => submitButton.OnSubmitSubject.OnNext(default);
             }
             else
             {
-                SubmitWidget = () => reregisterButton.OnSubmitClick.OnNext(submitButton);
+                SubmitWidget = () => reregisterButton.OnSubmitSubject.OnNext(default);
             }
 
             countInputField.enabled = isSell;

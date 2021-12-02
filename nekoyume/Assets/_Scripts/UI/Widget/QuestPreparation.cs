@@ -24,6 +24,7 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class QuestPreparation : Widget
@@ -56,9 +57,6 @@ namespace Nekoyume.UI
         private TextMeshProUGUI equipmentTitleText = null;
 
         [SerializeField]
-        private TextMeshProUGUI requiredPointText = null;
-
-        [SerializeField]
         private TextMeshProUGUI closeButtonText = null;
 
         [SerializeField]
@@ -71,7 +69,7 @@ namespace Nekoyume.UI
         private TMP_InputField levelField = null;
 
         [SerializeField]
-        private Button questButton = null;
+        private ConditionalCostButton questButton = null;
 
         [SerializeField]
         private Button closeButton;
@@ -117,7 +115,7 @@ namespace Nekoyume.UI
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            (questButton.interactable || !EnoughToPlay);
+            (questButton.Interactable || !EnoughToPlay);
 
         private bool EnoughToPlay =>
             States.Instance.CurrentAvatarState.actionPoint >= _requiredCost;
@@ -187,14 +185,9 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            questButton.OnClickAsObservable().Where(_ => EnoughToPlay)
-                .Subscribe(_ => QuestClick(repeatToggle.isOn))
-                .AddTo(gameObject);
-
-            questButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
+            questButton.OnSubmitSubject.Where(_ => !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ =>
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                .Subscribe(_ => QuestClick(repeatToggle.isOn))
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
@@ -223,7 +216,10 @@ namespace Nekoyume.UI
             boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("ERROR_ACTION_POINT"),
+                        NotificationCell.NotificationType.Alert))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
@@ -324,7 +320,7 @@ namespace Nekoyume.UI
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification();
             questButton.gameObject.SetActive(true);
-            questButton.interactable = true;
+            questButton.Interactable = true;
             coverToBlockClick.SetActive(false);
             HelpTooltip.HelpMe(100004, true);
         }
@@ -493,7 +489,6 @@ namespace Nekoyume.UI
 
         private void ReadyToQuest(bool ready)
         {
-            requiredPointText.color = ready ? Color.white : Color.red;
             foreach (var particle in particles)
             {
                 if (ready)
@@ -515,7 +510,7 @@ namespace Nekoyume.UI
             if (stage is null)
                 return;
             _requiredCost = stage.CostAP;
-            requiredPointText.text = _requiredCost.ToString();
+            questButton.SetCost(ConditionalCostButton.CostType.ActionPoint, _requiredCost);
         }
 
         #endregion
@@ -524,14 +519,14 @@ namespace Nekoyume.UI
         {
             if (_stage.IsInStage)
             {
-                questButton.interactable = false;
+                questButton.Interactable = false;
                 return;
             }
 
             _stage.IsInStage = true;
             _stage.IsShowHud = true;
             StartCoroutine(CoQuestClick(repeat));
-            questButton.interactable = false;
+            questButton.Interactable = false;
             repeatToggle.interactable = false;
             coverToBlockClick.SetActive(true);
         }
