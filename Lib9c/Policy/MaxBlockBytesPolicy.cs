@@ -26,12 +26,12 @@ namespace Nekoyume.BlockChain.Policy
                 // Note: The genesis block of 9c-main weighs 11,085,640 B (11 MiB).
                 .Add(new SpannedSubPolicy<long>(
                     startIndex: 0L,
-                    value: 1024L * 1024L * 15L))   // 15 MiB
+                    value: 1024L * 1024L * 15L))    // 15 MiB
                 // Note: Initial analysis of the heaviest block of 9c-main
                 // (except for the genesis) weighs 58,408 B (58 KiB).
                 .Add(new SpannedSubPolicy<long>(
                     startIndex: 1L,
-                    value: 1024L * 100L))         // 100 KiB
+                    value: 1024L * 100L))           // 100 KiB
                 // Note: Temporary limit increase for resolving
                 // https://github.com/planetarium/NineChronicles/issues/777.
                 // Issued for v100081.  Temporary ad hoc increase was introduced
@@ -40,10 +40,17 @@ namespace Nekoyume.BlockChain.Policy
                     startIndex: 2_000_001L,
                     value: 1024L * 1024L * 10L))    // 10 MiB
                 // Note: Reverting back to the previous limit.  Issued for v100086.
-                // FIXME: Starting index must be finalized accordingly before deployment.
                 .Add(new SpannedSubPolicy<long>(
                     startIndex: 2_800_001L,
-                    value: 1024L * 100L));        // 100 KiB
+                    value: 1024L * 100L))           // 100 KiB
+                // Note: Temporary limit increase for 30_000 blocks to accommodate
+                // issuing new invitation codes.  Issued for v100089.
+                .Add(new SpannedSubPolicy<long>(
+                    startIndex: 2_876_001L,
+                    value: 1024L * 1024L * 10L))    // 10 MiB
+                .Add(new SpannedSubPolicy<long>(
+                    startIndex: 2_906_001L,
+                    value: 1024L * 100L));          // 100 KiB
 
         // Note: For internal testing.
         public static IVariableSubPolicy<long> Internal =>
@@ -53,12 +60,18 @@ namespace Nekoyume.BlockChain.Policy
                     value: 1024L * 1024L * 15L))   // 15 MiB
                 .Add(new SpannedSubPolicy<long>(
                     startIndex: 1L,
-                    value: 1024L * 100L))         // 100 KiB
+                    value: 1024L * 100L))           // 100 KiB
                 .Add(new SpannedSubPolicy<long>(
                     startIndex: 2_000_001L,
                     value: 1024L * 1024L * 10L))    // 10 MiB
                 .Add(new SpannedSubPolicy<long>(
-                    startIndex: 2_800_001,
-                    value: 1024L * 100L));        // 100 KiB
+                    startIndex: 2_800_001L,
+                    value: 1024L * 100L))           // 100 KiB
+                .Add(new SpannedSubPolicy<long>(
+                    startIndex: 2_876_001L,
+                    value: 1024L * 1024L * 10L))    // 10 MiB
+                .Add(new SpannedSubPolicy<long>(
+                    startIndex: 2_906_001L,
+                    value: 1024L * 100L));          // 100 KiB
     }
 }
