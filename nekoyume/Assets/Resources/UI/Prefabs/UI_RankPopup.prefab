@@ -1646,8 +1646,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284375462
-  m_fontColor: {r: 0.6509804, g: 0.38039216, b: 0.36862746, a: 1}
+    rgba: 4284378790
+  m_fontColor: {r: 0.6509804, g: 0.43292496, b: 0.36862746, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2146,7 +2146,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TargetColor: {r: 1, g: 0, b: 0, a: 1}
   m_Range: 1
-  m_Hue: -0.023
+  m_Hue: 0.01
   m_Saturation: 0
   m_Value: 0
 --- !u!1 &4586909922080381324
@@ -4636,7 +4636,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5306632422885746524}
-  - component: {fileID: 182491559647066998}
   m_Layer: 0
   m_Name: Center
   m_TagString: Untagged
@@ -4665,14 +4664,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -20.999998}
   m_SizeDelta: {x: -40, y: -78.00001}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &182491559647066998
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7919893408553261124}
-  m_CullTransparentMesh: 0
 --- !u!1 &8173926160202664473
 GameObject:
   m_ObjectHideFlags: 0
@@ -4975,8 +4966,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4284375462
-  m_fontColor: {r: 0.6509804, g: 0.38039216, b: 0.36862746, a: 1}
+    rgba: 4284379046
+  m_fontColor: {r: 0.6509804, g: 0.43529412, b: 0.36862746, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -6697,7 +6688,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 3483b1826aa594389a7d7299dcab8151,
+      objectReference: {fileID: 21300000, guid: d2e596a6e4f454d439b735a988b14318,
         type: 3}
     - target: {fileID: 6917581053844563057, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
