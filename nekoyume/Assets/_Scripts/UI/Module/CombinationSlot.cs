@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Libplanet;
 using Nekoyume.Action;
@@ -15,6 +16,7 @@ using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.UI.Module
 {
@@ -342,6 +344,13 @@ namespace Nekoyume.UI.Module
                             L10nManager.Localize("UI_BLOCK_EXIT"),
                             NotificationCell.NotificationType.Alert);
                         return;
+                    }
+
+                    var widgetLayerRoot = MainCanvas.instance
+                        .GetLayerRootTransform(WidgetType.Widget);
+                    foreach (var widget in MainCanvas.instance.Widgets.Where(widget => widget.transform.parent.Equals(widgetLayerRoot)))
+                    {
+                        widget.Close(true);
                     }
 
                     Widget.Find<Craft>()?.gameObject.SetActive(false);
