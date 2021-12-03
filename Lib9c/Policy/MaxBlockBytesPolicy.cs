@@ -43,13 +43,13 @@ namespace Nekoyume.BlockChain.Policy
                 .Add(new SpannedSubPolicy<long>(
                     startIndex: 2_800_001L,
                     value: 1024L * 100L))           // 100 KiB
-                // Note: Temporary limit increase for 30_000 blocks to accommodate
+                // Note: Temporary limit increase for 50_000 blocks to accommodate
                 // issuing new invitation codes.  Issued for v100089.
                 .Add(new SpannedSubPolicy<long>(
                     startIndex: 2_876_001L,
                     value: 1024L * 1024L * 10L))    // 10 MiB
                 .Add(new SpannedSubPolicy<long>(
-                    startIndex: 2_906_001L,
+                    startIndex: 2_926_001L,
                     value: 1024L * 100L));          // 100 KiB
 
         // Note: For internal testing.
@@ -71,7 +71,7 @@ namespace Nekoyume.BlockChain.Policy
                     startIndex: 2_876_001L,
                     value: 1024L * 1024L * 10L))    // 10 MiB
                 .Add(new SpannedSubPolicy<long>(
-                    startIndex: 2_906_001L,
+                    startIndex: 2_926_001L,
                     value: 1024L * 100L));          // 100 KiB
     }
 }
