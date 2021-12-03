@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Spine;
 using Spine.Unity;
-using Spine.Unity.Modules.AttachmentTools;
+using Spine.Unity.AttachmentTools;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
