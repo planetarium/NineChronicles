@@ -269,7 +269,7 @@ namespace Nekoyume.BlockChain
             // BlockRenderHandler.Instance.Start(BlockRenderer);
             // ActionRenderHandler.Instance.Start(ActionRenderer);
             // ActionUnrenderHandler.Instance.Start(ActionRenderer);
-            _blockChainBehaviour = new BlockChainBehaviour(BlockRenderer, ActionRenderer);
+            _blockChainBehaviour = new BlockChainBehaviour(this, BlockRenderer, ActionRenderer);
             _blockChainBehaviour.Start();
 
             UpdateSubscribeAddresses();

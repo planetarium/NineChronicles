@@ -23,13 +23,15 @@ namespace Nekoyume.BlockChain
 
         private State _state = State.Stopped;
 
+        private readonly IAgent _agent;
         private readonly BlockRenderer _blockRenderer;
         private readonly ActionRenderer _actionRenderer;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public BlockChainBehaviour(BlockRenderer blockRenderer, ActionRenderer actionRenderer)
+        public BlockChainBehaviour(IAgent agent, BlockRenderer blockRenderer, ActionRenderer actionRenderer)
         {
+            _agent = agent;
             _blockRenderer = blockRenderer;
             _actionRenderer = actionRenderer;
         }
