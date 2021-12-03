@@ -15,7 +15,6 @@ namespace Nekoyume.BlockChain
     public abstract class ActionHandler
     {
         public bool Pending { get; set; }
-        public Currency GoldCurrency { get; internal set; }
 
         public abstract void Start(ActionRenderer renderer);
 
@@ -50,7 +49,9 @@ namespace Nekoyume.BlockChain
         protected GoldBalanceState GetGoldBalanceState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
-            return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
+            return evaluation.OutputStates.GetGoldBalanceState(
+                agentAddress,
+                States.Instance.GoldBalanceState.Gold.Currency);
         }
 
         protected async UniTask UpdateAgentStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
