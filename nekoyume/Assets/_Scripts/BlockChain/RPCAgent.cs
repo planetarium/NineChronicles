@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Grpc.Core;
 using Lib9c.Renderer;
 using Libplanet;
@@ -31,6 +32,7 @@ using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
 using static Nekoyume.Action.ActionBase;
+using Channel = Grpc.Core.Channel;
 using Logger = Serilog.Core.Logger;
 
 namespace Nekoyume.BlockChain
@@ -203,14 +205,12 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoJoin(Action<bool> callback)
         {
-            Task t = Task.Run(async () =>
+            var task = UniTask.Run(async () =>
             {
                 await Join();
             });
-
-            yield return new WaitUntil(() => t.IsCompleted);
-
-            if (t.IsFaulted)
+            yield return task.ToCoroutine();
+            if (task.Status == UniTaskStatus.Faulted)
             {
                 callback?.Invoke(false);
                 yield break;
@@ -218,48 +218,38 @@ namespace Nekoyume.BlockChain
 
             Connected = true;
 
-            // 에이전트의 상태를 한 번 동기화 한다.
-            Task currencyTask = Task.Run(async () =>
+            task = UniTask.Run(async () =>
             {
-                var state = await GetStateAsync(GoldCurrencyState.Address);
-                Currency goldCurrency = new GoldCurrencyState(
-                    (Dictionary)state
-                ).Currency;
-
-                await States.Instance.SetAgentStateAsync(
-                    await GetStateAsync(Address) is Bencodex.Types.Dictionary agentDict
-                        ? new AgentState(agentDict)
-                        : new AgentState(Address));
-                States.Instance.SetGoldBalanceState(
-                    new GoldBalanceState(Address, await GetBalanceAsync(Address, goldCurrency)));
-
-                // 상점의 상태를 한 번 동기화 한다.
-
-                if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
+                if (await GetStateAsync(GoldCurrencyState.Address) is Bencodex.Types.Dictionary goldDict)
                 {
-                    States.Instance.SetGameConfigState(new GameConfigState(configDict));
+                    var goldCurrency = new GoldCurrencyState(goldDict).Currency;
+                    States.Instance.SetGoldBalanceState(
+                        new GoldBalanceState(Address, await GetBalanceAsync(Address, goldCurrency)),
+                        true);
                 }
                 else
                 {
-                    throw new FailedToInstantiateStateException<GameConfigState>();
+                    throw new FailedToInstantiateStateException<GoldBalanceState>(Address);
                 }
 
-                // FIXME: BlockIndex may not initialized.
-                var weeklyArenaState = await ArenaHelper.GetThisWeekStateAsync(BlockIndex);
-                if (weeklyArenaState is null)
+                var value = await GetStateAsync(Address);
+                await States.Instance.SetAgentStateAsync(
+                    value is Bencodex.Types.Dictionary agentDict
+                        ? new AgentState(agentDict)
+                        : new AgentState(Address),
+                    true);
+
+                if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
                 {
-                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
+                    States.Instance.SetGameConfigState(new GameConfigState(configDict), true);
                 }
-
-                States.Instance.SetWeeklyArenaState(weeklyArenaState);
-
-                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
-
+                else
+                {
+                    throw new FailedToInstantiateStateException<GameConfigState>(GameConfigState.Address);
+                }
             });
-
-            yield return new WaitUntil(() => currencyTask.IsCompleted);
-
-            if (currencyTask.IsFaulted)
+            yield return task.ToCoroutine();
+            if (task.Status == UniTaskStatus.Faulted)
             {
                 callback?.Invoke(false);
                 yield break;

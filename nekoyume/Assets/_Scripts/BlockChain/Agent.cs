@@ -379,44 +379,36 @@ namespace Nekoyume.BlockChain
 
             PreloadEndedAsync += async () =>
             {
-                // 에이전트의 상태를 한 번 동기화 한다.
-                Currency goldCurrency =
-                    new GoldCurrencyState((Dictionary)await GetStateAsync(GoldCurrencyState.Address)).Currency;
-                await States.Instance.SetAgentStateAsync(
-                    await GetStateAsync(Address) is Bencodex.Types.Dictionary agentDict
-                        ? new AgentState(agentDict)
-                        : new AgentState(Address));
-                States.Instance.SetGoldBalanceState(new GoldBalanceState(Address,
-                    await GetBalanceAsync(Address, goldCurrency)));
-
-                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
-
-                // 랭킹의 상태를 한 번 동기화 한다.
-                for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+                await UniTask.Run(async () =>
                 {
-                    var address = RankingState.Derive(i);
-                    var mapState = await GetStateAsync(address) is Bencodex.Types.Dictionary serialized
-                        ? new RankingMapState(serialized)
-                        : new RankingMapState(address);
-                    States.Instance.SetRankingMapStates(mapState);
-                }
+                    if (await GetStateAsync(GoldCurrencyState.Address) is Bencodex.Types.Dictionary goldDict)
+                    {
+                        var goldCurrency = new GoldCurrencyState(goldDict).Currency;
+                        States.Instance.SetGoldBalanceState(
+                            new GoldBalanceState(Address, await GetBalanceAsync(Address, goldCurrency)),
+                            true);
+                    }
+                    else
+                    {
+                        throw new FailedToInstantiateStateException<GoldBalanceState>(Address);
+                    }
 
-                if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
-                {
-                    States.Instance.SetGameConfigState(new GameConfigState(configDict));
-                }
-                else
-                {
-                    throw new FailedToInstantiateStateException<GameConfigState>();
-                }
+                    var value = await GetStateAsync(Address);
+                    await States.Instance.SetAgentStateAsync(
+                        value is Bencodex.Types.Dictionary agentDict
+                            ? new AgentState(agentDict)
+                            : new AgentState(Address),
+                        true);
 
-                var weeklyArenaState = await ArenaHelper.GetThisWeekStateAsync(BlockIndex);
-                if (weeklyArenaState is null)
-                {
-                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
-                }
-
-                States.Instance.SetWeeklyArenaState(weeklyArenaState);
+                    if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
+                    {
+                        States.Instance.SetGameConfigState(new GameConfigState(configDict), true);
+                    }
+                    else
+                    {
+                        throw new FailedToInstantiateStateException<GameConfigState>(GameConfigState.Address);
+                    }
+                });
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 // BlockRenderHandler.Instance.Start(BlockRenderer);
@@ -428,11 +420,10 @@ namespace Nekoyume.BlockChain
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
                 StartCoroutine(CoCheckBlockTip());
-
                 StartNullableCoroutine(_autoPlayer);
                 callback(SyncSucceed);
                 LoadQueuedActions();
-                TipChanged += (___, index) => { BlockIndexSubject.OnNext(index); };
+                TipChanged += (___, index) => BlockIndexSubject.OnNext(index);
             };
 
             _miner = options.NoMiner ? null : CoMiner();
