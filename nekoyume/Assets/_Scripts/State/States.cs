@@ -24,26 +24,47 @@ namespace Nekoyume.State
     {
         public static States Instance => Game.Game.instance.States;
 
-        public readonly Dictionary<Address, RankingMapState> RankingMapStates = new Dictionary<Address, RankingMapState>();
-
-        public WeeklyArenaState WeeklyArenaState { get; private set; }
-
-        public AgentState AgentState { get; private set; }
-
+        /// <summary>
+        /// Update when every block rendered.
+        /// </summary>
         public GoldBalanceState GoldBalanceState { get; private set; }
 
+        /// <summary>
+        /// Update if updated this address when each block rendered.
+        /// </summary>
+        public AgentState AgentState { get; private set; }
+
+        /// <summary>
+        /// Update if updated this address when each block rendered.
+        /// </summary>
         private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
 
+        /// <summary>
+        /// Update if updated this address when each block rendered.
+        /// </summary>
+        public GameConfigState GameConfigState { get; private set; }
+
+        /// <summary>
+        /// Update if updated this address when each block rendered or current avatar changed.
+        /// </summary>
+        private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
+            new Dictionary<int, CombinationSlotState>();
+
+        /// <summary>
+        /// Update when click the refresh button of the `RankPopup` UI widget.
+        /// </summary>
+        public readonly Dictionary<Address, RankingMapState> RankingMapStates = new Dictionary<Address, RankingMapState>();
+
+        /// <summary>
+        /// Update when entering to the `RankingBoard` UI widget.
+        /// </summary>
+        public WeeklyArenaState WeeklyArenaState { get; private set; }
+
         public int CurrentAvatarKey { get; private set; }
 
         public AvatarState CurrentAvatarState { get; private set; }
-
-        public GameConfigState GameConfigState { get; private set; }
-
-        private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
-            new Dictionary<int, CombinationSlotState>();
 
         public States()
         {
