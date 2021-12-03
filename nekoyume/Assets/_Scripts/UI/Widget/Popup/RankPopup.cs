@@ -29,7 +29,7 @@ namespace Nekoyume.UI
             public RankCategory Category;
         }
 
-        private static readonly Model.Rank SharedModel = new Model.Rank();
+        private static readonly Model.RankPopup SharedModel = new Model.RankPopup();
 
         private static Task RankLoadingTask = null;
 

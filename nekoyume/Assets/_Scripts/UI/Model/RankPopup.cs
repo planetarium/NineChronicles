@@ -14,7 +14,7 @@ using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI.Model
 {
-    public class Rank
+    public class RankPopup
     {
         public bool IsInitialized { get; private set; } = false;
 
