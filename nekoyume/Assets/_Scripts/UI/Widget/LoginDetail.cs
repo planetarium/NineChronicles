@@ -84,7 +84,7 @@ namespace Nekoyume.UI
             inputBox.Show("UI_INPUT_NAME", "UI_NICKNAME_CONDITION");
         }
 
-        public void CreateAndLogin(string nickName)
+        private void CreateAndLogin(string nickName)
         {
             if (!Regex.IsMatch(nickName, GameConfig.AvatarNickNamePattern))
             {
@@ -102,7 +102,8 @@ namespace Nekoyume.UI
                     {
                         var avatarState = await States.Instance.SelectAvatarAsync(_selectedIndex);
                         StartCoroutine(CreateAndLoginAnimation(avatarState));
-                        ActionRenderHandler.RenderQuest(avatarState.address,
+                        ActionRenderHandler.RenderQuest(
+                            avatarState.address,
                             avatarState.questList.completedQuestIds);
                     },
                     e =>

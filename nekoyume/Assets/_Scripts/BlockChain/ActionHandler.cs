@@ -73,12 +73,6 @@ namespace Nekoyume.BlockChain
         {
             Debug.LogFormat("Called UpdateAvatarState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
-            if (!States.Instance.AgentState.avatarAddresses.ContainsKey(index))
-            {
-                States.Instance.RemoveAvatarState(index);
-                return;
-            }
-
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.AgentState.avatarAddresses[index];
             if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))

@@ -12,9 +12,8 @@ using Spine.Unity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using mixpanel;
 using Nekoyume.L10n;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Helper;
 
 namespace Nekoyume.UI
@@ -106,17 +105,17 @@ namespace Nekoyume.UI
         private IEnumerator StartSynopsis(bool skipPrologue)
         {
             var delayedTime = 0f;
-
             var startIndex = 0;
             if (!skipPrologue && prolgueEnd)
             {
                 startIndex = _part1EndIndex + 2;
             }
+
             for (var index = startIndex; index < scripts.Length; index++)
             {
                 if (skipAll)
                 {
-                    yield return End();
+                    yield return EndAsync().ToCoroutine();
                     yield break;
                 }
 
@@ -157,7 +156,6 @@ namespace Nekoyume.UI
                         color = script.image.color;
                         color.a = 0;
                         script.image.color = color;
-
                         tweener = script.image.DOFade(1, script.imageAnimationTime);
 
                         if (script.hasSkeletonAnimation)
@@ -183,7 +181,6 @@ namespace Nekoyume.UI
                         color = script.image.color;
                         color.a = 1;
                         script.image.color = color;
-
                         tweener = script.image.DOFade(0, script.imageAnimationTime);
 
                         if (script.hasSkeletonAnimation)
@@ -206,7 +203,6 @@ namespace Nekoyume.UI
 
                         break;
                     case SynopsisScene.ImageAnimationType.Immediately:
-
                         script.image.sprite = script.sprite;
 
                         break;
@@ -241,7 +237,6 @@ namespace Nekoyume.UI
                 }
 
                 var fade = false;
-
                 switch (script.textAnimationTypes)
                 {
                     case SynopsisScene.TextAnimationType.TypeAndFade:
@@ -260,10 +255,9 @@ namespace Nekoyume.UI
                         throw new ArgumentOutOfRangeException();
                 }
 
-                delayedTime = 0f;
-
                 if (script.scriptsEndTerm > 0)
                 {
+                    delayedTime = 0f;
                     yield return new WaitUntil(() =>
                     {
                         if (delayedTime >= script.scriptsEndTerm || skipSynopsis)
@@ -284,7 +278,9 @@ namespace Nekoyume.UI
                     tweener2.Play();
 
                     yield return new WaitUntil(() =>
-                        (!tweener1.IsPlaying() && !tweener2.IsPlaying()) || skipSynopsis);
+                        !tweener1.IsPlaying() &&
+                        !tweener2.IsPlaying() ||
+                        skipSynopsis);
                 }
                 else
                 {
@@ -295,11 +291,11 @@ namespace Nekoyume.UI
                 {
                     continue;
                 }
+
                 script.image.transform.parent.gameObject.SetActive(false);
             }
-            yield return End();
 
-            yield return null;
+            yield return EndAsync().ToCoroutine();
         }
 
         private IEnumerator TypingText(SynopsisScene script)
@@ -349,7 +345,7 @@ namespace Nekoyume.UI
             StartCoroutine(StartSynopsis(skipPrologue));
         }
 
-        private async Task End()
+        private async UniTask EndAsync()
         {
             PlayerFactory.Create();
             if (Util.TryGetStoredAvatarSlotIndex(out var slotIndex))

@@ -547,7 +547,10 @@ namespace Nekoyume.State
         /// <param name="avatarAddress"></param>
         private static async Task TryResetLoadedAvatarState(Address avatarAddress)
         {
-            if (!TryGetLoadedAvatarState(avatarAddress, out _, out var outKey,
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out _,
+                out var outKey,
                 out var isCurrentAvatarState))
             {
                 return;
@@ -556,7 +559,7 @@ namespace Nekoyume.State
             await States.Instance.AddOrReplaceAvatarStateAsync(
                 avatarAddress,
                 outKey,
-                isCurrentAvatarState);
+                !isCurrentAvatarState);
         }
     }
 }

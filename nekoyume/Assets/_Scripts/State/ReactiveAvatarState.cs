@@ -15,10 +15,10 @@ namespace Nekoyume.State
     public static class ReactiveAvatarState
     {
         private static readonly ReactiveProperty<Address> _address;
-        public static IObservable<Address> Address;
+        public static readonly IObservable<Address> Address;
 
         private static readonly ReactiveProperty<Inventory> _inventory;
-        public static IObservable<Inventory> Inventory;
+        public static readonly IObservable<Inventory> Inventory;
 
         private static readonly ReactiveProperty<MailBox> _mailBox;
         public static readonly IObservable<MailBox> MailBox;

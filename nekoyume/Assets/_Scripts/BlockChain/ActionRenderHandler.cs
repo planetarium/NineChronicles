@@ -353,7 +353,7 @@ namespace Nekoyume.BlockChain
                 NotificationSystem.CancelReserve(result.itemUsable.TradableId);
                 NotificationSystem.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
 
-                States.Instance.UpdateCombinationSlotState(slotIndex, slotState);
+                States.Instance.AddOrReplaceCombinationSlotState(slotIndex, slotState);
                 UpdateAgentStateAsync(eval);
                 UpdateCurrentAvatarStateAsync(eval);
             }
@@ -393,7 +393,7 @@ namespace Nekoyume.BlockChain
                     .FirstOrDefault(x =>
                         gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
 
-                States.Instance.UpdateCombinationSlotState(slotIndex, slot);
+                States.Instance.AddOrReplaceCombinationSlotState(slotIndex, slot);
                 UpdateAgentStateAsync(eval);
                 UpdateCurrentAvatarStateAsync(eval);
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
@@ -479,7 +479,7 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
-                States.Instance.UpdateCombinationSlotState(slotIndex, slot);
+                States.Instance.AddOrReplaceCombinationSlotState(slotIndex, slot);
                 UpdateAgentStateAsync(eval);
                 UpdateCurrentAvatarStateAsync(eval);
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
@@ -525,7 +525,7 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
-                States.Instance.UpdateCombinationSlotState(slotIndex, slot);
+                States.Instance.AddOrReplaceCombinationSlotState(slotIndex, slot);
                 UpdateAgentStateAsync(eval);
                 UpdateCurrentAvatarStateAsync(eval);
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
