@@ -271,19 +271,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   predelay: 0.15
-  fadeDuration: 0.5
+  fadeDuration: 0.35
   fadeCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 3.3561904
-      outSlope: 3.3561904
+      inSlope: 2.783656
+      outSlope: 2.783656
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.028376844
+      outWeight: 0.041666668
     - serializedVersion: 3
       time: 1
       value: 1
@@ -310,7 +310,7 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.40167856
+      time: 0.2100119
       value: 0
       inSlope: -0
       outSlope: 1.2123067
@@ -330,7 +330,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  alpha: 0.65
+  alpha: 0.45
   mask: {fileID: 7689178348494104162}
   background: {fileID: 4658177902114798634}
 --- !u!1 &3291433380500980680
@@ -1072,10 +1072,50 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1821091608927050061, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.w
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 1821091608927050061, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 1821091608927050061, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 1821091608927050061, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.z
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 2677589118246083611, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074706754623706830, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.w
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074706754623706830, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074706754623706830, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 4074706754623706830, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.z
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 6232602685332831336, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
         type: 3}
@@ -1106,6 +1146,26 @@ PrefabInstance:
         type: 3}
       propertyPath: preDelay
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8041829600019506202, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.w
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8041829600019506202, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.x
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8041829600019506202, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.y
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 8041829600019506202, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_RaycastPadding.z
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72026eb0cfa6f48fd93ea86db2eb08bd, type: 3}
