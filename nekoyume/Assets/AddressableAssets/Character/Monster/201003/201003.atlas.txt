@@ -5,141 +5,141 @@ format: RGBA8888
 filter: Linear,Linear
 repeat: none
 acc_01
-  rotate: false
-  xy: 215, 119
+  rotate: true
+  xy: 357, 277
   size: 85, 46
   orig: 85, 46
   offset: 0, 0
   index: -1
 acc_02
   rotate: false
-  xy: 215, 64
+  xy: 148, 367
   size: 74, 53
   orig: 74, 53
   offset: 0, 0
   index: -1
 acc_03
-  rotate: false
-  xy: 95, 218
+  rotate: true
+  xy: 353, 157
   size: 118, 54
   orig: 118, 54
   offset: 0, 0
   index: -1
 acc_04
   rotate: false
-  xy: 348, 438
+  xy: 223, 256
   size: 128, 70
   orig: 128, 70
   offset: 0, 0
   index: -1
 acc_05
   rotate: true
-  xy: 224, 405
+  xy: 214, 151
   size: 103, 122
   orig: 103, 122
   offset: 0, 0
   index: -1
 acc_06
-  rotate: false
-  xy: 2, 100
+  rotate: true
+  xy: 224, 328
   size: 89, 131
   orig: 89, 131
   offset: 0, 0
   index: -1
 body
-  rotate: true
-  xy: 95, 274
+  rotate: false
+  xy: 2, 307
   size: 144, 113
   orig: 144, 113
   offset: 0, 0
   index: -1
 body_02
-  rotate: false
-  xy: 2, 233
+  rotate: true
+  xy: 224, 419
   size: 91, 185
   orig: 91, 185
   offset: 0, 0
   index: -1
 body_03
   rotate: true
-  xy: 215, 14
+  xy: 148, 317
   size: 48, 73
   orig: 48, 73
   offset: 0, 0
   index: -1
 body_04
-  rotate: false
-  xy: 314, 350
+  rotate: true
+  xy: 124, 150
   size: 43, 53
   orig: 43, 53
   offset: 0, 0
   index: -1
 effect01
   rotate: false
-  xy: 314, 295
+  xy: 357, 364
   size: 52, 53
   orig: 52, 53
   offset: 0, 0
   index: -1
 eye_01
-  rotate: false
-  xy: 93, 152
+  rotate: true
+  xy: 148, 195
   size: 120, 64
   orig: 120, 64
   offset: 0, 0
   index: -1
 eye_02
   rotate: false
-  xy: 93, 86
+  xy: 2, 241
   size: 120, 64
   orig: 120, 64
   offset: 0, 0
   index: -1
 eye_03
   rotate: false
-  xy: 93, 22
+  xy: 2, 177
   size: 120, 62
   orig: 120, 62
   offset: 0, 0
   index: -1
 eye_04
   rotate: false
-  xy: 215, 167
+  xy: 411, 365
   size: 97, 71
   orig: 97, 71
   offset: 0, 0
   index: -1
 eye_05
   rotate: false
-  xy: 215, 240
+  xy: 411, 438
   size: 97, 72
   orig: 97, 72
   offset: 0, 0
   index: -1
 flower_01
-  rotate: false
-  xy: 2, 2
+  rotate: true
+  xy: 411, 274
   size: 89, 96
   orig: 89, 96
   offset: 0, 0
   index: -1
 flower_02
-  rotate: false
-  xy: 210, 314
+  rotate: true
+  xy: 409, 170
   size: 102, 89
   orig: 102, 89
   offset: 0, 0
   index: -1
 shadow
   rotate: false
-  xy: 2, 420
+  xy: 2, 422
   size: 220, 88
   orig: 220, 88
   offset: 0, 0
   index: -1
 tear
   rotate: false
-  xy: 478, 491
+  xy: 500, 255
   size: 10, 17
   orig: 10, 17
   offset: 0, 0

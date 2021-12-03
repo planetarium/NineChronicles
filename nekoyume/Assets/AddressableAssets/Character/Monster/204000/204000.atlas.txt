@@ -6,49 +6,49 @@ filter: Linear,Linear
 repeat: none
 body
   rotate: false
-  xy: 2, 138
+  xy: 162, 189
   size: 86, 65
   orig: 86, 65
   offset: 0, 0
   index: -1
 face_01
-  rotate: false
-  xy: 126, 152
+  rotate: true
+  xy: 230, 126
   size: 29, 19
   orig: 29, 19
   offset: 0, 0
   index: -1
 face_02
-  rotate: false
-  xy: 165, 179
+  rotate: true
+  xy: 230, 157
   size: 30, 24
   orig: 30, 24
   offset: 0, 0
   index: -1
 face_03
-  rotate: true
-  xy: 23, 2
+  rotate: false
+  xy: 120, 134
   size: 28, 17
   orig: 28, 17
   offset: 0, 0
   index: -1
 face_04
-  rotate: true
-  xy: 2, 2
+  rotate: false
+  xy: 156, 136
   size: 28, 19
   orig: 28, 19
   offset: 0, 0
   index: -1
 leg_L
   rotate: true
-  xy: 221, 210
+  xy: 195, 143
   size: 19, 33
   orig: 19, 33
   offset: 0, 0
   index: -1
 leg_R
   rotate: true
-  xy: 221, 231
+  xy: 195, 164
   size: 23, 33
   orig: 23, 33
   offset: 0, 0
@@ -61,64 +61,64 @@ shadow
   offset: 0, 0
   index: -1
 sweat
-  rotate: true
-  xy: 45, 84
+  rotate: false
+  xy: 43, 124
   size: 11, 28
   orig: 11, 28
   offset: 0, 0
   index: -1
 sweat2
-  rotate: true
-  xy: 90, 141
+  rotate: false
+  xy: 108, 133
   size: 10, 27
   orig: 10, 27
   offset: 0, 0
   index: -1
 tear
   rotate: false
-  xy: 197, 194
+  xy: 186, 132
   size: 13, 9
   orig: 13, 9
   offset: 0, 0
   index: -1
 wood_01
-  rotate: false
-  xy: 45, 97
+  rotate: true
+  xy: 2, 114
   size: 38, 39
   orig: 38, 39
   offset: 0, 0
   index: -1
 wood_02
-  rotate: false
-  xy: 2, 32
+  rotate: true
+  xy: 61, 126
   size: 34, 45
   orig: 34, 45
   offset: 0, 0
   index: -1
 wood_03
   rotate: false
-  xy: 90, 153
+  xy: 120, 153
   size: 34, 50
   orig: 34, 50
   offset: 0, 0
   index: -1
 wood_04
   rotate: false
-  xy: 126, 173
+  xy: 156, 157
   size: 37, 30
   orig: 37, 30
   offset: 0, 0
   index: -1
 wood_05
   rotate: false
-  xy: 162, 205
+  xy: 2, 154
   size: 57, 49
   orig: 57, 49
   offset: 0, 0
   index: -1
 wood_06
-  rotate: false
-  xy: 2, 79
+  rotate: true
+  xy: 61, 162
   size: 41, 57
   orig: 41, 57
   offset: 0, 0

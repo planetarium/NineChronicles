@@ -6,49 +6,49 @@ filter: Linear,Linear
 repeat: none
 acc_01
   rotate: false
-  xy: 83, 170
+  xy: 172, 181
   size: 62, 53
   orig: 62, 53
   offset: 0, 0
   index: -1
 acc_02
-  rotate: false
-  xy: 2, 2
+  rotate: true
+  xy: 172, 160
   size: 19, 61
   orig: 19, 61
   offset: 0, 0
   index: -1
 body
   rotate: false
-  xy: 2, 154
+  xy: 91, 165
   size: 79, 69
   orig: 79, 69
   offset: 0, 0
   index: -1
 eye_01
-  rotate: true
-  xy: 23, 28
+  rotate: false
+  xy: 2, 140
   size: 35, 22
   orig: 35, 22
   offset: 0, 0
   index: -1
 eye_02
   rotate: false
-  xy: 147, 201
+  xy: 2, 164
   size: 36, 22
   orig: 36, 22
   offset: 0, 0
   index: -1
 eye_03
-  rotate: true
-  xy: 50, 117
+  rotate: false
+  xy: 40, 159
   size: 35, 27
   orig: 35, 27
   offset: 0, 0
   index: -1
 shadow
-  rotate: true
-  xy: 2, 65
+  rotate: false
+  xy: 2, 188
   size: 87, 46
   orig: 87, 46
   offset: 0, 0

@@ -285,7 +285,7 @@ namespace Spine.Unity {
 
 	#if UNITY_EDITOR && CONFIGURABLE_ENTER_PLAY_MODE
 		public virtual void Start () {
-			Initialize(false);
+			 Initialize(false);
 		}
 	#endif
 
