@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
+using Bencodex;
+using Bencodex.Types;
 using Cocona;
 using Libplanet;
 using Libplanet.Blockchain;
@@ -18,6 +22,8 @@ namespace Lib9c.Tools.SubCommand
 {
     public class State
     {
+        private static readonly Codec _codec = new Codec();
+
         [Command("Rebuild the entire states by executing the chain from the genesis.")]
         public void Rebuild(
             [Option('v', Description = "Print more logs.")]
@@ -92,15 +98,30 @@ namespace Lib9c.Tools.SubCommand
                     block.Index,
                     block.Hash
                 );
+                IImmutableDictionary<string, IValue> delta;
                 HashDigest<SHA256> stateRootHash = block.Index < 1
-                    ? preEvalBlock.DetermineStateRootHash(chain.Policy.BlockAction, stateStore)
-                    : preEvalBlock.DetermineStateRootHash(chain);
+                    ? preEvalBlock.DetermineStateRootHash(chain.Policy.BlockAction, stateStore, out delta)
+                    : preEvalBlock.DetermineStateRootHash(
+                        chain,
+                        StateCompleterSet<NCAction>.Reject,
+                        out delta);
                 DateTimeOffset now = DateTimeOffset.Now;
                 if (invalidStateRootHashBlock is null && !stateRootHash.Equals(block.StateRootHash))
                 {
+                    string blockDump = DumpBencodexToFile(
+                        block.MarshalBlock(),
+                        $"block_{block.Index}_{block.Hash}"
+                    );
+                    string deltaDump = DumpBencodexToFile(
+                        new Dictionary(
+                            delta.Select(kv =>
+                                new KeyValuePair<IKey, IValue>(new Text(kv.Key), kv.Value))),
+                        $"delta_{block.Index}_{block.Hash}"
+                    );
                     string message =
                         $"Unexpected state root hash for block #{block.Index} {block.Hash}.\n" +
-                        $"  Expected: {block.StateRootHash}\n  Actual:   {stateRootHash}";
+                        $"  Expected: {block.StateRootHash}\n  Actual:   {stateRootHash}\n" +
+                        $"  Block file: {blockDump}\n  Evaluated delta file: {deltaDump}\n";
                     if (!bypassStateRootHashCheck)
                     {
                         throw new CommandExitedException(message, 1);
@@ -150,6 +171,14 @@ namespace Lib9c.Tools.SubCommand
             stateStore.Dispose();
         }
 
+        private static string DumpBencodexToFile(IValue value, string name)
+        {
+            string path = Path.Join(Path.GetTempPath(), $"{name}.dat");
+            using FileStream stream = File.OpenWrite(path);
+            _codec.Encode(value, stream);
+            return path;
+        }
+
         private class MemoryKeyValueStore : IKeyValueStore
         {
             private readonly ConcurrentDictionary<byte[], byte[]> _dictionary;
@@ -179,7 +208,11 @@ namespace Lib9c.Tools.SubCommand
                 long i = 0;
                 foreach (KeyValuePair<byte[], byte[]> pair in _dictionary)
                 {
-                    string subDir = Path.Join(_dumpPath, pair.Key.LongLength.ToString());
+                    string subDir = Path.Join(
+                        _dumpPath,
+                        pair.Key.LongLength.ToString(),
+                        pair.Key.Length > 0 ? $"{pair.Key[0]:x2}" : "_"
+                    );
                     Directory.CreateDirectory(subDir);
                     File.WriteAllBytes(Path.Join(subDir, $"{ByteUtil.Hex(pair.Key)}"), pair.Value);
                     if (i++ % 1000 == 0)
