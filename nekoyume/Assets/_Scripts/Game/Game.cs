@@ -11,11 +11,6 @@ using Bencodex.Types;
 using Lib9c.Formatters;
 using MessagePack;
 using MessagePack.Resolvers;
-#if !UNITY_EDITOR
-using Libplanet;
-using Libplanet.Crypto;
-#endif
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
@@ -26,11 +21,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
-using Nekoyume.UI.Module;
-using UniRx;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.Serialization;
 using Menu = Nekoyume.UI.Menu;
 
 namespace Nekoyume.Game
@@ -56,8 +47,12 @@ namespace Nekoyume.Game
         public States States { get; private set; }
 
         public LocalLayer LocalLayer { get; private set; }
+        
+        public LocalLayerActions LocalLayerActions { get; private set; }
 
         public IAgent Agent { get; private set; }
+        
+        public Analyzer Analyzer { get; private set; }
 
         public Stage Stage => stage;
 
@@ -102,23 +97,6 @@ namespace Nekoyume.Game
 
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
 
-#if !UNITY_EDITOR
-            // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
-            Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
-
-            if (!(_options.PrivateKey is null))
-            {
-                var privateKey = new PrivateKey(ByteUtil.ParseHex(_options.PrivateKey));
-                Address address = privateKey.ToAddress();
-                Mixpanel.Identify(address.ToString());
-            }
-
-            Mixpanel.Init();
-            Mixpanel.Track("Unity/Started");
-
-            Debug.Log("[Game] Awake() Mixpanel initialized");
-#endif
-
             if (_options.RpcClient)
             {
                 Agent = GetComponent<RPCAgent>();
@@ -131,6 +109,7 @@ namespace Nekoyume.Game
 
             States = new States();
             LocalLayer = new LocalLayer();
+            LocalLayerActions = new LocalLayerActions();
             MainCanvas.instance.InitializeIntro();
         }
 
@@ -183,6 +162,8 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
+            Analyzer = new Analyzer().Initialize(Agent.Address.ToString());
+            Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
@@ -535,11 +516,12 @@ namespace Nekoyume.Game
 
         protected override void OnApplicationQuit()
         {
-            if (Mixpanel.IsInitialized())
+            if (Analyzer.Instance != null)
             {
-                Mixpanel.Track("Unity/Player Quit");
-                Mixpanel.Flush();
+                Analyzer.Instance.Track("Unity/Player Quit");
+                Analyzer.Instance.Flush();   
             }
+
             _logsClient?.Dispose();
         }
 

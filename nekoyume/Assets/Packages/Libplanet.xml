@@ -2365,7 +2365,7 @@
             by the same address, those with greater nonce never comes before those with
             lesser nonce.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset},System.Nullable{System.Boolean},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Nullable{System.Threading.CancellationToken})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset},System.Nullable{System.Boolean},System.Nullable{System.Int64},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Nullable{System.Threading.CancellationToken})">
             <summary>
             <para>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
@@ -2395,7 +2395,7 @@
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.DateTimeOffset,System.Boolean,System.Int32,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Crypto.PrivateKey,System.DateTimeOffset,System.Boolean,System.Int64,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
             <summary>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
@@ -2418,7 +2418,7 @@
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.GatherTransactionsToMine(Libplanet.Blocks.BlockMetadata,System.Int32,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GatherTransactionsToMine(Libplanet.Blocks.BlockMetadata,System.Int64,System.Int32,System.Int32,System.Collections.Generic.IComparer{Libplanet.Tx.Transaction{`0}})">
             <summary>
             Gathers <see cref="T:Libplanet.Tx.Transaction`1"/>s for mining a next block
             from the current set of staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
@@ -2620,7 +2620,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0},Libplanet.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.BlockPolicyViolationException},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Blocks.HashAlgorithmGetter,System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Nullable{System.TimeSpan},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0},Libplanet.Tx.TxPolicyViolationException},System.Func{Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.BlockPolicyViolationException},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Blocks.HashAlgorithmGetter,System.Func{System.Int64,System.Int64},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32},System.Func{System.Int64,System.Int32})">
             <summary>
             <para>
             Creates a default <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> instance.
@@ -4434,11 +4434,6 @@
         <member name="P:Libplanet.Blocks.Block`1.Transactions">
             <inheritdoc cref="P:Libplanet.Blocks.IBlockContent`1.Transactions"/>
         </member>
-        <member name="P:Libplanet.Blocks.Block`1.BytesLength">
-            <summary>
-            The bytes length in its serialized format.
-            </summary>
-        </member>
         <member name="P:Libplanet.Blocks.Block`1.Header">
             <summary>
             The <see cref="T:Libplanet.Blocks.BlockHeader"/> of the block.
@@ -5292,17 +5287,25 @@
         </member>
         <member name="T:Libplanet.Blocks.InvalidBlockBytesLengthException">
             <summary>
-            An exception thrown when <see cref="P:Libplanet.Blocks.Block`1.BytesLength"/>
-            does not follow the constraint provided by <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
+            An exception thrown when a <see cref="T:Libplanet.Blocks.Block`1"/>'s encoded bytes exceeds
+            <see cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.InvalidBlockBytesLengthException.#ctor(System.String,System.Int32)">
+        <member name="M:Libplanet.Blocks.InvalidBlockBytesLengthException.#ctor(System.String,System.Int64)">
             <summary>
             Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockBytesLengthException"/> class.
             </summary>
             <param name="message">The message that describes the error.</param>
-            <param name="bytesLength">The invalid <see cref="P:Libplanet.Blocks.Block`1.BytesLength"/>
-            according to <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.</param>
+            <param name="bytesLength">The actual length of the <see cref="T:Libplanet.Blocks.Block`1"/>'s encoded
+            bytes.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockBytesLengthException.BytesLength">
+            <summary>
+            The actual length of the <see cref="T:Libplanet.Blocks.Block`1"/>'s encoded bytes.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockBytesLengthException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc cref="M:System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
         </member>
         <member name="T:Libplanet.Blocks.InvalidBlockException">
             <summary>
@@ -7844,7 +7847,7 @@
             <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="peer"/> is
             <c>null</c>.</exception>
         </member>
-        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion},System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})">
             <summary>
             Decodes given <see typeref="T"/>-typed <paramref name="encoded"/> into
             <see cref="T:Libplanet.Net.Messages.Message"/> and checks its validity.
@@ -7856,10 +7859,6 @@
             <param name="appProtocolVersionValidator">
             The delegate validates the app protocol version of the message.
             </param>
-            <param name="lifetime">
-            The lifetime of a message.
-            Messages generated before this value from the current time are ignored.
-            If <c>null</c> is given, messages will not be ignored by its timestamp.</param>
             <returns>A <see cref="T:Libplanet.Net.Messages.Message"/> parsed from <paramref name="encoded"/>.</returns>
             <exception cref="T:System.ArgumentException">
             Thrown when empty <paramref name="encoded"/> is given.</exception>
@@ -8016,17 +8015,29 @@
             The body of the message.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Messages.MessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
-            <inheritdoc cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)"/>
-        </member>
-        <member name="M:Libplanet.Net.Messages.MessageCodec.Decode(System.Byte[],System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion},System.Nullable{System.TimeSpan})">
-            <inheritdoc cref="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion},System.Nullable{System.TimeSpan})"/>
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.#ctor(System.Nullable{System.TimeSpan})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Net.Messages.NetMQMessageCodec"/> instance.
+            </summary>
+            <param name="messageLifespan">Lifespan to use for messages when decoding.</param>
         </member>
         <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
             <inheritdoc cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)"/>
         </member>
-        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Decode(NetMQ.NetMQMessage,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion},System.Nullable{System.TimeSpan})">
-            <inheritdoc cref="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion},System.Nullable{System.TimeSpan})"/>
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Decode(NetMQ.NetMQMessage,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})">
+            <inheritdoc cref="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.#ctor(System.Nullable{System.TimeSpan})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Net.Messages.TcpMessageCodec"/> instance.
+            </summary>
+            <param name="messageLifespan">Lifespan to use for messages when decoding.</param>
+        </member>
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
+            <inheritdoc cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Decode(System.Byte[],System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})">
+            <inheritdoc cref="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})"/>
         </member>
         <member name="T:Libplanet.Net.Peer">
             <summary>
@@ -8898,7 +8909,7 @@
             </summary>
             <seealso cref="T:Libplanet.Net.BoundPeer"/>
         </member>
-        <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.QueryAppProtocolVersion(Libplanet.Net.BoundPeer,System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.QueryAppProtocolVersionNetMQ(Libplanet.Net.BoundPeer,System.Nullable{System.TimeSpan})">
             <summary>
             Queries <see cref="T:Libplanet.Net.AppProtocolVersion"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>
             specialized for NetMQ based transport.
@@ -8949,12 +8960,6 @@
             Whether this <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is running.
             </summary>
             <value>Gets the value indicates whether the instance is running.</value>
-        </member>
-        <member name="P:Libplanet.Net.Transports.ITransport.MessageHistory">
-            <summary>
-            A fixed sized queue that keeps history of <see cref="T:Libplanet.Net.Messages.Message"/> received.
-            It saves at most 30 recent <see cref="T:Libplanet.Net.Messages.Message"/>s.
-            </summary>
         </member>
         <member name="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)">
             <summary>
@@ -9122,9 +9127,6 @@
         </member>
         <member name="P:Libplanet.Net.Transports.NetMQTransport.Running">
             <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.Running"/>
-        </member>
-        <member name="P:Libplanet.Net.Transports.NetMQTransport.MessageHistory">
-            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.MessageHistory"/>
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc />
@@ -10161,10 +10163,19 @@
             <param name="merkleTrie">A trie to discover.</param>
             <returns>All state keys and the all states.</returns>
         </member>
+        <member name="M:Libplanet.Store.Trie.Nodes.BaseNode.ToBencodex">
+            <inheritdoc cref="M:Libplanet.Store.Trie.Nodes.INode.ToBencodex"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.Nodes.FullNode.ToBencodex">
+            <inheritdoc cref="M:Libplanet.Store.Trie.Nodes.INode.ToBencodex"/>
+        </member>
         <member name="T:Libplanet.Store.Trie.Nodes.HashNode">
             <summary>
             <see cref="T:Libplanet.HashDigest`1"/>'s wrapper class, used in <see cref="T:Libplanet.Store.Trie.ITrie"/> interface.
             </summary>
+        </member>
+        <member name="M:Libplanet.Store.Trie.Nodes.HashNode.ToBencodex">
+            <inheritdoc cref="M:Libplanet.Store.Trie.Nodes.INode.ToBencodex"/>
         </member>
         <member name="T:Libplanet.Store.Trie.Nodes.INode">
             <summary>
@@ -10175,10 +10186,16 @@
             <seealso cref="T:Libplanet.Store.Trie.Nodes.ValueNode"/>
             <seealso cref="T:Libplanet.Store.Trie.Nodes.HashNode"/>
         </member>
+        <member name="M:Libplanet.Store.Trie.Nodes.ShortNode.ToBencodex">
+            <inheritdoc cref="M:Libplanet.Store.Trie.Nodes.INode.ToBencodex"/>
+        </member>
         <member name="T:Libplanet.Store.Trie.Nodes.ValueNode">
             <summary>
             Wrapper class.
             </summary>
+        </member>
+        <member name="M:Libplanet.Store.Trie.Nodes.ValueNode.ToBencodex">
+            <inheritdoc cref="M:Libplanet.Store.Trie.Nodes.INode.ToBencodex"/>
         </member>
         <member name="T:Libplanet.Store.TrieStateStore">
             <summary>
@@ -10474,11 +10491,6 @@
             <see cref="T:Libplanet.Tx.Transaction`1"/> is made from.
             This can be <c>null</c> iff the transaction is contained
             in the genesis block.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Tx.Transaction`1.BytesLength">
-            <summary>
-            The bytes length in its serialized format.
             </summary>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Deserialize(System.Byte[],System.Boolean)">

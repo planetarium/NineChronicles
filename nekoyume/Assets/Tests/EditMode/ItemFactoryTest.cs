@@ -152,8 +152,8 @@ namespace Tests.EditMode
                     .Add("equipped", equipment.equipped.Serialize())
                     .Add("level", equipment.level)
                     .Add("statsMap", equipment.StatsMap.Serialize())
-                    .Add("skills", new Bencodex.Types.List(equipment.Skills.Select(s => s.Serialize())).Value)
-                    .Add("buffSkills", new Bencodex.Types.List(equipment.BuffSkills.Select(s => s.Serialize())).Value)
+                    // .Add("skills", new Bencodex.Types.List(equipment.Skills.Select(s => s.Serialize())).Value)
+                    // .Add("buffSkills", new Bencodex.Types.List(equipment.BuffSkills.Select(s => s.Serialize())).Value)
                     .Add("requiredBlockIndex", equipment.RequiredBlockIndex.Serialize())
             );
             var serialized = (Dictionary) equipment.Serialize();
