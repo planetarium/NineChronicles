@@ -348,7 +348,11 @@ namespace Nekoyume.UI.Module
 
                     var widgetLayerRoot = MainCanvas.instance
                         .GetLayerRootTransform(WidgetType.Widget);
-                    foreach (var widget in MainCanvas.instance.Widgets.Where(widget => widget.transform.parent.Equals(widgetLayerRoot)))
+                    var statusWidget = Widget.Find<Status>();
+                    foreach (var widget in MainCanvas.instance.Widgets.Where(widget =>
+                        widget.isActiveAndEnabled
+                        && widget.transform.parent.Equals(widgetLayerRoot)
+                        && !widget.Equals(statusWidget)))
                     {
                         widget.Close(true);
                     }
