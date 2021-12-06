@@ -2,6 +2,7 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 
@@ -11,25 +12,27 @@ namespace Nekoyume.Action
     [ActionType("initialize_states")]
     public class InitializeStates : GameAction
     {
-        public Bencodex.Types.Dictionary Ranking { get; set; }
-        public Bencodex.Types.Dictionary Shop { get; set; }
+        public Bencodex.Types.Dictionary Ranking { get; set; } = Dictionary.Empty;
+        public Bencodex.Types.Dictionary Shop { get; set; } = Dictionary.Empty;
         public Dictionary<string, string> TableSheets { get; set; }
-        public Bencodex.Types.Dictionary GameConfig { get; set; }
-        public Bencodex.Types.Dictionary RedeemCode { get; set; }
+        public Bencodex.Types.Dictionary GameConfig { get; set; } = Dictionary.Empty;
+        public Bencodex.Types.Dictionary RedeemCode { get; set; } = Dictionary.Empty;
 
-        public Bencodex.Types.Dictionary AdminAddress { get; set; }
+        public Bencodex.Types.Dictionary AdminAddress { get; set; } = Dictionary.Empty;
 
-        public Bencodex.Types.Dictionary ActivatedAccounts { get; set; }
+        public Bencodex.Types.Dictionary ActivatedAccounts { get; set; } = Dictionary.Empty;
 
-        public Bencodex.Types.Dictionary GoldCurrency { get; set; }
+        public Bencodex.Types.Dictionary GoldCurrency { get; set; } = Dictionary.Empty;
 
-        public Bencodex.Types.List GoldDistributions { get; set; }
+        public Bencodex.Types.List GoldDistributions { get; set; } = List.Empty;
 
-        public Bencodex.Types.List PendingActivations { get; set; }
+        public Bencodex.Types.List PendingActivations { get; set; } = List.Empty;
 
-        public Bencodex.Types.Dictionary? AuthorizedMiners { get; set; }
+        // This property can contain null:
+        public Bencodex.Types.Dictionary AuthorizedMiners { get; set; } = null;
 
-        public Bencodex.Types.Dictionary? Credits { get; set; }
+        // This property can contain null:
+        public Bencodex.Types.Dictionary Credits { get; set; } = null;
 
         public InitializeStates()
         {
@@ -138,7 +141,7 @@ namespace Nekoyume.Action
             if (!(AuthorizedMiners is null))
             {
                 states = states.SetState(
-                    AuthorizedMinersState.Address, 
+                    AuthorizedMinersState.Address,
                     AuthorizedMiners
                 );
             }
@@ -181,7 +184,7 @@ namespace Nekoyume.Action
                 .Add("gold_currency_state", GoldCurrency)
                 .Add("gold_distributions", GoldDistributions)
                 .Add("pending_activation_states", PendingActivations);
-                
+
                 if (!(AuthorizedMiners is null))
                 {
                     rv = rv.Add("authorized_miners_state", AuthorizedMiners);
@@ -191,7 +194,7 @@ namespace Nekoyume.Action
                 {
                     rv = rv.Add("credits_state", Credits);
                 }
-                
+
                 return rv;
             }
         }

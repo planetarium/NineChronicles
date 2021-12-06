@@ -96,6 +96,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(Sell))]
         [InlineData(typeof(SellCancellation))]
         [InlineData(typeof(UpdateSell))]
+        [InlineData(typeof(CreatePendingActivations))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -191,16 +192,7 @@ namespace Lib9c.Tests.Action
                 DailyReward _ => new DailyReward(),
                 InitializeStates _ => new InitializeStates
                 {
-                    Ranking = default,
-                    Shop = default,
                     TableSheets = new Dictionary<string, string>(),
-                    GameConfig = default,
-                    RedeemCode = default,
-                    AdminAddress = default,
-                    ActivatedAccounts = default,
-                    GoldCurrency = default,
-                    GoldDistributions = default,
-                    PendingActivations = default,
                     AuthorizedMiners = Dictionary.Empty,
                     Credits = Dictionary.Empty,
                 },
@@ -252,6 +244,13 @@ namespace Lib9c.Tests.Action
                 UpdateSell _ => new UpdateSell
                 {
                     price = _currency * 100,
+                },
+                CreatePendingActivations _ => new CreatePendingActivations
+                {
+                    PendingActivations = new[]
+                    {
+                        (new byte[40], new byte[4], new byte[33]),
+                    },
                 },
                 _ => throw new InvalidCastException()
             };

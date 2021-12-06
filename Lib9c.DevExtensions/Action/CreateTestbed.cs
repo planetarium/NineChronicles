@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
 using Bencodex.Types;
 using Lib9c.DevExtensions.Model;
 using Lib9c.Model.Order;
@@ -30,6 +28,7 @@ namespace Lib9c.DevExtensions.Action
         private PrivateKey _privateKey = new PrivateKey();
         public Result result = new Result();
         public List<Order> Orders = new List<Order>();
+        public Address weeklyArenaAddress;
 
         [Serializable]
         public class Result
@@ -60,17 +59,19 @@ namespace Lib9c.DevExtensions.Action
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
             {
+                {"w", weeklyArenaAddress.Serialize()},
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
+            weeklyArenaAddress = plainValue["w"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            var data = TestbedHelper.LoadData<TestbedSell>("TestbedSell");
-            var addedItemInfos = data.Items
+            var sellData = TestbedHelper.LoadData<TestbedSell>("TestbedSell");
+            var addedItemInfos = sellData.Items
                 .Select(item => new TestbedHelper.AddedItemInfo(
                     context.Random.GenerateRandomGuid(),
                     context.Random.GenerateRandomGuid()))
@@ -91,6 +92,22 @@ namespace Lib9c.DevExtensions.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             var orderReceiptAddress = OrderDigestListState.DeriveAddress(avatarAddress);
 
+            var weeklyArenaData = TestbedHelper.LoadData<TestbedWeeklyArena>("TestbedWeeklyArena");
+            var weeklyArenaAvatarNames = weeklyArenaData.Avatars
+                .Distinct()
+                .Select(avatar => avatar.Name)
+                .ToArray();
+            var weeklyArenaAgentAndAvatarAddresses = weeklyArenaAvatarNames
+                .Select(name => _privateKey.ToAddress().Derive(name))
+                .Select(e => (agentAddress: e, avatarAddress: e.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        CreateAvatar.DeriveFormat,
+                        0
+                    )
+                )))
+                .ToArray();
+
             if (context.Rehearsal)
             {
                 states = states.SetState(agentAddress, MarkChanged);
@@ -108,12 +125,12 @@ namespace Lib9c.DevExtensions.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged);
 
-                for (var i = 0; i < data.Items.Length; i++)
+                for (var i = 0; i < sellData.Items.Length; i++)
                 {
                     var itemAddress = Addresses.GetItemAddress(addedItemInfos[i].TradableId);
                     var orderAddress = Order.DeriveAddress(addedItemInfos[i].OrderId);
                     var shopAddress = ShardedShopStateV2.DeriveAddress(
-                        data.Items[i].ItemSubType,
+                        sellData.Items[i].ItemSubType,
                         addedItemInfos[i].OrderId);
 
                     states = states.SetState(avatarAddress, MarkChanged)
@@ -124,6 +141,14 @@ namespace Lib9c.DevExtensions.Action
                         .SetState(itemAddress, MarkChanged)
                         .SetState(orderAddress, MarkChanged)
                         .SetState(shopAddress, MarkChanged);
+                }
+
+                states = states.SetState(weeklyArenaAddress, MarkChanged);
+                foreach (var tuple in weeklyArenaAgentAndAvatarAddresses)
+                {
+                    states = states
+                        .SetState(tuple.agentAddress, MarkChanged)
+                        .SetState(tuple.avatarAddress, MarkChanged);
                 }
 
                 return states;
@@ -142,14 +167,14 @@ namespace Lib9c.DevExtensions.Action
             if (agentState.avatarAddresses.ContainsKey(_slotIndex))
             {
                 throw new AvatarIndexAlreadyUsedException(
-                    $"borted as the signer already has an avatar at index #{_slotIndex}.");
+                    $"Aborted as the signer already has an avatar at index #{_slotIndex}.");
             }
 
             agentState.avatarAddresses.Add(_slotIndex, avatarAddress);
 
             var rankingState = context.PreviousStates.GetRankingState();
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
-            avatarState = TestbedHelper.CreateAvatarState(data.avatar.Name,
+            avatarState = TestbedHelper.CreateAvatarState(sellData.Avatar.Name,
                 agentAddress,
                 avatarAddress,
                 context.BlockIndex,
@@ -165,7 +190,7 @@ namespace Lib9c.DevExtensions.Action
             var skillSheet = context.PreviousStates.GetSheet<SkillSheet>();
             var materialItemSheet = context.PreviousStates.GetSheet<MaterialItemSheet>();
             var consumableItemSheet = context.PreviousStates.GetSheet<ConsumableItemSheet>();
-            for (var i = 0; i < data.Items.Length; i++)
+            for (var i = 0; i < sellData.Items.Length; i++)
             {
                 TestbedHelper.AddItem(costumeItemSheet,
                     equipmentItemSheet,
@@ -174,7 +199,7 @@ namespace Lib9c.DevExtensions.Action
                     materialItemSheet,
                     consumableItemSheet,
                     context.Random,
-                    data.Items[i], addedItemInfos[i], avatarState);
+                    sellData.Items[i], addedItemInfos[i], avatarState);
             }
 
             avatarState.Customize(0, 0, 0, 0);
@@ -194,36 +219,37 @@ namespace Lib9c.DevExtensions.Action
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(avatarAddress, avatarState.SerializeV2());
+            // ~Create Agent and avatar && ~Add item
 
             // for sell
-            for (var i = 0; i < data.Items.Length; i++)
+            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
+            for (var i = 0; i < sellData.Items.Length; i++)
             {
                 var itemAddress = Addresses.GetItemAddress(addedItemInfos[i].TradableId);
                 var orderAddress = Order.DeriveAddress(addedItemInfos[i].OrderId);
                 var shopAddress = ShardedShopStateV2.DeriveAddress(
-                    data.Items[i].ItemSubType,
+                    sellData.Items[i].ItemSubType,
                     addedItemInfos[i].OrderId);
 
                 var balance =
                     context.PreviousStates.GetBalance(agentAddress, states.GetGoldCurrency());
-                var price = new FungibleAssetValue(balance.Currency, data.Items[i].Price, 0);
+                var price = new FungibleAssetValue(balance.Currency, sellData.Items[i].Price, 0);
                 var order = OrderFactory.Create(agentAddress, avatarAddress,
                     addedItemInfos[i].OrderId,
                     price,
                     addedItemInfos[i].TradableId,
                     context.BlockIndex,
-                    data.Items[i].ItemSubType,
-                    data.Items[i].Count);
+                    sellData.Items[i].ItemSubType,
+                    sellData.Items[i].Count);
 
                 Orders.Add(order);
-                order.Validate(avatarState, data.Items[i].Count);
+                order.Validate(avatarState, sellData.Items[i].Count);
                 var tradableItem = order.Sell(avatarState);
 
                 var shardedShopState =
                     states.TryGetState(shopAddress, out Dictionary serializedState)
                         ? new ShardedShopStateV2(serializedState)
                         : new ShardedShopStateV2(shopAddress);
-                var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
                 var orderDigest = order.Digest(avatarState, costumeStatSheet);
                 shardedShopState.Add(orderDigest, context.BlockIndex);
                 var orderReceiptList =
@@ -243,15 +269,43 @@ namespace Lib9c.DevExtensions.Action
             result.SellerAgentAddress = agentAddress;
             result.SellerAvatarAddress = avatarAddress;
             result.ItemInfos = new List<ItemInfos>();
-            for (var i = 0; i < data.Items.Length; i++)
+            for (var i = 0; i < sellData.Items.Length; i++)
             {
                 result.ItemInfos.Add(new ItemInfos(
                     addedItemInfos[i].OrderId,
                     addedItemInfos[i].TradableId,
-                    data.Items[i].ItemSubType,
-                    data.Items[i].Price,
-                    data.Items[i].Count));
+                    sellData.Items[i].ItemSubType,
+                    sellData.Items[i].Price,
+                    sellData.Items[i].Count));
             }
+            
+            // NOTE: Update WeeklyArenaState
+            var gameConfigState = states.GetGameConfigState();
+            var weeklyArenaState = states.GetWeeklyArenaState(weeklyArenaAddress);
+            var characterSheet = states.GetSheet<CharacterSheet>();
+            // loop
+            for (var i = 0; i < weeklyArenaAvatarNames.Length; i++)
+            {
+                var name = weeklyArenaAvatarNames[i];
+                var tuple = weeklyArenaAgentAndAvatarAddresses[i];
+                rankingMapAddress = rankingState.UpdateRankingMap(tuple.avatarAddress);
+                avatarState = new AvatarState(
+                    tuple.avatarAddress,
+                    tuple.agentAddress,
+                    context.BlockIndex,
+                    states.GetAvatarSheets(),
+                    gameConfigState,
+                    rankingMapAddress,
+                    name);
+                weeklyArenaState.SetV2(avatarState, characterSheet, costumeStatSheet);
+                states = states
+                    .SetState(tuple.avatarAddress, new AgentState(tuple.agentAddress).Serialize())
+                    .SetState(tuple.avatarAddress, avatarState.Serialize());
+            }
+            // ~loop
+            states = states.SetState(weeklyArenaAddress, weeklyArenaState.Serialize());
+            // ~Update WeeklyArenaState
+
             return states;
         }
     }

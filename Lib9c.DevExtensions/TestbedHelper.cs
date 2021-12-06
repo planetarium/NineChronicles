@@ -183,8 +183,17 @@ namespace Lib9c.DevExtensions
             return data;
         }
 
-        private static string GetDataPath(string fileName) =>
-            Path.Combine("..", "..", "..", "..", "Lib9c.DevExtensions", "Data", $"{fileName}.json");
+        public static string GetDataPath(string fileName)
+        {
+#if UNITY_EDITOR
+             return Path.Combine(Directory.GetCurrentDirectory(),
+                 "Assets", "_Scripts", "Lib9c", "lib9c", "Lib9c.DevExtensions", "Data", $"{fileName}.json");
+#elif LIB9C_DEV_EXTENSIONS
+            return Path.Combine($"{Directory.GetCurrentDirectory()}", "9c_Data", "StreamingAssets", $"{fileName}.json");
+#else
+            return Path.Combine("..", "..", "..", "..", "Lib9c.DevExtensions", "Data", $"{fileName}.json");;
+#endif
+        }
 
         private static T LoadJsonFile<T>(string path)
         {

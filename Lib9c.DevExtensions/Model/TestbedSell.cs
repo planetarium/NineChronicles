@@ -4,26 +4,34 @@ using Nekoyume.Model.Item;
 namespace Lib9c.DevExtensions.Model
 {
     [Serializable]
-    public class TestbedSell
+    public class TestbedSell : BaseTestbedModel
     {
-        public Avatar avatar;
+        public Avatar Avatar;
         public Item[] Items;
-
-        public TestbedSell()
-        {
-        }
-
-        public TestbedSell(TestbedSell data)
-        {
-            avatar = data.avatar;
-            Items = data.Items;
-        }
     }
 
     [Serializable]
     public class Avatar
     {
         public string Name;
+
+        protected bool Equals(Avatar other)
+        {
+            return Name == other.Name;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Avatar)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (Name != null ? Name.GetHashCode() : 0);
+        }
     }
 
     [Serializable]

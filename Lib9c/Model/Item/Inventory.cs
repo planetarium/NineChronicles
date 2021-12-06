@@ -135,7 +135,7 @@ namespace Nekoyume.Model.Item
 
         public Inventory(Bencodex.Types.List serialized) : this()
         {
-            _items.Capacity = serialized.Value.Length;
+            _items.Capacity = serialized.Count;
             foreach (IValue item in serialized)
             {
                 _items.Add(new Item((Bencodex.Types.Dictionary) item));
