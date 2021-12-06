@@ -164,7 +164,7 @@ namespace Lib9c.Tests.Model.State
             int expectedCount)
         {
             var weeklyArenaState = new WeeklyArenaState(new PrivateKey().ToAddress());
-            Address targetAddress;
+            Address targetAddress = default;
             var characterSheet = new CharacterSheet();
             characterSheet.Set(_sheets[nameof(CharacterSheet)]);
             for (var i = 0; i < infoCount; i++)
