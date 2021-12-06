@@ -455,7 +455,7 @@ namespace Nekoyume.BlockChain
                 .First()
                 .Subscribe(_ =>
                 {
-                    var popup = Widget.Find<HasIconAndButtonSystem>();
+                    var popup = Widget.Find<IconAndButtonSystem>();
                     popup.Show(L10nManager.Localize("UI_ERROR"),
                         errorMsg, L10nManager.Localize("UI_OK"), false);
                     popup.SetCancelCallbackToExit();

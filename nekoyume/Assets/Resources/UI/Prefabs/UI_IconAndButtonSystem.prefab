@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 95256010546860014}
   - component: {fileID: 841975948534870726}
   m_Layer: 5
-  m_Name: UI_HasIconAndButtonSystem
+  m_Name: UI_IconAndButtonSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,9 +84,21 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   uiBySystemType:
-  - {fileID: 164476152682126792}
-  - {fileID: 3222432043784836213}
-  - {fileID: 7075097660826133530}
+  - rootGameObject: {fileID: 5927909307788248981}
+    confirmButton: {fileID: 6963416762389632246}
+    cancelButton: {fileID: 8238191552479306613}
+    contentText: {fileID: 5328139292000856559}
+    titleText: {fileID: 7853042262489870000}
+  - rootGameObject: {fileID: 575851542106442874}
+    confirmButton: {fileID: 6543966870898138459}
+    cancelButton: {fileID: 2822219058975492368}
+    contentText: {fileID: 1218729057119587282}
+    titleText: {fileID: 3551774724433139374}
+  - rootGameObject: {fileID: 7999758512304243228}
+    confirmButton: {fileID: 6566924379800818080}
+    cancelButton: {fileID: 1175191920313947361}
+    contentText: {fileID: 1679316384102708493}
+    titleText: {fileID: 5237700529624657034}
   blur: {fileID: 3457247229074229189}
 --- !u!1 &575851542106442874
 GameObject:
@@ -101,7 +113,6 @@ GameObject:
   - component: {fileID: 2852144112128770134}
   - component: {fileID: 1254097287658843314}
   - component: {fileID: 3599941959708761275}
-  - component: {fileID: 3222432043784836213}
   m_Layer: 5
   m_Name: Type2_BlockChainError
   m_TagString: Untagged
@@ -238,22 +249,6 @@ MonoBehaviour:
     loop: 0
     loopDelay: 0
     updateMode: 0
---- !u!114 &3222432043784836213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 575851542106442874}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2143192879d9468e97e50a971883acd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  confirmButton: {fileID: 6566924379800818080}
-  cancelButton: {fileID: 1175191920313947361}
-  contentText: {fileID: 1218729057119587282}
-  titleText: {fileID: 3551774724433139374}
 --- !u!1 &737882815437931224
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,7 +494,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 5058135849732499410}
-  button: {fileID: 5024260608800334830}
 --- !u!1 &992101330896152411
 GameObject:
   m_ObjectHideFlags: 0
@@ -1361,7 +1355,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 4369481563070643996}
-  button: {fileID: 3810117393346897135}
 --- !u!1 &2158263050844248967
 GameObject:
   m_ObjectHideFlags: 0
@@ -1592,7 +1585,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 1234314334304878403}
-  button: {fileID: 7642102546792705597}
 --- !u!1 &2947930286231146475
 GameObject:
   m_ObjectHideFlags: 0
@@ -2785,7 +2777,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 7260755917797892861}
-  button: {fileID: 7476130792639922404}
 --- !u!1 &5653806868787543036
 GameObject:
   m_ObjectHideFlags: 0
@@ -3041,7 +3032,6 @@ GameObject:
   - component: {fileID: 1254275140491381507}
   - component: {fileID: 6722696112383337646}
   - component: {fileID: 4476332916983163457}
-  - component: {fileID: 164476152682126792}
   m_Layer: 5
   m_Name: Type1_Error
   m_TagString: Untagged
@@ -3178,22 +3168,6 @@ MonoBehaviour:
     loop: 0
     loopDelay: 0
     updateMode: 0
---- !u!114 &164476152682126792
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5927909307788248981}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2143192879d9468e97e50a971883acd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  confirmButton: {fileID: 6963416762389632246}
-  cancelButton: {fileID: 8238191552479306613}
-  contentText: {fileID: 5328139292000856559}
-  titleText: {fileID: 7853042262489870000}
 --- !u!1 &6061040173234408519
 GameObject:
   m_ObjectHideFlags: 0
@@ -4318,7 +4292,6 @@ GameObject:
   - component: {fileID: 2721253603715349322}
   - component: {fileID: 8846494992883679661}
   - component: {fileID: 9065696465700718655}
-  - component: {fileID: 7075097660826133530}
   m_Layer: 5
   m_Name: Type3_Information
   m_TagString: Untagged
@@ -4455,22 +4428,6 @@ MonoBehaviour:
     loop: 0
     loopDelay: 0
     updateMode: 0
---- !u!114 &7075097660826133530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7999758512304243228}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2143192879d9468e97e50a971883acd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  confirmButton: {fileID: 6566924379800818080}
-  cancelButton: {fileID: 1175191920313947361}
-  contentText: {fileID: 1679316384102708493}
-  titleText: {fileID: 5237700529624657034}
 --- !u!1 &8542818550421467455
 GameObject:
   m_ObjectHideFlags: 0
@@ -4813,7 +4770,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 2613670674907121535}
-  button: {fileID: 7550474440965986466}
 --- !u!1 &8888044963154833746
 GameObject:
   m_ObjectHideFlags: 0
@@ -4969,7 +4925,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 1955253937589200405}
-  button: {fileID: 1370086983249791455}
 --- !u!1 &8940342596742831790
 GameObject:
   m_ObjectHideFlags: 0

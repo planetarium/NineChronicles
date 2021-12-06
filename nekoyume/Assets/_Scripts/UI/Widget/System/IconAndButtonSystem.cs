@@ -8,13 +8,27 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class HasIconAndButtonSystem : SystemWidget
+    public class IconAndButtonSystem : SystemWidget
     {
         public enum SystemType : int
         {
             Error = 0,
             BlockChainError,
             Information,
+        }
+
+        [Serializable]
+        private struct IconAndButton
+        {
+            public GameObject rootGameObject;
+
+            public TextButton confirmButton;
+
+            public TextButton cancelButton;
+
+            public TextMeshProUGUI contentText;
+
+            public TextMeshProUGUI titleText;
         }
 
         [SerializeField]
@@ -51,7 +65,7 @@ namespace Nekoyume.UI
         {
             foreach (var ui in uiBySystemType)
             {
-                ui.gameObject.SetActive(false);
+                ui.rootGameObject.SetActive(false);
             }
             if (blur)
             {
@@ -178,7 +192,7 @@ namespace Nekoyume.UI
             _cancelButton = uiBySystemType[(int) type].cancelButton;
             _contentText = uiBySystemType[(int) type].contentText;
             _titleText = uiBySystemType[(int) type].titleText;
-            uiBySystemType[(int) type].gameObject.SetActive(true);
+            uiBySystemType[(int) type].rootGameObject.SetActive(true);
         }
     }
 }

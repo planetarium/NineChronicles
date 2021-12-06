@@ -394,18 +394,18 @@ namespace Nekoyume.Game
             }
 
             // FIXME 콜백 인자를 구조화 하면 타입 쿼리 없앨 수 있을 것 같네요.
-            HasIconAndButtonSystem popup;
+            IconAndButtonSystem popup;
             if (Agent is Agent _)
             {
                 var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
                     L10nManager.Localize("BLOCK_DOWNLOAD_FAIL"));
 
-                popup = Widget.Find<HasIconAndButtonSystem>();
+                popup = Widget.Find<IconAndButtonSystem>();
                 popup.Show(L10nManager.Localize("UI_ERROR"),
                     errorMsg,
                     L10nManager.Localize("UI_QUIT"),
                     false,
-                    HasIconAndButtonSystem.SystemType.BlockChainError);
+                    IconAndButtonSystem.SystemType.BlockChainError);
                 popup.SetCancelCallbackToExit();
 
                 return;
@@ -425,7 +425,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            popup = Widget.Find<HasIconAndButtonSystem>();
+            popup = Widget.Find<IconAndButtonSystem>();
             popup.Show("UI_ERROR", "UI_ERROR_RPC_CONNECTION", "UI_QUIT");
             popup.SetCancelCallbackToExit();
         }
@@ -572,7 +572,7 @@ namespace Nekoyume.Game
                     L10nManager.Localize(key),
                     code)
                 : errorMsg;
-            var popup = Widget.Find<HasIconAndButtonSystem>();
+            var popup = Widget.Find<IconAndButtonSystem>();
             popup.Show(L10nManager.Localize("UI_ERROR"), errorMsg,
                 L10nManager.Localize("UI_OK"), false);
             popup.SetCancelCallbackToExit();
@@ -601,7 +601,7 @@ namespace Nekoyume.Game
         {
             if (_options.Maintenance)
             {
-                var w = Widget.Create<HasIconAndButtonSystem>();
+                var w = Widget.Create<IconAndButtonSystem>();
                 w.CancelCallback = () =>
                 {
                     Application.OpenURL(GameConfig.DiscordLink);
@@ -616,7 +616,7 @@ namespace Nekoyume.Game
                     "UI_MAINTENANCE_CONTENT",
                     "UI_OK",
                     true,
-                    HasIconAndButtonSystem.SystemType.Information
+                    IconAndButtonSystem.SystemType.Information
                 );
                 yield break;
             }

@@ -337,7 +337,6 @@ namespace Nekoyume.UI
                         shopSell.Refresh();
                     }
                 });
-            //Find<HasIconAndButtonSystem>().Show();
         }
 
         public void Read(ItemEnhanceMail itemEnhanceMail)
