@@ -6,6 +6,12 @@
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
+    <PropertyGroup Condition="
+      '$([System.Runtime.InteropServices.RuntimeInformation]::
+        OSArchitecture.ToString())' == 'Arm64' ">
+      <TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
         <PackageReference Include="xunit" Version="2.4.1" />

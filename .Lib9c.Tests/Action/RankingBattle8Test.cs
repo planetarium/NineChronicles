@@ -278,9 +278,9 @@
         [InlineData(1)]
         public void ExecuteThrowFailedLoadStateException(int caseIndex)
         {
-            Address signer;
-            Address avatarAddress;
-            Address enemyAddress;
+            Address signer = default;
+            Address avatarAddress = default;
+            Address enemyAddress = default;
 
             switch (caseIndex)
             {
