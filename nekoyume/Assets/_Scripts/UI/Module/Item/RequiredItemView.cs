@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Nekoyume.UI.Model;
 using TMPro;
 
@@ -9,7 +9,7 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI requiredText;
 
         protected const string CountTextFormatEnough = "{0}/{1}";
-        protected const string CountTextFormatNotEnough = "<color=red>{0}</color>/{1}";
+        protected const string CountTextFormatNotEnough = "<#ff5a5a>{0}</color>/{1}";
 
         public int RequiredCount { get; set; } = 1;
 
