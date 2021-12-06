@@ -6,6 +6,7 @@ using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class RedeemCode : Widget
@@ -38,7 +39,10 @@ namespace Nekoyume.UI
             var code = codeField.text.Trim();
             Close();
             Game.Game.instance.ActionManager.RedeemCode(code).Subscribe();
-            NotificationSystem.Push(MailType.System, L10nManager.Localize("NOTIFICATION_REQUEST_REDEEM_CODE"));
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize("NOTIFICATION_REQUEST_REDEEM_CODE"),
+                NotificationCell.NotificationType.Information);
             OnRequested.Invoke();
         }
     }

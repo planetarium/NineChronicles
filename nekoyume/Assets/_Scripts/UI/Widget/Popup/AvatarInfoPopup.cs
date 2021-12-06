@@ -22,6 +22,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class AvatarInfoPopup : XTweenPopupWidget
@@ -717,7 +718,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize("UI_CHARGE_AP"));
+            NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize("UI_CHARGE_AP"),
+                NotificationCell.NotificationType.Information);
             Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
 
             var address = States.Instance.CurrentAvatarState.address;

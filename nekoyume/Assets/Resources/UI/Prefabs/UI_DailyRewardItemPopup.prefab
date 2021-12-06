@@ -1309,14 +1309,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 4979997259114752901}
   normalObject: {fileID: 705721542366199436}
+  normalText: {fileID: 8836945622092456840}
   conditionalObject: {fileID: 4875955165814963716}
+  conditionalText: {fileID: 5645994801992997259}
   disabledObject: {fileID: 6653492528016062873}
+  disabledText: {fileID: 8135494312821717374}
   effectOverlay: {fileID: 0}
   conditionInfoKey: 
-  texts:
-  - {fileID: 8836945622092456840}
-  - {fileID: 5645994801992997259}
-  - {fileID: 8135494312821717374}
 --- !u!1 &7128896813323800870
 GameObject:
   m_ObjectHideFlags: 0

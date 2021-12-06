@@ -2,11 +2,11 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.L10n;
+using Nekoyume.UI.Scroller;
+using TMPro;
 
 namespace Nekoyume.UI.Module
 {
-    using System.Collections.Generic;
-    using TMPro;
     using UniRx;
 
     public class ConditionalButton : MonoBehaviour
@@ -184,7 +184,10 @@ namespace Nekoyume.UI.Module
                     break;
                 case State.Conditional:
                     if (!string.IsNullOrEmpty(conditionInfoKey))
-                        NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize(conditionInfoKey));
+                        NotificationSystem.Push(
+                            Nekoyume.Model.Mail.MailType.System,
+                            L10nManager.Localize(conditionInfoKey),
+                            NotificationCell.NotificationType.Information);
                     break;
                 case State.Disabled:
                     break;

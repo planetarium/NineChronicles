@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI.Model
 {
@@ -46,7 +47,8 @@ namespace Nekoyume.UI.Model
                     else
                     {
                         OneLineSystem.Push(MailType.System,
-                            L10nManager.Localize("NOTIFICATION_BUY_WISHLIST_FULL"));
+                            L10nManager.Localize("NOTIFICATION_BUY_WISHLIST_FULL"),
+                            NotificationCell.NotificationType.Alert);
                     }
                 }
                 else

@@ -4,6 +4,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using UnityEngine;
 using UniRx;
+using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI
 {
@@ -64,7 +65,8 @@ namespace Nekoyume.UI
             if (Game.Game.instance.Stage.IsInStage)
             {
                 NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
-                    L10nManager.Localize("UI_BLOCK_EXIT"));
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Information);
                 return;
             }
 

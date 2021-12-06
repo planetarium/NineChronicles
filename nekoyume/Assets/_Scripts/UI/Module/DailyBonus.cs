@@ -17,6 +17,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class DailyBonus : AlphaAnimateModule
@@ -164,7 +165,10 @@ namespace Nekoyume.UI.Module
 
             if (actionPoint != null && actionPoint.NowCharging)
             {
-                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_CHARGING_AP"));
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_CHARGING_AP"),
+                    NotificationCell.NotificationType.Information);
             }
             else if (States.Instance.CurrentAvatarState.actionPoint > 0)
             {
@@ -188,8 +192,11 @@ namespace Nekoyume.UI.Module
 
         private void GetDailyReward()
         {
-            NotificationSystem.Push(MailType.System, L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
-
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"),
+                NotificationCell.NotificationType.Information);
+            
             Game.Game.instance.ActionManager.DailyReward().Subscribe();
 
             var address = States.Instance.CurrentAvatarState.address;

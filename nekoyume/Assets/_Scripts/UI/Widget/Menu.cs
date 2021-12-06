@@ -17,6 +17,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
     public class Menu : Widget
     {
@@ -115,7 +116,10 @@ namespace Nekoyume.UI
             var requiredCost = stageRow.CostAP;
             if (States.Instance.CurrentAvatarState.actionPoint < requiredCost)
             {
-                OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT"));
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("ERROR_ACTION_POINT"),
+                    NotificationCell.NotificationType.Alert);
                 return;
             }
 
@@ -314,7 +318,9 @@ namespace Nekoyume.UI
                     row => row.Id == worldId);
             if (worldRow is null)
             {
-                NotificationSystem.Push(MailType.System, L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"));
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"),
+                    NotificationCell.NotificationType.Information);
                 return;
             }
 
