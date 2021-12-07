@@ -1,6 +1,8 @@
 namespace Lib9c.Tests.Model.State
 {
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
@@ -9,6 +11,7 @@ namespace Lib9c.Tests.Model.State
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Xunit;
+    using static SerializeKeys;
 
     public class RankingStateTest
     {
@@ -35,7 +38,7 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Fact]
-        public void Deterministic_Between_Serialize_And_SerializeV1()
+        public void Deterministic_Between_Serialize_And_SerializeV1_With_Deterministic_Problem()
         {
             var state = new RankingState();
             for (var i = 0; i < 1000; i++)
@@ -44,7 +47,7 @@ namespace Lib9c.Tests.Model.State
             }
 
             var serialized = state.Serialize();
-            var serializedV1 = state.SerializeV1();
+            var serializedV1 = SerializeV1_With_Deterministic_Problem(state);
             Assert.Equal(serializedV1, serialized);
 
             var deserialized = new RankingState((Bencodex.Types.Dictionary)serialized);
@@ -84,6 +87,24 @@ namespace Lib9c.Tests.Model.State
 
             var deserialized = (RankingExceededException)formatter.Deserialize(ms);
             Assert.Equal(exec.Message, deserialized.Message);
+        }
+
+        private static IValue SerializeV1_With_Deterministic_Problem(RankingState rankingState)
+        {
+#pragma warning disable LAA1002
+            return new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text)"ranking_map"] = new Dictionary(rankingState.RankingMap.Select(kv =>
+                    new KeyValuePair<IKey, IValue>(
+                        (Binary)kv.Key.Serialize(),
+                        new List(kv.Value.Select(a => a.Serialize()))
+                    )
+                )),
+            }.Union(new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text)LegacyAddressKey] = rankingState.address.Serialize(),
+            })));
+#pragma warning restore LAA1002
         }
     }
 }
