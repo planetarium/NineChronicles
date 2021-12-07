@@ -344,6 +344,17 @@ namespace Nekoyume.UI.Module
                         return;
                     }
 
+                    var widgetLayerRoot = MainCanvas.instance
+                        .GetLayerRootTransform(WidgetType.Widget);
+                    var statusWidget = Widget.Find<Status>();
+                    foreach (var widget in MainCanvas.instance.Widgets.Where(widget =>
+                        widget.isActiveAndEnabled
+                        && widget.transform.parent.Equals(widgetLayerRoot)
+                        && !widget.Equals(statusWidget)))
+                    {
+                        widget.Close(true);
+                    }
+
                     Widget.Find<Craft>()?.gameObject.SetActive(false);
                     Widget.Find<UpgradeEquipment>()?.gameObject.SetActive(false);
                     Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
