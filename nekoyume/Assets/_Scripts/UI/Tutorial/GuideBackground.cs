@@ -61,13 +61,20 @@ namespace Nekoyume.UI
             mask.rectTransform.position = data.target ? data.target.position : Vector3.zero;
             mask.alpha = data.isEnableMask ? alpha : 0.0f;
 
-            float time = 0f;
-            float tick = maskDuration / 60.0f;
-            while (mask.alpha < alpha - 0.01f)
+            if (data.isEnableMask)
             {
-                time += tick;
-                mask.alpha = maskCurve.Evaluate(time) * alpha;
-                yield return null;
+                var time = 0f;
+                var tick = maskDuration / 60.0f;
+                while (mask.alpha < alpha - 0.01f)
+                {
+                    time += tick;
+                    mask.alpha = maskCurve.Evaluate(time) * alpha;
+                    yield return null;
+                }
+            }
+            else
+            {
+                mask.alpha = 0.0f;
             }
             callback?.Invoke();
         }
