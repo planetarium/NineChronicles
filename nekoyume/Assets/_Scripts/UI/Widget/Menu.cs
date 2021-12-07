@@ -71,9 +71,6 @@ namespace Nekoyume.UI
 
         private Coroutine _coLazyClose;
 
-        public Image combinationImage;
-        public Image hasSpriteImage;
-
         protected override void Awake()
         {
             base.Awake();

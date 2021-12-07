@@ -50,7 +50,12 @@ namespace Nekoyume.UI
         {
             yield return new WaitForSeconds(predelay);
             FadeIn(data.isExistFadeIn ? fadeDuration : 0.0f);
-            SetButton(data.fullScreenButton, data.buttonRectTransform, data.target);
+            SetButton(data.fullScreenButton,
+                data.buttonRectTransform,
+                data.target,
+                data.buttonRaycastPadding,
+                data.targetPositionOffset,
+                data.targetSizeOffset);
             SetMaskSize(data.target);
 
             mask.rectTransform.position = data.target ? data.target.position : Vector3.zero;
@@ -67,17 +72,34 @@ namespace Nekoyume.UI
             callback?.Invoke();
         }
 
-        private void SetButton(bool isFullScreen, RectTransform buttonRectTransform, RectTransform target)
+        private void SetButton(bool isFullScreen,
+            RectTransform buttonRectTransform,
+            RectTransform target,
+            Vector4 raycastPadding,
+            Vector2 targetPositionOffset,
+            Vector2 targetSizeOffset)
         {
             if (isFullScreen)
             {
+                buttonRectTransform.anchoredPosition = Vector2.zero;
+                buttonRectTransform.anchorMin = Vector2.one * 0.5f;
+                buttonRectTransform.anchorMax = Vector2.one * 0.5f;
+                buttonRectTransform.pivot = Vector2.one * 0.5f;
                 buttonRectTransform.position = Vector3.zero;
                 buttonRectTransform.sizeDelta = Vector2.one * 2000;
+                buttonRectTransform.GetComponent<Image>().raycastPadding = Vector4.zero;
             }
             else
             {
-                buttonRectTransform.position = target ? target.position  : Vector3.zero;
-                buttonRectTransform.sizeDelta = target ? target.sizeDelta : Vector2.one * 2000;
+                buttonRectTransform.anchoredPosition = target ? target.anchoredPosition : Vector2.zero;
+                buttonRectTransform.anchorMin = target ? target.anchorMin : Vector2.one * 0.5f;
+                buttonRectTransform.anchorMax = target ? target.anchorMax : Vector2.one * 0.5f;
+                buttonRectTransform.pivot = target ? target.pivot : Vector2.one * 0.5f;
+                buttonRectTransform.position = target ? target.position : Vector3.zero;
+                buttonRectTransform.anchoredPosition += target ? targetPositionOffset : Vector2.zero;
+                buttonRectTransform.sizeDelta = target ? target.sizeDelta + targetSizeOffset : Vector2.one * 2000;
+                buttonRectTransform.localScale = target ? target.localScale : Vector3.one;
+                buttonRectTransform.GetComponent<Image>().raycastPadding = raycastPadding;
             }
         }
 
