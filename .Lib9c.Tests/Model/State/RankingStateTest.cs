@@ -38,7 +38,7 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Fact]
-        public void Deterministic_Between_Serialize_And_SerializeV1_With_Deterministic_Problem()
+        public void Deterministic_Between_SerializeV1_And_SerializeV1_With_Deterministic_Problem()
         {
             var state = new RankingState();
             for (var i = 0; i < 1000; i++)
@@ -46,15 +46,15 @@ namespace Lib9c.Tests.Model.State
                 state.UpdateRankingMap(new PrivateKey().ToAddress());
             }
 
-            var serialized = state.Serialize();
-            var serializedV1 = SerializeV1_With_Deterministic_Problem(state);
-            Assert.Equal(serializedV1, serialized);
+            var serializedV1 = state.Serialize();
+            var serializedV1WithDeterministicProblem = SerializeV1_With_Deterministic_Problem(state);
+            Assert.Equal(serializedV1WithDeterministicProblem, serializedV1);
 
-            var deserialized = new RankingState((Bencodex.Types.Dictionary)serialized);
-            var deserializedV1 = new RankingState((Bencodex.Types.Dictionary)serializedV1);
-            serialized = deserialized.Serialize();
-            serializedV1 = deserializedV1.Serialize();
-            Assert.Equal(serializedV1, serialized);
+            var deserialized = new RankingState((Bencodex.Types.Dictionary)serializedV1);
+            var deserializedV1 = new RankingState((Bencodex.Types.Dictionary)serializedV1WithDeterministicProblem);
+            serializedV1 = deserialized.Serialize();
+            serializedV1WithDeterministicProblem = deserializedV1.Serialize();
+            Assert.Equal(serializedV1WithDeterministicProblem, serializedV1);
         }
 
         [Fact]
