@@ -180,7 +180,6 @@ namespace Nekoyume.UI
 
             var prefsKey = $"TUTORIAL_PROGRESS";
             PlayerPrefs.SetInt(prefsKey, id);
-            Debug.LogWarning($"Saved tutorial progress : {id}");
         }
     }
 }
