@@ -170,7 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e2d7e1f5f0fcf4aa7cc90aaf97dfe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 1
+  playAtStart: 1
   startDelay: 0
   duration: 1
   tweenType: 0
@@ -526,7 +526,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e20b377b90b84274db63bc9c14107473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 1
+  playAtStart: 1
   startDelay: 0
   duration: 1
   tweenType: 0
@@ -544,7 +544,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   beginValue: 0
   endValue: 1
-  infiniteLoop: 1
+  infiniteLoop: 0
 --- !u!1 &5214974218392538790
 GameObject:
   m_ObjectHideFlags: 0
@@ -858,7 +858,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e20b377b90b84274db63bc9c14107473, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 1
+  playAtStart: 1
   startDelay: 0
   duration: 1
   tweenType: 0
