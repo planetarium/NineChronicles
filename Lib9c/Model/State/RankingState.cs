@@ -66,20 +66,5 @@ namespace Nekoyume.Model.State
             return ((Bencodex.Types.Dictionary)base.Serialize())
                 .SetItem("ranking_map", rankingMapValue);
         }
-
-        [Obsolete("Since it contains a deterministic problem, replace it with the `Serialize()` method that operates deterministically like this logic.")]
-        public IValue SerializeV1() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"ranking_map"] = new Dictionary(RankingMap.Select(kv =>
-                    new KeyValuePair<IKey, IValue>(
-                        (Binary)kv.Key.Serialize(),
-
-                        new List(kv.Value.Select(a => a.Serialize()))
-                    )
-                )),
-            }.Union((Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
     }
 }
