@@ -6,126 +6,126 @@ filter: Linear,Linear
 repeat: none
 body
   rotate: false
-  xy: 2, 130
+  xy: 162, 182
   size: 91, 71
   orig: 91, 71
   offset: 0, 0
   index: -1
 die
-  rotate: true
-  xy: 2, 19
+  rotate: false
+  xy: 2, 172
   size: 109, 30
   orig: 109, 30
   offset: 0, 0
   index: -1
 face_01
   rotate: false
-  xy: 206, 201
+  xy: 111, 131
   size: 38, 27
   orig: 38, 27
   offset: 0, 0
   index: -1
 face_02
-  rotate: true
-  xy: 123, 161
+  rotate: false
+  xy: 203, 122
   size: 40, 30
   orig: 40, 30
   offset: 0, 0
   index: -1
 face_03
-  rotate: true
-  xy: 77, 91
+  rotate: false
+  xy: 108, 106
   size: 37, 23
   orig: 37, 23
   offset: 0, 0
   index: -1
 face_04
   rotate: false
-  xy: 34, 67
+  xy: 2, 142
   size: 41, 28
   orig: 41, 28
   offset: 0, 0
   index: -1
 leg_L
-  rotate: false
-  xy: 95, 130
+  rotate: true
+  xy: 2, 127
   size: 13, 22
   orig: 13, 22
   offset: 0, 0
   index: -1
 leg_R
   rotate: false
-  xy: 77, 67
+  xy: 95, 148
   size: 14, 22
   orig: 14, 22
   offset: 0, 0
   index: -1
 shadow
   rotate: false
-  xy: 2, 203
+  xy: 2, 204
   size: 158, 49
   orig: 158, 49
   offset: 0, 0
   index: -1
 sweat2
-  rotate: true
-  xy: 2, 7
+  rotate: false
+  xy: 26, 113
   size: 10, 27
   orig: 10, 27
   offset: 0, 0
   index: -1
 tear
-  rotate: false
-  xy: 246, 221
+  rotate: true
+  xy: 245, 149
   size: 3, 7
   orig: 3, 7
   offset: 0, 0
   index: -1
 wood_01
-  rotate: false
-  xy: 162, 207
+  rotate: true
+  xy: 113, 160
   size: 42, 45
   orig: 42, 45
   offset: 0, 0
   index: -1
 wood_02
-  rotate: true
-  xy: 102, 95
+  rotate: false
+  xy: 45, 118
   size: 33, 28
   orig: 33, 28
   offset: 0, 0
   index: -1
 wood_03
   rotate: true
-  xy: 60, 31
+  xy: 80, 112
   size: 34, 26
   orig: 34, 26
   offset: 0, 0
   index: -1
 wood_04
   rotate: false
-  xy: 206, 230
+  xy: 45, 148
   size: 48, 22
   orig: 48, 22
   offset: 0, 0
   index: -1
 wood_05
-  rotate: true
-  xy: 34, 23
+  rotate: false
+  xy: 151, 123
   size: 42, 24
   orig: 42, 24
   offset: 0, 0
   index: -1
 wood_06
   rotate: false
-  xy: 34, 97
+  xy: 160, 149
   size: 41, 31
   orig: 41, 31
   offset: 0, 0
   index: -1
 wood_07
-  rotate: false
-  xy: 95, 154
+  rotate: true
+  xy: 203, 154
   size: 26, 47
   orig: 26, 47
   offset: 0, 0

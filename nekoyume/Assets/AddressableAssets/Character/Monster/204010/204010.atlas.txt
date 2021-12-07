@@ -5,71 +5,71 @@ format: RGBA8888
 filter: Linear,Linear
 repeat: none
 arm_L
-  rotate: false
-  xy: 72, 168
+  rotate: true
+  xy: 207, 202
   size: 10, 9
   orig: 10, 9
   offset: 0, 0
   index: -1
 arm_R
   rotate: false
-  xy: 24, 25
+  xy: 207, 188
   size: 8, 12
   orig: 8, 12
   offset: 0, 0
   index: -1
 body
   rotate: false
-  xy: 2, 168
+  xy: 93, 202
   size: 68, 51
   orig: 68, 51
   offset: 0, 0
   index: -1
 face_01
-  rotate: true
-  xy: 57, 139
+  rotate: false
+  xy: 134, 178
   size: 27, 22
   orig: 27, 22
   offset: 0, 0
   index: -1
 face_02
   rotate: false
-  xy: 208, 230
+  xy: 90, 157
   size: 29, 23
   orig: 29, 23
   offset: 0, 0
   index: -1
 face_03
   rotate: false
-  xy: 171, 234
+  xy: 218, 212
   size: 35, 19
   orig: 35, 19
   offset: 0, 0
   index: -1
 face_04
-  rotate: true
-  xy: 41, 95
+  rotate: false
+  xy: 58, 175
   size: 30, 17
   orig: 30, 17
   offset: 0, 0
   index: -1
 leaf_01
   rotate: false
-  xy: 2, 39
+  xy: 218, 180
   size: 34, 30
   orig: 34, 30
   offset: 0, 0
   index: -1
 leaf_02
-  rotate: true
-  xy: 72, 179
+  rotate: false
+  xy: 92, 182
   size: 40, 18
   orig: 40, 18
   offset: 0, 0
   index: -1
 leg_R
   rotate: false
-  xy: 57, 127
+  xy: 121, 170
   size: 11, 10
   orig: 11, 10
   offset: 0, 0
@@ -83,42 +83,42 @@ shadow
   index: -1
 tear
   rotate: false
-  xy: 93, 222
+  xy: 207, 182
   size: 7, 4
   orig: 7, 4
   offset: 0, 0
   index: -1
 wood_01
-  rotate: true
-  xy: 2, 71
+  rotate: false
+  xy: 2, 182
   size: 54, 37
   orig: 54, 37
   offset: 0, 0
   index: -1
 wood_02
   rotate: false
-  xy: 93, 228
+  xy: 163, 187
   size: 42, 25
   orig: 42, 25
   offset: 0, 0
   index: -1
 wood_03
   rotate: false
-  xy: 137, 228
+  xy: 58, 194
   size: 32, 25
   orig: 32, 25
   offset: 0, 0
   index: -1
 wood_04
-  rotate: false
-  xy: 2, 2
+  rotate: true
+  xy: 218, 233
   size: 20, 35
   orig: 20, 35
   offset: 0, 0
   index: -1
 wood_05
   rotate: false
-  xy: 2, 127
+  xy: 163, 214
   size: 53, 39
   orig: 53, 39
   offset: 0, 0

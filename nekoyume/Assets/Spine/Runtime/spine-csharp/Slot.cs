@@ -1,31 +1,30 @@
 /******************************************************************************
- * Spine Runtimes Software License v2.5
+ * Spine Runtimes License Agreement
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2016, Esoteric Software
- * All rights reserved.
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
- * You are granted a perpetual, non-exclusive, non-sublicensable, and
- * non-transferable license to use, install, execute, and perform the Spine
- * Runtimes software and derivative works solely for personal or internal
- * use. Without the written permission of Esoteric Software (see Section 2 of
- * the Spine Software License Agreement), you may not (a) modify, translate,
- * adapt, or develop new applications using the Spine Runtimes or otherwise
- * create derivative works or improvements of the Spine Runtimes or (b) remove,
- * delete, alter, or obscure any trademarks or any copyright, trademark, patent,
- * or other intellectual property or proprietary rights notices on or in the
- * Software, including any copy thereof. Redistributions in binary or source
- * form must include this license and terms.
+ * Integration of the Spine Runtimes into software or otherwise creating
+ * derivative works of the Spine Runtimes is permitted under the terms and
+ * conditions of Section 2 of the Spine Editor License Agreement:
+ * http://esotericsoftware.com/spine-editor-license
  *
- * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
- * EVENT SHALL ESOTERIC SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, BUSINESS INTERRUPTION, OR LOSS OF
- * USE, DATA, OR PROFITS) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * Otherwise, it is permitted to integrate the Spine Runtimes into software
+ * or otherwise create derivative works of the Spine Runtimes (collectively,
+ * "Products"), provided that each user of the Products must obtain their own
+ * Spine Editor license and redistribution of the Products in any form must
+ * include this license and copyright notice.
+ *
+ * THE SPINE RUNTIMES ARE PROVIDED BY ESOTERIC SOFTWARE LLC "AS IS" AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ESOTERIC SOFTWARE LLC BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES,
+ * BUSINESS INTERRUPTION, OR LOSS OF USE, DATA, OR PROFITS) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
 using System;
@@ -45,7 +44,8 @@ namespace Spine {
 		internal bool hasSecondColor;
 		internal Attachment attachment;
 		internal float attachmentTime;
-		internal ExposedList<float> attachmentVertices = new ExposedList<float>();
+		internal ExposedList<float> deform = new ExposedList<float>();
+		internal int attachmentState;
 
 		public Slot (SlotData data, Bone bone) {
 			if (data == null) throw new ArgumentNullException("data", "data cannot be null.");
@@ -84,6 +84,7 @@ namespace Spine {
 
 			attachment = slot.attachment;
 			attachmentTime = slot.attachmentTime;
+			deform.AddRange(slot.deform);
 		}
 
 		/// <summary>The slot's setup pose data.</summary>
@@ -105,6 +106,13 @@ namespace Spine {
 		/// color tinting.</summary>
 		public float A { get { return a; } set { a = value; } }
 
+		public void ClampColor() {
+			r = MathUtils.Clamp(r, 0, 1);
+			g = MathUtils.Clamp(g, 0, 1);
+			b = MathUtils.Clamp(b, 0, 1);
+			a = MathUtils.Clamp(a, 0, 1);
+		}
+
 		/// <summary>The dark color used to tint the slot's attachment for two color tinting, ignored if two color tinting is not used.</summary>
 		/// <seealso cref="HasSecondColor"/>
 		public float R2 { get { return r2; } set { r2 = value; } }
@@ -117,18 +125,24 @@ namespace Spine {
 		/// <summary>Whether R2 G2 B2 are used to tint the slot's attachment for two color tinting. False if two color tinting is not used.</summary>
 		public bool HasSecondColor { get { return data.hasSecondColor; } set { data.hasSecondColor = value; } }
 
+		public void ClampSecondColor () {
+			r2 = MathUtils.Clamp(r2, 0, 1);
+			g2 = MathUtils.Clamp(g2, 0, 1);
+			b2 = MathUtils.Clamp(b2, 0, 1);
+		}
+
 		public Attachment Attachment {
 			/// <summary>The current attachment for the slot, or null if the slot has no attachment.</summary>
 			get { return attachment; }
 			/// <summary>
 			/// Sets the slot's attachment and, if the attachment changed, resets <see cref="AttachmentTime"/> and clears
-			/// <see cref="AttachmentVertices">.</summary>
+			/// <see cref="Deform">.</summary>
 			/// <param name="value">May be null.</param>
 			set {
 				if (attachment == value) return;
 				attachment = value;
 				attachmentTime = bone.skeleton.time;
-				attachmentVertices.Clear(false);
+				deform.Clear(false);
 			}
 		}
 
@@ -143,13 +157,13 @@ namespace Spine {
 		/// weighted mesh, the entries are an offset for each vertex which will be added to the mesh's local vertex positions.
 		/// <para />
 		/// See <see cref="VertexAttachment.ComputeWorldVertices(Slot, int, int, float[], int, int)"/> and <see cref="DeformTimeline"/>.</summary>
-		public ExposedList<float> AttachmentVertices {
+		public ExposedList<float> Deform {
 			get {
-				return attachmentVertices;
+				return deform;
 			}
 			set {
-				if (attachmentVertices == null) throw new ArgumentNullException("attachmentVertices", "attachmentVertices cannot be null.");
-				attachmentVertices = value;
+				if (deform == null) throw new ArgumentNullException("deform", "deform cannot be null.");
+				deform = value;
 			}
 		}
 

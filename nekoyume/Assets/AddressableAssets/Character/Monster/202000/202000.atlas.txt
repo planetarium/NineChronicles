@@ -5,267 +5,267 @@ format: RGBA8888
 filter: Linear,Linear
 repeat: none
 arm_L
-  rotate: true
-  xy: 231, 184
+  rotate: false
+  xy: 209, 205
   size: 33, 23
   orig: 33, 23
   offset: 0, 0
   index: -1
 arm_R
   rotate: false
-  xy: 207, 102
+  xy: 116, 210
   size: 31, 21
   orig: 31, 21
   offset: 0, 0
   index: -1
 basket
-  rotate: false
-  xy: 53, 160
+  rotate: true
+  xy: 149, 43
   size: 50, 65
   orig: 50, 65
   offset: 0, 0
   index: -1
 basket_02
-  rotate: true
-  xy: 139, 168
+  rotate: false
+  xy: 2, 155
   size: 49, 31
   orig: 49, 31
   offset: 0, 0
   index: -1
 basket_R_01
-  rotate: false
-  xy: 72, 129
+  rotate: true
+  xy: 48, 213
   size: 20, 29
   orig: 20, 29
   offset: 0, 0
   index: -1
 basket_R_02
-  rotate: true
-  xy: 76, 103
+  rotate: false
+  xy: 32, 235
   size: 24, 13
   orig: 24, 13
   offset: 0, 0
   index: -1
 body_01
-  rotate: false
-  xy: 2, 156
+  rotate: true
+  xy: 78, 53
   size: 49, 69
   orig: 49, 69
   offset: 0, 0
   index: -1
 body_02
   rotate: true
-  xy: 105, 131
+  xy: 167, 136
   size: 35, 40
   orig: 35, 40
   offset: 0, 0
   index: -1
 ear_L
   rotate: true
-  xy: 180, 221
+  xy: 53, 115
   size: 33, 51
   orig: 33, 51
   offset: 0, 0
   index: -1
 ear_R
   rotate: true
-  xy: 116, 219
+  xy: 163, 95
   size: 35, 62
   orig: 35, 62
   offset: 0, 0
   index: -1
 eye_01
-  rotate: true
-  xy: 233, 219
+  rotate: false
+  xy: 172, 208
   size: 35, 21
   orig: 35, 21
   offset: 0, 0
   index: -1
 eye_02
-  rotate: true
-  xy: 147, 131
+  rotate: false
+  xy: 2, 189
   size: 35, 23
   orig: 35, 23
   offset: 0, 0
   index: -1
 face_01
-  rotate: true
-  xy: 2, 23
+  rotate: false
+  xy: 106, 104
   size: 55, 44
   orig: 55, 44
   offset: 0, 0
   index: -1
 face_02
-  rotate: true
-  xy: 172, 178
+  rotate: false
+  xy: 209, 132
   size: 39, 35
   orig: 39, 35
   offset: 0, 0
   index: -1
 face_03
   rotate: false
-  xy: 209, 152
+  xy: 174, 173
   size: 36, 30
   orig: 36, 30
   offset: 0, 0
   index: -1
 foot_L
   rotate: false
-  xy: 48, 68
+  xy: 149, 210
   size: 21, 21
   orig: 21, 21
   offset: 0, 0
   index: -1
 foot_R
-  rotate: false
-  xy: 47, 123
+  rotate: true
+  xy: 39, 188
   size: 23, 31
   orig: 23, 31
   offset: 0, 0
   index: -1
 hand_L_01
-  rotate: false
-  xy: 91, 110
+  rotate: true
+  xy: 13, 237
   size: 11, 17
   orig: 11, 17
   offset: 0, 0
   index: -1
 hand_L_02
   rotate: false
-  xy: 94, 150
+  xy: 2, 240
   size: 9, 8
   orig: 9, 8
   offset: 0, 0
   index: -1
 hand_L_03
-  rotate: true
-  xy: 27, 2
+  rotate: false
+  xy: 216, 230
   size: 19, 18
   orig: 19, 18
   offset: 0, 0
   index: -1
 hand_R
   rotate: false
-  xy: 48, 49
+  xy: 174, 231
   size: 20, 17
   orig: 20, 17
   offset: 0, 0
   index: -1
 hand_stone
-  rotate: false
-  xy: 70, 48
+  rotate: true
+  xy: 196, 231
   size: 17, 18
   orig: 17, 18
   offset: 0, 0
   index: -1
 leg_L
-  rotate: true
-  xy: 47, 2
+  rotate: false
+  xy: 2, 217
   size: 19, 18
   orig: 19, 18
   offset: 0, 0
   index: -1
 leg_R
-  rotate: true
-  xy: 48, 26
+  rotate: false
+  xy: 90, 233
   size: 21, 15
   orig: 21, 15
   offset: 0, 0
   index: -1
 shadow
   rotate: false
-  xy: 2, 227
+  xy: 53, 150
   size: 112, 27
   orig: 112, 27
   offset: 0, 0
   index: -1
 shoulder_L
-  rotate: false
-  xy: 209, 184
+  rotate: true
+  xy: 79, 211
   size: 20, 35
   orig: 20, 35
   offset: 0, 0
   index: -1
 shoulder_R
-  rotate: true
-  xy: 47, 91
+  rotate: false
+  xy: 142, 179
   size: 30, 27
   orig: 30, 27
   offset: 0, 0
   index: -1
 stone_01
   rotate: true
-  xy: 240, 110
+  xy: 58, 235
   size: 13, 14
   orig: 13, 14
   offset: 0, 0
   index: -1
 stone_02
   rotate: false
-  xy: 65, 31
+  xy: 113, 233
   size: 18, 15
   orig: 18, 15
   offset: 0, 0
   index: -1
 stone_03
   rotate: true
-  xy: 2, 2
+  xy: 23, 214
   size: 19, 23
   orig: 19, 23
   offset: 0, 0
   index: -1
 stone_04
-  rotate: false
-  xy: 67, 13
+  rotate: true
+  xy: 133, 233
   size: 15, 16
   orig: 15, 16
   offset: 0, 0
   index: -1
 stone_05
   rotate: false
-  xy: 240, 95
+  xy: 74, 235
   size: 14, 13
   orig: 14, 13
   offset: 0, 0
   index: -1
 stone_06
   rotate: false
-  xy: 172, 114
+  xy: 107, 182
   size: 33, 26
   orig: 33, 26
   offset: 0, 0
   index: -1
 tail
-  rotate: true
-  xy: 2, 80
+  rotate: false
+  xy: 2, 70
   size: 74, 43
   orig: 74, 43
   offset: 0, 0
   index: -1
 thigh_L
   rotate: false
-  xy: 209, 125
+  xy: 72, 184
   size: 33, 25
   orig: 33, 25
   offset: 0, 0
   index: -1
 thigh_R
   rotate: false
-  xy: 172, 142
+  xy: 212, 169
   size: 35, 34
   orig: 35, 34
   offset: 0, 0
   index: -1
 toe_L
-  rotate: true
-  xy: 71, 68
+  rotate: false
+  xy: 151, 233
   size: 21, 15
   orig: 21, 15
   offset: 0, 0
   index: -1
 waist
-  rotate: false
-  xy: 105, 168
+  rotate: true
+  xy: 2, 121
   size: 32, 49
   orig: 32, 49
   offset: 0, 0
