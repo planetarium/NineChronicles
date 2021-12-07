@@ -47,7 +47,7 @@ Use `xl()` for exporting all datas defined in [config.json](config.json)
 # Custom Functions
  GameDataManager has full access to all your gamedata. You can do wonders with such power. GameDataManger is aiming to let any game designers to write down necessary julia script and distribute to the team. Those scripts would be prone to bug and might not be maintainable in the long run. But that's **OK** because those scripts will resides in the seperate package, and won't jeopardize others.
 
-For demonstration I've put something inside [NineChronicles](.\julia\NineChronicles\src\NineChronicles.jl) to help with managing localization data with Excel. 
+For demonstration I've put something inside [NineChronicles](./julia/NineChronicles/src/NineChronicles.jl) to help with managing localization data with Excel. 
 
 You can use it after [loading the project](#Loading-the-NineChronicle-project)
 ```julia
