@@ -428,7 +428,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            if (tutorialProgress == 1)
+            if (!Game.Game.instance.Stage.TutorialController.IsPlaying &&
+                tutorialProgress == 1)
             {
                 var recipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
                     .FirstOrDefault();

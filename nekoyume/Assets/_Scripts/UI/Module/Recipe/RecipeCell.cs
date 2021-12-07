@@ -135,6 +135,7 @@ namespace Nekoyume.UI.Module
                 IsLocked = true;
             }
 
+            lockOpenVFXObject.SetActive(false);
             gameObject.SetActive(true);
 
             if (selectable)
