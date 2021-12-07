@@ -477,7 +477,7 @@ namespace Nekoyume.UI
             if (States.Instance.CurrentAvatarState != null)
             {
                 var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
-                var infos2 = state.GetArenaInfos(currentAvatarAddress, 90, 10);
+                var infos2 = state.GetArenaInfos(currentAvatarAddress, 50, 10);
                 // Player does not play prev & this week arena.
                 if (!infos2.Any() && state.OrderedArenaInfos.Any())
                 {
