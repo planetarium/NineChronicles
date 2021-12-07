@@ -8,7 +8,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 0,
-    "_name": "$gamedata.SkillSheet.100000._name"
+    "_name": "$gamedata.SkillSheet._name.100000"
   },
   {
     "id": "100001",
@@ -19,7 +19,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet.100001._name"
+    "_name": "$gamedata.SkillSheet._name.100001"
   },
   {
     "id": "_100002",
@@ -30,7 +30,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet._100002._name"
+    "_name": "$gamedata.SkillSheet._name._100002"
   },
   {
     "id": "100003",
@@ -41,7 +41,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 2,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet.100003._name"
+    "_name": "$gamedata.SkillSheet._name.100003"
   },
   {
     "id": "100005",
@@ -52,7 +52,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 5,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet.100005._name"
+    "_name": "$gamedata.SkillSheet._name.100005"
   },
   {
     "id": "110000",
@@ -63,7 +63,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet.110000._name"
+    "_name": "$gamedata.SkillSheet._name.110000"
   },
   {
     "id": "110001",
@@ -74,7 +74,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 5,
-    "_name": "$gamedata.SkillSheet.110001._name"
+    "_name": "$gamedata.SkillSheet._name.110001"
   },
   {
     "id": "110002",
@@ -85,7 +85,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 1,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.110002._name"
+    "_name": "$gamedata.SkillSheet._name.110002"
   },
   {
     "id": "110003",
@@ -96,7 +96,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 2,
     "cooldown": 3,
-    "_name": "$gamedata.SkillSheet.110003._name"
+    "_name": "$gamedata.SkillSheet._name.110003"
   },
   {
     "id": "110004",
@@ -107,7 +107,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 2,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.110004._name"
+    "_name": "$gamedata.SkillSheet._name.110004"
   },
   {
     "id": "110005",
@@ -118,7 +118,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 5,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.110005._name"
+    "_name": "$gamedata.SkillSheet._name.110005"
   },
   {
     "id": "120000",
@@ -129,7 +129,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet.120000._name"
+    "_name": "$gamedata.SkillSheet._name.120000"
   },
   {
     "id": "120001",
@@ -140,7 +140,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 5,
-    "_name": "$gamedata.SkillSheet.120001._name"
+    "_name": "$gamedata.SkillSheet._name.120001"
   },
   {
     "id": "120002",
@@ -151,7 +151,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 1,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.120002._name"
+    "_name": "$gamedata.SkillSheet._name.120002"
   },
   {
     "id": "120003",
@@ -162,7 +162,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 2,
     "cooldown": 3,
-    "_name": "$gamedata.SkillSheet.120003._name"
+    "_name": "$gamedata.SkillSheet._name.120003"
   },
   {
     "id": "120004",
@@ -173,7 +173,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 2,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.120004._name"
+    "_name": "$gamedata.SkillSheet._name.120004"
   },
   {
     "id": "120005",
@@ -184,7 +184,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 5,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.120005._name"
+    "_name": "$gamedata.SkillSheet._name.120005"
   },
   {
     "id": "130000",
@@ -195,7 +195,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet.130000._name"
+    "_name": "$gamedata.SkillSheet._name.130000"
   },
   {
     "id": "130001",
@@ -206,7 +206,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 5,
-    "_name": "$gamedata.SkillSheet.130001._name"
+    "_name": "$gamedata.SkillSheet._name.130001"
   },
   {
     "id": "130002",
@@ -217,7 +217,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 1,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.130002._name"
+    "_name": "$gamedata.SkillSheet._name.130002"
   },
   {
     "id": "130003",
@@ -228,7 +228,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 2,
     "cooldown": 3,
-    "_name": "$gamedata.SkillSheet.130003._name"
+    "_name": "$gamedata.SkillSheet._name.130003"
   },
   {
     "id": "130004",
@@ -239,7 +239,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 2,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.130004._name"
+    "_name": "$gamedata.SkillSheet._name.130004"
   },
   {
     "id": "130005",
@@ -250,7 +250,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 5,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.130005._name"
+    "_name": "$gamedata.SkillSheet._name.130005"
   },
   {
     "id": "140000",
@@ -261,7 +261,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet.140000._name"
+    "_name": "$gamedata.SkillSheet._name.140000"
   },
   {
     "id": "140001",
@@ -272,7 +272,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 5,
-    "_name": "$gamedata.SkillSheet.140001._name"
+    "_name": "$gamedata.SkillSheet._name.140001"
   },
   {
     "id": "140002",
@@ -283,7 +283,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 1,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.140002._name"
+    "_name": "$gamedata.SkillSheet._name.140002"
   },
   {
     "id": "140003",
@@ -294,7 +294,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 2,
     "cooldown": 3,
-    "_name": "$gamedata.SkillSheet.140003._name"
+    "_name": "$gamedata.SkillSheet._name.140003"
   },
   {
     "id": "140004",
@@ -305,7 +305,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 2,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.140004._name"
+    "_name": "$gamedata.SkillSheet._name.140004"
   },
   {
     "id": "140005",
@@ -316,7 +316,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 5,
     "cooldown": 13,
-    "_name": "$gamedata.SkillSheet.140005._name"
+    "_name": "$gamedata.SkillSheet._name.140005"
   },
   {
     "id": "200000",
@@ -327,7 +327,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.200000._name"
+    "_name": "$gamedata.SkillSheet._name.200000"
   },
   {
     "id": "_200001",
@@ -338,7 +338,7 @@
     "skill_target_type": "Ally",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet._200001._name"
+    "_name": "$gamedata.SkillSheet._name._200001"
   },
   {
     "id": "210000",
@@ -349,7 +349,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 25,
-    "_name": "$gamedata.SkillSheet.210000._name"
+    "_name": "$gamedata.SkillSheet._name.210000"
   },
   {
     "id": "_210001",
@@ -360,7 +360,7 @@
     "skill_target_type": "Ally",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet._210001._name"
+    "_name": "$gamedata.SkillSheet._name._210001"
   },
   {
     "id": "210002",
@@ -371,7 +371,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.210002._name"
+    "_name": "$gamedata.SkillSheet._name.210002"
   },
   {
     "id": "210003",
@@ -382,7 +382,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.210003._name"
+    "_name": "$gamedata.SkillSheet._name.210003"
   },
   {
     "id": "210004",
@@ -393,7 +393,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.210004._name"
+    "_name": "$gamedata.SkillSheet._name.210004"
   },
   {
     "id": "220000",
@@ -404,7 +404,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 25,
-    "_name": "$gamedata.SkillSheet.220000._name"
+    "_name": "$gamedata.SkillSheet._name.220000"
   },
   {
     "id": "_220001",
@@ -415,7 +415,7 @@
     "skill_target_type": "Ally",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet._220001._name"
+    "_name": "$gamedata.SkillSheet._name._220001"
   },
   {
     "id": "220002",
@@ -426,7 +426,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.220002._name"
+    "_name": "$gamedata.SkillSheet._name.220002"
   },
   {
     "id": "220003",
@@ -437,7 +437,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.220003._name"
+    "_name": "$gamedata.SkillSheet._name.220003"
   },
   {
     "id": "220004",
@@ -448,7 +448,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.220004._name"
+    "_name": "$gamedata.SkillSheet._name.220004"
   },
   {
     "id": "230000",
@@ -459,7 +459,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 25,
-    "_name": "$gamedata.SkillSheet.230000._name"
+    "_name": "$gamedata.SkillSheet._name.230000"
   },
   {
     "id": "_230001",
@@ -470,7 +470,7 @@
     "skill_target_type": "Ally",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet._230001._name"
+    "_name": "$gamedata.SkillSheet._name._230001"
   },
   {
     "id": "230002",
@@ -481,7 +481,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.230002._name"
+    "_name": "$gamedata.SkillSheet._name.230002"
   },
   {
     "id": "230003",
@@ -492,7 +492,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.230003._name"
+    "_name": "$gamedata.SkillSheet._name.230003"
   },
   {
     "id": "230004",
@@ -503,7 +503,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.230004._name"
+    "_name": "$gamedata.SkillSheet._name.230004"
   },
   {
     "id": "240000",
@@ -514,7 +514,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 25,
-    "_name": "$gamedata.SkillSheet.240000._name"
+    "_name": "$gamedata.SkillSheet._name.240000"
   },
   {
     "id": "_240001",
@@ -525,7 +525,7 @@
     "skill_target_type": "Ally",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet._240001._name"
+    "_name": "$gamedata.SkillSheet._name._240001"
   },
   {
     "id": "240002",
@@ -536,7 +536,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.240002._name"
+    "_name": "$gamedata.SkillSheet._name.240002"
   },
   {
     "id": "240003",
@@ -547,7 +547,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.240003._name"
+    "_name": "$gamedata.SkillSheet._name.240003"
   },
   {
     "id": "240004",
@@ -558,7 +558,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.240004._name"
+    "_name": "$gamedata.SkillSheet._name.240004"
   },
   {
     "id": "250000",
@@ -569,7 +569,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 25,
-    "_name": "$gamedata.SkillSheet.250000._name"
+    "_name": "$gamedata.SkillSheet._name.250000"
   },
   {
     "id": "_250001",
@@ -580,7 +580,7 @@
     "skill_target_type": "Ally",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet._250001._name"
+    "_name": "$gamedata.SkillSheet._name._250001"
   },
   {
     "id": "250002",
@@ -591,7 +591,7 @@
     "skill_target_type": "Enemy",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.250002._name"
+    "_name": "$gamedata.SkillSheet._name.250002"
   },
   {
     "id": "250003",
@@ -602,7 +602,7 @@
     "skill_target_type": "Enemies",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.250003._name"
+    "_name": "$gamedata.SkillSheet._name.250003"
   },
   {
     "id": "250004",
@@ -613,7 +613,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.250004._name"
+    "_name": "$gamedata.SkillSheet._name.250004"
   },
   {
     "id": "300000",
@@ -624,7 +624,7 @@
     "skill_target_type": "Self",
     "hit_count": 1,
     "cooldown": 10,
-    "_name": "$gamedata.SkillSheet.300000._name"
+    "_name": "$gamedata.SkillSheet._name.300000"
   },
   {
     "id": "_300001",
@@ -635,6 +635,6 @@
     "skill_target_type": "Ally",
     "hit_count": 1,
     "cooldown": 1,
-    "_name": "$gamedata.SkillSheet._300001._name"
+    "_name": "$gamedata.SkillSheet._name._300001"
   }
 ]

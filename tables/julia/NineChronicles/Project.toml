@@ -1,0 +1,10 @@
+name = "NineChronicles"
+uuid = "6ed67ad0-c4fd-4ed8-b380-134313ce4d15"
+authors = ["YongHeeKim <masterplanf@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+GameDataManager = "7e4809e4-a3a8-4b3b-a5e8-a128d6c0d43e"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"

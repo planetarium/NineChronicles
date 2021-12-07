@@ -4,7 +4,12 @@
     "environment": {
         "xlsx": "./xlsx",
         "out": "./json",
-        "localize": "./localization"
+        "localize": "./localization",
+        "juliaModule": "./julia"
+    },
+    "localization":{
+        "baseLanguage": "Korean",
+        "targetLanguage": ["English", "PortugueseBrazil", "Portuguese", "Japanese","German","Spanish","Thai","Polish","Lithuanian","Dutch","Indonesian","French","Russian","Cambodian","Urdu","ChineseSimplified","Hungarian"]
     },
     "xlsxtables": {
         "GameConfig.xlsx": {

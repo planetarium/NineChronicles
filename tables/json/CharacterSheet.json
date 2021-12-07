@@ -18,7 +18,7 @@
     "lv_spd": 2.8,
     "attack_range": 0.5,
     "run_speed": 3,
-    "_name": "$gamedata.CharacterSheet.100010._name"
+    "_name": "$gamedata.CharacterSheet._name.100010"
   },
   {
     "id": 100110,
@@ -39,7 +39,7 @@
     "lv_spd": 0.6,
     "attack_range": 2,
     "run_speed": 3,
-    "_name": "$gamedata.CharacterSheet.100110._name"
+    "_name": "$gamedata.CharacterSheet._name.100110"
   },
   {
     "id": 100210,
@@ -60,7 +60,7 @@
     "lv_spd": 0.6,
     "attack_range": 1,
     "run_speed": 3,
-    "_name": "$gamedata.CharacterSheet.100210._name"
+    "_name": "$gamedata.CharacterSheet._name.100210"
   },
   {
     "id": 201000,
@@ -81,7 +81,7 @@
     "lv_spd": 0.6,
     "attack_range": 0.8,
     "run_speed": 1.2,
-    "_name": "$gamedata.CharacterSheet.201000._name"
+    "_name": "$gamedata.CharacterSheet._name.201000"
   },
   {
     "id": 201001,
@@ -102,7 +102,7 @@
     "lv_spd": 0.8,
     "attack_range": 0.9,
     "run_speed": 1,
-    "_name": "$gamedata.CharacterSheet.201001._name"
+    "_name": "$gamedata.CharacterSheet._name.201001"
   },
   {
     "id": 201002,
@@ -123,7 +123,7 @@
     "lv_spd": 0.4,
     "attack_range": 0.95,
     "run_speed": 1,
-    "_name": "$gamedata.CharacterSheet.201002._name"
+    "_name": "$gamedata.CharacterSheet._name.201002"
   },
   {
     "id": 201003,
@@ -144,7 +144,7 @@
     "lv_spd": 0.4,
     "attack_range": 1.6,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.201003._name"
+    "_name": "$gamedata.CharacterSheet._name.201003"
   },
   {
     "id": 201004,
@@ -165,7 +165,7 @@
     "lv_spd": 0.6,
     "attack_range": 0.93,
     "run_speed": 0.8,
-    "_name": "$gamedata.CharacterSheet.201004._name"
+    "_name": "$gamedata.CharacterSheet._name.201004"
   },
   {
     "id": 201005,
@@ -186,7 +186,7 @@
     "lv_spd": 0.32,
     "attack_range": 3,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.201005._name"
+    "_name": "$gamedata.CharacterSheet._name.201005"
   },
   {
     "id": 201006,
@@ -207,7 +207,7 @@
     "lv_spd": 0.36,
     "attack_range": 2.4,
     "run_speed": 0.8,
-    "_name": "$gamedata.CharacterSheet.201006._name"
+    "_name": "$gamedata.CharacterSheet._name.201006"
   },
   {
     "id": 201007,
@@ -228,7 +228,7 @@
     "lv_spd": 0.2,
     "attack_range": 3,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.201007._name"
+    "_name": "$gamedata.CharacterSheet._name.201007"
   },
   {
     "id": 201008,
@@ -249,7 +249,7 @@
     "lv_spd": 0.16,
     "attack_range": 1.6,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.201008._name"
+    "_name": "$gamedata.CharacterSheet._name.201008"
   },
   {
     "id": 202000,
@@ -270,7 +270,7 @@
     "lv_spd": 0.6,
     "attack_range": 1.6,
     "run_speed": 1,
-    "_name": "$gamedata.CharacterSheet.202000._name"
+    "_name": "$gamedata.CharacterSheet._name.202000"
   },
   {
     "id": 202001,
@@ -291,7 +291,7 @@
     "lv_spd": 0.44,
     "attack_range": 0.8,
     "run_speed": 0.8,
-    "_name": "$gamedata.CharacterSheet.202001._name"
+    "_name": "$gamedata.CharacterSheet._name.202001"
   },
   {
     "id": 202002,
@@ -312,7 +312,7 @@
     "lv_spd": 0.28,
     "attack_range": 0.9,
     "run_speed": 0.8,
-    "_name": "$gamedata.CharacterSheet.202002._name"
+    "_name": "$gamedata.CharacterSheet._name.202002"
   },
   {
     "id": 202003,
@@ -333,7 +333,7 @@
     "lv_spd": 0.2,
     "attack_range": 1,
     "run_speed": 0.8,
-    "_name": "$gamedata.CharacterSheet.202003._name"
+    "_name": "$gamedata.CharacterSheet._name.202003"
   },
   {
     "id": 202004,
@@ -354,7 +354,7 @@
     "lv_spd": 0.2,
     "attack_range": 2.4,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.202004._name"
+    "_name": "$gamedata.CharacterSheet._name.202004"
   },
   {
     "id": 202005,
@@ -375,7 +375,7 @@
     "lv_spd": 0.6,
     "attack_range": 2.3,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.202005._name"
+    "_name": "$gamedata.CharacterSheet._name.202005"
   },
   {
     "id": 202006,
@@ -396,7 +396,7 @@
     "lv_spd": 0.2,
     "attack_range": 3,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.202006._name"
+    "_name": "$gamedata.CharacterSheet._name.202006"
   },
   {
     "id": 202007,
@@ -417,7 +417,7 @@
     "lv_spd": 0.2,
     "attack_range": 4,
     "run_speed": 0.2,
-    "_name": "$gamedata.CharacterSheet.202007._name"
+    "_name": "$gamedata.CharacterSheet._name.202007"
   },
   {
     "id": 203000,
@@ -438,7 +438,7 @@
     "lv_spd": 0.8,
     "attack_range": 0.8,
     "run_speed": 1,
-    "_name": "$gamedata.CharacterSheet.203000._name"
+    "_name": "$gamedata.CharacterSheet._name.203000"
   },
   {
     "id": 203001,
@@ -459,7 +459,7 @@
     "lv_spd": 0.48,
     "attack_range": 0.85,
     "run_speed": 0.8,
-    "_name": "$gamedata.CharacterSheet.203001._name"
+    "_name": "$gamedata.CharacterSheet._name.203001"
   },
   {
     "id": 203002,
@@ -480,7 +480,7 @@
     "lv_spd": 0.6,
     "attack_range": 2.4,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.203002._name"
+    "_name": "$gamedata.CharacterSheet._name.203002"
   },
   {
     "id": 203003,
@@ -501,7 +501,7 @@
     "lv_spd": 0.36,
     "attack_range": 0.86,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.203003._name"
+    "_name": "$gamedata.CharacterSheet._name.203003"
   },
   {
     "id": 203004,
@@ -522,7 +522,7 @@
     "lv_spd": 0.44,
     "attack_range": 1.6,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.203004._name"
+    "_name": "$gamedata.CharacterSheet._name.203004"
   },
   {
     "id": 203005,
@@ -543,7 +543,7 @@
     "lv_spd": 0.36,
     "attack_range": 1.65,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.203005._name"
+    "_name": "$gamedata.CharacterSheet._name.203005"
   },
   {
     "id": 203006,
@@ -564,7 +564,7 @@
     "lv_spd": 0.2,
     "attack_range": 3,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.203006._name"
+    "_name": "$gamedata.CharacterSheet._name.203006"
   },
   {
     "id": 203007,
@@ -585,7 +585,7 @@
     "lv_spd": 0.2,
     "attack_range": 4,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.203007._name"
+    "_name": "$gamedata.CharacterSheet._name.203007"
   },
   {
     "id": 204000,
@@ -606,7 +606,7 @@
     "lv_spd": 0.6,
     "attack_range": 1,
     "run_speed": 0.2,
-    "_name": "$gamedata.CharacterSheet.204000._name"
+    "_name": "$gamedata.CharacterSheet._name.204000"
   },
   {
     "id": 204010,
@@ -627,7 +627,7 @@
     "lv_spd": 0.6,
     "attack_range": 1.5,
     "run_speed": 0.2,
-    "_name": "$gamedata.CharacterSheet.204010._name"
+    "_name": "$gamedata.CharacterSheet._name.204010"
   },
   {
     "id": 204020,
@@ -648,7 +648,7 @@
     "lv_spd": 0.6,
     "attack_range": 2.5,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.204020._name"
+    "_name": "$gamedata.CharacterSheet._name.204020"
   },
   {
     "id": 204001,
@@ -669,7 +669,7 @@
     "lv_spd": 0.4,
     "attack_range": 1,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.204001._name"
+    "_name": "$gamedata.CharacterSheet._name.204001"
   },
   {
     "id": 204011,
@@ -690,7 +690,7 @@
     "lv_spd": 0.6,
     "attack_range": 1.5,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.204011._name"
+    "_name": "$gamedata.CharacterSheet._name.204011"
   },
   {
     "id": 204021,
@@ -711,7 +711,7 @@
     "lv_spd": 0.32,
     "attack_range": 2.5,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.204021._name"
+    "_name": "$gamedata.CharacterSheet._name.204021"
   },
   {
     "id": 204002,
@@ -732,7 +732,7 @@
     "lv_spd": 0.6,
     "attack_range": 1,
     "run_speed": 0.6,
-    "_name": "$gamedata.CharacterSheet.204002._name"
+    "_name": "$gamedata.CharacterSheet._name.204002"
   },
   {
     "id": 204012,
@@ -753,7 +753,7 @@
     "lv_spd": 0.6,
     "attack_range": 1.5,
     "run_speed": 0.6,
-    "_name": "$gamedata.CharacterSheet.204012._name"
+    "_name": "$gamedata.CharacterSheet._name.204012"
   },
   {
     "id": 204022,
@@ -774,7 +774,7 @@
     "lv_spd": 0.32,
     "attack_range": 2.5,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.204022._name"
+    "_name": "$gamedata.CharacterSheet._name.204022"
   },
   {
     "id": 204003,
@@ -795,7 +795,7 @@
     "lv_spd": 0.6,
     "attack_range": 1,
     "run_speed": 0.6,
-    "_name": "$gamedata.CharacterSheet.204003._name"
+    "_name": "$gamedata.CharacterSheet._name.204003"
   },
   {
     "id": 204013,
@@ -816,7 +816,7 @@
     "lv_spd": 0.6,
     "attack_range": 1.5,
     "run_speed": 0.6,
-    "_name": "$gamedata.CharacterSheet.204013._name"
+    "_name": "$gamedata.CharacterSheet._name.204013"
   },
   {
     "id": 204023,
@@ -837,7 +837,7 @@
     "lv_spd": 0.32,
     "attack_range": 2.5,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.204023._name"
+    "_name": "$gamedata.CharacterSheet._name.204023"
   },
   {
     "id": 204004,
@@ -858,7 +858,7 @@
     "lv_spd": 0.4,
     "attack_range": 1,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.204004._name"
+    "_name": "$gamedata.CharacterSheet._name.204004"
   },
   {
     "id": 204014,
@@ -879,7 +879,7 @@
     "lv_spd": 0.6,
     "attack_range": 1.5,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.204014._name"
+    "_name": "$gamedata.CharacterSheet._name.204014"
   },
   {
     "id": 204024,
@@ -900,7 +900,7 @@
     "lv_spd": 0.32,
     "attack_range": 2.5,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.204024._name"
+    "_name": "$gamedata.CharacterSheet._name.204024"
   },
   {
     "id": 205000,
@@ -921,7 +921,7 @@
     "lv_spd": 0.44,
     "attack_range": 1,
     "run_speed": 1,
-    "_name": "$gamedata.CharacterSheet.205000._name"
+    "_name": "$gamedata.CharacterSheet._name.205000"
   },
   {
     "id": 205001,
@@ -942,7 +942,7 @@
     "lv_spd": 0.6,
     "attack_range": 1,
     "run_speed": 1,
-    "_name": "$gamedata.CharacterSheet.205001._name"
+    "_name": "$gamedata.CharacterSheet._name.205001"
   },
   {
     "id": 205002,
@@ -963,7 +963,7 @@
     "lv_spd": 0.32,
     "attack_range": 2.4,
     "run_speed": 1,
-    "_name": "$gamedata.CharacterSheet.205002._name"
+    "_name": "$gamedata.CharacterSheet._name.205002"
   },
   {
     "id": 205003,
@@ -984,7 +984,7 @@
     "lv_spd": 0.2,
     "attack_range": 1.6,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.205003._name"
+    "_name": "$gamedata.CharacterSheet._name.205003"
   },
   {
     "id": 205004,
@@ -1005,7 +1005,7 @@
     "lv_spd": 0.32,
     "attack_range": 1.65,
     "run_speed": 1,
-    "_name": "$gamedata.CharacterSheet.205004._name"
+    "_name": "$gamedata.CharacterSheet._name.205004"
   },
   {
     "id": 205005,
@@ -1026,7 +1026,7 @@
     "lv_spd": 0.24,
     "attack_range": 1.7,
     "run_speed": 1,
-    "_name": "$gamedata.CharacterSheet.205005._name"
+    "_name": "$gamedata.CharacterSheet._name.205005"
   },
   {
     "id": 205006,
@@ -1047,7 +1047,7 @@
     "lv_spd": 0.36,
     "attack_range": 1.7,
     "run_speed": 1,
-    "_name": "$gamedata.CharacterSheet.205006._name"
+    "_name": "$gamedata.CharacterSheet._name.205006"
   },
   {
     "id": 205007,
@@ -1068,7 +1068,7 @@
     "lv_spd": 0.28,
     "attack_range": 4,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.205007._name"
+    "_name": "$gamedata.CharacterSheet._name.205007"
   },
   {
     "id": 206000,
@@ -1089,7 +1089,7 @@
     "lv_spd": 0.32,
     "attack_range": 1.7,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.206000._name"
+    "_name": "$gamedata.CharacterSheet._name.206000"
   },
   {
     "id": 206001,
@@ -1110,7 +1110,7 @@
     "lv_spd": 0.6,
     "attack_range": 1.65,
     "run_speed": 0.8,
-    "_name": "$gamedata.CharacterSheet.206001._name"
+    "_name": "$gamedata.CharacterSheet._name.206001"
   },
   {
     "id": 206002,
@@ -1131,7 +1131,7 @@
     "lv_spd": 0.2,
     "attack_range": 0.85,
     "run_speed": 0.5,
-    "_name": "$gamedata.CharacterSheet.206002._name"
+    "_name": "$gamedata.CharacterSheet._name.206002"
   },
   {
     "id": 206003,
@@ -1152,7 +1152,7 @@
     "lv_spd": 0.4,
     "attack_range": 1.65,
     "run_speed": 0.6,
-    "_name": "$gamedata.CharacterSheet.206003._name"
+    "_name": "$gamedata.CharacterSheet._name.206003"
   },
   {
     "id": 206004,
@@ -1173,7 +1173,7 @@
     "lv_spd": 0.32,
     "attack_range": 2.4,
     "run_speed": 0.8,
-    "_name": "$gamedata.CharacterSheet.206004._name"
+    "_name": "$gamedata.CharacterSheet._name.206004"
   },
   {
     "id": 206005,
@@ -1194,7 +1194,7 @@
     "lv_spd": 0.48,
     "attack_range": 1.65,
     "run_speed": 0.4,
-    "_name": "$gamedata.CharacterSheet.206005._name"
+    "_name": "$gamedata.CharacterSheet._name.206005"
   },
   {
     "id": 206006,
@@ -1215,7 +1215,7 @@
     "lv_spd": 0.2,
     "attack_range": 2.4,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.206006._name"
+    "_name": "$gamedata.CharacterSheet._name.206006"
   },
   {
     "id": 206007,
@@ -1236,6 +1236,6 @@
     "lv_spd": 0.16,
     "attack_range": 4,
     "run_speed": 0.3,
-    "_name": "$gamedata.CharacterSheet.206007._name"
+    "_name": "$gamedata.CharacterSheet._name.206007"
   }
 ]

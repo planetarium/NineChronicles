@@ -1,898 +1,1026 @@
 [
   {
     "id": 100000,
-    "_name": "보물상자",
+    "$_name": "보물상자",
     "item_sub_type": "NormalMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.100000"
   },
   {
     "id": 301000,
-    "_name": "핏빛 보석",
+    "$_name": "핏빛 보석",
     "item_sub_type": "NormalMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.301000"
   },
   {
     "id": 302000,
-    "_name": "쌀",
+    "$_name": "쌀",
     "item_sub_type": "FoodMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302000"
   },
   {
     "id": 302001,
-    "_name": "생선",
+    "$_name": "생선",
     "item_sub_type": "FoodMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302001"
   },
   {
     "id": 302002,
-    "_name": "깡통",
+    "$_name": "깡통",
     "item_sub_type": "FoodMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302002"
   },
   {
     "id": 302003,
-    "_name": "달걀",
+    "$_name": "달걀",
     "item_sub_type": "FoodMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302003"
   },
   {
     "id": 302004,
-    "_name": "암염",
+    "$_name": "암염",
     "item_sub_type": "FoodMaterial",
     "grade": 3,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302004"
   },
   {
     "id": 302005,
-    "_name": "올리브유",
+    "$_name": "올리브유",
     "item_sub_type": "FoodMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302005"
   },
   {
     "id": 302006,
-    "_name": "허브",
+    "$_name": "허브",
     "item_sub_type": "FoodMaterial",
     "grade": 4,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302006"
   },
   {
     "id": 302007,
-    "_name": "비린내 나는 고기",
+    "$_name": "비린내 나는 고기",
     "item_sub_type": "FoodMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302007"
   },
   {
     "id": 302008,
-    "_name": "맛있어 보이는 고기",
+    "$_name": "맛있어 보이는 고기",
     "item_sub_type": "FoodMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302008"
   },
   {
     "id": 302009,
-    "_name": "일품급 고기",
+    "$_name": "일품급 고기",
     "item_sub_type": "FoodMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302009"
   },
   {
     "id": 302010,
-    "_name": "고급 암염",
+    "$_name": "고급 암염",
     "item_sub_type": "FoodMaterial",
     "grade": 4,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302010"
   },
   {
     "id": 302011,
-    "_name": "고급 허브",
+    "$_name": "고급 허브",
     "item_sub_type": "FoodMaterial",
     "grade": 5,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302011"
   },
   {
     "id": 302012,
-    "_name": "새우",
+    "$_name": "새우",
     "item_sub_type": "FoodMaterial",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302012"
   },
   {
     "id": 302013,
-    "_name": "치킨",
+    "$_name": "치킨",
     "item_sub_type": "FoodMaterial",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302013"
   },
   {
     "id": 302014,
-    "_name": "토마토 소스",
+    "$_name": "토마토 소스",
     "item_sub_type": "FoodMaterial",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302014"
   },
   {
     "id": 302015,
-    "_name": "장작",
+    "$_name": "장작",
     "item_sub_type": "FoodMaterial",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302015"
   },
   {
     "id": 302016,
-    "_name": "아몬드",
+    "$_name": "아몬드",
     "item_sub_type": "FoodMaterial",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302016"
   },
   {
     "id": 302017,
-    "_name": "꿀",
+    "$_name": "꿀",
     "item_sub_type": "FoodMaterial",
     "grade": 3,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302017"
   },
   {
     "id": 302018,
-    "_name": "간장",
+    "$_name": "간장",
     "item_sub_type": "FoodMaterial",
     "grade": 4,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.302018"
   },
   {
     "id": 303000,
-    "_name": "녹슨 칼",
+    "$_name": "녹슨 칼",
     "item_sub_type": "EquipmentMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303000"
   },
   {
     "id": 303001,
-    "_name": "버려진 검",
+    "$_name": "버려진 검",
     "item_sub_type": "EquipmentMaterial",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303001"
   },
   {
     "id": 303002,
-    "_name": "단단한 검",
+    "$_name": "단단한 검",
     "item_sub_type": "EquipmentMaterial",
     "grade": 3,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303002"
   },
   {
     "id": 303003,
-    "_name": "영험한 기운의 검",
+    "$_name": "영험한 기운의 검",
     "item_sub_type": "EquipmentMaterial",
     "grade": 4,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303003"
   },
   {
     "id": 303004,
-    "_name": "전설의 검",
+    "$_name": "전설의 검",
     "item_sub_type": "EquipmentMaterial",
     "grade": 5,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303004"
   },
   {
     "id": 303100,
-    "_name": "낡은 옷",
+    "$_name": "낡은 옷",
     "item_sub_type": "EquipmentMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303100"
   },
   {
     "id": 303101,
-    "_name": "버려진 옷",
+    "$_name": "버려진 옷",
     "item_sub_type": "EquipmentMaterial",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303101"
   },
   {
     "id": 303102,
-    "_name": "단단한 옷",
+    "$_name": "단단한 옷",
     "item_sub_type": "EquipmentMaterial",
     "grade": 3,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303102"
   },
   {
     "id": 303103,
-    "_name": "영험한 기운의 갑옷",
+    "$_name": "영험한 기운의 갑옷",
     "item_sub_type": "EquipmentMaterial",
     "grade": 4,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303103"
   },
   {
     "id": 303104,
-    "_name": "전설의 옷",
+    "$_name": "전설의 옷",
     "item_sub_type": "EquipmentMaterial",
     "grade": 5,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303104"
   },
   {
     "id": 303200,
-    "_name": "낡은 끈",
+    "$_name": "낡은 끈",
     "item_sub_type": "EquipmentMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303200"
   },
   {
     "id": 303201,
-    "_name": "버려진 허리띠",
+    "$_name": "버려진 허리띠",
     "item_sub_type": "EquipmentMaterial",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303201"
   },
   {
     "id": 303202,
-    "_name": "단단한 벨트",
+    "$_name": "단단한 벨트",
     "item_sub_type": "EquipmentMaterial",
     "grade": 3,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303202"
   },
   {
     "id": 303203,
-    "_name": "영험한 기운의 벨트",
+    "$_name": "영험한 기운의 벨트",
     "item_sub_type": "EquipmentMaterial",
     "grade": 4,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303203"
   },
   {
     "id": 303204,
-    "_name": "전설의 벨트",
+    "$_name": "전설의 벨트",
     "item_sub_type": "EquipmentMaterial",
     "grade": 5,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303204"
   },
   {
     "id": 303300,
-    "_name": "낡은 목걸이",
+    "$_name": "낡은 목걸이",
     "item_sub_type": "EquipmentMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303300"
   },
   {
     "id": 303301,
-    "_name": "버려진 목걸이",
+    "$_name": "버려진 목걸이",
     "item_sub_type": "EquipmentMaterial",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303301"
   },
   {
     "id": 303302,
-    "_name": "단단한 목걸이",
+    "$_name": "단단한 목걸이",
     "item_sub_type": "EquipmentMaterial",
     "grade": 3,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303302"
   },
   {
     "id": 303303,
-    "_name": "영험한 기운의 목걸이",
+    "$_name": "영험한 기운의 목걸이",
     "item_sub_type": "EquipmentMaterial",
     "grade": 4,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303303"
   },
   {
     "id": 303304,
-    "_name": "전설의 목걸이",
+    "$_name": "전설의 목걸이",
     "item_sub_type": "EquipmentMaterial",
     "grade": 5,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303304"
   },
   {
     "id": 303400,
-    "_name": "낡은 반지",
+    "$_name": "낡은 반지",
     "item_sub_type": "EquipmentMaterial",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303400"
   },
   {
     "id": 303401,
-    "_name": "버려진 반지",
+    "$_name": "버려진 반지",
     "item_sub_type": "EquipmentMaterial",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303401"
   },
   {
     "id": 303402,
-    "_name": "단단한 반지",
+    "$_name": "단단한 반지",
     "item_sub_type": "EquipmentMaterial",
     "grade": 3,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303402"
   },
   {
     "id": 303403,
-    "_name": "영험한 기운의 반지",
+    "$_name": "영험한 기운의 반지",
     "item_sub_type": "EquipmentMaterial",
     "grade": 4,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303403"
   },
   {
     "id": 303404,
-    "_name": "전설의 반지",
+    "$_name": "전설의 반지",
     "item_sub_type": "EquipmentMaterial",
     "grade": 5,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.303404"
   },
   {
     "id": 304000,
-    "_name": "불의 정수",
+    "$_name": "불의 정수",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.304000"
   },
   {
     "id": 304001,
-    "_name": "대지의 정수",
+    "$_name": "대지의 정수",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.304001"
   },
   {
     "id": 304002,
-    "_name": "물의 정수",
+    "$_name": "물의 정수",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.304002"
   },
   {
     "id": 304003,
-    "_name": "바람의 정수",
+    "$_name": "바람의 정수",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Wind"
+    "elemental_type": "Wind",
+    "_name": "$gamedata.MaterialItemSheet._name.304003"
   },
   {
     "id": 305000,
-    "_name": "얼음의 염료",
+    "$_name": "얼음의 염료",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.305000"
   },
   {
     "id": 305001,
-    "_name": "불의 염료",
+    "$_name": "불의 염료",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.305001"
   },
   {
     "id": 305002,
-    "_name": "숲의 염료",
+    "$_name": "숲의 염료",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.305002"
   },
   {
     "id": 305003,
-    "_name": "요정의 염료",
+    "$_name": "요정의 염료",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.305003"
   },
   {
     "id": 305004,
-    "_name": "여신의 염료",
+    "$_name": "여신의 염료",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.305004"
   },
   {
     "id": 306000,
-    "_name": "차가운 씨앗 껍질",
+    "$_name": "차가운 씨앗 껍질",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306000"
   },
   {
     "id": 306001,
-    "_name": "작은 잎사귀",
+    "$_name": "작은 잎사귀",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306001"
   },
   {
     "id": 306002,
-    "_name": "시들지 않는 잎사귀",
+    "$_name": "시들지 않는 잎사귀",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306002"
   },
   {
     "id": 306003,
-    "_name": "빛나는 액체",
+    "$_name": "빛나는 액체",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306003"
   },
   {
     "id": 306004,
-    "_name": "부드러운 줄기",
+    "$_name": "부드러운 줄기",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306004"
   },
   {
     "id": 306005,
-    "_name": "물컹한 씨앗",
+    "$_name": "물컹한 씨앗",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306005"
   },
   {
     "id": 306006,
-    "_name": "푸른 빛의 꽃",
+    "$_name": "푸른 빛의 꽃",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306006"
   },
   {
     "id": 306007,
-    "_name": "푸른 열매",
+    "$_name": "푸른 열매",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306007"
   },
   {
     "id": 306008,
-    "_name": "영혼의 결정",
+    "$_name": "영혼의 결정",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306008"
   },
   {
     "id": 306009,
-    "_name": "작은 돌멩이",
+    "$_name": "작은 돌멩이",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306009"
   },
   {
     "id": 306010,
-    "_name": "부서진 돌날",
+    "$_name": "부서진 돌날",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306010"
   },
   {
     "id": 306011,
-    "_name": "부드러운 솜털",
+    "$_name": "부드러운 솜털",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306011"
   },
   {
     "id": 306012,
-    "_name": "희귀한 돌조각",
+    "$_name": "희귀한 돌조각",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306012"
   },
   {
     "id": 306013,
-    "_name": "낡은 칼자루",
+    "$_name": "낡은 칼자루",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306013"
   },
   {
     "id": 306014,
-    "_name": "대지의 열매",
+    "$_name": "대지의 열매",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306014"
   },
   {
     "id": 306015,
-    "_name": "부서진 마법석",
+    "$_name": "부서진 마법석",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306015"
   },
   {
     "id": 306016,
-    "_name": "대지의 정령석",
+    "$_name": "대지의 정령석",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306016"
   },
   {
     "id": 306017,
-    "_name": "어둠의 휘장",
+    "$_name": "어둠의 휘장",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306017"
   },
   {
     "id": 306018,
-    "_name": "마력의 구슬",
+    "$_name": "마력의 구슬",
     "item_sub_type": "MonsterPart",
     "grade": 4,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306018"
   },
   {
     "id": 306019,
-    "_name": "여우 가죽",
+    "$_name": "여우 가죽",
     "item_sub_type": "MonsterPart",
     "grade": 4,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306019"
   },
   {
     "id": 306020,
-    "_name": "여우의 송곳니",
+    "$_name": "여우의 송곳니",
     "item_sub_type": "MonsterPart",
     "grade": 4,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306020"
   },
   {
     "id": 306021,
-    "_name": "대지의 창 날",
+    "$_name": "대지의 창 날",
     "item_sub_type": "MonsterPart",
     "grade": 5,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306021"
   },
   {
     "id": 306022,
-    "_name": "대지의 견장",
+    "$_name": "대지의 견장",
     "item_sub_type": "MonsterPart",
     "grade": 5,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306022"
   },
   {
     "id": 306023,
-    "_name": "나무껍질",
+    "$_name": "나무껍질",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306023"
   },
   {
     "id": 306024,
-    "_name": "나무조각",
+    "$_name": "나무조각",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306024"
   },
   {
     "id": 306025,
-    "_name": "단단한 껍질",
+    "$_name": "단단한 껍질",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306025"
   },
   {
     "id": 306026,
-    "_name": "두꺼운 천조각",
+    "$_name": "두꺼운 천조각",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306026"
   },
   {
     "id": 306027,
-    "_name": "날카로운 무기 조각",
+    "$_name": "날카로운 무기 조각",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306027"
   },
   {
     "id": 306028,
-    "_name": "하얀 가루",
+    "$_name": "하얀 가루",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306028"
   },
   {
     "id": 306029,
-    "_name": "단단한 쇳조각",
+    "$_name": "단단한 쇳조각",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306029"
   },
   {
     "id": 306030,
-    "_name": "반짝이는 돌",
+    "$_name": "반짝이는 돌",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306030"
   },
   {
     "id": 306031,
-    "_name": "단단한 쇠사슬",
+    "$_name": "단단한 쇠사슬",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306031"
   },
   {
     "id": 306032,
-    "_name": "화염의 부러진 지팡이",
+    "$_name": "화염의 부러진 지팡이",
     "item_sub_type": "MonsterPart",
     "grade": 4,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306032"
   },
   {
     "id": 306033,
-    "_name": "화염의 제림니르 도끼",
+    "$_name": "화염의 제림니르 도끼",
     "item_sub_type": "MonsterPart",
     "grade": 4,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306033"
   },
   {
     "id": 306034,
-    "_name": "화염의 제림니르 철퇴",
+    "$_name": "화염의 제림니르 철퇴",
     "item_sub_type": "MonsterPart",
     "grade": 4,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306034"
   },
   {
     "id": 306035,
-    "_name": "수액 덩어리",
+    "$_name": "수액 덩어리",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.306035"
   },
   {
     "id": 306036,
-    "_name": "화염의 수액 덩어리",
+    "$_name": "화염의 수액 덩어리",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306036"
   },
   {
     "id": 306037,
-    "_name": "바람의 수액 덩어리",
+    "$_name": "바람의 수액 덩어리",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Wind"
+    "elemental_type": "Wind",
+    "_name": "$gamedata.MaterialItemSheet._name.306037"
   },
   {
     "id": 306038,
-    "_name": "대지의 수액 덩어리",
+    "$_name": "대지의 수액 덩어리",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306038"
   },
   {
     "id": 306039,
-    "_name": "물의 수액 덩어리",
+    "$_name": "물의 수액 덩어리",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306039"
   },
   {
     "id": 306040,
-    "_name": "수액 덩어리(소)",
+    "$_name": "수액 덩어리(소)",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.306040"
   },
   {
     "id": 306041,
-    "_name": "화염의 수액 덩어리(소)",
+    "$_name": "화염의 수액 덩어리(소)",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306041"
   },
   {
     "id": 306042,
-    "_name": "바람의 수액 덩어리(소)",
+    "$_name": "바람의 수액 덩어리(소)",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Wind"
+    "elemental_type": "Wind",
+    "_name": "$gamedata.MaterialItemSheet._name.306042"
   },
   {
     "id": 306043,
-    "_name": "대지의 수액 덩어리(소)",
+    "$_name": "대지의 수액 덩어리(소)",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306043"
   },
   {
     "id": 306044,
-    "_name": "물의 수액 덩어리(소)",
+    "$_name": "물의 수액 덩어리(소)",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306044"
   },
   {
     "id": 306045,
-    "_name": "수액 덩어리(대)",
+    "$_name": "수액 덩어리(대)",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.306045"
   },
   {
     "id": 306046,
-    "_name": "화염의 수액 덩어리(대)",
+    "$_name": "화염의 수액 덩어리(대)",
     "item_sub_type": "MonsterPart",
     "grade": 4,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306046"
   },
   {
     "id": 306047,
-    "_name": "바람의 수액 덩어리(대)",
+    "$_name": "바람의 수액 덩어리(대)",
     "item_sub_type": "MonsterPart",
     "grade": 4,
-    "elemental_type": "Wind"
+    "elemental_type": "Wind",
+    "_name": "$gamedata.MaterialItemSheet._name.306047"
   },
   {
     "id": 306048,
-    "_name": "대지의 수액 덩어리(대)",
+    "$_name": "대지의 수액 덩어리(대)",
     "item_sub_type": "MonsterPart",
     "grade": 4,
-    "elemental_type": "Land"
+    "elemental_type": "Land",
+    "_name": "$gamedata.MaterialItemSheet._name.306048"
   },
   {
     "id": 306049,
-    "_name": "물의 수액 덩어리(대)",
+    "$_name": "물의 수액 덩어리(대)",
     "item_sub_type": "MonsterPart",
     "grade": 4,
-    "elemental_type": "Water"
+    "elemental_type": "Water",
+    "_name": "$gamedata.MaterialItemSheet._name.306049"
   },
   {
     "id": 306050,
-    "_name": "가벼운 천 조각",
+    "$_name": "가벼운 천 조각",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Wind"
+    "elemental_type": "Wind",
+    "_name": "$gamedata.MaterialItemSheet._name.306050"
   },
   {
     "id": 306051,
-    "_name": "희귀한 원석",
+    "$_name": "희귀한 원석",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Wind"
+    "elemental_type": "Wind",
+    "_name": "$gamedata.MaterialItemSheet._name.306051"
   },
   {
     "id": 306052,
-    "_name": "영웅의 증표",
+    "$_name": "영웅의 증표",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Wind"
+    "elemental_type": "Wind",
+    "_name": "$gamedata.MaterialItemSheet._name.306052"
   },
   {
     "id": 306053,
-    "_name": "날카로운 발톱",
+    "$_name": "날카로운 발톱",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Wind"
+    "elemental_type": "Wind",
+    "_name": "$gamedata.MaterialItemSheet._name.306053"
   },
   {
     "id": 306054,
-    "_name": "원한이 깃든 장식",
+    "$_name": "원한이 깃든 장식",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Wind"
+    "elemental_type": "Wind",
+    "_name": "$gamedata.MaterialItemSheet._name.306054"
   },
   {
     "id": 306055,
-    "_name": "고대의 마법서",
+    "$_name": "고대의 마법서",
     "item_sub_type": "MonsterPart",
     "grade": 3,
-    "elemental_type": "Wind"
+    "elemental_type": "Wind",
+    "_name": "$gamedata.MaterialItemSheet._name.306055"
   },
   {
     "id": 306056,
-    "_name": "브론즈 엠블렘",
+    "$_name": "브론즈 엠블렘",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.306056"
   },
   {
     "id": 306057,
-    "_name": "실버 엠블렘",
+    "$_name": "실버 엠블렘",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.306057"
   },
   {
     "id": 306058,
-    "_name": "화염의 나무둔기",
+    "$_name": "화염의 나무둔기",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306058"
   },
   {
     "id": 306059,
-    "_name": "화염의 작은 투구",
+    "$_name": "화염의 작은 투구",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306059"
   },
   {
     "id": 306060,
-    "_name": "화염의 멧돼지뿔",
+    "$_name": "화염의 멧돼지뿔",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306060"
   },
   {
     "id": 306061,
-    "_name": "화염의 허리가방",
+    "$_name": "화염의 허리가방",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306061"
   },
   {
     "id": 306062,
-    "_name": "화염의 둔기 조각",
+    "$_name": "화염의 둔기 조각",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306062"
   },
   {
     "id": 306063,
-    "_name": "화염의 하얀 털다발",
+    "$_name": "화염의 하얀 털다발",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306063"
   },
   {
     "id": 306064,
-    "_name": "화염의 큰 멧돼지뿔",
+    "$_name": "화염의 큰 멧돼지뿔",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306064"
   },
   {
     "id": 306065,
-    "_name": "화염의 무거운 견장",
+    "$_name": "화염의 무거운 견장",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306065"
   },
   {
     "id": 306066,
-    "_name": "화염의 달궈진 쇠사슬",
+    "$_name": "화염의 달궈진 쇠사슬",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306066"
   },
   {
     "id": 306067,
-    "_name": "화염의 부러진 지팡이",
+    "$_name": "화염의 부러진 지팡이",
     "item_sub_type": "MonsterPart",
     "grade": 1,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306067"
   },
   {
     "id": 306068,
-    "_name": "화염의 제림니르 도끼",
+    "$_name": "화염의 제림니르 도끼",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306068"
   },
   {
     "id": 306069,
-    "_name": "화염의 제림니르 철퇴",
+    "$_name": "화염의 제림니르 철퇴",
     "item_sub_type": "MonsterPart",
     "grade": 2,
-    "elemental_type": "Fire"
+    "elemental_type": "Fire",
+    "_name": "$gamedata.MaterialItemSheet._name.306069"
   },
   {
     "id": 400000,
-    "_name": "모래시계",
+    "$_name": "모래시계",
     "item_sub_type": "Hourglass",
     "grade": 4,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.400000"
   },
   {
     "id": 500000,
-    "_name": "AP 스톤",
+    "$_name": "AP 스톤",
     "item_sub_type": "ApStone",
     "grade": 4,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.500000"
   },
   {
     "id": 700000,
-    "_name": "아레나 시즌0 메달",
+    "$_name": "아레나 시즌0 메달",
     "item_sub_type": "NormalMaterial",
     "grade": 5,
-    "elemental_type": "Normal"
+    "elemental_type": "Normal",
+    "_name": "$gamedata.MaterialItemSheet._name.700000"
   }
 ]

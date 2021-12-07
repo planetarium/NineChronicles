@@ -10,7 +10,7 @@
     "modify_type": "Percentage",
     "modify_value": 50,
     "icon_resource": "icon_buff_plus_hp",
-    "_name": "$gamedata.BuffSheet.101000._name"
+    "_name": "$gamedata.BuffSheet._name.101000"
   },
   {
     "id": 101001,
@@ -23,7 +23,7 @@
     "modify_type": "Percentage",
     "modify_value": 50,
     "icon_resource": "icon_buff_plus_hp",
-    "_name": "$gamedata.BuffSheet.101001._name"
+    "_name": "$gamedata.BuffSheet._name.101001"
   },
   {
     "id": 102000,
@@ -36,7 +36,7 @@
     "modify_type": "Percentage",
     "modify_value": 25,
     "icon_resource": "icon_buff_plus_attack",
-    "_name": "$gamedata.BuffSheet.102000._name"
+    "_name": "$gamedata.BuffSheet._name.102000"
   },
   {
     "id": 102001,
@@ -49,7 +49,7 @@
     "modify_type": "Percentage",
     "modify_value": 50,
     "icon_resource": "icon_buff_plus_attack",
-    "_name": "$gamedata.BuffSheet.102001._name"
+    "_name": "$gamedata.BuffSheet._name.102001"
   },
   {
     "id": 102002,
@@ -62,7 +62,7 @@
     "modify_type": "Percentage",
     "modify_value": 25,
     "icon_resource": "icon_buff_plus_attack",
-    "_name": "$gamedata.BuffSheet.102002._name"
+    "_name": "$gamedata.BuffSheet._name.102002"
   },
   {
     "id": 103000,
@@ -75,7 +75,7 @@
     "modify_type": "Percentage",
     "modify_value": 25,
     "icon_resource": "icon_buff_plus_defense",
-    "_name": "$gamedata.BuffSheet.103000._name"
+    "_name": "$gamedata.BuffSheet._name.103000"
   },
   {
     "id": 103001,
@@ -88,7 +88,7 @@
     "modify_type": "Percentage",
     "modify_value": 50,
     "icon_resource": "icon_buff_plus_defense",
-    "_name": "$gamedata.BuffSheet.103001._name"
+    "_name": "$gamedata.BuffSheet._name.103001"
   },
   {
     "id": 103002,
@@ -101,7 +101,7 @@
     "modify_type": "Percentage",
     "modify_value": 25,
     "icon_resource": "icon_buff_plus_defense",
-    "_name": "$gamedata.BuffSheet.103002._name"
+    "_name": "$gamedata.BuffSheet._name.103002"
   },
   {
     "id": 104000,
@@ -114,7 +114,7 @@
     "modify_type": "Percentage",
     "modify_value": 50,
     "icon_resource": "icon_buff_plus_critical",
-    "_name": "$gamedata.BuffSheet.104000._name"
+    "_name": "$gamedata.BuffSheet._name.104000"
   },
   {
     "id": 104001,
@@ -127,7 +127,7 @@
     "modify_type": "Percentage",
     "modify_value": 75,
     "icon_resource": "icon_buff_plus_critical",
-    "_name": "$gamedata.BuffSheet.104001._name"
+    "_name": "$gamedata.BuffSheet._name.104001"
   },
   {
     "id": 104002,
@@ -140,7 +140,7 @@
     "modify_type": "Percentage",
     "modify_value": 25,
     "icon_resource": "icon_buff_plus_critical",
-    "_name": "$gamedata.BuffSheet.104002._name"
+    "_name": "$gamedata.BuffSheet._name.104002"
   },
   {
     "id": 105000,
@@ -153,7 +153,7 @@
     "modify_type": "Percentage",
     "modify_value": 50,
     "icon_resource": "icon_buff_plus_hit",
-    "_name": "$gamedata.BuffSheet.105000._name"
+    "_name": "$gamedata.BuffSheet._name.105000"
   },
   {
     "id": 105001,
@@ -166,7 +166,7 @@
     "modify_type": "Percentage",
     "modify_value": 75,
     "icon_resource": "icon_buff_plus_hit",
-    "_name": "$gamedata.BuffSheet.105001._name"
+    "_name": "$gamedata.BuffSheet._name.105001"
   },
   {
     "id": 105002,
@@ -179,7 +179,7 @@
     "modify_type": "Percentage",
     "modify_value": 25,
     "icon_resource": "icon_buff_plus_hit",
-    "_name": "$gamedata.BuffSheet.105002._name"
+    "_name": "$gamedata.BuffSheet._name.105002"
   },
   {
     "id": 106000,
@@ -192,7 +192,7 @@
     "modify_type": "Percentage",
     "modify_value": 50,
     "icon_resource": "icon_buff_plus_speed",
-    "_name": "$gamedata.BuffSheet.106000._name"
+    "_name": "$gamedata.BuffSheet._name.106000"
   },
   {
     "id": 106001,
@@ -205,7 +205,7 @@
     "modify_type": "Percentage",
     "modify_value": 75,
     "icon_resource": "icon_buff_plus_speed",
-    "_name": "$gamedata.BuffSheet.106001._name"
+    "_name": "$gamedata.BuffSheet._name.106001"
   },
   {
     "id": 106002,
@@ -218,7 +218,7 @@
     "modify_type": "Percentage",
     "modify_value": 25,
     "icon_resource": "icon_buff_plus_speed",
-    "_name": "$gamedata.BuffSheet.106002._name"
+    "_name": "$gamedata.BuffSheet._name.106002"
   },
   {
     "id": 202000,
@@ -231,7 +231,7 @@
     "modify_type": "Percentage",
     "modify_value": -25,
     "icon_resource": "icon_buff_minus_attack",
-    "_name": "$gamedata.BuffSheet.202000._name"
+    "_name": "$gamedata.BuffSheet._name.202000"
   },
   {
     "id": 202001,
@@ -244,7 +244,7 @@
     "modify_type": "Percentage",
     "modify_value": -25,
     "icon_resource": "icon_buff_minus_attack",
-    "_name": "$gamedata.BuffSheet.202001._name"
+    "_name": "$gamedata.BuffSheet._name.202001"
   },
   {
     "id": 203001,
@@ -257,7 +257,7 @@
     "modify_type": "Percentage",
     "modify_value": -25,
     "icon_resource": "icon_buff_minus_defense",
-    "_name": "$gamedata.BuffSheet.203001._name"
+    "_name": "$gamedata.BuffSheet._name.203001"
   },
   {
     "id": 204001,
@@ -270,7 +270,7 @@
     "modify_type": "Percentage",
     "modify_value": -25,
     "icon_resource": "icon_buff_minus_critical",
-    "_name": "$gamedata.BuffSheet.204001._name"
+    "_name": "$gamedata.BuffSheet._name.204001"
   },
   {
     "id": 205001,
@@ -283,7 +283,7 @@
     "modify_type": "Percentage",
     "modify_value": -25,
     "icon_resource": "icon_buff_minus_hit",
-    "_name": "$gamedata.BuffSheet.205001._name"
+    "_name": "$gamedata.BuffSheet._name.205001"
   },
   {
     "id": 206001,
@@ -296,6 +296,6 @@
     "modify_type": "Percentage",
     "modify_value": -25,
     "icon_resource": "icon_buff_minus_speed",
-    "_name": "$gamedata.BuffSheet.206001._name"
+    "_name": "$gamedata.BuffSheet._name.206001"
   }
 ]
