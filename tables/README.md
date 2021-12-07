@@ -32,6 +32,18 @@ julia>init_project(joinpath(pwd(), "tables"))
 [ Info: "NineChronicles" Project has loaded successfully!
 ```
 
+# Usage
+After loading is complete, you can export excel data with 
+```julia
+julia>xl("GoldQuest")
+┌ NOTE: xlsx -> json 추출을 시작합니다 ⚒
+└ --------------------------------------------------
+『GoldQuest』
+  ⁿ/ₐ => C:\Users\Maste\Projects\Planetarium\NineChronicles\tables\json\GoldQuestSheet.json
+[ DONE: json 추출이 완료되었습니다 ☺
+```
+Use `xl()` for exporting all datas defined in [config.json](config.json)
+
 # Custom Functions
  GameDataManager has full access to all your gamedata. You can do wonders with such power. GameDataManger is aiming to let any game designers to write down necessary julia script and distribute to the team. Those scripts would be prone to bug and might not be maintainable in the long run. But that's **OK** because those scripts will resides in the seperate package, and won't jeopardize others.
 
