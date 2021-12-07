@@ -53,7 +53,22 @@ namespace Nekoyume.Model.State
             throw new RankingExceededException();
         }
 
-        public override IValue Serialize() =>
+        public override IValue Serialize()
+        {
+#pragma warning disable LAA1002
+            var rankingMapValue = new Bencodex.Types.Dictionary(RankingMap.Select(pair =>
+#pragma warning restore LAA1002
+                new KeyValuePair<IKey, IValue>(
+                    (Bencodex.Types.Binary)pair.Key.Serialize(),
+                    new Bencodex.Types.List(pair.Value
+                        .OrderBy(e => e.GetHashCode())
+                        .Select(e => e.Serialize())))));
+            return ((Bencodex.Types.Dictionary)base.Serialize())
+                .SetItem("ranking_map", rankingMapValue);
+        }
+
+        [Obsolete("Since it contains a deterministic problem, replace it with the `Serialize()` method that operates deterministically like this logic.")]
+        public IValue SerializeV1() =>
 #pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
