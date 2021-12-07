@@ -133,7 +133,7 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.ExitPlaymode();
 #else
-                CloseCallback = UnityEngine.Application.Quit;
+                UnityEngine.Application.Quit();
 #endif
             };
         }
