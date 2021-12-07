@@ -70,12 +70,6 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void ShowButton()
-        {
-            _buttonAlphaTweener.Play();
-            _bgAlphaTweener.Play();
-        }
-
         public void HideButton()
         {
             _buttonAlphaTweener.PlayReverse();
@@ -118,7 +112,6 @@ namespace Nekoyume.UI
                 31);
             _npc = go.GetComponent<NPC>();
             _npc.SpineController.Appear(.3f);
-            ShowButton();
             var pos = ActionCamera.instance.Cam.transform.position;
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
             _npc.PlayAnimation(itemType switch
