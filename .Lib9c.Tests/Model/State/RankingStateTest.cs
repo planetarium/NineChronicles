@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Model.State
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
+    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
@@ -23,13 +24,34 @@ namespace Lib9c.Tests.Model.State
         public void Serialize()
         {
             var state = new RankingState();
-            state.UpdateRankingMap(default);
+            var avatarAddress = new PrivateKey().ToAddress();
+            state.UpdateRankingMap(avatarAddress);
             var serialized = state.Serialize();
 
             var des = new RankingState((Dictionary)serialized);
 
             Assert.Equal(Addresses.Ranking, des.address);
-            Assert.Contains(des.RankingMap, m => m.Value.Contains(default));
+            Assert.Contains(des.RankingMap, m => m.Value.Contains(avatarAddress));
+        }
+
+        [Fact]
+        public void Deterministic_Between_Serialize_And_SerializeV1()
+        {
+            var state = new RankingState();
+            for (var i = 0; i < 1000; i++)
+            {
+                state.UpdateRankingMap(new PrivateKey().ToAddress());
+            }
+
+            var serialized = state.Serialize();
+            var serializedV1 = state.SerializeV1();
+            Assert.Equal(serializedV1, serialized);
+
+            var deserialized = new RankingState((Bencodex.Types.Dictionary)serialized);
+            var deserializedV1 = new RankingState((Bencodex.Types.Dictionary)serializedV1);
+            serialized = deserialized.Serialize();
+            serializedV1 = deserializedV1.Serialize();
+            Assert.Equal(serializedV1, serialized);
         }
 
         [Fact]
