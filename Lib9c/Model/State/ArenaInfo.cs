@@ -90,7 +90,7 @@ namespace Nekoyume.Model.State
             Level = serialized.GetInteger("level");
             ArmorId = serialized.GetInteger("armorId");
             CombatPoint = serialized.GetInteger("combatPoint");
-            Active = serialized.GetBoolean("active");
+            Active = IsActive(serialized);
             DailyChallengeCount = serialized.GetInteger("dailyChallengeCount");
             Score = serialized.GetInteger("score");
             Receive = serialized["receive"].ToBoolean();
@@ -258,5 +258,8 @@ namespace Nekoyume.Model.State
 
             return 1;
         }
+
+        public static bool IsActive(Dictionary serialized) =>
+            serialized.GetBoolean("active");
     }
 }
