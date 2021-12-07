@@ -196,7 +196,9 @@ namespace Nekoyume.BlockChain
             }
             catch (InvalidGenesisBlockException)
             {
-                Widget.Find<TitleOneButtonSystem>().ShowAndQuit("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
+                var popup = Widget.Find<IconAndButtonSystem>();
+                popup.Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
+                popup.SetCancelCallbackToExit();
             }
 
 #if BLOCK_LOG_USE
@@ -450,7 +452,7 @@ namespace Nekoyume.BlockChain
                 yield return new WaitForSeconds(180f);
                 if (BlockIndex == current)
                 {
-                    Widget.Find<BlockFailTitleOneButtonSystem>().Show(current);
+                    Widget.Find<IconAndButtonSystem>().ShowByBlockDownloadFail(current);
                     break;
                 }
             }
