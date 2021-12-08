@@ -1,12 +1,17 @@
 using System.Globalization;
 using Nekoyume.UI.Model;
 using TMPro;
+using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
     public class RequiredItemView : SimpleCountableItemView
     {
-        public TextMeshProUGUI requiredText;
+        [SerializeField]
+        private TextMeshProUGUI requiredText;
+
+        [SerializeField]
+        private GameObject enoughObject;
 
         protected const string CountTextFormatEnough = "{0}/{1}";
         protected const string CountTextFormatNotEnough = "<#ff5a5a>{0}</color>/{1}";
@@ -30,6 +35,7 @@ namespace Nekoyume.UI.Module
 
             countText.gameObject.SetActive(true);
             requiredText.gameObject.SetActive(false);
+            enoughObject.SetActive(isEnough);
         }
 
         public void SetRequiredText()
