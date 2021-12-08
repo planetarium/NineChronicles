@@ -478,6 +478,8 @@ namespace Nekoyume.UI.Module
             }
 
             var targetQuest = questList?
+                .EnumerateLazyQuestStates()
+                .Select(l => l.State)
                 .OfType<WorldQuest>()
                 .Where(quest => !quest.Complete)
                 .OrderBy(quest => quest.Goal)
@@ -505,6 +507,8 @@ namespace Nekoyume.UI.Module
 
             var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
             return questList?
+                .EnumerateLazyQuestStates()
+                .Select(l => l.State)
                 .OfType<CombinationEquipmentQuest>()
                 .Select(quest => recipeSheet.TryGetValue(quest.RecipeId, out var recipeRow)
                     ? (quest, unlockStageId: recipeRow.UnlockStage)
