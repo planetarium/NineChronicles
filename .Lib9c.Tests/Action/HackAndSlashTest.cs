@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
+    using Lib9c.Tests.Model;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
@@ -292,7 +293,7 @@ namespace Lib9c.Tests.Action
             Assert.True(avatarState.worldInformation.IsStageCleared(stageId));
 
             var avatarWorldQuests = avatarState.questList.OfType<WorldQuest>().ToList();
-            Assert.Equal(worldQuestSheet.Count, avatarWorldQuests.Count);
+            Assert.Equal(worldQuestSheet.Count, avatarWorldQuests.Count());
             Assert.Empty(avatarState.questList.completedQuestIds);
             Assert.Equal(2, avatarState.inventory.Items.Count);
 
@@ -323,7 +324,7 @@ namespace Lib9c.Tests.Action
 
             avatarState = state.GetAvatarStateV2(avatarState.address);
             avatarWorldQuests = avatarState.questList.OfType<WorldQuest>().ToList();
-            Assert.Equal(worldQuestSheet.Count, avatarWorldQuests.Count);
+            Assert.Equal(worldQuestSheet.Count, avatarWorldQuests.Count());
             Assert.Single(avatarWorldQuests, e => e.Goal == stageId && e.Complete);
         }
 

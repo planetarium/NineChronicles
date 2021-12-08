@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -56,6 +57,11 @@ namespace Nekoyume.Model.State
         {
             return new HashSet<T>(serialized.ToEnumerable(deserializer));
         }
+
+        public static ImmutableHashSet<T> ToImmutableHashSet<T>(
+            this IValue serialized,
+            Func<IValue, T> deserializer
+        ) => serialized.ToEnumerable(deserializer).ToImmutableHashSet();
 
         #region Address
 

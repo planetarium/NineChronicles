@@ -36,18 +36,23 @@ namespace Lib9c.Tools
             return logConfig.CreateLogger();
         }
 
-        public static (BlockChain<NCAction> Chain, IStore Store) GetBlockChain(
+        public static (
+            BlockChain<NCAction> Chain,
+            IStore Store,
+            IKeyValueStore StateKVStore,
+            IStateStore StateStore
+        ) GetBlockChain(
             ILogger logger,
             string storePath,
-            Guid? chainId = null
+            Guid? chainId = null,
+            IKeyValueStore stateKeyValueStore = null
         )
         {
             var policySource = new BlockPolicySource(logger);
             IBlockPolicy<NCAction> policy = policySource.GetPolicy();
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             IStore store = new RocksDBStore(storePath);
-            IKeyValueStore stateKeyValueStore =
-                new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
+            stateKeyValueStore ??= new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
             IStateStore stateStore = new TrieStateStore(stateKeyValueStore);
             Guid chainIdValue
                 = chainId ??
@@ -81,7 +86,7 @@ namespace Lib9c.Tools
                 stateStore,
                 genesis
             );
-            return (chain, store);
+            return (chain, store, stateKeyValueStore, stateStore);
         }
 
         public static Address ParseAddress(string address)

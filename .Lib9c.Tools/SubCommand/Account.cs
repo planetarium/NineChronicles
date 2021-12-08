@@ -38,7 +38,7 @@ namespace Lib9c.Tools.SubCommand
         {
             using Logger logger = Utils.ConfigureLogger(verbose);
             TextWriter stderr = Console.Error;
-            (BlockChain<NCAction> chain, IStore store) =
+            (BlockChain<NCAction> chain, IStore store, _, _) =
                 Utils.GetBlockChain(logger, storePath, chainId);
 
             Block<NCAction> offset = Utils.ParseBlockOffset(chain, block);

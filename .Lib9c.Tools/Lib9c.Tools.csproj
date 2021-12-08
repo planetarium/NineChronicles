@@ -21,6 +21,7 @@
       <PackageReference Include="Cocona.Lite" Version="1.5.0" />
       <PackageReference Include="Serilog" Version="2.10.0" />
       <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
+      <PackageReference Include="Planetarium.RocksDbSharp" Version="6.2.4-planetarium" />
     </ItemGroup>
 
 </Project>
