@@ -121,6 +121,20 @@ namespace Nekoyume.UI
             ReactiveAvatarState.QuestList
                 .Subscribe(SubscribeQuestList)
                 .AddTo(gameObject);
+
+            ReactiveAvatarState.Inventory
+                .Subscribe(_ =>
+                {
+                    if (equipmentSubRecipeView.gameObject.activeSelf)
+                    {
+                        equipmentSubRecipeView.UpdateView();
+                    }
+                    else if (consumableSubRecipeView.gameObject.activeSelf)
+                    {
+                        consumableSubRecipeView.UpdateView();
+                    }
+                })
+                .AddTo(gameObject);
         }
 
         public void Show(int equipmentRecipeId)
