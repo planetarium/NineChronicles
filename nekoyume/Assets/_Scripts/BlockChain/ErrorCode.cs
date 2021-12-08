@@ -1,11 +1,10 @@
 ﻿using System;
 using Libplanet.Action;
-using mixpanel;
+using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using PackageExtensions.Mixpanel;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
@@ -110,18 +109,36 @@ namespace Nekoyume.BlockChain
                 case ActionTimeoutException ate:
                     key = "ERROR_NETWORK";
                     errorMsg = "Action timeout occurred.";
-                    if (Game.Game.instance.Agent.IsActionStaged(ate.ActionId, out var txId))
+                    TxId txId;
+                    if (ate.TxId.HasValue)
                     {
-                        errorMsg += $" Transaction for action is still staged. (txId: {txId})";
-                        code = "26";
+                        txId = ate.TxId.Value;
+                        if (Game.Game.instance.Agent.IsTxStaged(txId))
+                        {
+                            errorMsg += $" Transaction for action is still staged. (txId: {txId})";
+                            code = "26";
+                        }
+                        else
+                        {
+                            errorMsg += $" Transaction for action is not staged. (txId: {txId})";
+                            code = "27";
+                        }
                     }
                     else
                     {
-                        errorMsg += $" Transaction for action is not staged. (txId: {txId})";
-                        code = "27";
+                        if (Game.Game.instance.Agent.TryGetTxId(ate.ActionId, out txId))
+                        {
+                            errorMsg += $" Transaction for action is still staged. (txId: {txId})";
+                            code = "26";
+                        }
+                        else
+                        {
+                            errorMsg += " Transaction for action is not staged.";
+                            code = "27";
+                        }
                     }
 
-                    Debug.LogError($"Action timeout: (actionID: {ate.ActionId}, txId: {txId}, code: {code})");
+                    Debug.LogError($"Action timeout: (txId: {txId}, actionId: {ate.ActionId}, code: {code})");
 
                     errorMsg += $"\nError Code: {code}";
                     break;
