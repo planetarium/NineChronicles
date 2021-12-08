@@ -47,7 +47,7 @@ namespace Nekoyume.Game.Character
             if (Target is null)
                 throw new ArgumentNullException();
 
-            Object.DestroyImmediate(Target);
+            Object.Destroy(Target);
             Target = null;
         }
 

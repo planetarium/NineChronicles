@@ -455,10 +455,10 @@ namespace Nekoyume.BlockChain
                 .First()
                 .Subscribe(_ =>
                 {
-                    Widget
-                        .Find<TitleOneButtonSystem>()
-                        .ShowAndQuit(L10nManager.Localize("UI_ERROR"), errorMsg,
-                            L10nManager.Localize("UI_OK"), false);
+                    var popup = Widget.Find<IconAndButtonSystem>();
+                    popup.Show(L10nManager.Localize("UI_ERROR"),
+                        errorMsg, L10nManager.Localize("UI_OK"), false);
+                    popup.SetCancelCallbackToExit();
                 });
 
         }

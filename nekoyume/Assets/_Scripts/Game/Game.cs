@@ -394,17 +394,19 @@ namespace Nekoyume.Game
             }
 
             // FIXME 콜백 인자를 구조화 하면 타입 쿼리 없앨 수 있을 것 같네요.
+            IconAndButtonSystem popup;
             if (Agent is Agent _)
             {
                 var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
                     L10nManager.Localize("BLOCK_DOWNLOAD_FAIL"));
 
-                Widget.Find<TitleOneButtonSystem>().ShowAndQuit(
-                    L10nManager.Localize("UI_ERROR"),
+                popup = Widget.Find<IconAndButtonSystem>();
+                popup.Show(L10nManager.Localize("UI_ERROR"),
                     errorMsg,
                     L10nManager.Localize("UI_QUIT"),
-                    false
-                );
+                    false,
+                    IconAndButtonSystem.SystemType.BlockChainError);
+                popup.SetCancelCallbackToExit();
 
                 return;
             }
@@ -423,11 +425,9 @@ namespace Nekoyume.Game
                 return;
             }
 
-            Widget.Find<TitleOneButtonSystem>().ShowAndQuit(
-                "UI_ERROR",
-                "UI_ERROR_RPC_CONNECTION",
-                "UI_QUIT"
-            );
+            popup = Widget.Find<IconAndButtonSystem>();
+            popup.Show("UI_ERROR", "UI_ERROR_RPC_CONNECTION", "UI_QUIT");
+            popup.SetCancelCallbackToExit();
         }
 
         // FIXME: Leave one between this or CoSyncTableSheets()
@@ -572,10 +572,10 @@ namespace Nekoyume.Game
                     L10nManager.Localize(key),
                     code)
                 : errorMsg;
-            Widget
-                .Find<TitleOneButtonSystem>()
-                .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
-                    L10nManager.Localize("UI_OK"), false);
+            var popup = Widget.Find<IconAndButtonSystem>();
+            popup.Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                L10nManager.Localize("UI_OK"), false);
+            popup.SetCancelCallbackToExit();
         }
 
         public static void Quit()
@@ -601,8 +601,8 @@ namespace Nekoyume.Game
         {
             if (_options.Maintenance)
             {
-                var w = Widget.Create<TitleOneButtonSystem>();
-                w.CloseCallback = () =>
+                var w = Widget.Create<IconAndButtonSystem>();
+                w.CancelCallback = () =>
                 {
                     Application.OpenURL(GameConfig.DiscordLink);
 #if UNITY_EDITOR
@@ -614,7 +614,9 @@ namespace Nekoyume.Game
                 w.Show(
                     "UI_MAINTENANCE",
                     "UI_MAINTENANCE_CONTENT",
-                    "UI_OK"
+                    "UI_OK",
+                    true,
+                    IconAndButtonSystem.SystemType.Information
                 );
                 yield break;
             }

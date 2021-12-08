@@ -91,5 +91,13 @@ namespace Nekoyume.UI.Tween
             yield return new WaitForSeconds(delay);
             Play();
         }
+
+        private void OnEnable()
+        {
+            if (playAtStart)
+            {
+                Play();
+            }
+        }
     }
 }
