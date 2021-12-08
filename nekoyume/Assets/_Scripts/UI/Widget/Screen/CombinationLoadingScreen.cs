@@ -131,7 +131,6 @@ namespace Nekoyume.UI
             {
                 StartCoroutine(speechBubble.CoShowText(quote, true));
             }
-            //StartCoroutine(CoWorkshopItemMove());
 
             var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
 
