@@ -11,8 +11,7 @@ namespace Nekoyume.BlockChain
         {
             try
             {
-                var response = await next(context); /* Call next filter or method body */
-                return response;
+                return await next(context);
             }
             catch (Exception e)
             {
