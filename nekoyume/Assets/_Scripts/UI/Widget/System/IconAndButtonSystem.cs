@@ -89,41 +89,49 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void Show(string title, string content, string labelYes = "UI_OK",
-            bool localize = true, SystemType type = SystemType.Error)
+        public void Show(
+            string title,
+            string content,
+            string labelYes = "UI_OK",
+            bool localize = true,
+            SystemType type = SystemType.Error)
         {
+            if (gameObject.activeSelf)
+            {
+                Close(true);
+                Show(title, content, labelYes, localize, type);
+                return;
+            }
+
+            Set(title, content, labelYes, "", localize, type);
+            Show();
             if (blur)
             {
                 blur.Show();
             }
-
-            if (gameObject.activeSelf)
-            {
-                Close(true);
-                ShowWithTwoButton(title, content, labelYes, "", localize, false, type);
-                return;
-            }
-
-            Set(title, content, labelYes, "", localize, false, type);
         }
 
-        public void ShowWithTwoButton(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true, bool hasConfirmButton = true, SystemType type = SystemType.Error)
+        public void ShowWithTwoButton(
+            string title,
+            string content,
+            string labelYes = "UI_OK",
+            string labelNo = "UI_CANCEL",
+            bool localize = true,
+            SystemType type = SystemType.Error)
         {
+            if (gameObject.activeSelf)
+            {
+                Close(true);
+                ShowWithTwoButton(title, content, labelYes, labelNo, localize, type);
+                return;
+            }
+
+            Set(title, content, labelYes, labelNo, localize, type);
+            Show();
             if (blur)
             {
                 blur.Show();
             }
-
-            if (gameObject.activeSelf)
-            {
-                Close(true);
-                ShowWithTwoButton(title, content, labelYes, labelNo, localize, hasConfirmButton, type);
-                return;
-            }
-
-            Set(title, content, labelYes, labelNo, localize, hasConfirmButton, type);
-            Show();
         }
 
         public void ShowByBlockDownloadFail(long index)
@@ -160,31 +168,35 @@ namespace Nekoyume.UI
             Close();
         }
 
-        private void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true, bool hasConfirmButton = true, SystemType type = SystemType.Error)
+        private void Set(
+            string title,
+            string content,
+            string labelYes = "UI_OK",
+            string labelNo = "UI_CANCEL",
+            bool localize = true,
+            SystemType type = SystemType.Error)
         {
             SetUIByType(type);
-            bool titleExists = !string.IsNullOrEmpty(title);
-            if (localize)
+
+            void Test(string text, Action<bool> setActive, Action<string> setText)
             {
-                if (titleExists)
+                if (string.IsNullOrEmpty(text))
                 {
-                    _titleText.text = L10nManager.Localize(title);
+                    setActive?.Invoke(false);
                 }
-                _contentText.text = L10nManager.Localize(content);
-                _confirmButton.Text = L10nManager.Localize(labelYes);
-                _cancelButton.Text = L10nManager.Localize(labelNo);
-            }
-            else
-            {
-                _titleText.text = title;
-                _contentText.text = content;
-                _confirmButton.Text = labelYes;
-                _cancelButton.Text = labelNo;
+                else
+                {
+                    setText?.Invoke(localize
+                        ? L10nManager.Localize(text)
+                        : text);
+                    setActive?.Invoke(true);
+                }
             }
 
-            _titleText.gameObject.SetActive(titleExists);
-            _confirmButton.gameObject.SetActive(hasConfirmButton);
+            Test(title, _titleText.gameObject.SetActive, text => _titleText.text = text);
+            Test(content, _contentText.gameObject.SetActive, text => _contentText.text = text);
+            Test(labelYes, _confirmButton.gameObject.SetActive, text => _confirmButton.Text = text);
+            Test(labelNo, _cancelButton.gameObject.SetActive, text => _cancelButton.Text = text);
         }
 
         private void Confirm()
