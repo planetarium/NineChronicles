@@ -117,7 +117,7 @@ namespace Nekoyume.BlockChain
                     }
                     else
                     {
-                        errorMsg += $" Transaction for action is not staged. (txId: {txId})";
+                        errorMsg += " Transaction for action is not staged.";
                         code = "27";
                     }
 
