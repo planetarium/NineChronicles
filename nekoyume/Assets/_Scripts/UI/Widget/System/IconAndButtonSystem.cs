@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
+using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -29,6 +34,8 @@ namespace Nekoyume.UI
             public TextMeshProUGUI contentText;
 
             public TextMeshProUGUI titleText;
+
+            public Button textGroupButton;
         }
 
         [SerializeField]
@@ -58,6 +65,14 @@ namespace Nekoyume.UI
             {
                 ui.confirmButton.OnClick = Confirm;
                 ui.cancelButton.OnClick = Cancel;
+                ui.textGroupButton.onClick.AddListener(() =>
+                {
+                    ClipboardHelper.CopyToClipboard(ui.contentText.text);
+                    NotificationSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_COPIED"),
+                        NotificationCell.NotificationType.Information);
+                });
             }
         }
 
