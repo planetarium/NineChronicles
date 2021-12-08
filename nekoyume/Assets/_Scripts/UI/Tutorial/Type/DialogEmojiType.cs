@@ -7,9 +7,9 @@ namespace Nekoyume.UI
     public enum DialogEmojiType
     {
         None = 0,
-        Idle,
-        Reaction,
-        Question,
+        Idle = 1,
+        Reaction = 2,
+        Question = 3,
     }
 
     public class DialogEmojiTypeEqualityComparer : IEqualityComparer<DialogEmojiType>

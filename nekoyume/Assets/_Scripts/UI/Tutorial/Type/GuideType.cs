@@ -7,11 +7,11 @@ namespace Nekoyume.UI
     public enum GuideType
     {
         None = 0,
-        Square,
-        Circle,
-        Outline,
-        Stop,
-        End,
+        Square = 1,
+        Circle = 2,
+        Outline = 3,
+        Stop = 4,
+        End = 5,
     }
 
     public class GuideTypeEqualityComparer : IEqualityComparer<GuideType>

@@ -79,6 +79,14 @@
       "isEnableMask": true,
       "isSkipArrowAnimation" : false,
       "commaId" : 2
+    },
+    {
+      "id" : 10,
+      "content" : "Linked_End_Comma",
+      "isExistFadeInBackground": false,
+      "isEnableMask": false,
+      "isSkipArrowAnimation" : true,
+      "commaId" : 1
     }
   ]
 }

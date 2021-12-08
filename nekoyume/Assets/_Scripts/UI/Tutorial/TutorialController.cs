@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using mixpanel;
 using Nekoyume.L10n;
 using UnityEngine;
@@ -45,6 +44,7 @@ namespace Nekoyume.UI
 
                 foreach (var target in widget.tutorialTargets.Where(target => target != null))
                 {
+
                     _targets.Add(target.type, target.rectTransform);
                 }
 
@@ -65,8 +65,9 @@ namespace Nekoyume.UI
 
         private T GetData<T>(string path) where T : new()
         {
-            var data = Resources.Load<TextAsset>(path)?.text;
-            return !string.IsNullOrEmpty(data) ? JsonSerializer.Deserialize<T>(data) : new T();
+            var json = Resources.Load<TextAsset>(path).ToString();
+            var data = JsonUtility.FromJson<T>(json);
+            return data;
         }
 
         public void Play(int id)
@@ -139,12 +140,16 @@ namespace Nekoyume.UI
                     preset.isEnableMask,
                     target,
                     _buttonRectTransform,
-                    data.fullScreenButton),
+                    data.fullScreenButton,
+                    data.buttonRaycastPadding,
+                    data.targetPositionOffset,
+                    data.targetSizeOffset),
                 new GuideArrowData(
                     data.noArrow ? GuideType.Stop : data.guideType,
                     target,
                     data.targetPositionOffset,
                     data.targetSizeOffset,
+                    data.arrowPositionOffset,
                     data.arrowAdditionalDelay,
                     preset.isSkipArrowAnimation),
                 new GuideDialogData(
@@ -175,7 +180,6 @@ namespace Nekoyume.UI
 
             var prefsKey = $"TUTORIAL_PROGRESS";
             PlayerPrefs.SetInt(prefsKey, id);
-            Debug.LogWarning($"Saved tutorial progress : {id}");
         }
     }
 }
