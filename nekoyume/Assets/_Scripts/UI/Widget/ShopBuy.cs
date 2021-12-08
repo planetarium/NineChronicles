@@ -30,7 +30,7 @@ namespace Nekoyume.UI
         [SerializeField] private List<ShopItemViewRow> itemViewItems;
 
         private NPC _npc;
-        private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
+        private static readonly Vector3 NPCPosition = new Vector3(1000.2f, 996.8f, 1.7f);
         private const int NPCId = 300000;
 
         private Shop SharedModel { get; set; }
