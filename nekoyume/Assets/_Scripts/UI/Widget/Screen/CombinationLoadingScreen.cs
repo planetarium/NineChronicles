@@ -131,7 +131,7 @@ namespace Nekoyume.UI
             {
                 StartCoroutine(speechBubble.CoShowText(quote, true));
             }
-            StartCoroutine(CoWorkshopItemMove());
+            //StartCoroutine(CoWorkshopItemMove());
 
             var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
 
@@ -146,8 +146,6 @@ namespace Nekoyume.UI
 
         private IEnumerator CoWorkshopItemMove()
         {
-            yield return new WaitForSeconds(speechBubble.bubbleTweenTime);
-
             var item = speechBubble.item;
             var target = Find<HeaderMenuStatic>().GetToggle(HeaderMenuStatic.ToggleType.CombinationSlots);
             var targetPosition = target ? target.position : Vector3.zero;
@@ -170,6 +168,7 @@ namespace Nekoyume.UI
         {
             _npc.PlayAnimation(NPCAnimation.Type.Disappear_02);
             HideButton();
+            StartCoroutine(CoWorkshopItemMove());
             if (_sparkVFX)
             {
                 _sparkVFX.LazyStop();
