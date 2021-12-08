@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -167,6 +165,17 @@ namespace Nekoyume.BlockChain
             return FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
+        }
+
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
+        {
+            Dictionary<byte[], byte[]> raw =  await _service.GetAvatarStates(addressList.Select(a => a.ToByteArray()));
+            var result = new Dictionary<Address, AvatarState>();
+            foreach (var kv in raw)
+            {
+                result[new Address(kv.Key)] = new AvatarState((Dictionary)_codec.Decode(kv.Value));
+            }
+            return result;
         }
 
         public void SendException(Exception exc)

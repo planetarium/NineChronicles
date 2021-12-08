@@ -283,6 +283,24 @@ namespace Nekoyume.BlockChain
             return Task.Run(() => blocks.GetState(address));
         }
 
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
+        {
+            return await Task.Run(async () =>
+            {
+                var dict = new Dictionary<Address, AvatarState>();
+                foreach (var address in addressList)
+                {
+                    var result = await States.TryGetAvatarStateAsync(address);
+                    if (result.exist)
+                    {
+                        dict[address] = result.avatarState;
+                    }
+                }
+
+                return dict;
+            });
+        }
+
         public bool IsActionStaged(Guid actionId, out TxId txId)
         {
             return _transactions.TryGetValue(actionId, out txId)
