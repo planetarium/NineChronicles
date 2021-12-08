@@ -180,9 +180,9 @@ namespace Lib9c.Tests.Action
         [InlineData(1)]
         public void ExecuteThrowFailedLoadStateException(int caseIndex)
         {
-            Address signer;
-            Address avatarAddress;
-            Address enemyAddress;
+            Address signer = default;
+            Address avatarAddress = default;
+            Address enemyAddress = default;
 
             switch (caseIndex)
             {
@@ -293,7 +293,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteThrowWeeklyArenaStateNotContainsAvatarAddressException(
             int caseIndex)
         {
-            Address targetAddress;
+            Address targetAddress = default;
             switch (caseIndex)
             {
                 case 0:

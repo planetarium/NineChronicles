@@ -5,6 +5,12 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
     </PropertyGroup>
 
+    <PropertyGroup Condition="
+      '$([System.Runtime.InteropServices.RuntimeInformation]::
+        OSArchitecture.ToString())' == 'Arm64' ">
+      <TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
+
     <ItemGroup>
       <ProjectReference Include="..\.Libplanet\Libplanet.RocksDBStore\Libplanet.RocksDBStore.csproj" />
       <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" />
