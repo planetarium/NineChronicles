@@ -237,6 +237,8 @@ namespace Nekoyume.UI
         private void SubscribeQuestList(QuestList questList)
         {
             var quest = questList?
+                .EnumerateLazyQuestStates()
+                .Select(l => l.State)
                 .OfType<CombinationEquipmentQuest>()
                 .Where(x => !x.Complete)
                 .OrderBy(x => x.StageId)
