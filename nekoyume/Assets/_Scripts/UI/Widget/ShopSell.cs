@@ -42,7 +42,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button spineButton = null;
 
         private NPC _npc;
-        private static readonly Vector2 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
+        private static readonly Vector3 NPCPosition = new Vector3(1000.2f, 998, 1.7f);
         private const int NPCId = 300000;
         private const int LimitPrice  = 100000000;
 
