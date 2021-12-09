@@ -262,16 +262,20 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
+            var addressList = response.StageRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
+            var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
+
             MimisbrunnrRankingInfos = response.StageRanking
-                .Select(async e =>
+                .Select(e =>
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                    if (!exist)
+                    if (!avatarDict.ContainsKey(address))
                     {
                         return null;
                     }
+
+                    var avatarState = avatarDict[address];
 
                     return new StageRankingModel
                     {
@@ -281,7 +285,7 @@ namespace Nekoyume.UI.Model
                         Rank = e.Ranking,
                     };
                 })
-                .Select(t => t?.Result)
+                .Select(t => t)
                 .Where(e => e != null)
                 .ToList();
 
@@ -312,17 +316,9 @@ namespace Nekoyume.UI.Model
                     continue;
                 }
 
-                var addressString = myRecord.AvatarAddress.Substring(2);
-                var address = new Address(addressString);
-                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                if (!exist)
-                {
-                    continue;
-                }
-
                 AgentMimisbrunnrRankingInfos[pair.Key] = new StageRankingModel
                 {
-                    AvatarState = avatarState,
+                    AvatarState = pair.Value,
                     ClearedStageId = myRecord.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1,
                     Rank = myRecord.Ranking,
                 };
