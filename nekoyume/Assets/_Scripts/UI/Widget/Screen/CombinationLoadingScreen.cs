@@ -70,12 +70,6 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void ShowButton()
-        {
-            _buttonAlphaTweener.Play();
-            _bgAlphaTweener.Play();
-        }
-
         public void HideButton()
         {
             _buttonAlphaTweener.PlayReverse();
@@ -118,7 +112,6 @@ namespace Nekoyume.UI
                 31);
             _npc = go.GetComponent<NPC>();
             _npc.SpineController.Appear(.3f);
-            ShowButton();
             var pos = ActionCamera.instance.Cam.transform.position;
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
             _npc.PlayAnimation(itemType switch
@@ -138,7 +131,6 @@ namespace Nekoyume.UI
             {
                 StartCoroutine(speechBubble.CoShowText(quote, true));
             }
-            StartCoroutine(CoWorkshopItemMove());
 
             var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
 
@@ -153,8 +145,6 @@ namespace Nekoyume.UI
 
         private IEnumerator CoWorkshopItemMove()
         {
-            yield return new WaitForSeconds(speechBubble.bubbleTweenTime);
-
             var item = speechBubble.item;
             var target = Find<HeaderMenuStatic>().GetToggle(HeaderMenuStatic.ToggleType.CombinationSlots);
             var targetPosition = target ? target.position : Vector3.zero;
@@ -177,6 +167,7 @@ namespace Nekoyume.UI
         {
             _npc.PlayAnimation(NPCAnimation.Type.Disappear_02);
             HideButton();
+            StartCoroutine(CoWorkshopItemMove());
             if (_sparkVFX)
             {
                 _sparkVFX.LazyStop();

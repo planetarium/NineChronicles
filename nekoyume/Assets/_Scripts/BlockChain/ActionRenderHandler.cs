@@ -29,6 +29,7 @@ using Lib9c.DevExtensions.Action;
 
 namespace Nekoyume.BlockChain
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class ActionRenderHandler : ActionHandler
@@ -351,7 +352,10 @@ namespace Nekoyume.BlockChain
 
                 var format = L10nManager.Localize(formatKey);
                 NotificationSystem.CancelReserve(result.itemUsable.TradableId);
-                NotificationSystem.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
+                NotificationSystem.Push(
+                    MailType.Workshop,
+                    string.Format(format, result.itemUsable.GetLocalizedName()),
+                    NotificationCell.NotificationType.Notification);
 
                 States.Instance.AddOrReplaceCombinationSlotState(slotIndex, slotState);
                 UpdateAgentStateAsync(eval);
@@ -387,6 +391,8 @@ namespace Nekoyume.BlockChain
 
                 var gameInstance = Game.Game.instance;
                 var nextQuest = avatarState.questList?
+                    .EnumerateLazyQuestStates()
+                    .Select(l => l.State)
                     .OfType<CombinationEquipmentQuest>()
                     .Where(x => !x.Complete)
                     .OrderBy(x => x.StageId)
@@ -586,7 +592,10 @@ namespace Nekoyume.BlockChain
                         item.GetLocalizedName());
                 }
 
-                OneLineSystem.Push(MailType.Auction, message);
+                OneLineSystem.Push(
+                    MailType.Auction,
+                    message,
+                    NotificationCell.NotificationType.Information);
 
                 UpdateCurrentAvatarStateAsync(eval);
                 var shopSell = Widget.Find<ShopSell>();
@@ -611,7 +620,10 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
             LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            OneLineSystem.Push(MailType.Auction, string.Format(format, itemName));
+            OneLineSystem.Push(
+                MailType.Auction,
+                string.Format(format, itemName),
+                NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
             var shopSell = Widget.Find<ShopSell>();
             if (shopSell.isActiveAndEnabled)
@@ -629,7 +641,10 @@ namespace Nekoyume.BlockChain
 
             var itemName = await Util.GetItemNameByOrderId(eval.Action.orderId);
             var format = L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE");
-            OneLineSystem.Push(MailType.Auction, string.Format(format, itemName));
+            OneLineSystem.Push(
+                MailType.Auction,
+                string.Format(format, itemName),
+                NotificationCell.NotificationType.Notification);
             UpdateCurrentAvatarStateAsync(eval);
             var shopSell = Widget.Find<ShopSell>();
             if (shopSell.isActiveAndEnabled)
@@ -679,7 +694,7 @@ namespace Nekoyume.BlockChain
                             itemName,
                             L10nManager.Localize(errorType),
                             price);
-                        OneLineSystem.Push(MailType.Auction, msg);
+                        OneLineSystem.Push(MailType.Auction, msg, NotificationCell.NotificationType.Alert);
                     }
                     else
                     {
@@ -689,7 +704,10 @@ namespace Nekoyume.BlockChain
                         LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
 
                         var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                        OneLineSystem.Push(MailType.Auction, string.Format(format, itemName, price));
+                        OneLineSystem.Push(
+                            MailType.Auction,
+                            string.Format(format, itemName, price),
+                            NotificationCell.NotificationType.Notification);
                     }
                 }
             }
@@ -721,7 +739,7 @@ namespace Nekoyume.BlockChain
                         L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
                         buyerNameWithHash,
                         itemName);
-                    OneLineSystem.Push(MailType.Auction, message);
+                    OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Notification);
                 }
             }
 
@@ -743,7 +761,10 @@ namespace Nekoyume.BlockChain
                 LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                     eval.Action.avatarAddress);
                 UpdateCurrentAvatarStateAsync(eval);
-                UI.NotificationSystem.Push(MailType.System, L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"));
+                UI.NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
+                    NotificationCell.NotificationType.Notification);
             }
         }
 
@@ -988,6 +1009,8 @@ namespace Nekoyume.BlockChain
                 Widget.Find<CodeRewardPopup>().Show(eval.Action.Code, eval.OutputStates.GetRedeemCodeState());
                 key = "UI_REDEEM_CODE_SUCCESS";
                 UpdateCurrentAvatarStateAsync(eval);
+                var msg = L10nManager.Localize(key);
+                UI.NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Information);
             }
             else
             {
@@ -995,10 +1018,9 @@ namespace Nekoyume.BlockChain
                 {
                     key = "UI_REDEEM_CODE_ALREADY_USE";
                 }
+                var msg = L10nManager.Localize(key);
+                UI.NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Alert);
             }
-
-            var msg = L10nManager.Localize(key);
-            UI.NotificationSystem.Push(MailType.System, msg);
         }
 
         private void ResponseChargeActionPoint(ActionBase.ActionEvaluation<ChargeActionPoint> eval)
@@ -1076,7 +1098,8 @@ namespace Nekoyume.BlockChain
             // Notification
             UI.NotificationSystem.Push(
                 MailType.System,
-                L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"));
+                L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
+                NotificationCell.NotificationType.Information);
 
             UpdateAgentStateAsync(eval);
             UpdateCurrentAvatarStateAsync(eval);
@@ -1098,27 +1121,26 @@ namespace Nekoyume.BlockChain
             if (senderAddress == currentAgentAddress)
             {
                 var amount = eval.Action.Amount;
-                var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_SENDER");
-                var message = string.Format(messageFormat, amount, recipientAddress);
 
-                OneLineSystem.Push(MailType.System, message);
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_SENDER", amount, recipientAddress),
+                    NotificationCell.NotificationType.Notification);
             }
             else if (recipientAddress == currentAgentAddress)
             {
                 var amount = eval.Action.Amount;
-                string message;
                 if (senderAddress == playToEarnRewardAddress)
                 {
-                    var messageFormat = L10nManager.Localize("UI_PLAYTOEARN_NOTIFICATION_FORMAT");
-                    message = string.Format(messageFormat, amount);
+                    OneLineSystem.Push(MailType.System,
+                        L10nManager.Localize("UI_PLAYTOEARN_NOTIFICATION_FORMAT", amount),
+                        NotificationCell.NotificationType.Notification);
                 }
                 else
                 {
-                    var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_RECIPIENT");
-                    message = string.Format(messageFormat, amount, senderAddress);
+                    OneLineSystem.Push(MailType.System,
+                        L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_RECIPIENT", amount, senderAddress),
+                        NotificationCell.NotificationType.Notification);
                 }
-
-                OneLineSystem.Push(MailType.System, message);
             }
             UpdateAgentStateAsync(eval);
         }
@@ -1133,7 +1155,11 @@ namespace Nekoyume.BlockChain
             var questList = States.Instance.CurrentAvatarState.questList;
             foreach (var id in ids)
             {
-                var quest = questList.First(q => q.Id == id);
+                var quest = questList.EnumerateLazyQuestStates().First(lq =>
+                    (lq.GetStateOrSerializedEncoding(out Quest q, out Dictionary d)
+                        ? q.Id
+                        : Quest.GetQuestId(d)).Equals(id)
+                ).State;
                 var rewardMap = quest.Reward.ItemMap;
 
                 foreach (var reward in rewardMap)

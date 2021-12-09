@@ -1,5 +1,6 @@
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine.UI;
@@ -19,8 +20,9 @@ namespace Nekoyume.UI
         public InputField inputField;
         public Text inputFieldPlaceHolder;
         public TextMeshProUGUI content;
-        public TextMeshProUGUI labelYes;
-        public TextMeshProUGUI labelNo;
+        public TextButton submitButton;
+        public TextButton cancelButton;
+
         public InputBoxDelegate CloseCallback { get; set; }
         public Blur blur;
 
@@ -29,6 +31,9 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+
+            cancelButton.OnClick = No;
+            submitButton.OnClick = Yes;
 
             CloseWidget = No;
             SubmitWidget = Yes;
@@ -43,15 +48,15 @@ namespace Nekoyume.UI
             {
                 inputFieldPlaceHolder.text = L10nManager.Localize(placeHolderText);
                 this.content.text = L10nManager.Localize(content);
-                this.labelYes.text = L10nManager.Localize(labelYes);
-                this.labelNo.text = L10nManager.Localize(labelNo);
+                submitButton.Text = L10nManager.Localize(labelYes);
+                cancelButton.Text = L10nManager.Localize(labelNo);
             }
             else
             {
                 inputFieldPlaceHolder.text = placeHolderText;
                 this.content.text = content;
-                this.labelYes.text = "OK";
-                this.labelNo.text = "CANCEL";
+                submitButton.Text = "OK";
+                cancelButton.Text = "CANCEL";
             }
 
             base.Show();

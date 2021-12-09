@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Caching</name>
+    </assembly>
+    <members>
+        <member name="T:Caching.FIFOCache`2">
+            <summary>
+            FIFO cache that internally uses tuples.
+            </summary>
+        </member>
+        <member name="M:Caching.FIFOCache`2.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Initialize the cache.
+            </summary>
+            <param name="capacity">Maximum number of entries.</param>
+            <param name="evictCount">Number to evict when capacity is reached.</param>
+            <param name="debug">Deprecated.</param>
+        </member>
+        <member name="M:Caching.FIFOCache`2.Dispose">
+            <summary>
+            Dispose of the object.  Do not use after disposal.
+            </summary>
+        </member>
+        <member name="M:Caching.FIFOCache`2.Count">
+            <summary>
+            Retrieve the current number of entries in the cache.
+            </summary>
+            <returns>An integer containing the number of entries.</returns>
+        </member>
+        <member name="M:Caching.FIFOCache`2.Oldest">
+            <summary>
+            Retrieve the key of the oldest entry in the cache.
+            </summary>
+            <returns>String containing the key.</returns>
+        </member>
+        <member name="M:Caching.FIFOCache`2.Newest">
+            <summary>
+            Retrieve the key of the newest entry in the cache.
+            </summary>
+            <returns>String containing the key.</returns>
+        </member>
+        <member name="M:Caching.FIFOCache`2.All">
+            <summary>
+            Retrieve all entries from the cache.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Caching.FIFOCache`2.Clear">
+            <summary>
+            Clear the cache.
+            </summary>
+        </member>
+        <member name="M:Caching.FIFOCache`2.Get(`0)">
+            <summary>
+            Retrieve a key's value from the cache.
+            </summary>
+            <param name="key">The key associated with the data you wish to retrieve.</param>
+            <returns>The object data associated with the key.</returns>
+        </member>
+        <member name="M:Caching.FIFOCache`2.TryGet(`0,`1@)">
+            <summary>
+            Retrieve a key's value from the cache.
+            </summary>
+            <param name="key">The key associated with the data you wish to retrieve.</param>
+            <param name="val">The value associated with the key.</param>
+            <returns>True if key is found.</returns>
+        </member>
+        <member name="M:Caching.FIFOCache`2.Contains(`0)">
+            <summary>
+            See if a key exists in the cache.
+            </summary>
+            <param name="key">The key of the cached items.</param>
+            <returns>True if cached.</returns>
+        </member>
+        <member name="M:Caching.FIFOCache`2.AddReplace(`0,`1)">
+            <summary>
+            Add or replace a key's value in the cache.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="val">The value associated with the key.</param> 
+        </member>
+        <member name="M:Caching.FIFOCache`2.Remove(`0)">
+            <summary>
+            Remove a key from the cache.
+            </summary>
+            <param name="key">The key.</param> 
+        </member>
+        <member name="M:Caching.FIFOCache`2.GetKeys">
+            <summary>
+            Retrieve all keys in the cache.
+            </summary>
+            <returns>List of string.</returns>
+        </member>
+        <member name="M:Caching.FIFOCache`2.Dispose(System.Boolean)">
+            <summary>
+            Dispose of the object.  Do not use after disposal.
+            </summary>
+        </member>
+        <member name="T:Caching.LRUCache`2">
+            <summary>
+            LRU cache that internally uses tuples.  T1 is the type of the key, and T2 is the type of the value.
+            </summary>
+        </member>
+        <member name="M:Caching.LRUCache`2.#ctor(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Initialize the cache.
+            </summary>
+            <param name="capacity">Maximum number of entries.</param>
+            <param name="evictCount">Number to evict when capacity is reached.</param>
+            <param name="debug">Deprecated.</param>
+        </member>
+        <member name="M:Caching.LRUCache`2.Dispose">
+            <summary>
+            Dispose of the object.  Do not use after disposal.
+            </summary>
+        </member>
+        <member name="M:Caching.LRUCache`2.Count">
+            <summary>
+            Retrieve the current number of entries in the cache.
+            </summary>
+            <returns>An integer containing the number of entries.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.Oldest">
+            <summary>
+            Retrieve the key of the oldest entry in the cache.
+            </summary>
+            <returns>String containing the key.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.Newest">
+            <summary>
+            Retrieve the key of the newest entry in the cache.
+            </summary>
+            <returns>String containing the key.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.All">
+            <summary>
+            Retrieve all entries from the cache.
+            </summary>
+            <returns>Dictionary.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.LastUsed">
+            <summary>
+            Retrieve the key of the last used entry in the cache.
+            </summary>
+            <returns>String containing the key.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.FirstUsed">
+            <summary>
+            Retrieve the key of the first used entry in the cache.
+            </summary>
+            <returns>String containing the key.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.Clear">
+            <summary>
+            Clear the cache.
+            </summary>
+        </member>
+        <member name="M:Caching.LRUCache`2.Get(`0)">
+            <summary>
+            Retrieve a key's value from the cache.
+            </summary>
+            <param name="key">The key associated with the data you wish to retrieve.</param>
+            <returns>The object data associated with the key.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.TryGet(`0,`1@)">
+            <summary>
+            Retrieve a key's value from the cache.
+            </summary>
+            <param name="key">The key associated with the data you wish to retrieve.</param>
+            <param name="val">The value associated with the key.</param>
+            <returns>True if key is found.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.Contains(`0)">
+            <summary>
+            See if a key exists in the cache.
+            </summary>
+            <param name="key">The key of the cached items.</param>
+            <returns>True if cached.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.AddReplace(`0,`1)">
+            <summary>
+            Add or replace a key's value in the cache.
+            </summary>
+            <param name="key">The key.</param>
+            <param name="val">The value associated with the key.</param>
+            <returns>Boolean indicating success.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.Remove(`0)">
+            <summary>
+            Remove a key from the cache.
+            </summary>
+            <param name="key">The key.</param> 
+        </member>
+        <member name="M:Caching.LRUCache`2.GetKeys">
+            <summary>
+            Retrieve all keys in the cache.
+            </summary>
+            <returns>List of string.</returns>
+        </member>
+        <member name="M:Caching.LRUCache`2.Dispose(System.Boolean)">
+            <summary>
+            Dispose of the object.  Do not use after disposal.
+            </summary>
+        </member>
+    </members>
+</doc>

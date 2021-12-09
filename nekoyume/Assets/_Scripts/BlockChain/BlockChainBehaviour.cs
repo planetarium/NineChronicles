@@ -10,6 +10,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
@@ -57,7 +58,10 @@ namespace Nekoyume.BlockChain
                     _updatedAddresses.Clear();
 
                     var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
-                    UI.NotificationSystem.Push(Model.Mail.MailType.System, msg);
+                    UI.NotificationSystem.Push(
+                        Model.Mail.MailType.System,
+                        msg,
+                        NotificationCell.NotificationType.Information);
                 })
                 .AddTo(_disposables);
 
@@ -183,7 +187,7 @@ namespace Nekoyume.BlockChain
             await UniTask.Run(async () => await States.Instance.UpdateAsync(_agent, _updatedAddresses, true));
 
             // LocalLayerActions 적용
-            LocalLayerActions.Instance.Apply(_agent, States.Instance, TableSheets.Instance, _updatedAddresses, true);
+            // LocalLayerActions.Instance.Apply(_agent, States.Instance, TableSheets.Instance, _updatedAddresses, true);
 
             // LocalLayerCommands 적용
             LocalLayerCommands.Instance.Apply(_agent, States.Instance, TableSheets.Instance, _updatedAddresses, true);

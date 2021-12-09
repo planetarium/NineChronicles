@@ -13,6 +13,7 @@ using Nekoyume.Model.Mail;
 namespace Nekoyume.UI.Module
 {
     using Nekoyume.L10n;
+    using Nekoyume.UI.Scroller;
     using System.Collections.Generic;
     using UniRx;
 
@@ -74,13 +75,17 @@ namespace Nekoyume.UI.Module
 
                             if (diff > UnlockConditionDisplayRange)
                             {
-                                OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_RECIPE_LOCK_GUIDE"));
+                                OneLineSystem.Push(
+                                    MailType.System,
+                                    L10nManager.Localize("UI_RECIPE_LOCK_GUIDE"),
+                                    NotificationCell.NotificationType.UnlockCondition);
                             }
                             else
                             {
-                                var format = L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE");
-                                var message = string.Format(format, equipmentRow.UnlockStage);
-                                OneLineSystem.Push(MailType.System, message);
+                                OneLineSystem.Push(
+                                    MailType.System,
+                                    L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE", equipmentRow.UnlockStage),
+                                    NotificationCell.NotificationType.UnlockCondition);
                             }
                         }
                     }
@@ -130,6 +135,7 @@ namespace Nekoyume.UI.Module
                 IsLocked = true;
             }
 
+            lockOpenVFXObject.SetActive(false);
             gameObject.SetActive(true);
 
             if (selectable)

@@ -25,6 +25,7 @@ using EquipmentInventory = Nekoyume.UI.Module.EquipmentInventory;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class UpgradeEquipment : Widget
@@ -33,7 +34,7 @@ namespace Nekoyume.UI
         private EquipmentInventory inventory;
 
         [SerializeField]
-        private Button upgradeButton;
+        private ConditionalCostButton upgradeButton;
 
         [SerializeField]
         private Button closeButton;
@@ -58,9 +59,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI nextLevelText;
-
-        [SerializeField]
-        private TextMeshProUGUI costText;
 
         [SerializeField]
         private TextMeshProUGUI materialGuideText;
@@ -115,7 +113,9 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            upgradeButton.onClick.AddListener(Action);
+            upgradeButton.OnSubmitSubject
+                .Subscribe(_ => Action())
+                .AddTo(gameObject);
             closeButton.onClick.AddListener(Close);
             CloseWidget = Close;
         }
@@ -284,14 +284,14 @@ namespace Nekoyume.UI
         {
             if (!IsInteractableButton(_baseItem, _materialItem))
             {
-                NotificationSystem.Push(MailType.System, errorMessage);
+                NotificationSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
                 return;
             }
 
             if (States.Instance.GoldBalanceState.Gold.MajorUnit < _costNcg)
             {
                 errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
-                NotificationSystem.Push(MailType.System, errorMessage);
+                NotificationSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
                 return;
             }
 
@@ -308,7 +308,8 @@ namespace Nekoyume.UI
             }
 
             NotificationSystem.Push(MailType.Workshop,
-                L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"));
+                L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
+                NotificationCell.NotificationType.Information);
 
             Game.Game.instance.ActionManager.ItemEnhancement(_baseItem, _materialItem, slotIndex, _costNcg).Subscribe();
 
@@ -435,7 +436,6 @@ namespace Nekoyume.UI
 
         private void ClearInformation()
         {
-            costText.text = "0";
             itemNameText.text = string.Empty;
             currentLevelText.text = string.Empty;
             nextLevelText.text = string.Empty;
@@ -458,8 +458,7 @@ namespace Nekoyume.UI
         private void UpdateInformation(EnhancementCostSheetV2.Row row, Equipment equipment)
         {
             ClearInformation();
-            costText.text = row.Cost.ToString();
-            costText.color = GetNcgColor(row.Cost);
+            upgradeButton.SetCost(ConditionalCostButton.CostType.NCG, (int) row.Cost);
             itemNameText.text = equipment.GetLocalizedName();
             currentLevelText.text = $"+{equipment.level}";
             nextLevelText.text = $"+{equipment.level + 1}";

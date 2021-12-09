@@ -16,6 +16,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class HeaderMenuStatic : StaticWidget
@@ -123,9 +124,9 @@ namespace Nekoyume.UI.Module
                         var requiredStage = _toggleUnlockStages[toggleInfo.Type];
                         if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
                         {
-                            var msg = string.Format(L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
-                                requiredStage);
-                            OneLineSystem.Push(MailType.System, msg);
+                            OneLineSystem.Push(MailType.System,
+                                L10nManager.Localize("UI_STAGE_LOCK_FORMAT", requiredStage),
+                                NotificationCell.NotificationType.UnlockCondition);
                             toggleInfo.Toggle.isOn = false;
                             return;
                         }
@@ -305,8 +306,10 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var hasNotification =
-                questList.Any(quest => quest.IsPaidInAction && quest.isReceivable);
+            var hasNotification = questList
+                .EnumerateLazyQuestStates()
+                .Select(l => l.State)
+                .Any(quest => quest.IsPaidInAction && quest.isReceivable);
             _toggleNotifications[ToggleType.Quest].Value = hasNotification;
             Find<QuestPopup>().SetList(questList);
         }

@@ -5,12 +5,10 @@
       "nextId": 0,
       "data": {
         "presetId": 1,
-        "targetType": "HackAndSlashButton",
-        "targetPositionOffset": { "x": 0, "y": 0 },
-        "targetSizeOffset": { "x": 0, "y": 0 },
-        "actionType": "TutorialActionHackAndSlash",
-        "emojiType": "Reaction",
-        "guideType": "Outline",
+        "targetType": 1,
+        "actionType": 1,
+        "emojiType": 2,
+        "guideType": 3,
         "scriptKey": "TUTORIAL_01_001"
       }
     },
@@ -19,10 +17,10 @@
       "nextId": 3,
       "data": {
         "presetId": 2,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_001"
       }
     },
@@ -31,10 +29,10 @@
       "nextId": 4,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_002"
       }
     },
@@ -42,11 +40,11 @@
       "id": 4,
       "nextId": 6,
       "data": {
-        "presetId": 4,
-        "targetType": "CombinationButton",
-        "actionType": "TutorialActionGoToFirstRecipeCellView",
-        "emojiType": "Question",
-        "guideType": "Outline",
+        "presetId": 8,
+        "targetType": 2,
+        "actionType": 2,
+        "emojiType": 3,
+        "guideType": 3,
         "scriptKey": "TUTORIAL_02_003"
       }
     },
@@ -54,11 +52,11 @@
       "id": 6,
       "nextId": 8,
       "data": {
-        "presetId": 3,
-        "targetType": "CombineEquipmentCategory",
-        "actionType": "None",
-        "emojiType": "Question",
-        "guideType": "Square",
+        "presetId": 1,
+        "targetType": 4,
+        "actionType": 0,
+        "emojiType": 3,
+        "guideType": 1,
         "scriptKey": "TUTORIAL_02_005",
         "fullScreenButton" : true
       }
@@ -68,10 +66,10 @@
       "nextId": 9,
       "data": {
         "presetId": 9,
-        "targetType": "EquipmentRecipeCellView",
-        "actionType": "TutorialActionClickFirstRecipeCellView",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 9,
+        "actionType": 3,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_007"
       }
     },
@@ -80,10 +78,10 @@
       "nextId": 11,
       "data": {
         "presetId": 5,
-        "targetType": "EquipmentRecipeCellView",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 9,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_008",
         "fullScreenButton" : true,
         "noArrow": true
@@ -94,10 +92,10 @@
       "nextId": 12,
       "data": {
         "presetId": 9,
-        "targetType": "CombineWithCostButton",
-        "actionType": "TutorialActionClickCombinationSubmitButton",
-        "emojiType": "Idle",
-        "guideType": "Square",
+        "targetType": 8,
+        "actionType": 4,
+        "emojiType": 1,
+        "guideType": 1,
         "scriptKey": "TUTORIAL_02_010"
       }
     },
@@ -106,10 +104,10 @@
       "nextId": 15,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_011"
       }
     },
@@ -118,10 +116,10 @@
       "nextId": 14,
       "data": {
         "presetId": 9,
-        "targetType": "CombinationSlotsButton",
-        "actionType": "TutorialActionClickBottomMenuWorkShopButton",
-        "emojiType": "Question",
-        "guideType": "Circle",
+        "targetType": 6,
+        "actionType": 5,
+        "emojiType": 3,
+        "guideType": 2,
         "scriptKey": "TUTORIAL_02_012"
       }
     },
@@ -130,10 +128,10 @@
       "nextId": 15,
       "data": {
         "presetId": 2,
-        "targetType": "CombinationSlots",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "Square",
+        "targetType": 16,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 1,
         "scriptKey": "TUTORIAL_02_013"
       }
     },
@@ -142,10 +140,10 @@
       "nextId": 29,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "Square",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 1,
         "scriptKey": "TUTORIAL_02_013_L01"
       }
     },
@@ -154,10 +152,10 @@
       "nextId": 17,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_013_L02"
       }
     },
@@ -166,10 +164,10 @@
       "nextId": 18,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_013_L03"
       }
     },
@@ -178,10 +176,10 @@
       "nextId": 19,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_013_L04"
       }
     },
@@ -190,10 +188,10 @@
       "nextId": 20,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Question",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 3,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_013_L05"
       }
     },
@@ -202,10 +200,10 @@
       "nextId": 21,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_013_L06"
       }
     },
@@ -214,10 +212,10 @@
       "nextId": 22,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Question",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 3,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_013_L07"
       }
     },
@@ -226,10 +224,10 @@
       "nextId": 23,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_013_L08"
       }
     },
@@ -238,10 +236,10 @@
       "nextId": 24,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Question",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 3,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_013_L09"
       }
     },
@@ -250,10 +248,10 @@
       "nextId": 15,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_013_L10"
       }
     },
@@ -262,10 +260,10 @@
       "nextId": 26,
       "data": {
         "presetId": 2,
-        "targetType": "CombinationSlots",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "Square",
+        "targetType": 16,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 1,
         "scriptKey": "TUTORIAL_02_014"
       }
     },
@@ -274,10 +272,10 @@
       "nextId": 27,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "Circle",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 2,
         "scriptKey": "TUTORIAL_02_014_L01"
       }
     },
@@ -286,10 +284,10 @@
       "nextId": 28,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_014_L02"
       }
     },
@@ -298,10 +296,10 @@
       "nextId": 29,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_014_L03"
       }
     },
@@ -310,10 +308,10 @@
       "nextId": 30,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Question",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 3,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_014_L04"
       }
     },
@@ -322,10 +320,10 @@
       "nextId": 31,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Question",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 3,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_014_L05"
       }
     },
@@ -334,10 +332,10 @@
       "nextId": 32,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_014_L06"
       }
     },
@@ -346,10 +344,10 @@
       "nextId": 33,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_014_L07"
       }
     },
@@ -358,10 +356,10 @@
       "nextId": 48,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_014_L08"
       }
     },
@@ -370,10 +368,10 @@
       "nextId": 35,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_014_L09"
       }
     },
@@ -382,10 +380,10 @@
       "nextId": 36,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_014_L10"
       }
     },
@@ -394,10 +392,10 @@
       "nextId": 26,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_014_L11"
       }
     },
@@ -406,10 +404,10 @@
       "nextId": 38,
       "data": {
         "presetId": 2,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_015"
       }
     },
@@ -418,10 +416,10 @@
       "nextId": 39,
       "data": {
         "presetId": 9,
-        "targetType": "MailButton",
-        "actionType": "TutorialActionClickBottomMenuMailButton",
-        "emojiType": "Idle",
-        "guideType": "Circle",
+        "targetType": 7,
+        "actionType": 6,
+        "emojiType": 1,
+        "guideType": 2,
         "scriptKey": "TUTORIAL_02_016"
       }
     },
@@ -430,10 +428,10 @@
       "nextId": 40,
       "data": {
         "presetId": 3,
-        "targetType": "MailReceiveButton",
-        "actionType": "TutorialActionClickFirstCombinationMailSubmitButton",
-        "emojiType": "Idle",
-        "guideType": "Square",
+        "targetType": 15,
+        "actionType": 9,
+        "emojiType": 1,
+        "guideType": 1,
         "scriptKey": "TUTORIAL_02_017"
       }
     },
@@ -442,10 +440,10 @@
       "nextId": 41,
       "data": {
         "presetId": 4,
-        "targetType": "None",
-        "actionType": "TutorialActionClickCombinationResultPopupSubmitButton",
-        "emojiType": "Reaction",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 10,
+        "emojiType": 2,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_018"
       }
     },
@@ -454,10 +452,10 @@
       "nextId": 42,
       "data": {
         "presetId": 4,
-        "targetType": "CharacterButton",
-        "actionType": "None",
-        "emojiType": "Question",
-        "guideType": "Circle",
+        "targetType": 12,
+        "actionType": 0,
+        "emojiType": 3,
+        "guideType": 2,
         "scriptKey": "TUTORIAL_02_019"
       }
     },
@@ -466,10 +464,10 @@
       "nextId": 43,
       "data": {
         "presetId": 9,
-        "targetType": "CharacterButton",
-        "actionType": "TutorialActionClickBottomMenuCharacterButton",
-        "emojiType": "Reaction",
-        "guideType": "Circle",
+        "targetType": 12,
+        "actionType": 7,
+        "emojiType": 2,
+        "guideType": 2,
         "scriptKey": "TUTORIAL_02_020"
       }
     },
@@ -478,10 +476,10 @@
       "nextId": 44,
       "data": {
         "presetId": 3,
-        "targetType": "InventoryFirstCell",
-        "actionType": "TutorialActionClickAvatarInfoFirstInventoryCellView",
-        "emojiType": "Idle",
-        "guideType": "Square",
+        "targetType": 10,
+        "actionType": 11,
+        "emojiType": 1,
+        "guideType": 1,
         "scriptKey": "TUTORIAL_02_021"
       }
     },
@@ -490,10 +488,10 @@
       "nextId": 45,
       "data": {
         "presetId": 6,
-        "targetType": "ItemEquipButton",
-        "actionType": "TutorialActionClickItemInformationTooltipSubmitButton",
-        "emojiType": "Idle",
-        "guideType": "Square",
+        "targetType": 14,
+        "actionType": 12,
+        "emojiType": 1,
+        "guideType": 1,
         "scriptKey": "TUTORIAL_02_022",
         "fullScreenButton" : true
       }
@@ -503,10 +501,10 @@
       "nextId": 46,
       "data": {
         "presetId": 4,
-        "targetType": "InventoryEquipWeapon",
-        "actionType": "None",
-        "emojiType": "Reaction",
-        "guideType": "Square",
+        "targetType": 11,
+        "actionType": 0,
+        "emojiType": 2,
+        "guideType": 1,
         "scriptKey": "TUTORIAL_02_023",
         "fullScreenButton" : true
       }
@@ -516,10 +514,10 @@
       "nextId": 47,
       "data": {
         "presetId": 4,
-        "targetType": "InventoryEquipWeapon",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "Square",
+        "targetType": 11,
+        "actionType": 0,
+        "emojiType": 1,
+        "guideType": 1,
         "scriptKey": "TUTORIAL_02_024",
         "fullScreenButton" : true
       }
@@ -529,10 +527,10 @@
       "nextId": 48,
       "data": {
         "presetId": 9,
-        "targetType": "None",
-        "actionType": "TutorialActionCloseAvatarInfoWidget",
-        "emojiType": "Idle",
-        "guideType": "None",
+        "targetType": 0,
+        "actionType": 13,
+        "emojiType": 1,
+        "guideType": 0,
         "scriptKey": "TUTORIAL_02_025"
       }
     },
@@ -540,11 +538,11 @@
       "id": 48,
       "nextId": 49,
       "data": {
-        "presetId": 1,
-        "targetType": "BackButton",
-        "actionType": "TutorialActionCloseCombination",
-        "emojiType": "Idle",
-        "guideType": "Circle",
+        "presetId": 10,
+        "targetType": 13,
+        "actionType": 8,
+        "emojiType": 1,
+        "guideType": 2,
         "scriptKey": "TUTORIAL_02_026"
       }
     },
@@ -553,12 +551,14 @@
       "nextId": 0,
       "data": {
         "presetId": 1,
-        "targetType": "GuidedQuestButton",
-        "targetPositionOffset": { "x": 0, "y": 0 },
-        "targetSizeOffset": { "x": 1, "y": 1 },
-        "actionType": "TutorialActionClickGuidedQuestWorldStage2",
-        "emojiType": "Reaction",
-        "guideType": "Square",
+        "targetType": 17,
+        "actionType": 14,
+        "emojiType": 2,
+        "guideType": 1,
+        "arrowPositionOffset": { "x": -50, "y": 0 },
+        "targetSizeOffset": { "x": -20, "y": 0 },
+        "targetPositionOffset": { "x": -20, "y": 0 },
+        "buttonRaycastPadding": { "x": -20, "y": -20, "z": -20, "w": -20 },
         "scriptKey": "TUTORIAL_02_027",
         "arrowAdditionalDelay" : 1.5
       }

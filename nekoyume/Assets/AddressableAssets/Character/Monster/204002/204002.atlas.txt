@@ -5,120 +5,120 @@ format: RGBA8888
 filter: Linear,Linear
 repeat: none
 body
-  rotate: false
-  xy: 2, 94
+  rotate: true
+  xy: 2, 133
   size: 69, 107
   orig: 69, 107
   offset: 0, 0
   index: -1
 body_wood_01
-  rotate: true
-  xy: 164, 203
+  rotate: false
+  xy: 111, 150
   size: 50, 52
   orig: 50, 52
   offset: 0, 0
   index: -1
 body_wood_02
   rotate: false
-  xy: 240, 191
+  xy: 206, 135
   size: 12, 12
   orig: 12, 12
   offset: 0, 0
   index: -1
 body_wood_03
-  rotate: true
-  xy: 2, 2
+  rotate: false
+  xy: 248, 245
   size: 6, 9
   orig: 6, 9
   offset: 0, 0
   index: -1
 face_1
-  rotate: true
-  xy: 218, 205
+  rotate: false
+  xy: 111, 117
   size: 48, 31
   orig: 48, 31
   offset: 0, 0
   index: -1
 face_2
-  rotate: false
-  xy: 73, 126
+  rotate: true
+  xy: 220, 148
   size: 41, 33
   orig: 41, 33
   offset: 0, 0
   index: -1
 face_3
   rotate: false
-  xy: 173, 173
+  xy: 161, 119
   size: 43, 28
   orig: 43, 28
   offset: 0, 0
   index: -1
 face_4
-  rotate: false
-  xy: 130, 168
+  rotate: true
+  xy: 220, 105
   size: 41, 33
   orig: 41, 33
   offset: 0, 0
   index: -1
 head
-  rotate: false
-  xy: 2, 10
+  rotate: true
+  xy: 164, 191
   size: 63, 82
   orig: 63, 82
   offset: 0, 0
   index: -1
 head_wood
   rotate: false
-  xy: 73, 161
+  xy: 163, 149
   size: 55, 40
   orig: 55, 40
   offset: 0, 0
   index: -1
 head_wood_2
-  rotate: false
-  xy: 218, 174
+  rotate: true
+  xy: 161, 97
   size: 20, 29
   orig: 20, 29
   offset: 0, 0
   index: -1
 head_wood_3
-  rotate: false
-  xy: 86, 102
+  rotate: true
+  xy: 217, 72
   size: 16, 22
   orig: 16, 22
   offset: 0, 0
   index: -1
 leg_L
-  rotate: false
-  xy: 116, 136
+  rotate: true
+  xy: 217, 90
   size: 13, 23
   orig: 13, 23
   offset: 0, 0
   index: -1
 leg_R
-  rotate: false
-  xy: 104, 101
+  rotate: true
+  xy: 192, 88
   size: 15, 23
   orig: 15, 23
   offset: 0, 0
   index: -1
 shadow
   rotate: false
-  xy: 2, 203
+  xy: 2, 204
   size: 160, 50
   orig: 160, 50
   offset: 0, 0
   index: -1
 sweat
   rotate: false
-  xy: 73, 96
+  xy: 206, 105
   size: 11, 28
   orig: 11, 28
   offset: 0, 0
   index: -1
 tear
   rotate: false
-  xy: 251, 246
+  xy: 248, 236
   size: 3, 7
   orig: 3, 7
   offset: 0, 0

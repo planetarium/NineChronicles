@@ -61,7 +61,7 @@ namespace Nekoyume.ActionExtensions
 
             // FIXME: Add non-serialize field for slot state to use for UI
             slotState.Update(slotState.Result, slotState.StartBlockIndex, nextBlockIndex);
-            states.UpdateCombinationSlotState(action.slotIndex, slotState);
+            states.AddOrReplaceCombinationSlotState(action.slotIndex, slotState);
 
             ReactiveAvatarState.UpdateInventory(currentAvatarState.inventory);
         }

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Nekoyume.Helper;
 using Spine.Unity;
-using Spine.Unity.Modules.AttachmentTools;
+using Spine.Unity.AttachmentTools;
 using UnityEngine;
 
 namespace Nekoyume.UI

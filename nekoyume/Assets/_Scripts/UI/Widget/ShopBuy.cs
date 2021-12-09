@@ -11,6 +11,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,7 +30,7 @@ namespace Nekoyume.UI
         [SerializeField] private List<ShopItemViewRow> itemViewItems;
 
         private NPC _npc;
-        private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
+        private static readonly Vector3 NPCPosition = new Vector3(1000.2f, 998, 1.7f);
         private const int NPCId = 300000;
 
         private Shop SharedModel { get; set; }
@@ -224,7 +225,8 @@ namespace Nekoyume.UI
 
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             OneLineSystem.Push(MailType.Auction,
-                string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
+                string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()),
+                NotificationCell.NotificationType.Information);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
         }

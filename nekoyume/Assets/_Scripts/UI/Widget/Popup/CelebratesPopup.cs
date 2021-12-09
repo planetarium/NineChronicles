@@ -21,6 +21,7 @@ using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI
 {
@@ -164,6 +165,8 @@ namespace Nekoyume.UI
             }
 
             var quest = States.Instance.CurrentAvatarState?.questList
+                .EnumerateLazyQuestStates()
+                .Select(l => l.State)
                 .OfType<CombinationEquipmentQuest>()
                 .FirstOrDefault(item =>
                     item.Id == row.Id);
@@ -327,7 +330,7 @@ namespace Nekoyume.UI
             var msg = string.IsNullOrEmpty(questContent)
                 ? string.Empty
                 : string.Format(format, questContent);
-            NotificationSystem.Push(MailType.System, msg);
+            NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Information);
         }
 
         private static void UpdateLocalState(int questId, Dictionary<int, int> rewards)

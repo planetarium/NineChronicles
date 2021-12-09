@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<engine:UXML
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:engine="UnityEngine.UIElements"
+        xmlns:editor="UnityEditor.UIElements"
+        xsi:noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd"
+>
+        <engine:VisualElement name="canvas" class="row canvas-background">
+            <engine:VisualElement name="container" class="column container-background">
+                <engine:VisualElement name="container" class="row">
+                    <editor:ObjectField name="sell-field" class="object-field" picking-mode="Position"/>
+                </engine:VisualElement>
+
+                <engine:VisualElement name="container" class="row">
+                    <engine:Button name="sell-export-button" class="button" text="export"/>
+                    <engine:Button name="sell-import-button" class="button" text="import"/>
+                </engine:VisualElement>
+
+                <engine:VisualElement name="container" class="row">
+                    <editor:ObjectField name="create-avatar-field" class="object-field" picking-mode="Position"/>
+                </engine:VisualElement>
+
+                <engine:VisualElement name="container" class="row">
+                    <engine:Button name="create-avatar-export-button" class="button" text="export"/>
+                    <engine:Button name="create-avatar-import-button" class="button" text="import"/>
+                </engine:VisualElement>
+
+                <engine:VisualElement name="container" class="row">
+                    <editor:ObjectField name="weekly-arena-field" class="object-field" picking-mode="Position"/>
+                </engine:VisualElement>
+
+                <engine:VisualElement name="container" class="row">
+                    <engine:Button name="weekly-arena-export-button" class="button" text="export"/>
+                    <engine:Button name="weekly-arena-import-button" class="button" text="import"/>
+                </engine:VisualElement>
+
+            </engine:VisualElement>
+        </engine:VisualElement>
+</engine:UXML>

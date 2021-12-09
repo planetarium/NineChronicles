@@ -5,6 +5,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 
@@ -71,7 +72,10 @@ namespace Nekoyume.UI
                 stage.IsExitReserved = value;
                 if (value)
                 {
-                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_BATTLE_EXIT_RESERVATION_TITLE"));
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_BATTLE_EXIT_RESERVATION_TITLE"),
+                        NotificationCell.NotificationType.Information);
                     stage.IsRepeatStage = false;
                 }
             });

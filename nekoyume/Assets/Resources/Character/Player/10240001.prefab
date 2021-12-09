@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5256764651715253875
+--- !u!1 &4916714377716643148
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,13 +8,13 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3191498844802854478}
-  - component: {fileID: 1662645105017735350}
-  - component: {fileID: 536048013975604010}
-  - component: {fileID: 2248496466717340343}
-  - component: {fileID: 2160245140657269644}
-  - component: {fileID: 3582166261843445879}
-  - component: {fileID: 2557983205480441924}
+  - component: {fileID: 6963030639556708512}
+  - component: {fileID: 1098817934449372392}
+  - component: {fileID: 205199703690246584}
+  - component: {fileID: 7493696315561315491}
+  - component: {fileID: 3863004367807888435}
+  - component: {fileID: 8412393706983228193}
+  - component: {fileID: 2562284169928849030}
   m_Layer: 8
   m_Name: 10240001
   m_TagString: Untagged
@@ -22,13 +22,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3191498844802854478
+--- !u!4 &6963030639556708512
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5256764651715253875}
+  m_GameObject: {fileID: 4916714377716643148}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.64, y: 0.64, z: 1}
@@ -36,21 +36,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &1662645105017735350
+--- !u!33 &1098817934449372392
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5256764651715253875}
+  m_GameObject: {fileID: 4916714377716643148}
   m_Mesh: {fileID: 0}
---- !u!23 &536048013975604010
+--- !u!23 &205199703690246584
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5256764651715253875}
+  m_GameObject: {fileID: 4916714377716643148}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -58,9 +58,13 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
+  - {fileID: 2100000, guid: 5c540021f5675479da2e88f0a902f62d, type: 2}
+  - {fileID: 2100000, guid: b6e3e15622171914bbda40bce30b3c44, type: 2}
   - {fileID: 2100000, guid: 5c540021f5675479da2e88f0a902f62d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -69,6 +73,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -81,13 +86,14 @@ MeshRenderer:
   m_SortingLayerID: -385277771
   m_SortingLayer: 3
   m_SortingOrder: 0
---- !u!114 &2248496466717340343
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7493696315561315491
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5256764651715253875}
+  m_GameObject: {fileID: 4916714377716643148}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
@@ -97,6 +103,7 @@ MonoBehaviour:
   initialSkinName: 
   initialFlipX: 0
   initialFlipY: 0
+  updateWhenInvisible: 3
   separatorSlotNames: []
   zSpacing: 0
   useClipping: 1
@@ -105,6 +112,7 @@ MonoBehaviour:
   clearStateOnDisable: 0
   tintBlack: 0
   singleSubmesh: 0
+  fixDrawOrder: 0
   addNormals: 0
   calculateTangents: 0
   maskInteraction: 0
@@ -116,14 +124,14 @@ MonoBehaviour:
   _animationName: Idle
   loop: 1
   timeScale: 1
---- !u!95 &2160245140657269644
+--- !u!95 &3863004367807888435
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5256764651715253875}
+  m_GameObject: {fileID: 4916714377716643148}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 21ad0e93f82d940989ca46e7a61db8ac, type: 2}
@@ -135,26 +143,26 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!65 &3582166261843445879
+--- !u!65 &8412393706983228193
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5256764651715253875}
+  m_GameObject: {fileID: 4916714377716643148}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 2.193683, y: 2.793359, z: 1}
   m_Center: {x: -0.3047748, y: 1.159554, z: 0}
---- !u!114 &2557983205480441924
+--- !u!114 &2562284169928849030
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5256764651715253875}
+  m_GameObject: {fileID: 4916714377716643148}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31d31fa84aca402e91f399864e10ad55, type: 3}
@@ -162,47 +170,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statesAndAnimations:
   - stateName: Appear
-    animation: {fileID: 11400000, guid: e3df83f6496664b39957d5f5befea92d, type: 2}
+    animation: {fileID: 11400000, guid: 605ac9101b5f1a649a624f80a8f49275, type: 2}
   - stateName: Disappear
-    animation: {fileID: 11400000, guid: e3df83f6496664b39957d5f5befea92d, type: 2}
+    animation: {fileID: 11400000, guid: 605ac9101b5f1a649a624f80a8f49275, type: 2}
   - stateName: Standing
-    animation: {fileID: 11400000, guid: e3df83f6496664b39957d5f5befea92d, type: 2}
+    animation: {fileID: 11400000, guid: 605ac9101b5f1a649a624f80a8f49275, type: 2}
   - stateName: StandingToIdle
-    animation: {fileID: 11400000, guid: e3df83f6496664b39957d5f5befea92d, type: 2}
+    animation: {fileID: 11400000, guid: 605ac9101b5f1a649a624f80a8f49275, type: 2}
   - stateName: Idle
-    animation: {fileID: 11400000, guid: e3df83f6496664b39957d5f5befea92d, type: 2}
+    animation: {fileID: 11400000, guid: 605ac9101b5f1a649a624f80a8f49275, type: 2}
   - stateName: Touch
-    animation: {fileID: 11400000, guid: 2e81a0b5f439d44f58d7e0c5c22bbe4f, type: 2}
+    animation: {fileID: 11400000, guid: c859ae0ef0316874db3cde9a3fa31a64, type: 2}
   - stateName: Run
-    animation: {fileID: 11400000, guid: bcb3c204706e247148c22df064a8b107, type: 2}
+    animation: {fileID: 11400000, guid: 3d75a89b2784c614192c5d6f3181e16a, type: 2}
   - stateName: Attack
-    animation: {fileID: 11400000, guid: ded3982f10ddf49fbb0f8b26f6b798e5, type: 2}
+    animation: {fileID: 11400000, guid: 386cce84a625bbb458df86bc0a5be00a, type: 2}
   - stateName: Casting
-    animation: {fileID: 11400000, guid: 0375c171e04bc4134913d42654b930c4, type: 2}
+    animation: {fileID: 11400000, guid: 4d047b50ddc87214c87d955d49532251, type: 2}
   - stateName: CastingAttack
-    animation: {fileID: 11400000, guid: ded3982f10ddf49fbb0f8b26f6b798e5, type: 2}
+    animation: {fileID: 11400000, guid: 386cce84a625bbb458df86bc0a5be00a, type: 2}
   - stateName: CriticalAttack
-    animation: {fileID: 11400000, guid: 12fc5888620324df49cd2d441f8578ca, type: 2}
+    animation: {fileID: 11400000, guid: dbec5ea864fa3e3489335b0ffaaba1eb, type: 2}
   - stateName: Hit
-    animation: {fileID: 11400000, guid: 24000066b9c154b75a8a604c6bbee4ad, type: 2}
+    animation: {fileID: 11400000, guid: 06dbb9f5fe4973749bcbda5b489a3a79, type: 2}
   - stateName: Die
-    animation: {fileID: 11400000, guid: df93370729b3748d79cfdfeb8134f520, type: 2}
+    animation: {fileID: 11400000, guid: 20ee9d32e83083048936171e41168792, type: 2}
   - stateName: Win
-    animation: {fileID: 11400000, guid: 8952151b68e1648fab974514487bcd2a, type: 2}
+    animation: {fileID: 11400000, guid: 3e29a831ab1d57042beedf9e39064df0, type: 2}
   - stateName: Win_02
-    animation: {fileID: 11400000, guid: 8952151b68e1648fab974514487bcd2a, type: 2}
+    animation: {fileID: 11400000, guid: 3e29a831ab1d57042beedf9e39064df0, type: 2}
   - stateName: Win_03
-    animation: {fileID: 11400000, guid: 8952151b68e1648fab974514487bcd2a, type: 2}
+    animation: {fileID: 11400000, guid: 3e29a831ab1d57042beedf9e39064df0, type: 2}
   - stateName: Greeting
-    animation: {fileID: 11400000, guid: e3df83f6496664b39957d5f5befea92d, type: 2}
+    animation: {fileID: 11400000, guid: 605ac9101b5f1a649a624f80a8f49275, type: 2}
   - stateName: Emotion
-    animation: {fileID: 11400000, guid: e3df83f6496664b39957d5f5befea92d, type: 2}
+    animation: {fileID: 11400000, guid: 605ac9101b5f1a649a624f80a8f49275, type: 2}
   - stateName: Skill_01
-    animation: {fileID: 11400000, guid: e3df83f6496664b39957d5f5befea92d, type: 2}
+    animation: {fileID: 11400000, guid: 605ac9101b5f1a649a624f80a8f49275, type: 2}
   - stateName: Skill_02
-    animation: {fileID: 11400000, guid: e3df83f6496664b39957d5f5befea92d, type: 2}
+    animation: {fileID: 11400000, guid: 605ac9101b5f1a649a624f80a8f49275, type: 2}
   - stateName: TurnOver_01
-    animation: {fileID: 11400000, guid: 2928c4dcea7125445a3e4542c445d37c, type: 2}
+    animation: {fileID: 11400000, guid: 610696ece8cd85e4ba202a945b8629f2, type: 2}
   - stateName: TurnOver_02
-    animation: {fileID: 11400000, guid: 4babbcef0de356045a59e24a25459c45, type: 2}
+    animation: {fileID: 11400000, guid: 043d9bcd7ee042e4e86283fcbfa26981, type: 2}
   hairTypeIndex: 0

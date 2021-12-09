@@ -22,6 +22,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class AvatarInfoPopup : XTweenPopupWidget
@@ -676,17 +677,16 @@ namespace Nekoyume.UI
 
         public static void ShowRefillConfirmPopup(CountableItem item)
         {
-            var confirm = Widget.Find<ConfirmPopup>();
-            confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.No)
-                {
-                    return;
-                }
-
-                ChargeActionPoint(item);
-            };
+            var confirm = Find<IconAndButtonSystem>();
+            confirm.ShowWithTwoButton(
+                "UI_CONFIRM",
+                "UI_AP_REFILL_CONFIRM_CONTENT",
+                "UI_OK",
+                "UI_CANCEL",
+                true,
+                IconAndButtonSystem.SystemType.Information);
+            confirm.ConfirmCallback = () => ChargeActionPoint(item);
+            confirm.CancelCallback = () => confirm.Close();
         }
 
         public static bool DimmedFuncForChargeActionPoint(CountableItem item)
@@ -723,7 +723,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize("UI_CHARGE_AP"));
+            NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize("UI_CHARGE_AP"),
+                NotificationCell.NotificationType.Information);
             Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
 
             var address = States.Instance.CurrentAvatarState.address;

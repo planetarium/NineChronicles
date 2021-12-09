@@ -123,7 +123,7 @@ namespace Nekoyume.ActionExtensions
 
             // FIXME: Add non-serialize field for slot state to use for UI
             slotState.Update(attachmentResult, nextBlockIndex, endBlockIndex);
-            states.UpdateCombinationSlotState(action.slotIndex, slotState);
+            states.AddOrReplaceCombinationSlotState(action.slotIndex, slotState);
 
             var goldBalanceState = new GoldBalanceState(states.GoldBalanceState.address,
                 states.GoldBalanceState.Gold.Currency * costNCG);

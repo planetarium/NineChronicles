@@ -9,8 +9,18 @@ namespace Nekoyume.UI
     {
         public TutorialItemType type = TutorialItemType.Background;
 
-        public bool isExistFadeIn;
+        /// <summary>
+        /// Padding to be applied to the masking
+        /// X = Left
+        /// Y = Bottom
+        /// Z = Right
+        /// W = Top
+        /// </summary>
+        public Vector4 buttonRaycastPadding;
+        public Vector2 targetPositionOffset;
+        public Vector2 targetSizeOffset;
 
+        public bool isExistFadeIn;
         public bool isEnableMask;
 
         public RectTransform target;
@@ -23,13 +33,19 @@ namespace Nekoyume.UI
             bool isEnableMask,
             RectTransform target,
             RectTransform buttonRectTransform,
-            bool fullScreenButton)
+            bool fullScreenButton,
+            Vector4 buttonRaycastPadding,
+            Vector2 targetPositionOffset,
+            Vector2 targetSizeOffset)
         {
             this.isExistFadeIn = isExistFadeIn;
             this.isEnableMask = isEnableMask;
             this.target = target;
             this.buttonRectTransform = buttonRectTransform;
             this.fullScreenButton = fullScreenButton;
+            this.buttonRaycastPadding = buttonRaycastPadding;
+            this.targetPositionOffset = targetPositionOffset;
+            this.targetSizeOffset = targetSizeOffset;
         }
     }
 }

@@ -17,10 +17,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -139,6 +139,23 @@ namespace Spine {
 			foreach (T t in enumerable) {
 				Add(t);
 			}
+		}
+
+		// Additional overload provided because ExposedList<T> only implements IEnumerable<T>,
+		// leading to sub-optimal behavior: It grows multiple times as it assumes not
+		// to know the final size ahead of insertion.
+		public void AddRange (ExposedList<T> list) {
+			CheckCollection(list);
+
+			int collectionCount = list.Count;
+			if (collectionCount == 0)
+				return;
+
+			GrowIfNeeded(collectionCount);
+			list.CopyTo(Items, Count);
+			Count += collectionCount;
+
+			version++;
 		}
 
 		public void AddRange (IEnumerable<T> collection) {
@@ -466,7 +483,7 @@ namespace Spine {
 		public T Pop () {
 			if (Count == 0)
 				throw new InvalidOperationException("List is empty. Nothing to pop.");
-			
+
 			int i = Count - 1;
 			T item = Items[i];
 			Items[i] = default(T);

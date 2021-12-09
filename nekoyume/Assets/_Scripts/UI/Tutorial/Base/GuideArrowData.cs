@@ -16,6 +16,8 @@ namespace Nekoyume.UI
 
         public Vector2 targetSizeOffset;
 
+        public Vector2 arrowPositionOffset;
+
         public float arrowAdditionalDelay;
 
         public bool isSkip;
@@ -27,6 +29,7 @@ namespace Nekoyume.UI
             RectTransform target,
             Vector2 targetPositionOffset,
             Vector2 targetSizeOffset,
+            Vector2 arrowPositionOffset,
             float arrowAdditionalDelay,
             bool isSkip)
         {
@@ -34,6 +37,7 @@ namespace Nekoyume.UI
             this.target = target;
             this.targetPositionOffset = targetPositionOffset;
             this.targetSizeOffset = targetSizeOffset;
+            this.arrowPositionOffset = arrowPositionOffset;
             this.arrowAdditionalDelay = arrowAdditionalDelay;
             this.isSkip = isSkip;
         }

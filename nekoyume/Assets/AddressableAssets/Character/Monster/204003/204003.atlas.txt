@@ -6,98 +6,98 @@ filter: Linear,Linear
 repeat: none
 body_01
   rotate: false
-  xy: 2, 125
+  xy: 2, 173
   size: 47, 44
   orig: 47, 44
   offset: 0, 0
   index: -1
 body_02
-  rotate: false
-  xy: 2, 75
+  rotate: true
+  xy: 108, 180
   size: 37, 48
   orig: 37, 48
   offset: 0, 0
   index: -1
 body_03
-  rotate: false
-  xy: 220, 217
+  rotate: true
+  xy: 2, 107
   size: 34, 37
   orig: 34, 37
   offset: 0, 0
   index: -1
 body_04
-  rotate: true
-  xy: 157, 189
+  rotate: false
+  xy: 50, 115
   size: 26, 24
   orig: 26, 24
   offset: 0, 0
   index: -1
 body_05
-  rotate: false
-  xy: 30, 2
+  rotate: true
+  xy: 222, 138
   size: 22, 19
   orig: 22, 19
   offset: 0, 0
   index: -1
 body_06
   rotate: true
-  xy: 2, 23
+  xy: 227, 204
   size: 50, 25
   orig: 50, 25
   offset: 0, 0
   index: -1
 eye
   rotate: true
-  xy: 51, 128
+  xy: 201, 165
   size: 41, 20
   orig: 41, 20
   offset: 0, 0
   index: -1
 face_1
   rotate: false
-  xy: 110, 189
+  xy: 2, 143
   size: 45, 28
   orig: 45, 28
   offset: 0, 0
   index: -1
 face_2
-  rotate: true
-  xy: 73, 133
+  rotate: false
+  xy: 158, 178
   size: 41, 28
   orig: 41, 28
   offset: 0, 0
   index: -1
 face_3
-  rotate: false
-  xy: 110, 167
+  rotate: true
+  xy: 223, 162
   size: 40, 20
   orig: 40, 20
   offset: 0, 0
   index: -1
 face_4
   rotate: true
-  xy: 41, 94
+  xy: 41, 112
   size: 29, 7
   orig: 29, 7
   offset: 0, 0
   index: -1
 head_01
   rotate: false
-  xy: 66, 176
+  xy: 51, 141
   size: 42, 41
   orig: 42, 41
   offset: 0, 0
   index: -1
 head_02
   rotate: false
-  xy: 163, 221
+  xy: 51, 184
   size: 55, 33
   orig: 55, 33
   offset: 0, 0
   index: -1
 head_03
   rotate: false
-  xy: 2, 171
+  xy: 163, 208
   size: 62, 46
   orig: 62, 46
   offset: 0, 0
@@ -111,119 +111,119 @@ shadow
   index: -1
 sweat
   rotate: false
-  xy: 29, 45
+  xy: 95, 154
   size: 11, 28
   orig: 11, 28
   offset: 0, 0
   index: -1
 wood_01
   rotate: false
-  xy: 41, 80
+  xy: 245, 176
   size: 7, 12
   orig: 7, 12
   offset: 0, 0
   index: -1
 wood_02
-  rotate: false
-  xy: 183, 201
+  rotate: true
+  xy: 153, 142
   size: 14, 18
   orig: 14, 18
   offset: 0, 0
   index: -1
 wood_03
   rotate: true
-  xy: 164, 168
+  xy: 78, 120
   size: 19, 15
   orig: 19, 15
   offset: 0, 0
   index: -1
 wood_04
-  rotate: false
-  xy: 103, 168
+  rotate: true
+  xy: 145, 157
   size: 5, 6
   orig: 5, 6
   offset: 0, 0
   index: -1
 wood_05
-  rotate: false
-  xy: 183, 187
+  rotate: true
+  xy: 187, 162
   size: 14, 12
   orig: 14, 12
   offset: 0, 0
   index: -1
 wood_06
-  rotate: false
-  xy: 2, 2
+  rotate: true
+  xy: 201, 137
   size: 26, 19
   orig: 26, 19
   offset: 0, 0
   index: -1
 wood_07
   rotate: false
-  xy: 199, 189
+  xy: 107, 131
   size: 13, 13
   orig: 13, 13
   offset: 0, 0
   index: -1
 wood_08
   rotate: false
-  xy: 199, 204
+  xy: 173, 141
   size: 15, 15
   orig: 15, 15
   offset: 0, 0
   index: -1
 wood_09
   rotate: false
-  xy: 241, 208
+  xy: 245, 157
   size: 7, 7
   orig: 7, 7
   offset: 0, 0
   index: -1
 wood_10
   rotate: true
-  xy: 103, 133
+  xy: 108, 146
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
   index: -1
 wood_11
   rotate: false
-  xy: 29, 23
+  xy: 222, 116
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 wood_12
-  rotate: true
-  xy: 140, 137
+  rotate: false
+  xy: 157, 158
   size: 28, 18
   orig: 28, 18
   offset: 0, 0
   index: -1
 wood_13
   rotate: false
-  xy: 181, 171
+  xy: 145, 164
   size: 10, 14
   orig: 10, 14
   offset: 0, 0
   index: -1
 wood_14
-  rotate: false
-  xy: 216, 207
+  rotate: true
+  xy: 245, 190
   size: 12, 8
   orig: 12, 8
   offset: 0, 0
   index: -1
 wood_15
   rotate: false
-  xy: 152, 167
+  xy: 95, 132
   size: 10, 20
   orig: 10, 20
   offset: 0, 0
   index: -1
 wood_16
   rotate: true
-  xy: 230, 207
+  xy: 245, 166
   size: 8, 9
   orig: 8, 9
   offset: 0, 0

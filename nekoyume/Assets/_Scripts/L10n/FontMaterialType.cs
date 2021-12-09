@@ -32,5 +32,9 @@ namespace Nekoyume.L10n
 	MainSpeech,
 	Preparing,
 	DiceCount,
+	ButtonMain,
+	ButtonMainDisable,
+	PopupTitleRed,
+	PopupTitleYellow,
     }
 }

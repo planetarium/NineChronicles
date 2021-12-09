@@ -5783,6 +5783,23 @@
             <exception cref="T:System.InvalidOperationException">Thrown when its
             <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/> is not zero.</exception>
         </member>
+        <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.DetermineStateRootHash(Libplanet.Action.IAction,Libplanet.Store.IStateStore,System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue}@)">
+            <summary>
+            Evaluates all actions in the <see cref="P:Libplanet.Blocks.PreEvaluationBlock`1.Transactions"/> and
+            a <paramref name="blockAction"/> (if any), and determines
+            the <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/> from ground zero (i.e., empty state root).
+            </summary>
+            <param name="blockAction">An optional
+            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>.</param>
+            <param name="stateStore">The <see cref="P:Libplanet.Blockchain.BlockChain`1.StateStore"/>.</param>
+            <param name="statesDelta">Returns made changes on states.</param>
+            <returns>The resulting <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.</returns>
+            <remarks>This can be used with only genesis blocks.  For blocks with indices greater
+            than zero, use <see cref="M:Libplanet.Blocks.PreEvaluationBlock`1.DetermineStateRootHash(Libplanet.Blockchain.BlockChain{`0})"/> overloaded one
+            instead.</remarks>
+            <exception cref="T:System.InvalidOperationException">Thrown when its
+            <see cref="P:Libplanet.Blocks.IBlockMetadata.Index"/> is not zero.</exception>
+        </member>
         <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.DetermineStateRootHash(Libplanet.Blockchain.BlockChain{`0})">
             <summary>
             Evaluates all actions in the <see cref="P:Libplanet.Blocks.PreEvaluationBlock`1.Transactions"/> and an optional
@@ -5790,6 +5807,18 @@
             the <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.
             </summary>
             <param name="blockChain">The blockchain on which actions are evaluated based.</param>
+            <returns>The resulting <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Blocks.PreEvaluationBlock`1.DetermineStateRootHash(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blockchain.StateCompleterSet{`0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue}@)">
+            <summary>
+            Evaluates all actions in the <see cref="P:Libplanet.Blocks.PreEvaluationBlock`1.Transactions"/> and an optional
+            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>, and determines
+            the <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.
+            </summary>
+            <param name="blockChain">The blockchain on which actions are evaluated based.</param>
+            <param name="stateCompleterSet">The <see cref="T:Libplanet.Blockchain.StateCompleterSet`1"/> to use when
+            it needs states unevaluated yet.</param>
+            <param name="statesDelta">Returns made changes on states.</param>
             <returns>The resulting <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.</returns>
         </member>
         <member name="T:Libplanet.Blocks.PreEvaluationBlockHeader">
@@ -7479,6 +7508,33 @@
             ]]></code>
             </example>
         </member>
+        <member name="T:Libplanet.Misc.ArrayEqualityComparer`1">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IEqualityComparer`1"/> implementation to compare two arrays of the same
+            element type.  This compares the elements in the order of the array.
+            <para>The way to compare each element can be customized by specifying
+            the <see cref="P:Libplanet.Misc.ArrayEqualityComparer`1.ElementComparer"/>.</para>
+            </summary>
+            <typeparam name="T">The element type of the array.</typeparam>
+        </member>
+        <member name="M:Libplanet.Misc.ArrayEqualityComparer`1.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
+            <summary>
+            Creates a new instance of <see cref="T:Libplanet.Misc.ArrayEqualityComparer`1"/>.
+            </summary>
+            <param name="elementComparer">Optionally customize the way to compare each element.
+            </param>
+        </member>
+        <member name="P:Libplanet.Misc.ArrayEqualityComparer`1.ElementComparer">
+            <summary>
+            Optionally customizes the way to compare each element.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Misc.ArrayEqualityComparer`1.Equals(`0[],`0[])">
+            <inheritdoc cref="M:System.Collections.Generic.IEqualityComparer`1.Equals(`0,`0)"/>
+        </member>
+        <member name="M:Libplanet.Misc.ArrayEqualityComparer`1.GetHashCode(`0[])">
+            <inheritdoc cref="M:System.Collections.Generic.IEqualityComparer`1.GetHashCode(`0)"/>
+        </member>
         <member name="T:Libplanet.Net.ActionExecutionState">
             <summary>
             Indicates a progress of executing block actions.
@@ -8369,13 +8425,49 @@
         </member>
         <member name="P:Libplanet.Net.Protocols.KBucket.Head">
             <summary>
-            Most recently used peer.
+            The <see cref="T:Libplanet.Net.PeerState"/> used most recently. If the bucket is empty,
+            this is <c>null</c>.
             </summary>
         </member>
         <member name="P:Libplanet.Net.Protocols.KBucket.Tail">
             <summary>
-            Least recently used peer.
+            The <see cref="T:Libplanet.Net.PeerState"/> used longest time ago. If the bucket is empty,
+            this is <c>null</c>.
             </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucket.Contains(Libplanet.Net.BoundPeer)">
+            <summary>
+            Checks whether the bucket contains given <paramref name="peer"/>.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to check.</param>
+            <returns><c>true</c> if the bucket contains <paramref name="peer"/>,
+            <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucket.Clear">
+            <summary>
+            Empties the bucket.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucket.RemovePeer(Libplanet.Net.BoundPeer)">
+            <summary>
+            Removes given <paramref name="peer"/> from the bucket.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to remove.</param>
+            <returns>
+            <c>true</c> if <paramref name="peer"/> was removed, <c>false</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucket.GetRandomPeer(System.Nullable{Libplanet.Address})">
+            <summary>
+            Selects a random <see cref="T:Libplanet.Net.BoundPeer"/> in the bucket excluding
+            <paramref name="except"/>.
+            </summary>
+            <param name="except">The <see cref="T:Libplanet.Net.BoundPeer"/> to exclude when selecting.</param>
+            <returns>
+            A randomly selected <see cref="T:Libplanet.Net.BoundPeer"/> in the bucket excluding
+            <paramref name="except"/>. If no <see cref="T:Libplanet.Net.BoundPeer"/> can be selected,
+            <c>null</c> is returned.
+            </returns>
         </member>
         <member name="T:Libplanet.Net.Protocols.RoutingTable">
             <summary>
@@ -8961,12 +9053,6 @@
             </summary>
             <value>Gets the value indicates whether the instance is running.</value>
         </member>
-        <member name="P:Libplanet.Net.Transports.ITransport.MessageHistory">
-            <summary>
-            A fixed sized queue that keeps history of <see cref="T:Libplanet.Net.Messages.Message"/> received.
-            It saves at most 30 recent <see cref="T:Libplanet.Net.Messages.Message"/>s.
-            </summary>
-        </member>
         <member name="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)">
             <summary>
             Initiates and runs transport layer.
@@ -9133,9 +9219,6 @@
         </member>
         <member name="P:Libplanet.Net.Transports.NetMQTransport.Running">
             <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.Running"/>
-        </member>
-        <member name="P:Libplanet.Net.Transports.NetMQTransport.MessageHistory">
-            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.MessageHistory"/>
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc />
@@ -9973,29 +10056,6 @@
             <returns>The state root hash of the block, or <c>null</c> if the block is not found or
             <paramref name="blockHash"/> is <c>null</c>.</returns>
         </member>
-        <member name="T:Libplanet.Store.TrieStateStore">
-            <summary>
-            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
-            </summary>
-            <param name="stateKeyValueStore">The storage to store states. It used by
-            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
-            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
-            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Store.IStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Store.IStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.Dispose">
-            <inheritdoc cref="M:System.IDisposable.Dispose"/>
-        </member>
         <member name="T:Libplanet.Store.Trie.CacheableKeyValueStore">
             <summary>
             The proxy class to cache <see cref="T:Libplanet.Store.Trie.IKeyValueStore"/> operations.
@@ -10228,6 +10288,29 @@
         </member>
         <member name="M:Libplanet.Store.Trie.Nodes.ValueNode.ToBencodex">
             <inheritdoc cref="M:Libplanet.Store.Trie.Nodes.INode.ToBencodex"/>
+        </member>
+        <member name="T:Libplanet.Store.TrieStateStore">
+            <summary>
+            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
+            </summary>
+            <param name="stateKeyValueStore">The storage to store states. It used by
+            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
+            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Store.IStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Store.IStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.Dispose">
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>

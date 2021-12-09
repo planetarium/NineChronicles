@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Nekoyume.Helper;
 using Spine;
 using Spine.Unity;
-using Spine.Unity.Modules.AttachmentTools;
+using Spine.Unity.AttachmentTools;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -233,7 +233,13 @@ namespace Nekoyume.Game.Character
         private void SetSprite(SlotAndAttachment slot, Sprite sprite)
         {
             _attachmentNames.Clear();
-            _clonedSkin.FindNamesForSlot(slot.SlotIndex, _attachmentNames);
+            foreach (var key in _clonedSkin.Attachments.Keys)
+            {
+                if (key.SlotIndex == slot.SlotIndex)
+                {
+                    _attachmentNames.Add(key.Name);
+                }
+            }
 
             var attachmentName = _attachmentNames.Count > 0
                 ? _attachmentNames[0]
@@ -241,7 +247,7 @@ namespace Nekoyume.Game.Character
 
             if (string.IsNullOrEmpty(attachmentName))
             {
-                _clonedSkin.AddAttachment(
+                _clonedSkin.SetAttachment(
                     slot.SlotIndex,
                     slot.Name,
                     slot.Attachment);
