@@ -430,16 +430,20 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
+                var addressList = response.EquipmentRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
+                var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
+
                 EquipmentRankingInfosMap[subType] = response.EquipmentRanking
-                    .Select(async e =>
+                    .Select(e =>
                     {
                         var addressString = e.AvatarAddress.Substring(2);
                         var address = new Address(addressString);
-                        var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                        if (!exist)
+                        if (!avatarDict.ContainsKey(address))
                         {
                             return null;
                         }
+
+                        var avatarState = avatarDict[address];
 
                         return new EquipmentRankingModel
                         {
@@ -450,7 +454,7 @@ namespace Nekoyume.UI.Model
                             EquipmentId = e.EquipmentId,
                         };
                     })
-                    .Select(t => t?.Result)
+                    .Select(t => t)
                     .Where(e => e != null)
                     .ToList();
 
@@ -482,14 +486,6 @@ namespace Nekoyume.UI.Model
                         continue;
                     }
 
-                    var addressString = myRecord.AvatarAddress.Substring(2);
-                    var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                    if (!exist)
-                    {
-                        continue;
-                    }
-
                     if (!AgentEquipmentRankingInfos.ContainsKey(pair.Key))
                     {
                         AgentEquipmentRankingInfos[pair.Key] = new Dictionary<ItemSubType, EquipmentRankingModel>();
@@ -497,7 +493,7 @@ namespace Nekoyume.UI.Model
 
                     AgentEquipmentRankingInfos[pair.Key][subType] = new EquipmentRankingModel
                     {
-                        AvatarState = avatarState,
+                        AvatarState = pair.Value,
                         Rank = myRecord.Ranking,
                         Level = myRecord.Level,
                         Cp = myRecord.Cp,
