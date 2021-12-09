@@ -31,7 +31,7 @@ namespace Nekoyume.UI
             Overall
         }
 
-        private static readonly Vector3 NPCPosition = new Vector3(999.8f, 998.3f);
+        private static readonly Vector3 NPCPosition = new Vector3(999.8f, 998.15f);
         private const int NPCId = 300002;
 
         [SerializeField]

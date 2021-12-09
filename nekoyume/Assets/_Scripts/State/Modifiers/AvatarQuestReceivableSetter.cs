@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Bencodex.Types;
+using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using UnityEngine;
 
@@ -60,13 +62,16 @@ namespace Nekoyume.State.Modifiers
             }
 
             var quests = state.questList;
-            foreach (var quest in quests)
+            foreach (var lazyQuest in quests.EnumerateLazyQuestStates())
             {
                 foreach (var id in questIdList)
                 {
-                    if (id.Equals(quest.Id))
+                    var qid = lazyQuest.GetStateOrSerializedEncoding(out Quest q, out Dictionary d)
+                        ? q.Id
+                        : Quest.GetQuestId(d);
+                    if (id.Equals(qid))
                     {
-                        quest.isReceivable = true;
+                        lazyQuest.State.isReceivable = true;
                     }
                 }
             }

@@ -1,3 +1,5 @@
+using Nekoyume.Game.Controller;
+
 namespace Nekoyume.UI
 {
     public class IntroScreen : LoadingScreen
@@ -16,6 +18,7 @@ namespace Nekoyume.UI
             indicator.Show("Verifying transaction..");
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             StartLoading();
         }
 

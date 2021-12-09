@@ -262,8 +262,9 @@ namespace Nekoyume.UI
             };
             _selectedRecipeInfo = recipeInfo;
 
-            var submittable = CheckSubmittable(out _, out _);
+            var submittable = CheckMaterialAndSlot();
             button.SetCost(ConditionalCostButton.CostType.NCG, (int) _selectedRecipeInfo.CostNCG);
+            button.Interactable = submittable;
         }
 
         private void SetOptions(
@@ -322,6 +323,22 @@ namespace Nekoyume.UI
             }
 
             CombinationActionSubject.OnNext(_selectedRecipeInfo);
+        }
+
+        private bool CheckMaterialAndSlot()
+        {
+            if (!CheckMaterial(_selectedRecipeInfo.Materials))
+            {
+                return false;
+            }
+
+            var slots = Widget.Find<CombinationSlotsPopup>();
+            if (!slots.TryGetEmptyCombinationSlot(out var _))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public bool CheckSubmittable(out string errorMessage, out int slotIndex)

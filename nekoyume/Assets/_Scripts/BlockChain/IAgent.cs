@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Blocks;
 using Libplanet.Assets;
 using Libplanet.Crypto;
@@ -39,6 +40,9 @@ namespace Nekoyume.BlockChain
 
         BlockHash BlockTipHash { get; }
 
+        IObservable<(Transaction<PolymorphicAction<ActionBase>> tx, List<PolymorphicAction<ActionBase>> actions)>
+            OnMakeTransaction { get; }
+
         IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -52,7 +56,9 @@ namespace Nekoyume.BlockChain
 
         void SendException(Exception exc);
 
-        bool IsActionStaged(Guid actionId, out TxId txId);
+        bool TryGetTxId(Guid actionId, out TxId txId);
+
+        bool IsTxStaged(TxId txId);
 
         FungibleAssetValue GetBalance(Address address, Currency currency);
 

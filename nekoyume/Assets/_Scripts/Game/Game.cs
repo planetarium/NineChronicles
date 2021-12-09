@@ -183,6 +183,12 @@ namespace Nekoyume.Game
             StartCoroutine(CoUpdate());
         }
 
+        protected override void OnDestroy()
+        {
+            ActionManager.Dispose();
+            base.OnDestroy();
+        }
+
         private void SubscribeRPCAgent()
         {
             if (!(Agent is RPCAgent rpcAgent))

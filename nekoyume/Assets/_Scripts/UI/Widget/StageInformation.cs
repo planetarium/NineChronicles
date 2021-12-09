@@ -145,6 +145,8 @@ namespace Nekoyume.UI
             world.Set(worldRow);
             var questStageId = Game.Game.instance.States
                 .CurrentAvatarState.questList
+                .EnumerateLazyQuestStates()
+                .Select(l => l.State)
                 .OfType<WorldQuest>()
                 .Where(x => !x.Complete)
                 .OrderBy(x => x.Goal)
