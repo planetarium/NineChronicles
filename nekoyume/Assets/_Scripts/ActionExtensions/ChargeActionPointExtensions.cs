@@ -1,19 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.ActionExtensions
 {
     public static class ChargeActionPointExtensions
     {
-        public static void PayCost(this ChargeActionPoint action, IAgent agent, States states, TableSheets tableSheets)
+        public static void PayCost(
+            this ChargeActionPoint action,
+            IAgent agent,
+            States states,
+            TableSheets tableSheets,
+            IReadOnlyList<Address> updatedAddresses = null,
+            bool ignoreNotify = false)
         {
-            // NOTE: ignore now
-            return;
             if (action is null)
             {
                 throw new ArgumentNullException(nameof(action));
@@ -34,8 +41,10 @@ namespace Nekoyume.ActionExtensions
                 throw new ArgumentNullException(nameof(tableSheets));
             }
 
-            var currentAvatarState = states.CurrentAvatarState;
-            if (action.avatarAddress != currentAvatarState.address)
+            var avatarState = states.AvatarStates.Values.FirstOrDefault(e => e.address == action.avatarAddress);
+            if (avatarState is null ||
+                updatedAddresses is null ||
+                !updatedAddresses.Contains(avatarState.address.Derive(LegacyInventoryKey)))
             {
                 return;
             }
@@ -47,9 +56,15 @@ namespace Nekoyume.ActionExtensions
             }
 
             var nextBlockIndex = agent.BlockIndex + 1;
-            currentAvatarState.inventory.RemoveFungibleItem(row.ItemId, nextBlockIndex);
+            avatarState.inventory.RemoveFungibleItem(row.ItemId, nextBlockIndex);
 
-            ReactiveAvatarState.UpdateInventory(currentAvatarState.inventory);
+            if (ignoreNotify ||
+                avatarState.address != states.CurrentAvatarState.address)
+            {
+                return;
+            }
+
+            ReactiveAvatarState.UpdateInventory(avatarState.inventory);
         }
     }
 }
