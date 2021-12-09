@@ -80,8 +80,8 @@ namespace Nekoyume.UI.Model
                     var sw = new Stopwatch();
                     sw.Start();
 
-                    LoadAbilityRankingInfos(displayCount);
                     await Task.WhenAll(
+                        LoadAbilityRankingInfos(displayCount),
                         LoadStageRankingInfos(apiClient, displayCount),
                         LoadMimisbrunnrRankingInfos(apiClient, displayCount),
                         LoadCraftRankingInfos(apiClient, displayCount),
@@ -96,23 +96,26 @@ namespace Nekoyume.UI.Model
             return Task.CompletedTask;
         }
 
-        private void LoadAbilityRankingInfos(int displayCount)
+        private async Task LoadAbilityRankingInfos(int displayCount)
         {
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
             var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
 
             var rankOffset = 1;
+            var addressList = _rankingInfoSet.Select(i => i.AvatarAddress).ToList();
+            var avatarDictionary = await Game.Game.instance.Agent.GetAvatarStates(addressList);
             AbilityRankingInfos = _rankingInfoSet
                 .OrderByDescending(i => i.Level)
                 .Take(displayCount)
                 .Select(async rankingInfo =>
                 {
-                    var (exist, avatarState) =
-                        await States.TryGetAvatarStateAsync(rankingInfo.AvatarAddress);
-                    if (!exist)
+                    var avatarAddress = rankingInfo.AvatarAddress;
+                    if (!avatarDictionary.ContainsKey(avatarAddress))
                     {
                         return null;
                     }
+
+                    var avatarState = avatarDictionary[avatarAddress];
 
                     return new AbilityRankingModel
                     {
