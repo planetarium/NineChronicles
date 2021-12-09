@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using UnityEngine;
@@ -30,7 +31,7 @@ namespace Nekoyume.State
 
         private class Info
         {
-            public Action<IAgent, States, TableSheets> payCostAction;
+            public Action<IAgent, States, TableSheets, IReadOnlyList<Address>, bool> payCostAction;
             public long createdBlockIndex;
             public bool isRendered;
         }
@@ -48,7 +49,7 @@ namespace Nekoyume.State
         /// <param name="isRendered">Set `true` when this `GameAction` already rendered by `IActionRenderer`</param>
         public void Register(
             Guid gameActionId,
-            Action<IAgent, States, TableSheets> payCostAction,
+            Action<IAgent, States, TableSheets, IReadOnlyList<Address>, bool> payCostAction,
             long createdBlockIndex,
             bool isRendered = false)
         {
@@ -83,14 +84,16 @@ namespace Nekoyume.State
         /// <summary>
         /// Pay the cost of registered `GameAction`s which is not rendered.
         /// </summary>
-        /// <param name="agent"></param>
-        /// <param name="states">Source `States`</param>
-        /// <param name="tableSheets"></param>
-        public void PayCost(IAgent agent, States states, TableSheets tableSheets)
+        public void Apply(
+            IAgent agent,
+            States states,
+            TableSheets tableSheets,
+            IReadOnlyList<Address> updatedAddresses,
+            bool ignoreNotify = false)
         {
             foreach (var info in _infos.Values.Where(e => !e.isRendered))
             {
-                info.payCostAction(agent, states, tableSheets);
+                info.payCostAction(agent, states, tableSheets, updatedAddresses, ignoreNotify);
             }
         }
 
@@ -133,7 +136,9 @@ namespace Nekoyume.State
             return false;
         }
 
-        private Info GetNewInfo(Action<IAgent, States, TableSheets> payCostAction, long createdBlockIndex,
+        private Info GetNewInfo(
+            Action<IAgent, States, TableSheets, IReadOnlyList<Address>, bool> payCostAction,
+            long createdBlockIndex,
             bool isRendered = false)
         {
             var info = _reusableInfoPool.Count == 0

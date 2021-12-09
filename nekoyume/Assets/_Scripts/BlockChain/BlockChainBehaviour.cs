@@ -187,7 +187,7 @@ namespace Nekoyume.BlockChain
             await UniTask.Run(async () => await States.Instance.UpdateAsync(_agent, _updatedAddresses, true));
 
             // LocalLayerActions 적용
-            // LocalLayerActions.Instance.Apply(_agent, States.Instance, TableSheets.Instance, _updatedAddresses, true);
+            LocalLayerActions.Instance.Apply(_agent, States.Instance, TableSheets.Instance, _updatedAddresses, true);
 
             // LocalLayerCommands 적용
             LocalLayerCommands.Instance.Apply(_agent, States.Instance, TableSheets.Instance, _updatedAddresses, true);

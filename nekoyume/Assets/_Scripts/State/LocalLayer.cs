@@ -57,6 +57,7 @@ namespace Nekoyume.State
         /// <exception cref="ArgumentNullException"></exception>
         public void InitializeAgentAndAvatars(AgentState agentState)
         {
+            return;
             if (agentState is null)
             {
                 throw new ArgumentNullException(nameof(agentState));
@@ -78,6 +79,7 @@ namespace Nekoyume.State
 
         public void InitializeCurrentAvatarState(AvatarState avatarState)
         {
+            return;
             if (avatarState is null)
             {
                 _avatarModifierInfo = null;
@@ -96,6 +98,7 @@ namespace Nekoyume.State
 
         public void InitializeCombinationSlotsByCurrentAvatarState(AvatarState avatarState)
         {
+            return;
             if (avatarState is null)
             {
                 _combinationSlotModifierInfos.Clear();
@@ -113,6 +116,7 @@ namespace Nekoyume.State
 
         public void InitializeWeeklyArena(WeeklyArenaState weeklyArenaState)
         {
+            return;
             var address = weeklyArenaState.address;
             _weeklyArenaModifierInfo = new ModifierInfo<WeeklyArenaStateModifier>(address);
         }
@@ -128,6 +132,7 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         public void Set(Address address, CombinationSlotStateModifier modifier)
         {
+            return;
             if (!_combinationSlotModifierInfos.ContainsKey(address))
             {
                 return;
@@ -151,6 +156,7 @@ namespace Nekoyume.State
         public void ResetCombinationSlotModifiers<T>(Address address)
             where T : CombinationSlotStateModifier
         {
+            return;
             if (!_combinationSlotModifierInfos.ContainsKey(address))
             {
                 return;
@@ -180,6 +186,7 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         public void Add(Address agentAddress, AgentStateModifier modifier)
         {
+            return;
             // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null ||
                 modifier.IsEmpty)
@@ -208,6 +215,7 @@ namespace Nekoyume.State
 
         public void Add(Address agentAddress, AgentGoldModifier modifier)
         {
+            return;
             // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null || modifier.IsEmpty)
             {
@@ -239,6 +247,7 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         public void Add(Address avatarAddress, AvatarStateModifier modifier)
         {
+            return;
             // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null ||
                 modifier.IsEmpty)
@@ -275,6 +284,7 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         public void Add(Address weeklyArenaAddress, WeeklyArenaStateModifier modifier)
         {
+            return;
             // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null ||
                 modifier.IsEmpty)
@@ -312,6 +322,7 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         public void Remove(Address agentAddress, AgentStateModifier modifier)
         {
+            return;
             if (modifier is null ||
                 modifier.IsEmpty)
             {
@@ -352,6 +363,7 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         public void Remove(Address avatarAddress, AvatarStateModifier modifier)
         {
+            return;
             if (modifier is null ||
                 modifier.IsEmpty)
             {
@@ -395,6 +407,7 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         public void Remove(Address weeklyArenaAddress, WeeklyArenaStateModifier modifier)
         {
+            return;
             if (modifier is null ||
                 modifier.IsEmpty)
             {
@@ -439,6 +452,7 @@ namespace Nekoyume.State
         /// <returns></returns>
         public AgentState Modify(AgentState state)
         {
+            return state;
             if (state is null ||
                 !state.address.Equals(_agentModifierInfo.Address))
             {
@@ -453,6 +467,7 @@ namespace Nekoyume.State
         /// </summary>
         public GoldBalanceState Modify(GoldBalanceState state)
         {
+            return state;
             if (state is null ||
                 !state.address.Equals(_agentGoldModifierInfo.Address))
             {
@@ -469,6 +484,7 @@ namespace Nekoyume.State
         /// <returns></returns>
         public AvatarState Modify(AvatarState state)
         {
+            return state;
             if (state is null ||
                 _avatarModifierInfo is null)
             {
@@ -486,6 +502,7 @@ namespace Nekoyume.State
 
         public CombinationSlotState Modify(CombinationSlotState state)
         {
+            return state;
             if (state is null)
             {
                 return null;
@@ -510,6 +527,7 @@ namespace Nekoyume.State
         /// <returns></returns>
         public WeeklyArenaState Modify(WeeklyArenaState state)
         {
+            return state;
             if (state is null ||
                 !state.address.Equals(_weeklyArenaModifierInfo.Address))
             {
@@ -525,6 +543,7 @@ namespace Nekoyume.State
             where TState : Model.State.State
             where TModifier : class, IStateModifier<TState>
         {
+            return state;
             foreach (var modifier in modifierInfo.Modifiers)
             {
                 state = modifier.Modify(state);
@@ -544,6 +563,7 @@ namespace Nekoyume.State
         public void ClearAvatarModifiers<T>(Address avatarAddress)
             where T : AvatarStateModifier
         {
+            return;
             if (_avatarModifierInfo is null ||
                 !_avatarModifierInfo.Address.Equals(avatarAddress))
             {
