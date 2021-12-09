@@ -343,16 +343,20 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
+            var addressList = response.CraftRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
+            var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
+
             CraftRankingInfos = response.CraftRanking
-                .Select(async e =>
+                .Select(e =>
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                    if (!exist)
+                    if (!avatarDict.ContainsKey(address))
                     {
                         return null;
                     }
+
+                    var avatarState = avatarDict[address];
 
                     return new CraftRankingModel
                     {
@@ -361,7 +365,7 @@ namespace Nekoyume.UI.Model
                         Rank = e.Ranking,
                     };
                 })
-                .Select(t => t?.Result)
+                .Select(t => t)
                 .Where(e => e != null)
                 .ToList();
 
@@ -391,17 +395,9 @@ namespace Nekoyume.UI.Model
                     continue;
                 }
 
-                var addressString = myRecord.AvatarAddress.Substring(2);
-                var address = new Address(addressString);
-                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                if (!exist)
-                {
-                    continue;
-                }
-
                 AgentCraftRankingInfos[pair.Key] = new CraftRankingModel
                 {
-                    AvatarState = avatarState,
+                    AvatarState = pair.Value,
                     CraftCount = myRecord.CraftCount,
                     Rank = myRecord.Ranking,
                 };
