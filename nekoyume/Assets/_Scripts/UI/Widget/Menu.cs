@@ -297,6 +297,7 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<RankingBoard>().Show();
+            Analyzer.Instance.Track("Unity/Ranking Battle");
             AudioController.PlayClick();
         }
 
