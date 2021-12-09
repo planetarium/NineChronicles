@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -10,10 +12,14 @@ namespace Nekoyume.ActionExtensions
 {
     public static class BuyExtensions
     {
-        public static void PayCost(this Buy action, IAgent agent, States states, TableSheets tableSheets)
+        public static void PayCost(
+            this Buy action,
+            IAgent agent,
+            States states,
+            TableSheets tableSheets,
+            IReadOnlyList<Address> updatedAddresses = null,
+            bool ignoreNotify = false)
         {
-            // NOTE: ignore now
-            return;
             if (action is null)
             {
                 throw new ArgumentNullException(nameof(action));
@@ -45,7 +51,7 @@ namespace Nekoyume.ActionExtensions
                 (current, purchaseInfo) => current - purchaseInfo.Price);
 
             var state = new GoldBalanceState(states.GoldBalanceState.address, gold);
-            states.SetGoldBalanceState(state);
+            states.SetGoldBalanceState(state, ignoreNotify);
         }
     }
 }
