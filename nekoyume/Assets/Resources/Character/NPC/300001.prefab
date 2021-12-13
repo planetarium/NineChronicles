@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 6431166969061385214}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.64, y: 0.64, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -183,17 +183,17 @@ MonoBehaviour:
   - stateName: Greeting_03
     animation: {fileID: 11400000, guid: 76456d65fcc7bf84a8440fecb58387bc, type: 2}
   - stateName: Open
-    animation: {fileID: 11400000, guid: 3835c448ebdbf3148ac4c75805abf31c, type: 2}
+    animation: {fileID: 0}
   - stateName: Open_02
-    animation: {fileID: 11400000, guid: 3835c448ebdbf3148ac4c75805abf31c, type: 2}
+    animation: {fileID: 0}
   - stateName: Open_03
-    animation: {fileID: 11400000, guid: 3835c448ebdbf3148ac4c75805abf31c, type: 2}
+    animation: {fileID: 0}
   - stateName: Idle
-    animation: {fileID: 11400000, guid: 3835c448ebdbf3148ac4c75805abf31c, type: 2}
+    animation: {fileID: 0}
   - stateName: Idle_02
-    animation: {fileID: 11400000, guid: 3835c448ebdbf3148ac4c75805abf31c, type: 2}
+    animation: {fileID: 0}
   - stateName: Idle_03
-    animation: {fileID: 11400000, guid: 3835c448ebdbf3148ac4c75805abf31c, type: 2}
+    animation: {fileID: 0}
   - stateName: Emotion
     animation: {fileID: 11400000, guid: a05fab560bfab0441b154b0f97299848, type: 2}
   - stateName: Emotion_02
@@ -223,6 +223,6 @@ MonoBehaviour:
   - stateName: Disappear_03
     animation: {fileID: 11400000, guid: c86b8f5c860ad484c8695b2074c010f3, type: 2}
   - stateName: Over
-    animation: {fileID: 11400000, guid: 3835c448ebdbf3148ac4c75805abf31c, type: 2}
+    animation: {fileID: 0}
   - stateName: Click
-    animation: {fileID: 11400000, guid: 3835c448ebdbf3148ac4c75805abf31c, type: 2}
+    animation: {fileID: 0}
