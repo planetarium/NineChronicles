@@ -9,15 +9,22 @@ namespace Nekoyume.BlockChain
     {
         public async ValueTask<ResponseContext> SendAsync(RequestContext context, Func<RequestContext, ValueTask<ResponseContext>> next)
         {
-            try
+            var retryCount = 0;
+            Exception exception = null;
+            while (retryCount < 3)
             {
-                return await next(context);
+                try
+                {
+                    return await next(context);
+                }
+                catch (Exception e)
+                {
+                    await Task.Delay((3 - retryCount) * 1000);
+                    retryCount++;
+                    exception = e;
+                }
             }
-            catch (Exception e)
-            {
-                Debug.Log($"Filter Catch Exception: {e}");
-            }
-
+            Debug.Log($"Filter Catch Exception: {exception}");
             return null;
         }
     }
