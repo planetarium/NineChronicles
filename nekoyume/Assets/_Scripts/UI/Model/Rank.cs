@@ -53,14 +53,19 @@ namespace Nekoyume.UI.Model
                 {
                     if (!_rankingMapLoaded)
                     {
+                        var addressList = new List<Address>();
                         for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
                         {
-                            var address = RankingState.Derive(i);
-                            var mapState =
-                                await Game.Game.instance.Agent.GetStateAsync(address) is
-                                    Bencodex.Types.Dictionary serialized
+                            var address = RankingState.Derive(0);
+                            addressList.Add(address);
+                        }
+
+                        var iValues = await Game.Game.instance.Agent.GetStateBulk(addressList);
+                        foreach (var kv in iValues)
+                        {
+                            var mapState = kv.Value is Bencodex.Types.Dictionary serialized
                                 ? new RankingMapState(serialized)
-                                : new RankingMapState(address);
+                                : new RankingMapState(kv.Key);
                             States.Instance.SetRankingMapStates(mapState);
                         }
 

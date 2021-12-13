@@ -9,6 +9,7 @@ using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
 using Lib9c.Formatters;
+using Libplanet;
 using MessagePack;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
@@ -474,13 +475,19 @@ namespace Nekoyume.Game
             var task = Task.Run(() =>
             {
                 List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
+                var map = new ConcurrentDictionary<Address, string>();
                 var csv = new ConcurrentDictionary<string, string>();
                 Parallel.ForEach(csvAssets, asset =>
                 {
-                    if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
+                    map[Addresses.TableSheet.Derive(asset.name)] = asset.name;
+                });
+                var values = Agent.GetStateBulk(map.Keys).Result;
+                Parallel.ForEach(values, kv =>
+                {
+                    if (kv.Value is Text tableCsv)
                     {
                         var table = tableCsv.ToDotnetString();
-                        csv[asset.name] = table;
+                        csv[map[kv.Key]] = table;
                     }
                 });
                 TableSheets = new TableSheets(csv);
