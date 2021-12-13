@@ -38,7 +38,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// Last index in which restriction will apply.
         /// </summary>
-        public const long AuthorizedMinersPolicyEndIndex = 3_153_600;
+        public const long AuthorizedMinersPolicyEndIndex = 5_716_957;
 
         public const long AuthorizedMinersPolicyInterval = 50;
 
