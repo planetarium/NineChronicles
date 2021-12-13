@@ -6,10 +6,10 @@ namespace Nekoyume.Game.Character
     {
         protected override bool IsLoopAnimation(string animationName)
         {
-            return animationName == nameof(NPCAnimation.Type.Idle_01)
+            return animationName == nameof(NPCAnimation.Type.Idle)
                    || animationName == nameof(NPCAnimation.Type.Idle_02)
                    || animationName == nameof(NPCAnimation.Type.Idle_03)
-                   || animationName == nameof(NPCAnimation.Type.Loop_01)
+                   || animationName == nameof(NPCAnimation.Type.Loop)
                    || animationName == nameof(NPCAnimation.Type.Loop_02)
                    || animationName == nameof(NPCAnimation.Type.Loop_03)
                    || animationName == nameof(CharacterAnimation.Type.Idle)

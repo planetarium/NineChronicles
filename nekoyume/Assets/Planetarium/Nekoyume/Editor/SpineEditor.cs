@@ -284,63 +284,63 @@ namespace Planetarium.Nekoyume.Editor
                         {
                             switch (animationType)
                             {
-                                case NPCAnimation.Type.Appear_01:
-                                    break;
                                 case NPCAnimation.Type.Appear_02:
-                                    break;
                                 case NPCAnimation.Type.Appear_03:
-                                    break;
-                                case NPCAnimation.Type.Greeting_01:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Appear)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                                     break;
                                 case NPCAnimation.Type.Greeting_02:
-                                    break;
                                 case NPCAnimation.Type.Greeting_03:
-                                    break;
-                                case NPCAnimation.Type.Open_01:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Greeting)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                                     break;
                                 case NPCAnimation.Type.Open_02:
-                                    break;
                                 case NPCAnimation.Type.Open_03:
-                                    break;
-                                case NPCAnimation.Type.Idle_01:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Open)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                                     break;
                                 case NPCAnimation.Type.Idle_02:
-                                    break;
                                 case NPCAnimation.Type.Idle_03:
-                                    break;
-                                case NPCAnimation.Type.Emotion_01:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Idle)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                                     break;
                                 case NPCAnimation.Type.Emotion_02:
-                                    break;
                                 case NPCAnimation.Type.Emotion_03:
-                                    break;
                                 case NPCAnimation.Type.Emotion_04:
-                                    break;
                                 case NPCAnimation.Type.Emotion_05:
-                                    break;
-                                case NPCAnimation.Type.Touch_01:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Emotion)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                                     break;
                                 case NPCAnimation.Type.Touch_02:
-                                    break;
                                 case NPCAnimation.Type.Touch_03:
-                                    break;
-                                case NPCAnimation.Type.Loop_01:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Touch)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                                     break;
                                 case NPCAnimation.Type.Loop_02:
-                                    break;
                                 case NPCAnimation.Type.Loop_03:
-                                    break;
-                                case NPCAnimation.Type.Disappear_01:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Loop)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                                     break;
                                 case NPCAnimation.Type.Disappear_02:
-                                    break;
                                 case NPCAnimation.Type.Disappear_03:
-                                    break;
-                                case NPCAnimation.Type.Appear:
-                                    break;
-                                case NPCAnimation.Type.Over:
-                                    break;
-                                case NPCAnimation.Type.Click:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Disappear)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                                     break;
                             }
 
@@ -348,15 +348,7 @@ namespace Planetarium.Nekoyume.Editor
                             {
                                 assetPath = Path.Combine(
                                     animationAssetsPath,
-                                    $"{nameof(CharacterAnimation.Type.Idle)}.asset");
-                                asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
-                            }
-
-                            if (asset is null)
-                            {
-                                assetPath = Path.Combine(
-                                    animationAssetsPath,
-                                    "{Idle.asset");
+                                    $"{nameof(NPCAnimation.Type.Idle)}.asset");
                                 asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                             }
 
@@ -394,7 +386,8 @@ namespace Planetarium.Nekoyume.Editor
 
         private static bool IsNPC(string prefabName)
         {
-            return prefabName.StartsWith("3");
+            return prefabName.StartsWith("3") ||
+                prefabName.StartsWith("dialog_");
         }
 
         private static bool IsPlayer(string prefabName)
