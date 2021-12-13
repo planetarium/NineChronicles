@@ -636,7 +636,9 @@ namespace Nekoyume.BlockChain
             Widget.Create<BattleSimulator>(true);
             Widget.Create<CombinationSimulator>(true);
             Widget.Create<Cheat>(true);
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Widget.Create<TestbedEditor>(true);
+#endif
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);
