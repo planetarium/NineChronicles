@@ -8,6 +8,8 @@ using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.TableData;
+using LazyArenaInfo =
+    Nekoyume.Model.State.LazyState<Nekoyume.Model.State.ArenaInfo, Bencodex.Types.Dictionary>;
 
 namespace Nekoyume.Model.State
 {
@@ -29,19 +31,19 @@ namespace Nekoyume.Model.State
 
         public bool Ended;
 
-        private readonly Dictionary<Address, ArenaInfo> _map;
+        private readonly Dictionary<Address, LazyArenaInfo> _map;
 
         public List<ArenaInfo> OrderedArenaInfos { get; private set; }
 
         public WeeklyArenaState(int index) : base(DeriveAddress(index))
         {
-            _map = new Dictionary<Address, ArenaInfo>();
+            _map = new Dictionary<Address, LazyArenaInfo>();
             ResetOrderedArenaInfos();
         }
 
         public WeeklyArenaState(Address address) : base(address)
         {
-            _map = new Dictionary<Address, ArenaInfo>();
+            _map = new Dictionary<Address, LazyArenaInfo>();
             ResetOrderedArenaInfos();
         }
 
@@ -49,7 +51,7 @@ namespace Nekoyume.Model.State
         {
             _map = ((Dictionary)serialized["map"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
-                kv => new ArenaInfo((Dictionary)kv.Value)
+                kv => new LazyArenaInfo((Dictionary)kv.Value, DeserializeArenaInfo)
             );
 
             ResetIndex = serialized.GetLong("resetIndex");
@@ -66,26 +68,20 @@ namespace Nekoyume.Model.State
         {
         }
 
-        public override IValue Serialize() =>
+        public override IValue Serialize() => ((Dictionary)base.Serialize())
+            .Add("resetIndex", ResetIndex.Serialize())
+            .Add("ended", Ended.Serialize())
 #pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"map"] = new Dictionary(_map.Select(kv =>
-                   new KeyValuePair<IKey, IValue>(
-                       (Binary)kv.Key.Serialize(),
-                       kv.Value.Serialize()
-                   )
-                )),
-                [(Text)"resetIndex"] = ResetIndex.Serialize(),
-                [(Text)"ended"] = Ended.Serialize(),
-            }.Union((Dictionary)base.Serialize()));
+            .Add("map", new Dictionary(_map.Select(kv =>
 #pragma warning restore LAA1002
+                new KeyValuePair<IKey, IValue>((IKey)kv.Key.Serialize(), kv.Value.Serialize()))));
 
         private void ResetOrderedArenaInfos()
         {
             OrderedArenaInfos = _map.Values
-                .OrderByDescending(pair => pair.Score)
-                .ThenBy(pair => pair.CombatPoint)
+                .Select(lazy => lazy.State)
+                .OrderByDescending(info => info.Score)
+                .ThenBy(info => info.CombatPoint)
                 .ToList();
         }
 
@@ -190,7 +186,7 @@ namespace Nekoyume.Model.State
         {
             foreach (var info in _map.Values)
             {
-                info.ResetCount();
+                info.State.ResetCount();
             }
 
             ResetIndex = ctxBlockIndex;
@@ -204,38 +200,42 @@ namespace Nekoyume.Model.State
         public void Update(WeeklyArenaState prevState, long index)
         {
 #pragma warning disable LAA1002
-            var filtered = prevState.Where(i => i.Value.Active).ToList();
+            foreach (var kv in prevState._map)
 #pragma warning restore LAA1002
-            foreach (var kv in filtered)
             {
-                var value = new ArenaInfo(kv.Value);
-                _map[kv.Key] = value;
+                LazyArenaInfo lazyArenaInfo = kv.Value;
+                bool active =
+                    lazyArenaInfo.GetStateOrSerializedEncoding(out ArenaInfo i, out Dictionary d)
+                        ? i.Active
+                        : ArenaInfo.IsActive(d);
+                if (active)
+                {
+                    _map[kv.Key] = lazyArenaInfo;
+                }
             }
+
             ResetIndex = index;
         }
 
         public void SetReceive(Address avatarAddress)
         {
-            _map[avatarAddress].Receive = true;
+            _map[avatarAddress].State.Receive = true;
         }
 
         #region IDictionary
 
-        public IEnumerator<KeyValuePair<Address, ArenaInfo>> GetEnumerator()
-        {
-            return _map.GetEnumerator();
-        }
+        public IEnumerator<KeyValuePair<Address, ArenaInfo>> GetEnumerator() => _map
+            .OrderBy(kv => kv.Key.GetHashCode())
+            .Select(LazyArenaInfo.LoadStatePair)
+            .GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        public void Add(KeyValuePair<Address, ArenaInfo> item)
-        {
-            _map[item.Key] = item.Value;
-            ResetOrderedArenaInfos();
-        }
+        public void Add(KeyValuePair<Address, ArenaInfo> item) =>
+            Add(item.Key, item.Value);
 
         public void Clear()
         {
@@ -243,16 +243,11 @@ namespace Nekoyume.Model.State
             ResetOrderedArenaInfos();
         }
 
-        public bool Contains(KeyValuePair<Address, ArenaInfo> item)
-        {
-#pragma warning disable LAA1002
-            return _map.Contains(item);
-#pragma warning restore LAA1002
-        }
+        public bool Contains(KeyValuePair<Address, ArenaInfo> item) =>
+            _map.TryGetValue(item.Key, out LazyArenaInfo lazy) && lazy.State.Equals(item.Value);
 
         public void CopyTo(KeyValuePair<Address, ArenaInfo>[] array, int arrayIndex)
         {
-
             throw new NotImplementedException();
         }
 
@@ -266,7 +261,8 @@ namespace Nekoyume.Model.State
 
         public void Add(Address key, ArenaInfo value)
         {
-            Add(new KeyValuePair<Address, ArenaInfo>(key, value));
+            _map[key] = new LazyArenaInfo(value);
+            ResetOrderedArenaInfos();
         }
 
         public bool ContainsKey(Address key)
@@ -283,21 +279,35 @@ namespace Nekoyume.Model.State
 
         public bool TryGetValue(Address key, out ArenaInfo value)
         {
-            return _map.TryGetValue(key, out value);
+            if (_map.TryGetValue(key, out LazyArenaInfo lazy))
+            {
+                value = lazy.State;
+                return true;
+            }
+
+            value = null;
+            return false;
         }
 
         public ArenaInfo this[Address key]
         {
-            get => _map[key];
+            get => _map[key].State;
             set
             {
-                _map[key] = value;
+                _map[key] = new LazyArenaInfo(value);
                 ResetOrderedArenaInfos();
             }
         }
 
-        public ICollection<Address> Keys => _map.Keys;
-        public ICollection<ArenaInfo> Values => _map.Values;
+        public ICollection<Address> Keys =>
+#pragma warning disable S2365
+            _map.Keys.OrderBy(k => k.GetHashCode()).ToArray();
+#pragma warning restore S2365
+
+        public ICollection<ArenaInfo> Values =>
+#pragma warning disable S2365
+            _map.OrderBy(kv => kv.Key.GetHashCode()).Select(kv => kv.Value.State).ToArray();
+#pragma warning restore S2365
 
         #endregion
 
@@ -305,5 +315,8 @@ namespace Nekoyume.Model.State
         {
             info.AddValue("serialized", new Codec().Encode(Serialize()));
         }
+
+        private static ArenaInfo DeserializeArenaInfo(Dictionary serialized) =>
+            new ArenaInfo(serialized);
     }
 }

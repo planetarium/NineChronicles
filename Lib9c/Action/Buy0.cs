@@ -206,13 +206,13 @@ namespace Nekoyume.Action
             sellerAvatarState.UpdateQuestRewards2(materialSheet);
 
             //Avoid InvalidBlockStateRootHashException to 50000 index.
-            if (sellerAvatarState.questList.Any(q => q.Complete && !q.IsPaidInAction))
+            if (sellerAvatarState.questList.UnpaidCompleteQuests.Any())
             {
                 var prevIds = sellerAvatarState.questList.completedQuestIds;
                 sellerAvatarState.UpdateQuestRewards(materialSheet);
                 sellerAvatarState.questList.completedQuestIds = prevIds;
             }
-            if (context.BlockIndex != 4742 && buyerAvatarState.questList.Any(q => q.Complete && !q.IsPaidInAction))
+            if (context.BlockIndex != 4742 && buyerAvatarState.questList.UnpaidCompleteQuests.Any())
             {
                 var prevIds = buyerAvatarState.questList.completedQuestIds;
                 buyerAvatarState.UpdateQuestRewards(materialSheet);

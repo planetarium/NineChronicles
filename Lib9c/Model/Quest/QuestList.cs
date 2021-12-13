@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Serialization;
+using Bencodex;
 using Bencodex.Types;
 using Libplanet.Assets;
 using Nekoyume.Model.EnumType;
@@ -61,10 +62,11 @@ namespace Nekoyume.Model.Quest
     #endregion
 
     [Serializable]
-    public class QuestList : IEnumerable<Quest>, IState
+    public class QuestList : IState, ISerializable
     {
         public const string QuestsKey = "q";
-        private readonly List<Quest> _quests;
+        private static readonly Codec _codec = new Codec();
+        private readonly List<LazyState<Quest, Dictionary>> _quests;
 
         // FIXME: Consider removing the `_listVersion` field.
         public const string ListVersionKey = "v";
@@ -81,7 +83,7 @@ namespace Nekoyume.Model.Quest
             EquipmentItemSubRecipeSheet equipmentItemSubRecipeSheet
         )
         {
-            _quests = new List<Quest>();
+            _quests = new List<LazyState<Quest, Dictionary>>();
             foreach (var questData in questSheet.OrderedList)
             {
                 var reward = GetQuestReward(
@@ -96,7 +98,7 @@ namespace Nekoyume.Model.Quest
                     continue;
                 }
 
-                _quests.Add(quest);
+                _quests.Add(new LazyState<Quest, Dictionary>(quest));
             }
         }
 
@@ -109,9 +111,10 @@ namespace Nekoyume.Model.Quest
 
             if (_listVersion == 1)
             {
-                _quests = serialized.TryGetValue((Text) QuestsKeyDeprecated, out var questsValue)
-                    ? questsValue.ToList(Quest.Deserialize)
-                    : new List<Quest>();
+                _quests = serialized.TryGetValue((Text)QuestsKeyDeprecated, out var l)
+                    ? ((List)l).Select(d =>
+                        new LazyState<Quest, Dictionary>((Dictionary)d, Quest.Deserialize)).ToList()
+                    : new List<LazyState<Quest, Dictionary>>();
 
                 completedQuestIds = serialized.TryGetValue((Text) CompletedQuestIdsKeyDeprecated, out var idsValue)
                     ? idsValue.ToList(StateExtensions.ToInteger)
@@ -119,14 +122,20 @@ namespace Nekoyume.Model.Quest
             }
             else
             {
-                _quests = serialized.TryGetValue((Text) QuestsKey, out var q)
-                    ? q.ToList(Quest.Deserialize)
-                    : new List<Quest>();
+                _quests = serialized.TryGetValue((Text) QuestsKey, out var l)
+                    ? ((List)l).Select(d =>
+                        new LazyState<Quest, Dictionary>((Dictionary)d, Quest.Deserialize)).ToList()
+                    : new List<LazyState<Quest, Dictionary>>();
 
                 completedQuestIds = serialized.TryGetValue((Text) CompletedQuestIdsKey, out var cqi)
                     ? cqi.ToList(StateExtensions.ToInteger)
                     : new List<int>();
             }
+        }
+
+        private QuestList(SerializationInfo info, StreamingContext context)
+            : this((Dictionary)_codec.Decode((byte[])info.GetValue("serialized", typeof(byte[]))))
+        {
         }
 
         public void UpdateList(
@@ -166,7 +175,11 @@ namespace Nekoyume.Model.Quest
 
             _listVersion = listVersion;
 
-            ImmutableHashSet<int> questIds = _quests.Select(q => q.Id).ToImmutableHashSet();
+            ImmutableHashSet<int> questIds = _quests
+                .Select(l => l.GetStateOrSerializedEncoding(out Quest q, out Dictionary d)
+                    ? q.Id
+                    : Quest.GetQuestId(d))
+                .ToImmutableHashSet();
             foreach (var questRow in questSheet.OrderedList)
             {
                 if (questIds.Contains(questRow.Id))
@@ -185,23 +198,14 @@ namespace Nekoyume.Model.Quest
                     continue;
                 }
 
-                _quests.Add(quest);
+                _quests.Add(new LazyState<Quest, Dictionary>(quest));
             }
-        }
-
-        public IEnumerator<Quest> GetEnumerator()
-        {
-            return _quests.OrderBy(q => q.Id).GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         public void UpdateCombinationQuest(ItemUsable itemUsable)
         {
             var targets = _quests
+                .Select(q => q.State)
                 .OfType<CombinationQuest>()
                 .Where(i => i.ItemType == itemUsable.ItemType &&
                             i.ItemSubType == itemUsable.ItemSubType &&
@@ -215,6 +219,7 @@ namespace Nekoyume.Model.Quest
         public void UpdateTradeQuest(TradeType type, FungibleAssetValue price)
         {
             var tradeQuests = _quests
+                .Select(q => q.State)
                 .OfType<TradeQuest>()
                 .Where(i => i.Type == type && !i.Complete);
             foreach (var tradeQuest in tradeQuests)
@@ -223,6 +228,7 @@ namespace Nekoyume.Model.Quest
             }
 
             var goldQuests = _quests
+                .Select(q => q.State)
                 .OfType<GoldQuest>()
                 .Where(i => i.Type == type && !i.Complete);
             foreach (var goldQuest in goldQuests)
@@ -233,7 +239,9 @@ namespace Nekoyume.Model.Quest
 
         public void UpdateStageQuest(CollectionMap stageMap)
         {
-            var stageQuests = _quests.OfType<WorldQuest>();
+            var stageQuests = _quests
+                .Select(q => q.State)
+                .OfType<WorldQuest>();
             foreach (var quest in stageQuests)
             {
                 quest.Update(stageMap);
@@ -242,7 +250,9 @@ namespace Nekoyume.Model.Quest
 
         public void UpdateMonsterQuest(CollectionMap monsterMap)
         {
-            var monsterQuests = _quests.OfType<MonsterQuest>();
+            var monsterQuests = _quests
+                .Select(q => q.State)
+                .OfType<MonsterQuest>();
             foreach (var quest in monsterQuests)
             {
                 quest.Update(monsterMap);
@@ -251,7 +261,9 @@ namespace Nekoyume.Model.Quest
 
         public void UpdateCollectQuest(CollectionMap itemMap)
         {
-            var collectQuests = _quests.OfType<CollectQuest>();
+            var collectQuests = _quests
+                .Select(q => q.State)
+                .OfType<CollectQuest>();
             foreach (var quest in collectQuests)
             {
                 quest.Update(itemMap);
@@ -261,6 +273,7 @@ namespace Nekoyume.Model.Quest
         public void UpdateItemEnhancementQuest(Equipment equipment)
         {
             var targets = _quests
+                .Select(q => q.State)
                 .OfType<ItemEnhancementQuest>()
                 .Where(i => !i.Complete && i.Grade == equipment.Grade);
             foreach (var target in targets)
@@ -276,6 +289,7 @@ namespace Nekoyume.Model.Quest
             foreach (var type in types)
             {
                 var targets = _quests
+                    .Select(q => q.State)
                     .OfType<GeneralQuest>()
                     .Where(i => i.Event == type && !i.Complete);
                 foreach (var target in targets)
@@ -290,6 +304,7 @@ namespace Nekoyume.Model.Quest
         public void UpdateItemGradeQuest(ItemUsable itemUsable)
         {
             var targets = _quests
+                .Select(q => q.State)
                 .OfType<ItemGradeQuest>()
                 .Where(i => i.Grade == itemUsable.Grade && !i.Complete);
             foreach (var target in targets)
@@ -308,6 +323,7 @@ namespace Nekoyume.Model.Quest
             foreach (var item in items.OrderBy(i => i.Id))
             {
                 var targets = _quests
+                    .Select(q => q.State)
                     .OfType<ItemTypeCollectQuest>()
                     .Where(i => i.ItemType == item.ItemType && !i.Complete);
                 foreach (var target in targets)
@@ -323,19 +339,19 @@ namespace Nekoyume.Model.Quest
             {
                 return Dictionary.Empty
                     .SetItem(ListVersionKey, _listVersion.Serialize())
-                    .SetItem(QuestsKey, (IValue) new List(_quests
-                        .OrderBy(i => i.Id)
-                        .Select(q => q.Serialize())))
-                    .SetItem(CompletedQuestIdsKey, (IValue) new List(completedQuestIds
+                    .SetItem(QuestsKey, _quests
+                        .Select(q => q.Serialize())
+                        .OrderBy(Quest.GetQuestId))
+                    .SetItem(CompletedQuestIdsKey, completedQuestIds
                         .OrderBy(i => i)
-                        .Select(i => i.Serialize())));
+                        .Select(i => i.Serialize()));
             }
 
             return new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) QuestsKeyDeprecated] = new List(_quests
-                    .OrderBy(i => i.Id)
-                    .Select(q => q.Serialize())),
+                    .Select(q => q.Serialize())
+                    .OrderBy(Quest.GetQuestId)),
                 [(Text) CompletedQuestIdsKeyDeprecated] = new List(completedQuestIds
                     .OrderBy(i => i)
                     .Select(i => i.Serialize()))
@@ -344,7 +360,9 @@ namespace Nekoyume.Model.Quest
 
         public void UpdateCombinationEquipmentQuest(int recipeId)
         {
-            var targets = _quests.OfType<CombinationEquipmentQuest>()
+            var targets = _quests
+                .Select(q => q.State)
+                .OfType<CombinationEquipmentQuest>()
                 .Where(q => !q.Complete);
             foreach (var target in targets)
             {
@@ -356,10 +374,23 @@ namespace Nekoyume.Model.Quest
         public CollectionMap UpdateCompletedQuest(CollectionMap eventMap)
         {
             const QuestEventType type = QuestEventType.Complete;
-            eventMap[(int) type] = _quests.Count(i => i.Complete);
+            eventMap[(int) type] = _quests.Count(l =>
+                l.GetStateOrSerializedEncoding(out Quest loaded, out Dictionary serialized)
+                    ? loaded.Complete
+                    : Quest.IsQuestComplete(serialized)
+            );
             return UpdateGeneralQuest(new[] {type}, eventMap);
         }
 
+        public int Count() => _quests.Count;
+
+        public IEnumerable<Quest> UnpaidCompleteQuests => _quests
+            .Where(l => l.GetStateOrSerializedEncoding(out Quest q, out Dictionary d)
+                ? q.Complete && !q.IsPaidInAction
+                : Quest.IsQuestComplete(d) && !Quest.IsQuestPaidInAction(d))
+            .Select(l => l.State);
+
+        public IEnumerable<LazyState<Quest, Dictionary>> EnumerateLazyQuestStates() => _quests;
 
         private static QuestReward GetQuestReward(
             int rewardId,
@@ -434,6 +465,11 @@ namespace Nekoyume.Model.Quest
             }
 
             return quest;
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("serialized", _codec.Encode(Serialize()));
         }
     }
 }

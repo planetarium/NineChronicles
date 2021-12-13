@@ -7,6 +7,7 @@
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
+    using Lib9c.Tests.Model;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;

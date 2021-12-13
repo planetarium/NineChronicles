@@ -517,7 +517,7 @@ namespace Nekoyume.Model.State
         public void UpdateQuestRewards(MaterialItemSheet materialItemSheet)
         {
             var completedQuests = questList
-                .Where(quest => quest.Complete && !quest.IsPaidInAction)
+                .UnpaidCompleteQuests
                 .ToList();
             // 완료되었지만 보상을 받지 않은 퀘스트를 return 문에서 Select 하지 않고 미리 저장하는 이유는
             // 지연된 실행에 의해, return 시점에서 이미 모든 퀘스트의 보상 처리가 완료된 상태에서
@@ -535,7 +535,7 @@ namespace Nekoyume.Model.State
         public void UpdateQuestRewards2(MaterialItemSheet materialItemSheet)
         {
             var completedQuests = questList
-                .Where(quest => quest.Complete && !quest.IsPaidInAction)
+                .UnpaidCompleteQuests
                 .ToList();
             // 완료되었지만 보상을 받지 않은 퀘스트를 return 문에서 Select 하지 않고 미리 저장하는 이유는
             // 지연된 실행에 의해, return 시점에서 이미 모든 퀘스트의 보상 처리가 완료된 상태에서

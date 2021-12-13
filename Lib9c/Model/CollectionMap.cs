@@ -1,32 +1,69 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Model
 {
     [Serializable]
-    public class CollectionMap : IState, IDictionary<int, int>
+    public class CollectionMap : IState, IDictionary<int, int>, ISerializable
     {
-        private readonly Dictionary<int, int> _dictionary = new Dictionary<int, int>();
+        private Dictionary<int, int> _dictionary;
+        private Dictionary _serialized;
 
         public CollectionMap()
         {
+            _dictionary = new Dictionary<int, int>();
         }
 
         public CollectionMap(Bencodex.Types.Dictionary serialized)
         {
-            _dictionary = serialized.ToDictionary(
-                kv => kv.Key.ToInteger(),
-                kv => kv.Value.ToInteger()
+            _serialized = serialized;
+        }
+
+        private CollectionMap(SerializationInfo info, StreamingContext context)
+        {
+            _dictionary = (Dictionary<int, int>)info.GetValue(
+                nameof(Dictionary),
+                typeof(Dictionary<int, int>)
             );
         }
 
-        public IValue Serialize() => new Bencodex.Types.Dictionary(
-            _dictionary.OrderBy(kv => kv.Key).Select(kv =>
+        private Dictionary<int, int> Dictionary
+        {
+            get
+            {
+                if (_serialized is Dictionary d)
+                {
+                    _dictionary = d.ToDictionary(
+                        kv => kv.Key.ToInteger(),
+                        kv => kv.Value.ToInteger()
+                    );
+                    _serialized = null;
+                    return _dictionary;
+                }
+
+                return _dictionary;
+            }
+
+            set
+            {
+                _dictionary = value;
+                _serialized = null;
+            }
+        }
+
+        [SuppressMessage(
+            "Libplanet.Analyzers.ActionAnalyzer",
+            "LAA1002",
+            Justification = "It's serialzed into a dictionary in the end.")]
+        public IValue Serialize() => _serialized ?? new Dictionary(
+            Dictionary.Select(kv =>
                 new KeyValuePair<IKey, IValue>(
                     (Text) kv.Key.ToString(CultureInfo.InvariantCulture),
                     (Text) kv.Value.ToString(CultureInfo.InvariantCulture)
@@ -36,25 +73,25 @@ namespace Nekoyume.Model
 
         public void Add(KeyValuePair<int, int> item)
         {
-            if (_dictionary.ContainsKey(item.Key))
+            if (Dictionary.ContainsKey(item.Key))
             {
-                _dictionary[item.Key] += item.Value;
+                Dictionary[item.Key] += item.Value;
             }
             else
             {
-                _dictionary[item.Key] = item.Value;
+                Dictionary[item.Key] = item.Value;
             }
         }
 
         public void Clear()
         {
-            _dictionary.Clear();
+            Dictionary.Clear();
         }
 
         public bool Contains(KeyValuePair<int, int> item)
         {
 #pragma warning disable LAA1002
-            return _dictionary.Contains(item);
+            return Dictionary.Contains(item);
 #pragma warning restore LAA1002
         }
 
@@ -65,15 +102,15 @@ namespace Nekoyume.Model
 
         public bool Remove(KeyValuePair<int, int> item)
         {
-            return _dictionary.Remove(item.Key);
+            return Dictionary.Remove(item.Key);
         }
 
-        public int Count => _dictionary.Count;
+        public int Count => Dictionary.Count;
         public bool IsReadOnly => false;
 
         public IEnumerator<KeyValuePair<int, int>> GetEnumerator()
         {
-            return _dictionary.OrderBy(kv => kv.Key).GetEnumerator();
+            return Dictionary.OrderBy(kv => kv.Key).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -88,26 +125,31 @@ namespace Nekoyume.Model
 
         public bool ContainsKey(int key)
         {
-            return _dictionary.ContainsKey(key);
+            return Dictionary.ContainsKey(key);
         }
 
         public bool Remove(int key)
         {
-            return _dictionary.Remove(key);
+            return Dictionary.Remove(key);
         }
 
         public bool TryGetValue(int key, out int value)
         {
-            return _dictionary.TryGetValue(key, out value);
+            return Dictionary.TryGetValue(key, out value);
         }
 
         public int this[int key]
         {
-            get => _dictionary[key];
-            set => _dictionary[key] = value;
+            get => Dictionary[key];
+            set => Dictionary[key] = value;
         }
 
-        public ICollection<int> Keys => _dictionary.Keys;
-        public ICollection<int> Values => _dictionary.Values;
+        public ICollection<int> Keys => Dictionary.Keys;
+        public ICollection<int> Values => Dictionary.Values;
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(nameof(Dictionary), Dictionary);
+        }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Bencodex;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -9,7 +10,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model
 {
     [Serializable]
-    public class WorldInformation : IState
+    public class WorldInformation : IState, ISerializable
     {
         [Serializable]
         public struct World : IState
@@ -113,10 +114,29 @@ namespace Nekoyume.Model
             }
         }
 
+        private static readonly Codec _codec = new Codec();
+        private Dictionary _serialized;
+        private Dictionary<int, World> _worlds;
+
         /// <summary>
         /// key: worldId
         /// </summary>
-        private readonly Dictionary<int, World> _worlds = new Dictionary<int, World>();
+        private IDictionary<int, World> worlds
+        {
+            get
+            {
+                if (_worlds is null)
+                {
+                    _worlds = _serialized.ToDictionary(
+                        kv => kv.Key.ToInteger(),
+                        kv => new World((Bencodex.Types.Dictionary)kv.Value)
+                    );
+                    _serialized = null;
+                }
+
+                return _worlds;
+            }
+        }
 
         public WorldInformation(
             long blockIndex,
@@ -129,6 +149,7 @@ namespace Nekoyume.Model
             }
 
             var orderedSheet = worldSheet.OrderedList;
+            _worlds = new Dictionary<int, World>();
 
             if (openAllOfWorldsAndStages)
             {
@@ -164,6 +185,7 @@ namespace Nekoyume.Model
             }
 
             var orderedSheet = worldSheet.OrderedList;
+            _worlds = new Dictionary<int, World>();
 
             if (clearStageId > 0)
             {
@@ -204,14 +226,21 @@ namespace Nekoyume.Model
 
         public WorldInformation(Bencodex.Types.Dictionary serialized)
         {
-            _worlds = serialized.ToDictionary(
-                kv => kv.Key.ToInteger(),
-                kv => new World((Bencodex.Types.Dictionary) kv.Value)
-            );
+            _serialized = serialized;
+        }
+
+        private WorldInformation(SerializationInfo info, StreamingContext context)
+            : this((Dictionary)_codec.Decode((byte[])info.GetValue("serialized", typeof(byte[]))))
+        {
         }
 
         public IValue Serialize()
         {
+            if (_serialized is Dictionary d)
+            {
+                return d;
+            }
+
 #pragma warning disable LAA1002
             return new Bencodex.Types.Dictionary(_worlds.Select(kv =>
 #pragma warning restore LAA1002
@@ -239,28 +268,51 @@ namespace Nekoyume.Model
 
         public bool TryAddWorld(WorldSheet.Row worldRow, out World world)
         {
-            if (worldRow is null ||
-                _worlds.ContainsKey(worldRow.Id))
+            if (worldRow is null || (_serialized is Dictionary d
+                    ? d.ContainsKey((IKey)worldRow.Id.Serialize())
+                    : _worlds.ContainsKey(worldRow.Id)))
             {
                 world = default;
                 return false;
             }
 
             world = new World(worldRow);
-            _worlds.Add(worldRow.Id, world);
+
+            if (_serialized is Dictionary s)
+            {
+                var key = (IKey)worldRow.Id.Serialize();
+                _serialized = (Dictionary)s.Add(key, world.Serialize());
+            }
+            else
+            {
+                worlds.Add(worldRow.Id, world);
+            }
+
             return true;
         }
 
         public void UpdateWorld(WorldSheet.Row worldRow)
         {
-            var originWorld = _worlds[worldRow.Id];
+            var key = (IKey)worldRow.Id.Serialize();
+            var originWorld = _serialized is Dictionary d
+                ? new World((Dictionary)d[key])
+                : _worlds[worldRow.Id];
+
             var world = new World(
                 worldRow,
                 originWorld.UnlockedBlockIndex,
                 originWorld.StageClearedBlockIndex,
                 originWorld.StageClearedId
             );
-            _worlds[worldRow.Id] = world;
+
+            if (_serialized is Dictionary s)
+            {
+                _serialized = (Dictionary)s.SetItem(key, world.Serialize());
+            }
+            else
+            {
+                _worlds[worldRow.Id] = world;
+            }
         }
 
         /// <summary>
@@ -272,25 +324,25 @@ namespace Nekoyume.Model
         /// <exception cref="KeyNotFoundException"></exception>
         public bool TryGetWorld(int worldId, out World world)
         {
-            if (!_worlds.ContainsKey(worldId))
+            if (!worlds.ContainsKey(worldId))
             {
                 world = default;
                 return false;
             }
 
-            world = _worlds[worldId];
+            world = worlds[worldId];
             return true;
         }
 
         public bool TryGetFirstWorld(out World world)
         {
-            if (_worlds.Count == 0)
+            if (worlds.Count == 0)
             {
                 world = default;
                 return false;
             }
 
-            world = _worlds.OrderBy(w => w.Key).First().Value;
+            world = worlds.OrderBy(w => w.Key).First().Value;
             return true;
         }
 
@@ -302,15 +354,17 @@ namespace Nekoyume.Model
         /// <returns></returns>
         public bool TryGetWorldByStageId(int stageId, out World world)
         {
-            var worlds = _worlds.Values.Where(e => e.ContainsStageId(stageId)).ToList();
-            if (worlds.Count == 0)
+            foreach (World w in worlds.Values)
             {
-                world = default;
-                return false;
+                if (w.ContainsStageId(stageId))
+                {
+                    world = w;
+                    return true;
+                }
             }
 
-            world = worlds[0];
-            return true;
+            world = default;
+            return false;
         }
 
         /// <summary>
@@ -322,7 +376,7 @@ namespace Nekoyume.Model
         {
             try
             {
-                world = _worlds.Values
+                world = worlds.Values
                     .Where(e => e.IsStageCleared)
                     .OrderByDescending(e => e.StageClearedBlockIndex)
                     .First();
@@ -342,7 +396,7 @@ namespace Nekoyume.Model
         /// <returns></returns>
         public bool TryGetLastClearedStageId(out int stageId)
         {
-            var clearedStages = _worlds.Values
+            var clearedStages = worlds.Values
                 .Where(world => world.Id < GameConfig.MimisbrunnrWorldId &&
                                 world.IsStageCleared)
                 .ToList();
@@ -352,14 +406,14 @@ namespace Nekoyume.Model
                 stageId = clearedStages.Max(world => world.StageClearedId);
                 return true;
             }
-            
+
             stageId = default;
             return false;
         }
 
         public bool TryGetLastClearedMimisbrunnrStageId(out int stageId)
         {
-            var clearedStages = _worlds.Values
+            var clearedStages = worlds.Values
                 .Where(world => world.Id == GameConfig.MimisbrunnrWorldId &&
                                 world.IsStageCleared)
                 .ToList();
@@ -390,12 +444,12 @@ namespace Nekoyume.Model
             WorldSheet worldSheet,
             WorldUnlockSheet worldUnlockSheet)
         {
-            if (!_worlds.ContainsKey(worldId))
+            if (!worlds.ContainsKey(worldId))
             {
                 return;
             }
 
-            var world = _worlds[worldId];
+            var world = worlds[worldId];
             if (stageId < world.StageBegin ||
                 stageId > world.StageEnd)
             {
@@ -417,7 +471,7 @@ namespace Nekoyume.Model
                 return;
             }
 
-            _worlds[worldId] = new World(world, clearedAt, stageId);
+            worlds[worldId] = new World(world, clearedAt, stageId);
         }
 
         public void AddAndUnlockNewWorld(WorldSheet.Row worldRow, long unlockedAt, WorldSheet worldSheet)
@@ -426,7 +480,7 @@ namespace Nekoyume.Model
             if (IsStageCleared(worldRow.StageBegin - 1))
             {
                 var world = new World(worldRow);
-                _worlds.Add(worldId, world);
+                worlds.Add(worldId, world);
                 UnlockWorld(worldId, unlockedAt, worldSheet);
             }
             else
@@ -460,7 +514,7 @@ namespace Nekoyume.Model
             if (succeed)
             {
                 var world = new World(worldRow);
-                _worlds.Add(worldId, world);
+                worlds.Add(worldId, world);
                 UnlockWorld(worldId, unlockedAt, worldSheet);
             }
             else
@@ -479,9 +533,9 @@ namespace Nekoyume.Model
         public void UnlockWorld(int worldId, long unlockedAt, WorldSheet worldSheet)
         {
             World world;
-            if (_worlds.ContainsKey(worldId))
+            if (worlds.ContainsKey(worldId))
             {
-                world = _worlds[worldId];
+                world = worlds[worldId];
             }
             else if (!worldSheet.TryGetValue(worldId, out var worldRow) ||
                      !TryAddWorld(worldRow, out world))
@@ -494,7 +548,12 @@ namespace Nekoyume.Model
                 return;
             }
 
-            _worlds[worldId] = new World(world, unlockedAt);
+            worlds[worldId] = new World(world, unlockedAt);
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("serialized", _codec.Encode(Serialize()));
         }
     }
 
