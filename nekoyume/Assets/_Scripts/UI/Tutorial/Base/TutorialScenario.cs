@@ -15,6 +15,7 @@ namespace Nekoyume.UI
     {
         public int id;
         public int nextId;
+        public int checkPointId;
         public ScenarioData data;
     }
 

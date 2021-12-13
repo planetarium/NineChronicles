@@ -186,7 +186,7 @@ namespace Nekoyume.Game
 
         protected override void OnDestroy()
         {
-            ActionManager.Dispose();
+            ActionManager?.Dispose();
             base.OnDestroy();
         }
 
