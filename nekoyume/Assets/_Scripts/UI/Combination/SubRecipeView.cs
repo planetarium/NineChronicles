@@ -11,7 +11,6 @@ using System;
 using System.Globalization;
 using Nekoyume.State;
 using System.Numerics;
-using UniRx;
 using UnityEngine.UI;
 using Nekoyume.Model.Item;
 using Libplanet;
@@ -22,6 +21,8 @@ using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class SubRecipeView : MonoBehaviour
     {
         public struct RecipeInfo
@@ -87,15 +88,17 @@ namespace Nekoyume.UI
                 CombineCurrentRecipe();
             });
 
-            button.OnClick = state =>
-            {
-                if (state == ConditionalButton.State.Disabled)
+            button.OnClickSubject
+                .Subscribe(state =>
                 {
-                    return;
-                }
+                    if (state == ConditionalButton.State.Disabled)
+                    {
+                        return;
+                    }
 
-                CombineCurrentRecipe();
-            };
+                    CombineCurrentRecipe();
+                })
+                .AddTo(gameObject);
         }
 
         public void SetData(SheetRow<int> recipeRow, List<int> subrecipeIds)
@@ -259,9 +262,9 @@ namespace Nekoyume.UI
             };
             _selectedRecipeInfo = recipeInfo;
 
-            var submittable = CheckSubmittable(out _, out _);
-            button.SetCost((int) _selectedRecipeInfo.CostNCG);
-            button.UpdateObjects();
+            var submittable = CheckMaterialAndSlot();
+            button.SetCost(ConditionalCostButton.CostType.NCG, (int) _selectedRecipeInfo.CostNCG);
+            button.Interactable = submittable;
         }
 
         private void SetOptions(
@@ -320,6 +323,22 @@ namespace Nekoyume.UI
             }
 
             CombinationActionSubject.OnNext(_selectedRecipeInfo);
+        }
+
+        private bool CheckMaterialAndSlot()
+        {
+            if (!CheckMaterial(_selectedRecipeInfo.Materials))
+            {
+                return false;
+            }
+
+            var slots = Widget.Find<CombinationSlotsPopup>();
+            if (!slots.TryGetEmptyCombinationSlot(out var _))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public bool CheckSubmittable(out string errorMessage, out int slotIndex)

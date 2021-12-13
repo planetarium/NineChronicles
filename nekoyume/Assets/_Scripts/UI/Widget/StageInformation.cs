@@ -50,7 +50,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI closeButtonText;
 
         [SerializeField]
-        private SubmitButton submitButton;
+        private ConditionalButton submitButton;
 
         [SerializeField]
         private WorldMapWorld world;
@@ -77,7 +77,7 @@ namespace Nekoyume.UI
             base.Initialize();
             monstersAreaText.text = L10nManager.Localize("UI_WORLD_MAP_MONSTERS");
             rewardsAreaText.text = L10nManager.Localize("UI_REWARDS");
-            submitButton.SetSubmitText(L10nManager.Localize("UI_WORLD_MAP_ENTER"));
+            submitButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
 
             var tooltip = Find<ItemInformationTooltip>();
             foreach (var view in rewardsAreaItemViews)
@@ -102,7 +102,7 @@ namespace Nekoyume.UI
                 }).AddTo(gameObject);
             }
 
-            submitButton.OnSubmitClick
+            submitButton.OnSubmitSubject
                 .Subscribe(_ => GoToPreparation())
                 .AddTo(gameObject);
         }
@@ -145,6 +145,8 @@ namespace Nekoyume.UI
             world.Set(worldRow);
             var questStageId = Game.Game.instance.States
                 .CurrentAvatarState.questList
+                .EnumerateLazyQuestStates()
+                .Select(l => l.State)
                 .OfType<WorldQuest>()
                 .Where(x => !x.Complete)
                 .OrderBy(x => x.Goal)
@@ -205,7 +207,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            submitButton.SetSubmittable(isSubmittable);
+            submitButton.Interactable = isSubmittable;
 
             var stageWaveSheet = Game.Game.instance.TableSheets.StageWaveSheet;
             stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);

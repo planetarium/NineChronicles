@@ -6,343 +6,343 @@ filter: Linear,Linear
 repeat: none
 ankle_L
   rotate: true
-  xy: 491, 418
+  xy: 309, 494
   size: 13, 19
   orig: 13, 19
   offset: 0, 0
   index: -1
 ankle_L_02
-  rotate: true
-  xy: 13, 3
+  rotate: false
+  xy: 261, 496
   size: 22, 11
   orig: 22, 11
   offset: 0, 0
   index: -1
 ankle_R
-  rotate: true
-  xy: 191, 192
+  rotate: false
+  xy: 285, 496
   size: 22, 11
   orig: 22, 11
   offset: 0, 0
   index: -1
 arm_L
-  rotate: false
-  xy: 208, 213
+  rotate: true
+  xy: 261, 462
   size: 32, 39
   orig: 32, 39
   offset: 0, 0
   index: -1
 arm_R
-  rotate: false
-  xy: 140, 160
+  rotate: true
+  xy: 222, 466
   size: 29, 37
   orig: 29, 37
   offset: 0, 0
   index: -1
 body
   rotate: true
-  xy: 30, 11
+  xy: 134, 366
   size: 58, 68
   orig: 58, 68
   offset: 0, 0
   index: -1
 body_01
   rotate: true
-  xy: 124, 305
+  xy: 160, 274
   size: 75, 97
   orig: 75, 97
   offset: 0, 0
   index: -1
 body_02
-  rotate: false
-  xy: 100, 216
+  rotate: true
+  xy: 44, 428
   size: 40, 83
   orig: 40, 83
   offset: 0, 0
   index: -1
 body_03
   rotate: false
-  xy: 2, 218
+  xy: 2, 213
   size: 96, 81
   orig: 96, 81
   offset: 0, 0
   index: -1
 body_04
-  rotate: false
-  xy: 300, 310
+  rotate: true
+  xy: 353, 457
   size: 32, 65
   orig: 32, 65
   offset: 0, 0
   index: -1
 body_05
   rotate: true
-  xy: 223, 309
+  xy: 346, 328
   size: 66, 75
   orig: 66, 75
   offset: 0, 0
   index: -1
 ear_0001_L
-  rotate: false
-  xy: 208, 254
+  rotate: true
+  xy: 302, 460
   size: 32, 49
   orig: 32, 49
   offset: 0, 0
   index: -1
 ear_0001_R
-  rotate: false
-  xy: 242, 219
+  rotate: true
+  xy: 174, 468
   size: 28, 46
   orig: 28, 46
   offset: 0, 0
   index: -1
 effect_02
   rotate: false
-  xy: 2, 301
+  xy: 342, 247
   size: 120, 79
   orig: 120, 79
   offset: 0, 0
   index: -1
 emotion
-  rotate: false
-  xy: 2, 2
+  rotate: true
+  xy: 153, 498
   size: 9, 23
   orig: 9, 23
   offset: 0, 0
   index: -1
 eye_04
-  rotate: true
-  xy: 272, 233
+  rotate: false
+  xy: 178, 498
   size: 32, 9
   orig: 32, 9
   offset: 0, 0
   index: -1
 eye_red_01
-  rotate: true
-  xy: 171, 163
+  rotate: false
+  xy: 449, 489
   size: 34, 18
   orig: 34, 18
   offset: 0, 0
   index: -1
 eye_red_02
   rotate: false
-  xy: 300, 295
+  xy: 330, 494
   size: 32, 13
   orig: 32, 13
   offset: 0, 0
   index: -1
 eye_red_03
-  rotate: true
-  xy: 500, 480
+  rotate: false
+  xy: 229, 497
   size: 30, 10
   orig: 30, 10
   offset: 0, 0
   index: -1
 eyebrow_01
-  rotate: true
-  xy: 500, 442
+  rotate: false
+  xy: 75, 499
   size: 36, 8
   orig: 36, 8
   offset: 0, 0
   index: -1
 eyebrow_02
-  rotate: true
-  xy: 284, 270
+  rotate: false
+  xy: 364, 493
   size: 37, 14
   orig: 37, 14
   offset: 0, 0
   index: -1
 eyebrow_03
   rotate: false
-  xy: 450, 370
+  xy: 113, 499
   size: 38, 8
   orig: 38, 8
   offset: 0, 0
   index: -1
 face
-  rotate: false
-  xy: 142, 227
+  rotate: true
+  xy: 268, 345
   size: 64, 76
   orig: 64, 76
   offset: 0, 0
   index: -1
 faceeffect
   rotate: false
-  xy: 242, 267
+  xy: 2, 432
   size: 40, 40
   orig: 40, 40
   offset: 0, 0
   index: -1
 hair_brown_01
   rotate: true
-  xy: 142, 199
+  xy: 2, 474
   size: 26, 47
   orig: 26, 47
   offset: 0, 0
   index: -1
 hair_brown_02
-  rotate: true
-  xy: 399, 313
+  rotate: false
+  xy: 294, 411
   size: 50, 47
   orig: 50, 47
   offset: 0, 0
   index: -1
 hair_brown_03
   rotate: true
-  xy: 236, 377
+  xy: 129, 426
   size: 40, 91
   orig: 40, 91
   offset: 0, 0
   index: -1
 hair_brown_04
-  rotate: false
-  xy: 30, 71
+  rotate: true
+  xy: 2, 299
   size: 67, 77
   orig: 67, 77
   offset: 0, 0
   index: -1
 hair_brown_05
   rotate: false
-  xy: 2, 150
+  xy: 423, 328
   size: 84, 66
   orig: 84, 66
   offset: 0, 0
   index: -1
 hair_brown_06
-  rotate: false
-  xy: 334, 429
+  rotate: true
+  xy: 259, 249
   size: 94, 81
   orig: 94, 81
   offset: 0, 0
   index: -1
 hand_L
   rotate: true
-  xy: 300, 277
+  xy: 403, 491
   size: 16, 24
   orig: 16, 24
   offset: 0, 0
   index: -1
 hand_L_02
   rotate: true
-  xy: 191, 216
+  xy: 212, 498
   size: 9, 15
   orig: 9, 15
   offset: 0, 0
   index: -1
 hand_R
-  rotate: false
-  xy: 491, 398
+  rotate: true
+  xy: 429, 490
   size: 17, 18
   orig: 17, 18
   offset: 0, 0
   index: -1
 leg_L
-  rotate: false
-  xy: 99, 78
+  rotate: true
+  xy: 222, 415
   size: 45, 70
   orig: 45, 70
   offset: 0, 0
   index: -1
 leg_L_02
-  rotate: false
-  xy: 100, 11
+  rotate: true
+  xy: 2, 372
   size: 54, 65
   orig: 54, 65
   offset: 0, 0
   index: -1
 leg_R
-  rotate: false
-  xy: 88, 150
+  rotate: true
+  xy: 346, 405
   size: 50, 64
   orig: 50, 64
   offset: 0, 0
   index: -1
 mouth_01
   rotate: false
-  xy: 491, 391
+  xy: 21, 502
   size: 19, 5
   orig: 19, 5
   offset: 0, 0
   index: -1
 mouth_02
   rotate: false
-  xy: 491, 384
+  xy: 42, 502
   size: 19, 5
   orig: 19, 5
   offset: 0, 0
   index: -1
 mouth_03
   rotate: false
-  xy: 500, 434
+  xy: 63, 501
   size: 10, 6
   orig: 10, 6
   offset: 0, 0
   index: -1
 mouth_04
   rotate: false
-  xy: 399, 307
+  xy: 9, 503
   size: 10, 4
   orig: 10, 4
   offset: 0, 0
   index: -1
 mouth_05
   rotate: false
-  xy: 223, 377
+  xy: 2, 504
   size: 5, 3
   orig: 5, 3
   offset: 0, 0
   index: -1
 shadow
-  rotate: true
-  xy: 2, 27
+  rotate: false
+  xy: 51, 470
   size: 121, 26
   orig: 121, 26
   offset: 0, 0
   index: -1
 shoulder_L
-  rotate: false
-  xy: 398, 365
+  rotate: true
+  xy: 412, 396
   size: 50, 62
   orig: 50, 62
   offset: 0, 0
   index: -1
 shoulder_R
-  rotate: false
-  xy: 450, 380
+  rotate: true
+  xy: 420, 448
   size: 39, 51
   orig: 39, 51
   offset: 0, 0
   index: -1
 tail_0002
   rotate: false
-  xy: 236, 419
+  xy: 100, 181
   size: 96, 91
   orig: 96, 91
   offset: 0, 0
   index: -1
 thigh_L
   rotate: false
-  xy: 334, 365
+  xy: 204, 351
   size: 62, 62
   orig: 62, 62
   offset: 0, 0
   index: -1
 thigh_L_02
-  rotate: false
-  xy: 430, 433
+  rotate: true
+  xy: 81, 296
   size: 68, 77
   orig: 68, 77
   offset: 0, 0
   index: -1
 thigh_R
   rotate: false
-  xy: 334, 307
+  xy: 69, 368
   size: 63, 56
   orig: 63, 56
   offset: 0, 0
   index: -1
 weapon
   rotate: false
-  xy: 2, 382
+  xy: 198, 117
   size: 232, 128
   orig: 232, 128
   offset: 0, 0

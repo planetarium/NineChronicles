@@ -654,7 +654,7 @@ namespace Nekoyume.UI
             var eventName = $"Unity/Stage Exit {eventKey}";
             Analyzer.Instance.Track(eventName, props);
 
-            Find<Battle>().Close();
+            Find<Battle>().Close(true);
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
         }

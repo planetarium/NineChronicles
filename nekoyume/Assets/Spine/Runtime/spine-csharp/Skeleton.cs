@@ -1,31 +1,30 @@
 /******************************************************************************
- * Spine Runtimes Software License v2.5
+ * Spine Runtimes License Agreement
+ * Last updated January 1, 2020. Replaces all prior versions.
  *
- * Copyright (c) 2013-2016, Esoteric Software
- * All rights reserved.
+ * Copyright (c) 2013-2020, Esoteric Software LLC
  *
- * You are granted a perpetual, non-exclusive, non-sublicensable, and
- * non-transferable license to use, install, execute, and perform the Spine
- * Runtimes software and derivative works solely for personal or internal
- * use. Without the written permission of Esoteric Software (see Section 2 of
- * the Spine Software License Agreement), you may not (a) modify, translate,
- * adapt, or develop new applications using the Spine Runtimes or otherwise
- * create derivative works or improvements of the Spine Runtimes or (b) remove,
- * delete, alter, or obscure any trademarks or any copyright, trademark, patent,
- * or other intellectual property or proprietary rights notices on or in the
- * Software, including any copy thereof. Redistributions in binary or source
- * form must include this license and terms.
+ * Integration of the Spine Runtimes into software or otherwise creating
+ * derivative works of the Spine Runtimes is permitted under the terms and
+ * conditions of Section 2 of the Spine Editor License Agreement:
+ * http://esotericsoftware.com/spine-editor-license
  *
- * THIS SOFTWARE IS PROVIDED BY ESOTERIC SOFTWARE "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
- * EVENT SHALL ESOTERIC SOFTWARE BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, BUSINESS INTERRUPTION, OR LOSS OF
- * USE, DATA, OR PROFITS) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
- * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * Otherwise, it is permitted to integrate the Spine Runtimes into software
+ * or otherwise create derivative works of the Spine Runtimes (collectively,
+ * "Products"), provided that each user of the Products must obtain their own
+ * Spine Editor license and redistribution of the Products in any form must
+ * include this license and copyright notice.
+ *
+ * THE SPINE RUNTIMES ARE PROVIDED BY ESOTERIC SOFTWARE LLC "AS IS" AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ESOTERIC SOFTWARE LLC BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES,
+ * BUSINESS INTERRUPTION, OR LOSS OF USE, DATA, OR PROFITS) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THE SPINE RUNTIMES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
 
 using System;
@@ -45,7 +44,7 @@ namespace Spine {
 		internal Skin skin;
 		internal float r = 1, g = 1, b = 1, a = 1;
 		internal float time;
-		internal float scaleX = 1, scaleY = 1;
+		private float scaleX = 1, scaleY = 1;
 		internal float x, y;
 
 		public SkeletonData Data { get { return data; } }
@@ -56,7 +55,7 @@ namespace Spine {
 		public ExposedList<IkConstraint> IkConstraints { get { return ikConstraints; } }
 		public ExposedList<PathConstraint> PathConstraints { get { return pathConstraints; } }
 		public ExposedList<TransformConstraint> TransformConstraints { get { return transformConstraints; } }
-		public Skin Skin { get { return skin; } set { skin = value; } }
+		public Skin Skin { get { return skin; } set { SetSkin(value); } }
 		public float R { get { return r; } set { r = value; } }
 		public float G { get { return g; } set { g = value; } }
 		public float B { get { return b; } set { b = value; } }
@@ -65,7 +64,7 @@ namespace Spine {
 		public float X { get { return x; } set { x = value; } }
 		public float Y { get { return y; } set { y = value; } }
 		public float ScaleX { get { return scaleX; } set { scaleX = value; } }
-		public float ScaleY { get { return scaleY; } set { scaleY = value; } }
+		public float ScaleY { get { return scaleY * (Bone.yDown ? -1 : 1); } set { scaleY = value; } }
 
 		[Obsolete("Use ScaleX instead. FlipX is when ScaleX is negative.")]
 		public bool FlipX { get { return scaleX < 0; } set { scaleX = value ? -1f : 1f; } }
@@ -85,7 +84,7 @@ namespace Spine {
 			foreach (BoneData boneData in data.bones) {
 				Bone bone;
 				if (boneData.parent == null) {
-					bone = new Bone(boneData, this, null);				
+					bone = new Bone(boneData, this, null);
 				} else {
 					Bone parent = bones.Items[boneData.parent.index];
 					bone = new Bone(boneData, this, parent);
@@ -119,21 +118,36 @@ namespace Spine {
 			UpdateWorldTransform();
 		}
 
-		/// <summary>Caches information about bones and constraints. Must be called if bones, constraints or weighted path attachments are added
-		/// or removed.</summary>
+		/// <summary>Caches information about bones and constraints. Must be called if the <see cref="Skin"/> is modified or if bones, constraints, or
+		/// constraints, or weighted path attachments are added or removed.</summary>
 		public void UpdateCache () {
 			var updateCache = this.updateCache;
 			updateCache.Clear();
 			this.updateCacheReset.Clear();
 
+			int boneCount = this.bones.Items.Length;
 			var bones = this.bones;
-			for (int i = 0, n = bones.Count; i < n; i++)
-				bones.Items[i].sorted = false;
+			for (int i = 0; i < boneCount; i++) {
+				Bone bone = bones.Items[i];
+				bone.sorted = bone.data.skinRequired;
+				bone.active = !bone.sorted;
+			}
+			if (skin != null) {
+				Object[] skinBones = skin.bones.Items;
+				for (int i = 0, n = skin.bones.Count; i < n; i++) {
+					Bone bone = (Bone)bones.Items[((BoneData)skinBones[i]).index];
+					do {
+						bone.sorted = false;
+						bone.active = true;
+						bone = bone.parent;
+					} while (bone != null);
+				}
+			}
 
+			int ikCount = this.ikConstraints.Count, transformCount = this.transformConstraints.Count, pathCount = this.pathConstraints.Count;
 			var ikConstraints = this.ikConstraints;
 			var transformConstraints = this.transformConstraints;
 			var pathConstraints = this.pathConstraints;
-			int ikCount = ikConstraints.Count, transformCount = transformConstraints.Count, pathCount = pathConstraints.Count;
 			int constraintCount = ikCount + transformCount + pathCount;
 			//outer:
 			for (int i = 0; i < constraintCount; i++) {
@@ -161,11 +175,15 @@ namespace Spine {
 				continue_outer: {}
 			}
 
-			for (int i = 0, n = bones.Count; i < n; i++)
+			for (int i = 0; i < boneCount; i++)
 				SortBone(bones.Items[i]);
 		}
 
 		private void SortIkConstraint (IkConstraint constraint) {
+			constraint.active = constraint.target.active
+				&& (!constraint.data.skinRequired || (skin != null && skin.constraints.Contains(constraint.data)));
+			if (!constraint.active) return;
+
 			Bone target = constraint.target;
 			SortBone(target);
 
@@ -186,14 +204,16 @@ namespace Spine {
 		}
 
 		private void SortPathConstraint (PathConstraint constraint) {
+			constraint.active = constraint.target.bone.active
+				&& (!constraint.data.skinRequired || (skin != null && skin.constraints.Contains(constraint.data)));
+			if (!constraint.active) return;
+
 			Slot slot = constraint.target;
 			int slotIndex = slot.data.index;
 			Bone slotBone = slot.bone;
 			if (skin != null) SortPathConstraintAttachment(skin, slotIndex, slotBone);
 			if (data.defaultSkin != null && data.defaultSkin != skin)
 				SortPathConstraintAttachment(data.defaultSkin, slotIndex, slotBone);
-			for (int ii = 0, nn = data.skins.Count; ii < nn; ii++)
-				SortPathConstraintAttachment(data.skins.Items[ii], slotIndex, slotBone);
 
 			Attachment attachment = slot.attachment;
 			if (attachment is PathAttachment) SortPathConstraintAttachment(attachment, slotBone);
@@ -212,6 +232,10 @@ namespace Spine {
 		}
 
 		private void SortTransformConstraint (TransformConstraint constraint) {
+			constraint.active = constraint.target.active
+				&& (!constraint.data.skinRequired || (skin != null && skin.constraints.Contains(constraint.data)));
+			if (!constraint.active) return;
+
 			SortBone(constraint.target);
 
 			var constrained = constraint.bones;
@@ -236,8 +260,10 @@ namespace Spine {
 		}
 
 		private void SortPathConstraintAttachment (Skin skin, int slotIndex, Bone slotBone) {
-			foreach (var entry in skin.Attachments)
-				if (entry.Key.slotIndex == slotIndex) SortPathConstraintAttachment(entry.Value, slotBone);
+			foreach (var entryObj in skin.Attachments.Keys) {
+				var entry = (Skin.SkinEntry)entryObj;
+				if (entry.SlotIndex == slotIndex) SortPathConstraintAttachment(entry.Attachment, slotBone);
+			}
 		}
 
 		private void SortPathConstraintAttachment (Attachment attachment, Bone slotBone) {
@@ -268,6 +294,7 @@ namespace Spine {
 			var bonesItems = bones.Items;
 			for (int i = 0, n = bones.Count; i < n; i++) {
 				Bone bone = bonesItems[i];
+				if (!bone.active) continue;
 				if (bone.sorted) SortReset(bone.children);
 				bone.sorted = false;
 			}
@@ -294,7 +321,8 @@ namespace Spine {
 		}
 
 		/// <summary>
-		/// Updates the world transform for each bone and applies all constraints. The root bone will be temporarily parented to the specified bone.
+		/// Temporarily sets the root bone as a child of the specified bone, then updates the world transform for each bone and applies
+		/// all constraints.
 	 	/// </summary>
 		public void UpdateWorldTransform (Bone parent) {
 			// This partial update avoids computing the world transform for constrained bones when 1) the bone is not updated
@@ -314,8 +342,7 @@ namespace Spine {
 				bone.appliedValid = true;
 			}
 
-			// Apply the parent bone transform to the root bone. The root bone
-			// always inherits scale, rotation and reflection.
+			// Apply the parent bone transform to the root bone. The root bone always inherits scale, rotation and reflection.
 			Bone rootBone = this.RootBone;
 			float pa = parent.a, pb = parent.b, pc = parent.c, pd = parent.d;
 			rootBone.worldX = pa * x + pb * y + parent.worldX;
@@ -357,6 +384,7 @@ namespace Spine {
 			for (int i = 0, n = ikConstraints.Count; i < n; i++) {
 				IkConstraint constraint = ikConstraintsItems[i];
 				constraint.mix = constraint.data.mix;
+				constraint.softness = constraint.data.softness;
 				constraint.bendDirection = constraint.data.bendDirection;
 				constraint.compress = constraint.data.compress;
 				constraint.stretch = constraint.data.stretch;
@@ -446,15 +474,20 @@ namespace Spine {
 		}
 
 		/// <summary>
-		/// <para>Attachments from the new skin are attached if the corresponding attachment from the old skin was attached. 
-		/// If there was no old skin, each slot's setup mode attachment is attached from the new skin.</para>
-		/// <para>After changing the skin, the visible attachments can be reset to those attached in the setup pose by calling 
-		/// <see cref="Skeleton.SetSlotsToSetupPose()"/>. 
-		/// Also, often <see cref="AnimationState.Apply(Skeleton)"/> is called before the next time the 
+		/// <para>Sets the skin used to look up attachments before looking in the <see cref="SkeletonData.DefaultSkin"/>. If the
+		/// skin is changed, <see cref="UpdateCache()"/> is called.
+		/// </para>
+	 	/// <para>Attachments from the new skin are attached if the corresponding attachment from the old skin was attached.
+		/// If there was no old skin, each slot's setup mode attachment is attached from the new skin.
+		/// </para>
+		/// <para>After changing the skin, the visible attachments can be reset to those attached in the setup pose by calling
+		/// <see cref="Skeleton.SetSlotsToSetupPose()"/>.
+		/// Also, often <see cref="AnimationState.Apply(Skeleton)"/> is called before the next time the
 		/// skeleton is rendered to allow any attachment keys in the current animation(s) to hide or show attachments from the new skin.</para>
 		/// </summary>
 		/// <param name="newSkin">May be null.</param>
 		public void SetSkin (Skin newSkin) {
+			if (newSkin == skin) return;
 			if (newSkin != null) {
 				if (skin != null)
 					newSkin.AttachAll(this, skin);
@@ -471,6 +504,7 @@ namespace Spine {
 				}
 			}
 			skin = newSkin;
+			UpdateCache();
 		}
 
 		/// <summary>Finds an attachment by looking in the {@link #skin} and {@link SkeletonData#defaultSkin} using the slot name and attachment name.</summary>
@@ -491,7 +525,7 @@ namespace Spine {
 		}
 
 		/// <summary>A convenience method to set an attachment by finding the slot with FindSlot, finding the attachment with GetAttachment, then setting the slot's slot.Attachment.</summary>
-		/// <param name="attachmentName">May be null.</param>
+		/// <param name="attachmentName">May be null to clear the slot's attachment.</param>
 		public void SetAttachment (string slotName, string attachmentName) {
 			if (slotName == null) throw new ArgumentNullException("slotName", "slotName cannot be null.");
 			ExposedList<Slot> slots = this.slots;
@@ -509,7 +543,7 @@ namespace Spine {
 			}
 			throw new Exception("Slot not found: " + slotName);
 		}
-			
+
 		/// <returns>May be null.</returns>
 		public IkConstraint FindIkConstraint (string constraintName) {
 			if (constraintName == null) throw new ArgumentNullException("constraintName", "constraintName cannot be null.");
@@ -527,7 +561,7 @@ namespace Spine {
 			ExposedList<TransformConstraint> transformConstraints = this.transformConstraints;
 			for (int i = 0, n = transformConstraints.Count; i < n; i++) {
 				TransformConstraint transformConstraint = transformConstraints.Items[i];
-				if (transformConstraint.data.name == constraintName) return transformConstraint;
+				if (transformConstraint.data.Name == constraintName) return transformConstraint;
 			}
 			return null;
 		}
@@ -538,7 +572,7 @@ namespace Spine {
 			ExposedList<PathConstraint> pathConstraints = this.pathConstraints;
 			for (int i = 0, n = pathConstraints.Count; i < n; i++) {
 				PathConstraint constraint = pathConstraints.Items[i];
-				if (constraint.data.name.Equals(constraintName)) return constraint;
+				if (constraint.data.Name.Equals(constraintName)) return constraint;
 			}
 			return null;
 		}
@@ -558,8 +592,9 @@ namespace Spine {
 			temp = temp ?? new float[8];
 			var drawOrderItems = this.drawOrder.Items;
 			float minX = int.MaxValue, minY = int.MaxValue, maxX = int.MinValue, maxY = int.MinValue;
-			for (int i = 0, n = this.drawOrder.Count; i < n; i++) {
+			for (int i = 0, n = drawOrderItems.Length; i < n; i++) {
 				Slot slot = drawOrderItems[i];
+				if (!slot.bone.active) continue;
 				int verticesLength = 0;
 				float[] vertices = null;
 				Attachment attachment = slot.attachment;

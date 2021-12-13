@@ -17,6 +17,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Scroller;
     using UniRx;
     public class Menu : Widget
     {
@@ -70,9 +71,6 @@ namespace Nekoyume.UI
 
         private Coroutine _coLazyClose;
 
-        public Image combinationImage;
-        public Image hasSpriteImage;
-
         protected override void Awake()
         {
             base.Awake();
@@ -115,7 +113,10 @@ namespace Nekoyume.UI
             var requiredCost = stageRow.CostAP;
             if (States.Instance.CurrentAvatarState.actionPoint < requiredCost)
             {
-                OneLineSystem.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT"));
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("ERROR_ACTION_POINT"),
+                    NotificationCell.NotificationType.Alert);
                 return;
             }
 
@@ -296,6 +297,7 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<RankingBoard>().Show();
+            Analyzer.Instance.Track("Unity/Enter arena page");
             AudioController.PlayClick();
         }
 
@@ -314,7 +316,9 @@ namespace Nekoyume.UI
                     row => row.Id == worldId);
             if (worldRow is null)
             {
-                NotificationSystem.Push(MailType.System, L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"));
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"),
+                    NotificationCell.NotificationType.Information);
                 return;
             }
 
@@ -395,7 +399,6 @@ namespace Nekoyume.UI
         private void PlayTutorial()
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
-            var tutorialProgress = tutorialController.GetTutorialProgress();
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
             var nextStageId = avatarState.worldInformation != null &&
                               avatarState.worldInformation.TryGetLastClearedStageId(out var stageId)
@@ -408,42 +411,24 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (tutorialProgress <= 1)
+            if (tutorialController.GetTutorialProgress() < 2)
             {
-                if (nextStageId <= 3)
+                if (nextStageId < 4)
                 {
                     tutorialController.Play(1);
                     return;
                 }
-                else
-                {
-                    tutorialController.SaveTutorialProgress(1);
-                    tutorialProgress = 1;
-                }
             }
 
-            if (tutorialProgress == 1)
+            if (tutorialController.GetTutorialProgress() == 1)
             {
-                var recipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
-                    .FirstOrDefault();
-                if (recipeRow is null)
-                {
-                    Debug.LogError("EquipmentItemRecipeSheet is empty");
-                    return;
-                }
+                tutorialController.SaveTutorialProgress(2);
+                tutorialController.Play(2);
+            }
 
-                if (!States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.MaterialId, recipeRow.MaterialCount))
-                {
-                    tutorialController.SaveTutorialProgress(2);
-                    if (!Game.Game.instance.Stage.TutorialController.IsPlaying)
-                    {
-                        HelpTooltip.HelpMe(100001, true);
-                    }
-                }
-                else
-                {
-                    tutorialController.Play(2);
-                }
+            if (!Game.Game.instance.Stage.TutorialController.IsPlaying)
+            {
+                HelpTooltip.HelpMe(100001, true);
             }
         }
 

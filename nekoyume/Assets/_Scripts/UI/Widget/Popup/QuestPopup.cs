@@ -94,8 +94,10 @@ namespace Nekoyume.UI
         {
             filterType = (QuestType)state;
 
-            var list = _questList.Value.ToList()
-                .FindAll(e => e.QuestType == (QuestType)state)
+            var list = _questList.Value
+                .EnumerateLazyQuestStates()
+                .Select(l => l.State)
+                .Where(e => e.QuestType == (QuestType)state)
                 .OrderBy(e => e, new QuestOrderComparer())
                 .ToList();
             scroll.UpdateData(list, true);
@@ -143,10 +145,13 @@ namespace Nekoyume.UI
                     QuestType.Craft => craftingButton,
                     QuestType.Exchange => exchangeButton
                 };
-                button.HasNotification.Value = list.Any(quest =>
-                    quest.QuestType == questType &&
-                    quest.Complete &&
-                    quest.isReceivable);
+                button.HasNotification.Value = list
+                    .EnumerateLazyQuestStates()
+                    .Select(l => l.State)
+                    .Any(quest =>
+                        quest.QuestType == questType &&
+                        quest.Complete &&
+                        quest.isReceivable);
             }
         }
     }

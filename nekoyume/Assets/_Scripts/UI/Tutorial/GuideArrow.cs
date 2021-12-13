@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
-using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,27 +8,36 @@ namespace Nekoyume.UI
 {
     public class GuideArrow : TutorialItem
     {
-        [SerializeField] private Material growOutline;
-        [SerializeField] private Material spriteDefault;
+        [SerializeField]
+        private Material growOutline;
+
+        [SerializeField]
+        private List<RectTransform> arrowTransform;
+
         private RectTransform _rectTransform;
         private Animator _arrow;
         private Coroutine _coroutine;
         private Image _cachedImage;
-        private Menu _menu;
 
         private readonly Dictionary<GuideType, int> _guideTypes =
             new Dictionary<GuideType, int>(new GuideTypeEqualityComparer());
 
+        private readonly List<Vector2> _arrowDefaultPositionOffset = new List<Vector2>();
+
         private void Awake()
         {
-            _menu = Widget.Find<Menu>();
             _rectTransform = GetComponent<RectTransform>();
             _arrow = GetComponent<Animator>();
 
-            for (int i = 0; i < (int) GuideType.End; ++i)
+            for (var i = 0; i < (int) GuideType.End; ++i)
             {
                 var type = (GuideType) i;
                 _guideTypes.Add(type, Animator.StringToHash(type.ToString()));
+            }
+
+            foreach (var arrow in arrowTransform)
+            {
+                _arrowDefaultPositionOffset.Add(arrow.anchoredPosition);
             }
         }
 
@@ -53,14 +60,18 @@ namespace Nekoyume.UI
 
                 if (d.guideType != GuideType.Stop)
                 {
-                    Vector3 position = d.target.position;
-                    position = new Vector3(position.x + d.targetPositionOffset.x,
-                        position.y + d.targetPositionOffset.y, position.z);
-                    _rectTransform.position = position;
-
-                    Vector2 sizeDelta = d.target.sizeDelta + d.targetSizeOffset;
-                    _rectTransform.sizeDelta = sizeDelta;
-
+                    for (var i = 0; i < arrowTransform.Count; i++)
+                    {
+                        arrowTransform[i].anchoredPosition =
+                            _arrowDefaultPositionOffset[i] + d.arrowPositionOffset;
+                    }
+                    _rectTransform.anchoredPosition = d.target.anchoredPosition;
+                    _rectTransform.anchorMin = d.target.anchorMin;
+                    _rectTransform.anchorMax = d.target.anchorMax;
+                    _rectTransform.pivot = d.target.pivot;
+                    _rectTransform.position = d.target.position;
+                    _rectTransform.anchoredPosition += d.targetPositionOffset;
+                    _rectTransform.sizeDelta = d.target.sizeDelta + d.targetSizeOffset;
                     if (d.guideType == GuideType.Outline)
                     {
                         ApplyOutline(d.target);
@@ -92,26 +103,12 @@ namespace Nekoyume.UI
         }
 
 
-        private void ApplyOutline(RectTransform target)
+        private void ApplyOutline(Component target)
         {
             _cachedImage = target.GetComponent<Image>();
             if (_cachedImage != null)
             {
                 _cachedImage.material = growOutline;
-            }
-
-            var menu = target.GetComponent<MainMenu>();
-            if (menu != null)
-            {
-                switch (menu.type)
-                {
-                    case MenuType.Combination:
-                        _menu.combinationImage.material = growOutline;
-                        break;
-                    case MenuType.Quest:
-                        _menu.hasSpriteImage.material = growOutline;
-                        break;
-                }
             }
         }
 
@@ -123,9 +120,6 @@ namespace Nekoyume.UI
             {
                 _cachedImage.material = null;
             }
-
-            _menu.combinationImage.material = spriteDefault;
-            _menu.hasSpriteImage.material = spriteDefault;
         }
 
         public void PlaySfx()

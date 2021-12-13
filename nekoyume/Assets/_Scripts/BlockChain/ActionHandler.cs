@@ -8,6 +8,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
@@ -131,7 +132,7 @@ namespace Nekoyume.BlockChain
             }
 
             Game.Game.instance.Stage.AvatarState = null;
-            var questList = avatarState.questList.Where(i => i.Complete && !i.IsPaidInAction).ToList();
+            var questList = avatarState.questList.UnpaidCompleteQuests.ToList();
             if (questList.Count >= 1)
             {
                 if (questList.Count == 1)
@@ -139,13 +140,13 @@ namespace Nekoyume.BlockChain
                     var quest = questList.First();
                     var format = L10nManager.Localize("NOTIFICATION_QUEST_COMPLETE");
                     var msg = string.Format(format, quest.GetContent());
-                    UI.NotificationSystem.Push(MailType.System, msg);
+                    UI.NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Information);
                 }
                 else
                 {
                     var format = L10nManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
                     var msg = string.Format(format, questList.Count);
-                    UI.NotificationSystem.Push(MailType.System, msg);
+                    UI.NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Information);
                 }
             }
 

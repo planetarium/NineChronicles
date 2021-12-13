@@ -121,6 +121,20 @@ namespace Nekoyume.UI
             ReactiveAvatarState.QuestList
                 .Subscribe(SubscribeQuestList)
                 .AddTo(gameObject);
+
+            ReactiveAvatarState.Inventory
+                .Subscribe(_ =>
+                {
+                    if (equipmentSubRecipeView.gameObject.activeSelf)
+                    {
+                        equipmentSubRecipeView.UpdateView();
+                    }
+                    else if (consumableSubRecipeView.gameObject.activeSelf)
+                    {
+                        consumableSubRecipeView.UpdateView();
+                    }
+                })
+                .AddTo(gameObject);
         }
 
         public void Show(int equipmentRecipeId)
@@ -223,6 +237,8 @@ namespace Nekoyume.UI
         private void SubscribeQuestList(QuestList questList)
         {
             var quest = questList?
+                .EnumerateLazyQuestStates()
+                .Select(l => l.State)
                 .OfType<CombinationEquipmentQuest>()
                 .Where(x => !x.Complete)
                 .OrderBy(x => x.StageId)
@@ -246,7 +262,7 @@ namespace Nekoyume.UI
         {
             if (!equipmentSubRecipeView.CheckSubmittable(out var errorMessage, out var slotIndex))
             {
-                OneLineSystem.Push(MailType.System, errorMessage);
+                OneLineSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
                 return;
             }
 
@@ -274,7 +290,7 @@ namespace Nekoyume.UI
         {
             if (!consumableSubRecipeView.CheckSubmittable(out var errorMessage, out var slotIndex))
             {
-                OneLineSystem.Push(MailType.System, errorMessage);
+                OneLineSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
                 return;
             }
 

@@ -132,14 +132,13 @@ namespace Planetarium.Nekoyume.Editor
                     Debug.LogError("ValidationSpineResource() return false");
                     return;
                 }
-                
+
                 Debug.LogWarning("ValidationSpineResource() return false");
             }
 
             CreateAnimationReferenceAssets(skeletonDataAsset);
 
-            var skeletonAnimation =
-                SpineEditorUtilities.EditorInstantiation.InstantiateSkeletonAnimation(
+            var skeletonAnimation = EditorInstantiation.InstantiateSkeletonAnimation(
                     skeletonDataAsset);
             skeletonAnimation.AnimationName = nameof(CharacterAnimation.Type.Idle);
 
@@ -415,7 +414,7 @@ namespace Planetarium.Nekoyume.Editor
             foreach (var animation in skeletonData.Animations)
             {
                 var assetPath =
-                    $"{dataPath}/{SpineEditorUtilities.AssetUtility.GetPathSafeName(animation.Name)}.asset";
+                    $"{dataPath}/{AssetUtility.GetPathSafeName(animation.Name)}.asset";
                 var existingAsset =
                     AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                 if (!(existingAsset is null))

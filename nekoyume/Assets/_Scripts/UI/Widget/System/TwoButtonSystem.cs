@@ -1,15 +1,21 @@
-﻿using Nekoyume.Game.Controller;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class TwoButtonSystem : SystemWidget
     {
-        public SubmitButton confirmButton;
-        public SubmitButton cancelButton;
-        public TextMeshProUGUI contentText;
+        [SerializeField]
+        private TextButton confirmButton = null;
+
+        [SerializeField]
+        private TextButton cancelButton = null;
+
+        [SerializeField]
+        private TextMeshProUGUI contentText = null;
 
         private System.Action _confirmCallback;
         private System.Action _cancelCallback;
@@ -20,14 +26,8 @@ namespace Nekoyume.UI
 
             SubmitWidget = Confirm;
             CloseWidget = Cancel;
-            confirmButton.OnSubmitClick.Subscribe(_ =>
-            {
-                Confirm();
-            }).AddTo(gameObject);
-            cancelButton.OnSubmitClick.Subscribe(_ =>
-            {
-                Cancel();
-            }).AddTo(gameObject);
+            confirmButton.OnClick = Confirm;
+            cancelButton.OnClick = Cancel;
         }
 
         public override void Show(bool ignoreStartAnimation = false)
@@ -35,13 +35,13 @@ namespace Nekoyume.UI
             base.Show(ignoreStartAnimation);
         }
 
-        public void Show(string content, string confirm, string cancel,
+        public void Show(string content, string confirmText, string cancelText,
             System.Action confirmCallback, System.Action cancelCallback = null)
         {
             if (gameObject.activeSelf)
             {
                 Close(true);
-                Show( content, confirm, cancel, confirmCallback, cancelCallback);
+                Show(content, confirmText, cancelText, confirmCallback, cancelCallback);
                 return;
             }
 
@@ -51,11 +51,8 @@ namespace Nekoyume.UI
             _confirmCallback = confirmCallback;
             _cancelCallback = cancelCallback;
 
-            confirmButton.SetSubmitText(confirm);
-            confirmButton.SetSubmittableWithoutInteractable(true);
-
-            cancelButton.SetSubmitText(cancel);
-            cancelButton.SetSubmittableWithoutInteractable(true);
+            confirmButton.Text = confirmText;
+            cancelButton.Text = cancelText;
             Show();
         }
 

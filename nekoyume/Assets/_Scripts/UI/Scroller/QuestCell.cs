@@ -3,7 +3,6 @@ using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -15,6 +14,7 @@ using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
+    using Nekoyume.L10n;
     using UniRx;
 
     public class QuestCell : RectCell<QuestModel, QuestScroll.ContextModel>
@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Scroller
         private SimpleCountableItemView[] rewardViews = null;
 
         [SerializeField]
-        private SubmitButton receiveButton = null;
+        private ConditionalButton receiveButton = null;
 
         private QuestModel _quest = null;
 
@@ -51,14 +51,18 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            receiveButton.SetSubmitText(
-                L10nManager.Localize("UI_PROGRESS"),
-                L10nManager.Localize("UI_RECEIVE"));
-            receiveButton.SetSubmitTextColor(ColorHelper.HexToColorRGB("955c4a"));
-            receiveButton.OnSubmitClick
+            receiveButton.OnSubmitSubject
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(OnReceiveClick)
                 .AddTo(gameObject);
+
+            receiveButton.SetText(
+                ConditionalButton.State.Normal,
+                L10nManager.Localize("UI_RECEIVE"));
+
+            receiveButton.SetText(
+                ConditionalButton.State.Disabled,
+                L10nManager.Localize("UI_PROGRESS"));
         }
 
         #endregion
@@ -69,7 +73,7 @@ namespace Nekoyume.UI.Scroller
             UpdateView();
         }
 
-        private void OnReceiveClick(SubmitButton submitButton)
+        private void OnReceiveClick(Unit unit)
         {
             var questWidget = Widget.Find<QuestPopup>();
             questWidget.EnqueueCompletedQuest(_quest);
@@ -133,8 +137,8 @@ namespace Nekoyume.UI.Scroller
                     titleText.color = ColorHelper.HexToColorRGB("ffa78b");
                     contentText.color = ColorHelper.HexToColorRGB("955c4a");
                     progressText.color = ColorHelper.HexToColorRGB("e0a491");
-                    receiveButton.Show();
-                    receiveButton.SetSubmittable(true);
+                    receiveButton.gameObject.SetActive(true);
+                    receiveButton.Interactable = true;
                 }
                 else
                 {
@@ -144,7 +148,7 @@ namespace Nekoyume.UI.Scroller
                     titleText.color = ColorHelper.HexToColorRGB("614037");
                     contentText.color = ColorHelper.HexToColorRGB("38251e");
                     progressText.color = ColorHelper.HexToColorRGB("282828");
-                    receiveButton.Hide();
+                    receiveButton.gameObject.SetActive(false);
                 }
             }
             else
@@ -154,8 +158,8 @@ namespace Nekoyume.UI.Scroller
                 titleText.color = ColorHelper.HexToColorRGB("ffa78b");
                 contentText.color = ColorHelper.HexToColorRGB("955c4a");
                 progressText.color = ColorHelper.HexToColorRGB("e0a491");
-                receiveButton.Show();
-                receiveButton.SetSubmittable(false);
+                receiveButton.gameObject.SetActive(true);
+                receiveButton.Interactable = false;
             }
 
             var itemMap = _quest.Reward.ItemMap;
@@ -195,7 +199,7 @@ namespace Nekoyume.UI.Scroller
             titleText.color = ColorHelper.HexToColorRGB("614037");
             contentText.color = ColorHelper.HexToColorRGB("38251e");
             progressText.color = ColorHelper.HexToColorRGB("282828");
-            receiveButton.Hide();
+            receiveButton.gameObject.SetActive(false);
         }
     }
 }
