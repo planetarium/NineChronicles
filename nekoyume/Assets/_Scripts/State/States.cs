@@ -107,9 +107,15 @@ namespace Nekoyume.State
                 return;
             }
 
+            var dictionary = await Game.Game.instance.Agent.GetAvatarStates(AgentState.avatarAddresses.Values);
             foreach (var pair in AgentState.avatarAddresses)
             {
-                await AddOrReplaceAvatarStateAsync(pair.Value, pair.Key);
+                var address = pair.Value;
+                var index = pair.Key;
+                if (dictionary.ContainsKey(address))
+                {
+                    await AddOrReplaceAvatarStateAsync(dictionary[address], index);
+                }
             }
         }
 
