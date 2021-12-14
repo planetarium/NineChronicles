@@ -50,7 +50,7 @@ namespace Nekoyume.Game
 
         public MonsterSpawner spawner;
 
-        public GameObject background;
+        private GameObject _background;
 
         // dummy for stage background moving.
         public GameObject dummy;
@@ -244,29 +244,28 @@ namespace Nekoyume.Game
         // todo: 배경 캐싱.
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
-            if (background)
+            if (_background)
             {
-                if (background.name.Equals(prefabName))
+                if (_background.name.Equals(prefabName))
                     return;
 
                 if (fadeTime > 0.0f)
                 {
-                    var sprites = background.GetComponentsInChildren<SpriteRenderer>();
+                    var sprites = _background.GetComponentsInChildren<SpriteRenderer>();
                     foreach (var sprite in sprites)
                     {
                         sprite.sortingOrder += 1;
                         sprite.DOFade(0.0f, fadeTime);
                     }
 
-                    var particles = background.GetComponentsInChildren<ParticleSystem>();
+                    var particles = _background.GetComponentsInChildren<ParticleSystem>();
                     foreach (var particle in particles)
                     {
                         particle.Stop();
                     }
                 }
 
-                Destroy(background, fadeTime);
-                background = null;
+                DestroyBackground(fadeTime);
             }
 
             var path = $"Prefab/Background/{prefabName}";
@@ -274,10 +273,10 @@ namespace Nekoyume.Game
             if (!prefab)
                 throw new FailedToLoadResourceException<GameObject>(path);
 
-            background = Instantiate(prefab, transform);
-            background.name = prefabName;
+            _background = Instantiate(prefab, transform);
+            _background.name = prefabName;
 
-            foreach (Transform child in background.transform)
+            foreach (Transform child in _background.transform)
             {
                 var childName = child.name;
                 if (!childName.StartsWith("bgvfx"))
@@ -302,6 +301,12 @@ namespace Nekoyume.Game
             {
                 _battleCoroutine = StartCoroutine(CoPlayStage(log));
             }
+        }
+
+        public void DestroyBackground(float fadeTime = 0f)
+        {
+            Destroy(_background, fadeTime);
+            _background = null;
         }
 
         private void PlayRankingBattle(BattleLog log)
