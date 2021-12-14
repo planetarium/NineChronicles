@@ -69,9 +69,17 @@ namespace Nekoyume.UI
             spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion_01));
             closeButton.onClick.AddListener(() =>
             {
-                CleanUpWishListAlertPopup(Close);
+                CleanUpWishListAlertPopup(() =>
+                {
+                    Close();
+                    Game.Event.OnRoomEnter.Invoke(true);
+                });
             });
-            CloseWidget = () => CleanUpWishListAlertPopup(Close);
+            CloseWidget = () => CleanUpWishListAlertPopup(() =>
+            {
+                Close();
+                Game.Event.OnRoomEnter.Invoke(true);
+            });
         }
 
         public override void Initialize()
@@ -131,7 +139,7 @@ namespace Nekoyume.UI
             base.Show(true);
         }
 
-        private void Close()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
             if (shopItems.IsActiveInputField)
             {
@@ -141,16 +149,7 @@ namespace Nekoyume.UI
             _npc?.gameObject.SetActive(false);
             shopItems.Close();
             Find<ItemCountAndPricePopup>().Close();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close(true);
-        }
-
-        public void ForceClose()
-        {
-            _npc?.gameObject.SetActive(false);
-            shopItems.Close();
-            Find<ItemCountAndPricePopup>().Close();
-            Close(true);
+            base.Close(true);
         }
 
         private void ShowNPC()
@@ -249,7 +248,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            CleanUpWishListAlertPopup(Close);
+            CleanUpWishListAlertPopup(() =>
+            {
+                Close();
+                Game.Event.OnRoomEnter.Invoke(true);
+            });
         }
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
