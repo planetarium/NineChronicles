@@ -99,8 +99,7 @@ namespace Nekoyume.UI
             guidedQuest.Hide(ignoreCloseAnimation);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
             Find<HeaderMenuStatic>().Close();
-            Destroy(Game.Game.instance.Stage.background);
-            Game.Game.instance.Stage.background = null;
+            Game.Game.instance.Stage.DestroyBackground();
             base.Close(ignoreCloseAnimation);
         }
 
