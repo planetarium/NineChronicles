@@ -265,7 +265,7 @@ namespace Nekoyume.Game
                     }
                 }
 
-                DestroyBackground();
+                DestroyBackground(fadeTime);
             }
 
             var path = $"Prefab/Background/{prefabName}";
