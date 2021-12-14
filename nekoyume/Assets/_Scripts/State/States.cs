@@ -321,6 +321,7 @@ namespace Nekoyume.State
             }
 
             LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
+            var addressDict = new Dictionary<int, Address>();
             for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
             {
                 var slotAddress = avatarState.address.Derive(
@@ -330,9 +331,17 @@ namespace Nekoyume.State
                         i
                     )
                 );
-                var stateValue = await Game.Game.instance.Agent.GetStateAsync(slotAddress);
+                addressDict[i] = slotAddress;
+            }
+
+            var slotValues = await Game.Game.instance.Agent.GetStateBulk(addressDict.Values);
+            foreach (var kv in addressDict)
+            {
+                var index = kv.Key;
+                var slotAddress = addressDict[index];
+                var stateValue = slotValues[slotAddress];
                 var state = new CombinationSlotState((Dictionary) stateValue);
-                UpdateCombinationSlotState(i, state);
+                UpdateCombinationSlotState(index, state);
             }
         }
 
