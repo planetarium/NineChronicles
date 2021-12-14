@@ -8,6 +8,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -17,8 +18,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle10")]
-    public class RankingBattle : GameAction
+    [ActionType("ranking_battle9")]
+    [ActionObsolete(BlockPolicySource.V100092ObsoleteIndex)]
+    public class RankingBattle9 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
@@ -28,6 +30,7 @@ namespace Nekoyume.Action
         public Address weeklyArenaAddress;
         public List<Guid> costumeIds;
         public List<Guid> equipmentIds;
+        public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
         public AvatarState EnemyAvatarState;
         public ArenaInfo ArenaInfo;
@@ -49,6 +52,8 @@ namespace Nekoyume.Action
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockPolicySource.V100092ObsoleteIndex, context);
 
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
@@ -85,6 +90,7 @@ namespace Nekoyume.Action
             var items = equipmentIds.Concat(costumeIds);
 
             avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
+            avatarState.ValidateConsumable(consumableIds, context.BlockIndex);
             avatarState.ValidateCostume(costumeIds);
 
             sw.Stop();
@@ -187,7 +193,7 @@ namespace Nekoyume.Action
                 ctx.Random,
                 avatarState,
                 enemyAvatarState,
-                new List<Guid>(),
+                consumableIds,
                 states.GetRankingSimulatorSheets(),
                 StageId,
                 arenaInfo,
@@ -260,6 +266,9 @@ namespace Nekoyume.Action
                 ["equipment_ids"] = new List(equipmentIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
+                ["consumable_ids"] = new List(consumableIds
+                    .OrderBy(element => element)
+                    .Select(e => e.Serialize())),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -271,6 +280,9 @@ namespace Nekoyume.Action
                 .Select(e => e.ToGuid())
                 .ToList();
             equipmentIds = ((List) plainValue["equipment_ids"])
+                .Select(e => e.ToGuid())
+                .ToList();
+            consumableIds = ((List) plainValue["consumable_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();
         }
