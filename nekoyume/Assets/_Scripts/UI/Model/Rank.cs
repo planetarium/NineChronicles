@@ -51,42 +51,42 @@ namespace Nekoyume.UI.Model
             {
                 return Task.Run(async () =>
                 {
-                    if (!_rankingMapLoaded)
-                    {
-                        var addressList = new List<Address>();
-                        for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
-                        {
-                            var address = RankingState.Derive(0);
-                            addressList.Add(address);
-                        }
+                    //if (!_rankingMapLoaded)
+                    //{
+                    //    var addressList = new List<Address>();
+                    //    for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+                    //    {
+                    //        var address = RankingState.Derive(0);
+                    //        addressList.Add(address);
+                    //    }
 
-                        var iValues = await Game.Game.instance.Agent.GetStateBulk(addressList);
-                        foreach (var kv in iValues)
-                        {
-                            var mapState = kv.Value is Bencodex.Types.Dictionary serialized
-                                ? new RankingMapState(serialized)
-                                : new RankingMapState(kv.Key);
-                            States.Instance.SetRankingMapStates(mapState);
-                        }
+                    //    var iValues = await Game.Game.instance.Agent.GetStateBulk(addressList);
+                    //    foreach (var kv in iValues)
+                    //    {
+                    //        var mapState = kv.Value is Bencodex.Types.Dictionary serialized
+                    //            ? new RankingMapState(serialized)
+                    //            : new RankingMapState(kv.Key);
+                    //        States.Instance.SetRankingMapStates(mapState);
+                    //    }
 
-                        var rankingMapStates = States.Instance.RankingMapStates;
-                        _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
-                        foreach (var pair in rankingMapStates)
-                        {
-                            var rankingInfo = pair.Value.GetRankingInfos(null);
-                            _rankingInfoSet.UnionWith(rankingInfo);
-                        }
+                    //    var rankingMapStates = States.Instance.RankingMapStates;
+                    //    _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
+                    //    foreach (var pair in rankingMapStates)
+                    //    {
+                    //        var rankingInfo = pair.Value.GetRankingInfos(null);
+                    //        _rankingInfoSet.UnionWith(rankingInfo);
+                    //    }
 
-                        _rankingMapLoaded = true;
-                    }
+                    //    _rankingMapLoaded = true;
+                    //}
 
-                    Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
+                    //Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
 
                     var sw = new Stopwatch();
                     sw.Start();
 
                     await Task.WhenAll(
-                        LoadAbilityRankingInfos(displayCount),
+                        //LoadAbilityRankingInfos(displayCount),
                         LoadStageRankingInfos(apiClient, displayCount),
                         LoadMimisbrunnrRankingInfos(apiClient, displayCount),
                         LoadCraftRankingInfos(apiClient, displayCount),
