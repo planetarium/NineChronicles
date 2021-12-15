@@ -2,6 +2,7 @@ namespace Nekoyume.UI.Model
 {
     public enum RankCategory
     {
+        Maintenance = -1,
         Ability = 0,
         Stage = 1,
         Mimisburnnr = 2,
