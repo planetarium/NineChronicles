@@ -14,7 +14,7 @@ namespace Nekoyume.UI
     public class Battle : Widget
     {
         [SerializeField]
-        private StageTitle stageTitle = null;
+        private TextMeshProUGUI stageText = null;
 
         [SerializeField]
         private GuidedQuest guidedQuest = null;
@@ -106,14 +106,13 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfCloseAnimationInternal()
         {
             base.OnCompleteOfCloseAnimationInternal();
-            stageTitle.Close();
             stageProgressBar.Close();
         }
 
         public void ShowInArena(bool ignoreShowAnimation = false)
         {
             Find<HeaderMenuStatic>().Close(true);
-            stageTitle.Close();
+            stageText.gameObject.SetActive(false);
             comboText.Close();
             stageProgressBar.Close();
             guidedQuest.Hide(true);
@@ -138,7 +137,9 @@ namespace Nekoyume.UI
             {
                 guidedQuest.SetWorldQuestToInProgress(stageId);
             });
-            stageTitle.Show(stageId);
+
+            stageText.text = $"STAGE {StageInformation.GetStageIdString(stageId, true)}";
+            stageText.gameObject.SetActive(true);
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
@@ -184,13 +185,13 @@ namespace Nekoyume.UI
             if (isPrologue)
             {
                 stageProgressBar.Close();
-                stageTitle.gameObject.SetActive(false);
             }
             else
             {
                 stageProgressBar.Show();
             }
 
+            stageText.gameObject.SetActive(true);
             guidedQuest.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             repeatToggle.gameObject.SetActive(false);
