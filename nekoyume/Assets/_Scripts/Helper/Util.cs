@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +9,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Model.Item;
 using UnityEngine;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.Helper
 {
@@ -15,6 +18,9 @@ namespace Nekoyume.Helper
         public const int VisibleEnhancementEffectLevel = 10;
         private const int BlockPerSecond = 12;
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
+
+        private static readonly ConcurrentDictionary<Guid, Order> Orders = new ConcurrentDictionary<Guid, Order>();
+        private static readonly ConcurrentDictionary<Guid, ItemBase> ItemBases = new ConcurrentDictionary<Guid, ItemBase>();
 
         public static string GetBlockToTime(int block)
         {
@@ -58,59 +64,72 @@ namespace Nekoyume.Helper
 
         public static async Task<Order> GetOrder(Guid orderId)
         {
+            if (Orders.ContainsKey(orderId))
+            {
+                return Orders[orderId];
+            }
+
             var address = Order.DeriveAddress(orderId);
             return await UniTask.Run(async () =>
             {
                 var state = await Game.Game.instance.Agent.GetStateAsync(address);
-                if (state is Dictionary dictionary)
+                if (!(state is Dictionary dictionary))
                 {
-                    return OrderFactory.Deserialize(dictionary);
+                    return null;
                 }
 
-                return null;
+                var order = OrderFactory.Deserialize(dictionary);
+                Orders.GetOrAdd(orderId, order);
+                return order;
+
             });
         }
 
-        public static async Task<string> GetItemNameByOrderId(Guid orderId, bool isNonColored = false)
+        public static async Task<ItemBase> GetItemBaseByOrderId(Guid orderId)
         {
+            if (ItemBases.ContainsKey(orderId))
+            {
+                return ItemBases[orderId];
+            }
+
             var order = await GetOrder(orderId);
             if (order == null)
             {
-                return string.Empty;
+                return null;
             }
 
             var address = Addresses.GetItemAddress(order.TradableId);
             return await UniTask.Run(async () =>
             {
                 var state = await Game.Game.instance.Agent.GetStateAsync(address);
-                if (state is Dictionary dictionary)
+                if (!(state is Dictionary dictionary))
                 {
-                    var itemBase = ItemFactory.Deserialize(dictionary);
-                    return isNonColored
-                        ? itemBase.GetLocalizedNonColoredName()
-                        : itemBase.GetLocalizedName();
+                    return null;
                 }
 
-                return string.Empty;
+                var itemBase = ItemFactory.Deserialize(dictionary);
+                ItemBases.GetOrAdd(orderId, itemBase);
+                return itemBase;
             });
         }
 
-        public static async Task<ItemBase> GetItemBaseByTradableId(Guid tradableId, long requiredBlockExpiredIndex)
+        public static async Task<List<ItemBase>> GetTradableItems(IEnumerable<ShopItem> items)
         {
-            var address = Addresses.GetItemAddress(tradableId);
-            return await UniTask.Run(async () =>
+            var addressList = items.Select(shopItem => shopItem.TradableId.Value)
+                .Select(Addresses.GetItemAddress)
+                .ToList();
+            var values = await Game.Game.instance.Agent.GetStateBulk(addressList);
+            var itemBases = new List<ItemBase>();
+            foreach (var kv in values)
             {
-                var state = await Game.Game.instance.Agent.GetStateAsync(address);
-                if (state is Dictionary dictionary)
+                if (kv.Value is Bencodex.Types.Dictionary dictionary)
                 {
                     var itemBase = ItemFactory.Deserialize(dictionary);
-                    var tradableItem = itemBase as ITradableItem;
-                    tradableItem.RequiredBlockIndex = requiredBlockExpiredIndex;
-                    return tradableItem as ItemBase;
+                    itemBases.Add(itemBase);
                 }
+            }
 
-                return null;
-            });
+            return itemBases;
         }
 
         public static ItemBase CreateItemBaseByItemId(int itemId)
