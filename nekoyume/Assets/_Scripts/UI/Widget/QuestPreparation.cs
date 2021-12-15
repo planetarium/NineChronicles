@@ -500,6 +500,8 @@ namespace Nekoyume.UI
                     particle.Stop();
                 }
             }
+
+            questButton.SetConditionalState(ready);
         }
 
         private void SubscribeStage(int stageId)
