@@ -210,7 +210,33 @@ namespace Nekoyume.Model.State
                         : ArenaInfo.IsActive(d);
                 if (active)
                 {
-                    _map[kv.Key] = lazyArenaInfo;
+                    // Note that this conditional is necessary and must not be removed.  There had
+                    // been a bug where the ArenaInfo.Active & ArenaInfo.Score hadn't been reset
+                    // when ArenaInfo updated from v100090 to v100092 (inclusive; fixed in v100093).
+                    // Although such behaviour was an unintended bug, anyway there still exist
+                    // actions in the 9c-main chain which are immutable and thus must be maintained
+                    // for backward compatibility.
+                    // Contexts:
+                    //   https://canary.discord.com/channels/539405872346955788/613670425729171456/920464205319123024
+                    //   https://canary.discord.com/channels/539405872346955788/613670425729171456/920494074476257310
+                    //   https://github.com/planetarium/lib9c/blob/v100090/Lib9c/Model/State/WeeklyArenaState.cs#L200-L218
+                    //   https://github.com/planetarium/lib9c/blob/v100092/Lib9c/Model/State/ArenaInfo.cs#L99-L111
+                    //   (planetarium internal) https://planetariumhq.slack.com/archives/C01D7N32V55/p1639524157031900
+                    //   (planetarium internal) https://www.notion.so/planetarium/2021-12-15-1-470a0216e2b44495974e68bab8f51d2d
+                    const long bugExistedSince = 2_968_000L;  // Bug-appeared block index
+                    const long bugExistedUntil = 3_024_000L;  // Bug-removed block index
+                    if (index < bugExistedSince || index >= bugExistedUntil)
+                    {
+                        // Intended behavior:
+                        var prevArenaInfo = lazyArenaInfo.State;
+                        var newArenaInfo = new ArenaInfo(prevArenaInfo);  // Reset .Score & .Active
+                        _map[kv.Key] = new LazyArenaInfo(newArenaInfo);
+                    }
+                    else
+                    {
+                        // Unintended behaviour, which is maintained only for certain blocks:
+                        _map[kv.Key] = lazyArenaInfo;
+                    }
                 }
             }
 
