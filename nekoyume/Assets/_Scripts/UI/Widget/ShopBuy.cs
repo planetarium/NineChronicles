@@ -66,7 +66,7 @@ namespace Nekoyume.UI
                 });
             });
 
-            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion_01));
+            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion));
             closeButton.onClick.AddListener(() =>
             {
                 CleanUpWishListAlertPopup(() =>
@@ -160,7 +160,7 @@ namespace Nekoyume.UI
             _npc.SpineController.Appear();
             go.SetActive(true);
             frontCanvas.sortingLayerName = LayerType.UI.ToLayerName();
-            _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
+            _npc.PlayAnimation(NPCAnimation.Type.Greeting);
         }
 
         private void ShowTooltip(ShopItemView view)

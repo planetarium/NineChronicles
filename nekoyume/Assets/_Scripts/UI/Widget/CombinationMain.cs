@@ -65,7 +65,7 @@ namespace Nekoyume.UI
             };
 
             speechBubble.SetKey("SPEECH_COMBINE_EQUIPMENT_");
-            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Greeting_01));
+            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Greeting));
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -113,7 +113,7 @@ namespace Nekoyume.UI
                 alpha => _npc.SpineController.SkeletonAnimation.skeleton.A = alpha, 1,
                 1f);
             var tween = skeletonTweener.Play();
-            tween.onComplete += () => _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
+            tween.onComplete += () => _npc.PlayAnimation(NPCAnimation.Type.Greeting);
         }
     }
 }

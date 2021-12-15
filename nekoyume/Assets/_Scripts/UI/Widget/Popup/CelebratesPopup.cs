@@ -261,7 +261,7 @@ namespace Nekoyume.UI
 
             _rewards = null;
 
-            AppearNPC(ignoreShowAnimation, NPCAnimation.Type.Emotion_01);
+            AppearNPC(ignoreShowAnimation, NPCAnimation.Type.Emotion);
             base.Show(ignoreShowAnimation);
             PlayEffects();
         }

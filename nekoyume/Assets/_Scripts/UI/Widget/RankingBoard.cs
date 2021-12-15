@@ -437,11 +437,11 @@ namespace Nekoyume.UI
             {
                 if (type == CharacterAnimation.Type.Greeting)
                 {
-                    _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
+                    _npc.PlayAnimation(NPCAnimation.Type.Greeting);
                 }
                 else
                 {
-                    _npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
+                    _npc.PlayAnimation(NPCAnimation.Type.Emotion);
                 }
 
                 speechBubble.SetKey(key);
