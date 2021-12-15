@@ -23,6 +23,25 @@ namespace Lib9c.Tests.Model
             new UpdateListQuestsCountException("test"));
 
         [Fact]
+        public void GetEnumerator()
+        {
+            var list = new QuestList(
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet
+            ).ToList();
+
+            for (var i = 0; i < list.Count - 1; i++)
+            {
+                var quest = list[i];
+                var next = list[i + 1];
+                Assert.True(quest.Id < next.Id);
+            }
+        }
+
+        [Fact]
         public void UpdateItemTypeCollectQuestDeterministic()
         {
             var expectedItemIds = new List<int>
