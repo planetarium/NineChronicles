@@ -145,7 +145,8 @@ namespace Nekoyume.UI
             Find<TwoButtonSystem>().Close();
             Find<ItemCountableAndPricePopup>().Close();
             speechBubble.gameObject.SetActive(false);
-            Find<ShopBuy>().ForceClose();
+            Find<ShopBuy>().Close();
+            _npc?.gameObject.SetActive(false);
             base.Close(ignoreCloseAnimation);
         }
 
