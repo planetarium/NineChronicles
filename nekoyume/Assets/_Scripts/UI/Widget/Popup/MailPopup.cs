@@ -173,6 +173,7 @@ namespace Nekoyume.UI
 
         private void OnReceivedTutorialEquipment()
         {
+            //It is not currently used, but but might use it later
         }
 
         public void UpdateTabs(long? blockIndex = null)

@@ -391,11 +391,11 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfShowAnimationInternal()
         {
             base.OnCompleteOfShowAnimationInternal();
-            Find<DialogPopup>().Show(1, HasTutorial);
+            Find<DialogPopup>().Show(1, PlayTutorial);
             StartCoroutine(CoHelpPopup());
         }
 
-        private void HasTutorial()
+        private void PlayTutorial()
         {
             var worldInfo = Game.Game.instance.States.CurrentAvatarState.worldInformation;
             if (worldInfo is null)
@@ -405,7 +405,7 @@ namespace Nekoyume.UI
             }
 
             var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
-            Game.Game.instance.Stage.TutorialController.Start(clearedStageId);
+            Game.Game.instance.Stage.TutorialController.Run(clearedStageId);
         }
 
         private IEnumerator CoHelpPopup()

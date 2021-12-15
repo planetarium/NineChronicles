@@ -59,7 +59,7 @@ namespace Nekoyume.UI
             _preset.AddRange(GetData<TutorialPreset>(PresetPath).preset);
         }
 
-        public void Start(int clearedStageId)
+        public void Run(int clearedStageId)
         {
             if (clearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
             {
