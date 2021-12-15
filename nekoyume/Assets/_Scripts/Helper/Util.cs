@@ -87,10 +87,10 @@ namespace Nekoyume.Helper
 
         public static async Task<ItemBase> GetItemBaseByOrderId(Guid orderId)
         {
-            // if (ItemBases.ContainsKey(orderId))
-            // {
-            //     return ItemBases[orderId];
-            // }
+            if (ItemBases.ContainsKey(orderId))
+            {
+                return ItemBases[orderId];
+            }
 
             var order = await GetOrder(orderId);
             if (order == null)
@@ -109,10 +109,6 @@ namespace Nekoyume.Helper
 
                 var itemBase = ItemFactory.Deserialize(dictionary);
                 ItemBases.GetOrAdd(orderId, itemBase);
-                // if (!ItemBases.ContainsKey(orderId))
-                // {
-                //     ItemBases.Add(orderId, itemBase);
-                // }
                 return itemBase;
             });
         }
