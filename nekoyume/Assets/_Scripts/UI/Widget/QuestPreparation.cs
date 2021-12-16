@@ -489,6 +489,7 @@ namespace Nekoyume.UI
 
         private void ReadyToQuest()
         {
+            questButton.UpdateObjects();
             foreach (var particle in particles)
             {
                 if (questButton.IsSubmittable)
@@ -500,8 +501,6 @@ namespace Nekoyume.UI
                     particle.Stop();
                 }
             }
-
-            questButton.UpdateObjects();
         }
 
         private void SubscribeStage(int stageId)
