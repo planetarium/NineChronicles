@@ -19,7 +19,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("ranking_battle9")]
-    [ActionObsolete(BlockPolicySource.V100092ObsoleteIndex)]
+    [ActionObsolete(BlockPolicySource.V100093ObsoleteIndex)]
     public class RankingBattle9 : GameAction
     {
         public const int StageId = 999999;
@@ -53,7 +53,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockPolicySource.V100092ObsoleteIndex, context);
+            CheckObsolete(BlockPolicySource.V100093ObsoleteIndex, context);
 
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
