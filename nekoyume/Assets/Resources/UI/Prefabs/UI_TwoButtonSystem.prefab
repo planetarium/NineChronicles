@@ -235,12 +235,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
+  m_fontSize: 19.05
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
-  m_fontSizeMin: 20
-  m_fontSizeMax: 24
+  m_fontSizeMin: 16
+  m_fontSizeMax: 22
   m_fontStyle: 33
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -888,7 +888,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 800353370342395445}
-  button: {fileID: 8229501762057558946}
 --- !u!1 &4276603609459487456
 GameObject:
   m_ObjectHideFlags: 0
@@ -1037,7 +1036,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 739795791568411168}
-  button: {fileID: 4204597903488805751}
 --- !u!1 &5896934542767846687
 GameObject:
   m_ObjectHideFlags: 0

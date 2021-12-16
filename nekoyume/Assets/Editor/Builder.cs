@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Lib9c.DevExtensions;
@@ -9,13 +8,10 @@ using UnityEditor.Callbacks;
 
 namespace Editor
 {
+    [ExecuteInEditMode]
     public class Builder {
-
-        public static readonly string PlayerName = PlayerSettings.productName;
-
-        public const string BuildBasePath = "Build";
-
-        public const bool isDevelopment = false;
+        private static readonly string PlayerName = PlayerSettings.productName;
+        private const string BuildBasePath = "Build";
 
         [MenuItem("Build/Standalone/Windows + macOS + Linux")]
         public static void BuildAll()
@@ -86,7 +82,7 @@ namespace Editor
         public static void BuildWindowsDevelopment()
         {
             Debug.Log("Build Windows Development");
-            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development | BuildOptions.AllowDebugging, "Windows", true);
+            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development | BuildOptions.AllowDebugging, "Windows");
         }
 
         [MenuItem("Build/Development/Linux")]
@@ -120,6 +116,16 @@ namespace Editor
             Build(BuildTarget.StandaloneWindows64, BuildOptions.EnableHeadlessMode, "WindowsHeadless");
         }
 
+        [MenuItem("Build/QA")]
+        public static void BuildWindowsForQA()
+        {
+            Debug.Log("Build Windows For QA");
+            CopyJsonDataFile("TestbedSell");
+            CopyJsonDataFile("TestbedWeeklyArena");
+            CopyJsonDataFile("TestbedCreateAvatar");
+            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development | BuildOptions.AllowDebugging, "Windows", true);
+        }
+
         private static void Build(
             BuildTarget buildTarget,
             BuildOptions options = BuildOptions.None,
@@ -144,30 +150,7 @@ namespace Editor
                     : options,
             };
 
-            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
-            var preDefines = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-            var newDefines = preDefines.Split( ';' ).ToList();
-            if (isDevelopment)
-            {
-                CopyJsonDataFile("TestbedSell");
-                CopyJsonDataFile("TestbedCreateAvatar");
-
-                if (!newDefines.Exists(x => x.Equals("LIB9C_DEV_EXTENSIONS")))
-                {
-                    newDefines.Add("LIB9C_DEV_EXTENSIONS");
-                    PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,
-                        string.Join(";", newDefines.ToArray()));
-                }
-            }
-            else
-            {
-                if (newDefines.Exists(x => x.Equals("LIB9C_DEV_EXTENSIONS")))
-                {
-                    newDefines.Remove("LIB9C_DEV_EXTENSIONS");
-                    PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,
-                        string.Join(";", newDefines.ToArray()));
-                }
-            }
+            UpdateDefines(isDevelopment);
 
             var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
             var summary = report.summary;
@@ -176,11 +159,39 @@ namespace Editor
             {
                 case BuildResult.Succeeded:
                     Debug.Log("Build succeeded: " + summary.totalSize + " bytes");
+                    UpdateDefines(false);
                     break;
                 case BuildResult.Failed:
                     Debug.LogError("Build failed");
+                    UpdateDefines(false);
                     break;
             }
+        }
+
+        private static void UpdateDefines(bool isDevelopment)
+        {
+            Debug.Log($"UpdateDefines : {isDevelopment}");
+            var buildTargetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            var preDefines = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+            var newDefines = preDefines.Split( ';' ).ToList();
+            const string qaDefine = "LIB9C_DEV_EXTENSIONS";
+            if (isDevelopment)
+            {
+                if (!newDefines.Exists(x => x.Equals(qaDefine)))
+                {
+                    newDefines.Add(qaDefine);
+                }
+            }
+            else
+            {
+                if (newDefines.Exists(x => x.Equals(qaDefine)))
+                {
+                    newDefines.Remove(qaDefine);
+                }
+            }
+            PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup,
+                string.Join(";", newDefines.ToArray()));
+            EditorApplication.ExecuteMenuItem("File/Save Project");
         }
 
         private static void CopyJsonDataFile(string fileName)
@@ -188,6 +199,7 @@ namespace Editor
             var sourcePath = TestbedHelper.GetDataPath(fileName);
             var destPath = Path.Combine(Application.streamingAssetsPath, $"{fileName}.json");
             File.Copy(sourcePath, destPath, true);
+            Debug.Log($"Copy json data file : {fileName}");
         }
 
         [PostProcessBuild(0)]

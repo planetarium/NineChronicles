@@ -72,7 +72,7 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             });
 
-            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion_01));
+            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion));
 
             CloseWidget = () =>
             {
@@ -145,7 +145,8 @@ namespace Nekoyume.UI
             Find<TwoButtonSystem>().Close();
             Find<ItemCountableAndPricePopup>().Close();
             speechBubble.gameObject.SetActive(false);
-            Find<ShopBuy>().ForceClose();
+            Find<ShopBuy>().Close();
+            _npc?.gameObject.SetActive(false);
             base.Close(ignoreCloseAnimation);
         }
 
@@ -472,6 +473,7 @@ namespace Nekoyume.UI
             var price = model.Price.Value;
             var count = model.Item.Value.Count.Value;
             var subType = tradableItem.ItemSubType;
+            var itemName = model.Item.Value.ItemBase.Value.GetLocalizedName();
 
             var digest = ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, price, count);
             if (digest != null)
@@ -482,7 +484,7 @@ namespace Nekoyume.UI
                     digest.OrderId,
                     digest.TradableId,
                     subType).Subscribe();
-                ResponseSellCancellation(digest.OrderId, digest.TradableId);
+                ResponseSellCancellation(digest.OrderId, itemName);
             }
         }
 
@@ -539,10 +541,9 @@ namespace Nekoyume.UI
             Refresh();
         }
 
-        private async void ResponseSellCancellation(Guid orderId, Guid tradableId)
+        private void ResponseSellCancellation(Guid orderId, string itemName)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            var itemName = await Util.GetItemNameByOrderId(orderId);
             ReactiveShopState.RemoveSellDigest(orderId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
@@ -558,8 +559,8 @@ namespace Nekoyume.UI
             CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
         {
             _npc.PlayAnimation(type == CharacterAnimation.Type.Greeting
-                ? NPCAnimation.Type.Greeting_01
-                : NPCAnimation.Type.Emotion_01);
+                ? NPCAnimation.Type.Greeting
+                : NPCAnimation.Type.Emotion);
 
             speechBubble.SetKey(key);
         }

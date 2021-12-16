@@ -292,6 +292,39 @@ namespace Nekoyume.BlockChain
             return Task.Run(() => blocks.GetState(address));
         }
 
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
+        {
+            return await Task.Run(async () =>
+            {
+                var dict = new Dictionary<Address, AvatarState>();
+                foreach (var address in addressList)
+                {
+                    var result = await States.TryGetAvatarStateAsync(address);
+                    if (result.exist)
+                    {
+                        dict[address] = result.avatarState;
+                    }
+                }
+
+                return dict;
+            });
+        }
+
+        public async Task<Dictionary<Address, IValue>> GetStateBulk(IEnumerable<Address> addressList)
+        {
+            return await Task.Run(async () =>
+            {
+                var dict = new Dictionary<Address, IValue>();
+                foreach (var address in addressList)
+                {
+                    var result = await GetStateAsync(address);
+                    dict[address] = result;
+                }
+
+                return dict;
+            });
+        }
+
         public bool TryGetTxId(Guid actionId, out TxId txId) =>
             _transactions.TryGetValue(actionId, out txId) &&
             IsTxStaged(txId);
@@ -615,7 +648,9 @@ namespace Nekoyume.BlockChain
             Widget.Create<BattleSimulator>(true);
             Widget.Create<CombinationSimulator>(true);
             Widget.Create<Cheat>(true);
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Widget.Create<TestbedEditor>(true);
+#endif
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);

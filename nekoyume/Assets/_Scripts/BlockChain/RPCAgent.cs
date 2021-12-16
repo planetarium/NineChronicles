@@ -2,10 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -13,7 +10,6 @@ using Cysharp.Threading.Tasks;
 using Grpc.Core;
 using Lib9c.Renderer;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
@@ -31,7 +27,6 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
-using static Nekoyume.Action.ActionBase;
 using Channel = Grpc.Core.Channel;
 using Logger = Serilog.Core.Logger;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -118,7 +113,10 @@ namespace Nekoyume.BlockChain
             );
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
-            _service = MagicOnionClient.Create<IBlockChainService>(_channel);
+            _service = MagicOnionClient.Create<IBlockChainService>(_channel, new IClientFilter[]
+            {
+                new ClientFilter()
+            }).WithCancellationToken(_channel.ShutdownToken);
             var getTipTask = Task.Run(async () => await _service.GetTip());
             yield return new WaitUntil(() => getTipTask.IsCompleted);
             OnRenderBlock(null, getTipTask.Result);
@@ -176,6 +174,28 @@ namespace Nekoyume.BlockChain
             return FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
+        }
+
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
+        {
+            Dictionary<byte[], byte[]> raw =  await _service.GetAvatarStates(addressList.Select(a => a.ToByteArray()));
+            var result = new Dictionary<Address, AvatarState>();
+            foreach (var kv in raw)
+            {
+                result[new Address(kv.Key)] = new AvatarState((Dictionary)_codec.Decode(kv.Value));
+            }
+            return result;
+        }
+
+        public async Task<Dictionary<Address, IValue>> GetStateBulk(IEnumerable<Address> addressList)
+        {
+            Dictionary<byte[], byte[]> raw =  await _service.GetStateBulk(addressList.Select(a => a.ToByteArray()));
+            var result = new Dictionary<Address, IValue>();
+            foreach (var kv in raw)
+            {
+                result[new Address(kv.Key)] = _codec.Decode(kv.Value);
+            }
+            return result;
         }
 
         public void SendException(Exception exc)

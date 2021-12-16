@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7450033686277532010
+--- !u!1 &1343209922733688679
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,13 +8,13 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5397956928725673419}
-  - component: {fileID: 6387851767419459665}
-  - component: {fileID: 1378734267161096976}
-  - component: {fileID: 3471749723470681726}
-  - component: {fileID: 4241037091364689851}
-  - component: {fileID: 3300937179716837617}
-  - component: {fileID: -8713652210562661060}
+  - component: {fileID: 6233394148600521898}
+  - component: {fileID: 8543803571193624798}
+  - component: {fileID: 7376464859141210016}
+  - component: {fileID: 8082131522159397471}
+  - component: {fileID: 8303084089579447620}
+  - component: {fileID: 6374970504601847303}
+  - component: {fileID: 8984587719637700281}
   m_Layer: 8
   m_Name: 300002
   m_TagString: Untagged
@@ -22,13 +22,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5397956928725673419
+--- !u!4 &6233394148600521898
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7450033686277532010}
+  m_GameObject: {fileID: 1343209922733688679}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.44, y: 0.44, z: 1}
@@ -36,21 +36,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6387851767419459665
+--- !u!33 &8543803571193624798
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7450033686277532010}
+  m_GameObject: {fileID: 1343209922733688679}
   m_Mesh: {fileID: 0}
---- !u!23 &1378734267161096976
+--- !u!23 &7376464859141210016
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7450033686277532010}
+  m_GameObject: {fileID: 1343209922733688679}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -85,13 +85,13 @@ MeshRenderer:
   m_SortingLayer: 3
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3471749723470681726
+--- !u!114 &8082131522159397471
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7450033686277532010}
+  m_GameObject: {fileID: 1343209922733688679}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
@@ -119,20 +119,20 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
-  _animationName: Idle_01
+  _animationName: Idle
   loop: 1
   timeScale: 1
---- !u!95 &4241037091364689851
+--- !u!95 &8303084089579447620
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7450033686277532010}
+  m_GameObject: {fileID: 1343209922733688679}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8e21a119b97524e9790c0860074266b7, type: 2}
+  m_Controller: {fileID: 9100000, guid: 21ad0e93f82d940989ca46e7a61db8ac, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -141,41 +141,85 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!65 &3300937179716837617
+--- !u!65 &6374970504601847303
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7450033686277532010}
+  m_GameObject: {fileID: 1343209922733688679}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 2.737256, y: 4.6463985, z: 0}
   m_Center: {x: 0.20940387, y: 2.0761979, z: 0}
---- !u!114 &-8713652210562661060
+--- !u!114 &8984587719637700281
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7450033686277532010}
+  m_GameObject: {fileID: 1343209922733688679}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 45c9f9f6fb9a40edbb3b19220df6a86d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   statesAndAnimations:
-  - stateName: Appear_01
-    animation: {fileID: 11400000, guid: b6316220e29eb485c924c77a64a7c581, type: 2}
-  - stateName: Disappear_01
-    animation: {fileID: 11400000, guid: 308769b97867140a4a6dacf8f7a70b6f, type: 2}
-  - stateName: Emotion_01
-    animation: {fileID: 11400000, guid: 7e8cd49ff449b05478c036544ef48f80, type: 2}
-  - stateName: Greeting_01
-    animation: {fileID: 11400000, guid: 9f3342732063644b3addb1434c6895ee, type: 2}
-  - stateName: Idle_01
-    animation: {fileID: 11400000, guid: a52e138372faa4382a63d1a8bb2dd0f2, type: 2}
-  - stateName: Touch_01
-    animation: {fileID: 11400000, guid: 5a00c2da638ca4db697e7f62d6eae80c, type: 2}
+  - stateName: Appear
+    animation: {fileID: 11400000, guid: 8d4d09107e9a5704fbdf02ef32a7b671, type: 2}
+  - stateName: Appear_02
+    animation: {fileID: 11400000, guid: 8d4d09107e9a5704fbdf02ef32a7b671, type: 2}
+  - stateName: Appear_03
+    animation: {fileID: 11400000, guid: 8d4d09107e9a5704fbdf02ef32a7b671, type: 2}
+  - stateName: Greeting
+    animation: {fileID: 11400000, guid: 77ffeef05f15a1940b27b41eb8479b7b, type: 2}
+  - stateName: Greeting_02
+    animation: {fileID: 11400000, guid: 77ffeef05f15a1940b27b41eb8479b7b, type: 2}
+  - stateName: Greeting_03
+    animation: {fileID: 11400000, guid: 77ffeef05f15a1940b27b41eb8479b7b, type: 2}
+  - stateName: Open
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}
+  - stateName: Open_02
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}
+  - stateName: Open_03
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}
+  - stateName: Idle
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}
+  - stateName: Idle_02
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}
+  - stateName: Idle_03
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}
+  - stateName: Emotion
+    animation: {fileID: 11400000, guid: cb26cc96a0baac941a860643501c17f6, type: 2}
+  - stateName: Emotion_02
+    animation: {fileID: 11400000, guid: cb26cc96a0baac941a860643501c17f6, type: 2}
+  - stateName: Emotion_03
+    animation: {fileID: 11400000, guid: cb26cc96a0baac941a860643501c17f6, type: 2}
+  - stateName: Emotion_04
+    animation: {fileID: 11400000, guid: cb26cc96a0baac941a860643501c17f6, type: 2}
+  - stateName: Emotion_05
+    animation: {fileID: 11400000, guid: cb26cc96a0baac941a860643501c17f6, type: 2}
+  - stateName: Touch
+    animation: {fileID: 11400000, guid: c0205289651ce4648b48f7888acd04eb, type: 2}
+  - stateName: Touch_02
+    animation: {fileID: 11400000, guid: c0205289651ce4648b48f7888acd04eb, type: 2}
+  - stateName: Touch_03
+    animation: {fileID: 11400000, guid: c0205289651ce4648b48f7888acd04eb, type: 2}
+  - stateName: Loop
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}
+  - stateName: Loop_02
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}
+  - stateName: Loop_03
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}
+  - stateName: Disappear
+    animation: {fileID: 11400000, guid: 342b1df1440a1eb458b66ee1f5abd174, type: 2}
+  - stateName: Disappear_02
+    animation: {fileID: 11400000, guid: 342b1df1440a1eb458b66ee1f5abd174, type: 2}
+  - stateName: Disappear_03
+    animation: {fileID: 11400000, guid: 342b1df1440a1eb458b66ee1f5abd174, type: 2}
+  - stateName: Over
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}
+  - stateName: Click
+    animation: {fileID: 11400000, guid: 1606d7de3e34cac49aa6ed77d8da6259, type: 2}

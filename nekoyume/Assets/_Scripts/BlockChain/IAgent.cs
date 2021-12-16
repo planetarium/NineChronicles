@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bencodex.Types;
@@ -14,6 +13,7 @@ using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
 using Nekoyume.Helper;
+using Nekoyume.Model.State;
 using UniRx;
 
 namespace Nekoyume.BlockChain
@@ -63,5 +63,9 @@ namespace Nekoyume.BlockChain
         FungibleAssetValue GetBalance(Address address, Currency currency);
 
         Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency);
+
+        Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList);
+
+        Task<Dictionary<Address, IValue>> GetStateBulk(IEnumerable<Address> addressList);
     }
 }

@@ -117,25 +117,26 @@ namespace Nekoyume
                 }
 
                 case OrderBuyerMail orderBuyerMail:
-                    var buyerItemName = await Util.GetItemNameByOrderId(orderBuyerMail.OrderId, true);
+                    var itemBase = await Util.GetItemBaseByOrderId(orderBuyerMail.OrderId);
                     return string.Format(L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
-                        buyerItemName);
+                        itemBase.GetLocalizedNonColoredName());
 
                 case OrderSellerMail orderSellerMail:
                     var order = await Util.GetOrder(orderSellerMail.OrderId);
-                    var sellerItemName = await Util.GetItemNameByOrderId(orderSellerMail.OrderId, true);
+                    var sellerItemBase = await Util.GetItemBaseByOrderId(orderSellerMail.OrderId);
                     var taxedPrice = order.Price - order.GetTax();
-                    return string.Format(L10nManager.Localize("UI_SELLER_MAIL_FORMAT"), taxedPrice, sellerItemName);
+                    return string.Format(L10nManager.Localize("UI_SELLER_MAIL_FORMAT"),
+                        taxedPrice, sellerItemBase.GetLocalizedNonColoredName());
 
                 case OrderExpirationMail orderExpirationMail:
-                    var expiredItemName = await Util.GetItemNameByOrderId(orderExpirationMail.OrderId, true);
+                    var expiredItemBase = await Util.GetItemBaseByOrderId(orderExpirationMail.OrderId);
                     return string.Format(L10nManager.Localize("UI_SELL_EXPIRATION_MAIL_FORMAT"),
-                        expiredItemName);
+                        expiredItemBase.GetLocalizedNonColoredName());
 
                 case CancelOrderMail cancelOrderMail:
-                    var cancelItemName = await Util.GetItemNameByOrderId(cancelOrderMail.OrderId, true);
+                    var cancelItemBase = await Util.GetItemBaseByOrderId(cancelOrderMail.OrderId);
                     return string.Format(L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
-                        cancelItemName);
+                        cancelItemBase.GetLocalizedNonColoredName());
 
                 case BuyerMail buyerMail:
                     var buyerMailItemBase = GetItemBase(buyerMail.attachment);

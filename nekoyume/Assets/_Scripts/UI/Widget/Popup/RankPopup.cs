@@ -77,7 +77,7 @@ namespace Nekoyume.UI
         private List<ToggleDropdown> categoryDropdowns = null;
 
         [SerializeField]
-        private List<Button> notImplementedToggles = null;
+        private List<Button> maintenancingToggles = null;
 
         [SerializeField]
         private Blur blur = null;
@@ -142,10 +142,10 @@ namespace Nekoyume.UI
                 dropDown.onClickToggle.AddListener(AudioController.PlayClick);
             }
 
-            foreach (var button in notImplementedToggles)
+            foreach (var button in maintenancingToggles)
             {
                 button.OnClickAsObservable()
-                    .Subscribe(_ => AlertNotImplemented())
+                    .Subscribe(_ => AlertMaintenancing())
                     .AddTo(gameObject);
             }
 
@@ -169,7 +169,8 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            UpdateCategory(RankCategory.Ability, true);
+            var firstCategory = categoryToggles.FirstOrDefault(x => x.Category != RankCategory.Maintenance);
+            UpdateCategory(firstCategory.Category, true);
 
             if (blur)
             {
@@ -364,9 +365,9 @@ namespace Nekoyume.UI
             }
         }
 
-        private void AlertNotImplemented()
+        private void AlertMaintenancing()
         {
-            Find<TitleOneButtonSystem>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+            Find<TitleOneButtonSystem>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_MAINTENANCE");
         }
     }
 }
