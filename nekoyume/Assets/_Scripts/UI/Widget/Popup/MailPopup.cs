@@ -173,12 +173,7 @@ namespace Nekoyume.UI
 
         private void OnReceivedTutorialEquipment()
         {
-            var tutorialController = Game.Game.instance.Stage.TutorialController;
-            tutorialController.GetTutorialProgress();
-            if (tutorialController.CurrentlyPlayingId < 37)
-            {
-                tutorialController.Stop(() => tutorialController.Play(37));
-            }
+            //It is not currently used, but but might use it later
         }
 
         public void UpdateTabs(long? blockIndex = null)

@@ -3,6 +3,7 @@
     {
       "id": 1,
       "nextId": 0,
+      "checkPointId": 2,
       "data": {
         "presetId": 1,
         "targetType": 1,
@@ -15,6 +16,7 @@
     {
       "id": 2,
       "nextId": 3,
+      "checkPointId": 2,
       "data": {
         "presetId": 2,
         "targetType": 0,
@@ -27,6 +29,7 @@
     {
       "id": 3,
       "nextId": 4,
+      "checkPointId": 2,
       "data": {
         "presetId": 4,
         "targetType": 0,
@@ -39,6 +42,7 @@
     {
       "id": 4,
       "nextId": 6,
+      "checkPointId": 2,
       "data": {
         "presetId": 8,
         "targetType": 2,
@@ -51,6 +55,7 @@
     {
       "id": 6,
       "nextId": 8,
+      "checkPointId": 2,
       "data": {
         "presetId": 1,
         "targetType": 4,
@@ -64,6 +69,7 @@
     {
       "id": 8,
       "nextId": 9,
+      "checkPointId": 2,
       "data": {
         "presetId": 9,
         "targetType": 9,
@@ -76,6 +82,7 @@
     {
       "id": 9,
       "nextId": 11,
+      "checkPointId": 2,
       "data": {
         "presetId": 5,
         "targetType": 9,
@@ -90,6 +97,7 @@
     {
       "id": 11,
       "nextId": 12,
+      "checkPointId": 2,
       "data": {
         "presetId": 9,
         "targetType": 8,
@@ -102,8 +110,9 @@
     {
       "id": 12,
       "nextId": 15,
+      "checkPointId": 12,
       "data": {
-        "presetId": 4,
+        "presetId": 2,
         "targetType": 0,
         "actionType": 0,
         "emojiType": 2,
@@ -126,6 +135,7 @@
     {
       "id": 14,
       "nextId": 15,
+      "checkPointId": 12,
       "data": {
         "presetId": 2,
         "targetType": 16,
@@ -138,6 +148,7 @@
     {
       "id": 15,
       "nextId": 29,
+      "checkPointId": 12,
       "data": {
         "presetId": 4,
         "targetType": 0,
@@ -306,6 +317,7 @@
     {
       "id": 29,
       "nextId": 30,
+      "checkPointId": 12,
       "data": {
         "presetId": 4,
         "targetType": 0,
@@ -318,6 +330,7 @@
     {
       "id": 30,
       "nextId": 31,
+      "checkPointId": 12,
       "data": {
         "presetId": 4,
         "targetType": 0,
@@ -330,6 +343,7 @@
     {
       "id": 31,
       "nextId": 32,
+      "checkPointId": 12,
       "data": {
         "presetId": 4,
         "targetType": 0,
@@ -342,6 +356,7 @@
     {
       "id": 32,
       "nextId": 33,
+      "checkPointId": 12,
       "data": {
         "presetId": 4,
         "targetType": 0,
@@ -354,6 +369,7 @@
     {
       "id": 33,
       "nextId": 48,
+      "checkPointId": 12,
       "data": {
         "presetId": 4,
         "targetType": 0,
@@ -537,6 +553,7 @@
     {
       "id": 48,
       "nextId": 49,
+      "checkPointId": 48,
       "data": {
         "presetId": 10,
         "targetType": 13,
@@ -549,6 +566,7 @@
     {
       "id": 49,
       "nextId": 0,
+      "checkPointId": 0,
       "data": {
         "presetId": 1,
         "targetType": 17,

@@ -80,6 +80,21 @@ namespace Nekoyume.UI
             _callback = callback;
         }
 
+        public void Stop(System.Action callback = null)
+        {
+            _onClickDispose?.Dispose();
+            _onClickDispose = null;
+            _onClickWithSkipDispose?.Dispose();
+            _onClickWithSkipDispose = null;
+            _finishRef = 0;
+            _playTimeRef = 0;
+            _isPlaying = true;
+            foreach (var item in items)
+            {
+                item.Item.Stop(() => PlayEnd(callback));
+            }
+        }
+
         private void RunStopwatch()
         {
             if (_coroutine != null)
@@ -95,21 +110,6 @@ namespace Nekoyume.UI
             _playTimeRef = 1;
             yield return new WaitForSeconds(playTime);
             PlayEnd();
-        }
-
-        public void Stop(System.Action callback = null)
-        {
-            _onClickDispose.Dispose();
-            _onClickDispose = null;
-            _onClickWithSkipDispose.Dispose();
-            _onClickWithSkipDispose = null;
-            _finishRef = 0;
-            _playTimeRef = 0;
-            _isPlaying = true;
-            foreach (var item in items)
-            {
-                item.Item.Stop(() => PlayEnd(callback));
-            }
         }
 
         private void PlayEnd(System.Action callback = null)
