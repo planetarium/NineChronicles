@@ -974,7 +974,7 @@ namespace Nekoyume.BlockChain
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
                     enemyAvatarState,
-                    eval.Action.consumableIds,
+                    new List<Guid>(),
                     Game.Game.instance.TableSheets.GetRankingSimulatorSheets(),
                     Action.RankingBattle.StageId,
                     arenaInfo,

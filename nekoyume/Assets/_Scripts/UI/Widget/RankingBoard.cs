@@ -400,8 +400,7 @@ namespace Nekoyume.UI
                     .Select(i => i.ItemId).ToList(),
                 currentAvatarInventory.Equipments
                     .Where(i => i.equipped)
-                    .Select(i => i.ItemId).ToList(),
-                new List<Guid>()
+                    .Select(i => i.ItemId).ToList()
             ).Subscribe();
             Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
         }

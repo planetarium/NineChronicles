@@ -491,8 +491,7 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
             Address enemyAddress,
             List<Guid> costumeIds,
-            List<Guid> equipmentIds,
-            List<Guid> consumableIds
+            List<Guid> equipmentIds
         )
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
@@ -508,7 +507,6 @@ namespace Nekoyume.BlockChain
                 weeklyArenaAddress = weeklyArenaAddress,
                 costumeIds = costumeIds,
                 equipmentIds = equipmentIds,
-                consumableIds = consumableIds
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
