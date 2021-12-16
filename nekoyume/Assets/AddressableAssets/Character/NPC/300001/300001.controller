@@ -73,7 +73,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Loop_01
+  m_Name: Loop
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -190,7 +190,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Emotion_01
+  m_Name: Emotion
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -241,7 +241,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Touch_01
+  animationClip: Touch
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -252,7 +252,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Greeting_01
+  m_Name: Greeting
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -390,7 +390,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Loop_01
+  animationClip: Loop
   timeScale: 1
   exitTime: 1
   loop: 1
@@ -516,7 +516,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Idle_01
+  animationClip: Idle
   timeScale: 1
   exitTime: 1
   loop: 1
@@ -656,7 +656,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Disappear_01
+  m_Name: Disappear
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -683,7 +683,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Appear_01
+  m_Name: Appear
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -711,7 +711,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Idle_01
+  m_Name: Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -796,7 +796,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Appear_01
+  animationClip: Appear
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -914,7 +914,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Greeting_01
+  animationClip: Greeting
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -942,7 +942,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Touch_01
+  m_Name: Touch
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -976,7 +976,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Emotion_01
+  animationClip: Emotion
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -1077,7 +1077,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Disappear_01
+  animationClip: Disappear
   timeScale: 1
   exitTime: 1
   loop: 0
