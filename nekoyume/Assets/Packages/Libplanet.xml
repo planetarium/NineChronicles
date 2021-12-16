@@ -2263,9 +2263,8 @@
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.StageTransaction(Libplanet.Tx.Transaction{`0})">
             <summary>
-            Adds a <paramref name="transaction"/> to the pending list so that
-            a next <see cref="T:Libplanet.Blocks.Block`1"/> to be mined contains the given
-            <paramref name="transaction"/>.
+            Adds <paramref name="transaction"/> to the pending list so that a next
+            <see cref="T:Libplanet.Blocks.Block`1"/> to be mined may contain given <paramref name="transaction"/>.
             </summary>
             <param name="transaction"><see cref="T:Libplanet.Tx.Transaction`1"/> to add to the pending list.
             </param>
@@ -2901,124 +2900,168 @@
         </member>
         <member name="T:Libplanet.Blockchain.Policies.IStagePolicy`1">
             <summary>
-            The interface to configure a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s strategy to deal with staged
+            An interface to configure a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s strategy to deal with staged
             transactions.
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
-            <remarks>Every operation on an object implementing this must be thread-safe.</remarks>
+            the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+            <remarks>
+            Every operation of an implementation of this <c>interface</c> must be thread-safe.
+            </remarks>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Stage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0})">
             <summary>
             Stages a <paramref name="transaction"/>.
             </summary>
-            <param name="blockChain">The chain to stage the <paramref name="transaction"/>.
+            <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> that the stage belongs to.
             </param>
             <param name="transaction">The <seealso cref="T:Libplanet.Tx.Transaction`1"/> to be staged.</param>
-            <remarks>It does not throw any exception even if the <paramref name="transaction"/> has
-            already been staged.  It does nothing either if the <paramref name="transaction"/> has
-            marked as ignored (using <see cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Ignore(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)"/> method).</remarks>
+            <remarks>
+            <para>
+            This does not throw any exception regardless of whether <paramref name="transaction"/>
+            was successfully staged or not.
+            </para>
+            <para>
+            If the <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of <paramref name="transaction"/> is marked
+            as ignored, <paramref name="transaction"/> will not be staged.
+            </para>
+            </remarks>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Unstage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
             <summary>
-            Removes a transaction <paramref name="id"/> from the stage.
+            Unstages a transaction <paramref name="id"/>.
             </summary>
-            <param name="blockChain">The chain to unstage the <paramref name="id"/>.</param>
-            <param name="id">The <seealso cref="P:Libplanet.Tx.Transaction`1.Id"/> to remove.</param>
-            <remarks>It does not throw any exception even if the <paramref name="id"/> has never
-            been staged.</remarks>
+            <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> that the stage belongs to.
+            </param>
+            <param name="id">The <seealso cref="P:Libplanet.Tx.Transaction`1.Id"/> to unstage.</param>
+            <remarks>
+            This does not throw any exception regardless of whether <paramref name="id"/> was
+            successfully unstaged or not.
+            </remarks>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Ignore(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
             <summary>
-            Marks a transaction as ignored, so that it will be never staged.
+            Marks given <paramref name="id"/> as ignored.
             </summary>
-            <param name="blockChain">The chain that the stage belongs to.</param>
+            <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> that the stage belongs to.
+            </param>
             <param name="id">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> to ignore.</param>
-            <remarks>If the transaction is already in the stage, this method does nothing.</remarks>
+            <remarks>
+            If the <see cref="T:Libplanet.Tx.Transaction`1"/> associated with <paramref name="id"/> is already
+            staged, this also unstages the <see cref="T:Libplanet.Tx.Transaction`1"/>.
+            </remarks>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Ignores(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
             <summary>
-            Checks if a transaction should be ignored for any reasons (for example, it is already
-            staged or marked as ignored).
+            Checks if given <paramref name="id"/> is marked as ignored.
             </summary>
-            <param name="blockChain">The chain that the stage belongs to.</param>
+            <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> that the stage belongs to.
+            </param>
             <param name="id">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> to check.</param>
-            <returns><c>true</c> if a transaction should be ignored.
-            Otherwise, <c>false</c>.</returns>
+            <returns><c>true</c> if <paramref name="id"/> is marked as ignored,
+            <c>false</c> otherwise.</returns>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
             <summary>
-            Gets a staged <see cref="T:Libplanet.Tx.Transaction`1"/> by its <paramref name="id"/>.
+            Retrieves a staged <see cref="T:Libplanet.Tx.Transaction`1"/> by its <paramref name="id"/>.
             </summary>
-            <param name="blockChain">The chain that the stage belongs to.</param>
+            <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> that the stage belongs to.
+            </param>
             <param name="id">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> to get.</param>
-            <param name="includeUnstaged">Whether to include transactions that had once staged but
-            unstaged then.</param>
-            <returns>A staged transaction if found.  If it had never staged <c>null</c> is
-            returned.</returns>
+            <param name="filtered">Whether to filter masked staged <see cref="T:Libplanet.Tx.Transaction`1"/>s
+            or not.  Set to <c>true</c> by default.</param>
+            <returns>The staged <see cref="T:Libplanet.Tx.Transaction`1"/> associated with <paramref name="id"/>
+            if found,  <c>null</c> otherwise.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Iterate">
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Iterate(Libplanet.Blockchain.BlockChain{`0},System.Boolean)">
             <summary>
-            Enumerates all staged transaction IDs.
+            Enumerates all staged <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
-            <returns>Staged transactions.  The earliest staged transaction goes first,
-            and the latest staged transaction goes last.</returns>
+            <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> that the stage belongs to.
+            </param>
+            <param name="filtered">Whether to filter masked staged <see cref="T:Libplanet.Tx.Transaction`1"/>s
+            or not.  Set to <c>true</c> by default.</param>
+            <returns>All staged transactions.  No ordering is guaranteed.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.GetNextTxNonce(Libplanet.Address,System.Int64)">
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.GetNextTxNonce(Libplanet.Blockchain.BlockChain{`0},Libplanet.Address)">
             <summary>
-            Get the next transaction nonce according for the <paramref name="address"/>.
+            Calculates the next nonce according for given <paramref name="address"/>.
             </summary>
-            <param name="address"><see cref="T:Libplanet.Address"/> to get transaction.</param>
-            <param name="minedTxs">Receives the expected latest nonce of the
-            <paramref name="address"/> being looked up on the blockchain.</param>
-            <returns>The next transaction nonce.</returns>
+            <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> that the stage belongs to.
+            </param>
+            <param name="address">The <see cref="T:Libplanet.Address"/> to calculate the next nonce for.
+            </param>
+            <returns>The next appropriate nonce for <paramref name="address"/>.</returns>
         </member>
         <member name="T:Libplanet.Blockchain.Policies.VolatileStagePolicy`1">
             <summary>
-            In-memory staged transactions.
+            <para>
+            An in memory implementation of the <see cref="T:Libplanet.Blockchain.Policies.IStagePolicy`1"/>.
+            </para>
+            <para>
+            This implementation holds on to every unconfirmed <see cref="T:Libplanet.Tx.Transaction`1"/> except
+            for the following reasons:
+            <list type="bullet">
+                <item>
+                    <description>A <see cref="T:Libplanet.Tx.Transaction`1"/> has been specifically marked to
+                    be ignored due to <see cref="T:Libplanet.Tx.Transaction`1"/> not being valid.</description>
+                </item>
+                <item>
+                    <description>A <see cref="T:Libplanet.Tx.Transaction`1"/> has expired due to its staleness.
+                    </description>
+                </item>
+            </list>
+            </para>
+            <para>
+            Additionally, any <see cref="T:Libplanet.Tx.Transaction`1"/> with a lower nonce than that of returned by
+            the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> is masked and filtered by default.
+            </para>
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+            the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.#ctor">
             <summary>
             Creates a new <see cref="T:Libplanet.Blockchain.Policies.VolatileStagePolicy`1"/> instance.
-            <para><see cref="P:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Lifetime"/> is configured to 3 hours.</para>
+            By default, <see cref="P:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Lifetime"/> is configured to 3 hours.
             </summary>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.#ctor(System.TimeSpan)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blockchain.Policies.VolatileStagePolicy`1"/> instance.
             </summary>
-            <param name="lifetime">Volatilizes staged transactions older than this <paramref
-            name="lifetime"/>.  See also the <see cref="P:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Lifetime"/> property.</param>
+            <param name="lifetime">Volatilizes staged transactions older than this
+            <see cref="T:System.TimeSpan"/>.  See also <see cref="P:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Lifetime"/>.</param>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Lifetime">
             <summary>
-            Volatilizes staged transactions older than this <see cref="P:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Lifetime"/>.
-            <para>Note that transactions older than the lifetime never cannot be staged.</para>
+            Lifespan for <see cref="T:Libplanet.Tx.Transaction`1"/>s.  Any <see cref="T:Libplanet.Tx.Transaction`1"/> older
+            than this <see cref="T:System.TimeSpan"/> will be considered expired.
             </summary>
+            <remarks>
+            Expired <see cref="T:Libplanet.Tx.Transaction`1"/>s cannot be staged.
+            </remarks>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Stage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0})">
-            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Stage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0})"/>
+            <inheritdoc/>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Unstage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Unstage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)"/>
+            <inheritdoc/>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Ignore(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Ignore(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)"/>
+            <inheritdoc/>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Ignores(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Ignores(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)"/>
+            <inheritdoc/>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)"/>
+            <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Iterate">
-            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Iterate"/>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Iterate(Libplanet.Blockchain.BlockChain{`0},System.Boolean)">
+            <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.GetNextTxNonce(Libplanet.Address,System.Int64)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.GetNextTxNonce(Libplanet.Address,System.Int64)"/>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.GetNextTxNonce(Libplanet.Blockchain.BlockChain{`0},Libplanet.Address)">
+            <inheritdoc/>
         </member>
         <member name="T:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1">
             <summary>
