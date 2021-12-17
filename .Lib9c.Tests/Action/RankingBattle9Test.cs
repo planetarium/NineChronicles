@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class RankingBattleTest
+    public class RankingBattle9Test
     {
         private readonly TableSheets _tableSheets;
         private readonly Address _agent1Address;
@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _weeklyArenaAddress;
         private readonly IAccountStateDelta _initialState;
 
-        public RankingBattleTest(ITestOutputHelper outputHelper)
+        public RankingBattle9Test(ITestOutputHelper outputHelper)
         {
             _initialState = new State();
 
@@ -196,18 +196,19 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatar2Address, enemyAvatarState.SerializeV2());
             }
 
-            var action = new RankingBattle
+            var action = new RankingBattle9
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
                 weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid> { costume.ItemId },
                 equipmentIds = new List<Guid>(),
+                consumableIds = new List<Guid>(),
             };
 
             Assert.Null(action.Result);
 
-            var nextState = action.Execute(new ActionContext
+            var nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = previousState,
                 Signer = _agent1Address,
@@ -232,9 +233,9 @@ namespace Lib9c.Tests.Action
                 new TestRandom(),
                 previousAvatar1State,
                 action.EnemyAvatarState,
-                new List<Guid>(),
+                action.consumableIds,
                 _tableSheets.GetRankingSimulatorSheets(),
-                RankingBattle.StageId,
+                RankingBattle9.StageId,
                 action.ArenaInfo,
                 action.EnemyArenaInfo,
                 _tableSheets.CostumeStatSheet);
@@ -250,18 +251,19 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidAddressException()
         {
-            var action = new RankingBattle
+            var action = new RankingBattle9
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar1Address,
                 weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
+                consumableIds = new List<Guid>(),
             };
 
             Assert.Throws<InvalidAddressException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = _initialState,
                     Signer = _agent1Address,
@@ -294,18 +296,19 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            var action = new RankingBattle
+            var action = new RankingBattle9
             {
                 avatarAddress = avatarAddress,
                 enemyAddress = enemyAddress,
                 weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
+                consumableIds = new List<Guid>(),
             };
 
             Assert.Throws<FailedLoadStateException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = _initialState,
                     Signer = signer,
@@ -328,18 +331,19 @@ namespace Lib9c.Tests.Action
                 _avatar1Address,
                 previousAvatar1State.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle9
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
                 weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
+                consumableIds = new List<Guid>(),
             };
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
@@ -359,18 +363,19 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle9
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
                 weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
+                consumableIds = new List<Guid>(),
             };
 
             Assert.Throws<WeeklyArenaStateAlreadyEndedException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
@@ -392,18 +397,19 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle9
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
                 weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
+                consumableIds = new List<Guid>(),
             };
 
             Assert.Throws<WeeklyArenaStateNotContainsAvatarAddressException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
@@ -432,18 +438,19 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle9
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
                 weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
+                consumableIds = new List<Guid>(),
             };
 
             Assert.Throws<NotEnoughWeeklyArenaChallengeCountException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
@@ -456,16 +463,17 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new RankingBattle
+            var action = new RankingBattle9
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
                 weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
+                consumableIds = new List<Guid>(),
             };
 
-            var updatedAddresses = new List<Address>
+            var updatedAddresses = new List<Address>()
             {
                 _avatar1Address,
                 _weeklyArenaAddress,
@@ -476,7 +484,7 @@ namespace Lib9c.Tests.Action
 
             var state = new State();
 
-            var nextState = action.Execute(new ActionContext
+            var nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = state,
                 Signer = _agent1Address,
@@ -523,13 +531,14 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatar1Address, previousAvatarState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle9
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
                 weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = equipments,
+                consumableIds = new List<Guid>(),
             };
 
             Assert.Null(action.Result);
