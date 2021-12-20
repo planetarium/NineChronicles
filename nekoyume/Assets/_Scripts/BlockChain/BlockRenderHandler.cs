@@ -94,14 +94,11 @@ namespace Nekoyume.BlockChain
                     AgentStateSubject.OnNextGold(value);
                     return (false, null);
                 });
-                if (!hasException ||
-                    exception is OperationCanceledException)
+                if (hasException ||
+                    !(exception is OperationCanceledException))
                 {
-                    Debug.Log($"[{nameof(BlockRenderHandler)}] NCG updated in {nameof(UpdateWhenEveryBlockRenderBeginningAsync)}");
-                    return;
+                    Debug.LogException(exception);
                 }
-
-                Debug.LogException(exception);
             }
 
             var currentAvatarState = States.Instance.CurrentAvatarState;
@@ -140,14 +137,11 @@ namespace Nekoyume.BlockChain
                     ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
                     return (false, null);
                 });
-                if (!hasException ||
-                    exception is OperationCanceledException)
+                if (hasException ||
+                    !(exception is OperationCanceledException))
                 {
-                    Debug.Log($"[{nameof(BlockRenderHandler)}] AP updated in {nameof(UpdateWhenEveryBlockRenderBeginningAsync)}");
-                    return;
+                    Debug.LogException(exception);
                 }
-
-                Debug.LogException(exception);
             }
 
             UpdateWeeklyArenaStateAsync().Forget();
@@ -201,14 +195,11 @@ namespace Nekoyume.BlockChain
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
                 return (false, null);
             });
-            if (!hasException ||
-                exception is OperationCanceledException)
+            if (hasException ||
+                !(exception is OperationCanceledException))
             {
-                Debug.Log($"[{nameof(BlockRenderHandler)}] WeeklyArenaState updated in {nameof(UpdateWhenEveryBlockRenderBeginningAsync)}");
-                return;
+                Debug.LogException(exception);
             }
-
-            Debug.LogException(exception);
         }
     }
 }
