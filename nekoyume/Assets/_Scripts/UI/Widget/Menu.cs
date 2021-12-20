@@ -434,6 +434,7 @@ namespace Nekoyume.UI
             StopSpeeches();
             Find<Status>().Close(true);
             Find<EventBanner>().Close(true);
+            Game.Game.instance.Stage.selectedPlayer.gameObject.SetActive(false);
             yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);
         }
