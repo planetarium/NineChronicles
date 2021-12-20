@@ -459,6 +459,9 @@ namespace Nekoyume.UI
         {
             ClearInformation();
             upgradeButton.SetCost(ConditionalCostButton.CostType.NCG, (int) row.Cost);
+            var slots = Find<CombinationSlotsPopup>();
+            upgradeButton.Interactable = slots.TryGetEmptyCombinationSlot(out var _);
+
             itemNameText.text = equipment.GetLocalizedName();
             currentLevelText.text = $"+{equipment.level}";
             nextLevelText.text = $"+{equipment.level + 1}";
