@@ -45,16 +45,12 @@ namespace Nekoyume.BlockChain
             Stop();
             _blockRenderer.BlockSubject
                 .ObserveOnMainThread()
-                .Subscribe(tuple =>
-                {
-                    Debug.Log($"[{nameof(BlockRenderHandler)}] Render beginning: {tuple.NewTip?.Index ?? default}, {tuple.NewTip?.ToString() ?? "null"}");
-                    UpdateWhenEveryBlockRenderBeginningAsync().Forget();
-                }).AddTo(_disposables);
+                .Subscribe(_ => UpdateWhenEveryBlockRenderBeginningAsync().Forget())
+                .AddTo(_disposables);
             _blockRenderer.ReorgSubject
                 .ObserveOnMainThread()
-                .Subscribe(tuple =>
+                .Subscribe(_ =>
                 {
-                    Debug.Log($"[{nameof(BlockRenderHandler)}] Reorg beginning: {tuple.NewTip?.Index ?? default}, {tuple.NewTip?.ToString() ?? "null"}");
                     var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
                     UI.NotificationSystem.Push(Model.Mail.MailType.System, msg, NotificationCell.NotificationType.Alert);
                 })
@@ -81,7 +77,7 @@ namespace Nekoyume.BlockChain
             var agentState = States.Instance.AgentState;
             if (agentState != null)
             {
-                var exception = await UniTask.Run(async () =>
+                var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
                 {
                     FungibleAssetValue value;
                     try
@@ -92,14 +88,16 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e)
                     {
-                        return e;
+                        return (true, e);
                     }
 
                     AgentStateSubject.OnNextGold(value);
-                    return null;
+                    return (false, null);
                 });
-                if (exception is OperationCanceledException)
+                if (!hasException ||
+                    exception is OperationCanceledException)
                 {
+                    Debug.Log($"[{nameof(BlockRenderHandler)}] NCG updated in {nameof(UpdateWhenEveryBlockRenderBeginningAsync)}");
                     return;
                 }
 
@@ -109,7 +107,7 @@ namespace Nekoyume.BlockChain
             var currentAvatarState = States.Instance.CurrentAvatarState;
             if (currentAvatarState != null)
             {
-                var exception = await UniTask.Run(async () =>
+                var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
                 {
                     IValue value;
                     try
@@ -118,13 +116,13 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e)
                     {
-                        return e;
+                        return (true, e);
                     }
 
                     if (!(value is Bencodex.Types.Dictionary dict))
                     {
-                        return new InvalidCastException(
-                            $"value cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}");
+                        return (true, new InvalidCastException(
+                            $"value cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}"));
                     }
 
                     var ap = dict.ContainsKey(ActionPointKey)
@@ -140,11 +138,12 @@ namespace Nekoyume.BlockChain
                             ? (int)(Bencodex.Types.Integer)dict[LegacyDailyRewardReceivedIndexKey]
                             : 0;
                     ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
-                    return null;
+                    return (false, null);
                 });
-                if (exception is null ||
+                if (!hasException ||
                     exception is OperationCanceledException)
                 {
+                    Debug.Log($"[{nameof(BlockRenderHandler)}] AP updated in {nameof(UpdateWhenEveryBlockRenderBeginningAsync)}");
                     return;
                 }
 
@@ -186,7 +185,7 @@ namespace Nekoyume.BlockChain
                 (int) currentBlockIndex / gameConfigState.WeeklyArenaInterval;
             var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
 
-            var exception = await UniTask.Run(async () =>
+            var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
             {
                 WeeklyArenaState weeklyArenaState;
                 try
@@ -196,15 +195,16 @@ namespace Nekoyume.BlockChain
                 }
                 catch (Exception e) when (!(e is OperationCanceledException))
                 {
-                    return e;
+                    return (true, e);
                 }
 
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
-                return null;
+                return (false, null);
             });
-            if (exception is null ||
+            if (!hasException ||
                 exception is OperationCanceledException)
             {
+                Debug.Log($"[{nameof(BlockRenderHandler)}] WeeklyArenaState updated in {nameof(UpdateWhenEveryBlockRenderBeginningAsync)}");
                 return;
             }
 
