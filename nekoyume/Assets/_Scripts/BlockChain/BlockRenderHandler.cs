@@ -72,15 +72,22 @@ namespace Nekoyume.BlockChain
 
         private static async UniTaskVoid UpdateWhenEveryBlockRenderBeginningAsync()
         {
-            if (States.Instance.AgentState != null)
+            var agent = Game.Game.instance.Agent;
+            if (agent is null)
+            {
+                return;
+            }
+
+            var agentState = States.Instance.AgentState;
+            if (agentState != null)
             {
                 var exception = await UniTask.Run(async () =>
                 {
                     FungibleAssetValue value;
                     try
                     {
-                        value = await Game.Game.instance.Agent.GetBalanceAsync(
-                            States.Instance.AgentState.address,
+                        value = await agent.GetBalanceAsync(
+                            agentState.address,
                             States.Instance.GoldBalanceState.Gold.Currency);
                     }
                     catch (Exception e)
@@ -99,15 +106,15 @@ namespace Nekoyume.BlockChain
                 Debug.LogException(exception);
             }
 
-            if (States.Instance.CurrentAvatarState != null)
+            var currentAvatarState = States.Instance.CurrentAvatarState;
+            if (currentAvatarState != null)
             {
                 var exception = await UniTask.Run(async () =>
                 {
                     IValue value;
                     try
                     {
-                        value = await Game.Game.instance.Agent.GetStateAsync(States.Instance.CurrentAvatarState
-                            .address);
+                        value = await agent.GetStateAsync(currentAvatarState.address);
                     }
                     catch (Exception e)
                     {
@@ -148,7 +155,7 @@ namespace Nekoyume.BlockChain
             
             // NOTE: Unregister actions created before 300 blocks for optimization.
             // 300 * 12s = 3600s = 1h
-            LocalLayerActions.Instance.UnregisterCreatedBefore(Game.Game.instance.Agent.BlockIndex - 1000);
+            LocalLayerActions.Instance.UnregisterCreatedBefore(agent.BlockIndex - 1000);
         }
 
         private static async UniTaskVoid UpdateWeeklyArenaStateAsync()
