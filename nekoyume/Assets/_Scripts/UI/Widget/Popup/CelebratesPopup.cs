@@ -58,6 +58,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI recipeNameText = null;
 
         [SerializeField]
+        private TextMeshProUGUI recipeOptionText = null;
+
+        [SerializeField]
         private GameObject menuContainer = null;
 
         [SerializeField]
@@ -257,6 +260,7 @@ namespace Nekoyume.UI
                 gradeImages[i].SetActive(i < resultItem.Grade);
             }
             recipeNameText.text = resultItem.GetLocalizedName(false);
+            recipeOptionText.text = resultItem.GetUniqueStat().DecimalStatToString();
             recipeAreaParent.SetActive(true);
 
             _rewards = null;
