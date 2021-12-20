@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Libplanet.Blocks;
 using Nekoyume.Action;
 using Nekoyume.L10n;
@@ -43,16 +45,12 @@ namespace Nekoyume.BlockChain
             Stop();
             _blockRenderer.BlockSubject
                 .ObserveOnMainThread()
-                .Subscribe(tuple =>
-                {
-                    Debug.Log($"[{nameof(BlockRenderHandler)}] Render beginning");
-                    UpdateWhenEveryBlockRenderBeginning();
-                }).AddTo(_disposables);
+                .Subscribe(_ => UpdateWhenEveryBlockRenderBeginningAsync().Forget())
+                .AddTo(_disposables);
             _blockRenderer.ReorgSubject
                 .ObserveOnMainThread()
                 .Subscribe(_ =>
                 {
-                    Debug.Log($"[{nameof(BlockRenderHandler)}] Reorg beginning");
                     var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
                     UI.NotificationSystem.Push(Model.Mail.MailType.System, msg, NotificationCell.NotificationType.Alert);
                 })
@@ -68,27 +66,60 @@ namespace Nekoyume.BlockChain
             _disposables.DisposeAllAndClear();
         }
 
-        private static void UpdateWhenEveryBlockRenderBeginning()
+        private static async UniTaskVoid UpdateWhenEveryBlockRenderBeginningAsync()
         {
-            if (States.Instance.AgentState != null)
+            var agent = Game.Game.instance.Agent;
+            if (agent is null)
             {
-                UniTask.Run(async () =>
-                {
-                    var value = await Game.Game.instance.Agent.GetBalanceAsync(
-                        States.Instance.AgentState.address,
-                        States.Instance.GoldBalanceState.Gold.Currency);
-                    AgentStateSubject.OnNextGold(value);
-                });
+                return;
             }
 
-            if (States.Instance.CurrentAvatarState != null)
+            var agentState = States.Instance.AgentState;
+            if (agentState != null)
             {
-                UniTask.Run(async () =>
+                var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
                 {
-                    var value = await Game.Game.instance.Agent.GetStateAsync(States.Instance.CurrentAvatarState.address);
+                    FungibleAssetValue value;
+                    try
+                    {
+                        value = await agent.GetBalanceAsync(
+                            agentState.address,
+                            States.Instance.GoldBalanceState.Gold.Currency);
+                    }
+                    catch (Exception e)
+                    {
+                        return (true, e);
+                    }
+
+                    AgentStateSubject.OnNextGold(value);
+                    return (false, null);
+                });
+                if (hasException ||
+                    !(exception is OperationCanceledException))
+                {
+                    Debug.LogException(exception);
+                }
+            }
+
+            var currentAvatarState = States.Instance.CurrentAvatarState;
+            if (currentAvatarState != null)
+            {
+                var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
+                {
+                    IValue value;
+                    try
+                    {
+                        value = await agent.GetStateAsync(currentAvatarState.address);
+                    }
+                    catch (Exception e)
+                    {
+                        return (true, e);
+                    }
+
                     if (!(value is Bencodex.Types.Dictionary dict))
                     {
-                        return;
+                        return (true, new InvalidCastException(
+                            $"value cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}"));
                     }
 
                     var ap = dict.ContainsKey(ActionPointKey)
@@ -104,17 +135,23 @@ namespace Nekoyume.BlockChain
                             ? (int)(Bencodex.Types.Integer)dict[LegacyDailyRewardReceivedIndexKey]
                             : 0;
                     ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
+                    return (false, null);
                 });
+                if (hasException ||
+                    !(exception is OperationCanceledException))
+                {
+                    Debug.LogException(exception);
+                }
             }
 
-            UpdateWeeklyArenaState();
+            UpdateWeeklyArenaStateAsync().Forget();
             
             // NOTE: Unregister actions created before 300 blocks for optimization.
             // 300 * 12s = 3600s = 1h
-            LocalLayerActions.Instance.UnregisterCreatedBefore(Game.Game.instance.Agent.BlockIndex - 1000);
+            LocalLayerActions.Instance.UnregisterCreatedBefore(agent.BlockIndex - 1000);
         }
 
-        private static void UpdateWeeklyArenaState()
+        private static async UniTaskVoid UpdateWeeklyArenaStateAsync()
         {
             var doNothing = true;
             var agent = Game.Game.instance.Agent;
@@ -142,13 +179,27 @@ namespace Nekoyume.BlockChain
                 (int) currentBlockIndex / gameConfigState.WeeklyArenaInterval;
             var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
 
-            UniTask.Run(async () =>
+            var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
             {
-                var weeklyArenaState =
-                    new WeeklyArenaState(
-                        (Bencodex.Types.Dictionary) await agent.GetStateAsync(weeklyArenaAddress));
+                WeeklyArenaState weeklyArenaState;
+                try
+                {
+                    weeklyArenaState = new WeeklyArenaState(
+                        (Bencodex.Types.Dictionary)await agent.GetStateAsync(weeklyArenaAddress));
+                }
+                catch (Exception e) when (!(e is OperationCanceledException))
+                {
+                    return (true, e);
+                }
+
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
+                return (false, null);
             });
+            if (hasException ||
+                !(exception is OperationCanceledException))
+            {
+                Debug.LogException(exception);
+            }
         }
     }
 }

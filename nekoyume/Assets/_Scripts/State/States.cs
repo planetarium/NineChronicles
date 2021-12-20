@@ -271,7 +271,7 @@ namespace Nekoyume.State
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
             }
 
-            var isNew = CurrentAvatarKey != index;
+            var isNew = CurrentAvatarKey != -1 && CurrentAvatarKey != index;
 
             CurrentAvatarKey = index;
             var avatarState = _avatarStates[CurrentAvatarKey];
@@ -283,14 +283,8 @@ namespace Nekoyume.State
                 _combinationSlotStates.Clear();
                 await UniTask.Run(async () =>
                 {
-                    var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
-                    if (!exist)
-                    {
-                        return;
-                    }
-
-                    await SetCombinationSlotStatesAsync(curAvatarState);
-                    await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
+                    await SetCombinationSlotStatesAsync(avatarState);
+                    await AddOrReplaceAvatarStateAsync(avatarState, CurrentAvatarKey);
                 });
             }
 
