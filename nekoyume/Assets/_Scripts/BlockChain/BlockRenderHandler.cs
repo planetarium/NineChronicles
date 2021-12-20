@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Libplanet.Blocks;
 using Nekoyume.Action;
 using Nekoyume.L10n;
@@ -74,9 +76,19 @@ namespace Nekoyume.BlockChain
             {
                 UniTask.Run(async () =>
                 {
-                    var value = await Game.Game.instance.Agent.GetBalanceAsync(
-                        States.Instance.AgentState.address,
-                        States.Instance.GoldBalanceState.Gold.Currency);
+                    FungibleAssetValue value;
+                    try
+                    {
+                        value = await Game.Game.instance.Agent.GetBalanceAsync(
+                            States.Instance.AgentState.address,
+                            States.Instance.GoldBalanceState.Gold.Currency);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                        return;
+                    }
+
                     AgentStateSubject.OnNextGold(value);
                 });
             }
@@ -85,7 +97,18 @@ namespace Nekoyume.BlockChain
             {
                 UniTask.Run(async () =>
                 {
-                    var value = await Game.Game.instance.Agent.GetStateAsync(States.Instance.CurrentAvatarState.address);
+                    IValue value;
+                    try
+                    {
+                        value = await Game.Game.instance.Agent.GetStateAsync(States.Instance.CurrentAvatarState
+                            .address);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                        return;
+                    }
+
                     if (!(value is Bencodex.Types.Dictionary dict))
                     {
                         return;
@@ -144,9 +167,18 @@ namespace Nekoyume.BlockChain
 
             UniTask.Run(async () =>
             {
-                var weeklyArenaState =
-                    new WeeklyArenaState(
-                        (Bencodex.Types.Dictionary) await agent.GetStateAsync(weeklyArenaAddress));
+                WeeklyArenaState weeklyArenaState;
+                try
+                {
+                    weeklyArenaState = new WeeklyArenaState(
+                        (Bencodex.Types.Dictionary)await agent.GetStateAsync(weeklyArenaAddress));
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    return;
+                }
+
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
             });
         }
