@@ -126,7 +126,7 @@ namespace Nekoyume.UI
         {
             if (isTutorial)
             {
-                ShowForTutorial(false);
+                ShowForTutorial(false, stageId);
                 return;
             }
 
@@ -179,7 +179,7 @@ namespace Nekoyume.UI
         }
 
         #region tutorial
-        public void ShowForTutorial(bool isPrologue)
+        public void ShowForTutorial(bool isPrologue, int stageId = 0)
         {
             if (isPrologue)
             {
@@ -187,10 +187,11 @@ namespace Nekoyume.UI
             }
             else
             {
+                stageText.text = $"STAGE {StageInformation.GetStageIdString(stageId, true)}";
+                stageText.gameObject.SetActive(true);
                 stageProgressBar.Show();
             }
 
-            stageText.gameObject.SetActive(true);
             guidedQuest.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             repeatToggle.gameObject.SetActive(false);
