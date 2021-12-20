@@ -48,7 +48,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(tuple =>
                 {
                     Debug.Log($"[{nameof(BlockRenderHandler)}] Render beginning: {tuple.NewTip?.Index ?? default}, {tuple.NewTip?.ToString() ?? "null"}");
-                    UpdateWhenEveryBlockRenderBeginning();
+                    UpdateWhenEveryBlockRenderBeginningAsync().Forget();
                 }).AddTo(_disposables);
             _blockRenderer.ReorgSubject
                 .ObserveOnMainThread()
@@ -70,11 +70,11 @@ namespace Nekoyume.BlockChain
             _disposables.DisposeAllAndClear();
         }
 
-        private static void UpdateWhenEveryBlockRenderBeginning()
+        private static async UniTaskVoid UpdateWhenEveryBlockRenderBeginningAsync()
         {
             if (States.Instance.AgentState != null)
             {
-                var task = UniTask.Run(async () =>
+                var exception = await UniTask.Run(async () =>
                 {
                     FungibleAssetValue value;
                     try
@@ -91,21 +91,17 @@ namespace Nekoyume.BlockChain
                     AgentStateSubject.OnNextGold(value);
                     return null;
                 });
-                task.GetAwaiter().OnCompleted(() =>
+                if (exception is OperationCanceledException)
                 {
-                    var exception = task.GetAwaiter().GetResult();
-                    if (exception is OperationCanceledException)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    Debug.LogException(exception);
-                });
+                Debug.LogException(exception);
             }
 
             if (States.Instance.CurrentAvatarState != null)
             {
-                var task = UniTask.Run(async () =>
+                var exception = await UniTask.Run(async () =>
                 {
                     IValue value;
                     try
@@ -139,26 +135,23 @@ namespace Nekoyume.BlockChain
                     ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
                     return null;
                 });
-                task.GetAwaiter().OnCompleted(() =>
+                if (exception is null ||
+                    exception is OperationCanceledException)
                 {
-                    var exception = task.GetAwaiter().GetResult();
-                    if (exception is OperationCanceledException)
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    Debug.LogException(exception);
-                });
+                Debug.LogException(exception);
             }
 
-            UpdateWeeklyArenaState();
+            UpdateWeeklyArenaStateAsync().Forget();
             
             // NOTE: Unregister actions created before 300 blocks for optimization.
             // 300 * 12s = 3600s = 1h
             LocalLayerActions.Instance.UnregisterCreatedBefore(Game.Game.instance.Agent.BlockIndex - 1000);
         }
 
-        private static void UpdateWeeklyArenaState()
+        private static async UniTaskVoid UpdateWeeklyArenaStateAsync()
         {
             var doNothing = true;
             var agent = Game.Game.instance.Agent;
@@ -186,7 +179,7 @@ namespace Nekoyume.BlockChain
                 (int) currentBlockIndex / gameConfigState.WeeklyArenaInterval;
             var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
 
-            var task = UniTask.Run(async () =>
+            var exception = await UniTask.Run(async () =>
             {
                 WeeklyArenaState weeklyArenaState;
                 try
@@ -202,16 +195,13 @@ namespace Nekoyume.BlockChain
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
                 return null;
             });
-            task.GetAwaiter().OnCompleted(() =>
+            if (exception is null ||
+                exception is OperationCanceledException)
             {
-                var exception = task.GetAwaiter().GetResult();
-                if (exception is OperationCanceledException)
-                {
-                    return;
-                }
+                return;
+            }
 
-                Debug.LogException(exception);
-            });
+            Debug.LogException(exception);
         }
     }
 }
