@@ -473,7 +473,6 @@ namespace Nekoyume.UI
             var price = model.Price.Value;
             var count = model.Item.Value.Count.Value;
             var subType = tradableItem.ItemSubType;
-            var itemName = model.Item.Value.ItemBase.Value.GetLocalizedName();
 
             var digest = ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, price, count);
             if (digest != null)
@@ -484,7 +483,7 @@ namespace Nekoyume.UI
                     digest.OrderId,
                     digest.TradableId,
                     subType).Subscribe();
-                ResponseSellCancellation(digest.OrderId, itemName);
+                ResponseSellCancellation(digest.OrderId, digest.TradableId);
             }
         }
 
@@ -541,9 +540,10 @@ namespace Nekoyume.UI
             Refresh();
         }
 
-        private void ResponseSellCancellation(Guid orderId, string itemName)
+        private async void ResponseSellCancellation(Guid orderId, Guid tradableId)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
+            var itemName = await Util.GetItemNameByOrderId(orderId);
             ReactiveShopState.RemoveSellDigest(orderId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");

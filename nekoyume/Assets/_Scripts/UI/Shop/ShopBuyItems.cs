@@ -2,11 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -220,40 +217,19 @@ namespace Nekoyume.UI.Module
             UpdateViewWithFilteredPageIndex(SharedModel.Items.Value);
         }
 
-        private async void UpdateViewWithFilteredPageIndex(
+        private void UpdateViewWithFilteredPageIndex(
             IReadOnlyDictionary<int, List<ShopItem>> models)
         {
             var count = models?.Count ?? 0;
             if (count > _filteredPageIndex)
             {
-                var items = models[_filteredPageIndex];
-                var task = Task.Run(async () =>
-                {
-                    var itemBases = await Util.GetTradableItems(items);
-                    foreach (var itemBase in itemBases)
-                    {
-                        if (itemBase is Equipment equipment)
-                        {
-                            var shopItem = items.FirstOrDefault(x => x.TradableId.Value.Equals(equipment.TradableId));
-                            if(shopItem != null)
-                            {
-                                shopItem.ItemBase.Value = itemBase;
-                            }
-                        }
-                    }
-                    return true;
-                });
-                var result = await task;
-                if (result)
-                {
-
-                    UpdateViewWithItems(items);
-                }
+                UpdateViewWithItems(models[_filteredPageIndex]);
             }
 
             previousPageButton.gameObject.SetActive(_filteredPageIndex > 0);
             nextPageButton.gameObject.SetActive(_filteredPageIndex + 1 < count);
             pageText.text = (_filteredPageIndex + 1).ToString();
+
         }
 
         private void UpdateViewWithItems(IEnumerable<ShopItem> viewModels)
