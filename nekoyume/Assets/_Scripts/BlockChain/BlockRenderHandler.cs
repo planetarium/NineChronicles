@@ -74,7 +74,7 @@ namespace Nekoyume.BlockChain
         {
             if (States.Instance.AgentState != null)
             {
-                UniTask.Run(async () =>
+                var task = UniTask.Run(async () =>
                 {
                     FungibleAssetValue value;
                     try
@@ -85,17 +85,27 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e)
                     {
-                        Debug.LogException(e);
-                        return;
+                        return e;
                     }
 
                     AgentStateSubject.OnNextGold(value);
+                    return null;
+                });
+                task.GetAwaiter().OnCompleted(() =>
+                {
+                    var exception = task.GetAwaiter().GetResult();
+                    if (exception is OperationCanceledException)
+                    {
+                        return;
+                    }
+
+                    Debug.LogException(exception);
                 });
             }
 
             if (States.Instance.CurrentAvatarState != null)
             {
-                UniTask.Run(async () =>
+                var task = UniTask.Run(async () =>
                 {
                     IValue value;
                     try
@@ -105,13 +115,13 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e)
                     {
-                        Debug.LogException(e);
-                        return;
+                        return e;
                     }
 
                     if (!(value is Bencodex.Types.Dictionary dict))
                     {
-                        return;
+                        return new InvalidCastException(
+                            $"value cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}");
                     }
 
                     var ap = dict.ContainsKey(ActionPointKey)
@@ -127,6 +137,17 @@ namespace Nekoyume.BlockChain
                             ? (int)(Bencodex.Types.Integer)dict[LegacyDailyRewardReceivedIndexKey]
                             : 0;
                     ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
+                    return null;
+                });
+                task.GetAwaiter().OnCompleted(() =>
+                {
+                    var exception = task.GetAwaiter().GetResult();
+                    if (exception is OperationCanceledException)
+                    {
+                        return;
+                    }
+
+                    Debug.LogException(exception);
                 });
             }
 
@@ -165,7 +186,7 @@ namespace Nekoyume.BlockChain
                 (int) currentBlockIndex / gameConfigState.WeeklyArenaInterval;
             var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
 
-            UniTask.Run(async () =>
+            var task = UniTask.Run(async () =>
             {
                 WeeklyArenaState weeklyArenaState;
                 try
@@ -173,13 +194,23 @@ namespace Nekoyume.BlockChain
                     weeklyArenaState = new WeeklyArenaState(
                         (Bencodex.Types.Dictionary)await agent.GetStateAsync(weeklyArenaAddress));
                 }
-                catch (Exception e)
+                catch (Exception e) when (!(e is OperationCanceledException))
                 {
-                    Debug.LogException(e);
-                    return;
+                    return e;
                 }
 
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
+                return null;
+            });
+            task.GetAwaiter().OnCompleted(() =>
+            {
+                var exception = task.GetAwaiter().GetResult();
+                if (exception is OperationCanceledException)
+                {
+                    return;
+                }
+
+                Debug.LogException(exception);
             });
         }
     }
