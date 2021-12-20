@@ -275,7 +275,7 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var order = await Util.GetOrder(orderBuyerMail.OrderId);
-            var itemBase = await Util.GetItemBaseByOrderId(order.OrderId);
+            var itemBase = await Util.GetItemBaseByTradableId(order.TradableId, order.ExpiredBlockIndex);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             var popup = Find<BuyItemInformationPopup>();
             var model = new UI.Model.BuyItemInformationPopup(new CountableItem(itemBase, count))
