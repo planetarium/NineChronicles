@@ -47,14 +47,14 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(tuple =>
                 {
-                    Debug.Log($"[{nameof(BlockRenderHandler)}] Render beginning: {tuple.NewTip.Index}, {tuple.NewTip}");
+                    Debug.Log($"[{nameof(BlockRenderHandler)}] Render beginning: {tuple.NewTip?.Index ?? default}, {tuple.NewTip?.ToString() ?? "null"}");
                     UpdateWhenEveryBlockRenderBeginning();
                 }).AddTo(_disposables);
             _blockRenderer.ReorgSubject
                 .ObserveOnMainThread()
                 .Subscribe(tuple =>
                 {
-                    Debug.Log($"[{nameof(BlockRenderHandler)}] Reorg beginning: {tuple.NewTip.Index}, {tuple.NewTip}");
+                    Debug.Log($"[{nameof(BlockRenderHandler)}] Reorg beginning: {tuple.NewTip?.Index ?? default}, {tuple.NewTip?.ToString() ?? "null"}");
                     var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
                     UI.NotificationSystem.Push(Model.Mail.MailType.System, msg, NotificationCell.NotificationType.Alert);
                 })
