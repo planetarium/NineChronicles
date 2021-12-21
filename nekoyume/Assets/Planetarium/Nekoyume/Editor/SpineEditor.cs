@@ -57,7 +57,7 @@ namespace Planetarium.Nekoyume.Editor
                 return;
             }
 
-            CreateSpinePrefabInternal(skeletonDataAsset);
+            CreateSpinePrefab(skeletonDataAsset);
         }
 
         [MenuItem("Tools/9C/Create Spine Prefab(All FullCostume)", false, 0)]
@@ -567,7 +567,31 @@ namespace Planetarium.Nekoyume.Editor
                     continue;
                 }
 
+                try
+                {
+                    CreateSpinePrefab(skeletonDataAsset);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    return;
+                }
+            }
+        }
+
+        private static void CreateSpinePrefab(SkeletonDataAsset skeletonDataAsset)
+        {
+            try
+            {
                 CreateSpinePrefabInternal(skeletonDataAsset);
+            }
+            catch (Exception e)
+            {
+                EditorUtility.DisplayDialog(
+                    "Error",
+                    $"Unexpected exception thrown while creating spine prefab.\n{e}",
+                    "OK");
+                throw e;
             }
         }
 
