@@ -283,10 +283,14 @@ namespace Nekoyume.State
                 _combinationSlotStates.Clear();
                 await UniTask.Run(async () =>
                 {
-                    await SetCombinationSlotStatesAsync(avatarState);
                     await AddOrReplaceAvatarStateAsync(avatarState, CurrentAvatarKey);
                 });
             }
+
+            await UniTask.Run(async () =>
+            {
+                await SetCombinationSlotStatesAsync(avatarState);
+            });
 
             if (Game.Game.instance.Agent is RPCAgent agent)
             {
