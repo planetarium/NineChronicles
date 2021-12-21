@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Grpc.Core;
 using Lib9c.Renderer;
 using Libplanet;
@@ -27,6 +28,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
+using Channel = Grpc.Core.Channel;
 using Logger = Serilog.Core.Logger;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>>;
@@ -554,10 +556,9 @@ namespace Nekoyume.BlockChain
         }
 
         public bool TryGetTxId(Guid actionId, out TxId txId) =>
-            _transactions.TryGetValue(actionId, out txId) &&
-            IsTxStaged(txId);
+            _transactions.TryGetValue(actionId, out txId);
 
-        public bool IsTxStaged(TxId txId) =>
-            _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.Result;
+        public async UniTask<bool> IsTxStagedAsync(TxId txId) =>
+            await _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.AsUniTask();
     }
 }
