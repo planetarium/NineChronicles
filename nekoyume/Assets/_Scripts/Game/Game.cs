@@ -22,6 +22,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 using Menu = Nekoyume.UI.Menu;
 
@@ -48,11 +49,11 @@ namespace Nekoyume.Game
         public States States { get; private set; }
 
         public LocalLayer LocalLayer { get; private set; }
-        
+
         public LocalLayerActions LocalLayerActions { get; private set; }
 
         public IAgent Agent { get; private set; }
-        
+
         public Analyzer Analyzer { get; private set; }
 
         public Stage Stage => stage;
@@ -532,7 +533,7 @@ namespace Nekoyume.Game
             if (Analyzer.Instance != null)
             {
                 Analyzer.Instance.Track("Unity/Player Quit");
-                Analyzer.Instance.Flush();   
+                Analyzer.Instance.Flush();
             }
 
             _logsClient?.Dispose();
@@ -568,6 +569,28 @@ namespace Nekoyume.Game
                 .Subscribe(_ => PopupError(key, code, errorMsg));
 
             MainCanvas.instance.InitWidgetInMain();
+        }
+
+        public void BackToNest()
+        {
+            if (Stage.IsInStage)
+            {
+                NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"),
+                    NotificationCell.NotificationType.Information);
+                return;
+            }
+
+            Event.OnNestEnter.Invoke();
+
+            var deletableWidgets = Widget.FindWidgets().Where(widget =>
+                !(widget is SystemWidget) &&
+                !(widget is MessageCatTooltip) && widget.IsActive());
+            foreach (var widget in deletableWidgets)
+            {
+                widget.Close(true);
+            }
+            Widget.Find<Login>().Show();
         }
 
         public static void PopupError(Exception exc)

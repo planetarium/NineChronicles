@@ -98,7 +98,7 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager
                 .CreateAvatar(_selectedIndex, nickName, _hair,
                     _lens, _ear, _tail)
-                .Subscribe(async eval =>
+                .Subscribe(onNext: async eval =>
                     {
                         var avatarState = await States.Instance.SelectAvatarAsync(_selectedIndex);
                         StartCoroutine(CreateAndLoginAnimation(avatarState));

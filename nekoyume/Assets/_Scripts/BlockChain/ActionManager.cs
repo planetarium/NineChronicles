@@ -125,7 +125,11 @@ namespace Nekoyume.BlockChain
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e))
+                .DoOnError(e =>
+                {
+                    Game.Game.instance.BackToNest();
+                    HandleException(action.Id, e);
+                })
                 .Finally(() =>
                 {
                     var agentAddress = States.Instance.AgentState.address;
@@ -485,6 +489,7 @@ namespace Nekoyume.BlockChain
                     {
                         Game.Game.BackToMain(false, inner);
                     }
+
                 });
         }
 
