@@ -1,4 +1,5 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using Libplanet.Action;
 using Libplanet.Tx;
 using Nekoyume.Action;
@@ -11,7 +12,7 @@ namespace Nekoyume.BlockChain
 {
     public static class ErrorCode
     {
-        public static (string, string, string) GetErrorCode(Exception exc)
+        public static async UniTask<(string, string, string)> GetErrorCodeAsync(Exception exc)
         {
             var key = "ERROR_UNKNOWN";
             var code = "99";
@@ -113,7 +114,7 @@ namespace Nekoyume.BlockChain
                     if (ate.TxId.HasValue)
                     {
                         txId = ate.TxId.Value;
-                        if (Game.Game.instance.Agent.IsTxStaged(txId))
+                        if (await Game.Game.instance.Agent.IsTxStagedAsync(txId))
                         {
                             errorMsg += $" Transaction for action is still staged. (txId: {txId})";
                             code = "26";

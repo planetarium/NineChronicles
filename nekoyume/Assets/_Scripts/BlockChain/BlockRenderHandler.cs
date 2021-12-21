@@ -136,7 +136,7 @@ namespace Nekoyume.BlockChain
                     ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
                     return (false, null);
                 });
-                if (hasException &&!(exception is OperationCanceledException))
+                if (hasException && !(exception is OperationCanceledException))
                 {
                     Debug.LogException(exception);
                 }

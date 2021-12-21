@@ -107,7 +107,7 @@ namespace Nekoyume.UI
                     },
                     e =>
                     {
-                        Game.Game.PopupError(e);
+                        Game.Game.PopupError(e).Forget();
                         Find<GrayLoadingScreen>().Close();
                     });
             AudioController.PlayClick();

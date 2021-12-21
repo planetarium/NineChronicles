@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Lib9c.Formatters;
 using Libplanet;
 using MessagePack;
@@ -558,11 +559,11 @@ namespace Nekoyume.Game
             }
         }
 
-        public static void BackToMain(bool showLoadingScreen, Exception exc)
+        public static async UniTaskVoid BackToMain(bool showLoadingScreen, Exception exc)
         {
             Debug.LogException(exc);
 
-            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
+            var (key, code, errorMsg) = await ErrorCode.GetErrorCodeAsync(exc);
             Event.OnRoomEnter.Invoke(showLoadingScreen);
             instance.Stage.OnRoomEnterEnd
                 .First()
@@ -593,10 +594,10 @@ namespace Nekoyume.Game
             Widget.Find<Login>().Show();
         }
 
-        public static void PopupError(Exception exc)
+        public static async UniTaskVoid PopupError(Exception exc)
         {
             Debug.LogException(exc);
-            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
+            var (key, code, errorMsg) = await ErrorCode.GetErrorCodeAsync(exc);
             PopupError(key, code, errorMsg);
         }
 

@@ -186,7 +186,7 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e2)
                     {
-                        Game.Game.BackToMain(false, e2);
+                        Game.Game.BackToMain(false, e2).Forget();
                     }
                 });
         }
@@ -247,7 +247,7 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e2)
                     {
-                        Game.Game.BackToMain(false, e2);
+                        Game.Game.BackToMain(false, e2).Forget();
                     }
                 });
         }
@@ -487,7 +487,7 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception inner)
                     {
-                        Game.Game.BackToMain(false, inner);
+                        Game.Game.BackToMain(false, inner).Forget();
                     }
 
                 });
@@ -530,7 +530,7 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e2)
                     {
-                        Game.Game.BackToMain(false, e2);
+                        Game.Game.BackToMain(false, e2).Forget();
                     }
                 });
         }
@@ -686,7 +686,7 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e2)
                     {
-                        Game.Game.BackToMain(false, e2);
+                        Game.Game.BackToMain(false, e2).Forget();
                     }
                 });
         }
