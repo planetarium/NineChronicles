@@ -271,7 +271,7 @@ namespace Nekoyume.State
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
             }
 
-            var isNew = CurrentAvatarKey != -1 && CurrentAvatarKey != index;
+            var isNew = CurrentAvatarKey != index;
 
             CurrentAvatarKey = index;
             var avatarState = _avatarStates[CurrentAvatarKey];
@@ -281,19 +281,20 @@ namespace Nekoyume.State
             if (isNew)
             {
                 // notee: commit c1b7f0dc2e8fd922556b83f0b9b2d2d2b2626603 에서 코드 수정이 생기면서
-                // SetCombinationSlotStatesAsync()가 호출이 안되는 이슈가 있어서
-                // SetCombinationSlotStatesAsync()가 isNew 상관없이 호출되도록 임시 수정해놨습니다. 재수정 필요
+                // SetCombinationSlotStatesAsync()가 호출이 안되는 이슈가 있어서 revert했습니다. 재수정 필요
                 _combinationSlotStates.Clear();
                 await UniTask.Run(async () =>
                 {
-                    await AddOrReplaceAvatarStateAsync(avatarState, CurrentAvatarKey);
+                    var (exist, curAvatarState) = await TryGetAvatarStateAsync(avatarState.address);
+                    if (!exist)
+                    {
+                        return;
+                    }
+
+                    await SetCombinationSlotStatesAsync(curAvatarState);
+                    await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
                 });
             }
-
-            await UniTask.Run(async () =>
-            {
-                await SetCombinationSlotStatesAsync(avatarState);
-            });
 
             if (Game.Game.instance.Agent is RPCAgent agent)
             {
