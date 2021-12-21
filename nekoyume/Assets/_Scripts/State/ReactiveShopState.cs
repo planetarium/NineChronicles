@@ -82,8 +82,7 @@ namespace Nekoyume.State
 
 
         // key: orderId
-
-        private static ConcurrentDictionary<Guid, ItemBase> ShopItems { get; } = new ConcurrentDictionary<Guid, ItemBase>();
+        private static ConcurrentDictionary<Guid, ItemBase> CachedShopItems { get; } = new ConcurrentDictionary<Guid, ItemBase>();
 
 
         public static OrderDigest GetSellDigest(Guid tradableId,
@@ -104,7 +103,11 @@ namespace Nekoyume.State
         public static async Task InitAndUpdateBuyDigests()
         {
             _buyDigests = await GetBuyOrderDigests();
-            UpdateBuyDigests();
+            var result = await UpdateCachedShopItems(_buyDigests);
+            if (result)
+            {
+                UpdateBuyDigests();
+            }
         }
 
         public static async void InitSellDigests()
@@ -114,26 +117,25 @@ namespace Nekoyume.State
                 await UniTask.Run(async () =>
                 {
                     _sellDigests = await GetSellOrderDigests();
-                    await InitItemBases(_sellDigests);
+                    await UpdateCachedShopItems(_sellDigests);
                 });
             }
         }
 
         public static async void InitAndUpdateSellDigests()
         {
-            // todo : block index로 캐싱 여부 결정
             _sellDigests = await GetSellOrderDigests();
-            var result = await InitItemBases(_sellDigests);
+            var result = await UpdateCachedShopItems(_sellDigests);
             if (result)
             {
                 UpdateSellDigests();
             }
         }
 
-        private static async Task<bool> InitItemBases(List<OrderDigest> digests)
+        private static async Task<bool> UpdateCachedShopItems(IEnumerable<OrderDigest> digests)
         {
-            ShopItems.Clear();
-            var tuples = digests
+            var selectedDigests = digests.Where(orderDigest => !CachedShopItems.ContainsKey(orderDigest.OrderId)).ToList();
+            var tuples = selectedDigests
                 .Select(e => (Address: Addresses.GetItemAddress(e.TradableId), OrderDigest: e))
                 .ToArray();
             var itemAddresses = tuples.Select(tuple => tuple.Address).Distinct();
@@ -166,7 +168,7 @@ namespace Nekoyume.State
                         c.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
                         break;
                 }
-                ShopItems.TryAdd(orderDigest.OrderId, itemBase);
+                CachedShopItems.TryAdd(orderDigest.OrderId, itemBase);
             }
             return true;
         }
@@ -209,14 +211,14 @@ namespace Nekoyume.State
 
         public static bool TryGetShopItem(OrderDigest orderDigest, out ItemBase itemBase)
         {
-            if (!ShopItems.ContainsKey(orderDigest.OrderId))
+            if (!CachedShopItems.ContainsKey(orderDigest.OrderId))
             {
                 Debug.LogWarning($"[{nameof(TryGetShopItem)}] Not found address: {orderDigest.OrderId}");
                 itemBase = null;
                 return false;
             }
 
-            itemBase = ShopItems[orderDigest.OrderId];
+            itemBase = CachedShopItems[orderDigest.OrderId];
             return true;
         }
 
