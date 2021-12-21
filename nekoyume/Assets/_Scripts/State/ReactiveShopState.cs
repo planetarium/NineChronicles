@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
@@ -15,6 +17,8 @@ using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
+using UnityEditor;
+using UnityEngine;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.State
@@ -76,6 +80,12 @@ namespace Nekoyume.State
         private static List<OrderDigest> _buyDigests = new List<OrderDigest>();
         private static List<OrderDigest> _sellDigests = new List<OrderDigest>();
 
+
+        // key: orderId
+
+        private static ConcurrentDictionary<Guid, ItemBase> ShopItems { get; } = new ConcurrentDictionary<Guid, ItemBase>();
+
+
         public static OrderDigest GetSellDigest(Guid tradableId,
             long requiredBlockIndex,
             FungibleAssetValue price,
@@ -104,14 +114,61 @@ namespace Nekoyume.State
                 await UniTask.Run(async () =>
                 {
                     _sellDigests = await GetSellOrderDigests();
+                    await InitItemBases(_sellDigests);
                 });
             }
         }
 
         public static async void InitAndUpdateSellDigests()
         {
+            // todo : block index로 캐싱 여부 결정
             _sellDigests = await GetSellOrderDigests();
-            UpdateSellDigests();
+            var result = await InitItemBases(_sellDigests);
+            if (result)
+            {
+                UpdateSellDigests();
+            }
+        }
+
+        private static async Task<bool> InitItemBases(List<OrderDigest> digests)
+        {
+            ShopItems.Clear();
+            var tuples = digests
+                .Select(e => (Address: Addresses.GetItemAddress(e.TradableId), OrderDigest: e))
+                .ToArray();
+            var itemAddresses = tuples.Select(tuple => tuple.Address).Distinct();
+            var itemValues = await Game.Game.instance.Agent.GetStateBulk(itemAddresses);
+            foreach (var (address, orderDigest) in tuples)
+            {
+                if (!itemValues.ContainsKey(address))
+                {
+                    Debug.LogWarning($"[{nameof(ReactiveShopState)}] Not found address: {address.ToHex()}");
+                    continue;
+                }
+
+                var itemValue = itemValues[address];
+                if (!(itemValue is Dictionary dictionary))
+                {
+                    Debug.LogWarning($"[{nameof(ReactiveShopState)}] {nameof(itemValue)} cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}");
+                    continue;
+                }
+
+                var itemBase = ItemFactory.Deserialize(dictionary);
+                switch (itemBase)
+                {
+                    case TradableMaterial tm:
+                        tm.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
+                        break;
+                    case ItemUsable iu:
+                        iu.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
+                        break;
+                    case Costume c:
+                        c.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
+                        break;
+                }
+                ShopItems.TryAdd(orderDigest.OrderId, itemBase);
+            }
+            return true;
         }
 
         private static void UpdateBuyDigests()
@@ -148,6 +205,19 @@ namespace Nekoyume.State
             }
 
             UpdateSellDigests();
+        }
+
+        public static bool TryGetShopItem(OrderDigest orderDigest, out ItemBase itemBase)
+        {
+            if (!ShopItems.ContainsKey(orderDigest.OrderId))
+            {
+                Debug.LogWarning($"[{nameof(TryGetShopItem)}] Not found address: {orderDigest.OrderId}");
+                itemBase = null;
+                return false;
+            }
+
+            itemBase = ShopItems[orderDigest.OrderId];
+            return true;
         }
 
         private static

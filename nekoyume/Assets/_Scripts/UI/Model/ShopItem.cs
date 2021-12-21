@@ -1,7 +1,6 @@
 using System;
 using Lib9c.Model.Order;
 using Libplanet.Assets;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -18,11 +17,7 @@ namespace Nekoyume.UI.Model
 
         public ShopItemView View;
 
-        public ShopItem(OrderDigest orderDigest) : this(orderDigest, Util.CreateItemBaseByItemId(orderDigest.ItemId))
-        {
-        }
-
-        private ShopItem(OrderDigest orderDigest, ItemBase item) : base(item, orderDigest.ItemCount)
+        public ShopItem(OrderDigest orderDigest, ItemBase item) : base(item, orderDigest.ItemCount)
         {
             GradeEnabled.Value = true;
             Price.Value = orderDigest.Price;

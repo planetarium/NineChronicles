@@ -459,6 +459,7 @@ namespace Nekoyume.UI
                                         SubscribeSellCancellationPopupSubmit,
                                         SubscribeSellCancellationPopupCancel);
         }
+
         private void SubscribeSellCancellationPopupSubmit()
         {
             var model = SharedModel.ItemCountAndPricePopup.Value;
@@ -537,7 +538,7 @@ namespace Nekoyume.UI
             }
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
-            Refresh();
+            // Refresh();
         }
 
         private async void ResponseSellCancellation(Guid orderId, Guid tradableId)
@@ -552,7 +553,7 @@ namespace Nekoyume.UI
                 string.Format(format, itemName),
                 NotificationCell.NotificationType.Information);
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
-            Refresh();
+            // Refresh();
         }
 
         private void ShowSpeech(string key,
