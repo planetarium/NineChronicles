@@ -94,8 +94,7 @@ namespace Nekoyume.BlockChain
                     AgentStateSubject.OnNextGold(value);
                     return (false, null);
                 });
-                if (hasException ||
-                    !(exception is OperationCanceledException))
+                if (hasException && !(exception is OperationCanceledException))
                 {
                     Debug.LogException(exception);
                 }
@@ -137,15 +136,14 @@ namespace Nekoyume.BlockChain
                     ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
                     return (false, null);
                 });
-                if (hasException ||
-                    !(exception is OperationCanceledException))
+                if (hasException && !(exception is OperationCanceledException))
                 {
                     Debug.LogException(exception);
                 }
             }
 
             UpdateWeeklyArenaStateAsync().Forget();
-            
+
             // NOTE: Unregister actions created before 300 blocks for optimization.
             // 300 * 12s = 3600s = 1h
             LocalLayerActions.Instance.UnregisterCreatedBefore(agent.BlockIndex - 1000);
@@ -195,8 +193,7 @@ namespace Nekoyume.BlockChain
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
                 return (false, null);
             });
-            if (hasException ||
-                !(exception is OperationCanceledException))
+            if (hasException && !(exception is OperationCanceledException))
             {
                 Debug.LogException(exception);
             }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Action;
@@ -58,7 +59,7 @@ namespace Nekoyume.BlockChain
 
         bool TryGetTxId(Guid actionId, out TxId txId);
 
-        bool IsTxStaged(TxId txId);
+        UniTask<bool> IsTxStagedAsync(TxId txId);
 
         FungibleAssetValue GetBalance(Address address, Currency currency);
 
