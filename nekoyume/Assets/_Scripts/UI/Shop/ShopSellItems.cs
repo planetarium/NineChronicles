@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -173,39 +170,13 @@ namespace Nekoyume.UI.Module
             refreshButton.gameObject.SetActive(false);
         }
 
-        private async void UpdateViewWithFilteredPageIndex(IReadOnlyDictionary<int, List<ShopItem>> models)
+        private void UpdateViewWithFilteredPageIndex(
+            IReadOnlyDictionary<int, List<ShopItem>> models)
         {
             var count = models?.Count ?? 0;
-            if (count > _filteredPageIndex)
-            {
-                var items = models[_filteredPageIndex];
-                var task = Task.Run(async () =>
-                {
-                    var itemBases = await Util.GetTradableItems(items);
-                    foreach (var itemBase in itemBases)
-                    {
-                        if (itemBase is Equipment equipment)
-                        {
-                            var shopItem = items.FirstOrDefault(x => x.TradableId.Value.Equals(equipment.TradableId));
-                            if(shopItem != null)
-                            {
-                                shopItem.ItemBase.Value = itemBase;
-                            }
-                        }
-                    }
-                    return true;
-                });
-                var result = await task;
-                if (result)
-                {
-
-                    UpdateViewWithItems(items);
-                }
-            }
-            else
-            {
-                UpdateViewWithItems(new List<ShopItem>());
-            }
+            UpdateViewWithItems(count > _filteredPageIndex
+                ? models[_filteredPageIndex]
+                : new List<ShopItem>());
 
             if (_filteredPageIndex > 0)
             {

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Grpc.Core;
 using Lib9c.Renderer;
 using Libplanet;
@@ -27,6 +28,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UnityEngine;
+using Channel = Grpc.Core.Channel;
 using Logger = Serilog.Core.Logger;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>>;
@@ -400,6 +402,8 @@ namespace Nekoyume.BlockChain
             BlockTipHash = new BlockHash(newTipBlock.Hash.ToByteArray());
             BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
+
+            Debug.Log($"[{nameof(RPCAgent)}] Render block: {BlockIndex}, {BlockTipHash.ToString()}");
             BlockRenderer.RenderBlock(null, null);
         }
 
@@ -470,6 +474,18 @@ namespace Nekoyume.BlockChain
 
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
+            var dict = (Bencodex.Types.Dictionary)_codec.Decode(newTip);
+            HashAlgorithmGetter hashAlgorithmGetter = Game.Game.instance.Agent.BlockPolicySource
+                .GetPolicy()
+                .GetHashAlgorithm;
+            Block<NCAction> newTipBlock = BlockMarshaler.UnmarshalBlock<NCAction>(hashAlgorithmGetter, dict);
+            BlockIndex = newTipBlock.Index;
+            BlockIndexSubject.OnNext(BlockIndex);
+            BlockTipHash = new BlockHash(newTipBlock.Hash.ToByteArray());
+            BlockTipHashSubject.OnNext(BlockTipHash);
+            _lastTipChangedAt = DateTimeOffset.UtcNow;
+
+            Debug.Log($"[{nameof(RPCAgent)}] Render reorg: {BlockIndex}, {BlockTipHash.ToString()}");
             BlockRenderer.RenderReorg(null, null, null);
         }
 
@@ -540,10 +556,9 @@ namespace Nekoyume.BlockChain
         }
 
         public bool TryGetTxId(Guid actionId, out TxId txId) =>
-            _transactions.TryGetValue(actionId, out txId) &&
-            IsTxStaged(txId);
+            _transactions.TryGetValue(actionId, out txId);
 
-        public bool IsTxStaged(TxId txId) =>
-            _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.Result;
+        public async UniTask<bool> IsTxStagedAsync(TxId txId) =>
+            await _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.AsUniTask();
     }
 }

@@ -324,10 +324,10 @@ namespace Nekoyume.BlockChain
         }
 
         public bool TryGetTxId(Guid actionId, out TxId txId) =>
-            _transactions.TryGetValue(actionId, out txId) &&
-            IsTxStaged(txId);
+            _transactions.TryGetValue(actionId, out txId);
 
-        public bool IsTxStaged(TxId txId) => blocks.GetStagedTransactionIds().Contains(txId);
+        public UniTask<bool> IsTxStagedAsync(TxId txId) =>
+            UniTask.FromResult(blocks.GetStagedTransactionIds().Contains(txId));
 
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
             blocks.GetBalance(address, currency);

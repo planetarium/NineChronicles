@@ -2115,6 +2115,11 @@
             <returns>A number that represents how many elements in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
             </returns>
         </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.IsCanonical">
+            <summary>
+            Whether the instance is canonical or not.
+            </summary>
+        </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Item(System.Int32)">
             <summary>
             Gets the block corresponding to the <paramref name="index"/>.

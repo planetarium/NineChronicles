@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Helper;
+using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI.Module
 {
@@ -20,6 +20,9 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private long _expiredBlockIndex;
+
+        public Task<Nekoyume.Model.Item.ItemBase> ItemBaseLoadingTask { get; private set; } = null;
+        private CancellationTokenSource _cancellationTokenSource = null;
 
         public override void SetData(ShopItem model)
         {
@@ -45,7 +48,18 @@ namespace Nekoyume.UI.Module
                     .AddTo(_disposables);
             }
 
-            SetOptionTag(model.ItemBase.Value);
+            _cancellationTokenSource = new CancellationTokenSource();
+            ItemBaseLoadingTask = Task.Run(async () =>
+            {
+                var item = await Util.GetItemBaseByTradableId(model.TradableId.Value, model.ExpiredBlockIndex.Value);
+                return item;
+            }, _cancellationTokenSource.Token);
+
+            ItemBaseLoadingTask.ToObservable()
+                .ObserveOnMainThread()
+                .First()
+                .Subscribe(item => SetOptionTag(item))
+                .AddTo(_disposables);
         }
 
         public override void Clear()
@@ -65,6 +79,7 @@ namespace Nekoyume.UI.Module
                 expired.SetActive(false);
             }
             _disposables.DisposeAllAndClear();
+            _cancellationTokenSource?.Cancel();
         }
 
         private void SetBg(float alpha)

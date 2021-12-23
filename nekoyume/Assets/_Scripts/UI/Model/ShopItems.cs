@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bencodex.Types;
 using Lib9c.Model.Order;
+using Nekoyume.Helper;
+using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI.Model
@@ -83,10 +87,17 @@ namespace Nekoyume.UI.Model
             if (view == null || view.Model is null)
                 return;
 
+            if (view.ItemBaseLoadingTask is null)
+            {
+                return;
+            }
+
             DeselectItemView();
             _selectedItemViewModel.Value = view.Model;
+
+            var item = await view.ItemBaseLoadingTask;
             _selectedItemViewModel.Value.Selected.Value = true;
-            _selectedItemViewModel.Value.ItemBase.Value = view.Model.ItemBase.Value;
+            _selectedItemViewModel.Value.ItemBase.Value = item;
             SelectedItemView.SetValueAndForceNotify(view);
         }
 
