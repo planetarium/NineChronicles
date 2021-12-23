@@ -156,7 +156,6 @@ namespace Nekoyume.UI.Scroller
                     notificationContent.messageText.text = _viewModel.message;
                     break;
                 case NotificationType.Alert:
-                    alertContent.iconImage.overrideSprite = iconSprite;
                     alertContent.messageText.text = _viewModel.message;
                     break;
             }

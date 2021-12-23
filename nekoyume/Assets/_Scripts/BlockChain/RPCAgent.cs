@@ -95,6 +95,8 @@ namespace Nekoyume.BlockChain
 
         private BlockChainBehaviour _blockChainBehaviour;
 
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
         public IEnumerator Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -134,7 +136,6 @@ namespace Nekoyume.BlockChain
             RegisterDisconnectEvent(_hub);
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
-            yield return null;
         }
 
         public IValue GetState(Address address)
@@ -209,8 +210,28 @@ namespace Nekoyume.BlockChain
 
         #region Mono
 
+        private void Awake()
+        {
+            OnDisconnected
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Disconnected"))
+                .AddTo(_disposables);
+            OnRetryStarted
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Started"))
+                .AddTo(_disposables);
+            OnRetryEnded
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Ended"))
+                .AddTo(_disposables);
+            OnPreloadStarted
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Started"))
+                .AddTo(_disposables);
+            OnPreloadEnded
+                .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended"))
+                .AddTo(_disposables);
+        }
+
         private async void OnDestroy()
         {
+            _disposables.DisposeAllAndClear();
             _onMakeTransactionSubject.Dispose();
 
             // BlockRenderHandler.Instance.Stop();

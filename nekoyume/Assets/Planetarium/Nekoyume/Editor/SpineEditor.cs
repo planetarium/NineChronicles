@@ -484,12 +484,10 @@ namespace Planetarium.Nekoyume.Editor
 
             var parentFolder = Path.GetDirectoryName(AssetDatabase.GetAssetPath(skeletonDataAsset));
             var dataPath = parentFolder + "/" + assetFolderName;
-            if (AssetDatabase.IsValidFolder(dataPath))
+            if (!AssetDatabase.IsValidFolder(dataPath))
             {
-                Directory.Delete(dataPath, true);
+                AssetDatabase.CreateFolder(parentFolder, assetFolderName);
             }
-
-            AssetDatabase.CreateFolder(parentFolder, assetFolderName);
 
             var nameField =
                 typeof(AnimationReferenceAsset).GetField(
@@ -515,12 +513,6 @@ namespace Planetarium.Nekoyume.Editor
             {
                 var assetPath =
                     $"{dataPath}/{AssetUtility.GetPathSafeName(animation.Name)}.asset";
-                var existingAsset =
-                    AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
-                if (!(existingAsset is null))
-                {
-                    continue;
-                }
 
                 var newAsset = ScriptableObject.CreateInstance<AnimationReferenceAsset>();
                 skeletonDataAssetField.SetValue(newAsset, skeletonDataAsset);
