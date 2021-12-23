@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -8,6 +9,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.ActionExtensions
 {
@@ -17,10 +19,10 @@ namespace Nekoyume.ActionExtensions
             this CombinationConsumable action,
             IAgent agent,
             States states,
-            TableSheets tableSheets)
+            TableSheets tableSheets,
+            IReadOnlyList<Address> updatedAddresses = null,
+            bool ignoreNotify = false)
         {
-            // NOTE: ignore now
-            return;
             if (action is null)
             {
                 throw new ArgumentNullException(nameof(action));
@@ -41,8 +43,10 @@ namespace Nekoyume.ActionExtensions
                 throw new ArgumentNullException(nameof(tableSheets));
             }
 
-            var currentAvatarState = states.CurrentAvatarState;
-            if (action.avatarAddress != currentAvatarState.address)
+            var avatarState = states.AvatarStates.Values.FirstOrDefault(e => e.address == action.avatarAddress);
+            if (avatarState is null ||
+                updatedAddresses is null ||
+                !updatedAddresses.Contains(avatarState.address.Derive(LegacyInventoryKey)))
             {
                 return;
             }
@@ -62,13 +66,13 @@ namespace Nekoyume.ActionExtensions
                 costFungibleItems.Add(materialInfo.Id, materialInfo.Count);
             }
 
-            currentAvatarState.actionPoint -= costAP;
+            avatarState.actionPoint -= costAP;
 
             foreach (var pair in costFungibleItems)
             {
                 if (tableSheets.MaterialItemSheet.TryGetValue(pair.Key, out var materialRow))
                 {
-                    currentAvatarState.inventory.RemoveFungibleItem(materialRow.ItemId, pair.Value);
+                    avatarState.inventory.RemoveFungibleItem(materialRow.ItemId, pair.Value);
                 }
             }
 
@@ -97,6 +101,12 @@ namespace Nekoyume.ActionExtensions
                 recipeId = action.recipeId,
             };
 
+            if (ignoreNotify ||
+                avatarState.address != states.CurrentAvatarState.address)
+            {
+                return;
+            }
+
             var slotState = states.GetCombinationSlotState(nextBlockIndex)?[action.slotIndex];
             if (slotState is null)
             {
@@ -111,8 +121,9 @@ namespace Nekoyume.ActionExtensions
             var goldBalanceState = new GoldBalanceState(states.GoldBalanceState.address,
                 states.GoldBalanceState.Gold.Currency * costNCG);
             states.SetGoldBalanceState(goldBalanceState);
-            ReactiveAvatarState.UpdateActionPoint(currentAvatarState.actionPoint);
-            ReactiveAvatarState.UpdateInventory(currentAvatarState.inventory);
+            
+            ReactiveAvatarState.UpdateActionPoint(avatarState.actionPoint);
+            ReactiveAvatarState.UpdateInventory(avatarState.inventory);
         }
     }
 }

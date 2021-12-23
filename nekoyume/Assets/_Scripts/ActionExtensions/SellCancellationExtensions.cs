@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -8,7 +10,13 @@ namespace Nekoyume.ActionExtensions
 {
     public static class SellCancellationExtensions
     {
-        public static void PayCost(this SellCancellation action, IAgent agent, States states, TableSheets tableSheets)
+        public static void PayCost(
+            this SellCancellation action,
+            IAgent agent,
+            States states,
+            TableSheets tableSheets,
+            IReadOnlyList<Address> updatedAddresses = null,
+            bool ignoreNotify = false)
         {
             // NOTE: ignore now
             return;

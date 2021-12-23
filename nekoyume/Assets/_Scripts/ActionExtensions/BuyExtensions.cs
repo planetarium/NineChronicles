@@ -40,12 +40,7 @@ namespace Nekoyume.ActionExtensions
                 throw new ArgumentNullException(nameof(tableSheets));
             }
 
-            var avatarState = states.AvatarStates.Values.FirstOrDefault(e => e.address == action.buyerAvatarAddress);
-            if (avatarState is null)
-            {
-                return;
-            }
-
+            // NOTE: gold must 
             var gold = action.purchaseInfos.Aggregate(
                 states.GoldBalanceState.Gold,
                 (current, purchaseInfo) => current - purchaseInfo.Price);
