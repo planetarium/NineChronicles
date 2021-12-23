@@ -227,7 +227,6 @@ namespace Lib9c.Tests.Action
                     weeklyArenaAddress = new PrivateKey().ToAddress(),
                     costumeIds = new List<Guid>(),
                     equipmentIds = new List<Guid>(),
-                    consumableIds = new List<Guid>(),
                 },
                 RapidCombination _ => new RapidCombination(),
                 RedeemCode _ => new RedeemCode

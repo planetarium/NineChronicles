@@ -5,12 +5,10 @@ namespace Lib9c.Tests
     using System.Threading.Tasks;
     using Lib9c.Tests.TestHelper;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
     using Libplanet.Crypto;
     using Libplanet.Tx;
-    using Nekoyume.Action;
     using Nekoyume.BlockChain;
     using Nekoyume.BlockChain.Policy;
     using Serilog.Core;
@@ -22,9 +20,6 @@ namespace Lib9c.Tests
         private readonly PrivateKey[] _accounts;
 
         private readonly Dictionary<Address, Transaction<NCAction>[]> _txs;
-
-        // It's safe beause we don't use `BlockChain<T>` atm...
-        private readonly BlockChain<NCAction> _chain = null;
 
         public StagePolicyTest()
         {
@@ -54,18 +49,17 @@ namespace Lib9c.Tests
         [Fact]
         public void Stage()
         {
-            var policy = new StagePolicy(
-                default,
-                2
-            );
+            StagePolicy stagePolicy = new StagePolicy(default, 2);
+            BlockChain<NCAction> chain = MakeChainWithStagePolicy(stagePolicy);
 
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][0]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][1]);
-            policy.Stage(_chain, _txs[_accounts[1].ToAddress()][0]);
-            policy.Stage(_chain, _txs[_accounts[2].ToAddress()][0]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][0]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][1]);
+            stagePolicy.Stage(chain, _txs[_accounts[1].ToAddress()][0]);
+            stagePolicy.Stage(chain, _txs[_accounts[2].ToAddress()][0]);
 
             AssertTxs(
-                policy,
+                chain,
+                stagePolicy,
                 _txs[_accounts[0].ToAddress()][0],
                 _txs[_accounts[0].ToAddress()][1],
                 _txs[_accounts[1].ToAddress()][0],
@@ -76,18 +70,17 @@ namespace Lib9c.Tests
         [Fact]
         public void StageOverQuota()
         {
-            var policy = new StagePolicy(
-                default,
-                2
-            );
+            StagePolicy stagePolicy = new StagePolicy(default, 2);
+            BlockChain<NCAction> chain = MakeChainWithStagePolicy(stagePolicy);
 
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][0]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][1]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][2]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][3]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][0]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][1]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][2]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][3]);
 
             AssertTxs(
-                policy,
+                chain,
+                stagePolicy,
                 _txs[_accounts[0].ToAddress()][0],
                 _txs[_accounts[0].ToAddress()][1]
             );
@@ -96,18 +89,17 @@ namespace Lib9c.Tests
         [Fact]
         public void StageOverQuotaInverseOrder()
         {
-            var policy = new StagePolicy(
-                default,
-                2
-            );
+            StagePolicy stagePolicy = new StagePolicy(default, 2);
+            BlockChain<NCAction> chain = MakeChainWithStagePolicy(stagePolicy);
 
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][3]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][2]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][1]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][0]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][3]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][2]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][1]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][0]);
 
             AssertTxs(
-                policy,
+                chain,
+                stagePolicy,
                 _txs[_accounts[0].ToAddress()][0],
                 _txs[_accounts[0].ToAddress()][1]
             );
@@ -116,18 +108,17 @@ namespace Lib9c.Tests
         [Fact]
         public void StageOverQuotaOutOfOrder()
         {
-            var policy = new StagePolicy(
-                default,
-                2
-            );
+            StagePolicy stagePolicy = new StagePolicy(default, 2);
+            BlockChain<NCAction> chain = MakeChainWithStagePolicy(stagePolicy);
 
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][2]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][1]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][3]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][0]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][2]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][1]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][3]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][0]);
 
             AssertTxs(
-                policy,
+                chain,
+                stagePolicy,
                 _txs[_accounts[0].ToAddress()][0],
                 _txs[_accounts[0].ToAddress()][1]
             );
@@ -136,39 +127,36 @@ namespace Lib9c.Tests
         [Fact]
         public void StageSameNonce()
         {
-            var policy = new StagePolicy(
-                default,
-                2
-            );
+            StagePolicy stagePolicy = new StagePolicy(default, 2);
+            BlockChain<NCAction> chain = MakeChainWithStagePolicy(stagePolicy);
             var txA = Transaction<NCAction>.Create(0, _accounts[0], default, new NCAction[0]);
             var txB = Transaction<NCAction>.Create(0, _accounts[0], default, new NCAction[0]);
             var txC = Transaction<NCAction>.Create(0, _accounts[0], default, new NCAction[0]);
 
-            policy.Stage(_chain, txA);
-            policy.Stage(_chain, txB);
-            policy.Stage(_chain, txC);
+            stagePolicy.Stage(chain, txA);
+            stagePolicy.Stage(chain, txB);
+            stagePolicy.Stage(chain, txC);
 
-            AssertTxs(policy, txA, txB);
+            AssertTxs(chain, stagePolicy, txA, txB);
         }
 
         [Fact]
         public async Task StateFromMultiThread()
         {
-            var policy = new StagePolicy(
-                default,
-                2
-            );
+            StagePolicy stagePolicy = new StagePolicy(default, 2);
+            BlockChain<NCAction> chain = MakeChainWithStagePolicy(stagePolicy);
 
             await Task.WhenAll(
                 Enumerable
                     .Range(0, 40)
                     .Select(i => Task.Run(() =>
                     {
-                        policy.Stage(_chain, _txs[_accounts[i / 10].ToAddress()][i % 10]);
+                        stagePolicy.Stage(chain, _txs[_accounts[i / 10].ToAddress()][i % 10]);
                     }))
             );
             AssertTxs(
-                policy,
+                chain,
+                stagePolicy,
                 _txs[_accounts[0].ToAddress()][0],
                 _txs[_accounts[0].ToAddress()][1],
                 _txs[_accounts[1].ToAddress()][0],
@@ -183,26 +171,26 @@ namespace Lib9c.Tests
         [Fact]
         public void IterateAfterUnstage()
         {
-            var policy = new StagePolicy(
-                default,
-                2
-            );
+            StagePolicy stagePolicy = new StagePolicy(default, 2);
+            BlockChain<NCAction> chain = MakeChainWithStagePolicy(stagePolicy);
 
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][0]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][1]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][2]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][3]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][0]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][1]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][2]);
+            stagePolicy.Stage(chain, _txs[_accounts[0].ToAddress()][3]);
 
             AssertTxs(
-                policy,
+                chain,
+                stagePolicy,
                 _txs[_accounts[0].ToAddress()][0],
                 _txs[_accounts[0].ToAddress()][1]
             );
 
-            policy.Unstage(_chain, _txs[_accounts[0].ToAddress()][0].Id);
+            stagePolicy.Unstage(chain, _txs[_accounts[0].ToAddress()][0].Id);
 
             AssertTxs(
-                policy,
+                chain,
+                stagePolicy,
                 _txs[_accounts[0].ToAddress()][1],
                 _txs[_accounts[0].ToAddress()][2]
             );
@@ -211,13 +199,8 @@ namespace Lib9c.Tests
         [Fact]
         public void CalculateNextTxNonceCorrectWhenTxOverQuota()
         {
-            var stagePolicy = new StagePolicy(
-                default,
-                2);
-            var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy();
-            BlockChain<PolymorphicAction<ActionBase>> chain =
-                BlockChainHelper.MakeBlockChain(new[] { blockPolicySource.BlockRenderer }, policy, stagePolicy);
+            StagePolicy stagePolicy = new StagePolicy(default, 2);
+            BlockChain<NCAction> chain = MakeChainWithStagePolicy(stagePolicy);
 
             long nextTxNonce = chain.GetNextTxNonce(_accounts[0].ToAddress());
             Assert.Equal(0, nextTxNonce);
@@ -238,22 +221,35 @@ namespace Lib9c.Tests
             Assert.Equal(3, nextTxNonce);
 
             AssertTxs(
+                chain,
                 stagePolicy,
                 txA,
                 txB);
         }
 
-        private void AssertTxs(StagePolicy policy, params Transaction<NCAction>[] txs)
+        private void AssertTxs(BlockChain<NCAction> blockChain, StagePolicy policy, params Transaction<NCAction>[] txs)
         {
             foreach (Transaction<NCAction> tx in txs)
             {
-                Assert.Equal(tx, policy.Get(_chain, tx.Id, false));
+                Assert.Equal(tx, policy.Get(blockChain, tx.Id, filtered: true));
             }
 
             Assert.Equal(
                 txs.ToHashSet(),
-                policy.Iterate().ToHashSet()
+                policy.Iterate(blockChain, filtered: true).ToHashSet()
             );
+        }
+
+        private BlockChain<NCAction> MakeChainWithStagePolicy(StagePolicy stagePolicy)
+        {
+            BlockPolicySource blockPolicySource = new BlockPolicySource(Logger.None);
+            IBlockPolicy<NCAction> policy = blockPolicySource.GetPolicy();
+            BlockChain<NCAction> chain =
+                BlockChainHelper.MakeBlockChain(
+                    blockRenderers: new[] { blockPolicySource.BlockRenderer },
+                    policy: policy,
+                    stagePolicy: stagePolicy);
+            return chain;
         }
     }
 }
