@@ -21,6 +21,8 @@ using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.Mail;
+    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class SubRecipeView : MonoBehaviour
@@ -97,6 +99,16 @@ namespace Nekoyume.UI
                     }
 
                     CombineCurrentRecipe();
+                })
+                .AddTo(gameObject);
+
+            button.OnClickDisabledSubject
+                .Subscribe(_ =>
+                {
+                    if (!CheckSubmittable(out var errorMessage, out var slotIndex))
+                    {
+                        OneLineSystem.Push(MailType.System, errorMessage, NotificationCell.NotificationType.Alert);
+                    }
                 })
                 .AddTo(gameObject);
         }

@@ -22,6 +22,7 @@ namespace PackageExtensions.Mixpanel
             _clientHost = Resources.Load<TextAsset>("MixpanelClientHost")?.text ?? "no-host";
             _clientHash = Resources.Load<TextAsset>("MixpanelClientHash")?.text ?? "no-hash";
             _initialized = true;
+            Debug.Log($"[{nameof(MixpanelValueFactory)}] Initialized. {_clientHost} {_clientHash}");
         }
 
         public Value GetValue(params (string key, string value)[] properties)

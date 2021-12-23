@@ -29,7 +29,7 @@ namespace Nekoyume.Game.Character
             _touchHandler.OnClick
                 .Merge(_touchHandler.OnDoubleClick)
                 .Merge(_touchHandler.OnMultipleClick)
-                .Subscribe(_ => PlayAnimation(NPCAnimation.Type.Touch_01))
+                .Subscribe(_ => PlayAnimation(NPCAnimation.Type.Touch))
                 .AddTo(gameObject);
 
             Animator = new NPCAnimator(this) {TimeScale = AnimatorTimeScale};

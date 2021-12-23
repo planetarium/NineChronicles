@@ -22,6 +22,9 @@ namespace Nekoyume.UI.Module
         private Button button = null;
 
         [SerializeField]
+        private Button disabledButton = null;
+
+        [SerializeField]
         private GameObject normalObject = null;
 
         [SerializeField]
@@ -48,6 +51,21 @@ namespace Nekoyume.UI.Module
         public readonly Subject<State> OnClickSubject = new Subject<State>();
 
         public readonly Subject<Unit> OnSubmitSubject = new Subject<Unit>();
+
+        private IObservable<Unit> _onClickDisabledSubject = null;
+
+        public IObservable<Unit> OnClickDisabledSubject
+        {
+            get
+            {
+                if (_onClickDisabledSubject is null)
+                {
+                    _onClickDisabledSubject = disabledButton.OnClickAsObservable();
+                }
+
+                return _onClickDisabledSubject;
+            }
+        }
 
         public bool IsSubmittable => _interactable && CurrentState.Value == State.Normal;
 
@@ -126,7 +144,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void UpdateObjects()
+        public virtual void UpdateObjects()
         {
             var condition = CheckCondition();
             SetConditionalState(condition);

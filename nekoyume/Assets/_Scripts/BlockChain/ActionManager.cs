@@ -6,6 +6,7 @@ using System.Numerics;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.Tx;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
@@ -30,7 +31,7 @@ namespace Nekoyume.BlockChain
     /// <summary>
     /// Creates an action of the game and puts it in the agent.
     /// </summary>
-    public class ActionManager
+    public class ActionManager : IDisposable
     {
         private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(360f);
 
@@ -38,15 +39,23 @@ namespace Nekoyume.BlockChain
 
         private Guid _lastBattleActionId;
 
+        private readonly Dictionary<Guid, (TxId txId, long updatedBlockIndex)> _actionIdToTxIdBridge =
+            new Dictionary<Guid, (TxId txId, long updatedBlockIndex)>();
+
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
         public static ActionManager Instance => Game.Game.instance.ActionManager;
 
         public static bool IsLastBattleActionId(Guid actionId) => actionId == Instance._lastBattleActionId;
 
-        private static void HandleException(Guid actionId, Exception e)
+        private void HandleException(Guid actionId, Exception e)
         {
             if (e is TimeoutException)
             {
-                throw new ActionTimeoutException(e.Message, actionId);
+                var txId = _actionIdToTxIdBridge.ContainsKey(actionId)
+                    ? (TxId?)_actionIdToTxIdBridge[actionId].txId
+                    : null;
+                throw new ActionTimeoutException(e.Message, txId, actionId);
             }
 
             throw e;
@@ -55,6 +64,29 @@ namespace Nekoyume.BlockChain
         public ActionManager(IAgent agent)
         {
             _agent = agent ?? throw new ArgumentNullException(nameof(agent));
+            _agent.BlockIndexSubject.Subscribe(blockIndex =>
+            {
+                var actionIds = _actionIdToTxIdBridge
+                    .Where(pair => pair.Value.updatedBlockIndex < blockIndex - 100)
+                    .Select(pair => pair.Key)
+                    .ToArray();
+                foreach (var actionId in actionIds)
+                {
+                    _actionIdToTxIdBridge.Remove(actionId);
+                }
+            }).AddTo(_disposables);
+            _agent.OnMakeTransaction.Subscribe(tuple =>
+            {
+                var (tx, actions) = tuple;
+                var gameActions = actions
+                    .Select(e => e.InnerAction)
+                    .OfType<GameAction>()
+                    .ToArray();
+                foreach (var gameAction in gameActions)
+                {
+                    _actionIdToTxIdBridge[gameAction.Id] = (tx.Id, _agent.BlockIndex);
+                }
+            }).AddTo(_disposables);
         }
 
         private void ProcessAction<T>(T gameAction) where T : GameAction
@@ -93,7 +125,11 @@ namespace Nekoyume.BlockChain
                 .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
-                .DoOnError(e => HandleException(action.Id, e))
+                .DoOnError(e =>
+                {
+                    Game.Game.instance.BackToNest();
+                    HandleException(action.Id, e);
+                })
                 .Finally(() =>
                 {
                     var agentAddress = States.Instance.AgentState.address;
@@ -150,7 +186,7 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e2)
                     {
-                        Game.Game.BackToMain(false, e2);
+                        Game.Game.BackToMain(false, e2).Forget();
                     }
                 });
         }
@@ -211,7 +247,7 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e2)
                     {
-                        Game.Game.BackToMain(false, e2);
+                        Game.Game.BackToMain(false, e2).Forget();
                     }
                 });
         }
@@ -451,16 +487,16 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception inner)
                     {
-                        Game.Game.BackToMain(false, inner);
+                        Game.Game.BackToMain(false, inner).Forget();
                     }
+
                 });
         }
 
         public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
             Address enemyAddress,
             List<Guid> costumeIds,
-            List<Guid> equipmentIds,
-            List<Guid> consumableIds
+            List<Guid> equipmentIds
         )
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
@@ -476,7 +512,6 @@ namespace Nekoyume.BlockChain
                 weeklyArenaAddress = weeklyArenaAddress,
                 costumeIds = costumeIds,
                 equipmentIds = equipmentIds,
-                consumableIds = consumableIds
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -495,7 +530,7 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e2)
                     {
-                        Game.Game.BackToMain(false, e2);
+                        Game.Game.BackToMain(false, e2).Forget();
                     }
                 });
         }
@@ -651,11 +686,16 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e2)
                     {
-                        Game.Game.BackToMain(false, e2);
+                        Game.Game.BackToMain(false, e2).Forget();
                     }
                 });
         }
 #endif
         #endregion
+
+        public void Dispose()
+        {
+            _disposables.DisposeAllAndClear();
+        }
     }
 }

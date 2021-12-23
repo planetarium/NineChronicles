@@ -851,7 +851,7 @@ namespace Nekoyume.BlockChain
                     Widget.Find<BattleResultPopup>().Close();
                 }
 
-                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException);
+                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
             }
         }
 
@@ -931,7 +931,7 @@ namespace Nekoyume.BlockChain
                     Widget.Find<BattleResultPopup>().Close();
                 }
 
-                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException);
+                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
             }
         }
 
@@ -974,7 +974,7 @@ namespace Nekoyume.BlockChain
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
                     enemyAvatarState,
-                    eval.Action.consumableIds,
+                    new List<Guid>(),
                     Game.Game.instance.TableSheets.GetRankingSimulatorSheets(),
                     Action.RankingBattle.StageId,
                     arenaInfo,
@@ -1003,7 +1003,7 @@ namespace Nekoyume.BlockChain
                     Widget.Find<RankingBattleResultPopup>().Close();
                 }
 
-                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException);
+                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
             }
         }
 

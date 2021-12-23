@@ -49,14 +49,6 @@ namespace Nekoyume.ActionExtensions
             // var arenaInfo = weeklyArenaState[action.avatarAddress];
             // arenaInfo.DailyChallengeCount--;
 
-            var inventory = currentAvatarState.inventory;
-            var consumableIds = action.consumableIds;
-            for (var i = 0; i < consumableIds.Count; i++)
-            {
-                var nonFungibleId = consumableIds[i];
-                inventory.RemoveNonFungibleItem(nonFungibleId);
-            }
-
             ReactiveAvatarState.UpdateActionPoint(currentAvatarState.actionPoint);
             ReactiveAvatarState.UpdateInventory(currentAvatarState.inventory);
         }

@@ -72,11 +72,7 @@ namespace Planetarium.Nekoyume.Editor
             CreateSpinePrefabAllOfPath(MonsterSpineRootPath);
         }
 
-        // FIXME: ArgumentNotFoundException 발생.
-        // NPC의 경우에 `Idle_01`과 같이 각 상태 분류의 첫 번째 작명에 `_01`이라는 숫자가 들어가 있기 때문에태
-        // `CharacterAnimation.Type`을 같이 사용할 수 없는 상황이다.
-        // 따라서 NPC 스파인의 상태 작명을 수정한 후에 사용해야 한다.
-        // [MenuItem("Tools/9C/Create Spine Prefab(All NPC)", false, 0)]
+        [MenuItem("Tools/9C/Create Spine Prefab(All NPC)", false, 0)]
         public static void CreateSpinePrefabAllOfNPC()
         {
             CreateSpinePrefabAllOfPath(NPCSpineRootPath);
@@ -169,80 +165,7 @@ namespace Planetarium.Nekoyume.Editor
             animator.runtimeAnimatorController =
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(animatorControllerPath);
 
-            var controller = GetOrCreateSpineController(prefabName, gameObject);
-            // 지금은 예상 외의 애니메이션을 찾지 못하는 로직이다.
-            // animationAssetsPath 하위에 있는 모든 것을 검사..?
-            // 애초에 CreateAnimationReferenceAssets() 단계에서 검사할 수 있겠다.
-            foreach (var animationType in CharacterAnimation.List)
-            {
-                assetPath = Path.Combine(animationAssetsPath, $"{animationType}.asset");
-                var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
-                if (asset is null)
-                {
-                    switch (animationType)
-                    {
-                        // todo: `CharacterAnimation.Type.Appear`와 `CharacterAnimation.Type.Disappear`는 없어질 예정.
-                        default:
-                            assetPath = Path.Combine(
-                                animationAssetsPath,
-                                $"{nameof(CharacterAnimation.Type.Idle)}.asset");
-                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
-                                assetPath);
-                            break;
-                        case CharacterAnimation.Type.Idle:
-                            Object.DestroyImmediate(gameObject);
-                            throw new AssetNotFoundException(assetPath);
-                        case CharacterAnimation.Type.Win_02:
-                        case CharacterAnimation.Type.Win_03:
-                            assetPath = Path.Combine(
-                                animationAssetsPath,
-                                $"{nameof(CharacterAnimation.Type.Win)}.asset");
-                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
-                                assetPath);
-                            break;
-                        case CharacterAnimation.Type.Touch:
-                        case CharacterAnimation.Type.CastingAttack:
-                        case CharacterAnimation.Type.CriticalAttack:
-                            assetPath = Path.Combine(
-                                animationAssetsPath,
-                                $"{nameof(CharacterAnimation.Type.Attack)}.asset");
-                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
-                                assetPath);
-                            break;
-                        case CharacterAnimation.Type.TurnOver_01:
-                        case CharacterAnimation.Type.TurnOver_02:
-                            assetPath = Path.Combine(
-                                animationAssetsPath,
-                                $"{nameof(CharacterAnimation.Type.Die)}.asset");
-                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
-                                assetPath);
-                            break;
-                    }
-
-                    if (asset is null)
-                    {
-                        assetPath = Path.Combine(
-                            animationAssetsPath,
-                            $"{nameof(CharacterAnimation.Type.Idle)}.asset");
-                        asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
-                    }
-
-                    if (asset is null)
-                    {
-                        Object.DestroyImmediate(gameObject);
-                        throw new AssetNotFoundException(assetPath);
-                    }
-                }
-
-                controller.statesAndAnimations.Add(
-                    new SpineController.StateNameToAnimationReference
-                    {
-                        stateName = animationType.ToString(),
-                        animation = asset
-                    });
-            }
-
-            // 헤어타입을 결정한다.
+            var controller = AddStatesAndAnimations(prefabName, animationAssetsPath, gameObject);
             if (controller is PlayerSpineController playerSpineController)
             {
                 playerSpineController.hairTypeIndex = HairType1Names.Contains(prefabName)
@@ -273,6 +196,182 @@ namespace Planetarium.Nekoyume.Editor
             }
         }
 
+        private static SpineController AddStatesAndAnimations(
+            string prefabName,
+            string animationAssetsPath,
+            GameObject gameObject)
+        {
+            var controller = GetOrCreateSpineController(prefabName, gameObject);
+            switch (controller)
+            {
+                case PlayerSpineController playerSpineController:
+                case CharacterSpineController characterSpineController:
+                    foreach (var animationType in CharacterAnimation.List)
+                    {
+                        var assetPath = Path.Combine(animationAssetsPath, $"{animationType}.asset");
+                        var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                        if (asset is null)
+                        {
+                            switch (animationType)
+                            {
+                                // todo: `CharacterAnimation.Type.Appear`와 `CharacterAnimation.Type.Disappear`는 없어질 예정.
+                                default:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(CharacterAnimation.Type.Idle)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
+                                        assetPath);
+                                    break;
+                                case CharacterAnimation.Type.Idle:
+                                    Object.DestroyImmediate(gameObject);
+                                    throw new AssetNotFoundException(assetPath);
+                                case CharacterAnimation.Type.Win_02:
+                                case CharacterAnimation.Type.Win_03:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(CharacterAnimation.Type.Win)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
+                                        assetPath);
+                                    break;
+                                case CharacterAnimation.Type.Touch:
+                                case CharacterAnimation.Type.CastingAttack:
+                                case CharacterAnimation.Type.CriticalAttack:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(CharacterAnimation.Type.Attack)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
+                                        assetPath);
+                                    break;
+                                case CharacterAnimation.Type.TurnOver_01:
+                                case CharacterAnimation.Type.TurnOver_02:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(CharacterAnimation.Type.Die)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
+                                        assetPath);
+                                    break;
+                            }
+
+                            if (asset is null)
+                            {
+                                assetPath = Path.Combine(
+                                    animationAssetsPath,
+                                    $"{nameof(CharacterAnimation.Type.Idle)}.asset");
+                                asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                            }
+
+                            if (asset is null)
+                            {
+                                Object.DestroyImmediate(gameObject);
+                                throw new AssetNotFoundException(assetPath);
+                            }
+                        }
+
+                        controller.statesAndAnimations.Add(
+                            new SpineController.StateNameToAnimationReference
+                            {
+                                stateName = animationType.ToString(),
+                                animation = asset
+                            });
+                    }
+                    break;
+                case NPCSpineController npcSpineController:
+                    foreach (var animationType in NPCAnimation.List)
+                    {
+                        var assetPath = Path.Combine(animationAssetsPath, $"{animationType}.asset");
+                        var asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                        if (asset is null)
+                        {
+                            switch (animationType)
+                            {
+                                case NPCAnimation.Type.Appear_02:
+                                case NPCAnimation.Type.Appear_03:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Appear)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                                    break;
+                                case NPCAnimation.Type.Greeting_02:
+                                case NPCAnimation.Type.Greeting_03:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Greeting)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                                    break;
+                                case NPCAnimation.Type.Open_02:
+                                case NPCAnimation.Type.Open_03:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Open)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                                    break;
+                                case NPCAnimation.Type.Idle_02:
+                                case NPCAnimation.Type.Idle_03:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Idle)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                                    break;
+                                case NPCAnimation.Type.Emotion_02:
+                                case NPCAnimation.Type.Emotion_03:
+                                case NPCAnimation.Type.Emotion_04:
+                                case NPCAnimation.Type.Emotion_05:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Emotion)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                                    break;
+                                case NPCAnimation.Type.Touch_02:
+                                case NPCAnimation.Type.Touch_03:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Touch)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                                    break;
+                                case NPCAnimation.Type.Loop_02:
+                                case NPCAnimation.Type.Loop_03:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Loop)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                                    break;
+                                case NPCAnimation.Type.Disappear_02:
+                                case NPCAnimation.Type.Disappear_03:
+                                    assetPath = Path.Combine(
+                                        animationAssetsPath,
+                                        $"{nameof(NPCAnimation.Type.Disappear)}.asset");
+                                    asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                                    break;
+                            }
+
+                            if (asset is null)
+                            {
+                                assetPath = Path.Combine(
+                                    animationAssetsPath,
+                                    $"{nameof(NPCAnimation.Type.Idle)}.asset");
+                                asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                            }
+
+                            if (asset is null)
+                            {
+                                Object.DestroyImmediate(gameObject);
+                                throw new AssetNotFoundException(assetPath);
+                            }
+                        }
+
+                        controller.statesAndAnimations.Add(
+                            new SpineController.StateNameToAnimationReference
+                            {
+                                stateName = animationType.ToString(),
+                                animation = asset
+                            });
+                    }
+                    break;
+            }
+
+            return controller;
+        }
+
         #region Character Type
 
         private static bool IsFullCostume(string prefabName)
@@ -287,7 +386,8 @@ namespace Planetarium.Nekoyume.Editor
 
         private static bool IsNPC(string prefabName)
         {
-            return prefabName.StartsWith("3");
+            return prefabName.StartsWith("3") ||
+                prefabName.StartsWith("dialog_");
         }
 
         private static bool IsPlayer(string prefabName)
@@ -384,12 +484,10 @@ namespace Planetarium.Nekoyume.Editor
 
             var parentFolder = Path.GetDirectoryName(AssetDatabase.GetAssetPath(skeletonDataAsset));
             var dataPath = parentFolder + "/" + assetFolderName;
-            if (AssetDatabase.IsValidFolder(dataPath))
+            if (!AssetDatabase.IsValidFolder(dataPath))
             {
-                Directory.Delete(dataPath, true);
+                AssetDatabase.CreateFolder(parentFolder, assetFolderName);
             }
-
-            AssetDatabase.CreateFolder(parentFolder, assetFolderName);
 
             var nameField =
                 typeof(AnimationReferenceAsset).GetField(
@@ -415,12 +513,6 @@ namespace Planetarium.Nekoyume.Editor
             {
                 var assetPath =
                     $"{dataPath}/{AssetUtility.GetPathSafeName(animation.Name)}.asset";
-                var existingAsset =
-                    AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
-                if (!(existingAsset is null))
-                {
-                    continue;
-                }
 
                 var newAsset = ScriptableObject.CreateInstance<AnimationReferenceAsset>();
                 skeletonDataAssetField.SetValue(newAsset, skeletonDataAsset);

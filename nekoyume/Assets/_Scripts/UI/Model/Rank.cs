@@ -51,37 +51,42 @@ namespace Nekoyume.UI.Model
             {
                 return Task.Run(async () =>
                 {
-                    if (!_rankingMapLoaded)
-                    {
-                        for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
-                        {
-                            var address = RankingState.Derive(i);
-                            var mapState =
-                                await Game.Game.instance.Agent.GetStateAsync(address) is
-                                    Bencodex.Types.Dictionary serialized
-                                ? new RankingMapState(serialized)
-                                : new RankingMapState(address);
-                            States.Instance.SetRankingMapStates(mapState);
-                        }
+                    //if (!_rankingMapLoaded)
+                    //{
+                    //    var addressList = new List<Address>();
+                    //    for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+                    //    {
+                    //        var address = RankingState.Derive(0);
+                    //        addressList.Add(address);
+                    //    }
 
-                        var rankingMapStates = States.Instance.RankingMapStates;
-                        _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
-                        foreach (var pair in rankingMapStates)
-                        {
-                            var rankingInfo = pair.Value.GetRankingInfos(null);
-                            _rankingInfoSet.UnionWith(rankingInfo);
-                        }
+                    //    var iValues = await Game.Game.instance.Agent.GetStateBulk(addressList);
+                    //    foreach (var kv in iValues)
+                    //    {
+                    //        var mapState = kv.Value is Bencodex.Types.Dictionary serialized
+                    //            ? new RankingMapState(serialized)
+                    //            : new RankingMapState(kv.Key);
+                    //        States.Instance.SetRankingMapStates(mapState);
+                    //    }
 
-                        _rankingMapLoaded = true;
-                    }
+                    //    var rankingMapStates = States.Instance.RankingMapStates;
+                    //    _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
+                    //    foreach (var pair in rankingMapStates)
+                    //    {
+                    //        var rankingInfo = pair.Value.GetRankingInfos(null);
+                    //        _rankingInfoSet.UnionWith(rankingInfo);
+                    //    }
 
-                    Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
+                    //    _rankingMapLoaded = true;
+                    //}
+
+                    //Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
 
                     var sw = new Stopwatch();
                     sw.Start();
 
-                    LoadAbilityRankingInfos(displayCount);
                     await Task.WhenAll(
+                        //LoadAbilityRankingInfos(displayCount),
                         LoadStageRankingInfos(apiClient, displayCount),
                         LoadMimisbrunnrRankingInfos(apiClient, displayCount),
                         LoadCraftRankingInfos(apiClient, displayCount),
@@ -96,23 +101,26 @@ namespace Nekoyume.UI.Model
             return Task.CompletedTask;
         }
 
-        private void LoadAbilityRankingInfos(int displayCount)
+        private async Task LoadAbilityRankingInfos(int displayCount)
         {
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
             var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
 
             var rankOffset = 1;
+            var addressList = _rankingInfoSet.Select(i => i.AvatarAddress).ToList();
+            var avatarDictionary = await Game.Game.instance.Agent.GetAvatarStates(addressList);
             AbilityRankingInfos = _rankingInfoSet
                 .OrderByDescending(i => i.Level)
                 .Take(displayCount)
                 .Select(async rankingInfo =>
                 {
-                    var (exist, avatarState) =
-                        await States.TryGetAvatarStateAsync(rankingInfo.AvatarAddress);
-                    if (!exist)
+                    var avatarAddress = rankingInfo.AvatarAddress;
+                    if (!avatarDictionary.ContainsKey(avatarAddress))
                     {
                         return null;
                     }
+
+                    var avatarState = avatarDictionary[avatarAddress];
 
                     return new AbilityRankingModel
                     {
@@ -179,16 +187,19 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
+            var addressList = response.StageRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
+            var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
             StageRankingInfos = response.StageRanking
-                .Select(async e =>
+                .Select(e =>
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                    if (!exist)
+                    if (!avatarDict.ContainsKey(address))
                     {
                         return null;
                     }
+
+                    var avatarState = avatarDict[address];
 
                     return new StageRankingModel
                     {
@@ -197,7 +208,7 @@ namespace Nekoyume.UI.Model
                         Rank = e.Ranking,
                     };
                 })
-                .Select(t => t?.Result)
+                .Select(t => t)
                 .Where(e => e != null)
                 .ToList();
 
@@ -228,17 +239,9 @@ namespace Nekoyume.UI.Model
                     continue;
                 }
 
-                var addressString = myRecord.AvatarAddress.Substring(2);
-                var address = new Address(addressString);
-                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                if (!exist)
-                {
-                    continue;
-                }
-
                 AgentStageRankingInfos[pair.Key] = new StageRankingModel
                 {
-                    AvatarState = avatarState,
+                    AvatarState = pair.Value,
                     ClearedStageId = myRecord.ClearedStageId,
                     Rank = myRecord.Ranking,
                 };
@@ -264,16 +267,20 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
+            var addressList = response.StageRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
+            var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
+
             MimisbrunnrRankingInfos = response.StageRanking
-                .Select(async e =>
+                .Select(e =>
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                    if (!exist)
+                    if (!avatarDict.ContainsKey(address))
                     {
                         return null;
                     }
+
+                    var avatarState = avatarDict[address];
 
                     return new StageRankingModel
                     {
@@ -283,7 +290,7 @@ namespace Nekoyume.UI.Model
                         Rank = e.Ranking,
                     };
                 })
-                .Select(t => t?.Result)
+                .Select(t => t)
                 .Where(e => e != null)
                 .ToList();
 
@@ -314,17 +321,9 @@ namespace Nekoyume.UI.Model
                     continue;
                 }
 
-                var addressString = myRecord.AvatarAddress.Substring(2);
-                var address = new Address(addressString);
-                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                if (!exist)
-                {
-                    continue;
-                }
-
                 AgentMimisbrunnrRankingInfos[pair.Key] = new StageRankingModel
                 {
-                    AvatarState = avatarState,
+                    AvatarState = pair.Value,
                     ClearedStageId = myRecord.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1,
                     Rank = myRecord.Ranking,
                 };
@@ -349,16 +348,20 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
+            var addressList = response.CraftRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
+            var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
+
             CraftRankingInfos = response.CraftRanking
-                .Select(async e =>
+                .Select(e =>
                 {
                     var addressString = e.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                    if (!exist)
+                    if (!avatarDict.ContainsKey(address))
                     {
                         return null;
                     }
+
+                    var avatarState = avatarDict[address];
 
                     return new CraftRankingModel
                     {
@@ -367,7 +370,7 @@ namespace Nekoyume.UI.Model
                         Rank = e.Ranking,
                     };
                 })
-                .Select(t => t?.Result)
+                .Select(t => t)
                 .Where(e => e != null)
                 .ToList();
 
@@ -397,17 +400,9 @@ namespace Nekoyume.UI.Model
                     continue;
                 }
 
-                var addressString = myRecord.AvatarAddress.Substring(2);
-                var address = new Address(addressString);
-                var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                if (!exist)
-                {
-                    continue;
-                }
-
                 AgentCraftRankingInfos[pair.Key] = new CraftRankingModel
                 {
-                    AvatarState = avatarState,
+                    AvatarState = pair.Value,
                     CraftCount = myRecord.CraftCount,
                     Rank = myRecord.Ranking,
                 };
@@ -440,16 +435,20 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
+                var addressList = response.EquipmentRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
+                var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
+
                 EquipmentRankingInfosMap[subType] = response.EquipmentRanking
-                    .Select(async e =>
+                    .Select(e =>
                     {
                         var addressString = e.AvatarAddress.Substring(2);
                         var address = new Address(addressString);
-                        var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                        if (!exist)
+                        if (!avatarDict.ContainsKey(address))
                         {
                             return null;
                         }
+
+                        var avatarState = avatarDict[address];
 
                         return new EquipmentRankingModel
                         {
@@ -460,7 +459,7 @@ namespace Nekoyume.UI.Model
                             EquipmentId = e.EquipmentId,
                         };
                     })
-                    .Select(t => t?.Result)
+                    .Select(t => t)
                     .Where(e => e != null)
                     .ToList();
 
@@ -492,14 +491,6 @@ namespace Nekoyume.UI.Model
                         continue;
                     }
 
-                    var addressString = myRecord.AvatarAddress.Substring(2);
-                    var address = new Address(addressString);
-                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(address);
-                    if (!exist)
-                    {
-                        continue;
-                    }
-
                     if (!AgentEquipmentRankingInfos.ContainsKey(pair.Key))
                     {
                         AgentEquipmentRankingInfos[pair.Key] = new Dictionary<ItemSubType, EquipmentRankingModel>();
@@ -507,7 +498,7 @@ namespace Nekoyume.UI.Model
 
                     AgentEquipmentRankingInfos[pair.Key][subType] = new EquipmentRankingModel
                     {
-                        AvatarState = avatarState,
+                        AvatarState = pair.Value,
                         Rank = myRecord.Ranking,
                         Level = myRecord.Level,
                         Cp = myRecord.Cp,

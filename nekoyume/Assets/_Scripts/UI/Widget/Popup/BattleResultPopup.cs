@@ -655,6 +655,7 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track(eventName, props);
 
             Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
         }

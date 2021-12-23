@@ -373,41 +373,48 @@ namespace Nekoyume.State
         private static async Task<List<OrderDigest>> GetBuyOrderDigests()
         {
             var orderDigests = new Dictionary<Address, List<OrderDigest>>();
+            var addressList = new List<Address>();
 
             foreach (var itemSubType in ItemSubTypes)
             {
                 if (ShardedSubTypes.Contains(itemSubType))
                 {
-                    foreach (var addressKey in ShardedShopState.AddressKeys)
-                    {
-                        var address = ShardedShopStateV2.DeriveAddress(itemSubType, addressKey);
-                        await AddOrderDigest(address, orderDigests);
-                    }
+                    addressList.AddRange(ShardedShopState.AddressKeys.Select(addressKey =>
+                        ShardedShopStateV2.DeriveAddress(itemSubType, addressKey)));
                 }
                 else
                 {
                     var address = ShardedShopStateV2.DeriveAddress(itemSubType, string.Empty);
-                    await AddOrderDigest(address, orderDigests);
+                    addressList.Add(address);
                 }
             }
 
+            Dictionary<Address, IValue> values = await Game.Game.instance.Agent.GetStateBulk(addressList);
+            var shopStates = new List<ShardedShopStateV2>();
+            foreach (var kv in values)
+            {
+                if (kv.Value is Dictionary shopDict)
+                {
+                    shopStates.Add(new ShardedShopStateV2(shopDict));
+                }
+            }
+
+            AddOrderDigest(shopStates, orderDigests);
+
             var digests = new List<OrderDigest>();
-            foreach (var items in orderDigests.Select(i => i.Value))
+            foreach (var items in orderDigests.Values)
             {
                 digests.AddRange(items);
             }
-
             return digests;
         }
 
-        private static async Task AddOrderDigest(Address address,
+        private static void AddOrderDigest(List<ShardedShopStateV2> shopStates,
             IDictionary<Address, List<OrderDigest>> orderDigests)
         {
-            var shardedShopState = await Game.Game.instance.Agent.GetStateAsync(address);
-            if (shardedShopState is Dictionary dictionary)
+            foreach (var shopState in shopStates)
             {
-                var state = new ShardedShopStateV2(dictionary);
-                foreach (var orderDigest in state.OrderDigestList)
+                foreach (var orderDigest in shopState.OrderDigestList)
                 {
                     if (orderDigest.ExpiredBlockIndex != 0 && orderDigest.ExpiredBlockIndex >
                         Game.Game.instance.Agent.BlockIndex)
@@ -415,9 +422,8 @@ namespace Nekoyume.State
                         var agentAddress = orderDigest.SellerAgentAddress;
                         if (!orderDigests.ContainsKey(agentAddress))
                         {
-                            orderDigests.Add(agentAddress, new List<OrderDigest>());
+                            orderDigests[agentAddress] = new List<OrderDigest>();
                         }
-
                         orderDigests[agentAddress].Add(orderDigest);
                     }
                 }

@@ -1,18 +1,18 @@
 ﻿using System;
+using Cysharp.Threading.Tasks;
 using Libplanet.Action;
-using mixpanel;
+using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using PackageExtensions.Mixpanel;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
     public static class ErrorCode
     {
-        public static (string, string, string) GetErrorCode(Exception exc)
+        public static async UniTask<(string, string, string)> GetErrorCodeAsync(Exception exc)
         {
             var key = "ERROR_UNKNOWN";
             var code = "99";
@@ -110,18 +110,36 @@ namespace Nekoyume.BlockChain
                 case ActionTimeoutException ate:
                     key = "ERROR_NETWORK";
                     errorMsg = "Action timeout occurred.";
-                    if (Game.Game.instance.Agent.IsActionStaged(ate.ActionId, out var txId))
+                    TxId txId;
+                    if (ate.TxId.HasValue)
                     {
-                        errorMsg += $" Transaction for action is still staged. (txId: {txId})";
-                        code = "26";
+                        txId = ate.TxId.Value;
+                        if (await Game.Game.instance.Agent.IsTxStagedAsync(txId))
+                        {
+                            errorMsg += $" Transaction for action is still staged. (txId: {txId})";
+                            code = "26";
+                        }
+                        else
+                        {
+                            errorMsg += $" Transaction for action is not staged. (txId: {txId})";
+                            code = "27";
+                        }
                     }
                     else
                     {
-                        errorMsg += $" Transaction for action is not staged. (txId: {txId})";
-                        code = "27";
+                        if (Game.Game.instance.Agent.TryGetTxId(ate.ActionId, out txId))
+                        {
+                            errorMsg += $" Transaction for action is still staged. (txId: {txId})";
+                            code = "26";
+                        }
+                        else
+                        {
+                            errorMsg += " Transaction for action is not staged.";
+                            code = "27";
+                        }
                     }
 
-                    Debug.LogError($"Action timeout: (actionID: {ate.ActionId}, txId: {txId}, code: {code})");
+                    Debug.LogError($"Action timeout: (txId: {txId}, actionId: {ate.ActionId}, code: {code})");
 
                     errorMsg += $"\nError Code: {code}";
                     break;

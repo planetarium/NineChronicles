@@ -72,7 +72,7 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             });
 
-            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion_01));
+            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion));
 
             CloseWidget = () =>
             {
@@ -145,7 +145,8 @@ namespace Nekoyume.UI
             Find<TwoButtonSystem>().Close();
             Find<ItemCountableAndPricePopup>().Close();
             speechBubble.gameObject.SetActive(false);
-            Find<ShopBuy>().ForceClose();
+            Find<ShopBuy>().Close();
+            _npc?.gameObject.SetActive(false);
             base.Close(ignoreCloseAnimation);
         }
 
@@ -558,8 +559,8 @@ namespace Nekoyume.UI
             CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
         {
             _npc.PlayAnimation(type == CharacterAnimation.Type.Greeting
-                ? NPCAnimation.Type.Greeting_01
-                : NPCAnimation.Type.Emotion_01);
+                ? NPCAnimation.Type.Greeting
+                : NPCAnimation.Type.Emotion);
 
             speechBubble.SetKey(key);
         }

@@ -42,6 +42,8 @@ using NetMQ;
 using Serilog;
 using Serilog.Events;
 using UnityEngine;
+using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>>;
 
 namespace Nekoyume.BlockChain
 {
@@ -71,15 +73,15 @@ namespace Nekoyume.BlockChain
         private const int SwarmLinger = 1 * 1000;
         private const string QueuedActionsFileName = "queued_actions.dat";
 
-        private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
-            new ConcurrentQueue<PolymorphicAction<ActionBase>>();
+        private readonly ConcurrentQueue<NCAction> _queuedActions =
+            new ConcurrentQueue<NCAction>();
 
         private readonly TransactionMap _transactions = new TransactionMap(20);
 
-        protected BlockChain<PolymorphicAction<ActionBase>> blocks;
-        private Swarm<PolymorphicAction<ActionBase>> _swarm;
+        protected BlockChain<NCAction> blocks;
+        private Swarm<NCAction> _swarm;
         protected BaseStore store;
-        private IStagePolicy<PolymorphicAction<ActionBase>> _stagePolicy;
+        private IStagePolicy<NCAction> _stagePolicy;
         private IStateStore _stateStore;
         private ImmutableList<Peer> _seedPeers;
         private ImmutableList<Peer> _peerList;
@@ -88,7 +90,7 @@ namespace Nekoyume.BlockChain
 
         private string _tipInfo = string.Empty;
 
-        private ConcurrentQueue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)> lastTenBlocks;
+        private ConcurrentQueue<(Block<NCAction>, DateTimeOffset)> lastTenBlocks;
 
         public long BlockIndex => blocks?.Tip?.Index ?? 0;
         public PrivateKey PrivateKey { get; private set; }
@@ -101,6 +103,11 @@ namespace Nekoyume.BlockChain
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
         public int AppProtocolVersion { get; private set; }
         public BlockHash BlockTipHash => blocks.Tip.Hash;
+
+        private readonly Subject<(NCTx tx, List<NCAction> actions)> _onMakeTransactionSubject =
+            new Subject<(NCTx tx, List<NCAction> actions)>();
+
+        public IObservable<(NCTx tx, List<NCAction> actions)> OnMakeTransaction => _onMakeTransactionSubject;
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -177,7 +184,7 @@ namespace Nekoyume.BlockChain
             );
 
             var policy = BlockPolicySource.GetPolicy();
-            _stagePolicy = new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
+            _stagePolicy = new VolatileStagePolicy<NCAction>();
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
 
@@ -185,7 +192,7 @@ namespace Nekoyume.BlockChain
             {
                 IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "states"));
                 _stateStore = new TrieStateStore(stateKeyValueStore);
-                blocks = new BlockChain<PolymorphicAction<ActionBase>>(
+                blocks = new BlockChain<NCAction>(
                     policy,
                     _stagePolicy,
                     store,
@@ -204,11 +211,11 @@ namespace Nekoyume.BlockChain
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
-            lastTenBlocks = new ConcurrentQueue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)>();
+            lastTenBlocks = new ConcurrentQueue<(Block<NCAction>, DateTimeOffset)>();
 
             EncounteredHighestVersion = appProtocolVersion;
 
-            _swarm = new Swarm<PolymorphicAction<ActionBase>>(
+            _swarm = new Swarm<NCAction>(
                 blocks,
                 privateKey,
                 appProtocolVersion: appProtocolVersion,
@@ -283,11 +290,44 @@ namespace Nekoyume.BlockChain
             return Task.Run(() => blocks.GetState(address));
         }
 
-        public bool IsActionStaged(Guid actionId, out TxId txId)
+        public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
         {
-            return _transactions.TryGetValue(actionId, out txId)
-                   && blocks.GetStagedTransactionIds().Contains(txId);
+            return await Task.Run(async () =>
+            {
+                var dict = new Dictionary<Address, AvatarState>();
+                foreach (var address in addressList)
+                {
+                    var result = await States.TryGetAvatarStateAsync(address);
+                    if (result.exist)
+                    {
+                        dict[address] = result.avatarState;
+                    }
+                }
+
+                return dict;
+            });
         }
+
+        public async Task<Dictionary<Address, IValue>> GetStateBulk(IEnumerable<Address> addressList)
+        {
+            return await Task.Run(async () =>
+            {
+                var dict = new Dictionary<Address, IValue>();
+                foreach (var address in addressList)
+                {
+                    var result = await GetStateAsync(address);
+                    dict[address] = result;
+                }
+
+                return dict;
+            });
+        }
+
+        public bool TryGetTxId(Guid actionId, out TxId txId) =>
+            _transactions.TryGetValue(actionId, out txId);
+
+        public UniTask<bool> IsTxStagedAsync(TxId txId) =>
+            UniTask.FromResult(blocks.GetStagedTransactionIds().Contains(txId));
 
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
             blocks.GetBalance(address, currency);
@@ -316,6 +356,8 @@ namespace Nekoyume.BlockChain
 
         protected void OnDestroy()
         {
+            _onMakeTransactionSubject.Dispose();
+
             BlockRenderHandler.Instance.Stop();
             ActionRenderHandler.Instance.Stop();
             ActionUnrenderHandler.Instance.Stop();
@@ -609,7 +651,9 @@ namespace Nekoyume.BlockChain
             Widget.Create<BattleSimulator>(true);
             Widget.Create<CombinationSimulator>(true);
             Widget.Create<Cheat>(true);
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Widget.Create<TestbedEditor>(true);
+#endif
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);
@@ -759,8 +803,8 @@ namespace Nekoyume.BlockChain
         }
 
         private void TipChangedHandler((
-            Block<PolymorphicAction<ActionBase>> OldTip,
-            Block<PolymorphicAction<ActionBase>> NewTip) tuple)
+            Block<NCAction> OldTip,
+            Block<NCAction> NewTip) tuple)
         {
             var (oldTip, newTip) = tuple;
 
@@ -785,10 +829,10 @@ namespace Nekoyume.BlockChain
             {
                 yield return new WaitForSeconds(TxProcessInterval);
 
-                var actions = new List<PolymorphicAction<ActionBase>>();
+                var actions = new List<NCAction>();
 
                 Debug.LogFormat("Try Dequeue Actions. Total Count: {0}", _queuedActions.Count);
-                while (_queuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
+                while (_queuedActions.TryDequeue(out NCAction action))
                 {
                     actions.Add(action);
                     Debug.LogFormat("Remain Queued Actions Count: {0}", _queuedActions.Count);
@@ -857,13 +901,13 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
-            IEnumerable<PolymorphicAction<ActionBase>> actions)
+        private Transaction<NCAction> MakeTransaction(List<NCAction> actions)
         {
             var polymorphicActions = actions.ToArray();
             Debug.LogFormat("Make Transaction with Actions: `{0}`",
                 string.Join(",", polymorphicActions.Select(i => i.InnerAction)));
-            Transaction<PolymorphicAction<ActionBase>> tx = blocks.MakeTransaction(PrivateKey, polymorphicActions);
+            Transaction<NCAction> tx = blocks.MakeTransaction(PrivateKey, polymorphicActions);
+            _onMakeTransactionSubject.OnNext((tx, actions));
             if (_swarm.Running)
             {
                 _swarm.BroadcastTxs(new[] { tx });
@@ -934,9 +978,9 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 // 프레임 저하를 막기 위해 별도 스레드로 처리합니다.
-                Task<List<Transaction<PolymorphicAction<ActionBase>>>> getOwnTxs =
+                Task<List<Transaction<NCAction>>> getOwnTxs =
                     Task.Run(
-                        () => _stagePolicy.Iterate()
+                        () => _stagePolicy.Iterate(blocks)
                             .Where(tx => tx.Signer.Equals(Address))
                             .ToList()
                     );
@@ -945,7 +989,7 @@ namespace Nekoyume.BlockChain
 
                 if (!getOwnTxs.IsFaulted)
                 {
-                    List<Transaction<PolymorphicAction<ActionBase>>> txs = getOwnTxs.Result;
+                    List<Transaction<NCAction>> txs = getOwnTxs.Result;
                     var next = txs.Any();
                     if (next != hasOwnTx)
                     {

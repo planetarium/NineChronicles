@@ -22,10 +22,7 @@ namespace Nekoyume.UI
 
         private const string ScenarioPath = "Tutorial/Data/TutorialScenario";
         private const string PresetPath = "Tutorial/Data/TutorialPreset";
-
-        private readonly List<int> _playIdHistory = new List<int>();
-
-        public int CurrentlyPlayingId { get; private set; }
+        private const string CheckPoint = "Tutorial_Check_Point";
 
         private readonly List<int> _mixpanelTargets = new List<int>() { 1, 2, 6, 11, 49 };
 
@@ -44,7 +41,6 @@ namespace Nekoyume.UI
 
                 foreach (var target in widget.tutorialTargets.Where(target => target != null))
                 {
-
                     _targets.Add(target.type, target.rectTransform);
                 }
 
@@ -63,17 +59,26 @@ namespace Nekoyume.UI
             _preset.AddRange(GetData<TutorialPreset>(PresetPath).preset);
         }
 
-        private T GetData<T>(string path) where T : new()
+        public void Run(int clearedStageId)
         {
-            var json = Resources.Load<TextAsset>(path).ToString();
-            var data = JsonUtility.FromJson<T>(json);
-            return data;
+            if (clearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+            {
+                Play(1);
+            }
+            else
+            {
+                var checkPoint = GetCheckPoint(clearedStageId);
+                if (checkPoint == 0)
+                {
+                    return;
+                }
+
+                Play(checkPoint);
+            }
         }
 
-        public void Play(int id)
+        private void Play(int id)
         {
-            CurrentlyPlayingId = id;
-            _playIdHistory.Add(id);
             if (!_tutorial.isActiveAndEnabled)
             {
                 _tutorial.Show();
@@ -83,6 +88,8 @@ namespace Nekoyume.UI
             var scenario = _scenario.FirstOrDefault(x => x.id == id);
             if (scenario != null)
             {
+                SendMixPanel(id);
+                SetCheckPoint(scenario.checkPointId);
                 var viewData = GetTutorialData(scenario.data);
                 _tutorial.Play(viewData, scenario.data.presetId, () =>
                 {
@@ -92,29 +99,13 @@ namespace Nekoyume.UI
             }
             else
             {
-                if (_playIdHistory.Any())
-                {
-                    SaveTutorialProgress(_playIdHistory.First());
-                    _playIdHistory.Clear();
-                }
-
                 _tutorial.Stop(() =>
                 {
                     _tutorial.gameObject.SetActive(false);
                     WidgetHandler.Instance.IsActiveTutorialMaskWidget = false;
                 });
-
+                HelpTooltip.HelpMe(100001, true);
             }
-        }
-
-        public void Stop(System.Action callback = null)
-        {
-            _tutorial.Stop(() =>
-            {
-                _tutorial.gameObject.SetActive(false);
-                WidgetHandler.Instance.IsActiveTutorialMaskWidget = false;
-                callback?.Invoke();
-            });
         }
 
         private void PlayAction(TutorialActionType actionType)
@@ -160,26 +151,50 @@ namespace Nekoyume.UI
             };
         }
 
-        public int GetTutorialProgress()
+        private static T GetData<T>(string path) where T : new()
         {
-            var prefsKey = $"TUTORIAL_PROGRESS";
-            var progress = PlayerPrefs.GetInt(prefsKey, 0);
-            return progress;
+            var json = Resources.Load<TextAsset>(path).ToString();
+            var data = JsonUtility.FromJson<T>(json);
+            return data;
         }
 
-        public void SaveTutorialProgress(int id)
+        private static int GetCheckPoint(int clearedStageId)
         {
-            if (_mixpanelTargets.Exists(x => x == id))
+            if(PlayerPrefs.HasKey(CheckPoint))
             {
-                var props = new Value
-                {
-                    ["Id"] = id,
-                };
-                Analyzer.Instance.Track("Unity/Tutorial progress", props);
+                return PlayerPrefs.GetInt(CheckPoint);
             }
 
-            var prefsKey = $"TUTORIAL_PROGRESS";
-            PlayerPrefs.SetInt(prefsKey, id);
+            //If PlayerPrefs doesn't exist
+            var value = 0;
+            if (clearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+            {
+                value = 1;
+            }
+            else if (clearedStageId == GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+            {
+                value = 2;
+            }
+            return PlayerPrefs.GetInt(CheckPoint, value);
+        }
+
+        private static void SetCheckPoint(int id)
+        {
+            PlayerPrefs.SetInt(CheckPoint, id);
+        }
+
+        private void SendMixPanel(int id)
+        {
+            if (!_mixpanelTargets.Exists(x => x == id))
+            {
+                return;
+            }
+
+            var props = new Value
+            {
+                ["Id"] = id,
+            };
+            Analyzer.Instance.Track("Unity/Tutorial progress", props);
         }
     }
 }

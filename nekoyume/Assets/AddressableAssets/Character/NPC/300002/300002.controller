@@ -27,7 +27,7 @@ AnimatorStateTransition:
   m_CanTransitionToSelf: 1
 --- !u!1101 &-8410431374189080807
 AnimatorStateTransition:
-  m_ObjectHideFlags: 3
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -112,12 +112,12 @@ MonoBehaviour:
   loop: 1
 --- !u!1102 &-6019464610825843976
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Emotion_01
+  m_Name: Emotion
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -168,18 +168,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Touch_01
+  animationClip: Touch
   timeScale: 1
   exitTime: 1
   loop: 0
 --- !u!1102 &-4807721152195327876
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Greeting_01
+  m_Name: Greeting
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -219,7 +219,7 @@ MonoBehaviour:
   loop: 0
 --- !u!1101 &-3416116275270573586
 AnimatorStateTransition:
-  m_ObjectHideFlags: 3
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -362,7 +362,7 @@ MonoBehaviour:
   loop: 0
 --- !u!1101 &-706228272739260943
 AnimatorStateTransition:
-  m_ObjectHideFlags: 3
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -398,7 +398,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Idle_01
+  animationClip: Idle
   timeScale: 1
   exitTime: 1
   loop: 1
@@ -516,12 +516,12 @@ AnimatorStateTransition:
   m_CanTransitionToSelf: 1
 --- !u!1102 &1102102544963568188
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Disappear_01
+  m_Name: Disappear
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -544,12 +544,12 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1102 &1102371260301684146
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Appear_01
+  m_Name: Appear
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -572,12 +572,12 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1102 &1102983976320820166
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Idle_01
+  m_Name: Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -599,7 +599,7 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1107 &1107287239022552144
 AnimatorStateMachine:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -647,7 +647,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Appear_01
+  animationClip: Appear
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -687,7 +687,7 @@ MonoBehaviour:
   loop: 0
 --- !u!1101 &2500096371034331204
 AnimatorStateTransition:
-  m_ObjectHideFlags: 3
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -723,7 +723,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Greeting_01
+  animationClip: Greeting
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -746,12 +746,12 @@ MonoBehaviour:
   loop: 0
 --- !u!1102 &4344912761779924467
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Touch_01
+  m_Name: Touch
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -785,7 +785,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Emotion_01
+  animationClip: Emotion
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -825,7 +825,7 @@ MonoBehaviour:
   loop: 0
 --- !u!1101 &5110473172743494982
 AnimatorStateTransition:
-  m_ObjectHideFlags: 3
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -858,7 +858,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer: 0
-  animationClip: Disappear_01
+  animationClip: Disappear
   timeScale: 1
   exitTime: 1
   loop: 0
@@ -999,7 +999,7 @@ MonoBehaviour:
   loop: 1
 --- !u!1101 &9175105469496725385
 AnimatorStateTransition:
-  m_ObjectHideFlags: 3
+  m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}

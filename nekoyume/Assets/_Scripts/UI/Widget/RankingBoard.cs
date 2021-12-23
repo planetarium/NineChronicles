@@ -2,17 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet;
-using Nekoyume.Action;
-using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
@@ -185,7 +183,7 @@ namespace Nekoyume.UI
                 var weeklyArenaState =
                     new WeeklyArenaState((Bencodex.Types.Dictionary) await agent.GetStateAsync(weeklyArenaAddress));
                 States.Instance.SetWeeklyArenaState(weeklyArenaState);
-                UpdateWeeklyCache(States.Instance.WeeklyArenaState);
+                await UpdateWeeklyCache(States.Instance.WeeklyArenaState);
             });
 
             base.Show(true);
@@ -402,8 +400,7 @@ namespace Nekoyume.UI
                     .Select(i => i.ItemId).ToList(),
                 currentAvatarInventory.Equipments
                     .Where(i => i.equipped)
-                    .Select(i => i.ItemId).ToList(),
-                new List<Guid>()
+                    .Select(i => i.ItemId).ToList()
             ).Subscribe();
             Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
         }
@@ -439,11 +436,11 @@ namespace Nekoyume.UI
             {
                 if (type == CharacterAnimation.Type.Greeting)
                 {
-                    _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
+                    _npc.PlayAnimation(NPCAnimation.Type.Greeting);
                 }
                 else
                 {
-                    _npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
+                    _npc.PlayAnimation(NPCAnimation.Type.Emotion);
                 }
 
                 speechBubble.SetKey(key);
@@ -471,7 +468,7 @@ namespace Nekoyume.UI
                 .ToList();
         }
 
-        private void UpdateWeeklyCache(WeeklyArenaState state)
+        private async Task UpdateWeeklyCache(WeeklyArenaState state)
         {
             var infos = state.GetArenaInfos(1, 3);
             if (States.Instance.CurrentAvatarState != null)
@@ -489,14 +486,18 @@ namespace Nekoyume.UI
                 infos = infos.ToImmutableHashSet().OrderBy(tuple => tuple.rank).ToList();
             }
 
+            var addressList = infos.Select(i => i.arenaInfo.AvatarAddress).ToList();
+            var avatarStates = await Game.Game.instance.Agent.GetAvatarStates(addressList);
             _weeklyCachedInfo = infos
-                .Select(async tuple =>
+                .Select(tuple =>
                 {
-                    var (exist, avatarState) = await States.TryGetAvatarStateAsync(tuple.arenaInfo.AvatarAddress);
-                    if (!exist)
+                    var avatarAddress = tuple.arenaInfo.AvatarAddress;
+                    if (!avatarStates.ContainsKey(avatarAddress))
                     {
                         return (0, null);
                     }
+
+                    var avatarState = avatarStates[avatarAddress];
 
                     var arenaInfo = tuple.arenaInfo;
 #pragma warning disable 618
@@ -506,7 +507,7 @@ namespace Nekoyume.UI
 #pragma warning restore 618
                     return tuple;
                 })
-                .Select(t => t.AsTask().Result)
+                .Select(t => t)
                 .Where(tuple => tuple.rank > 0)
                 .ToList();
         }

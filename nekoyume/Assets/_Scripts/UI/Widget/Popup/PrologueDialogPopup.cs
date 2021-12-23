@@ -13,8 +13,8 @@ namespace Nekoyume.UI
     public class PrologueDialogPopup : PopupWidget
     {
         private const float TextInterval = 0.06f;
-        private const int FenrirId = 205007;
-        private const int FreyaId = 300005;
+        private const string FenrirKey = "dialog_10";
+        private const string FreyaKey = "300005";
 
         private static readonly Vector3 FenrirSpinePosition = new Vector3(4001.7f, 3998.2f);
         private static readonly Vector3 FreyaSpinePosition = new Vector3(4000.8f, 3994.59f);
@@ -110,7 +110,7 @@ namespace Nekoyume.UI
                     if (_fenrir is null)
                     {
                         var go = Game.Game.instance.Stage.npcFactory.CreateDialogNPC(
-                            FenrirId,
+                            FenrirKey,
                             FenrirSpinePosition,
                             LayerType.UI,
                             100);
@@ -125,7 +125,7 @@ namespace Nekoyume.UI
                     if (_freya is null)
                     {
                         var go = Game.Game.instance.Stage.npcFactory.CreateDialogNPC(
-                            FreyaId,
+                            FreyaKey,
                             FreyaSpinePosition,
                             LayerType.UI,
                             100);

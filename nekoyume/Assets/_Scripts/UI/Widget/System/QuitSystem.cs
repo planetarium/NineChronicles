@@ -28,7 +28,8 @@ namespace Nekoyume.UI
             characterSelectEventSubject.GetEvent("Click")
                 .Subscribe(_ =>
                 {
-                    SelectCharacter();
+                    Game.Game.instance.BackToNest();
+                    Close();
                     AudioController.PlayClick();
                 })
                 .AddTo(gameObject);
@@ -58,29 +59,6 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             blur.Show(blurRadius);
             AudioController.PlayPopup();
-        }
-
-        private void SelectCharacter()
-        {
-            if (Game.Game.instance.Stage.IsInStage)
-            {
-                NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
-                    L10nManager.Localize("UI_BLOCK_EXIT"),
-                    NotificationCell.NotificationType.Information);
-                return;
-            }
-
-            Game.Event.OnNestEnter.Invoke();
-
-            var deletableWidgets = FindWidgets().Where(widget =>
-                !(widget is SystemWidget) && !(widget is QuitSystem) &&
-                !(widget is MessageCatTooltip) && widget.IsActive());
-            foreach (var widget in deletableWidgets)
-            {
-                widget.Close(true);
-            }
-            Find<Login>().Show();
-            Close();
         }
 
         private void Quit()

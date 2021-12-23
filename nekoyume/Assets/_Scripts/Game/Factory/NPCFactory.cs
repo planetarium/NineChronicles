@@ -34,7 +34,7 @@ namespace Nekoyume.Game.Factory
             return npc.gameObject;
         }
 
-        public GameObject CreateDialogNPC(int id, Vector3 position, LayerType layerType, int sortingOrder)
+        public GameObject CreateDialogNPC(string key, Vector3 position, LayerType layerType, int sortingOrder)
         {
             var objectPool = GetComponent<ObjectPool>();
             if (ReferenceEquals(objectPool, null))
@@ -55,7 +55,7 @@ namespace Nekoyume.Game.Factory
             }
 
             npc.SetSortingLayer(layerType, sortingOrder);
-            var prefab = Resources.Load<GameObject>($"Character/NPC/{id}");
+            var prefab = Resources.Load<GameObject>($"Character/NPC/{key}");
             var go = Instantiate(prefab, npc.transform);
             npc.ResetAnimatorTarget(go);
             return npc.gameObject;

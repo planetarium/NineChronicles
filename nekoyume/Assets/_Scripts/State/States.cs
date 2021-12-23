@@ -280,6 +280,8 @@ namespace Nekoyume.State
 
             if (isNew)
             {
+                // notee: commit c1b7f0dc2e8fd922556b83f0b9b2d2d2b2626603 에서 코드 수정이 생기면서
+                // SetCombinationSlotStatesAsync()가 호출이 안되는 이슈가 있어서 revert했습니다. 재수정 필요
                 _combinationSlotStates.Clear();
                 await UniTask.Run(async () =>
                 {

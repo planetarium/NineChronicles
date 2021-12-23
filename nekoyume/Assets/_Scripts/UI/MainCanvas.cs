@@ -180,13 +180,13 @@ namespace Nekoyume.UI
                 Widget.Create<TitleOneButtonSystem>(),
 
                 // 시스템 정보 영역.
-                Widget.Create<BlockChainMessageSystem>(true),
-                Widget.Create<NotificationSystem>(true),
-                Widget.Create<OneLineSystem>(true),
-                Widget.Create<VersionSystem>(true),
                 Widget.Create<OneButtonSystem>(),
                 Widget.Create<TwoButtonSystem>(),
                 Widget.Create<IconAndButtonSystem>(),
+                Widget.Create<OneLineSystem>(true),
+                Widget.Create<NotificationSystem>(true),
+                Widget.Create<BlockChainMessageSystem>(true),
+                Widget.Create<VersionSystem>(true),
             };
 
             foreach (var value in firstWidgets)
