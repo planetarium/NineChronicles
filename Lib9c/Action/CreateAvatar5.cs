@@ -14,8 +14,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("create_avatar6")]
-    public class CreateAvatar : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100096ObsoleteIndex)]
+    [ActionType("create_avatar5")]
+    public class CreateAvatar5 : GameAction
     {
         public const string DeriveFormat = "avatar-state-{0}";
 
@@ -127,7 +128,7 @@ namespace Nekoyume.Action
             // Avoid NullReferenceException in test
             var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
 
-            RankingState rankingState = ctx.PreviousStates.GetRankingState();
+            RankingState1 rankingState = ctx.PreviousStates.GetRankingState1();
 
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
 
