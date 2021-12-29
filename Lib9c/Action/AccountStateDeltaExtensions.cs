@@ -566,7 +566,7 @@ namespace Nekoyume.Action
             );
         }
 
-        public static RankingState1 GetRankingState(this IAccountStateDelta states)
+        public static RankingState1 GetRankingState1(this IAccountStateDelta states)
         {
             var value = states.GetState(Addresses.Ranking);
             if (value is null)
