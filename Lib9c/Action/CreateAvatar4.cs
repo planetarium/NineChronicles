@@ -14,8 +14,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("create_avatar5")]
-    public class CreateAvatar : GameAction
+    [ActionType("create_avatar4")]
+    public class CreateAvatar4 : GameAction
     {
         public const string DeriveFormat = "avatar-state-{0}";
 
@@ -127,7 +127,7 @@ namespace Nekoyume.Action
             // Avoid NullReferenceException in test
             var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
 
-            RankingState rankingState = ctx.PreviousStates.GetRankingState();
+            var rankingState = ctx.PreviousStates.GetRankingState0();
 
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
 

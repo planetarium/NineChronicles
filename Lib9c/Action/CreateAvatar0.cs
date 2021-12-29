@@ -26,7 +26,8 @@ namespace Nekoyume.Action
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("create_avatar")]
     public class CreateAvatar0 : GameAction
-    {        public Address avatarAddress;
+    {
+        public Address avatarAddress;
         public int index;
         public int hair;
         public int lens;

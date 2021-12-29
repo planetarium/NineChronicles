@@ -566,6 +566,16 @@ namespace Nekoyume.Action
             );
         }
 
+        public static RankingState GetRankingState(this IAccountStateDelta states)
+        {
+            var value = states.GetState(Addresses.Ranking);
+            if (value is null)
+            {
+                throw new FailedLoadStateException(nameof(RankingState0));
+            }
+            return new RankingState((Dictionary) value);
+        }
+
         public static RankingState0 GetRankingState0(this IAccountStateDelta states)
         {
             var value = states.GetState(Addresses.Ranking);
