@@ -40,10 +40,10 @@ namespace Lib9c.Tests.Action
             };
 
             var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
-            var ranking = new RankingState();
-            for (var i = 0; i < RankingState.RankingMapCapacity; i++)
+            var ranking = new RankingState0();
+            for (var i = 0; i < RankingState0.RankingMapCapacity; i++)
             {
-                ranking.RankingMap[RankingState.Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
+                ranking.RankingMap[RankingState0.Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
             }
 
             var sheets = TableSheetsImporter.ImportSheets();
@@ -275,7 +275,7 @@ namespace Lib9c.Tests.Action
             }
 
             var state = new State()
-                .SetState(Addresses.Ranking, new RankingState().Serialize())
+                .SetState(Addresses.Ranking, new RankingState0().Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 
             var nextState = action.Execute(new ActionContext()
