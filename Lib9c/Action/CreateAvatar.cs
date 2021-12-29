@@ -127,7 +127,7 @@ namespace Nekoyume.Action
             // Avoid NullReferenceException in test
             var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
 
-            var rankingState = ctx.PreviousStates.GetRankingState();
+            var rankingState = ctx.PreviousStates.GetRankingState0();
 
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
 

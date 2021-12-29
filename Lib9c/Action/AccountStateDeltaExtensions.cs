@@ -566,14 +566,14 @@ namespace Nekoyume.Action
             );
         }
 
-        public static RankingState GetRankingState(this IAccountStateDelta states)
+        public static RankingState0 GetRankingState0(this IAccountStateDelta states)
         {
             var value = states.GetState(Addresses.Ranking);
             if (value is null)
             {
-                throw new FailedLoadStateException(nameof(RankingState));
+                throw new FailedLoadStateException(nameof(RankingState0));
             }
-            return new RankingState((Dictionary) value);
+            return new RankingState0((Dictionary) value);
         }
 
         public static ShopState GetShopState(this IAccountStateDelta states)

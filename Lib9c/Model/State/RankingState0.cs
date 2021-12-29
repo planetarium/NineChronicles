@@ -11,7 +11,7 @@ using Nekoyume.Action;
 namespace Nekoyume.Model.State
 {
     [Serializable]
-    public class RankingState : State, ISerializable
+    public class RankingState0 : State, ISerializable
     {
         private static readonly Codec _codec = new Codec();
         public static readonly Address Address = Addresses.Ranking;
@@ -19,7 +19,7 @@ namespace Nekoyume.Model.State
         private Dictionary<Address, ImmutableHashSet<Address>> _rankingMap;
         private Dictionary _serialized;
 
-        public RankingState() : base(Address)
+        public RankingState0() : base(Address)
         {
             _rankingMap = new Dictionary<Address, ImmutableHashSet<Address>>();
             for (var i = 0; i < RankingMapCapacity; i++)
@@ -28,13 +28,13 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public RankingState(Dictionary serialized)
+        public RankingState0(Dictionary serialized)
             : base(serialized)
         {
             _serialized = serialized;
         }
 
-        public RankingState(SerializationInfo info, StreamingContext context)
+        public RankingState0(SerializationInfo info, StreamingContext context)
             : this((Dictionary)_codec.Decode(
                 (byte[])info.GetValue(nameof(_serialized), typeof(byte[]))
             ))
