@@ -15,7 +15,7 @@ namespace Nekoyume.Model.State
     {
         private static readonly Codec _codec = new Codec();
         public static readonly Address Address = Addresses.Ranking;
-        public const int RankingMapCapacity = 1000;
+        public const int RankingMapCapacity = 150;
         private Dictionary<Address, ImmutableHashSet<Address>> _rankingMap;
         private Dictionary _serialized;
 
