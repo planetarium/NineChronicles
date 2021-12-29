@@ -581,7 +581,7 @@ namespace Nekoyume.Action
             var value = states.GetState(Addresses.Ranking);
             if (value is null)
             {
-                throw new FailedLoadStateException(nameof(RankingState0));
+                throw new FailedLoadStateException(nameof(RankingState1));
             }
             return new RankingState1((Dictionary) value);
         }
