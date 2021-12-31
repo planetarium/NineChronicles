@@ -39,7 +39,7 @@ namespace Nekoyume.Action
         }
 
         public InitializeStates(
-            RankingState rankingState,
+            RankingState0 rankingState,
             ShopState shopState,
             Dictionary<string, string> tableSheets,
             GameConfigState gameConfigState,
@@ -82,10 +82,10 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             var weeklyArenaState = new WeeklyArenaState(0);
 
-            var rankingState = new RankingState(Ranking);
+            var rankingState = new RankingState0(Ranking);
             if (ctx.Rehearsal)
             {
-                states = states.SetState(RankingState.Address, MarkChanged);
+                states = states.SetState(RankingState0.Address, MarkChanged);
                 states = states.SetState(ShopState.Address, MarkChanged);
 #pragma warning disable LAA1002
                 states = TableSheets
@@ -129,7 +129,7 @@ namespace Nekoyume.Action
 #pragma warning restore LAA1002
             states = states
                 .SetState(weeklyArenaState.address, weeklyArenaState.Serialize())
-                .SetState(RankingState.Address, Ranking)
+                .SetState(RankingState0.Address, Ranking)
                 .SetState(ShopState.Address, Shop)
                 .SetState(GameConfigState.Address, GameConfig)
                 .SetState(RedeemCodeState.Address, RedeemCode)

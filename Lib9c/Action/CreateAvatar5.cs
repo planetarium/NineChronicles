@@ -3,23 +3,20 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Numerics;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
-    [ActionType("create_avatar2")]
-    public class CreateAvatar2 : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100096ObsoleteIndex)]
+    [ActionType("create_avatar5")]
+    public class CreateAvatar5 : GameAction
     {
         public const string DeriveFormat = "avatar-state-{0}";
 
@@ -61,6 +58,9 @@ namespace Nekoyume.Action
                     index
                 )
             );
+            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
                 states = states.SetState(ctx.Signer, MarkChanged);
@@ -79,10 +79,11 @@ namespace Nekoyume.Action
                 return states
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(Addresses.Ranking, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
-
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -127,7 +128,7 @@ namespace Nekoyume.Action
             // Avoid NullReferenceException in test
             var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
 
-            var rankingState = ctx.PreviousStates.GetRankingState0();
+            RankingState1 rankingState = ctx.PreviousStates.GetRankingState1();
 
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
 
@@ -147,7 +148,7 @@ namespace Nekoyume.Action
                 states = states.SetState(address, slotState.Serialize());
             }
 
-            avatarState.UpdateQuestRewards2(materialItemSheet);
+            avatarState.UpdateQuestRewards(materialItemSheet);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
@@ -156,7 +157,10 @@ namespace Nekoyume.Action
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(Addresses.Ranking, rankingState.Serialize())
-                .SetState(avatarAddress, avatarState.Serialize());
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(avatarAddress, avatarState.SerializeV2());
         }
     }
 }

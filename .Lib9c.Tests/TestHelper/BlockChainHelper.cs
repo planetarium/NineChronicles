@@ -75,10 +75,10 @@
         public static MakeInitialStateResult MakeInitialState()
         {
             var goldCurrencyState = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
-            var ranking = new RankingState();
-            for (var i = 0; i < RankingState.RankingMapCapacity; i++)
+            var ranking = new RankingState1();
+            for (var i = 0; i < RankingState1.RankingMapCapacity; i++)
             {
-                ranking.RankingMap[RankingState.Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
+                ranking.RankingMap[RankingState1.Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
             }
 
             var sheets = TableSheetsImporter.ImportSheets();

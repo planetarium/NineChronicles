@@ -48,7 +48,7 @@ namespace Nekoyume
             activatedAccounts = activatedAccounts ?? ImmutableHashSet<Address>.Empty;
             var initialStatesAction = new InitializeStates
             (
-                rankingState: new RankingState(),
+                rankingState: new RankingState0(),
                 shopState: new ShopState(),
                 tableSheets: (Dictionary<string, string>) tableSheets,
                 gameConfigState: gameConfigState,

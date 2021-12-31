@@ -73,7 +73,7 @@ namespace Lib9c.Tests.Model.State
         [Fact]
         public void UpdateFromQuestRewardDeterministic()
         {
-            var rankingState = new RankingState();
+            var rankingState = new RankingState1();
             Address avatarAddress = new PrivateKey().ToAddress();
             Address agentAddress = new PrivateKey().ToAddress();
             var avatarState = new AvatarState(
@@ -460,7 +460,7 @@ namespace Lib9c.Tests.Model.State
 
         private AvatarState GetNewAvatarState(Address avatarAddress, Address agentAddress)
         {
-            var rankingState = new RankingState();
+            var rankingState = new RankingState1();
             return new AvatarState(
                 avatarAddress,
                 agentAddress,
