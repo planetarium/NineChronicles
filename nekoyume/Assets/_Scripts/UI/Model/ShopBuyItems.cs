@@ -37,6 +37,14 @@ namespace Nekoyume.UI.Model
                     x.OrderId.Value == view.Model.OrderId.Value);
                 if (wishItem is null)
                 {
+                    if (view.Model.ExpiredBlockIndex.Value - Game.Game.instance.Agent.BlockIndex <= 0)
+                    {
+                        OneLineSystem.Push(MailType.System,
+                            L10nManager.Localize("UI_SALE_PERIOD_HAS_EXPIRED"),
+                            NotificationCell.NotificationType.Alert);
+                        return;
+                    }
+
                     if (wishItems.Count < WishListSize)
                     {
                         wishItems.Add(view.Model);
