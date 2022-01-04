@@ -9,8 +9,6 @@ using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Module
 {
-    using UniRx;
-
     public enum MenuType
     {
         Combination,
@@ -32,7 +30,7 @@ namespace Nekoyume.UI.Module
         private GameObject[] lockObjects;
 
         [SerializeField]
-        private GameObject[] unLockObjects;
+        private GameObject[] unlockObjects;
 
         [SerializeField]
         private HoverScaleTweener hoverScaleTweener;
@@ -163,12 +161,12 @@ namespace Nekoyume.UI.Module
 
             foreach (var go in lockObjects)
             {
-                go.SetActive(false);
+                go.SetActive(!IsUnlocked);
             }
 
-            foreach (var go in unLockObjects)
+            foreach (var go in unlockObjects)
             {
-                go.SetActive(true);
+                go.SetActive(IsUnlocked);
             }
 
             gameObject.SetActive(true);
