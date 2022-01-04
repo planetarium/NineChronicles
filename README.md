@@ -41,7 +41,7 @@ visit [docs.nine-chronicles.com][9c-docs].
     ```
     git clone https://github.com/planetarium/NineChronicles.git
     ```
- 1. Nagivate to the cloned directory and run the command:
+ 1. Navigate to the cloned directory and run the command:
     ```
     git config core.hooksPath hooks
     git submodule update --init --recursive
