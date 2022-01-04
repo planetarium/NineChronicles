@@ -352,6 +352,7 @@ namespace Nekoyume.UI
             UpdateLayers();
 
             Widget.Find<SettingPopup>().transform.SetAsLastSibling();
+            EventManager.UpdateEventContainer(transform);
         }
 
         public void InitWidgetInMain()
