@@ -24,8 +24,6 @@ namespace Nekoyume.State
     {
         public static States Instance => Game.Game.instance.States;
 
-        public readonly Dictionary<Address, RankingMapState> RankingMapStates = new Dictionary<Address, RankingMapState>();
-
         public WeeklyArenaState WeeklyArenaState { get; private set; }
 
         public AgentState AgentState { get; private set; }
@@ -51,22 +49,6 @@ namespace Nekoyume.State
         }
 
         #region Setter
-
-        /// <summary>
-        /// 랭킹 상태를 할당한다.
-        /// </summary>
-        /// <param name="state"></param>
-        public void SetRankingMapStates(RankingMapState state)
-        {
-            if (state is null)
-            {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetRankingMapStates)}] {nameof(state)} is null.");
-                return;
-            }
-
-            RankingMapStates[state.address] = state;
-            RankingMapStatesSubject.OnNext(RankingMapStates);
-        }
 
         public void SetWeeklyArenaState(WeeklyArenaState state)
         {
