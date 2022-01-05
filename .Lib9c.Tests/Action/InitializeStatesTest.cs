@@ -39,7 +39,7 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
 
             var action = new InitializeStates(
-                rankingState: new RankingState(),
+                rankingState: new RankingState0(),
                 shopState: new ShopState(),
                 tableSheets: _sheets,
                 gameConfigState: gameConfigState,
@@ -97,7 +97,7 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
 
             var action = new InitializeStates(
-                rankingState: new RankingState(),
+                rankingState: new RankingState0(),
                 shopState: new ShopState(),
                 tableSheets: _sheets,
                 gameConfigState: gameConfigState,
@@ -150,7 +150,7 @@ namespace Lib9c.Tests.Action
             var adminAddress = new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9");
 
             var action = new InitializeStates(
-                rankingState: new RankingState(),
+                rankingState: new RankingState0(),
                 shopState: new ShopState(),
                 tableSheets: _sheets,
                 gameConfigState: gameConfigState,
@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action
             );
 
             var action = new InitializeStates(
-                rankingState: new RankingState(),
+                rankingState: new RankingState0(),
                 shopState: new ShopState(),
                 tableSheets: _sheets,
                 gameConfigState: gameConfigState,
