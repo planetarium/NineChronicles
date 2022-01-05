@@ -191,7 +191,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
-                .Where(_ => EnoughToPlay)
+                .Where(_ => EnoughToPlay && !_stage.IsInStage)
                 .Subscribe(_ =>
                 {
                     var costumes = _player.Costumes;
@@ -520,14 +520,12 @@ namespace Nekoyume.UI
         {
             if (_stage.IsInStage)
             {
-                questButton.Interactable = false;
                 return;
             }
 
             _stage.IsInStage = true;
             _stage.IsShowHud = true;
             StartCoroutine(CoQuestClick(repeat));
-            questButton.Interactable = false;
             repeatToggle.interactable = false;
             coverToBlockClick.SetActive(true);
         }
