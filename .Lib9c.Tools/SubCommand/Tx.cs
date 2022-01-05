@@ -8,6 +8,7 @@ using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.Model;
 using Nekoyume.Model.State;
 using System;
 using System.Collections.Generic;
@@ -266,6 +267,32 @@ namespace Lib9c.Tools.SubCommand
             );
             byte[] raw = _codec.Encode(encoded);
             Console.WriteLine(ByteUtil.Hex(raw));
+        }
+
+        [Command(Description = "Create ActvationKey-nonce pairs and dump them as csv")]
+        public void CreateActivationKeys(
+            [Argument("COUNT", Description = "An amount of pairs")] int count
+        )
+        {
+            var rng = new Random();
+            var nonce = new byte[4];
+            Console.WriteLine("EncodedActivationKey,NonceHex");
+            foreach (int i in Enumerable.Range(0, count))
+            {
+                PrivateKey key;
+                while (true)
+                {
+                    key = new PrivateKey();
+                    if (key.ToByteArray().Length == 32)
+                    {
+                        break;
+                    }
+                }
+
+                rng.NextBytes(nonce);
+                var (ak, _) = ActivationKey.Create(key, nonce);
+                Console.WriteLine($"{ak.Encode()},{ByteUtil.Hex(nonce)}");
+            }
         }
     }
 }
