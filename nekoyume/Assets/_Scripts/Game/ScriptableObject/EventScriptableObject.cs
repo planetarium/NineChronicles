@@ -17,9 +17,9 @@ namespace Nekoyume
     {
         [Tooltip("The type that describes the event")]
         public EnumType.EventType EventType;
-        [Tooltip("DateTimeFormat(UTC):MM/dd/ HH:mm:ss [ex) 05/10 10:20:30]")]
+        [Tooltip("DateTimeFormat(UTC):MM/dd/ HH:mm:ss (E.g: 05/10 10:20:30)")]
         public string BeginDateTime;
-        [Tooltip("DateTimeFormat(UTC):MM/dd/ HH:mm:ss [ex) 05/10 11:22:33]")]
+        [Tooltip("DateTimeFormat(UTC):MM/dd/ HH:mm:ss (E.g: 05/10 11:22:33)")]
         public string EndDateTime;
         [Tooltip("The sprite used by UI_IntroScreen.prefab")]
         public Sprite Intro;
