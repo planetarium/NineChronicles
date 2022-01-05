@@ -230,8 +230,8 @@ namespace Lib9c.Tools.SubCommand
         {
             var RecordType = new
             {
+                EncodedActivationKey = string.Empty,
                 NonceHex = string.Empty,
-                PublicKeyHex = string.Empty,
             };
             using var reader = new StreamReader(csvPath);
             using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -239,7 +239,7 @@ namespace Lib9c.Tools.SubCommand
                 csv.GetRecords(RecordType)
                     .Select(r => new PendingActivationState(
                         ByteUtil.ParseHex(r.NonceHex),
-                        new PublicKey(ByteUtil.ParseHex(r.PublicKeyHex).ToImmutableArray()))
+                        ActivationKey.Decode(r.EncodedActivationKey).PrivateKey.PublicKey)
                     )
                     .ToList();
             var action = new CreatePendingActivations(activations);
