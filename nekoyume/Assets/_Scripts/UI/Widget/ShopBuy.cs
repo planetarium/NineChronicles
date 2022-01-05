@@ -147,6 +147,7 @@ namespace Nekoyume.UI
             _npc?.gameObject.SetActive(false);
             shopItems.Close();
             Find<ItemCountAndPricePopup>().Close();
+            // This invoking (OnRoomEnter) has dependency with above if statement (shopItems.IsActiveInputField).
             Game.Event.OnRoomEnter.Invoke(true);
             base.Close(true);
         }
