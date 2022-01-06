@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bencodex.Types;
 using Lib9c.Model.Order;
-using Nekoyume.Helper;
-using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 
@@ -68,8 +65,13 @@ namespace Nekoyume.UI.Model
 
         private ShopItem CreateShopItem(OrderDigest orderDigest)
         {
-            var item = new ShopItem(orderDigest);
-            item.OnClick.Subscribe(model =>
+            if (!ReactiveShopState.TryGetShopItem(orderDigest, out var itemBase))
+            {
+                return null;
+            }
+
+            var shopItem = new ShopItem(orderDigest, itemBase);
+            shopItem.OnClick.Subscribe(model =>
             {
                 if (!(model is ShopItem shopItemViewModel))
                 {
@@ -79,25 +81,18 @@ namespace Nekoyume.UI.Model
                 OnClickItem(shopItemViewModel.View);
             });
 
-            return item;
+            return shopItem;
         }
 
-        protected async void SelectItemView(ShopItemView view)
+        protected void SelectItemView(ShopItemView view)
         {
             if (view == null || view.Model is null)
                 return;
 
-            if (view.ItemBaseLoadingTask is null)
-            {
-                return;
-            }
-
             DeselectItemView();
             _selectedItemViewModel.Value = view.Model;
 
-            var item = await view.ItemBaseLoadingTask;
             _selectedItemViewModel.Value.Selected.Value = true;
-            _selectedItemViewModel.Value.ItemBase.Value = item;
             SelectedItemView.SetValueAndForceNotify(view);
         }
 

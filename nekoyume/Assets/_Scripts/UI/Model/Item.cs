@@ -24,9 +24,7 @@ namespace Nekoyume.UI.Model
         {
             ItemBase.Value = value;
 
-            var equipment = ItemBase.Value as Equipment;
-
-            if (equipment != null &&
+            if (ItemBase.Value is Equipment equipment &&
                 equipment.level > 0)
             {
                 Enhancement.Value = $"+{equipment.level}";

@@ -9,6 +9,7 @@ namespace Nekoyume.UI.Model
         {
             foreach (var shopItem in Items.Value.SelectMany(keyValuePair => keyValuePair.Value))
             {
+                //note: ShopItem is sometimes null, so we needs to investigate.
                 shopItem.Selected.Value = false;
             }
         }
