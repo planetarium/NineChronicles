@@ -214,7 +214,7 @@ namespace Lib9c.Tools.SubCommand
                     );
                     Directory.CreateDirectory(subDir);
                     File.WriteAllBytes(
-                        Path.Join(subDir,$"{ByteUtil.Hex(pair.Key.ByteArray)}"), pair.Value);
+                        Path.Join(subDir, pair.Key.Hex), pair.Value);
                     if (i++ % 1000 == 0)
                     {
                         _messageWriter.Write('.');
