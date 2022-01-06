@@ -21,7 +21,6 @@ namespace Nekoyume.UI.Tween
         {
             if (Tweener != null && Tweener.IsActive() && Tweener.IsPlaying())
             {
-                // Tweener.Complete();
                 Tweener.Kill();
                 Tweener = null;
             }
