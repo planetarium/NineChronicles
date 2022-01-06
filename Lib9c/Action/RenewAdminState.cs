@@ -32,10 +32,13 @@ namespace Nekoyume.Action
                     .SetState(Addresses.Admin, MarkChanged);
             }
 
-            CheckPermission(context);
-
             if (TryGetAdminState(context, out AdminState adminState))
             {
+                if (context.Signer != adminState.AdminAddress)
+                {
+                    throw new PermissionDeniedException(adminState, context.Signer);
+                }
+
                 var newAdminState = new AdminState(adminState.AdminAddress, NewValidUntil);
                 states = states.SetState(Addresses.Admin,
                     newAdminState.Serialize());

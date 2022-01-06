@@ -60,5 +60,22 @@ namespace Lib9c.Tests.Action
                 });
             });
         }
+
+        [Fact]
+        public void RenewAdminStateEvenAlreadyExpired()
+        {
+            var newValidUntil = _validUntil + 1000;
+            var action = new RenewAdminState(newValidUntil);
+            var stateDelta = action.Execute(new ActionContext
+            {
+                BlockIndex = _validUntil + 1,
+                PreviousStates = _stateDelta,
+                Signer = _adminPrivateKey.ToAddress(),
+            });
+
+            var adminState = new AdminState((Bencodex.Types.Dictionary)stateDelta.GetState(Addresses.Admin));
+            Assert.Equal(newValidUntil, adminState.ValidUntil);
+            Assert.NotEqual(_validUntil, adminState.ValidUntil);
+        }
     }
 }
