@@ -7,7 +7,6 @@
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
-    using Lib9c.Tests.Model;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
@@ -15,6 +14,7 @@
     using Nekoyume.Action;
     using Nekoyume.Battle;
     using Nekoyume.Model;
+    using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.Quest;

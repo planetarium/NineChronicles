@@ -8,6 +8,7 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Serilog;
 
 namespace Nekoyume.Model.Item
@@ -22,23 +23,21 @@ namespace Nekoyume.Model.Item
         public class Item : IState, IComparer<Item>, IComparable<Item>
 #pragma warning restore S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
         {
-            public LazyState<ItemBase, Dictionary> _item;
-            public ItemBase item => _item.State;
+            public ItemBase item;
             public int count = 0;
             public ILock Lock;
             public bool Locked => !(Lock is null);
 
             public Item(ItemBase itemBase, int count = 1)
             {
-                _item = new LazyState<ItemBase, Dictionary>(itemBase);
+                item = itemBase;
                 this.count = count;
             }
 
             public Item(Bencodex.Types.Dictionary serialized)
             {
-                _item = new LazyState<ItemBase, Dictionary>(
-                    (Bencodex.Types.Dictionary)serialized["item"],
-                    ItemFactory.Deserialize
+                item = ItemFactory.Deserialize(
+                    (Bencodex.Types.Dictionary) serialized["item"]
                 );
                 count = (int) ((Integer) serialized["count"]).Value;
                 if (serialized.ContainsKey("l"))
@@ -99,7 +98,7 @@ namespace Nekoyume.Model.Item
             {
                 var innerDict = new Dictionary<IKey, IValue>
                 {
-                    [(Text) "item"] = _item.Serialize(),
+                    [(Text) "item"] = item.Serialize(),
                     [(Text) "count"] = (Integer) count,
                 };
                 if (Locked)
