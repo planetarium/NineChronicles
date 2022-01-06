@@ -252,8 +252,11 @@ namespace Lib9c.Tools.SubCommand
             Console.WriteLine(ByteUtil.Hex(raw));
         }
 
-        [Command("Create RenewAdminState action and dump it.")]
-        public void RenewAdminState(long newValidUntil)
+        [Command(Description = "Create RenewAdminState action and dump it.")]
+        public void RenewAdminState(
+            [Argument("NEW-VALID-UNTIL")]
+            long newValidUntil
+        )
         {
             PolymorphicAction<ActionBase> action = new RenewAdminState(newValidUntil);
             byte[] raw = _codec.Encode(action.PlainValue);
