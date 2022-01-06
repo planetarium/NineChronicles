@@ -72,13 +72,11 @@ namespace Nekoyume.UI
                 CleanUpWishListAlertPopup(() =>
                 {
                     Close();
-                    Game.Event.OnRoomEnter.Invoke(true);
                 });
             });
             CloseWidget = () => CleanUpWishListAlertPopup(() =>
             {
                 Close();
-                Game.Event.OnRoomEnter.Invoke(true);
             });
         }
 
@@ -149,6 +147,8 @@ namespace Nekoyume.UI
             _npc?.gameObject.SetActive(false);
             shopItems.Close();
             Find<ItemCountAndPricePopup>().Close();
+            // This invoking (OnRoomEnter) has dependency with above if statement (shopItems.IsActiveInputField).
+            Game.Event.OnRoomEnter.Invoke(true);
             base.Close(true);
         }
 
@@ -251,7 +251,6 @@ namespace Nekoyume.UI
             CleanUpWishListAlertPopup(() =>
             {
                 Close();
-                Game.Event.OnRoomEnter.Invoke(true);
             });
         }
 
