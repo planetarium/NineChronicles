@@ -63,7 +63,7 @@ namespace Lib9c.Tools.SubCommand
             Block<NCAction> tip = Utils.ParseBlockOffset(chain, topmost);
 
             stderr.WriteLine("Clear the existing state store...");
-            foreach (byte[] key in stateKvStore.ListKeys())
+            foreach (KeyBytes key in stateKvStore.ListKeys())
             {
                 stateKvStore.Delete(key);
             }
@@ -237,6 +237,50 @@ namespace Lib9c.Tools.SubCommand
             public void Delete(byte[] key) => _dictionary.TryRemove(key, out _);
 
             public bool Exists(byte[] key) => _dictionary.ContainsKey(key);
+
+            public byte[] Get(in KeyBytes key) => _dictionary[key.ToByteArray()];
+
+            public IReadOnlyDictionary<KeyBytes, byte[]> Get(IEnumerable<KeyBytes> keys)
+            {
+                var dictBuilder = ImmutableDictionary.CreateBuilder<KeyBytes, byte[]>();
+                foreach (KeyBytes key in keys)
+                {
+                    if (_dictionary.TryGetValue(key.ToByteArray(), out var value) && value is { } v)
+                    {
+                        dictBuilder[key] = v;
+                    }
+                }
+
+                return dictBuilder.ToImmutable();
+            }
+
+            public void Set(in KeyBytes key, byte[] value) =>
+                _dictionary[key.ToByteArray()] = value;
+
+            public void Set(IDictionary<KeyBytes, byte[]> values)
+            {
+                foreach (KeyValuePair<KeyBytes, byte[]> kv in values)
+                {
+                    _dictionary[kv.Key.ToByteArray()] = kv.Value;
+                }
+            }
+
+            public void Delete(in KeyBytes key) =>
+                _dictionary.TryRemove(key.ToByteArray(), out _);
+
+            public void Delete(IEnumerable<KeyBytes> keys)
+            {
+                foreach (KeyBytes key in keys)
+                {
+                    _dictionary.TryRemove(key.ToByteArray(), out _);
+                }
+            }
+
+            public bool Exists(in KeyBytes key) =>
+                _dictionary.ContainsKey(key.ToByteArray());
+
+            IEnumerable<KeyBytes> IKeyValueStore.ListKeys() =>
+                (IEnumerable<KeyBytes>)_dictionary.Keys;
 
             public IEnumerable<byte[]> ListKeys() => _dictionary.Keys;
         }
