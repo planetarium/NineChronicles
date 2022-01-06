@@ -62,16 +62,13 @@ namespace Nekoyume.State.Modifiers
             }
 
             var quests = state.questList;
-            foreach (var lazyQuest in quests.EnumerateLazyQuestStates())
+            foreach (var quest in quests)
             {
                 foreach (var id in questIdList)
                 {
-                    var qid = lazyQuest.GetStateOrSerializedEncoding(out Quest q, out Dictionary d)
-                        ? q.Id
-                        : Quest.GetQuestId(d);
-                    if (id.Equals(qid))
+                    if (id.Equals(quest.Id))
                     {
-                        lazyQuest.State.isReceivable = true;
+                        quest.isReceivable = true;
                     }
                 }
             }
