@@ -44,5 +44,21 @@ namespace Lib9c.Tests.Action
             Assert.Equal(newValidUntil, adminState.ValidUntil);
             Assert.NotEqual(_validUntil, adminState.ValidUntil);
         }
+
+        [Fact]
+        public void RejectSignerExceptAdminAddress()
+        {
+            var newValidUntil = _validUntil + 1000;
+            var action = new RenewAdminState(newValidUntil);
+            Assert.Throws<PermissionDeniedException>(() =>
+            {
+                var userPrivateKey = new PrivateKey();
+                action.Execute(new ActionContext
+                {
+                    PreviousStates = _stateDelta,
+                    Signer = userPrivateKey.ToAddress(),
+                });
+            });
+        }
     }
 }
