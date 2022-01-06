@@ -397,8 +397,6 @@ namespace Nekoyume.BlockChain
 
                 var gameInstance = Game.Game.instance;
                 var nextQuest = avatarState.questList?
-                    .EnumerateLazyQuestStates()
-                    .Select(l => l.State)
                     .OfType<CombinationEquipmentQuest>()
                     .Where(x => !x.Complete)
                     .OrderBy(x => x.StageId)
@@ -1161,11 +1159,7 @@ namespace Nekoyume.BlockChain
             var questList = States.Instance.CurrentAvatarState.questList;
             foreach (var id in ids)
             {
-                var quest = questList.EnumerateLazyQuestStates().First(lq =>
-                    (lq.GetStateOrSerializedEncoding(out Quest q, out Dictionary d)
-                        ? q.Id
-                        : Quest.GetQuestId(d)).Equals(id)
-                ).State;
+                var quest = questList.First(q => q.Id == id);
                 var rewardMap = quest.Reward.ItemMap;
 
                 foreach (var reward in rewardMap)

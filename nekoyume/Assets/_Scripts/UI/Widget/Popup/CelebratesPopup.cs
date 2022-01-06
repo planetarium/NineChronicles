@@ -168,8 +168,6 @@ namespace Nekoyume.UI
             }
 
             var quest = States.Instance.CurrentAvatarState?.questList
-                .EnumerateLazyQuestStates()
-                .Select(l => l.State)
                 .OfType<CombinationEquipmentQuest>()
                 .FirstOrDefault(item =>
                     item.Id == row.Id);
