@@ -1,9 +1,14 @@
 using Nekoyume.Game.Controller;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class IntroScreen : LoadingScreen
     {
+        [SerializeField]
+        private Image _background;
+
         private string _keyStorePath;
         private string _privateKey;
 
@@ -11,6 +16,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
             indicator.Close();
+            _background.sprite = EventManager.GetIntroSprite();
         }
 
         public void Show(string keyStorePath, string privateKey)
