@@ -15,6 +15,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Libplanet.Action;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Tools.SubCommand
@@ -248,6 +249,14 @@ namespace Lib9c.Tools.SubCommand
                }
            );
             byte[] raw = _codec.Encode(encoded);
+            Console.WriteLine(ByteUtil.Hex(raw));
+        }
+
+        [Command("Create RenewAdminState action and dump it.")]
+        public void RenewAdminState(long newValidUntil)
+        {
+            PolymorphicAction<ActionBase> action = new RenewAdminState(newValidUntil);
+            byte[] raw = _codec.Encode(action.PlainValue);
             Console.WriteLine(ByteUtil.Hex(raw));
         }
     }
