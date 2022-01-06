@@ -181,15 +181,14 @@ namespace Lib9c.Tools.SubCommand
 
         private class MemoryKeyValueStore : IKeyValueStore
         {
-            private readonly ConcurrentDictionary<byte[], byte[]> _dictionary;
+            private readonly ConcurrentDictionary<KeyBytes, byte[]> _dictionary;
             private readonly string _dumpPath;
             private readonly TextWriter _messageWriter;
             private bool _disposed;
 
             public MemoryKeyValueStore(string dumpPath, TextWriter messageWriter)
             {
-                _dictionary = new ConcurrentDictionary<byte[], byte[]>(
-                    new ArrayEqualityComparer<byte>());
+                _dictionary = new ConcurrentDictionary<KeyBytes, byte[]>();
                 _dumpPath = dumpPath;
                 _messageWriter = messageWriter;
             }
@@ -206,15 +205,16 @@ namespace Lib9c.Tools.SubCommand
                 Directory.CreateDirectory(_dumpPath);
                 _messageWriter.WriteLine("Total keys: {0}", _dictionary.Count);
                 long i = 0;
-                foreach (KeyValuePair<byte[], byte[]> pair in _dictionary)
+                foreach (KeyValuePair<KeyBytes, byte[]> pair in _dictionary)
                 {
                     string subDir = Path.Join(
                         _dumpPath,
-                        pair.Key.LongLength.ToString(),
-                        pair.Key.Length > 0 ? $"{pair.Key[0]:x2}" : "_"
+                        pair.Key.Length.ToString(),
+                        pair.Key.Length > 0 ? $"{pair.Key.ToByteArray()[0]:x2}" : "_"
                     );
                     Directory.CreateDirectory(subDir);
-                    File.WriteAllBytes(Path.Join(subDir, $"{ByteUtil.Hex(pair.Key)}"), pair.Value);
+                    File.WriteAllBytes(
+                        Path.Join(subDir,$"{ByteUtil.Hex(pair.Key.ToByteArray())}"), pair.Value);
                     if (i++ % 1000 == 0)
                     {
                         _messageWriter.Write('.');
@@ -222,30 +222,14 @@ namespace Lib9c.Tools.SubCommand
                 }
             }
 
-            public byte[] Get(byte[] key) => _dictionary[key];
-
-            public void Set(byte[] key, byte[] value) => _dictionary[key] = value;
-
-            public void Set(IDictionary<byte[], byte[]> values)
-            {
-                foreach (KeyValuePair<byte[], byte[]> pair in values)
-                {
-                    _dictionary[pair.Key] = pair.Value;
-                }
-            }
-
-            public void Delete(byte[] key) => _dictionary.TryRemove(key, out _);
-
-            public bool Exists(byte[] key) => _dictionary.ContainsKey(key);
-
-            public byte[] Get(in KeyBytes key) => _dictionary[key.ToByteArray()];
+            public byte[] Get(in KeyBytes key) => _dictionary[key];
 
             public IReadOnlyDictionary<KeyBytes, byte[]> Get(IEnumerable<KeyBytes> keys)
             {
                 var dictBuilder = ImmutableDictionary.CreateBuilder<KeyBytes, byte[]>();
                 foreach (KeyBytes key in keys)
                 {
-                    if (_dictionary.TryGetValue(key.ToByteArray(), out var value) && value is { } v)
+                    if (_dictionary.TryGetValue(key, out var value) && value is { } v)
                     {
                         dictBuilder[key] = v;
                     }
@@ -255,127 +239,32 @@ namespace Lib9c.Tools.SubCommand
             }
 
             public void Set(in KeyBytes key, byte[] value) =>
-                _dictionary[key.ToByteArray()] = value;
+                _dictionary[key] = value;
 
             public void Set(IDictionary<KeyBytes, byte[]> values)
             {
                 foreach (KeyValuePair<KeyBytes, byte[]> kv in values)
                 {
-                    _dictionary[kv.Key.ToByteArray()] = kv.Value;
+                    _dictionary[kv.Key] = kv.Value;
                 }
             }
 
             public void Delete(in KeyBytes key) =>
-                _dictionary.TryRemove(key.ToByteArray(), out _);
+                _dictionary.TryRemove(key, out _);
 
             public void Delete(IEnumerable<KeyBytes> keys)
             {
                 foreach (KeyBytes key in keys)
                 {
-                    _dictionary.TryRemove(key.ToByteArray(), out _);
+                    _dictionary.TryRemove(key, out _);
                 }
             }
 
             public bool Exists(in KeyBytes key) =>
-                _dictionary.ContainsKey(key.ToByteArray());
+                _dictionary.ContainsKey(key);
 
             IEnumerable<KeyBytes> IKeyValueStore.ListKeys() =>
-                (IEnumerable<KeyBytes>)_dictionary.Keys;
-
-            public IEnumerable<byte[]> ListKeys() => _dictionary.Keys;
-        }
-
-        /// <summary>
-        /// An <see cref="IEqualityComparer{T}"/> implementation to compare two arrays of the same
-        /// element type.  This compares the elements in the order of the array.
-        /// <para>The way to compare each element can be customized by specifying
-        /// the <see cref="ElementComparer"/>.</para>
-        /// </summary>
-        /// <typeparam name="T">The element type of the array.</typeparam>
-        private class ArrayEqualityComparer<T> : IEqualityComparer<T[]>
-            where T : IEquatable<T>
-        {
-            /// <summary>
-            /// Creates a new instance of <see cref="ArrayEqualityComparer{T}"/>.
-            /// </summary>
-            /// <param name="elementComparer">Optionally customize the way to compare each element.
-            /// </param>
-            public ArrayEqualityComparer(IEqualityComparer<T> elementComparer = null)
-            {
-                ElementComparer = elementComparer;
-            }
-
-            /// <summary>
-            /// Optionally customizes the way to compare each element.
-            /// </summary>
-            public IEqualityComparer<T> ElementComparer { get; }
-
-            /// <inheritdoc cref="IEqualityComparer{T}.Equals(T, T)"/>
-            public bool Equals(T[] x, T[] y)
-            {
-                if (x is null && y is null)
-                {
-                    return true;
-                }
-                else if (x is null || y is null)
-                {
-                    return false;
-                }
-                else if (x.Length != y.Length)
-                {
-                    return false;
-                }
-
-                if (ElementComparer is { } comparer)
-                {
-                    for (long i = 0L; i < x.LongLength; i++)
-                    {
-                        if (!comparer.Equals(x[i], y[i]))
-                        {
-                            return false;
-                        }
-                    }
-                }
-                else
-                {
-                    for (long i = 0L; i < x.LongLength; i++)
-                    {
-                        if (!x[i].Equals(y[i]))
-                        {
-                            return false;
-                        }
-                    }
-                }
-
-                return true;
-            }
-
-            /// <inheritdoc cref="IEqualityComparer{T}.GetHashCode(T)"/>
-            public int GetHashCode(T[] obj)
-            {
-                if (obj is null)
-                {
-                    return 0;
-                }
-
-                int hash = 17;
-                if (ElementComparer is { } comparer)
-                {
-                    foreach (T el in obj)
-                    {
-                        hash = unchecked(hash * 31 + comparer.GetHashCode(el));
-                    }
-                }
-                else
-                {
-                    foreach (T el in obj)
-                    {
-                        hash = unchecked(hash * 31 + el.GetHashCode());
-                    }
-                }
-
-                return hash;
-            }
+                _dictionary.Keys;
         }
     }
 }
