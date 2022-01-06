@@ -256,10 +256,18 @@ namespace Nekoyume.UI
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
         {
-            return inventoryItem is ShopItem shopItem &&
-                   States.Instance.GoldBalanceState.Gold >= shopItem.Price.Value;
-        }
+            if (!(inventoryItem is ShopItem shopItem))
+            {
+                return false;
+            }
 
+            if (shopItem.ExpiredBlockIndex.Value - Game.Game.instance.Agent.BlockIndex <= 0)
+            {
+                return false;
+            }
+
+            return States.Instance.GoldBalanceState.Gold >= shopItem.Price.Value;
+        }
 
         private void OnClickShopItem(ShopItemView view)
         {
