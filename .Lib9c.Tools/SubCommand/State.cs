@@ -210,11 +210,11 @@ namespace Lib9c.Tools.SubCommand
                     string subDir = Path.Join(
                         _dumpPath,
                         pair.Key.Length.ToString(),
-                        pair.Key.Length > 0 ? $"{pair.Key.ToByteArray()[0]:x2}" : "_"
+                        pair.Key.Length > 0 ? $"{pair.Key.ByteArray[0]:x2}" : "_"
                     );
                     Directory.CreateDirectory(subDir);
                     File.WriteAllBytes(
-                        Path.Join(subDir,$"{ByteUtil.Hex(pair.Key.ToByteArray())}"), pair.Value);
+                        Path.Join(subDir,$"{ByteUtil.Hex(pair.Key.ByteArray)}"), pair.Value);
                     if (i++ % 1000 == 0)
                     {
                         _messageWriter.Write('.');
