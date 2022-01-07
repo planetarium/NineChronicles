@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,12 +11,11 @@ using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
-using Nekoyume.State.Modifiers;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
-using ShopItem = Nekoyume.UI.Model.ShopItem;
+using UnityEngine;
 
 namespace Nekoyume.State
 {
@@ -76,6 +76,11 @@ namespace Nekoyume.State
         private static List<OrderDigest> _buyDigests = new List<OrderDigest>();
         private static List<OrderDigest> _sellDigests = new List<OrderDigest>();
 
+
+        // key: orderId
+        private static ConcurrentDictionary<Guid, ItemBase> CachedShopItems { get; } = new ConcurrentDictionary<Guid, ItemBase>();
+
+
         public static OrderDigest GetSellDigest(Guid tradableId,
             long requiredBlockIndex,
             FungibleAssetValue price,
@@ -94,7 +99,11 @@ namespace Nekoyume.State
         public static async Task InitAndUpdateBuyDigests()
         {
             _buyDigests = await GetBuyOrderDigests();
-            UpdateBuyDigests();
+            var result = await UpdateCachedShopItems(_buyDigests);
+            if (result)
+            {
+                UpdateBuyDigests();
+            }
         }
 
         public static async void InitSellDigests()
@@ -104,6 +113,7 @@ namespace Nekoyume.State
                 await UniTask.Run(async () =>
                 {
                     _sellDigests = await GetSellOrderDigests();
+                    await UpdateCachedShopItems(_sellDigests);
                 });
             }
         }
@@ -111,7 +121,52 @@ namespace Nekoyume.State
         public static async void InitAndUpdateSellDigests()
         {
             _sellDigests = await GetSellOrderDigests();
-            UpdateSellDigests();
+            var result = await UpdateCachedShopItems(_sellDigests);
+            if (result)
+            {
+                UpdateSellDigests();
+            }
+        }
+
+        private static async Task<bool> UpdateCachedShopItems(IEnumerable<OrderDigest> digests)
+        {
+            var selectedDigests = digests.Where(orderDigest => !CachedShopItems.ContainsKey(orderDigest.OrderId)).ToList();
+            var tuples = selectedDigests
+                .Select(e => (Address: Addresses.GetItemAddress(e.TradableId), OrderDigest: e))
+                .ToArray();
+            var itemAddresses = tuples.Select(tuple => tuple.Address).Distinct();
+            var itemValues = await Game.Game.instance.Agent.GetStateBulk(itemAddresses);
+            foreach (var (address, orderDigest) in tuples)
+            {
+                if (!itemValues.ContainsKey(address))
+                {
+                    Debug.LogWarning($"[{nameof(ReactiveShopState)}] Not found address: {address.ToHex()}");
+                    continue;
+                }
+
+                var itemValue = itemValues[address];
+                if (!(itemValue is Dictionary dictionary))
+                {
+                    Debug.LogWarning($"[{nameof(ReactiveShopState)}] {nameof(itemValue)} cannot cast to {typeof(Bencodex.Types.Dictionary).FullName}");
+                    continue;
+                }
+
+                var itemBase = ItemFactory.Deserialize(dictionary);
+                switch (itemBase)
+                {
+                    case TradableMaterial tm:
+                        tm.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
+                        break;
+                    case ItemUsable iu:
+                        iu.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
+                        break;
+                    case Costume c:
+                        c.RequiredBlockIndex = orderDigest.ExpiredBlockIndex;
+                        break;
+                }
+                CachedShopItems.TryAdd(orderDigest.OrderId, itemBase);
+            }
+            return true;
         }
 
         private static void UpdateBuyDigests()
@@ -148,6 +203,19 @@ namespace Nekoyume.State
             }
 
             UpdateSellDigests();
+        }
+
+        public static bool TryGetShopItem(OrderDigest orderDigest, out ItemBase itemBase)
+        {
+            if (!CachedShopItems.ContainsKey(orderDigest.OrderId))
+            {
+                Debug.LogWarning($"[{nameof(TryGetShopItem)}] Not found address: {orderDigest.OrderId}");
+                itemBase = null;
+                return false;
+            }
+
+            itemBase = CachedShopItems[orderDigest.OrderId];
+            return true;
         }
 
         private static
