@@ -35,9 +35,6 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private InteractableSwitchableSelectable nextPageButtonInteractableSwitch = null;
 
-        [SerializeField]
-        private RefreshButton refreshButton = null;
-
         private int _filteredPageIndex;
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
@@ -167,7 +164,6 @@ namespace Nekoyume.UI.Module
 
             _filteredPageIndex = 0;
             UpdateViewWithFilteredPageIndex(SharedModel.Items.Value);
-            refreshButton.gameObject.SetActive(false);
         }
 
         private void UpdateViewWithFilteredPageIndex(

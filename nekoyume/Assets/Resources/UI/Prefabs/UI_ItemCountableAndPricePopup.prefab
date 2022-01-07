@@ -627,6 +627,7 @@ GameObject:
   - component: {fileID: 5356919679359497953}
   - component: {fileID: 5580023071215899029}
   - component: {fileID: 3476572575387278862}
+  - component: {fileID: 6485752946129727058}
   m_Layer: 5
   m_Name: PriceAutoButton (1)
   m_TagString: Untagged
@@ -755,6 +756,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6485752946129727058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344322858539635827}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &360311226217619005
 GameObject:
   m_ObjectHideFlags: 0
@@ -1797,6 +1811,7 @@ GameObject:
   - component: {fileID: 6315925512376086251}
   - component: {fileID: 2708281601089831345}
   - component: {fileID: 183998403983466654}
+  - component: {fileID: 8272157985322850438}
   m_Layer: 5
   m_Name: PlusButton
   m_TagString: Untagged
@@ -1924,6 +1939,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8272157985322850438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1326763433632641480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &1348372292275898069
 GameObject:
   m_ObjectHideFlags: 0
@@ -2420,6 +2448,7 @@ GameObject:
   - component: {fileID: 2785585735252306769}
   - component: {fileID: 2158427294266635274}
   - component: {fileID: 5842112298453066302}
+  - component: {fileID: 6044244530224365488}
   m_Layer: 5
   m_Name: PriceAutoButton (3)
   m_TagString: Untagged
@@ -2548,6 +2577,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6044244530224365488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626350939760134000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &1669809671224574023
 GameObject:
   m_ObjectHideFlags: 0
@@ -3500,6 +3542,7 @@ GameObject:
   - component: {fileID: 7054090336362286050}
   - component: {fileID: 5565120943265902097}
   - component: {fileID: 8291307060039670412}
+  - component: {fileID: 8027075009413831468}
   m_Layer: 5
   m_Name: PriceAutoButton (2)
   m_TagString: Untagged
@@ -3628,6 +3671,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8027075009413831468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3478560312398745361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &3622553725944632317
 GameObject:
   m_ObjectHideFlags: 0
@@ -3641,6 +3697,7 @@ GameObject:
   - component: {fileID: 5938500433172659298}
   - component: {fileID: 5844122969988791754}
   - component: {fileID: 3297037222053819732}
+  - component: {fileID: 1003383557642454356}
   m_Layer: 5
   m_Name: PriceAutoButton
   m_TagString: Untagged
@@ -3769,6 +3826,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1003383557642454356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3622553725944632317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &3680461053289476667
 GameObject:
   m_ObjectHideFlags: 0
@@ -3902,6 +3972,7 @@ GameObject:
   - component: {fileID: 9206013217845944686}
   - component: {fileID: 5186842526527172084}
   - component: {fileID: 1622550543780249584}
+  - component: {fileID: 2272855582437943674}
   m_Layer: 5
   m_Name: PriceAutoButton (4)
   m_TagString: Untagged
@@ -4030,6 +4101,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &2272855582437943674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3986705226931630754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &4385771137912400838
 GameObject:
   m_ObjectHideFlags: 0
@@ -4894,6 +4978,7 @@ GameObject:
   - component: {fileID: 3255815806658233003}
   - component: {fileID: 303096996114411661}
   - component: {fileID: 7732366905997461347}
+  - component: {fileID: 7344013486442244824}
   m_Layer: 5
   m_Name: MinusButton
   m_TagString: Untagged
@@ -5021,6 +5106,19 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7344013486442244824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6812979342598618221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &7040485079135736510
 GameObject:
   m_ObjectHideFlags: 0
@@ -5127,6 +5225,7 @@ GameObject:
   - component: {fileID: 7034375784297003482}
   - component: {fileID: 6915313304477585025}
   - component: {fileID: 2501384742961520242}
+  - component: {fileID: 2101254725028075229}
   m_Layer: 5
   m_Name: MaxButton
   m_TagString: Untagged
@@ -5281,6 +5380,19 @@ MonoBehaviour:
     loop: 0
     loopDelay: 0
     updateMode: 0
+--- !u!114 &2101254725028075229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7067104876695804762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &7290026227465749606
 GameObject:
   m_ObjectHideFlags: 0
@@ -6004,6 +6116,7 @@ GameObject:
   - component: {fileID: 9019531727470545866}
   - component: {fileID: 5999716979284190453}
   - component: {fileID: 5569570029054119725}
+  - component: {fileID: 5017719534017422560}
   m_Layer: 5
   m_Name: CancelButton
   m_TagString: Untagged
@@ -6112,20 +6225,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 9019531727470545866}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 82062621171652306, guid: 20685b2c4d92f4fdca84e0ed92709c09,
-          type: 3}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &5569570029054119725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6139,6 +6239,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 6494172629076164390}
+--- !u!114 &5017719534017422560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7710773411132856294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &8157778773654011592
 GameObject:
   m_ObjectHideFlags: 0
@@ -6154,6 +6267,7 @@ GameObject:
   - component: {fileID: 5600446623637611759}
   - component: {fileID: 6096828879885856803}
   - component: {fileID: 8675513110967502001}
+  - component: {fileID: 7530147759920997538}
   m_Layer: 5
   m_Name: ResetButton
   m_TagString: Untagged
@@ -6328,6 +6442,19 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &7530147759920997538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8157778773654011592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a31d2fe1de140e1b55dcc96e488b751, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
 --- !u!1 &8327902237546215482
 GameObject:
   m_ObjectHideFlags: 0
