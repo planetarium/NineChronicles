@@ -16,7 +16,7 @@ namespace Nekoyume.UI
         private const string FenrirKey = "dialog_10";
         private const string FreyaKey = "300005";
 
-        private static readonly Vector3 FenrirSpinePosition = new Vector3(4001.7f, 3998.2f);
+        private static readonly Vector3 FenrirSpinePosition = new Vector3(4002.57f, 3998.2f);
         private static readonly Vector3 FreyaSpinePosition = new Vector3(4000.8f, 3994.59f);
 
         public TextMeshProUGUI txtName;
