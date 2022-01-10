@@ -81,13 +81,12 @@ namespace Nekoyume.State
                 return;
             }
 
-            outAvatarState = modifier.Modify(outAvatarState);
-
             if (!isCurrentAvatarState)
             {
                 return;
             }
 
+            outAvatarState = modifier.Modify(outAvatarState);
             ReactiveAvatarState.UpdateActionPoint(outAvatarState.actionPoint);
         }
 
