@@ -190,10 +190,10 @@ namespace Nekoyume.UI.Module
 
         protected virtual void OnClickButton()
         {
-            AudioController.PlayClick();
             OnClickSubject.OnNext(CurrentState.Value);
             if (IsSubmittable)
             {
+                AudioController.PlayClick();
                 OnSubmitSubject.OnNext(default);
             }
 
