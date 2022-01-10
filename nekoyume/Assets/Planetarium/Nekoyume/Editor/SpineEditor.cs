@@ -374,7 +374,7 @@ namespace Planetarium.Nekoyume.Editor
 
         #region Character Type
 
-        private static bool IsFullCostume(string prefabName)
+        public static bool IsFullCostume(string prefabName)
         {
             return prefabName.StartsWith("4");
         }

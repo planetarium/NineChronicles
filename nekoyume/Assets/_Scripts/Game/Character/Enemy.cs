@@ -157,6 +157,25 @@ namespace Nekoyume.Game.Character
             UpdateHitPoint();
         }
 
+        public void UpdateSpineResource(int id)
+        {
+            var spineResourcePath = $"Character/Monster/{id}";
+
+            if (!(Animator.Target is null))
+            {
+                var animatorTargetName = spineResourcePath.Split('/').Last();
+                if (Animator.Target.name.Contains(animatorTargetName))
+                    return;
+
+                Animator.DestroyTarget();
+            }
+
+            var origin = Resources.Load<GameObject>(spineResourcePath);
+            var go = Instantiate(origin, gameObject.transform);
+            SpineController = go.GetComponent<CharacterSpineController>();
+            Animator.ResetTarget(go);
+        }
+
         #endregion
 
         protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
