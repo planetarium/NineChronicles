@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using Lib9c.DevExtensions;
 
 namespace Lib9c.Tools.SubCommand
 {

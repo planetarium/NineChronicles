@@ -14,6 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\.Libplanet\Libplanet.RocksDBStore\Libplanet.RocksDBStore.csproj" />
+      <ProjectReference Include="..\Lib9c.DevExtensions\Lib9c.DevExtensions.csproj" />
       <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
     </ItemGroup>
 
