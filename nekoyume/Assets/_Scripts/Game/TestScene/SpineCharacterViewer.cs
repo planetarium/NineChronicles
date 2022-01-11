@@ -11,6 +11,9 @@ namespace Nekoyume.TestScene
         private TMP_InputField resourceIdField;
 
         [SerializeField]
+        private TextMeshProUGUI resourceWarningText;
+
+        [SerializeField]
         private Button loadButton;
 
         [SerializeField]
@@ -25,48 +28,78 @@ namespace Nekoyume.TestScene
         private void Awake()
         {
             loadButton.onClick.AddListener(Show);
+            resourceWarningText.gameObject.SetActive(false);
         }
 
         private void Show()
         {
+            enemy.gameObject.SetActive(false);
+            npc.gameObject.SetActive(false);
+            player.gameObject.SetActive(false);
+            resourceWarningText.gameObject.SetActive(false);
+
             var text = resourceIdField.text;
             if (string.IsNullOrEmpty(text))
             {
+                resourceWarningText.text = "Resource ID is empty.";
+                resourceWarningText.gameObject.SetActive(true);
                 return;
             }
 
-            if (IsMonster(text))
+            try
             {
-                if (!int.TryParse(text, out var id))
+                if (IsMonster(text))
                 {
+                    ShowMonster(text);
+                }
+                else if (IsNPC(text))
+                {
+                    ShowNPC(text);
+                }
+                else if (IsPlayer(text))
+                {
+                    ShowPlayer(text);
+                }
+                else if (IsFullCostume(text))
+                {
+                    ShowFullCostume(text);
+                }
+                else
+                {
+                    resourceWarningText.text = "Prefab name is not vaild.";
+                    resourceWarningText.gameObject.SetActive(true);
                     return;
                 }
-
-                CreateMonster(id);
             }
-            else if (IsNPC(text))
+            catch (FailedToLoadResourceException<GameObject> e)
             {
-
+                resourceWarningText.text = e.Message;
+                resourceWarningText.gameObject.SetActive(true);
             }
-            else if (IsPlayer(text))
-            {
-
-            }
-            else if (IsFullCostume(text))
-            {
-
-            }
-            else
-            {
-                return;
-            }
-
         }
 
-        private void CreateMonster(int id)
+        private void ShowMonster(string id)
         {
-            enemy.UpdateSpineResource(id);
+            enemy.gameObject.SetActive(true);
+            enemy.ChangeSpineResource(id);
+        }
 
+        private void ShowNPC(string id)
+        {
+            npc.gameObject.SetActive(true);
+            npc.ChangeSpineResource(id);
+        }
+
+        private void ShowPlayer(string id)
+        {
+            player.gameObject.SetActive(true);
+            player.ChangeSpineResource(id, false);
+        }
+
+        private void ShowFullCostume(string id)
+        {
+            player.gameObject.SetActive(true);
+            player.ChangeSpineResource(id, true);
         }
 
         #region Check Type
