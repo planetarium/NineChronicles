@@ -151,13 +151,18 @@ namespace Nekoyume.Game.Character
             }
 
             var origin = Resources.Load<GameObject>(spineResourcePath);
+            if (!origin)
+            {
+                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+            }
+
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);
             UpdateHitPoint();
         }
 
-        public void UpdateSpineResource(int id)
+        public void ChangeSpineResource(string id)
         {
             var spineResourcePath = $"Character/Monster/{id}";
 
@@ -171,6 +176,11 @@ namespace Nekoyume.Game.Character
             }
 
             var origin = Resources.Load<GameObject>(spineResourcePath);
+            if (!origin)
+            {
+                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+            }
+
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);
