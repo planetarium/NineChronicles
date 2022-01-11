@@ -81,7 +81,7 @@ namespace Nekoyume.UI
         {
             if (!_tutorial.isActiveAndEnabled)
             {
-                _tutorial.Show();
+                _tutorial.Show(true);
                 WidgetHandler.Instance.IsActiveTutorialMaskWidget = true;
             }
 

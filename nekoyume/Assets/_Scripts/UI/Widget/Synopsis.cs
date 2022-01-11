@@ -171,7 +171,19 @@ namespace Nekoyume.UI
                         tweener.Play();
                         skeletonTweener?.Play();
 
-                        yield return new WaitUntil(() => !tweener.IsPlaying() || skipSynopsis);
+                        var fadeInPlaying = true;
+                        while (fadeInPlaying)
+                        {
+                            if (skipSynopsis)
+                            {
+                                fadeInPlaying = false;
+                            }
+                            else
+                            {
+                                fadeInPlaying = tweener != null && tweener.IsActive() && tweener.IsPlaying();
+                            }
+                            yield return null;
+                        }
 
                         if (skipSynopsis)
                         {
@@ -197,7 +209,19 @@ namespace Nekoyume.UI
                         tweener.Play();
                         skeletonTweener?.Play();
 
-                        yield return new WaitUntil(() => !tweener.IsPlaying() || skipSynopsis);
+                        var fadeOutPlaying = true;
+                        while (fadeOutPlaying)
+                        {
+                            if (skipSynopsis)
+                            {
+                                fadeOutPlaying = false;
+                            }
+                            else
+                            {
+                                fadeOutPlaying = tweener != null && tweener.IsActive() && tweener.IsPlaying();
+                            }
+                            yield return null;
+                        }
 
                         if (skipSynopsis)
                         {
@@ -283,8 +307,20 @@ namespace Nekoyume.UI
                     tweener1.Play();
                     tweener2.Play();
 
-                    yield return new WaitUntil(() =>
-                        (!tweener1.IsPlaying() && !tweener2.IsPlaying()) || skipSynopsis);
+                    var playing = true;
+                    while (playing)
+                    {
+                        if (skipSynopsis)
+                        {
+                            playing = false;
+                        }
+                        else
+                        {
+                            playing = tweener1 != null && tweener1.IsActive() && tweener1.IsPlaying() &&
+                                      tweener2 != null && tweener2.IsActive() && tweener2.IsPlaying();
+                        }
+                        yield return null;
+                    }
                 }
                 else
                 {

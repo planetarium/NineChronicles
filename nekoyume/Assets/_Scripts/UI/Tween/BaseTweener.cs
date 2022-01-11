@@ -7,7 +7,9 @@ namespace Nekoyume.UI.Tween
     {
         protected Tweener Tweener { get; set; }
 
-        public bool IsPlaying => Tweener?.IsPlaying() ?? false;
+        public bool IsPlaying => Tweener != null && Tweener.IsPlaying();
+
+        public bool IsActive => Tweener != null && Tweener.IsActive();
 
         public abstract Tweener PlayTween();
 
@@ -17,12 +19,11 @@ namespace Nekoyume.UI.Tween
 
         public void KillTween()
         {
-            if (Tweener?.IsPlaying() ?? false)
+            if (Tweener != null && Tweener.IsActive() && Tweener.IsPlaying())
             {
-                Tweener?.Kill();
+                Tweener.Kill();
+                Tweener = null;
             }
-
-            Tweener = null;
         }
     }
 }
