@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Tween
 {
     using UniRx;
+    [RequireComponent(typeof(Mask))]
     public class MaskedRectTransformXRoller : MonoBehaviour
     {
         private enum PauseTiming
