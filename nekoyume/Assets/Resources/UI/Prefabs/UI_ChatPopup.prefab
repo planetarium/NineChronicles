@@ -153,7 +153,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 26
+  fontMaterialType: 33
   l10nKey: UI_PROCEED_DISCORD
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
@@ -1162,7 +1162,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 8641346270613069066}
-  button: {fileID: 6495711805411063220}
 --- !u!1 &1199726197691227319
 GameObject:
   m_ObjectHideFlags: 0
@@ -2154,7 +2153,6 @@ GameObject:
   - component: {fileID: 149362425858628033}
   - component: {fileID: 3220787156876726660}
   - component: {fileID: 6440204664724453625}
-  - component: {fileID: 7060060150564338119}
   m_Layer: 5
   m_Name: Modal
   m_TagString: Untagged
@@ -2291,22 +2289,6 @@ MonoBehaviour:
     loop: 0
     loopDelay: 0
     updateMode: 0
---- !u!114 &7060060150564338119
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3277913389646210558}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2143192879d9468e97e50a971883acd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  confirmButton: {fileID: 4489836064358545039}
-  cancelButton: {fileID: 1361672825991667205}
-  contentText: {fileID: 80732125048866605}
-  titleText: {fileID: 5968462093368198312}
 --- !u!1 &3278417965079962784
 GameObject:
   m_ObjectHideFlags: 0
@@ -2976,7 +2958,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -16}
-  m_SizeDelta: {x: 77, y: 81}
+  m_SizeDelta: {x: 80, y: 79}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5256127794862324200
 CanvasRenderer:
@@ -4703,7 +4685,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 3258553807717546613}
-  button: {fileID: 5921507572653683991}
 --- !u!1 &6871397859751847510
 GameObject:
   m_ObjectHideFlags: 0
