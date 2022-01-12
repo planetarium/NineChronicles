@@ -89,15 +89,9 @@ namespace Nekoyume.State
                 return;
             }
 
-            var dictionary = await Game.Game.instance.Agent.GetAvatarStates(AgentState.avatarAddresses.Values);
             foreach (var pair in AgentState.avatarAddresses)
             {
-                var address = pair.Value;
-                var index = pair.Key;
-                if (dictionary.ContainsKey(address))
-                {
-                    await AddOrReplaceAvatarStateAsync(dictionary[address], index);
-                }
+                await AddOrReplaceAvatarStateAsync(pair.Value, pair.Key);
             }
         }
 
@@ -118,7 +112,7 @@ namespace Nekoyume.State
             int index,
             bool initializeReactiveState = true)
         {
-            var (exist, avatarState) = await TryGetAvatarStateAsync(avatarAddress);
+            var (exist, avatarState) = await TryGetAvatarStateAsync(avatarAddress, true);
             if (exist)
             {
                 await AddOrReplaceAvatarStateAsync(avatarState, index, initializeReactiveState);
@@ -127,13 +121,17 @@ namespace Nekoyume.State
             return null;
         }
 
-        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address)
+        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address) =>
+            await TryGetAvatarStateAsync(address, false);
+
+
+        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address, bool allowBrokenState)
         {
             AvatarState avatarState = null;
             bool exist = false;
             try
             {
-                avatarState = await GetAvatarStateAsync(address);
+                avatarState = await GetAvatarStateAsync(address, allowBrokenState);
                 exist = true;
             }
             catch (Exception e)
@@ -144,17 +142,45 @@ namespace Nekoyume.State
             return (exist, avatarState);
         }
 
-        private static async UniTask<AvatarState> GetAvatarStateAsync(Address address)
+        private static async UniTask<AvatarState> GetAvatarStateAsync(Address address, bool allowBrokenState)
         {
             var agent = Game.Game.instance.Agent;
-            var dictionary = await agent.GetAvatarStates(new[] { address });
-            if (!dictionary.ContainsKey(address))
+            var avatarStateValue = await agent.GetStateAsync(address);
+            if (!(avatarStateValue is Bencodex.Types.Dictionary dict))
             {
                 Debug.LogWarning("Failed to get AvatarState");
                 throw new FailedLoadStateException($"Failed to get AvatarState: {address.ToHex()}");
             }
 
-            return dictionary[address];
+            if (dict.ContainsKey(LegacyNameKey))
+            {
+                return new AvatarState(dict);
+            }
+
+            foreach (var key in new[]
+            {
+                LegacyInventoryKey,
+                LegacyWorldInformationKey,
+                LegacyQuestListKey,
+            })
+            {
+                var address2 = address.Derive(key);
+                var value = await agent.GetStateAsync(address2);
+                if (value is null)
+                {
+                    if (allowBrokenState &&
+                        dict.ContainsKey(key))
+                    {
+                        dict = new Bencodex.Types.Dictionary(dict.Remove((Text)key));
+                    }
+
+                    continue;
+                }
+
+                dict = dict.SetItem(key, value);
+            }
+
+            return new AvatarState(dict);
         }
 
         /// <summary>
@@ -279,7 +305,6 @@ namespace Nekoyume.State
             }
 
             LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
-            var addressDict = new Dictionary<int, Address>();
             for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
             {
                 var slotAddress = avatarState.address.Derive(
@@ -289,17 +314,9 @@ namespace Nekoyume.State
                         i
                     )
                 );
-                addressDict[i] = slotAddress;
-            }
-
-            var slotValues = await Game.Game.instance.Agent.GetStateBulk(addressDict.Values);
-            foreach (var kv in addressDict)
-            {
-                var index = kv.Key;
-                var slotAddress = addressDict[index];
-                var stateValue = slotValues[slotAddress];
+                var stateValue = await Game.Game.instance.Agent.GetStateAsync(slotAddress);
                 var state = new CombinationSlotState((Dictionary) stateValue);
-                UpdateCombinationSlotState(index, state);
+                UpdateCombinationSlotState(i, state);
             }
         }
 
