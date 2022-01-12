@@ -6,8 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Bencodex;
 using Cocona;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
@@ -15,6 +17,7 @@ using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
+using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
@@ -240,6 +243,18 @@ namespace Lib9c.DevExtensions
             return activatedAccounts.Accounts
                 .Select(account => new Address(account))
                 .ToImmutableHashSet();
+        }
+
+        public static void ExportBlock(Block<PolymorphicAction<ActionBase>> block, string path)
+        {
+            Bencodex.Types.Dictionary dict = block.MarshalBlock();
+            byte[] encoded = new Codec().Encode(dict);
+            File.WriteAllBytes(path, encoded);
+        }
+
+        public static void ExportKeys(List<ActivationKey> keys, string path)
+        {
+            File.WriteAllLines(path, keys.Select(v => v.Encode()));
         }
 
         [Serializable]
