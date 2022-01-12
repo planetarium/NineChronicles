@@ -1,7 +1,3 @@
-using DG.Tweening;
-using Nekoyume.EnumType;
-using Nekoyume.Game;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,16 +19,8 @@ namespace Nekoyume.UI
         private Image craftNotificationImage = null;
 
         [SerializeField]
-        private Transform npcPosition = null;
-
-        [SerializeField]
         private SpeechBubble speechBubble = null;
 
-        [SerializeField]
-        private Button spineButton;
-
-        private NPC _npc = null;
-        private const int NPCID = 300001;
         protected override void Awake()
         {
             base.Awake();
@@ -65,7 +53,6 @@ namespace Nekoyume.UI
             };
 
             speechBubble.SetKey("SPEECH_COMBINE_EQUIPMENT_");
-            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Greeting));
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -80,40 +67,8 @@ namespace Nekoyume.UI
                 AudioController.instance.PlayMusic(musicName);
             }
 
-            if (_npc is null)
-            {
-                var go = Game.Game.instance.Stage.npcFactory.Create(
-                    NPCID,
-                    npcPosition.position,
-                    LayerType.UI,
-                    11);
-                _npc = go.GetComponent<NPC>();
-            }
-
-            NPCShowAnimation();
             HelpTooltip.HelpMe(100007, true);
             StartCoroutine(speechBubble.CoShowText(true));
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
-
-            if (_npc)
-            {
-                _npc.SpineController.SkeletonAnimation.skeleton.A = 0;
-                _npc = null;
-            }
-        }
-
-        private void NPCShowAnimation()
-        {
-            var skeletonTweener = DOTween.To(
-                () => _npc.SpineController.SkeletonAnimation.skeleton.A,
-                alpha => _npc.SpineController.SkeletonAnimation.skeleton.A = alpha, 1,
-                1f);
-            var tween = skeletonTweener.Play();
-            tween.onComplete += () => _npc.PlayAnimation(NPCAnimation.Type.Greeting);
         }
     }
 }

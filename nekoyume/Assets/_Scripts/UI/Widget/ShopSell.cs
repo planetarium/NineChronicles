@@ -1,22 +1,16 @@
 using System;
 using System.Globalization;
 using Libplanet.Assets;
-using mixpanel;
-using Nekoyume.Action;
-using Nekoyume.EnumType;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
@@ -33,18 +27,25 @@ namespace Nekoyume.UI
             Count,
         }
 
-        [SerializeField] private Module.Inventory inventory = null;
-        [SerializeField] private Module.ShopSellItems shopItems = null;
-        [SerializeField] private TextMeshProUGUI noticeText = null;
-        [SerializeField] private SpeechBubble speechBubble = null;
-        [SerializeField] private Button buyButton = null;
-        [SerializeField] private Button closeButton = null;
-        [SerializeField] private Button spineButton = null;
+        [SerializeField]
+        private Module.Inventory inventory = null;
 
-        private NPC _npc;
-        private static readonly Vector3 NPCPosition = new Vector3(1000.2f, 998, 1.7f);
-        private const int NPCId = 300000;
-        private const int LimitPrice  = 100000000;
+        [SerializeField]
+        private Module.ShopSellItems shopItems = null;
+
+        [SerializeField]
+        private TextMeshProUGUI noticeText = null;
+
+        [SerializeField]
+        private SpeechBubble speechBubble = null;
+
+        [SerializeField]
+        private Button buyButton = null;
+
+        [SerializeField]
+        private Button closeButton = null;
+
+        private const int LimitPrice = 100000000;
 
         private Shop SharedModel { get; set; }
 
@@ -62,7 +63,6 @@ namespace Nekoyume.UI
                 Find<ItemCountableAndPricePopup>().Close();
                 Find<ShopBuy>().gameObject.SetActive(true);
                 Find<ShopBuy>().Open();
-                _npc?.gameObject.SetActive(false);
                 gameObject.SetActive(false);
             });
 
@@ -71,8 +71,6 @@ namespace Nekoyume.UI
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             });
-
-            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion));
 
             CloseWidget = () =>
             {
@@ -123,7 +121,9 @@ namespace Nekoyume.UI
         public void Show()
         {
             base.Show();
-            ShowNPC();
+            speechBubble.gameObject.SetActive(true);
+            speechBubble.SetKey("SPEECH_SHOP_GREETING_");
+            StartCoroutine(speechBubble.CoShowText(true));
             Refresh(true);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
@@ -136,7 +136,9 @@ namespace Nekoyume.UI
             {
                 inventory.SharedModel.State.Value = ItemType.Equipment;
             }
-            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
+
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem =>
+                (inventoryItem.ItemBase.Value is ITradableItem));
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -146,25 +148,9 @@ namespace Nekoyume.UI
             Find<ItemCountableAndPricePopup>().Close();
             speechBubble.gameObject.SetActive(false);
             Find<ShopBuy>().Close();
-            _npc?.gameObject.SetActive(false);
             base.Close(ignoreCloseAnimation);
         }
 
-        private void ShowNPC()
-        {
-            var go = Game.Game.instance.Stage.npcFactory.Create(
-                NPCId,
-                NPCPosition,
-                LayerType.InGameBackground,
-                3);
-            _npc = go.GetComponent<NPC>();
-            _npc.GetComponent<SortingGroup>().sortingLayerName = LayerType.InGameBackground.ToLayerName();
-            _npc.GetComponent<SortingGroup>().sortingOrder = 3;
-            _npc.SpineController.Appear();
-            go.SetActive(true);
-
-            ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
-        }
 
         private void ShowTooltip(InventoryItemView view)
         {
@@ -179,7 +165,9 @@ namespace Nekoyume.UI
                 return;
             }
 
-            ShowSpeech("SPEECH_SHOP_REGISTER_ITEM_");
+            speechBubble.gameObject.SetActive(true);
+            speechBubble.SetKey("SPEECH_SHOP_REGISTER_ITEM_");
+            StartCoroutine(speechBubble.CoShowText(true));
             tooltip.Show(
                 view.RectTransform,
                 view.Model,
@@ -220,14 +208,16 @@ namespace Nekoyume.UI
             var data = SharedModel.ItemCountableAndPricePopup.Value;
 
             if (decimal.TryParse(shopItem.Price.Value.GetQuantityString(),
-                NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var totalPrice))
+                    NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
+                    out var totalPrice))
             {
                 var price = totalPrice / shopItem.Count.Value;
-                var majorUnit = (int) price;
+                var majorUnit = (int)price;
                 var minorUnit = (int)((price - majorUnit) * 100);
                 var currency = States.Instance.GoldBalanceState.Gold.Currency;
                 data.Price.Value = new FungibleAssetValue(currency, majorUnit, minorUnit);
             }
+
             data.PreTotalPrice.Value = shopItem.Price.Value;
             data.TotalPrice.Value = shopItem.Price.Value;
             data.Count.Value = shopItem.Count.Value;
@@ -322,7 +312,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit < Model.Shop.MinimumPrice)
+            if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit <
+                Model.Shop.MinimumPrice)
             {
                 throw new InvalidSellingPriceException(data);
             }
@@ -330,7 +321,8 @@ namespace Nekoyume.UI
             var totalPrice = data.TotalPrice.Value;
             var count = data.Count.Value;
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-            Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType).Subscribe();
+            Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType)
+                .Subscribe();
             Analyzer.Instance.Track("Unity/Sell");
             ResponseSell();
         }
@@ -361,7 +353,8 @@ namespace Nekoyume.UI
             var preTotalPrice = data.PreTotalPrice.Value;
             var count = data.Count.Value;
             var digest =
-                ReactiveShopState.GetSellDigest(tradableItem.TradableId, requiredBlockIndex, preTotalPrice, count);
+                ReactiveShopState.GetSellDigest(tradableItem.TradableId, requiredBlockIndex,
+                    preTotalPrice, count);
             if (digest == null)
             {
                 return;
@@ -393,7 +386,7 @@ namespace Nekoyume.UI
 
         private void SubscribeSellPopupPrice(decimal price)
         {
-            var majorUnit = (int) price;
+            var majorUnit = (int)price;
             var minorUnit = (int)((Math.Truncate((price - majorUnit) * 100) / 100) * 100);
             var model = SharedModel.ItemCountableAndPricePopup.Value;
             model.Price.SetValueAndForceNotify(new FungibleAssetValue(model.Price.Value.Currency,
@@ -405,8 +398,9 @@ namespace Nekoyume.UI
         {
             var model = SharedModel.ItemCountableAndPricePopup.Value;
             decimal price = 0;
-            if (decimal.TryParse(model.Price.Value.GetQuantityString(), NumberStyles.AllowDecimalPoint,
-                CultureInfo.InvariantCulture, out var result))
+            if (decimal.TryParse(model.Price.Value.GetQuantityString(),
+                    NumberStyles.AllowDecimalPoint,
+                    CultureInfo.InvariantCulture, out var result))
             {
                 price = result;
             }
@@ -420,9 +414,10 @@ namespace Nekoyume.UI
                 {
                     case PriorityType.Price:
                         price = LimitPrice / model.Count.Value;
-                        var majorUnit = (int) price;
+                        var majorUnit = (int)price;
                         var minorUnit = (int)((price - majorUnit) * 100);
-                        model.Price.Value = new FungibleAssetValue(model.Price.Value.Currency, majorUnit, minorUnit);
+                        model.Price.Value = new FungibleAssetValue(model.Price.Value.Currency,
+                            majorUnit, minorUnit);
                         break;
                     case PriorityType.Count:
                         count = LimitPrice / (int)price;
@@ -438,8 +433,8 @@ namespace Nekoyume.UI
 
             var currency = model.TotalPrice.Value.Currency;
             var sum = price * count;
-            var major = (int) sum;
-            var minor = (int) ((sum - (int) sum) * 100);
+            var major = (int)sum;
+            var minor = (int)((sum - (int)sum) * 100);
             var fungibleAsset = new FungibleAssetValue(currency, major, minor);
             model.TotalPrice.SetValueAndForceNotify(fungibleAsset);
         }
@@ -454,10 +449,10 @@ namespace Nekoyume.UI
             }
 
             Find<TwoButtonSystem>().Show(L10nManager.Localize("UI_SELL_CANCELLATION"),
-                                        L10nManager.Localize("UI_YES"),
-                                        L10nManager.Localize("UI_NO"),
-                                        SubscribeSellCancellationPopupSubmit,
-                                        SubscribeSellCancellationPopupCancel);
+                L10nManager.Localize("UI_YES"),
+                L10nManager.Localize("UI_NO"),
+                SubscribeSellCancellationPopupSubmit,
+                SubscribeSellCancellationPopupCancel);
         }
 
         private void SubscribeSellCancellationPopupSubmit()
@@ -475,7 +470,8 @@ namespace Nekoyume.UI
             var count = model.Item.Value.Count.Value;
             var subType = tradableItem.ItemSubType;
 
-            var digest = ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, price, count);
+            var digest =
+                ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, price, count);
             if (digest != null)
             {
                 Analyzer.Instance.Track("Unity/Sell Cancellation");
@@ -500,6 +496,7 @@ namespace Nekoyume.UI
             {
                 return !(itemBase is TradableMaterial);
             }
+
             return false;
         }
 
@@ -536,9 +533,11 @@ namespace Nekoyume.UI
                 message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_START"),
                     item.ItemBase.Value.GetLocalizedName());
             }
-            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
-            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
-            // Refresh();
+
+            OneLineSystem.Push(MailType.Auction, message,
+                NotificationCell.NotificationType.Information);
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem =>
+                (inventoryItem.ItemBase.Value is ITradableItem));
         }
 
         private async void ResponseSellCancellation(Guid orderId, Guid tradableId)
@@ -552,18 +551,8 @@ namespace Nekoyume.UI
                 MailType.Auction,
                 string.Format(format, itemName),
                 NotificationCell.NotificationType.Information);
-            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
-            // Refresh();
-        }
-
-        private void ShowSpeech(string key,
-            CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
-        {
-            _npc.PlayAnimation(type == CharacterAnimation.Type.Greeting
-                ? NPCAnimation.Type.Greeting
-                : NPCAnimation.Type.Emotion);
-
-            speechBubble.SetKey(key);
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem =>
+                (inventoryItem.ItemBase.Value is ITradableItem));
         }
     }
 }

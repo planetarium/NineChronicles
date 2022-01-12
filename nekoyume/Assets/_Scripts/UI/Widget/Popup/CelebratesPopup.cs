@@ -1,5 +1,4 @@
 using DG.Tweening;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -22,22 +21,19 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Scroller;
+using Spine.Unity;
 
 namespace Nekoyume.UI
 {
     public class CelebratesPopup : PopupWidget
     {
         private const float ContinueTime = 3f;
-        private const int NPCId = 300004;
 
         [SerializeField]
         private TextMeshProUGUI titleText = null;
 
         [SerializeField]
         private TextMeshProUGUI continueText = null;
-
-        [SerializeField]
-        private RectTransform npcPosition = null;
 
         [SerializeField]
         private GameObject questRewards = null;
@@ -75,11 +71,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private GraphicAlphaTweener graphicAlphaTweener = null;
 
+        [SerializeField]
+        private SkeletonGraphic npcSkeletonGraphic;
+
         private readonly List<Tweener> _tweeners = new List<Tweener>();
         private readonly WaitForSeconds _waitItemInterval = new WaitForSeconds(0.4f);
         private readonly WaitForSeconds _waitForDisappear = new WaitForSeconds(.3f);
 
-        private NPC _npc;
         private Coroutine _timerCoroutine;
         private Coroutine _coShowSomethingCoroutine;
         private List<CountableItem> _rewards;
@@ -99,17 +97,6 @@ namespace Nekoyume.UI
 
             var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
             continueText.text = string.Format(format, ContinueTime);
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-
-            // UI에 플레이어 고정.
-            if (_npc)
-            {
-                _npc.transform.position = npcPosition.position;
-            }
         }
 
         #region Show with menu
@@ -146,12 +133,20 @@ namespace Nekoyume.UI
 
             _rewards = null;
 
-            AppearNPC(ignoreShowAnimation, NPCAnimation.Type.Emotion_02);
+            PlayAnimation(NPCAnimation.Type.Emotion_03);
             base.Show(ignoreShowAnimation);
             PlayEffects();
         }
 
         #endregion
+
+        private void PlayAnimation(NPCAnimation.Type animationType)
+        {
+            npcSkeletonGraphic.AnimationState.SetAnimation(0,
+                animationType.ToString(), false);
+            npcSkeletonGraphic.AnimationState.AddAnimation(0,
+                NPCAnimation.Type.Idle.ToString(), true, 0f);
+        }
 
         #region Show with quest
 
@@ -174,7 +169,7 @@ namespace Nekoyume.UI
             Show(quest, ignoreShowAnimation);
         }
 
-        public void Show(Nekoyume.Model.Quest.Quest quest, bool ignoreShowAnimation = false)
+        public void Show(Quest quest, bool ignoreShowAnimation = false)
         {
             if (quest is null)
             {
@@ -196,9 +191,7 @@ namespace Nekoyume.UI
             Show(quest, rewardModels, ignoreShowAnimation);
         }
 
-        private void Show(
-            Nekoyume.Model.Quest.Quest quest,
-            List<CountableItem> rewards,
+        private void Show(Quest quest, List<CountableItem> rewards,
             bool ignoreShowAnimation = false)
         {
             titleText.text = L10nManager.Localize("UI_QUEST_COMPLETED");
@@ -222,7 +215,7 @@ namespace Nekoyume.UI
                 itemView.Hide();
             }
 
-            AppearNPC(ignoreShowAnimation, NPCAnimation.Type.Emotion_03);
+            PlayAnimation(NPCAnimation.Type.Emotion_03);
             base.Show(ignoreShowAnimation);
             PlayEffects();
             MakeNotification(quest.GetContent());
@@ -233,9 +226,7 @@ namespace Nekoyume.UI
 
         #region Show with recipe
 
-        public void Show(
-            EquipmentItemRecipeSheet.Row row,
-            bool ignoreShowAnimation = false)
+        public void Show(EquipmentItemRecipeSheet.Row row, bool ignoreShowAnimation = false)
         {
             if (row is null)
             {
@@ -257,13 +248,14 @@ namespace Nekoyume.UI
             {
                 gradeImages[i].SetActive(i < resultItem.Grade);
             }
+
             recipeNameText.text = resultItem.GetLocalizedName(false);
             recipeOptionText.text = resultItem.GetUniqueStat().DecimalStatToString();
             recipeAreaParent.SetActive(true);
 
             _rewards = null;
 
-            AppearNPC(ignoreShowAnimation, NPCAnimation.Type.Emotion);
+            PlayAnimation(NPCAnimation.Type.Emotion);
             base.Show(ignoreShowAnimation);
             PlayEffects();
         }
@@ -274,7 +266,6 @@ namespace Nekoyume.UI
         {
             blur.button.interactable = false;
             graphicAlphaTweener.Play();
-            DisappearNPC(ignoreCloseAnimation);
             StopEffects();
 
             if (!(_timerCoroutine is null))
@@ -332,7 +323,8 @@ namespace Nekoyume.UI
             var msg = string.IsNullOrEmpty(questContent)
                 ? string.Empty
                 : string.Format(format, questContent);
-            NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Information);
+            NotificationSystem.Push(MailType.System, msg,
+                NotificationCell.NotificationType.Information);
         }
 
         private static void UpdateLocalState(int questId, Dictionary<int, int> rewards)
@@ -358,39 +350,6 @@ namespace Nekoyume.UI
             }
 
             LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId, true);
-        }
-
-        private void AppearNPC(bool ignoreShowAnimation, NPCAnimation.Type animationType)
-        {
-            if (_npc is null)
-            {
-                var go = Game.Game.instance.Stage.npcFactory.Create(
-                    NPCId,
-                    npcPosition.position,
-                    LayerType.UI,
-                    100);
-                _npc = go.GetComponent<NPC>();
-            }
-
-            _npc.SpineController.Appear(ignoreShowAnimation ? 0f : .3f);
-            _npc.PlayAnimation(animationType);
-        }
-
-        private void DisappearNPC(bool ignoreCloseAnimation)
-        {
-            if (!_npc)
-            {
-                return;
-            }
-
-            _npc.SpineController.Disappear(
-                ignoreCloseAnimation ? 0f : .3f,
-                true,
-                () =>
-                {
-                    _npc.gameObject.SetActive(false);
-                        _npc = null;
-                });
         }
 
         private void PlayEffects()
