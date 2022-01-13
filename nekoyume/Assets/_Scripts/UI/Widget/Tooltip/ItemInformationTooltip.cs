@@ -56,6 +56,12 @@ namespace Nekoyume.UI
                 Close();
             }).AddTo(gameObject);
 
+            submitButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                Model.OnSubmitDisableClick.OnNext(this);
+                Close();
+            }).AddTo(gameObject);
+
             buyButton.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
