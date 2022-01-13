@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Character
         private SortingGroup _sortingGroup;
         private TouchHandler _touchHandler;
 
-        private NPCAnimator Animator { get; set; }
+        public NPCAnimator Animator { get; private set; }
         public NPCSpineController SpineController { get; private set; }
 
         private void Awake()

@@ -1,4 +1,9 @@
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.Util;
+using Nekoyume.UI.Module;
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +12,18 @@ namespace Nekoyume.TestScene
 {
     public class SpineCharacterViewer : MonoBehaviour
     {
+        [SerializeField]
+        private GameObject menus;
+
+        [SerializeField]
+        private Transform cameraTransform;
+
+        [SerializeField]
+        private float cameraSpeed;
+
+        [SerializeField]
+        private ObjectPool objectPool;
+
         [SerializeField]
         private TMP_InputField resourceIdField;
 
@@ -25,10 +42,44 @@ namespace Nekoyume.TestScene
         [SerializeField]
         private Player player;
 
+        [SerializeField]
+        private Transform animationButtonParent;
+
+        [SerializeField]
+        private TextButton animationButtonPrefab;
+
+        private readonly Queue<TextButton> _buttonPool = new Queue<TextButton>();
+
+        private readonly Queue<TextButton> _activeButtons = new Queue<TextButton>();
+
+        #region Mono
+
         private void Awake()
         {
             loadButton.onClick.AddListener(Show);
             resourceWarningText.gameObject.SetActive(false);
+            AudioController.instance.Initialize();
+            objectPool.Initialize();
+        }
+
+        private void Update()
+        {
+            var h = Input.GetAxis("Horizontal");
+            var v = Input.GetAxis("Vertical");
+
+            cameraTransform.Translate(new Vector3(h, v) * Time.fixedDeltaTime * cameraSpeed);
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                cameraTransform.position = new Vector3(0f, 0f, -100f);
+            }
+        }
+
+        #endregion
+
+        public void ToggleUI()
+        {
+            menus.SetActive(!menus.activeSelf);
         }
 
         private void Show()
@@ -66,7 +117,7 @@ namespace Nekoyume.TestScene
                 }
                 else
                 {
-                    resourceWarningText.text = "Prefab name is not vaild.";
+                    resourceWarningText.text = "Prefab name is invaild.";
                     resourceWarningText.gameObject.SetActive(true);
                     return;
                 }
@@ -82,24 +133,91 @@ namespace Nekoyume.TestScene
         {
             enemy.gameObject.SetActive(true);
             enemy.ChangeSpineResource(id);
+            ShowCharacterAnimations(enemy.Animator);
         }
 
         private void ShowNPC(string id)
         {
             npc.gameObject.SetActive(true);
             npc.ChangeSpineResource(id);
+            ShowCharacterAnimations(npc.Animator, true);
         }
 
         private void ShowPlayer(string id)
         {
             player.gameObject.SetActive(true);
             player.ChangeSpineResource(id, false);
+            ShowCharacterAnimations(player.Animator);
         }
 
         private void ShowFullCostume(string id)
         {
             player.gameObject.SetActive(true);
             player.ChangeSpineResource(id, true);
+            ShowCharacterAnimations(player.Animator);
+        }
+
+        private void ShowCharacterAnimations(SkeletonAnimator animator, bool isNpc = false)
+        {
+            resourceWarningText.gameObject.SetActive(false);
+
+            while (_activeButtons.Count > 0)
+            {
+                var button = _activeButtons.Dequeue();
+                button.gameObject.SetActive(false);
+                _buttonPool.Enqueue(button);
+            }
+
+            var types = Enum.GetValues(isNpc ?
+                typeof(NPCAnimation.Type) : typeof(CharacterAnimation.Type));
+
+            foreach (var type in types)
+            {
+                if (_buttonPool.Count == 0)
+                {
+                    var newButton = Instantiate(animationButtonPrefab, animationButtonParent);
+                    _buttonPool.Enqueue(newButton);
+                }
+
+                var button = _buttonPool.Dequeue();
+                if (isNpc)
+                {
+                    var animationType = (NPCAnimation.Type)type;
+                    button.Text = animationType.ToString();
+                    var npcAnimator = animator as NPCAnimator;
+                    button.OnClick = () =>
+                    {
+                        resourceWarningText.gameObject.SetActive(false);
+                        if (!npcAnimator.HasType(animationType))
+                        {
+                            resourceWarningText.text = $"Animation not found.\nType : {animationType}";
+                            resourceWarningText.gameObject.SetActive(true);
+                            return;
+                        }
+                        npcAnimator.Play(animationType);
+                    };
+                }
+                else
+                {
+                    var animationType = (CharacterAnimation.Type)type;
+                    button.Text = animationType.ToString();
+                    var characterAnimator = animator as CharacterAnimator;
+                    button.OnClick = () =>
+                    {
+                        resourceWarningText.gameObject.SetActive(false);
+                        if (!characterAnimator.HasType(animationType))
+                        {
+                            resourceWarningText.text = $"Animation not found.\nType : {animationType}";
+                            resourceWarningText.gameObject.SetActive(true);
+                            return;
+                        }
+                        characterAnimator.Play(animationType);
+                    };
+                }
+
+                button.gameObject.SetActive(true);
+                _activeButtons.Enqueue(button);
+            }
         }
 
         #region Check Type
