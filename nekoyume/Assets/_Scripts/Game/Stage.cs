@@ -1041,15 +1041,18 @@ namespace Nekoyume.Game
         public IEnumerator CoWaveTurnEnd(int turnNumber, int waveTurn)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} enter. {nameof(this.waveTurn)}({this.waveTurn})");
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} enter. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
             yield return new WaitWhile(() => selectedPlayer.actions.Any());
             Event.OnPlayerTurnEnd.Invoke(turnNumber);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} ing. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
+#endif
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             this.waveTurn = waveTurn;
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} exit. {nameof(this.waveTurn)}({this.waveTurn})");
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} exit. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
         }
 
