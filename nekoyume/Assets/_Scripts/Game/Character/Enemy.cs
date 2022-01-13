@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Character
 
         protected override bool CanRun => base.CanRun && !TargetInAttackRange(_player);
 
-        private CharacterSpineController SpineController { get; set; }
+        public CharacterSpineController SpineController { get; private set; }
 
         public override string TargetTag => Tag.Player;
 
