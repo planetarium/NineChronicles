@@ -155,7 +155,10 @@ namespace Nekoyume.UI
             }
             else
             {
+                var loadingScreen = Find<DimAndMessageLoadingScreen>();
+                loadingScreen.Show(L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                 await States.Instance.SelectAvatarAsync(_selectedIndex);
+                loadingScreen.Close();
                 player = new Player(
                     States.Instance.CurrentAvatarState,
                     tableSheets.CharacterSheet,
