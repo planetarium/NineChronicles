@@ -133,7 +133,7 @@ namespace Nekoyume.UI
 
             _rewards = null;
 
-            PlayAnimation(NPCAnimation.Type.Emotion_03);
+            PlayAnimation(NPCAnimation.Type.Emotion_02);
             base.Show(ignoreShowAnimation);
             PlayEffects();
         }
