@@ -75,6 +75,7 @@ namespace Nekoyume.UI
         public void BackToRanking()
         {
             Game.Game.instance.Stage.objectPool.ReleaseAll();
+            Game.Game.instance.Stage.IsInStage = false;
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
             Find<RankingBoard>().Show();

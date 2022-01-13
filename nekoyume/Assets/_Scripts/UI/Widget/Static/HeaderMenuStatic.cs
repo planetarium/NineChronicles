@@ -306,10 +306,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var hasNotification = questList
-                .EnumerateLazyQuestStates()
-                .Select(l => l.State)
-                .Any(quest => quest.IsPaidInAction && quest.isReceivable);
+            var hasNotification =
+                questList.Any(quest => quest.IsPaidInAction && quest.isReceivable);
             _toggleNotifications[ToggleType.Quest].Value = hasNotification;
             Find<QuestPopup>().SetList(questList);
         }

@@ -80,6 +80,16 @@ namespace Nekoyume.UI
             };
         }
 
+        protected override void OnEnable()
+        {
+            Game.Game.instance.Agent.BlockIndexSubject.Subscribe((long blockIndex) =>
+                {
+                    var isExpired = Model.ExpiredBlockIndex.Value - blockIndex <= 0;
+                    Model.SubmitButtonEnabled.SetValueAndForceNotify(!isExpired);
+                }).AddTo(_disposablesForModel);
+            base.OnEnable();
+        }
+
         protected override void OnDestroy()
         {
             Model.Dispose();

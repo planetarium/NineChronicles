@@ -68,7 +68,6 @@ namespace Nekoyume.UI
                 expiredText.SetActive(false);
                 remainTimeSlider.gameObject.SetActive(true);
                 remainTimeSlider.value = value;
-
             }
             else
             {
