@@ -656,10 +656,9 @@ namespace Nekoyume.UI
                     onSubmit = Equip;
                     onSubmitDisable = _ =>
                     {
-                        // ToDo : 상황에 맞게 메세지가 수정되어야 함 -> 일반전투/미미르의 샘/...
                         var msg = inventoryItem.EquippedEnabled.Value
                             ? L10nManager.Localize("UI_BLOCK_UNEQUIP")
-                            : L10nManager.Localize("UI_BLOCK_EQUIP");;
+                            : L10nManager.Localize("UI_BLOCK_EQUIP");
                         NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Alert);
                     };
                     break;
