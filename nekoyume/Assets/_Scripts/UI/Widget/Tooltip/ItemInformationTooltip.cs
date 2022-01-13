@@ -113,7 +113,8 @@ namespace Nekoyume.UI
                          Func<CountableItem, bool> submitEnabledFunc,
                          string submitText,
                          Action<ItemInformationTooltip> onSubmit,
-                         Action<ItemInformationTooltip> onClose = null)
+                         Action<ItemInformationTooltip> onClose = null,
+                         Action<ItemInformationTooltip> onSubmitDisable = null)
         {
             if (item?.ItemBase.Value is null)
             {
@@ -141,6 +142,10 @@ namespace Nekoyume.UI
             if (onClose != null)
             {
                 Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
+            }
+            if (onSubmitDisable != null)
+            {
+                Model.OnSubmitDisableClick.Subscribe(onSubmitDisable).AddTo(_disposablesForModel);
             }
             Model.ItemInformation.item.Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
