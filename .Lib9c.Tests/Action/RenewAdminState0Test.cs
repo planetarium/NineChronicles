@@ -77,5 +77,13 @@ namespace Lib9c.Tests.Action
             Assert.Equal(newValidUntil, adminState.ValidUntil);
             Assert.NotEqual(_validUntil, adminState.ValidUntil);
         }
+
+        [Fact]
+        public void LoadPlainValueShouldThrowError()
+        {
+            var action = new RenewAdminState0(_validUntil);
+            var newAction = new RenewAdminState0();
+            Assert.Throws<InvalidCastException>(() => newAction.LoadPlainValue(action.PlainValue));
+        }
     }
 }
