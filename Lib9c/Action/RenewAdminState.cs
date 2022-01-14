@@ -8,7 +8,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("renew_admin_state2")]
+    [ActionType("renew_admin_state")]
     public class RenewAdminState : GameAction
     {
         private const string NewValidUntilKey = "new_valid_until";
@@ -55,7 +55,7 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            NewValidUntil = (Integer)plainValue[NewValidUntilKey];
+            NewValidUntil = plainValue[NewValidUntilKey].ToLong();
         }
     }
 }
