@@ -55,7 +55,7 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            NewValidUntil = plainValue[NewValidUntilKey].ToLong();
+            NewValidUntil = (Integer)plainValue[NewValidUntilKey];
         }
     }
 }
