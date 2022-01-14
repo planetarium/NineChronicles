@@ -72,10 +72,10 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void Stage(BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
+        public bool Stage(BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
             => _impl.Stage(blockChain, transaction);
 
-        public void Unstage(BlockChain<NCAction> blockChain, TxId id)
+        public bool Unstage(BlockChain<NCAction> blockChain, TxId id)
             => _impl.Unstage(blockChain, id);
 
         private class TxComparer : IComparer<Transaction<NCAction>>

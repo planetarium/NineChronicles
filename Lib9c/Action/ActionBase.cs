@@ -91,6 +91,9 @@ namespace Nekoyume.Action
             public IValue GetState(Address address) =>
                 _states.GetValueOrDefault(address, null);
 
+            public IReadOnlyList<IValue> GetStates(IReadOnlyList<Address> addresses) =>
+                addresses.Select(_states.GetValueOrDefault).ToArray();
+
             public IAccountStateDelta SetState(Address address, IValue state) =>
                 new AccountStateDelta(_states.SetItem(address, state), _balances);
 
