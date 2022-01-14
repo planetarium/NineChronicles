@@ -603,7 +603,7 @@ namespace Nekoyume.UI
                 submitText,
                 _ => onSubmit(view.Model),
                 _ => inventory.SharedModel.DeselectItemView(),
-                _ => onSubmitDisable(view.Model)
+                _ => onClickBlocked(view.Model)
             );
         }
 
