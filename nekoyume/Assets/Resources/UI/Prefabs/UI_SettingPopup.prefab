@@ -8902,6 +8902,26 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4449755703174870109, guid: 936dac6a982dd664fa69abbe93a50c52,
+        type: 3}
+      propertyPath: m_Gloss
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4449755703174870109, guid: 936dac6a982dd664fa69abbe93a50c52,
+        type: 3}
+      propertyPath: m_Width
+      value: 0.476
+      objectReference: {fileID: 0}
+    - target: {fileID: 4449755703174870109, guid: 936dac6a982dd664fa69abbe93a50c52,
+        type: 3}
+      propertyPath: m_Brightness
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4449755703174870109, guid: 936dac6a982dd664fa69abbe93a50c52,
+        type: 3}
+      propertyPath: m_EffectFactor
+      value: 0.556
+      objectReference: {fileID: 0}
     - target: {fileID: 6266055154386651832, guid: 936dac6a982dd664fa69abbe93a50c52,
         type: 3}
       propertyPath: m_AnchorMax.y
