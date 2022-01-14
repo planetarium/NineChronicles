@@ -47,6 +47,9 @@ namespace Nekoyume.UI.Tween
         [SerializeField]
         private float pauseTime;
 
+        [SerializeField]
+        private bool scrollOnlyWhenNeed;
+
         private RectTransform _rectTransform = null;
 
         private Coroutine _coroutine = null;
@@ -85,7 +88,17 @@ namespace Nekoyume.UI.Tween
         {
             KillTween();
 
-            _coroutine = StartCoroutine(CoScrollContent());
+            if (scrollOnlyWhenNeed)
+            {
+                if (_rectTransform.rect.x < content.rectTransform.rect.x)
+                {
+                    _coroutine = StartCoroutine(CoScrollContent());
+                }
+            }
+            else
+            {
+                _coroutine = StartCoroutine(CoScrollContent());
+            }
         }
 
         private void OnDisable()
