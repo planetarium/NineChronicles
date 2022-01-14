@@ -9,16 +9,16 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("renew_admin_state")]
-    public class RenewAdminState : GameAction
+    public class RenewAdminState0 : GameAction
     {
         private const string NewValidUntilKey = "new_valid_until";
         public long NewValidUntil {get; internal set; }
 
-        public RenewAdminState()
+        public RenewAdminState0()
         {
         }
 
-        public RenewAdminState(long newValidUntil)
+        public RenewAdminState0(long newValidUntil)
         {
             NewValidUntil = newValidUntil;
         }

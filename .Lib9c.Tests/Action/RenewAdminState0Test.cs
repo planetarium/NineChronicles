@@ -11,14 +11,14 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Xunit;
 
-    public class RenewAdminStateTest
+    public class RenewAdminState0Test
     {
         private IAccountStateDelta _stateDelta;
         private long _validUntil;
         private AdminState _adminState;
         private PrivateKey _adminPrivateKey;
 
-        public RenewAdminStateTest()
+        public RenewAdminState0Test()
         {
             _adminPrivateKey = new PrivateKey();
             _validUntil = new Random().Next();
@@ -33,7 +33,7 @@ namespace Lib9c.Tests.Action
         public void Execute()
         {
             var newValidUntil = _validUntil + 1000;
-            var action = new RenewAdminState(newValidUntil);
+            var action = new RenewAdminState0(newValidUntil);
             var stateDelta = action.Execute(new ActionContext
             {
                 PreviousStates = _stateDelta,
@@ -49,7 +49,7 @@ namespace Lib9c.Tests.Action
         public void RejectSignerExceptAdminAddress()
         {
             var newValidUntil = _validUntil + 1000;
-            var action = new RenewAdminState(newValidUntil);
+            var action = new RenewAdminState0(newValidUntil);
             Assert.Throws<PermissionDeniedException>(() =>
             {
                 var userPrivateKey = new PrivateKey();
@@ -65,7 +65,7 @@ namespace Lib9c.Tests.Action
         public void RenewAdminStateEvenAlreadyExpired()
         {
             var newValidUntil = _validUntil + 1000;
-            var action = new RenewAdminState(newValidUntil);
+            var action = new RenewAdminState0(newValidUntil);
             var stateDelta = action.Execute(new ActionContext
             {
                 BlockIndex = _validUntil + 1,

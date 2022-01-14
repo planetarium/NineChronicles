@@ -88,7 +88,7 @@ namespace Lib9c.Tools.SubCommand
                         nameof(Nekoyume.Action.MigrationActivatedAccountsState) => new MigrationActivatedAccountsState(),
                         nameof(Nekoyume.Action.MigrationAvatarState) => new MigrationAvatarState(),
                         nameof(Nekoyume.Action.CreatePendingActivations) => new CreatePendingActivations(),
-                        nameof(Nekoyume.Action.RenewAdminState) => new RenewAdminState(),
+                        nameof(Nekoyume.Action.RenewAdminState0) => new RenewAdminState0(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -259,9 +259,9 @@ namespace Lib9c.Tools.SubCommand
             long newValidUntil
         )
         {
-            RenewAdminState action = new RenewAdminState(newValidUntil);
+            RenewAdminState0 action = new RenewAdminState0(newValidUntil);
             var encoded = new List(
-                (Text) nameof(Nekoyume.Action.RenewAdminState),
+                (Text) nameof(Nekoyume.Action.RenewAdminState0),
                 action.PlainValue
             );
             byte[] raw = _codec.Encode(encoded);
