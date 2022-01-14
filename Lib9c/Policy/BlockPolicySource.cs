@@ -58,13 +58,15 @@ namespace Nekoyume.BlockChain.Policy
         /// Current date: 2021/12/14 16:21
         /// Current block index: 2_965_521
         /// Temporary target date : 2021/12/20 12:00
-        /// Temporary block index: 
+        /// Temporary block index:
         /// </summary>
         public const long V100093ObsoleteIndex = 3_050_000;
 
         public const long V100095ObsoleteIndex = 3_317_632;
-        
+
         public const long V100096ObsoleteIndex = 3_317_632;
+
+        public const long V100099ObsoleteIndex = 3_490_961;
 
 
         public const long PermissionedMiningStartIndex = 2_225_500;

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet.Action;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("renew_admin_state")]
+    [ActionObsolete(BlockPolicySource.V100099ObsoleteIndex)]
     public class RenewAdminState0 : GameAction
     {
         private const string NewValidUntilKey = "new_valid_until";
