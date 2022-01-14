@@ -1046,6 +1046,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6304133723119780754}
   - component: {fileID: 3133923304137140641}
+  - component: {fileID: 301272268539683782}
   m_Layer: 5
   m_Name: UI_TwoButtonSystem
   m_TagString: Untagged
@@ -1091,6 +1092,25 @@ MonoBehaviour:
   confirmButton: {fileID: 8786400757489469699}
   cancelButton: {fileID: 5355011932519075559}
   contentText: {fileID: 5669120989085549578}
+--- !u!95 &301272268539683782
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5896934542767846687}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 0cd5d2c86a44744489151e7b78facb01, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6827828524361627259
 GameObject:
   m_ObjectHideFlags: 0
@@ -1140,7 +1160,7 @@ GameObject:
   - component: {fileID: 419207843367269569}
   - component: {fileID: 3370308439316468621}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: Modal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
