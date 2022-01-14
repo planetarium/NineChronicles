@@ -595,7 +595,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var (submitEnabledFunc, submitText, onSubmit, onSubmitDisable) = GetToolTipParams(view.Model);
+            var (submitEnabledFunc, submitText, onSubmit, onClickBlocked) = GetToolTipParams(view.Model);
             tooltip.Show(
                 view.RectTransform,
                 view.Model,
