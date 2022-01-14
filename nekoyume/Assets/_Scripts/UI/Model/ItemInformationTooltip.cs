@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<UI.ItemInformationTooltip> OnSubmitClick = new Subject<UI.ItemInformationTooltip>();
         public readonly Subject<UI.ItemInformationTooltip> OnCloseClick = new Subject<UI.ItemInformationTooltip>();
-        public readonly Subject<UI.ItemInformationTooltip> OnSubmitDisableClick = new Subject<UI.ItemInformationTooltip>();
+        public readonly Subject<UI.ItemInformationTooltip> OnClickBlocked = new Subject<UI.ItemInformationTooltip>();
 
         public ItemInformationTooltip(CountableItem countableItem = null)
         {
@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Model
             ExpiredBlockIndex.Dispose();
             OnSubmitClick.Dispose();
             OnCloseClick.Dispose();
-            OnSubmitDisableClick.Dispose();
+            OnClickBlocked.Dispose();
             base.Dispose();
         }
 

@@ -58,7 +58,7 @@ namespace Nekoyume.UI
 
             submitButton.OnClickDisabledSubject.Subscribe(_ =>
             {
-                Model.OnSubmitDisableClick.OnNext(this);
+                Model.OnClickBlocked.OnNext(this);
                 Close();
             }).AddTo(gameObject);
 
@@ -114,7 +114,7 @@ namespace Nekoyume.UI
                          string submitText,
                          Action<ItemInformationTooltip> onSubmit,
                          Action<ItemInformationTooltip> onClose = null,
-                         Action<ItemInformationTooltip> onSubmitDisable = null)
+                         Action<ItemInformationTooltip> onClickBlocked = null)
         {
             if (item?.ItemBase.Value is null)
             {
@@ -143,9 +143,9 @@ namespace Nekoyume.UI
             {
                 Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
             }
-            if (onSubmitDisable != null)
+            if (onClickBlocked != null)
             {
-                Model.OnSubmitDisableClick.Subscribe(onSubmitDisable).AddTo(_disposablesForModel);
+                Model.OnClickBlocked.Subscribe(onClickBlocked).AddTo(_disposablesForModel);
             }
             Model.ItemInformation.item.Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);

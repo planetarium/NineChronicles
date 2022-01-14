@@ -622,7 +622,7 @@ namespace Nekoyume.UI
                 inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item) ||
                 inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out item))
             {
-                var (submitEnabledFunc, submitText, onSubmit, onSubmitDisable) = GetToolTipParams(item);
+                var (submitEnabledFunc, submitText, onSubmit, onClickBlocked) = GetToolTipParams(item);
                 tooltip.Show(
                     slot.RectTransform,
                     item,
@@ -630,7 +630,7 @@ namespace Nekoyume.UI
                     submitText,
                     _ => onSubmit(item),
                     _ => inventory.SharedModel.DeselectItemView(),
-                    _ => onSubmitDisable(item)
+                    _ => onClickBlocked(item)
                     );
             }
         }
@@ -642,7 +642,7 @@ namespace Nekoyume.UI
             Func<CountableItem, bool> submitEnabledFunc = null;
             string submitText = null;
             Action<CountableItem> onSubmit = null;
-            Action<CountableItem> onSubmitDisable = null;
+            Action<CountableItem> onClickBlocked = null;
             switch (item.ItemType)
             {
                 case ItemType.Consumable:
@@ -654,7 +654,7 @@ namespace Nekoyume.UI
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
                     onSubmit = Equip;
-                    onSubmitDisable = _ =>
+                    onClickBlocked = _ =>
                     {
                         var msg = inventoryItem.EquippedEnabled.Value
                             ? L10nManager.Localize("UI_BLOCK_UNEQUIP")
@@ -679,7 +679,7 @@ namespace Nekoyume.UI
 
                             break;
                     }
-                    onSubmitDisable = _ =>
+                    onClickBlocked = _ =>
                     {
                         var msg = L10nManager.Localize("UI_BLOCK_CHARGE_AP");
                         NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Alert);
@@ -689,7 +689,7 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
 
-            return (submitEnabledFunc, submitText, onSubmit, onSubmitDisable);
+            return (submitEnabledFunc, submitText, onSubmit, onClickBlocked);
         }
 
         public static void ShowRefillConfirmPopup(CountableItem item)
