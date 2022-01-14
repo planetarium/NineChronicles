@@ -15,6 +15,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Libplanet.Action;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Tools.SubCommand
@@ -87,6 +88,7 @@ namespace Lib9c.Tools.SubCommand
                         nameof(Nekoyume.Action.MigrationActivatedAccountsState) => new MigrationActivatedAccountsState(),
                         nameof(Nekoyume.Action.MigrationAvatarState) => new MigrationAvatarState(),
                         nameof(Nekoyume.Action.CreatePendingActivations) => new CreatePendingActivations(),
+                        nameof(Nekoyume.Action.RenewAdminState) => new RenewAdminState(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -247,6 +249,21 @@ namespace Lib9c.Tools.SubCommand
                     action.PlainValue
                }
            );
+            byte[] raw = _codec.Encode(encoded);
+            Console.WriteLine(ByteUtil.Hex(raw));
+        }
+
+        [Command(Description = "Create RenewAdminState action and dump it.")]
+        public void RenewAdminState(
+            [Argument("NEW-VALID-UNTIL")]
+            long newValidUntil
+        )
+        {
+            RenewAdminState action = new RenewAdminState(newValidUntil);
+            var encoded = new List(
+                (Text) nameof(Nekoyume.Action.RenewAdminState),
+                action.PlainValue
+            );
             byte[] raw = _codec.Encode(encoded);
             Console.WriteLine(ByteUtil.Hex(raw));
         }

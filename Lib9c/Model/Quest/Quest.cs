@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -72,12 +71,12 @@ namespace Nekoyume.Model.Quest
 
         protected Quest(Dictionary serialized)
         {
-            Complete = IsQuestComplete(serialized);
+            Complete = ((Bencodex.Types.Boolean) serialized["complete"]).Value;
             Goal = (int) ((Integer) serialized["goal"]).Value;
             _current = (int) ((Integer) serialized["current"]).Value;
-            Id = GetQuestId(serialized);
+            Id = (int) ((Integer) serialized["id"]).Value;
             Reward = new QuestReward((Dictionary) serialized["reward"]);
-            IsPaidInAction = IsQuestPaidInAction(serialized);
+            IsPaidInAction = serialized["isPaidInAction"].ToNullableBoolean() ?? false;
         }
 
         public abstract string GetProgressText();
@@ -132,17 +131,5 @@ namespace Nekoyume.Model.Quest
         {
             return Deserialize((Dictionary) arg);
         }
-
-        public static int GetQuestId(Dictionary serialized) =>
-            serialized.GetValue<Integer>("id");
-
-        public static int GetQuestId(IValue serialized) =>
-            GetQuestId((Dictionary)serialized);
-
-        public static bool IsQuestComplete(Dictionary serialized) =>
-            serialized.GetValue<Bencodex.Types.Boolean>("complete");
-
-        public static bool IsQuestPaidInAction(Dictionary serialized) =>
-            serialized["isPaidInAction"].ToNullableBoolean() ?? false;
     }
 }

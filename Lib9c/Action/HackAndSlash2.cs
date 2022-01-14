@@ -218,7 +218,7 @@ namespace Nekoyume.Action
             avatarState.UpdateQuestRewards2(materialSheet);
 
             //Avoid InvalidBlockStateRootHashException to 50000 index.
-            if (avatarState.questList.UnpaidCompleteQuests.Any())
+            if (avatarState.questList.Any(q => q.Complete && !q.IsPaidInAction))
             {
                 var prevIds = avatarState.questList.completedQuestIds;
                 avatarState.UpdateQuestRewards(materialSheet);
