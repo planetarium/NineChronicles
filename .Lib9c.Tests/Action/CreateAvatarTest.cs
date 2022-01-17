@@ -40,25 +40,13 @@ namespace Lib9c.Tests.Action
             };
 
             var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
-            var ranking = new RankingState0();
-            for (var i = 0; i < RankingState0.RankingMapCapacity; i++)
-            {
-                ranking.RankingMap[RankingState0.Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
-            }
 
             var sheets = TableSheetsImporter.ImportSheets();
             var state = new State()
-                .SetState(GoldCurrencyState.Address, gold.Serialize())
-                .SetState(
-                    Addresses.GoldDistribution,
-                    GoldDistributionTest.Fixture.Select(v => v.Serialize()).Serialize()
-                )
                 .SetState(
                     Addresses.GameConfig,
                     new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize()
-                )
-                .SetState(Addresses.Ranking, ranking.Serialize())
-                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);
+                );
 
             foreach (var (key, value) in sheets)
             {
@@ -71,11 +59,6 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 BlockIndex = 0,
             });
-
-            Assert.Equal(
-                0,
-                nextState.GetBalance(default, gold.Currency).MajorUnit
-            );
 
             var avatarAddress = _agentAddress.Derive(
                 string.Format(
@@ -92,7 +75,6 @@ namespace Lib9c.Tests.Action
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(avatarAddress, nextState.GetRankingState().RankingMap[nextAvatarState.RankingMapAddress].First());
         }
 
         [Theory]
@@ -256,8 +238,6 @@ namespace Lib9c.Tests.Action
             {
                 agentAddress,
                 avatarAddress,
-                Addresses.GoldCurrency,
-                Addresses.Ranking,
                 avatarAddress.Derive(LegacyInventoryKey),
                 avatarAddress.Derive(LegacyQuestListKey),
                 avatarAddress.Derive(LegacyWorldInformationKey),
@@ -274,9 +254,7 @@ namespace Lib9c.Tests.Action
                 updatedAddresses.Add(slotAddress);
             }
 
-            var state = new State()
-                .SetState(Addresses.Ranking, new RankingState0().Serialize())
-                .SetState(GoldCurrencyState.Address, gold.Serialize());
+            var state = new State();
 
             var nextState = action.Execute(new ActionContext()
             {

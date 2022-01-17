@@ -14,7 +14,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("create_avatar6")]
+    [ActionType("create_avatar7")]
     public class CreateAvatar : GameAction
     {
         public const string DeriveFormat = "avatar-state-{0}";
@@ -77,11 +77,9 @@ namespace Nekoyume.Action
 
                 return states
                     .SetState(avatarAddress, MarkChanged)
-                    .SetState(Addresses.Ranking, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
+                    .SetState(questListAddress, MarkChanged);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -127,11 +125,7 @@ namespace Nekoyume.Action
             // Avoid NullReferenceException in test
             var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
 
-            RankingState rankingState = ctx.PreviousStates.GetRankingState();
-
-            var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
-
-            avatarState = CreateAvatar0.CreateAvatarState(name, avatarAddress, ctx, materialItemSheet, rankingMapAddress);
+            avatarState = CreateAvatar0.CreateAvatarState(name, avatarAddress, ctx, materialItemSheet, default);
 
             if (hair < 0) hair = 0;
             if (lens < 0) lens = 0;
@@ -155,7 +149,6 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}CreateAvatar Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
-                .SetState(Addresses.Ranking, rankingState.Serialize())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
