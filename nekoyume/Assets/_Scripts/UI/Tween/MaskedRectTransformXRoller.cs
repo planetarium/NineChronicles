@@ -165,7 +165,7 @@ namespace Nekoyume.UI.Tween
                 content.rectTransform.anchoredPosition = new Vector2(xPos, _originalPos.y);
 
                 elapsedTime += Time.deltaTime;
-                if (t >= pauseTime && !wasPaused && isInfiniteScroll)
+                if (t >= pauseTime && !wasPaused)
                 {
                     yield return new WaitForSeconds(this.pauseTime);
                     wasPaused = true;

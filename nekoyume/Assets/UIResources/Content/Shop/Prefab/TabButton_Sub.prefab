@@ -122,11 +122,12 @@ MonoBehaviour:
     m_RotationOrder: 4
   startDelay: 1.5
   endDelay: 1.5
-  targetAnimationTime: 10
+  targetAnimationTime: 3
   useAnimationSpeed: 0
   animationSpeed: 0
-  pauseTiming: 0
-  pauseTime: 0
+  pauseTiming: 1
+  pauseTime: 1
+  scrollOnlyWhenNeed: 0
   isSelected:
     value: 1
 --- !u!222 &1332309770741554073
@@ -919,7 +920,7 @@ MonoBehaviour:
   m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 14
   m_fontSizeMax: 18
   m_fontStyle: 1
