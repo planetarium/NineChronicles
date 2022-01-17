@@ -4,6 +4,7 @@ using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -11,6 +12,7 @@ namespace Nekoyume.UI
     {
         public LoadingIndicator indicator;
         public TextMeshProUGUI toolTip;
+        public Button toolTipChangeButton;
 
         public string Message { get; internal set; }
 
@@ -37,6 +39,11 @@ namespace Nekoyume.UI
                 {
                     throw new SerializeFieldNullException();
                 }
+            }
+
+            if (toolTipChangeButton != null)
+            {
+                toolTipChangeButton.onClick.AddListener(ChangeToolTip);
             }
         }
 
@@ -74,6 +81,14 @@ namespace Nekoyume.UI
         {
             Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
             base.OnDisable();
+        }
+
+        public void ChangeToolTip()
+        {
+            if (_tips != null)
+            {
+                toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
+            }
         }
 
         #endregion
