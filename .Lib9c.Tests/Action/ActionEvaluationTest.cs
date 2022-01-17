@@ -211,7 +211,6 @@ namespace Lib9c.Tests.Action
                     stageId = 0,
                     playCount = 0,
                     avatarAddress = default,
-                    rankingMapAddress = new PrivateKey().ToAddress(),
                 },
                 MonsterCollect _ => new MonsterCollect(),
                 PatchTableSheet _ => new PatchTableSheet
