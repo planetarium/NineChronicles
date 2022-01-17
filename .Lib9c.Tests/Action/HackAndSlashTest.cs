@@ -78,7 +78,6 @@ namespace Lib9c.Tests.Action
                 .SetState(_inventoryAddress, _avatarState.inventory.Serialize())
                 .SetState(_worldInformationAddress, _avatarState.worldInformation.Serialize())
                 .SetState(_questListAddress, _avatarState.questList.Serialize())
-                .SetState(_rankingMapAddress, new RankingMapState(_rankingMapAddress).Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize());
 
             foreach (var (key, value) in _sheets)
@@ -224,7 +223,6 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
                 playCount = playCount,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -241,15 +239,6 @@ namespace Lib9c.Tests.Action
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
             Assert.Equal(!isLock, nextAvatarState.inventory.Equipments.OfType<Weapon>().Any(w => w.equipped));
-
-            var value = nextState.GetState(_rankingMapAddress);
-            if (!isClearedBefore)
-            {
-                var rankingMapState = new RankingMapState((Dictionary)value);
-                var info = rankingMapState.GetRankingInfos(null).First();
-                Assert.Equal(info.AgentAddress, _agentAddress);
-                Assert.Equal(info.AvatarAddress, _avatarAddress);
-            }
         }
 
         [Theory]
@@ -306,7 +295,6 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
                 playCount = playCount,
                 avatarAddress = avatarState.address,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             avatarState = state.GetAvatarStateV2(avatarState.address);
@@ -365,7 +353,6 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -428,7 +415,6 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
@@ -440,34 +426,6 @@ namespace Lib9c.Tests.Action
             }));
 
             SerializeException<DuplicateEquipmentException>(exec);
-        }
-
-        [Fact]
-        public void ExecuteThrowInvalidRankingMapAddress()
-        {
-            var action = new HackAndSlash
-            {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                playCount = 1,
-                avatarAddress = _avatarAddress,
-                rankingMapAddress = default,
-            };
-
-            var exec = Assert.Throws<InvalidAddressException>(() =>
-                action.Execute(new ActionContext()
-                {
-                    PreviousStates = _initialState,
-                    Signer = _agentAddress,
-                    Random = new TestRandom(),
-                    Rehearsal = false,
-                })
-            );
-
-            SerializeException<InvalidAddressException>(exec);
         }
 
         [Theory]
@@ -518,7 +476,6 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
@@ -545,7 +502,6 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
@@ -570,7 +526,6 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -598,7 +553,6 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -634,7 +588,6 @@ namespace Lib9c.Tests.Action
                 stageId = 51,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.False(_avatarState.worldInformation.IsStageCleared(51));
@@ -661,7 +614,6 @@ namespace Lib9c.Tests.Action
                 stageId = 3,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var avatarState = new AvatarState(_avatarState);
@@ -703,7 +655,6 @@ namespace Lib9c.Tests.Action
                 stageId = 2,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             _avatarState.worldInformation.TryGetWorld(1, out var world);
@@ -744,7 +695,6 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState
@@ -793,7 +743,6 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext()
@@ -823,7 +772,6 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -884,7 +832,6 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -1048,7 +995,6 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
                 playCount = playCount,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -1114,14 +1060,12 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
-                rankingMapAddress = _rankingMapAddress,
             };
 
             var updatedAddresses = new List<Address>()
             {
                 _agentAddress,
                 _avatarAddress,
-                _rankingMapAddress,
                 _avatarAddress.Derive(LegacyInventoryKey),
                 _avatarAddress.Derive(LegacyWorldInformationKey),
                 _avatarAddress.Derive(LegacyQuestListKey),
