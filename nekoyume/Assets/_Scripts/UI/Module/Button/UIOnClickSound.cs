@@ -1,9 +1,9 @@
 ﻿using System;
-using UnityEditor;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume.Game.Controller
+namespace Nekoyume
 {
     public class UIOnClickSound : MonoBehaviour
     {
