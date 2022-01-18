@@ -9,6 +9,7 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -594,14 +595,16 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var (submitEnabledFunc, submitText, onSubmit) = GetToolTipParams(view.Model);
+            var (submitEnabledFunc, submitText, onSubmit, onClickBlocked) = GetToolTipParams(view.Model);
             tooltip.Show(
                 view.RectTransform,
                 view.Model,
                 submitEnabledFunc,
                 submitText,
                 _ => onSubmit(view.Model),
-                _ => inventory.SharedModel.DeselectItemView());
+                _ => inventory.SharedModel.DeselectItemView(),
+                _ => onClickBlocked(view.Model)
+            );
         }
 
         private void ShowTooltip(EquipmentSlot slot)
@@ -619,24 +622,27 @@ namespace Nekoyume.UI
                 inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item) ||
                 inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out item))
             {
-                var (submitEnabledFunc, submitText, onSubmit) = GetToolTipParams(item);
+                var (submitEnabledFunc, submitText, onSubmit, onClickBlocked) = GetToolTipParams(item);
                 tooltip.Show(
                     slot.RectTransform,
                     item,
                     submitEnabledFunc,
                     submitText,
                     _ => onSubmit(item),
-                    _ => inventory.SharedModel.DeselectItemView());
+                    _ => inventory.SharedModel.DeselectItemView(),
+                    _ => onClickBlocked(item)
+                    );
             }
         }
 
-        private (Func<CountableItem, bool>, string, Action<CountableItem>) GetToolTipParams(
+        private (Func<CountableItem, bool>, string, Action<CountableItem>, Action<CountableItem>) GetToolTipParams(
             InventoryItem inventoryItem)
         {
             var item = inventoryItem.ItemBase.Value;
             Func<CountableItem, bool> submitEnabledFunc = null;
             string submitText = null;
             Action<CountableItem> onSubmit = null;
+            Action<CountableItem> onClickBlocked = null;
             switch (item.ItemType)
             {
                 case ItemType.Consumable:
@@ -648,6 +654,11 @@ namespace Nekoyume.UI
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
                     onSubmit = Equip;
+                    onClickBlocked = _ =>
+                    {
+                        var msg = L10nManager.Localize("UI_BLOCK_EQUIP");
+                        NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Alert);
+                    };
                     break;
                 case ItemType.Material:
                     switch (item.ItemSubType)
@@ -667,12 +678,24 @@ namespace Nekoyume.UI
                             break;
                     }
 
+                    if (Game.Game.instance.Stage.IsInStage)
+                    {
+                        onClickBlocked = _ =>
+                        {
+                            var msg = L10nManager.Localize("UI_BLOCK_CHARGE_AP");
+                            NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Alert);
+                        };
+                    }
+                    else
+                    {
+                        onClickBlocked = ShowRefillConfirmPopup;
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            return (submitEnabledFunc, submitText, onSubmit);
+            return (submitEnabledFunc, submitText, onSubmit, onClickBlocked);
         }
 
         public static void ShowRefillConfirmPopup(CountableItem item)

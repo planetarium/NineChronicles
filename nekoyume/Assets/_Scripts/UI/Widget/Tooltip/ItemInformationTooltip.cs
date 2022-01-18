@@ -57,6 +57,12 @@ namespace Nekoyume.UI
                 Close();
             }).AddTo(gameObject);
 
+            submitButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                Model.OnClickBlocked.OnNext(this);
+                Close();
+            }).AddTo(gameObject);
+
             buyButton.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -115,6 +121,7 @@ namespace Nekoyume.UI
                          string submitText,
                          Action<ItemInformationTooltip> onSubmit,
                          Action<ItemInformationTooltip> onClose = null,
+                         Action<ItemInformationTooltip> onClickBlocked = null,
                          bool isShopItem = false)
         {
             if (item?.ItemBase.Value is null)
@@ -143,6 +150,10 @@ namespace Nekoyume.UI
             if (onClose != null)
             {
                 Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
+            }
+            if (onClickBlocked != null)
+            {
+                Model.OnClickBlocked.Subscribe(onClickBlocked).AddTo(_disposablesForModel);
             }
             Model.ItemInformation.item.Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
