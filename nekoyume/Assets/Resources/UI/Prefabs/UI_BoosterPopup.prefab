@@ -228,8 +228,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
+      - m_Target: {fileID: 7333232712628829551}
+        m_TargetAssemblyTypeName: Nekoyume.UI.BoosterPopup, Nekoyume
         m_MethodName: Close
         m_Mode: 6
         m_Arguments:
