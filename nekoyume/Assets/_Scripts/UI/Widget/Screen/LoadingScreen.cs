@@ -73,7 +73,7 @@ namespace Nekoyume.UI
             base.OnEnable();
             if (_tips != null)
             {
-                toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
+                toolTip.text = _tips[Random.Range(0, _tips.Count)];
             }
         }
 
@@ -87,7 +87,7 @@ namespace Nekoyume.UI
         {
             if (_tips != null)
             {
-                toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
+                toolTip.text = _tips[Random.Range(0, _tips.Count)];
             }
         }
 
