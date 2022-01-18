@@ -249,12 +249,12 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentRetryStarted(RPCAgent rpcAgent)
         {
-            Widget.Find<BlockSyncLoadingScreen>().Show();
+            Widget.Find<DimmedLoadingScreen>().Show();
         }
 
         private static void OnRPCAgentRetryEnded(RPCAgent rpcAgent)
         {
-            var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
+            var widget = (Widget) Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -274,7 +274,7 @@ namespace Nekoyume.Game
 
             var needToBackToMain = false;
             var showLoadingScreen = false;
-            var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
+            var widget = (Widget) Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -340,7 +340,7 @@ namespace Nekoyume.Game
 
             var needToBackToMain = false;
             var showLoadingScreen = false;
-            var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
+            var widget = (Widget) Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -396,7 +396,7 @@ namespace Nekoyume.Game
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
         {
-            var screen = Widget.Find<BlockSyncLoadingScreen>();
+            var screen = Widget.Find<DimmedLoadingScreen>();
             if (screen.IsActive())
             {
                 screen.Close();

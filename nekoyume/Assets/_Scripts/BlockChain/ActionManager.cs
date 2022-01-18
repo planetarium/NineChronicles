@@ -165,7 +165,6 @@ namespace Nekoyume.BlockChain
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = avatarAddress,
-                rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
                 playCount = playCount,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
@@ -228,7 +227,6 @@ namespace Nekoyume.BlockChain
                 stageId = stageId,
                 playCount = playCount,
                 avatarAddress = avatarAddress,
-                rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);

@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Tween
 {
     using UniRx;
+    [RequireComponent(typeof(Mask))]
     public class MaskedRectTransformXRoller : MonoBehaviour
     {
         private enum PauseTiming
@@ -45,6 +47,9 @@ namespace Nekoyume.UI.Tween
         [SerializeField]
         private float pauseTime;
 
+        [SerializeField]
+        private bool scrollOnlyWhenNeed;
+
         private RectTransform _rectTransform = null;
 
         private Coroutine _coroutine = null;
@@ -83,7 +88,17 @@ namespace Nekoyume.UI.Tween
         {
             KillTween();
 
-            _coroutine = StartCoroutine(CoScrollContent());
+            if (scrollOnlyWhenNeed)
+            {
+                if (_rectTransform.rect.x < content.rectTransform.rect.x)
+                {
+                    _coroutine = StartCoroutine(CoScrollContent());
+                }
+            }
+            else
+            {
+                _coroutine = StartCoroutine(CoScrollContent());
+            }
         }
 
         private void OnDisable()
@@ -150,7 +165,7 @@ namespace Nekoyume.UI.Tween
                 content.rectTransform.anchoredPosition = new Vector2(xPos, _originalPos.y);
 
                 elapsedTime += Time.deltaTime;
-                if (t >= pauseTime && !wasPaused && isInfiniteScroll)
+                if (t >= pauseTime && !wasPaused)
                 {
                     yield return new WaitForSeconds(this.pauseTime);
                     wasPaused = true;
