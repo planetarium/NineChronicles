@@ -34,12 +34,6 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image colorImage = null;
 
-        [SerializeField, Header("Direction"), Tooltip("대기 상태일 때 월드 이름이 스케일 되는 크기")]
-        private float idleNameScaleTo = 1.1f;
-
-        [SerializeField, Tooltip("대기 상태일 때 월드 이름이 스케일 되는 속도")]
-        private float idleNameScaleSpeed = 0.7f;
-
         [SerializeField, Tooltip("마우스 호버 상태일 때 월드 버튼이 스케일 되는 크기")]
         private float hoverScaleTo = 1.1f;
 
