@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using Libplanet;
 using Xunit;
 
-namespace Lib9c.Tools.Tests
+namespace Lib9c.DevExtensions.Tests
 {
     public class UtilsTest
     {
@@ -32,7 +31,7 @@ namespace Lib9c.Tools.Tests
         [Fact]
         public void ImportSheetTest()
         {
-            IDictionary<string, string> sheets = Utils.ImportSheets(Path.Join("Data", "TableCSV"));
+            IDictionary<string, string> sheets = Utils.ImportSheets();
 
             string enhancement = Assert.Contains("EnhancementCostSheet", sheets);
             string gameConfig = Assert.Contains("GameConfigSheet", sheets);
