@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.DevExtensions", "Lib9c.DevExtensions\Lib9c.DevExtensions.csproj", "{90723E02-D1AD-462F-B285-DA62E030AB3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.DevExtensions.Tests", "Lib9c.DevExtensions.Tests\Lib9c.DevExtensions.Tests.csproj", "{0E8248E4-DCA4-41D0-A02F-4B53CB7B48B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.DevExtensions.Tests", ".Lib9c.DevExtensions.Tests\Lib9c.DevExtensions.Tests.csproj", "{805D6BE8-E2CC-46CB-B503-2A114064432C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,10 +77,10 @@ Global
 		{90723E02-D1AD-462F-B285-DA62E030AB3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90723E02-D1AD-462F-B285-DA62E030AB3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90723E02-D1AD-462F-B285-DA62E030AB3B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0E8248E4-DCA4-41D0-A02F-4B53CB7B48B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E8248E4-DCA4-41D0-A02F-4B53CB7B48B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E8248E4-DCA4-41D0-A02F-4B53CB7B48B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E8248E4-DCA4-41D0-A02F-4B53CB7B48B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{805D6BE8-E2CC-46CB-B503-2A114064432C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{805D6BE8-E2CC-46CB-B503-2A114064432C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{805D6BE8-E2CC-46CB-B503-2A114064432C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{805D6BE8-E2CC-46CB-B503-2A114064432C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
