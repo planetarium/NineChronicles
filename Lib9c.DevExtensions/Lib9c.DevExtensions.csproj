@@ -21,7 +21,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Cocona.Core" Version="1.5.0" />
       <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     </ItemGroup>
 
 </Project>
