@@ -392,7 +392,11 @@ namespace Nekoyume.UI
             {
                 try
                 {
+                    var loadingScreen = Find<DataLoadingScreen>();
+                    loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
+                    loadingScreen.Show();
                     await States.Instance.SelectAvatarAsync(slotIndex);
+                    loadingScreen.Close();
                     Game.Event.OnRoomEnter.Invoke(false);
                 }
                 catch (KeyNotFoundException e)
