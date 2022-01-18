@@ -35,6 +35,7 @@ namespace Nekoyume.UI
 
         private bool _isPointerOnScrollArea;
         private bool _isClickedButtonArea;
+        private bool _isShopItem;
 
         private new Model.ItemInformationTooltip Model { get; set; }
 
@@ -82,11 +83,17 @@ namespace Nekoyume.UI
 
         protected override void OnEnable()
         {
-            Game.Game.instance.Agent.BlockIndexSubject.Subscribe((long blockIndex) =>
+            if (_isShopItem)
+            {
+                Game.Game.instance.Agent.BlockIndexSubject.Subscribe((long blockIndex) =>
                 {
                     var isExpired = Model.ExpiredBlockIndex.Value - blockIndex <= 0;
-                    Model.SubmitButtonEnabled.SetValueAndForceNotify(!isExpired);
+                    Model.SubmitButtonEnabled.SetValueAndForceNotify(
+                        Model.SubmitButtonEnabledFunc.Value.Invoke(Model.ItemInformation.item
+                            .Value) && !isExpired);
                 }).AddTo(_disposablesForModel);
+            }
+
             base.OnEnable();
         }
 
@@ -107,7 +114,8 @@ namespace Nekoyume.UI
                          Func<CountableItem, bool> submitEnabledFunc,
                          string submitText,
                          Action<ItemInformationTooltip> onSubmit,
-                         Action<ItemInformationTooltip> onClose = null)
+                         Action<ItemInformationTooltip> onClose = null,
+                         bool isShopItem = false)
         {
             if (item?.ItemBase.Value is null)
             {
@@ -140,6 +148,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForModel);
 
             scrollbar.value = 1f;
+            _isShopItem = isShopItem;
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
@@ -197,6 +206,7 @@ namespace Nekoyume.UI
             });
 
             scrollbar.value = 1f;
+            _isShopItem = true;
             StartCoroutine(CoUpdate(sell));
             sellTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
@@ -245,6 +255,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForModel);
 
             scrollbar.value = 1f;
+            _isShopItem = true;
             StartCoroutine(CoUpdate(buy));
             buyTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
