@@ -45,6 +45,9 @@
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#GetState(Libplanet.Address)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address})">
+            <inheritdoc cref="M:Libplanet.Action.IAccountStateDelta.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address})"/>
+        </member>
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#SetState(Libplanet.Address,Bencodex.Types.IValue)">
             <inheritdoc/>
         </member>
@@ -75,15 +78,14 @@
         <member name="T:Libplanet.Action.AccountStateGetter">
             <summary>
             An delegate to provide read-only view of account states.
-            <para>Gets an account state of the given
-            <paramref name="address"/>.</para>
-            <para>If the given <paramref name="address"/> has never been set
-            its account status, returns <c>null</c> instead of throwing
-            any exception.</para>
+            <para>Gets states associated with the specified account <paramref name="addresses"/>.</para>
+            <para>If some states associated with the specified account <paramref name="addresses"/> have
+            never been set these absent states are represented as <see langword="null"/>.</para>
             </summary>
-            <param name="address">An address of the account to read
-            its state.</param>
-            <returns>The account state if exists.  Otherwise <c>null</c>.
+            <param name="addresses">Account addresses associated with the states to get.</param>
+            <returns>The states associated to the specified account <paramref name="addresses"/>.
+            Associated values are ordered in the same way to the corresponding
+            <paramref name="addresses"/>.  Absent states are represented as <see langword="null"/>.
             </returns>
         </member>
         <member name="T:Libplanet.Action.ActionEvaluation">
@@ -135,17 +137,15 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             the <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluator`1.#ctor(Libplanet.Action.IAction,Libplanet.Action.StateGetter{`0},Libplanet.Action.BalanceGetter{`0},System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie})">
+        <member name="M:Libplanet.Action.ActionEvaluator`1.#ctor(Libplanet.Action.IAction,Libplanet.Blockchain.IBlockChainStates{`0},System.Func{Libplanet.Blocks.BlockHash,Libplanet.Store.Trie.ITrie})">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.ActionEvaluator`1"/>.
             </summary>
             <param name="policyBlockAction">The <see cref="T:Libplanet.Action.IAction"/> provided by
             <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/> to evaluate at the end for each
             <see cref="T:Libplanet.Blocks.Block`1"/> that gets evaluated.</param>
-            <param name="stateGetter">The <see cref="T:Libplanet.Action.StateGetter`1"/> to use to retreive
+            <param name="blockChainStates">The <see cref="T:Libplanet.Blockchain.IBlockChainStates`1"/> to use to retrieve
             the states for a provided <see cref="T:Libplanet.Address"/>.</param>
-            <param name="balanceGetter">The <see cref="T:Libplanet.Action.BalanceGetter`1"/> to use to retreive
-            the balance for a provided <see cref="T:Libplanet.Address"/>.</param>
             <param name="trieGetter">The function to retrieve a trie for
             a provided <see cref="T:Libplanet.Blocks.BlockHash"/>.</param>
         </member>
@@ -383,26 +383,6 @@
             <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.  If it's not annotated returns
             <c>null</c>.</returns>
         </member>
-        <member name="T:Libplanet.Action.BalanceGetter`1">
-            <summary>
-            An intermediary delegate for <see cref="T:Libplanet.Action.AccountBalanceGetter"/>.
-            </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
-            <param name="address">The address of an account to read the state from.</param>
-            <param name="currency">The currency to look up.</param>
-            <param name="hashDigest">The address of a block to read the state from.</param>
-            <param name="fungibleAssetStateCompleter">The <see cref="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1"/>
-            to use.</param>
-            <returns>
-            The balance of the <paramref name="currency"/> at <paramref name="address"/>.
-            </returns>
-            <remarks>
-            If the account state at <paramref name="address"/> has never been set by the evaluation
-            up to the <see cref="T:Libplanet.Blocks.Block`1"/> with <see cref="P:Libplanet.Blocks.Block`1.Hash"/>
-            of <paramref name="hashDigest"/>, returns <c>null</c> instead of throwing an exception.
-            </remarks>
-        </member>
         <member name="T:Libplanet.Action.CurrencyPermissionException">
             <summary>
             The exception that is thrown when a <see cref="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner"/> has no rights
@@ -507,6 +487,18 @@
             <returns>The account state of the given <paramref name="address"/>.
             If it has never been set to any state it returns <c>null</c>
             instead.</returns>
+        </member>
+        <member name="M:Libplanet.Action.IAccountStateDelta.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address})">
+            <summary>
+            Gets multiple account states associated with the specified <paramref name="addresses"/>
+            at once.
+            </summary>
+            <param name="addresses">The <see cref="T:Libplanet.Address"/>es associated with states to get.
+            </param>
+            <returns>The states associated to the specified <paramref name="addresses"/>.
+            Associated values are ordered in the same way to the corresponding
+            <paramref name="addresses"/>.  Absent states are represented as <see langword="null"/>.
+            </returns>
         </member>
         <member name="M:Libplanet.Action.IAccountStateDelta.SetState(Libplanet.Address,Bencodex.Types.IValue)">
             <summary>
@@ -1249,23 +1241,6 @@
             <returns> Generated random <see cref="T:System.Guid"/>.
             </returns>
             <seealso cref="T:Libplanet.Action.IRandom"/>
-        </member>
-        <member name="T:Libplanet.Action.StateGetter`1">
-            <summary>
-            An intermediary delegate for <see cref="T:Libplanet.Action.AccountStateGetter"/>.
-            </summary>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
-            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
-            <param name="address">The address of an account to read the state from.</param>
-            <param name="hashDigest">The address of a block to read the state from.</param>
-            <param name="stateCompleter">The <see cref="T:Libplanet.Blockchain.StateCompleter`1"/> to use.</param>
-            <returns>The account state if exists.  Otherwise <c>null</c>.
-            </returns>
-            <remarks>
-            If an account state at the given <paramref name="address"/> has never been set
-            by the evaluation up to the <see cref="T:Libplanet.Blocks.Block`1"/> with <see cref="P:Libplanet.Blocks.Block`1.Hash"/>
-            of <paramref name="hashDigest"/>, returns <c>null</c> instead of throwing an exception.
-            </remarks>
         </member>
         <member name="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
             <summary>
@@ -2205,6 +2180,26 @@
             <returns>The current state of given <paramref name="address"/>.  This can be <c>null</c>
             if <paramref name="address"/> has no value.</returns>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},System.Nullable{Libplanet.Blocks.BlockHash},Libplanet.Blockchain.StateCompleter{`0})">
+            <summary>
+            Gets multiple states associated to the specified <paramref name="addresses"/>.
+            </summary>
+            <param name="addresses">Addresses of states to query.</param>
+            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to start finding
+            the states.  <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> by default.</param>
+            <param name="stateCompleter">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
+            contain states of the block, this delegate is called and its return values are used
+            instead.
+            <para><see cref="F:Libplanet.Blockchain.StateCompleters`1.Recalculate"/> makes the incomplete states
+            recalculated and filled on the fly.</para>
+            <para><see cref="F:Libplanet.Blockchain.StateCompleters`1.Reject"/> (which is default) makes the incomplete
+            states (if needed) to cause <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead.</para>
+            </param>
+            <returns>The states associated to the specified <paramref name="addresses"/>.
+            Associated values are ordered in the same way to the corresponding
+            <paramref name="addresses"/>.  Absent states are represented as <see langword="null"/>.
+            </returns>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash},Libplanet.Blockchain.FungibleAssetStateCompleter{`0})">
             <summary>
             Queries <paramref name="address"/>'s balance of the <paramref name="currency"/> in the
@@ -2226,6 +2221,9 @@
             <returns>The <paramref name="address"/>'s current balance (or balance as of the given
             <paramref name="offset"/>) of the <paramref name="currency"/>.
             </returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)">
             <summary>
@@ -2273,8 +2271,10 @@
             </summary>
             <param name="transaction"><see cref="T:Libplanet.Tx.Transaction`1"/> to add to the pending list.
             </param>
-            <exception cref="T:Libplanet.Tx.InvalidTxException">Thrown when the given
-            <paramref name="transaction"/> is invalid.</exception>
+            <returns><c>true</c> if staging was successful, <c>false</c> otherwise.</returns>
+            <exception cref="T:Libplanet.Tx.InvalidTxGenesisHashException">Thrown when given
+            <paramref name="transaction"/> has invalid <see cref="P:Libplanet.Tx.Transaction`1.GenesisHash"/>.
+            </exception>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.UnstageTransaction(Libplanet.Tx.Transaction{`0})">
             <summary>
@@ -2282,6 +2282,7 @@
             </summary>
             <param name="transaction">A <see cref="T:Libplanet.Tx.Transaction`1"/>
             to remove from the pending list.</param>
+            <returns><c>true</c> if unstaging was successful, <c>false</c> otherwise.</returns>
             <seealso cref="M:Libplanet.Blockchain.BlockChain`1.StageTransaction(Libplanet.Tx.Transaction{`0})"/>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)">
@@ -2551,8 +2552,8 @@
         </member>
         <member name="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1">
             <summary>
-            A delegate to be called when <see cref="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash},Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/> method encounters
-            a block having incomplete dirty states. <see cref="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash},Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/> method
+            A delegate to be called when <see cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/> method encounters
+            a block having incomplete dirty states. <see cref="M:Libplanet.Blockchain.IBlockChainStates`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/> method
             returns this delegate's return value instead for such case.
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
@@ -2593,6 +2594,53 @@
             Rejects to complement incomplete state and throws
             an <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/>.
             </summary>
+        </member>
+        <member name="T:Libplanet.Blockchain.IBlockChainStates`1">
+            <summary>
+            A minimal interface to get states from a blockchain.
+            <para>Note that <see cref="T:Libplanet.Blockchain.BlockChain`1"/> implements this interface.</para>
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.</typeparam>
+        </member>
+        <member name="M:Libplanet.Blockchain.IBlockChainStates`1.GetStates(System.Collections.Generic.IReadOnlyList{Libplanet.Address},Libplanet.Blocks.BlockHash,Libplanet.Blockchain.StateCompleter{`0})">
+            <summary>
+            Gets multiple states associated to the specified <paramref name="addresses"/>.
+            </summary>
+            <param name="addresses">Addresses of states to query.</param>
+            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to start finding
+            the states.</param>
+            <param name="stateCompleter">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
+            contain states of the block, this delegate is called and its return values are used
+            instead.
+            <para><see cref="F:Libplanet.Blockchain.StateCompleters`1.Recalculate"/> makes the incomplete states
+            recalculated and filled on the fly.</para>
+            <para><see cref="F:Libplanet.Blockchain.StateCompleters`1.Reject"/> makes the incomplete states (if needed)
+            to cause <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead.</para></param>
+            <returns>The states associated to the specified <paramref name="addresses"/>.
+            Associated values are ordered in the same way to the corresponding
+            <paramref name="addresses"/>.  Absent states are represented as <see langword="null"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.IBlockChainStates`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,Libplanet.Blocks.BlockHash,Libplanet.Blockchain.FungibleAssetStateCompleter{`0})">
+            <summary>
+            Queries <paramref name="address"/>'s balance of the <paramref name="currency"/> in the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>.
+            </summary>
+            <param name="address">The owner <see cref="T:Libplanet.Address"/> to query.</param>
+            <param name="currency">The currency type to query.</param>
+            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
+            start finding the state.</param>
+            <param name="stateCompleter">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
+            contain states dirty of the block which lastly updated states of a requested address,
+            this delegate is called and its return value is used instead.
+            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Recalculate"/> makes the incomplete
+            states recalculated and filled on the fly.</para>
+            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Reject"/> makes the incomplete states
+            (if needed) to cause <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead.</para>
+            </param>
+            <returns>The <paramref name="address"/>'s current balance (or balance as of the given
+            <paramref name="offset"/>) of the <paramref name="currency"/>.
+            </returns>
         </member>
         <member name="T:Libplanet.Blockchain.IncompleteBlockStatesException">
             <summary>
@@ -2921,6 +2969,7 @@
             <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> that the stage belongs to.
             </param>
             <param name="transaction">The <seealso cref="T:Libplanet.Tx.Transaction`1"/> to be staged.</param>
+            <returns><c>true</c> if staging was successful, <c>false</c> otherwise.</returns>
             <remarks>
             <para>
             This does not throw any exception regardless of whether <paramref name="transaction"/>
@@ -2939,6 +2988,7 @@
             <param name="blockChain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> that the stage belongs to.
             </param>
             <param name="id">The <seealso cref="P:Libplanet.Tx.Transaction`1.Id"/> to unstage.</param>
+            <returns><c>true</c> if unstaging was successful, <c>false</c> otherwise.</returns>
             <remarks>
             This does not throw any exception regardless of whether <paramref name="id"/> was
             successfully unstaged or not.
@@ -4264,8 +4314,11 @@
             to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
             <param name="blockChain">The blockchain to query.</param>
             <param name="blockHash">The hash of a block to lacks its dirty states.</param>
-            <param name="address">The address to query its state value.</param>
-            <returns>A complement state.  This can be <c>null</c>.</returns>
+            <param name="addresses">The addresses of states to look up.</param>
+            <returns>Complement states associated to the specified <paramref name="addresses"/>.
+            The associated values are ordered in the same way to the corresponding
+            <paramref name="addresses"/>.  Absent states are represented as <see langword="null"/>.
+            </returns>
             <seealso cref="T:Libplanet.Blockchain.StateCompleters`1"/>
         </member>
         <member name="T:Libplanet.Blockchain.StateCompleters`1">
@@ -4292,7 +4345,7 @@
         </member>
         <member name="F:Libplanet.Blockchain.StateCompleters`1.Reject">
             <summary>
-            Rejects to complement incomplete state and throws
+            Rejects to complement incomplete states and throws
             an <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/>.
             </summary>
         </member>
@@ -6889,7 +6942,7 @@
             the same to the <see cref="F:Libplanet.HashDigest`1.Size"/> the hash algorithm
             (i.e., <typeparamref name="T"/> requires.</exception>
         </member>
-        <member name="M:Libplanet.HashDigest`1.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte})">
+        <member name="M:Libplanet.HashDigest`1.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
             <summary>
             Converts an immutable <see cref="T:System.Byte"/> array into a <see cref="T:Libplanet.HashDigest`1"/>.
             </summary>
@@ -6929,7 +6982,23 @@
             <seealso cref="M:Libplanet.HashDigest`1.ToString"/>
             <seealso cref="M:Libplanet.HashDigestExtensions.ToHashDigest``1(System.String)"/>
         </member>
-        <member name="M:Libplanet.HashDigest`1.DeriveFrom(System.Collections.Generic.IReadOnlyList{System.Byte})">
+        <member name="M:Libplanet.HashDigest`1.DeriveFrom(System.Byte[])">
+            <summary>
+            Computes a hash digest of the algorithm <typeparamref name="T"/> from the given
+            <paramref name="input"/> bytes.
+            </summary>
+            <param name="input">The bytes to compute its hash.</param>
+            <returns>The hash digest derived from <paramref name="input"/>.</returns>
+        </member>
+        <member name="M:Libplanet.HashDigest`1.DeriveFrom(System.Collections.Immutable.ImmutableArray{System.Byte})">
+            <summary>
+            Computes a hash digest of the algorithm <typeparamref name="T"/> from the given
+            <paramref name="input"/> bytes.
+            </summary>
+            <param name="input">The bytes to compute its hash.</param>
+            <returns>The hash digest derived from <paramref name="input"/>.</returns>
+        </member>
+        <member name="M:Libplanet.HashDigest`1.DeriveFrom(System.ReadOnlySpan{System.Byte})">
             <summary>
             Computes a hash digest of the algorithm <typeparamref name="T"/> from the given
             <paramref name="input"/> bytes.
@@ -8321,31 +8390,32 @@
         </member>
         <member name="M:Libplanet.Net.Protocols.Kademlia.CalculateDistance(Libplanet.Address,Libplanet.Address)">
             <summary>
-            Calculates xor distance between two address.
+            Calculates the xor distance between two <see cref="T:Libplanet.Address"/>es.
             </summary>
-            <param name="left">First element to calculate distance.</param>
-            <param name="right">Second element to calculate distance.</param>
-            <returns>Distance between two addresses in <see cref="T:Libplanet.Address"/>.</returns>
+            <param name="left">The first element to calculate the distance.</param>
+            <param name="right">The second element to calculate the distance.</param>
+            <returns>The distance between two <see cref="T:Libplanet.Address"/>es.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.Kademlia.CommonPrefixLength(Libplanet.Address,Libplanet.Address)">
             <summary>
-            Calculates length of common prefix length
-            by finding the index of first bit of xor value.
+            Calculates the length of the common prefix between two <see cref="T:Libplanet.Address"/>es
+            by finding the index of the first non-zero bit of the xor between the two.
             </summary>
-            <param name="left">First element to calculate common prefix length.</param>
-            <param name="right">Second element to calculate common prefix length.</param>
-            <returns>Length of the common prefix length.</returns>
+            <param name="left">The first element to calculate the common prefix length.</param>
+            <param name="right">The second element to calculate the common prefix length.</param>
+            <returns>The length of the common prefix between <paramref name="left"/> and
+            <paramref name="right"/>.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.Kademlia.SortByDistance(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address)">
             <summary>
             Sorts the element of the sequence from in ascending order of
-            the distance with <paramref name="targetAddr"/>.
+            the distance with <paramref name="target"/>.
             </summary>
             <param name="peers">A sequence of values to order.</param>
-            <param name="targetAddr">
+            <param name="target">
             <see cref="T:Libplanet.Address"/> to calculate distance of element.</param>
             <returns>>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> whose elements are sorted
-            according to the distance with <paramref name="targetAddr"/>.</returns>
+            according to the distance with <paramref name="target"/>.</returns>
         </member>
         <member name="T:Libplanet.Net.Protocols.KademliaProtocol">
             <summary>
@@ -8405,8 +8475,8 @@
             <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
-            <returns>A <see cref="T:Libplanet.Net.BoundPeer"/> with <see cref="T:Libplanet.Address"/> of
-            <paramref name="target"/>.</returns>
+            <returns>A <see cref="T:Libplanet.Net.BoundPeer"/> with <paramref name="target"/> as its
+            <see cref="T:Libplanet.Address"/> if found.  Otherwise, <c>null</c>.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ValidateAsync(Libplanet.Net.BoundPeer,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
@@ -8420,18 +8490,6 @@
             <returns>An awaitable task without value.</returns>
             <exception cref="T:System.TimeoutException">
             Thrown when validation fails in given <paramref name="timeout"/>.
-            </exception>
-        </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.Update(Libplanet.Net.Peer)">
-            <summary>
-            Updates routing table when receiving a message. If corresponding bucket
-            for remote peer is not full, just adds given <paramref name="rawPeer"/>.
-            Otherwise, checks aliveness of the least recently used (LRU) peer
-            and determine evict LRU peer or discard given <paramref name="rawPeer"/>.
-            </summary>
-            <param name="rawPeer"><see cref="T:Libplanet.Net.Peer"/> to update.</param>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown when <paramref name="rawPeer"/> is <c>null</c>.
             </exception>
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
@@ -8563,8 +8621,6 @@
             Adds the <paramref name="peer"/> to the table.
             </summary>
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to add.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="peer"/> is
-            <see langword="null"/>.</exception>
             <exception cref="T:System.ArgumentException">Thrown when <paramref name="peer"/>'s
             <see cref="T:Libplanet.Address"/> is equal to the <see cref="T:Libplanet.Address"/> of self.</exception>
         </member>
@@ -8590,12 +8646,12 @@
             Removes all peers in the table. This method does not affect static peers.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Protocols.RoutingTable.Neighbors(Libplanet.Net.Peer,System.Int32,System.Boolean)">
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.Neighbors(Libplanet.Net.BoundPeer,System.Int32,System.Boolean)">
             <summary>
             Returns <paramref name="k"/> nearest peers to given parameter peer from routing table.
             Return value is already sorted with respect to target.
             </summary>
-            <param name="target"><see cref="T:Libplanet.Net.Peer"/> to look up.</param>
+            <param name="target"><see cref="T:Libplanet.Net.BoundPeer"/> to look up.</param>
             <param name="k">Number of peers to return.</param>
             <param name="includeTarget">A boolean value indicates to include a peer with
             <see cref="T:Libplanet.Address"/> of <paramref name="target"/> in return value or not.</param>
@@ -10043,6 +10099,20 @@
             The internal bytes encoding of raw state keys.
             </summary>
         </member>
+        <member name="M:Libplanet.Store.StateStoreExtensions.EncodeKey(System.String)">
+            <summary>
+            Encodes a raw state key string to internal bytes representation.
+            </summary>
+            <param name="key">The raw state key to encode.</param>
+            <returns>An encoded key bytes.</returns>
+        </member>
+        <member name="M:Libplanet.Store.StateStoreExtensions.DecodeKey(Libplanet.Store.Trie.KeyBytes@)">
+            <summary>
+            Decodes internal <paramref name="keyBytes"/> into a raw state key string.
+            </summary>
+            <param name="keyBytes">The key bytes to decode.</param>
+            <returns>A decoded raw state key string.</returns>
+        </member>
         <member name="M:Libplanet.Store.StateStoreExtensions.Commit(Libplanet.Store.IStateStore,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
             <summary>
             Records <paramref name="rawStatesDelta"/> which is based on the previous state
@@ -10055,16 +10125,18 @@
             <param name="rawStatesDelta">The raw states delta to be recorded.</param>
             <returns>The new state root.</returns>
         </member>
-        <member name="M:Libplanet.Store.StateStoreExtensions.GetState(Libplanet.Store.IStateStore,System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+        <member name="M:Libplanet.Store.StateStoreExtensions.GetStates(Libplanet.Store.IStateStore,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Generic.IReadOnlyList{System.String})">
             <summary>
-            Gets the state of the <paramref name="rawStateKey"/> from
-            the <paramref name="stateRootHash"/>.
+            Gets multiple states at once.
             </summary>
-            <param name="stateStore">The <see cref="T:Libplanet.Store.IStateStore"/> to get the state.</param>
-            <param name="rawStateKey">The key of the state to get.</param>
-            <param name="stateRootHash">The state root hash to get the state.</param>
-            <returns>The state of the <paramref name="rawStateKey"/> if any.  If there is no such
-            key, returns <c>null</c>.</returns>
+            <param name="stateStore">The <see cref="T:Libplanet.Store.IStateStore"/> to get states.</param>
+            <param name="stateRootHash">The root hash of the state trie to look up states from.
+            </param>
+            <param name="rawStateKeys">State keys to get.</param>
+            <returns>The state values associated to the specified <paramref name="rawStateKeys"/>.
+            The associated values are ordered in the same way to the corresponding
+            <paramref name="rawStateKeys"/>.  Absent values are represented as
+            <see langword="null"/>.</returns>
         </member>
         <member name="M:Libplanet.Store.StateStoreExtensions.ContainsStateRoot(Libplanet.Store.IStateStore,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <summary>
@@ -10140,20 +10212,29 @@
             operations via <see cref="T:Libplanet.Store.Trie.CacheableKeyValueStore"/>.</param>
             <param name="cacheSize">The capacity of the values cache.</param>
         </member>
-        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Get(System.Byte[])">
+        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Get(Libplanet.Store.Trie.KeyBytes@)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Set(System.Byte[],System.Byte[])">
+        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Get(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})">
+            <inheritdoc cref="M:Libplanet.Store.Trie.IKeyValueStore.Get(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Set(Libplanet.Store.Trie.KeyBytes@,System.Byte[])">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Delete(System.Byte[])">
+        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Delete(Libplanet.Store.Trie.KeyBytes@)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Exists(System.Byte[])">
+        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Delete(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})">
+            <inheritdoc cref="M:Libplanet.Store.Trie.IKeyValueStore.Delete(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Exists(Libplanet.Store.Trie.KeyBytes@)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.ListKeys">
             <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.CacheableKeyValueStore.Dispose">
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
         </member>
         <member name="T:Libplanet.Store.Trie.DefaultKeyValueStore">
             <summary>
@@ -10168,16 +10249,22 @@
             <param name="path">The path of the directory where the storage files will be saved.
             If the path is <c>null</c>, the database is created in memory.</param>
         </member>
-        <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.Get(System.Byte[])">
+        <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.Get(Libplanet.Store.Trie.KeyBytes@)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.Set(System.Byte[],System.Byte[])">
+        <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.Get(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})">
+            <inheritdoc cref="M:Libplanet.Store.Trie.IKeyValueStore.Get(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.Set(Libplanet.Store.Trie.KeyBytes@,System.Byte[])">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.Delete(System.Byte[])">
+        <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.Delete(Libplanet.Store.Trie.KeyBytes@)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.Exists(System.Byte[])">
+        <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.Delete(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})">
+            <inheritdoc cref="M:Libplanet.Store.Trie.IKeyValueStore.Delete(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.Exists(Libplanet.Store.Trie.KeyBytes@)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.Trie.DefaultKeyValueStore.ListKeys">
@@ -10188,11 +10275,57 @@
             An interface to access key-value store.
             </summary>
         </member>
-        <member name="M:Libplanet.Store.Trie.IKeyValueStore.Set(System.Collections.Generic.IDictionary{System.Byte[],System.Byte[]})">
+        <member name="M:Libplanet.Store.Trie.IKeyValueStore.Get(Libplanet.Store.Trie.KeyBytes@)">
+            <summary>
+            Gets the value associated with the specified key.
+            </summary>
+            <param name="key">The key whose value to get.</param>
+            <returns>The value associated with the specified key.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when the key is not found.</exception>
+        </member>
+        <member name="M:Libplanet.Store.Trie.IKeyValueStore.Get(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})">
+            <summary>
+            Gets multiple values associated with the specified keys at once.
+            </summary>
+            <param name="keys">Keys whose values to get.  The order of keys does not matter.
+            Duplicate keys after their first occurrence are ignored.</param>
+            <returns>Values associated the specified <paramref name="keys"/>.  Non-existent
+            <paramref name="keys"/> are omitted (rather than being filled with
+            <see langword="null"/>).</returns>
+        </member>
+        <member name="M:Libplanet.Store.Trie.IKeyValueStore.Set(Libplanet.Store.Trie.KeyBytes@,System.Byte[])">
+            <summary>
+            Sets the value to the key.  If the key already exists, the value is overwritten.
+            </summary>
+            <param name="key">The key of the value to set.</param>
+            <param name="value">The value to set.</param>
+        </member>
+        <member name="M:Libplanet.Store.Trie.IKeyValueStore.Set(System.Collections.Generic.IDictionary{Libplanet.Store.Trie.KeyBytes,System.Byte[]})">
             <summary>
             Sets all values in the given dictionary.
             </summary>
             <param name="values">A values to set.</param>
+        </member>
+        <member name="M:Libplanet.Store.Trie.IKeyValueStore.Delete(Libplanet.Store.Trie.KeyBytes@)">
+            <summary>
+            Deletes the given key.  If the key does not exist, nothing happens.
+            </summary>
+            <param name="key">A key to delete.</param>
+        </member>
+        <member name="M:Libplanet.Store.Trie.IKeyValueStore.Delete(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})">
+            <summary>
+            Delete multiple <paramref name="keys"/> at once.
+            </summary>
+            <param name="keys">Keys to delete.  The order of keys does not matter.
+            Non-existent keys are ignored.</param>
+        </member>
+        <member name="M:Libplanet.Store.Trie.IKeyValueStore.Exists(Libplanet.Store.Trie.KeyBytes@)">
+            <summary>
+            Checks whether the given key exists in the store.
+            </summary>
+            <param name="key">A key to check.</param>
+            <returns><see langword="true"/> if the key exists; otherwise, <see langword="false"/>.
+            </returns>
         </member>
         <member name="M:Libplanet.Store.Trie.IKeyValueStore.ListKeys">
             <summary>
@@ -10218,26 +10351,25 @@
             </summary>
             <remarks>Empty root is considered as recorded.</remarks>
         </member>
-        <member name="M:Libplanet.Store.Trie.ITrie.Set(System.Byte[],Bencodex.Types.IValue)">
+        <member name="M:Libplanet.Store.Trie.ITrie.Set(Libplanet.Store.Trie.KeyBytes@,Bencodex.Types.IValue)">
             <summary>
             Stores the <paramref name="value"/> to the
             node corresponding to given <paramref name="key"/>.
             </summary>
-            <param name="key">An index to look with <see cref="M:Libplanet.Store.Trie.ITrie.TryGet(System.Byte[],Bencodex.Types.IValue@)"/> after.</param>
+            <param name="key">The unique key to associate with the <paramref name="value"/>.</param>
             <param name="value">The value to store.</param>
             <exception cref="T:System.ArgumentNullException">Thrown when the given
             <paramref name="value"/> is <c>null</c>.</exception>
             <returns>Returns new updated <see cref="T:Libplanet.Store.Trie.ITrie"/>.</returns>
         </member>
-        <member name="M:Libplanet.Store.Trie.ITrie.TryGet(System.Byte[],Bencodex.Types.IValue@)">
+        <member name="M:Libplanet.Store.Trie.ITrie.Get(System.Collections.Generic.IReadOnlyList{Libplanet.Store.Trie.KeyBytes})">
             <summary>
-            Gets the value stored with <paramref name="key"/> in <see cref="M:Libplanet.Store.Trie.ITrie.Set(System.Byte[],Bencodex.Types.IValue)"/>.
+            Gets the values stored with <paramref name="keys"/> in <see cref="M:Libplanet.Store.Trie.ITrie.Set(Libplanet.Store.Trie.KeyBytes@,Bencodex.Types.IValue)"/>.
             </summary>
-            <param name="key">The key used in <see cref="M:Libplanet.Store.Trie.ITrie.Set(System.Byte[],Bencodex.Types.IValue)"/> to store a value.</param>
-            <param name="value">The reference pointer to be set the value stored.</param>
-            <returns>If there is a value corresponded to <paramref name="key"/>,
-            set <paramref name="value"/> to it and return true. If not, set <paramref name="value"/>
-            to null and return false.</returns>
+            <param name="keys">The keys used in <see cref="M:Libplanet.Store.Trie.ITrie.Set(Libplanet.Store.Trie.KeyBytes@,Bencodex.Types.IValue)"/> to store a value.</param>
+            <returns>The values associated to the specified <paramref name="keys"/>.  The associated
+            values are ordered in the same way to the corresponding <paramref name="keys"/>.  Absent
+            values are represented as <see langword="null"/>.</returns>
         </member>
         <member name="M:Libplanet.Store.Trie.ITrie.Commit">
             <summary>
@@ -10245,12 +10377,133 @@
             </summary>
             <returns>Returns new committed <see cref="T:Libplanet.Store.Trie.ITrie"/>.</returns>
         </member>
+        <member name="T:Libplanet.Store.Trie.KeyBytes">
+            <summary>
+            Wraps a byte array and provides equality comparison and hash code calculation.  Designed
+            to be used as a key in dictionaries.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.#ctor(System.Byte[])">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.Trie.KeyBytes"/> instance from the given byte array.
+            </summary>
+            <param name="bytes">A mutable byte array to wrap.</param>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte}@)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.Trie.KeyBytes"/> instance from the given byte array.
+            </summary>
+            <param name="bytes">An immutable byte array to wrap.</param>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.#ctor(System.String,System.Text.Encoding)">
+            <summary>
+            Creates a new <seealso cref="T:Libplanet.Store.Trie.KeyBytes"/> instance from the given <paramref
+            name="string"/>.
+            </summary>
+            <param name="string">A key string.  This is encoded to bytes.</param>
+            <param name="encoding">The text encoding used for the key string.</param>
+        </member>
+        <member name="P:Libplanet.Store.Trie.KeyBytes.Length">
+            <summary>
+            The length of the byte array.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Store.Trie.KeyBytes.ByteArray">
+            <summary>
+            The immutable array of bytes.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Store.Trie.KeyBytes.Hex">
+            <summary>
+            The hexadecimal string representation of the byte array.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.op_Equality(Libplanet.Store.Trie.KeyBytes,Libplanet.Store.Trie.KeyBytes)">
+            <summary>
+            Compares two <see cref="T:Libplanet.Store.Trie.KeyBytes"/> values.
+            </summary>
+            <param name="left">An operand.</param>
+            <param name="right">Another operand.</param>
+            <returns><see langword="true"/> if two values equal; otherwise <see langword="false"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.op_Inequality(Libplanet.Store.Trie.KeyBytes,Libplanet.Store.Trie.KeyBytes)">
+            <summary>
+            Compares two <see cref="T:Libplanet.Store.Trie.KeyBytes"/> values.
+            </summary>
+            <param name="left">An operand.</param>
+            <param name="right">Another operand.</param>
+            <returns><see langword="false"/> if two values equal; otherwise <see langword="true"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.FromHex(System.String)">
+            <summary>
+            Parses the given hexadecimal string as bytes and returns a new <see cref="T:Libplanet.Store.Trie.KeyBytes"/>
+            instance.
+            </summary>
+            <param name="hex">A hexadecimal string which encodes bytes.</param>
+            <returns>A new <see cref="T:Libplanet.Store.Trie.KeyBytes"/> instance.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given <paramref name="hex"/>
+            string is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the length of the given
+            <paramref name="hex"/> string is an odd number.</exception>
+            <exception cref="T:System.FormatException">Thrown when the given <paramref name="hex"/> string is
+            not a valid hexadecimal string.</exception>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.ToByteArray">
+            <summary>
+            Converts to a mutable byte array.
+            </summary>
+            <returns>A new copy of mutable byte array.</returns>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.Equals(System.Collections.Immutable.ImmutableArray{System.Byte})">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.Equals(Libplanet.Store.Trie.KeyBytes)">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.Equals(System.Byte[])">
+            <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.Equals(System.Object)">
+            <inheritdoc cref="M:System.Object.Equals(System.Object)"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.GetHashCode">
+            <inheritdoc cref="M:System.Object.GetHashCode"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.KeyBytes.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
+        </member>
         <member name="T:Libplanet.Store.Trie.MemoryKeyValueStore">
             <summary>
             Volatile in-memory key-value store.
             <para>It is useful for storing temporal small chains, e.g., fixtures for unit tests of
             game logic.</para>
             </summary>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MemoryKeyValueStore.Libplanet#Store#Trie#IKeyValueStore#Get(Libplanet.Store.Trie.KeyBytes@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MemoryKeyValueStore.Get(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})">
+            <inheritdoc cref="M:Libplanet.Store.Trie.IKeyValueStore.Get(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MemoryKeyValueStore.Libplanet#Store#Trie#IKeyValueStore#Set(Libplanet.Store.Trie.KeyBytes@,System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MemoryKeyValueStore.Libplanet#Store#Trie#IKeyValueStore#Set(System.Collections.Generic.IDictionary{Libplanet.Store.Trie.KeyBytes,System.Byte[]})">
+            <inheritdoc cref="M:Libplanet.Store.Trie.IKeyValueStore.Set(System.Collections.Generic.IDictionary{Libplanet.Store.Trie.KeyBytes,System.Byte[]})"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MemoryKeyValueStore.Libplanet#Store#Trie#IKeyValueStore#Delete(Libplanet.Store.Trie.KeyBytes@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MemoryKeyValueStore.Delete(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})">
+            <inheritdoc cref="M:Libplanet.Store.Trie.IKeyValueStore.Delete(System.Collections.Generic.IEnumerable{Libplanet.Store.Trie.KeyBytes})"/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MemoryKeyValueStore.Libplanet#Store#Trie#IKeyValueStore#Exists(Libplanet.Store.Trie.KeyBytes@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MemoryKeyValueStore.System#IDisposable#Dispose">
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
         </member>
         <member name="T:Libplanet.Store.Trie.MerkleTrie">
             <summary>
@@ -10288,11 +10541,11 @@
         <member name="P:Libplanet.Store.Trie.MerkleTrie.Recorded">
             <inheritdoc cref="P:Libplanet.Store.Trie.ITrie.Recorded"/>
         </member>
-        <member name="M:Libplanet.Store.Trie.MerkleTrie.Set(System.Byte[],Bencodex.Types.IValue)">
+        <member name="M:Libplanet.Store.Trie.MerkleTrie.Set(Libplanet.Store.Trie.KeyBytes@,Bencodex.Types.IValue)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.Trie.MerkleTrie.TryGet(System.Byte[],Bencodex.Types.IValue@)">
-            <inheritdoc/>
+        <member name="M:Libplanet.Store.Trie.MerkleTrie.Get(System.Collections.Generic.IReadOnlyList{Libplanet.Store.Trie.KeyBytes})">
+            <inheritdoc cref="M:Libplanet.Store.Trie.ITrie.Get(System.Collections.Generic.IReadOnlyList{Libplanet.Store.Trie.KeyBytes})"/>
         </member>
         <member name="M:Libplanet.Store.Trie.MerkleTrie.Commit">
             <inheritdoc/>
@@ -10304,6 +10557,8 @@
             </summary>
             <param name="nodeHash">The hash of node to get.</param>
             <returns>The node corresponding to <paramref name="nodeHash"/>.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="nodeHash"/> is
+            not found.</exception>
         </member>
         <member name="T:Libplanet.Store.Trie.MerkleTrieExtensions">
             <summary>
