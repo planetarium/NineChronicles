@@ -677,11 +677,19 @@ namespace Nekoyume.UI
 
                             break;
                     }
-                    onClickBlocked = _ =>
+
+                    if (Game.Game.instance.Stage.IsInStage)
                     {
-                        var msg = L10nManager.Localize("UI_BLOCK_CHARGE_AP");
-                        NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Alert);
-                    };
+                        onClickBlocked = _ =>
+                        {
+                            var msg = L10nManager.Localize("UI_BLOCK_CHARGE_AP");
+                            NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Alert);
+                        };
+                    }
+                    else
+                    {
+                        onClickBlocked = ShowRefillConfirmPopup;
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
