@@ -51,6 +51,7 @@ namespace Nekoyume.Model.State
         public string NameWithHash { get; private set; }
         public int Nonce { get; private set; }
 
+        [Obsolete("don't use this field.")]
         public readonly Address RankingMapAddress;
 
         public static Address CreateAvatarAddress()

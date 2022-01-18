@@ -15,12 +15,12 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class CreateAvatarTest
+    public class CreateAvatar6Test
     {
         private readonly Address _agentAddress;
         private readonly TableSheets _tableSheets;
 
-        public CreateAvatarTest()
+        public CreateAvatar6Test()
         {
             _agentAddress = default;
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var action = new CreateAvatar()
+            var action = new CreateAvatar6()
             {
                 index = 0,
                 hair = 0,
@@ -40,13 +40,25 @@ namespace Lib9c.Tests.Action
             };
 
             var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
+            var ranking = new RankingState0();
+            for (var i = 0; i < RankingState0.RankingMapCapacity; i++)
+            {
+                ranking.RankingMap[RankingState0.Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
+            }
 
             var sheets = TableSheetsImporter.ImportSheets();
             var state = new State()
+                .SetState(GoldCurrencyState.Address, gold.Serialize())
+                .SetState(
+                    Addresses.GoldDistribution,
+                    GoldDistributionTest.Fixture.Select(v => v.Serialize()).Serialize()
+                )
                 .SetState(
                     Addresses.GameConfig,
                     new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize()
-                );
+                )
+                .SetState(Addresses.Ranking, ranking.Serialize())
+                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);
 
             foreach (var (key, value) in sheets)
             {
@@ -59,6 +71,11 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 BlockIndex = 0,
             });
+
+            Assert.Equal(
+                0,
+                nextState.GetBalance(default, gold.Currency).MajorUnit
+            );
 
             var avatarAddress = _agentAddress.Derive(
                 string.Format(
@@ -75,6 +92,7 @@ namespace Lib9c.Tests.Action
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
+            Assert.Equal(avatarAddress, nextState.GetRankingState().RankingMap[nextAvatarState.RankingMapAddress].First());
         }
 
         [Theory]
@@ -84,7 +102,7 @@ namespace Lib9c.Tests.Action
         {
             var agentAddress = default(Address);
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar6()
             {
                 index = 0,
                 hair = 0,
@@ -125,7 +143,7 @@ namespace Lib9c.Tests.Action
                 default
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar6()
             {
                 index = 0,
                 hair = 0,
@@ -153,7 +171,7 @@ namespace Lib9c.Tests.Action
         {
             var agentState = new AgentState(_agentAddress);
             var state = new State().SetState(_agentAddress, agentState.Serialize());
-            var action = new CreateAvatar()
+            var action = new CreateAvatar6()
             {
                 index = index,
                 hair = 0,
@@ -189,7 +207,7 @@ namespace Lib9c.Tests.Action
             agentState.avatarAddresses[index] = avatarAddress;
             var state = new State().SetState(_agentAddress, agentState.Serialize());
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar6()
             {
                 index = index,
                 hair = 0,
@@ -223,7 +241,7 @@ namespace Lib9c.Tests.Action
                 )
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar6()
             {
                 index = index,
                 hair = 0,
@@ -238,6 +256,8 @@ namespace Lib9c.Tests.Action
             {
                 agentAddress,
                 avatarAddress,
+                Addresses.GoldCurrency,
+                Addresses.Ranking,
                 avatarAddress.Derive(LegacyInventoryKey),
                 avatarAddress.Derive(LegacyQuestListKey),
                 avatarAddress.Derive(LegacyWorldInformationKey),
@@ -254,7 +274,9 @@ namespace Lib9c.Tests.Action
                 updatedAddresses.Add(slotAddress);
             }
 
-            var state = new State();
+            var state = new State()
+                .SetState(Addresses.Ranking, new RankingState0().Serialize())
+                .SetState(GoldCurrencyState.Address, gold.Serialize());
 
             var nextState = action.Execute(new ActionContext()
             {
@@ -274,7 +296,7 @@ namespace Lib9c.Tests.Action
         public void Serialize_With_DotnetAPI()
         {
             var formatter = new BinaryFormatter();
-            var action = new CreateAvatar()
+            var action = new CreateAvatar6()
             {
                 index = 2,
                 hair = 1,
@@ -288,7 +310,7 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
 
             ms.Seek(0, SeekOrigin.Begin);
-            var deserialized = (CreateAvatar)formatter.Deserialize(ms);
+            var deserialized = (CreateAvatar6)formatter.Deserialize(ms);
 
             Assert.Equal(2, deserialized.index);
             Assert.Equal(1, deserialized.hair);

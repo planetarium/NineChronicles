@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class MimisbrunnrBattleTest
+    public class MimisbrunnrBattle7Test
     {
         private readonly TableSheets _tableSheets;
 
@@ -28,9 +28,11 @@ namespace Lib9c.Tests.Action
 
         private readonly Address _avatarAddress;
 
+        private readonly Address _rankingMapAddress;
+
         private readonly IAccountStateDelta _initialState;
 
-        public MimisbrunnrBattleTest()
+        public MimisbrunnrBattle7Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -41,14 +43,14 @@ namespace Lib9c.Tests.Action
 
             _avatarAddress = _agentAddress.Derive("avatar");
             var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
-            var rankingMapAddress = _avatarAddress.Derive("ranking_map");
+            _rankingMapAddress = _avatarAddress.Derive("ranking_map");
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
                 gameConfigState,
-                rankingMapAddress
+                _rankingMapAddress
             )
             {
                 level = 400,
@@ -61,6 +63,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                .SetState(_rankingMapAddress, new RankingMapState(_rankingMapAddress).Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize());
 
             foreach (var (key, value) in sheets)
@@ -169,7 +172,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, previousAvatarState.SerializeV2());
             }
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle7()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = equipments,
@@ -178,6 +181,7 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
                 playCount = playCount,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext()
@@ -192,6 +196,16 @@ namespace Lib9c.Tests.Action
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
+
+            var value = nextState.GetState(_rankingMapAddress);
+            if (value != null)
+            {
+                var rankingMapState = new RankingMapState((Dictionary)value);
+                var info = rankingMapState.GetRankingInfos(null).First();
+
+                Assert.Equal(info.AgentAddress, _agentAddress);
+                Assert.Equal(info.AvatarAddress, _avatarAddress);
+            }
         }
 
         [Fact]
@@ -242,7 +256,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle7()
             {
                 costumes = new List<Guid> { costume.ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
@@ -251,6 +265,7 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<InvalidStageException>(() =>
@@ -268,7 +283,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle7()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -277,6 +292,7 @@ namespace Lib9c.Tests.Action
                 stageId = 10000002,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<FailedLoadStateException>(() =>
@@ -290,9 +306,34 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void ExecuteThrowInvalidRankingMapAddress()
+        {
+            var action = new MimisbrunnrBattle7()
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 10001,
+                stageId = 10000002,
+                playCount = 1,
+                avatarAddress = _avatarAddress,
+                rankingMapAddress = default,
+            };
+
+            Assert.Throws<InvalidAddressException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                });
+            });
+        }
+
+        [Fact]
         public void ExecuteThrowSheetRowNotFound()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle7()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -301,6 +342,7 @@ namespace Lib9c.Tests.Action
                 stageId = 10000002,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<SheetRowNotFoundException>(() =>
@@ -316,7 +358,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowColumn()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle7()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -325,6 +367,7 @@ namespace Lib9c.Tests.Action
                 stageId = 10000022,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<SheetRowColumnException>(() =>
@@ -355,7 +398,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 _tableSheets.WorldUnlockSheet);
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle7()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -364,6 +407,7 @@ namespace Lib9c.Tests.Action
                 stageId = 10000001,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -441,7 +485,7 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle7()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
@@ -450,6 +494,7 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<InvalidWorldException>(() =>
@@ -480,7 +525,7 @@ namespace Lib9c.Tests.Action
             avatarState.worldInformation = new WorldInformation(0, worldSheet, alreadyClearedStageId);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -488,6 +533,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<FailedAddWorldException>(() =>
@@ -524,7 +570,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle7()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
@@ -533,6 +579,7 @@ namespace Lib9c.Tests.Action
                 stageId = GameConfig.MimisbrunnrStartStageId,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             action.Execute(new ActionContext
@@ -644,7 +691,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
             }
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle7()
             {
                 costumes = costumes,
                 equipments = equipments,
@@ -653,6 +700,7 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
                 playCount = playCount,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -686,7 +734,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle7()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -695,12 +743,14 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var updatedAddresses = new List<Address>()
             {
                 _agentAddress,
                 _avatarAddress,
+                _rankingMapAddress,
                 _avatarAddress.Derive(LegacyInventoryKey),
                 _avatarAddress.Derive(LegacyWorldInformationKey),
                 _avatarAddress.Derive(LegacyQuestListKey),
