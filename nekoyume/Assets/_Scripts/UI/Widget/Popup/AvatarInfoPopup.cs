@@ -656,9 +656,7 @@ namespace Nekoyume.UI
                     onSubmit = Equip;
                     onClickBlocked = _ =>
                     {
-                        var msg = inventoryItem.EquippedEnabled.Value
-                            ? L10nManager.Localize("UI_BLOCK_UNEQUIP")
-                            : L10nManager.Localize("UI_BLOCK_EQUIP");
+                        var msg = L10nManager.Localize("UI_BLOCK_EQUIP");
                         NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Alert);
                     };
                     break;
