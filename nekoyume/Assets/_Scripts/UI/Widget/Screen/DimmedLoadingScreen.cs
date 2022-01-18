@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class DimAndMessageLoadingScreen : ScreenWidget
+    public class DimmedLoadingScreen : ScreenWidget
     {
         public override WidgetType WidgetType => WidgetType.System;
 

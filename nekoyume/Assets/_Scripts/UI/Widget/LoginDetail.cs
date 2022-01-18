@@ -155,7 +155,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                var loadingScreen = Find<DimAndMessageLoadingScreen>();
+                var loadingScreen = Find<DimmedLoadingScreen>();
                 loadingScreen.Show(L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                 await States.Instance.SelectAvatarAsync(_selectedIndex);
                 loadingScreen.Close();
