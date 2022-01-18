@@ -139,13 +139,13 @@ namespace Nekoyume.BlockChain
 
         public IValue GetState(Address address)
         {
-            byte[] raw = _service.GetState(address.ToByteArray()).ResponseAsync.Result;
+            byte[] raw = _service.GetState(address.ToByteArray(), BlockTipHash.ToByteArray()).ResponseAsync.Result;
             return _codec.Decode(raw);
         }
 
         public async Task<IValue> GetStateAsync(Address address)
         {
-            byte[] raw = await _service.GetState(address.ToByteArray());
+            byte[] raw = await _service.GetState(address.ToByteArray(), BlockTipHash.ToByteArray());
             return _codec.Decode(raw);
         }
 
@@ -154,7 +154,8 @@ namespace Nekoyume.BlockChain
             // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
             var result = _service.GetBalance(
                 address.ToByteArray(),
-                _codec.Encode(CurrencyExtensions.Serialize(currency))
+                _codec.Encode(CurrencyExtensions.Serialize(currency)),
+                BlockTipHash.ToByteArray()
             );
             byte[] raw = result.ResponseAsync.Result;
             var serialized = (Bencodex.Types.List) _codec.Decode(raw);
@@ -168,7 +169,8 @@ namespace Nekoyume.BlockChain
             // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
             byte[] raw = await _service.GetBalance(
                 address.ToByteArray(),
-                _codec.Encode(CurrencyExtensions.Serialize(currency))
+                _codec.Encode(CurrencyExtensions.Serialize(currency)),
+                BlockTipHash.ToByteArray()
             );
             var serialized = (Bencodex.Types.List) _codec.Decode(raw);
             return FungibleAssetValue.FromRawValue(
@@ -178,7 +180,9 @@ namespace Nekoyume.BlockChain
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
         {
-            Dictionary<byte[], byte[]> raw =  await _service.GetAvatarStates(addressList.Select(a => a.ToByteArray()));
+            Dictionary<byte[], byte[]> raw =
+                await _service.GetAvatarStates(addressList.Select(a => a.ToByteArray()),
+                    BlockTipHash.ToByteArray());
             var result = new Dictionary<Address, AvatarState>();
             foreach (var kv in raw)
             {
@@ -189,7 +193,9 @@ namespace Nekoyume.BlockChain
 
         public async Task<Dictionary<Address, IValue>> GetStateBulk(IEnumerable<Address> addressList)
         {
-            Dictionary<byte[], byte[]> raw =  await _service.GetStateBulk(addressList.Select(a => a.ToByteArray()));
+            Dictionary<byte[], byte[]> raw =
+                await _service.GetStateBulk(addressList.Select(a => a.ToByteArray()),
+                    BlockTipHash.ToByteArray());
             var result = new Dictionary<Address, IValue>();
             foreach (var kv in raw)
             {
