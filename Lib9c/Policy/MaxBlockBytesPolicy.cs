@@ -50,7 +50,12 @@ namespace Nekoyume.BlockChain.Policy
                     value: 1024L * 1024L * 10L))    // 10 MiB
                 .Add(new SpannedSubPolicy<long>(
                     startIndex: 2_926_001L,
-                    value: 1024L * 100L));          // 100 KiB
+                    value: 1024L * 100L))           // 100 KiB
+                // Note: Limit increase to accommodate issuing new invitation codes.
+                // Issued for v100098.
+                .Add(new SpannedSubPolicy<long>(
+                    startIndex: 3_150_001L,
+                    value: 1024L * 500L));          // 500 KiB
 
         // Note: For internal testing.
         public static IVariableSubPolicy<long> Internal =>
@@ -72,6 +77,9 @@ namespace Nekoyume.BlockChain.Policy
                     value: 1024L * 1024L * 10L))    // 10 MiB
                 .Add(new SpannedSubPolicy<long>(
                     startIndex: 2_926_001L,
-                    value: 1024L * 100L));          // 100 KiB
+                    value: 1024L * 100L))           // 100 KiB
+                .Add(new SpannedSubPolicy<long>(
+                    startIndex: 3_150_001L,
+                    value: 1024L * 500L));          // 500 KiB
     }
 }

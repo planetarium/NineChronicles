@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Numerics;
@@ -36,6 +37,9 @@ namespace Lib9c.Tests.Action
 
         public IValue GetState(Address address) =>
             _state.TryGetValue(address, out IValue value) ? value : null;
+
+        public IReadOnlyList<IValue> GetStates(IReadOnlyList<Address> addresses) =>
+            addresses.Select(GetState).ToArray();
 
         public IAccountStateDelta SetState(Address address, IValue state) =>
             new State(_state.SetItem(address, state), _balance);
