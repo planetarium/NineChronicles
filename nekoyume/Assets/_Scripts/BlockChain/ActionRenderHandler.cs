@@ -623,11 +623,19 @@ namespace Nekoyume.BlockChain
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
             LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
-            var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            OneLineSystem.Push(
-                MailType.Auction,
-                string.Format(format, itemName),
-                NotificationCell.NotificationType.Information);
+            
+            string message;
+            if (count > 1)
+            {
+                message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_CANCEL_COMPLETE"), 
+                    itemName, count);
+            }
+            else
+            {
+                message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE"), itemName);
+            }
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+
             UpdateCurrentAvatarStateAsync(eval);
             var shopSell = Widget.Find<ShopSell>();
             if (shopSell.isActiveAndEnabled)
