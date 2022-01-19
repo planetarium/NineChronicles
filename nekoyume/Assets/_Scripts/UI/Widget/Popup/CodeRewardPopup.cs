@@ -26,8 +26,6 @@ namespace Nekoyume.UI
         private readonly Dictionary<string, List<(ItemBase, int)>> _codeRewards =
             new Dictionary<string, List<(ItemBase, int)>>();
 
-        private RedeemCodeState _state = null;
-
         protected override void Awake()
         {
             base.Awake();

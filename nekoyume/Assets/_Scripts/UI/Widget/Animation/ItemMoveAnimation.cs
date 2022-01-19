@@ -18,15 +18,18 @@ namespace Nekoyume.UI
             Workshop
         }
 
-        [SerializeField] private Image itemImage;
-        [SerializeField] private AnimationCurve moveAnimationCurve;
+        [SerializeField]
+        private Image itemImage;
+
+        [SerializeField]
+        private AnimationCurve moveAnimationCurve;
 
         private Vector3 _endPosition;
         private float _middleXGap;
 
 
-        public static ItemMoveAnimation Show(Sprite itemSprite, Vector3 startWorldPosition,
-            Vector3 endWorldPosition,
+        public static ItemMoveAnimation Show(Sprite itemSprite,
+            Vector3 startWorldPosition, Vector3 endWorldPosition,
             Vector2 defaultScale, bool moveToLeft = false, bool playItemMoveVFXOnPlay = false,
             float animationTime = 1f, float middleXGap = 0f, EndPoint endPoint = EndPoint.None)
         {
@@ -48,15 +51,19 @@ namespace Nekoyume.UI
             return result;
         }
 
-        private IEnumerator CoPlay(Vector2 defaultScale, bool moveToLeft, bool playItemMoveVFXOnPlay, EndPoint endPoint)
+        private IEnumerator CoPlay(Vector2 defaultScale, bool moveToLeft,
+            bool playItemMoveVFXOnPlay, EndPoint endPoint)
         {
             if (playItemMoveVFXOnPlay)
             {
                 VFXController.instance.Create<ItemMoveVFX>(transform.position);
             }
 
-            Tweener tweenScale = transform.DOScale(defaultScale * 1.2f, 0.1f).SetEase(moveAnimationCurve);
-            yield return new WaitWhile(tweenScale.IsPlaying);
+            Tweener tweenScale = transform.DOScale(defaultScale * 1.2f, 0.1f)
+                .SetEase(moveAnimationCurve);
+
+            yield return new WaitWhile(() =>
+                tweenScale != null && tweenScale.IsActive() && tweenScale.IsPlaying());
 
             yield return new WaitForSeconds(0.5f);
 
@@ -66,7 +73,7 @@ namespace Nekoyume.UI
                 : new Vector3(transform.position.x + _middleXGap,
                     (_endPosition.y + transform.position.y) * 0.5f, _endPosition.z);
 
-            var path = new[] {transform.position, midPath, _endPosition};
+            var path = new[] { transform.position, midPath, _endPosition };
 
             Tweener tweenMove = transform.DOPath(path, _animationTime, PathType.CatmullRom)
                 .SetEase(Ease.OutSine);
@@ -74,7 +81,9 @@ namespace Nekoyume.UI
 
             Find<HeaderMenuStatic>().PlayVFX(endPoint);
 
-            yield return new WaitWhile(tweenMove.IsPlaying);
+            yield return new WaitWhile(() =>
+                tweenMove != null && tweenMove.IsActive() && tweenMove.IsPlaying());
+
             itemImage.enabled = false;
 
             if (endPoint == EndPoint.None)
