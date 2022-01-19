@@ -61,13 +61,9 @@ namespace Nekoyume.UI
 
             Tweener tweenScale = transform.DOScale(defaultScale * 1.2f, 0.1f)
                 .SetEase(moveAnimationCurve);
-            var isScaling = true;
-            while (isScaling)
-            {
-                isScaling = tweenScale != null && tweenScale.IsActive() &&
-                            tweenScale.IsPlaying();
-                yield return null;
-            }
+
+            yield return new WaitWhile(() =>
+                tweenScale != null && tweenScale.IsActive() && tweenScale.IsPlaying());
 
             yield return new WaitForSeconds(0.5f);
 
@@ -85,13 +81,8 @@ namespace Nekoyume.UI
 
             Find<HeaderMenuStatic>().PlayVFX(endPoint);
 
-            var isMoving = true;
-            while (isMoving)
-            {
-                isMoving = tweenMove != null && tweenMove.IsActive() &&
-                           tweenMove.IsPlaying();
-                yield return null;
-            }
+            yield return new WaitWhile(() =>
+                tweenMove != null && tweenMove.IsActive() && tweenMove.IsPlaying());
 
             itemImage.enabled = false;
 
