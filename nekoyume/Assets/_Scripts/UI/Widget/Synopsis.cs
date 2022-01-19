@@ -402,6 +402,7 @@ namespace Nekoyume.UI
                 catch (KeyNotFoundException e)
                 {
                     Debug.LogWarning(e.Message);
+                    Find<DataLoadingScreen>().Close();
                     EnterLogin();
                 }
             }
