@@ -465,6 +465,18 @@ namespace Nekoyume.UI.Module
 
         private static WorldQuest GetTargetWorldQuest(QuestList questList)
         {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (GameConfig.RequireClearedStageLevel.UIMainMenuStage > 0)
+            {
+                if (SharedViewModel.avatarState is null ||
+                    !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(
+                        out var lastClearedStageId) ||
+                    lastClearedStageId < GameConfig.RequireClearedStageLevel.UIMainMenuStage)
+                {
+                    return null;
+                }
+            }
+
             var targetQuest = questList?
                 .OfType<WorldQuest>()
                 .Where(quest => !quest.Complete)
