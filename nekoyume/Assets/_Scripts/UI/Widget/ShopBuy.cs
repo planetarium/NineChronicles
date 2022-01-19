@@ -191,16 +191,24 @@ namespace Nekoyume.UI
             var buyProps = new Value {["Price"] = shopItem.Price.Value.GetQuantityString(),};
             Analyzer.Instance.Track("Unity/Buy", buyProps);
 
+            var count = SharedModel.ItemCountAndPricePopup.Value.Item.Value.Count.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             shopItem.Selected.Value = false;
 
             ReactiveShopState.RemoveBuyDigest(shopItem.OrderId.Value);
 
-            var format = L10nManager.Localize("NOTIFICATION_BUY_START");
-            OneLineSystem.Push(MailType.Auction,
-                string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()),
-                NotificationCell.NotificationType.Information);
-
+            string message;
+            if (count > 1)
+            {
+                message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_BUY_START"),
+                    shopItem.ItemBase.Value.GetLocalizedName(), count);
+            }
+            else
+            {
+                message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_START"),
+                    shopItem.ItemBase.Value.GetLocalizedName());
+            }
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
         }
 
