@@ -625,8 +625,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1933286909}
   - {fileID: 1950109042}
+  - {fileID: 1933286909}
   - {fileID: 1109162249}
   - {fileID: 945606807}
   - {fileID: 1589994351}
@@ -1907,7 +1907,7 @@ Transform:
   m_Children:
   - {fileID: 2035760900}
   m_Father: {fileID: 599560688}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1933286910
 MonoBehaviour:
@@ -2062,7 +2062,7 @@ Camera:
   field of view: 60
   orthographic: 1
   orthographic size: 2
-  m_Depth: -1
+  m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 32
@@ -2089,7 +2089,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 599560688}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1962509239
 GameObject:
