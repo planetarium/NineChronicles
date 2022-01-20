@@ -1,3 +1,4 @@
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
@@ -19,19 +20,28 @@ namespace Nekoyume.TestScene
         private Transform cameraTransform;
 
         [SerializeField]
+        private Transform bgParent;
+
+        [SerializeField]
         private float cameraSpeed;
 
         [SerializeField]
         private ObjectPool objectPool;
 
         [SerializeField]
-        private TMP_InputField resourceIdField;
+        private TMP_InputField spinePrefabIDField;
+
+        [SerializeField]
+        private TMP_InputField backgroundPrefabIDField;
 
         [SerializeField]
         private TextMeshProUGUI resourceWarningText;
 
         [SerializeField]
-        private Button loadButton;
+        private Button loadSpineButton;
+
+        [SerializeField]
+        private Button loadBgButton;
 
         [SerializeField]
         private Enemy enemy;
@@ -52,11 +62,14 @@ namespace Nekoyume.TestScene
 
         private readonly Queue<TextButton> _activeButtons = new Queue<TextButton>();
 
+        private GameObject _background;
+
         #region Mono
 
         private void Awake()
         {
-            loadButton.onClick.AddListener(Show);
+            loadSpineButton.onClick.AddListener(LoadSpineObject);
+            loadBgButton.onClick.AddListener(LoadBackground);
             resourceWarningText.gameObject.SetActive(false);
             AudioController.instance.Initialize();
             objectPool.Initialize();
@@ -82,14 +95,14 @@ namespace Nekoyume.TestScene
             menus.SetActive(!menus.activeSelf);
         }
 
-        private void Show()
+        private void LoadSpineObject()
         {
             enemy.gameObject.SetActive(false);
             npc.gameObject.SetActive(false);
             player.gameObject.SetActive(false);
             resourceWarningText.gameObject.SetActive(false);
 
-            var text = resourceIdField.text;
+            var text = spinePrefabIDField.text;
             if (string.IsNullOrEmpty(text))
             {
                 resourceWarningText.text = "Resource ID is empty.";
@@ -155,6 +168,40 @@ namespace Nekoyume.TestScene
             player.gameObject.SetActive(true);
             player.ChangeSpineResource(id, true);
             ShowCharacterAnimations(player.Animator);
+        }
+
+        private void LoadBackground()
+        {
+            var prefabName = backgroundPrefabIDField.text;
+
+            if (_background)
+            {
+                if (_background.name.Equals(prefabName))
+                    return;
+
+                DestroyBackground();
+            }
+
+            try
+            {
+                var path = $"Prefab/Background/{prefabName}";
+                var prefab = Resources.Load<GameObject>(path);
+                if (!prefab)
+                    throw new FailedToLoadResourceException<GameObject>(path);
+                _background = Instantiate(prefab, bgParent);
+                _background.name = prefabName;
+            }
+            catch (FailedToLoadResourceException<GameObject> e)
+            {
+                resourceWarningText.text = e.Message;
+                resourceWarningText.gameObject.SetActive(true);
+            }
+        }
+
+        private void DestroyBackground()
+        {
+            Destroy(_background);
+            _background = null;
         }
 
         private void ShowCharacterAnimations(SkeletonAnimator animator, bool isNpc = false)
