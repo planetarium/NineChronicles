@@ -191,7 +191,7 @@ namespace Nekoyume.UI
             var buyProps = new Value {["Price"] = shopItem.Price.Value.GetQuantityString(),};
             Analyzer.Instance.Track("Unity/Buy", buyProps);
 
-            var count = SharedModel.ItemCountAndPricePopup.Value.Item.Value.Count.Value;
+            var count = shopItem.Count.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             shopItem.Selected.Value = false;
 
