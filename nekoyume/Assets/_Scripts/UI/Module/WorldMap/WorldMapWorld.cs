@@ -166,7 +166,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 var imageKey = worldRow.Id == GameConfig.MimisbrunnrWorldId
-                    ? "99"
+                    ? "mimisbrunnr"
                     : $"{worldRow.Id:D2}";
                 page.Show(stageModels, imageKey,
                     worldRow.Id == GameConfig.MimisbrunnrWorldId ? 1 : pageIndex);
