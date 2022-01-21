@@ -27,7 +27,7 @@ namespace Nekoyume.Game.Trigger
 
         private void SpawnWave()
         {
-            var player = Game.instance.Stage.GetComponentInChildren<Character.Player>();
+            var player = Game.instance.Stage.SelectedPlayer;
             var offsetX = player.transform.position.x + 2.8f;
             var randIndex = Enumerable.Range(0, spawnPoints.Length / 2)
                 .OrderBy(n => Guid.NewGuid()).ToArray();
@@ -53,9 +53,8 @@ namespace Nekoyume.Game.Trigger
                 var monster = monsters[index];
                 monster.spawnIndex = index;
 
-                var players = stage.GetComponentsInChildren<Character.Player>();
-                var target = players.FirstOrDefault(x => x.GetComponent<SortingGroup>().sortingLayerName == "Character");
-                var offsetX = target.transform.position.x + SpawnOffset;
+                var player = stage.SelectedPlayer;
+                var offsetX = player.transform.position.x + SpawnOffset;
                 {
                     Vector3 point;
                     try
@@ -69,7 +68,7 @@ namespace Nekoyume.Game.Trigger
                     var pos = new Vector2(
                         point.x + offsetX,
                         point.y);
-                    yield return StartCoroutine(CoSpawnMonster(monster, pos, target));
+                    yield return StartCoroutine(CoSpawnMonster(monster, pos, player));
                 }
             }
         }

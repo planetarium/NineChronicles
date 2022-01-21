@@ -256,7 +256,7 @@ namespace Nekoyume.UI
                 inventory.gameObject.SetActive(true);
                 SubscribeInventoryResetItems(inventory);
 
-                var currentPlayer = game.Stage.selectedPlayer;
+                var currentPlayer = game.Stage.SelectedPlayer;
                 cpText.text = CPHelper.GetCP(currentPlayer.Model, game.TableSheets.CostumeStatSheet)
                     .ToString();
             }
