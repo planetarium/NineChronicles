@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Entrance
 
             Widget.Find<Login>().ready = false;
 
-            stage.selectedPlayer = null;
+            stage.SelectedPlayer = null;
             yield return null;
 
             var factory = GetComponent<PlayerFactory>();

@@ -132,7 +132,7 @@ namespace Nekoyume.UI.Module
                         }
 
                         var stage = Game.Game.instance.Stage;
-                        if (!stage.IsInStage || stage.selectedPlayer.IsAlive)
+                        if (!stage.IsInStage || stage.SelectedPlayer.IsAlive)
                         {
                             widget.Show(() => { toggleInfo.Toggle.isOn = false; });
                         }

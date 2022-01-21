@@ -40,7 +40,7 @@ namespace Nekoyume.UI
         public void Show(int beforeLevel, int afterLevel, bool ignoreShowAnimation = false)
         {
             var gameInstance = Game.Game.instance;
-            _model = gameInstance.Stage.selectedPlayer.Model;
+            _model = gameInstance.Stage.SelectedPlayer.Model;
             var characterSheet = gameInstance.TableSheets.CharacterSheet;
             var characterId = _model.CharacterId;
             var costumeStatSheet = gameInstance.TableSheets.CostumeStatSheet;
