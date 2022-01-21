@@ -42,7 +42,7 @@ namespace Nekoyume.Game
         private bool useSystemLanguage = true;
 
         [SerializeField]
-        private LanguageType languageType = default;
+        private LanguageTypeReactiveProperty languageType = default;
 
         [SerializeField]
         private Prologue prologue = null;
@@ -133,7 +133,12 @@ namespace Nekoyume.Game
             }
             else
             {
-                yield return L10nManager.Initialize(languageType).ToYieldInstruction();
+                yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
+                
+                languageType.Subscribe(_ =>
+                {
+                    L10nManager.SetLanguage(languageType.Value);
+                }).AddTo(gameObject);
             }
 #else
             yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
