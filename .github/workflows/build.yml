@@ -60,6 +60,7 @@ jobs:
           name: 9c-${{ matrix.targetPlatform }}
           path: nekoyume/Build/${{ matrix.targetPlatform }}
           retention-days: 1
+          if-no-files-found: error
   publish:
     name: Publish Unity Player for ${{ matrix.targetPlatform }}
     runs-on: ubuntu-latest
