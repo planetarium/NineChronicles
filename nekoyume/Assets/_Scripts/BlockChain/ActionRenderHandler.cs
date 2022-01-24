@@ -690,7 +690,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var errorList = new List<(Guid orderId, int errorCode)>();
+            var errorList = (List)eval.Extra[nameof(Action.Buy.errors)];
             List<(Guid orderId, int errorCode)> errors = errorList
                 .Cast<List>()
                 .Select(t => (t[0].ToGuid(), t[1].ToInteger()))
@@ -772,7 +772,6 @@ namespace Nekoyume.BlockChain
                     LocalLayerModifier.ModifyAgentGold(agentAddress, -taxedPrice);
                     LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
 
-                    // Todo : 판매 성공
                     string message;
                     if (count > 1)
                     {
