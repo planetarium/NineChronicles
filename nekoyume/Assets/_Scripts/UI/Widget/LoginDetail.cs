@@ -268,7 +268,7 @@ namespace Nekoyume.UI
 
             paletteEarText.text = $"{L10nManager.Localize("UI_EAR")} {_ear + 1}";
 
-            var player = Game.Game.instance.Stage.selectedPlayer;
+            var player = Game.Game.instance.Stage.SelectedPlayer;
             if (player is null)
             {
                 throw new NullReferenceException(nameof(player));
@@ -299,7 +299,7 @@ namespace Nekoyume.UI
 
             paletteLensText.text = $"{L10nManager.Localize("UI_LENS")} {_lens + 1}";
 
-            var player = Game.Game.instance.Stage.selectedPlayer;
+            var player = Game.Game.instance.Stage.SelectedPlayer;
             if (player is null)
             {
                 throw new NullReferenceException(nameof(player));
@@ -330,7 +330,7 @@ namespace Nekoyume.UI
 
             paletteHairText.text = $"{L10nManager.Localize("UI_HAIR")} {_hair + 1}";
 
-            var player = Game.Game.instance.Stage.selectedPlayer;
+            var player = Game.Game.instance.Stage.SelectedPlayer;
             if (player is null)
             {
                 throw new NullReferenceException(nameof(player));
@@ -361,7 +361,7 @@ namespace Nekoyume.UI
 
             paletteTailText.text = $"{L10nManager.Localize("UI_TAIL")} {_tail + 1}";
 
-            var player = Game.Game.instance.Stage.selectedPlayer;
+            var player = Game.Game.instance.Stage.SelectedPlayer;
             if (player is null)
             {
                 throw new NullReferenceException(nameof(player));
