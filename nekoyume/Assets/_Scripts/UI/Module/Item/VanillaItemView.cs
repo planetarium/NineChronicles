@@ -95,14 +95,13 @@ namespace Nekoyume.UI.Module
             return _tweener;
         }
 
-        public void KillTween()
+        private void KillTween()
         {
-            if (_tweener?.IsPlaying() ?? false)
+            if (_tweener != null && _tweener.IsActive() && _tweener.IsPlaying())
             {
-                _tweener?.Kill();
+                _tweener.Kill();
+                _tweener = null;
             }
-
-            _tweener = null;
         }
     }
 }

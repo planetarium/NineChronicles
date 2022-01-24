@@ -63,7 +63,7 @@ namespace Nekoyume.Game
         public bool newlyClearedStage;
         public int waveNumber;
         public int waveTurn;
-        public Player selectedPlayer;
+
         public int foodCount;
         public string zone;
         public Animator roomAnimator { get; private set; }
@@ -78,6 +78,7 @@ namespace Nekoyume.Game
         private Coroutine _positionCheckCoroutine;
         private List<int> prevFood;
 
+        public Player SelectedPlayer { get; set; }
         public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
@@ -230,7 +231,7 @@ namespace Nekoyume.Game
                         player.SpineController.Appear();
                     }
 
-                    selectedPlayer = players[i];
+                    SelectedPlayer = players[i];
                 }
                 else
                 {
@@ -1041,15 +1042,18 @@ namespace Nekoyume.Game
         public IEnumerator CoWaveTurnEnd(int turnNumber, int waveTurn)
         {
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} enter. {nameof(this.waveTurn)}({this.waveTurn})");
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} enter. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
-            yield return new WaitWhile(() => selectedPlayer.actions.Any());
+            yield return new WaitWhile(() => SelectedPlayer.actions.Any());
             Event.OnPlayerTurnEnd.Invoke(turnNumber);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
+#if TEST_LOG
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} ing. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
+#endif
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             this.waveTurn = waveTurn;
 #if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} exit. {nameof(this.waveTurn)}({this.waveTurn})");
+            Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} exit. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
         }
 
@@ -1069,33 +1073,33 @@ namespace Nekoyume.Game
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             var character = GetCharacter(model);
-            _playerPosition = selectedPlayer.transform.position;
+            _playerPosition = SelectedPlayer.transform.position;
             character.Dead();
         }
 
         public Player GetPlayer(bool forceCreate = false)
         {
             if (!forceCreate &&
-                selectedPlayer &&
-                selectedPlayer.gameObject.activeSelf)
+                SelectedPlayer &&
+                SelectedPlayer.gameObject.activeSelf)
             {
-                return selectedPlayer;
+                return SelectedPlayer;
             }
 
-            if (selectedPlayer)
+            if (SelectedPlayer)
             {
-                objectPool.Remove<Model.Player>(selectedPlayer.gameObject);
+                objectPool.Remove<Model.Player>(SelectedPlayer.gameObject);
             }
 
             var go = PlayerFactory.Create(States.Instance.CurrentAvatarState);
-            selectedPlayer = go.GetComponent<Player>();
+            SelectedPlayer = go.GetComponent<Player>();
 
-            if (selectedPlayer is null)
+            if (SelectedPlayer is null)
             {
                 throw new NotFoundComponentException<Player>();
             }
 
-            return selectedPlayer;
+            return SelectedPlayer;
         }
 
         public Player GetPlayer(Vector3 position, bool forceCreate = false)
@@ -1131,9 +1135,9 @@ namespace Nekoyume.Game
 
         public Player RunPlayerForNextStage()
         {
-            if (selectedPlayer != null)
+            if (SelectedPlayer != null)
             {
-                _playerPosition = selectedPlayer.transform.position;
+                _playerPosition = SelectedPlayer.transform.position;
             }
 
             var player = GetPlayer(_playerPosition);

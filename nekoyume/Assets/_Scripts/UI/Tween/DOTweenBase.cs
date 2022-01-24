@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Tween
         public readonly Subject<Tween> onStopSubject = new Subject<Tween>();
         public System.Action onCompleted = null;
 
-        public bool IsPlaying => currentTween?.IsPlaying() ?? false;
+        public bool IsPlaying => currentTween != null && currentTween.IsActive() && currentTween.IsPlaying();
 
         [HideInInspector]
         public Ease ease = Ease.Linear;

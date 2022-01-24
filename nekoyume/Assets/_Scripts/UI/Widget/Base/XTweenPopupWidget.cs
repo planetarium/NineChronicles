@@ -36,10 +36,14 @@ namespace Nekoyume.UI
 
         private IEnumerator CoClose(bool ignoreCloseAnimation)
         {
-            yield return new WaitWhile(xTweener
-                .PlayReverse()
-                .OnComplete(OnTweenReverseComplete)
-                .IsPlaying);
+            xTweener.PlayReverse().OnComplete(OnTweenReverseComplete);
+            var playing = true;
+            while (playing)
+            {
+                playing = xTweener != null && xTweener.IsPlaying;
+                yield return null;
+            }
+
             base.Close(ignoreCloseAnimation);
         }
 

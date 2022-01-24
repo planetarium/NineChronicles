@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.L10n;
@@ -192,6 +193,7 @@ namespace Nekoyume.UI.Module
             OnClickSubject.OnNext(CurrentState.Value);
             if (IsSubmittable)
             {
+                AudioController.PlayClick();
                 OnSubmitSubject.OnNext(default);
             }
 

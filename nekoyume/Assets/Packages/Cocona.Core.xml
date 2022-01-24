@@ -1,0 +1,522 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Cocona.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Cocona.ArgumentAttribute">
+            <summary>
+            Specifies the parameter that should be treated as command argument.
+            </summary>
+        </member>
+        <member name="P:Cocona.ArgumentAttribute.Description">
+            <summary>
+            Gets or sets the argument description.
+            </summary>
+        </member>
+        <member name="P:Cocona.ArgumentAttribute.Name">
+            <summary>
+            Gets or sets the argument name.
+            </summary>
+        </member>
+        <member name="P:Cocona.ArgumentAttribute.Order">
+            <summary>
+            Gets or sets the argument order. The order is used only for sorting internally.
+            </summary>
+        </member>
+        <member name="T:Cocona.CoconaAppContext">
+            <summary>
+            Stores commonly used values about an application's command executing in Cocona.
+            </summary>
+        </member>
+        <member name="P:Cocona.CoconaAppContext.CancellationToken">
+            <summary>
+            Gets a cancellation token to waits for shutdown signal.
+            </summary>
+        </member>
+        <member name="P:Cocona.CoconaAppContext.Features">
+            <summary>
+            Gets a collection of features.
+            </summary>
+        </member>
+        <member name="P:Cocona.CoconaAppContext.ExecutingCommand">
+            <summary>
+            Gets a executing command.
+            </summary>
+        </member>
+        <member name="M:Cocona.CoconaAppFeatureCollection.Set``1(``0)">
+            <summary>
+            Sets the feature in the collection.
+            </summary>
+            <typeparam name="TFeature"></typeparam>
+            <param name="feature"></param>
+        </member>
+        <member name="M:Cocona.CoconaAppFeatureCollection.Get``1">
+            <summary>
+            Gets the requested feature from the collection.
+            </summary>
+            <typeparam name="TFeature"></typeparam>
+            <returns></returns>
+        </member>
+        <member name="T:Cocona.CommandAttribute">
+            <summary>
+            Specifies the method that should be treated as a command.
+            </summary>
+        </member>
+        <member name="P:Cocona.CommandAttribute.Name">
+            <summary>
+            Gets or sets the command name.
+            </summary>
+        </member>
+        <member name="P:Cocona.CommandAttribute.Aliases">
+            <summary>
+             Gets or sets the command aliases.
+            </summary>
+        </member>
+        <member name="P:Cocona.CommandAttribute.Description">
+            <summary>
+             Gets or sets the command description.
+            </summary>
+        </member>
+        <member name="T:Cocona.CommandExitedException">
+            <summary>
+            The exception that thrown when a command exited immediately.
+            </summary>
+        </member>
+        <member name="P:Cocona.CommandExitedException.ExitCode">
+            <summary>
+            Gets a exit code of the current command.
+            </summary>
+        </member>
+        <member name="P:Cocona.CommandExitedException.ExitMessage">
+            <summary>
+            Gets an message on the command exited.
+            </summary>
+        </member>
+        <member name="T:Cocona.CommandLine.CoconaCommandLineParser">
+            <summary>
+            Cocona default implementation of command-line parser.
+            </summary>
+        </member>
+        <member name="T:Cocona.CommandLine.ICoconaCommandLineArgumentProvider">
+            <summary>
+            A provider thats provides command-line arguments.
+            </summary>
+        </member>
+        <member name="T:Cocona.CommandLine.ICoconaCommandLineParser">
+            <summary>
+            A command-line arguments parser for Cocona.
+            </summary>
+        </member>
+        <member name="T:Cocona.CommandMethodForwardedToAttribute">
+            <summary>
+            Specifies that a method of the command is forwarded to another method.
+            </summary>
+        </member>
+        <member name="T:Cocona.Filters.CommandFilterAttribute">
+            <summary>
+            An abstract filter that surrounds execution of command.
+            </summary>
+        </member>
+        <member name="T:Cocona.Filters.ICommandFilter">
+            <summary>
+            An interface for filter that surrounds execution of command.
+            </summary>
+        </member>
+        <member name="T:Cocona.Filters.IFilterFactory">
+            <summary>
+            An interface for filter which can create an instance of an executable command filter.
+            </summary>
+        </member>
+        <member name="T:Cocona.Filters.IFilterMetadata">
+            <summary>
+            Marker interface for filters handled in the command pipeline.
+            </summary>
+        </member>
+        <member name="T:Cocona.FromServiceAttribute">
+            <summary>
+            Specifies the parameter that should be set by dependency injection.
+            </summary>
+        </member>
+        <member name="T:Cocona.HasSubCommandsAttribute">
+            <summary>
+            Specifies a class has a nested sub-commands.
+            </summary>
+        </member>
+        <member name="P:Cocona.HasSubCommandsAttribute.Type">
+            <summary>
+             Gets the sub-commands collection type.
+            </summary>
+        </member>
+        <member name="P:Cocona.HasSubCommandsAttribute.CommandName">
+            <summary>
+             Gets the sub-commands name.
+            </summary>
+        </member>
+        <member name="P:Cocona.HasSubCommandsAttribute.Description">
+            <summary>
+             Gets or sets the sub-commands description.
+            </summary>
+        </member>
+        <member name="T:Cocona.Help.CoconaHelpRenderer">
+            <summary>
+            A default implementation of help message renderer.
+            </summary>
+        </member>
+        <member name="T:Cocona.Help.ICoconaHelpMessageBuilder">
+            <summary>
+            Provides a help message based on the current context.
+            </summary>
+        </member>
+        <member name="M:Cocona.Help.ICoconaHelpMessageBuilder.BuildForCurrentContext">
+            <summary>
+            Build a help message based on the current context.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Cocona.Help.ICoconaHelpMessageBuilder.BuildAndRenderForCurrentContext">
+            <summary>
+            Build a help message and render as string based on the current context.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Cocona.Help.ICoconaHelpMessageBuilder.BuildForCurrentCommand">
+            <summary>
+            Build a help message based on the current command.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Cocona.Help.ICoconaHelpMessageBuilder.BuildAndRenderForCurrentCommand">
+            <summary>
+            Build a help message and render as string based on the current command.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Cocona.HiddenAttribute">
+            <summary>
+            Specifies the parameter or method that should be hidden from help and usage.
+            </summary>
+        </member>
+        <member name="T:Cocona.IgnoreAttribute">
+            <summary>
+            Specifies what should be ignored during processing command.
+            </summary>
+        </member>
+        <member name="T:Cocona.IgnoreUnknownOptionsAttribute">
+            <summary>
+            Specifies that the command should ignore unknown options.
+            </summary>
+        </member>
+        <member name="M:Cocona.Internal.DynamicListHelper.IsArrayOrEnumerableLike(System.Type)">
+            <summary>
+            Indicates whether the specified type is <see cref="T:System.Array"/> or <see cref="T:System.Collections.Generic.List`1"/> or enumerable-like.
+            </summary>
+            <param name="valueType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cocona.Internal.DynamicListHelper.GetElementType(System.Type)">
+            <summary>
+            Gets a type of a list or array element.
+            </summary>
+            <param name="valueType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cocona.Internal.DynamicListHelper.TryCreateArrayOrEnumerableLike(System.Type,System.String[],Cocona.Command.Binder.ICoconaValueConverter,System.Object@)">
+            <summary>
+            Create an array or list instance from the values. A return value indicates the array or list instance has created or not.
+            </summary>
+            <param name="valueType"></param>
+            <param name="values"></param>
+            <param name="converter"></param>
+            <param name="arrayOrEnumerableLike"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Cocona.Internal.Levenshtein.GetDistance(System.String,System.String)">
+            <summary>
+            Get levenshtein distance of two string values.
+            </summary>
+            <param name="s1"></param>
+            <param name="s2"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Cocona.OptionAttribute">
+            <summary>
+            Specifies the parameter that should be treated as command option.
+            </summary>
+        </member>
+        <member name="P:Cocona.OptionAttribute.Description">
+            <summary>
+            Gets or sets the option description.
+            </summary>
+        </member>
+        <member name="P:Cocona.OptionAttribute.Name">
+            <summary>
+            Gets the option name. The name is long-form name. (e.g. "output", "force")
+            </summary>
+        </member>
+        <member name="P:Cocona.OptionAttribute.ShortNames">
+            <summary>
+            Gets or sets the option short-form names. (e.g. 'O', 'f')
+            </summary>
+        </member>
+        <member name="P:Cocona.OptionAttribute.ValueName">
+            <summary>
+            Gets the option value name.
+            </summary>
+        </member>
+        <member name="T:Cocona.OptionLikeCommandAttribute">
+            <summary>
+            Specifies that the command has the option-like command.
+            </summary>
+        </member>
+        <member name="T:Cocona.PrimaryCommandAttribute">
+            <summary>
+            Specifies the method that should be treated as a primary command.
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Candidate.CoconaCompletionCandidatesMetadata">
+            <summary>
+            Provides metadata of shell completion state to generate candidates.
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Candidate.CompletionCandidateResult">
+            <summary>
+            Result of a shell completion candidate while generating a shell script. It contains candidate values.
+            </summary>
+        </member>
+        <member name="P:Cocona.ShellCompletion.Candidate.CompletionCandidateResult.ResultType">
+            <summary>
+            Gets the type of this result.
+            </summary>
+        </member>
+        <member name="P:Cocona.ShellCompletion.Candidate.CompletionCandidateResult.Values">
+            <summary>
+            Gets the candidates values.
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Candidate.CompletionCandidateResultType">
+            <summary>
+            Specifies the type of a completion candidate result while generating a shell script.
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Candidate.CompletionCandidatesAttribute">
+            <summary>
+            Specifies the parameter that provides shell completion candidates.
+            </summary>
+        </member>
+        <member name="P:Cocona.ShellCompletion.Candidate.CompletionCandidatesAttribute.CandidateType">
+            <summary>
+            Gets the candidate type of the parameter.
+            </summary>
+        </member>
+        <member name="P:Cocona.ShellCompletion.Candidate.CompletionCandidatesAttribute.CandidatesProviderType">
+            <summary>
+            Gets the type of a candidates provider.
+            </summary>
+        </member>
+        <member name="M:Cocona.ShellCompletion.Candidate.CompletionCandidatesAttribute.#ctor(Cocona.ShellCompletion.Candidate.CompletionCandidateType)">
+            <summary>
+            Initialize a new instance of the <see cref="T:Cocona.ShellCompletion.Candidate.CompletionCandidatesAttribute"/> class with a specified <see cref="T:Cocona.ShellCompletion.Candidate.CompletionCandidateType"/>.
+            </summary>
+            <param name="candidateType">The candidate type of the parameter.</param>
+        </member>
+        <member name="M:Cocona.ShellCompletion.Candidate.CompletionCandidatesAttribute.#ctor(System.Type)">
+            <summary>
+            Initialize a new instance of the <see cref="T:Cocona.ShellCompletion.Candidate.CompletionCandidatesAttribute"/> class with a specified <see cref="T:System.Type"/> of the candidates provider.
+            </summary>
+            <param name="typeOfProvider">The <see cref="T:System.Type"/> of the candidates provider.</param>
+        </member>
+        <member name="M:Cocona.ShellCompletion.Candidate.CompletionCandidatesAttribute.#ctor(System.String[])">
+            <summary>
+            Initialize a new instance of the <see cref="T:Cocona.ShellCompletion.Candidate.CompletionCandidatesAttribute"/> class with a specified candidates.
+            </summary>
+            <param name="candidates">The candidate values</param>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Candidate.CompletionCandidateType">
+            <summary>
+            Specifies a type of the completion candidate.
+            </summary>
+        </member>
+        <member name="F:Cocona.ShellCompletion.Candidate.CompletionCandidateType.Default">
+            <summary>
+            The default behavior by the shell itself.
+            </summary>
+        </member>
+        <member name="F:Cocona.ShellCompletion.Candidate.CompletionCandidateType.File">
+            <summary>
+            The parameter requires a file path.
+            </summary>
+        </member>
+        <member name="F:Cocona.ShellCompletion.Candidate.CompletionCandidateType.Directory">
+            <summary>
+            The parameter requires a directory path.
+            </summary>
+        </member>
+        <member name="F:Cocona.ShellCompletion.Candidate.CompletionCandidateType.Provider">
+            <summary>
+            The parameter requires a custom value which provided by <see cref="T:Cocona.ShellCompletion.Candidate.ICoconaCompletionStaticCandidatesProvider"/> or <see cref="T:Cocona.ShellCompletion.Candidate.ICoconaCompletionOnTheFlyCandidatesProvider"/>.
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Candidate.CompletionCandidateValue">
+            <summary>
+            The value of shell completion candidate.
+            </summary>
+        </member>
+        <member name="P:Cocona.ShellCompletion.Candidate.CompletionCandidateValue.Value">
+            <summary>
+            Gets the candidate value. The value will be show on the screen.
+            </summary>
+        </member>
+        <member name="P:Cocona.ShellCompletion.Candidate.CompletionCandidateValue.Description">
+            <summary>
+            Gets the description of the candidate.
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Candidate.ICoconaCompletionStaticCandidatesProvider">
+            <summary>
+            Provides shell completion candidates at a shell script generation.
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Candidate.ICoconaCompletionOnTheFlyCandidatesProvider">
+            <summary>
+            Provides shell completion candidates while a user interacted in a shell.
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.CoconaShellCompletionCodeProvider">
+            <summary>
+            Default implementation of <see cref="T:Cocona.ShellCompletion.ICoconaShellCompletionCodeProvider"/>
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Generators.BashCoconaShellCompletionCodeGenerator">
+            <summary>
+            Generates the shell completion code for Bash.
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Generators.ICoconaShellCompletionCodeGenerator">
+            <summary>
+            Generates the shell code for the completion.
+            </summary>
+        </member>
+        <member name="P:Cocona.ShellCompletion.Generators.ICoconaShellCompletionCodeGenerator.Targets">
+            <summary>
+            Gets the shell names that supported by the generator.
+            </summary>
+        </member>
+        <member name="M:Cocona.ShellCompletion.Generators.ICoconaShellCompletionCodeGenerator.Generate(System.IO.TextWriter,Cocona.Command.CommandCollection)">
+            <summary>
+            Generates a shell code for the completion.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.TextWriter"/> to be output.</param>
+            <param name="commandCollection">The <see cref="T:Cocona.Command.CommandCollection"/>.</param>
+        </member>
+        <member name="M:Cocona.ShellCompletion.Generators.ICoconaShellCompletionCodeGenerator.GenerateOnTheFlyCandidates(System.IO.TextWriter,System.Collections.Generic.IReadOnlyList{Cocona.ShellCompletion.Candidate.CompletionCandidateValue})">
+            <summary>
+            Generates completion candidates for shell on the fly.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.TextWriter"/> to be output.</param>
+            <param name="values">The on-the-fly candidates.</param>
+        </member>
+        <member name="T:Cocona.ShellCompletion.Generators.ZshCoconaShellCompletionCodeGenerator">
+            <summary>
+            Generates the shell completion code for Zsh.
+            </summary>
+        </member>
+        <member name="T:Cocona.ShellCompletion.ICoconaShellCompletionCodeProvider">
+            <summary>
+            Provides to generate shell completion code and candidates.
+            </summary>
+        </member>
+        <member name="P:Cocona.ShellCompletion.ICoconaShellCompletionCodeProvider.SupportedTargets">
+            <summary>
+            Gets the shell names supported by the provider.
+            </summary>
+        </member>
+        <member name="M:Cocona.ShellCompletion.ICoconaShellCompletionCodeProvider.CanHandle(System.String)">
+            <summary>
+            Gets the value that indicates whether the provider can handle.
+            </summary>
+            <param name="target">The target shell name</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cocona.ShellCompletion.ICoconaShellCompletionCodeProvider.Generate(System.String,System.IO.TextWriter,Cocona.Command.CommandCollection)">
+            <summary>
+            Generates a shell completion support code for the target shell.
+            </summary>
+            <param name="target">The target shell name</param>
+            <param name="writer">The <see cref="T:System.IO.TextWriter"/> which to the code is written</param>
+            <param name="commandCollection">The <see cref="T:Cocona.Command.CommandCollection"/></param>
+        </member>
+        <member name="M:Cocona.ShellCompletion.ICoconaShellCompletionCodeProvider.GenerateOnTheFlyCandidates(System.String,System.IO.TextWriter,System.Collections.Generic.IReadOnlyList{Cocona.ShellCompletion.Candidate.CompletionCandidateValue})">
+            <summary>
+            Generates formatted candidates for the target shell.
+            </summary>
+            <param name="target">The target shell name</param>
+            <param name="writer">The <see cref="T:System.IO.TextWriter"/> which to the code is written</param>
+            <param name="values">The candidates</param>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.AllowNullAttribute">
+            <summary>Specifies that null is allowed as an input even if the corresponding type disallows it.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.DisallowNullAttribute">
+            <summary>Specifies that null is disallowed as an input even if the corresponding type allows it.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MaybeNullAttribute">
+            <summary>Specifies that an output may be null even if the corresponding type disallows it.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.NotNullAttribute">
+            <summary>Specifies that an output will not be null even if the corresponding type allows it.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute">
+            <summary>Specifies that when a method returns <see cref="P:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute.ReturnValue"/>, the parameter may be null even if the corresponding type disallows it.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute.#ctor(System.Boolean)">
+            <summary>Initializes the attribute with the specified return value condition.</summary>
+            <param name="returnValue">
+            The return value condition. If the method returns this value, the associated parameter may be null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute.ReturnValue">
+            <summary>Gets the return value condition.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute">
+            <summary>Specifies that when a method returns <see cref="P:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.ReturnValue"/>, the parameter will not be null even if the corresponding type allows it.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.#ctor(System.Boolean)">
+            <summary>Initializes the attribute with the specified return value condition.</summary>
+            <param name="returnValue">
+            The return value condition. If the method returns this value, the associated parameter will not be null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute.ReturnValue">
+            <summary>Gets the return value condition.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute">
+            <summary>Specifies that the output will be non-null if the named parameter is non-null.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute.#ctor(System.String)">
+            <summary>Initializes the attribute with the associated parameter name.</summary>
+            <param name="parameterName">
+            The associated parameter name.  The output will be non-null if the argument to the parameter specified is non-null.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute.ParameterName">
+            <summary>Gets the associated parameter name.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute">
+            <summary>Applied to a method that will never return under any circumstance.</summary>
+        </member>
+        <member name="T:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute">
+            <summary>Specifies that the method will not return if the associated Boolean parameter is passed the specified value.</summary>
+        </member>
+        <member name="M:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute.#ctor(System.Boolean)">
+            <summary>Initializes the attribute with the specified parameter value.</summary>
+            <param name="parameterValue">
+            The condition parameter value. Code after the method will be considered unreachable by diagnostics if the argument to
+            the associated parameter matches this value.
+            </param>
+        </member>
+        <member name="P:System.Diagnostics.CodeAnalysis.DoesNotReturnIfAttribute.ParameterValue">
+            <summary>Gets the condition parameter value.</summary>
+        </member>
+    </members>
+</doc>

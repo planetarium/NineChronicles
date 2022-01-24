@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.EnumType;
-using Nekoyume.Game.Character;
+using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Spine.Unity;
 using TMPro;
 using UnityEngine;
 
@@ -13,16 +13,9 @@ namespace Nekoyume.UI
     public class PrologueDialogPopup : PopupWidget
     {
         private const float TextInterval = 0.06f;
-        private const string FenrirKey = "dialog_10";
-        private const string FreyaKey = "300005";
-
-        private static readonly Vector3 FenrirSpinePosition = new Vector3(4001.7f, 3998.2f);
-        private static readonly Vector3 FreyaSpinePosition = new Vector3(4000.8f, 3994.59f);
 
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtDialog;
-        private DialogNPC _fenrir;
-        private DialogNPC _freya;
 
         private string _dialogKey;
         private int _dialogIndex;
@@ -32,13 +25,18 @@ namespace Nekoyume.UI
         private string _text;
         private int _callCount = 1;
 
+        [SerializeField]
+        private SkeletonGraphic freya;
+
+        [SerializeField]
+        private SkeletonGraphic fenrir;
+
         protected override void Awake()
         {
             base.Awake();
 
             CloseWidget = null;
             SubmitWidget = Skip;
-
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -52,17 +50,8 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            if (_fenrir)
-            {
-                _fenrir.gameObject.SetActive(false);
-                _fenrir = null;
-            }
-            if (_freya)
-            {
-                _freya.gameObject.SetActive(false);
-                _freya = null;
-            }
-
+            freya.DOFade(0, 0);
+            fenrir.DOFade(0, 0);
             base.Close(ignoreCloseAnimation);
             _callCount++;
         }
@@ -93,7 +82,7 @@ namespace Nekoyume.UI
             _coroutine = StartCoroutine(CoShowText());
         }
 
-        public IEnumerator CoShowText()
+        private IEnumerator CoShowText()
         {
             var text = L10nManager.Localize($"{_dialogKey}{_dialogIndex}");
             if (string.IsNullOrEmpty(text))
@@ -102,38 +91,17 @@ namespace Nekoyume.UI
             _npc = null;
             _text = ParseText(text);
 
-            // TODO: npc
             if (!string.IsNullOrEmpty(_npc))
             {
                 if (_npc == "11")
                 {
-                    if (_fenrir is null)
-                    {
-                        var go = Game.Game.instance.Stage.npcFactory.CreateDialogNPC(
-                            FenrirKey,
-                            FenrirSpinePosition,
-                            LayerType.UI,
-                            100);
-                        _fenrir = go.GetComponent<DialogNPC>();
-                    }
-
-                    _freya?.SpineController.Disappear(0.3f);
-                    _fenrir.SpineController.Appear(0.3f);
+                    freya.DOFade(0, 0.3f);
+                    fenrir.DOFade(1, 0.3f);
                 }
                 else
                 {
-                    if (_freya is null)
-                    {
-                        var go = Game.Game.instance.Stage.npcFactory.CreateDialogNPC(
-                            FreyaKey,
-                            FreyaSpinePosition,
-                            LayerType.UI,
-                            100);
-                        _freya = go.GetComponent<DialogNPC>();
-                    }
-
-                    _freya.SpineController.Appear(0.3f);
-                    _fenrir?.SpineController.Disappear(0.3f);
+                    freya.DOFade(1, 0.3f);
+                    fenrir.DOFade(0, 0.3f);
                 }
                 string localizedName;
                 try
@@ -147,9 +115,9 @@ namespace Nekoyume.UI
                 txtName.text = localizedName;
             }
 
-            bool skipTag = false;
-            bool tagClosed = true;
-            for (int textIndex = 1; textIndex <= _text.Length; ++textIndex)
+            var skipTag = false;
+            var tagClosed = true;
+            for (var textIndex = 1; textIndex <= _text.Length; ++textIndex)
             {
                 if (_text.Length > textIndex)
                 {
@@ -209,20 +177,19 @@ namespace Nekoyume.UI
                         }
 
                         opened = false;
-                        string left = text.Substring(0, openIndex);
-                        string right = text.Substring(i + 1);
-                        string[] pair = text.Substring(openIndex + 1, i - openIndex - 1)
+                        var left = text.Substring(0, openIndex);
+                        var right = text.Substring(i + 1);
+                        var pair = text.Substring(openIndex + 1, i - openIndex - 1)
                             .Split(':', '：')
                             .Select(value => value.Trim())
                             .ToArray();
-                        string pairKey = pair[0].ToLower();
+                        var pairKey = pair[0].ToLower();
                         int.TryParse(pair[1], out _);
-                        switch (pairKey)
+                        _npc = pairKey switch
                         {
-                            case "npc":
-                                _npc = pair[1];
-                                break;
-                        }
+                            "npc" => pair[1],
+                            _ => _npc
+                        };
 
                         text = $"{left}{right}";
                         i = left.Length - 1;

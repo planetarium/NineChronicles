@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Tween
 {
     using UniRx;
+    [RequireComponent(typeof(Mask))]
     public class MaskedRectTransformXRoller : MonoBehaviour
     {
         private enum PauseTiming
@@ -45,6 +47,9 @@ namespace Nekoyume.UI.Tween
         [SerializeField]
         private float pauseTime;
 
+        [SerializeField]
+        private bool scrollOnlyWhenNeed;
+
         private RectTransform _rectTransform = null;
 
         private Coroutine _coroutine = null;
@@ -60,6 +65,8 @@ namespace Nekoyume.UI.Tween
         private float RightOutXPosition => _rectTransform.rect.width;
 
         private float _realAnimationTime;
+
+        private bool _isEnabledAndFirstLoop;
 
         public BoolReactiveProperty isSelected = new BoolReactiveProperty(true);
 
@@ -83,7 +90,17 @@ namespace Nekoyume.UI.Tween
         {
             KillTween();
 
-            _coroutine = StartCoroutine(CoScrollContent());
+            if (scrollOnlyWhenNeed)
+            {
+                if (_rectTransform.rect.x < content.rectTransform.rect.x)
+                {
+                    _coroutine = StartCoroutine(CoScrollContent());
+                }
+            }
+            else
+            {
+                _coroutine = StartCoroutine(CoScrollContent());
+            }
         }
 
         private void OnDisable()
@@ -115,6 +132,8 @@ namespace Nekoyume.UI.Tween
                 ? animationSpeed * content.text.Length
                 : targetAnimationTime;
 
+            _isEnabledAndFirstLoop = true;
+
             yield return null;
             if (_rectTransform.rect.width >= content.rectTransform.rect.width)
             {
@@ -134,31 +153,27 @@ namespace Nekoyume.UI.Tween
             var leftInX = LeftInXPosition;
             var elapsedTime = 0f;
             var wasPaused = false;
-            var pauseTime = pauseTiming switch
-            {
-                PauseTiming.Left => (rightInX - leftOutX) / (rightOutX - leftOutX),
-                PauseTiming.Middle => ((leftOutX + rightOutX) / 2 - leftOutX) / (rightOutX - leftOutX),
-                PauseTiming.Right => (leftInX - leftOutX) / (rightOutX - leftOutX),
-                _ => throw new ArgumentOutOfRangeException()
-            };
 
             yield return new WaitForSeconds(startDelay);
             while (gameObject.activeSelf)
             {
                 var t = curve.Evaluate(elapsedTime / _realAnimationTime);
-                var xPos = Mathf.Lerp(isInfiniteScroll ? rightOutX : leftInX,  isInfiniteScroll ? leftOutX : rightInX, t);
+                var xStart = _isEnabledAndFirstLoop ? leftInX : isInfiniteScroll ? rightOutX : leftInX;
+                var xEnd = _isEnabledAndFirstLoop && isInfiniteScroll ? leftOutX : isInfiniteScroll ? leftOutX : rightInX;
+                var xPos = Mathf.Lerp(xStart, xEnd, t);
                 content.rectTransform.anchoredPosition = new Vector2(xPos, _originalPos.y);
 
                 elapsedTime += Time.deltaTime;
-                if (t >= pauseTime && !wasPaused && isInfiniteScroll)
+                if (!wasPaused && IsShouldPause(!isInfiniteScroll || _isEnabledAndFirstLoop, pauseTiming, t))
                 {
-                    yield return new WaitForSeconds(this.pauseTime);
+                    yield return new WaitForSeconds(pauseTime);
                     wasPaused = true;
                 }
 
                 if (elapsedTime > _realAnimationTime)
                 {
                     wasPaused = false;
+                    _isEnabledAndFirstLoop = false;
                     if (isInfiniteScroll)
                     {
                         content.rectTransform.anchoredPosition = new Vector2(rightOutX, _originalPos.y);
@@ -178,6 +193,34 @@ namespace Nekoyume.UI.Tween
                     yield return null;
                 }
             }
+        }
+
+        private bool IsShouldPause(bool startFromLeft, PauseTiming timing, float t)
+        {
+            if (startFromLeft)
+            {
+                var contentRectTransform = content.rectTransform;
+                return timing switch
+                {
+                    PauseTiming.Left => true,
+                    PauseTiming.Middle => contentRectTransform.anchoredPosition.x +
+                        contentRectTransform.rect.width / 2 < (LeftInXPosition + RightOutXPosition) / 2,
+                    PauseTiming.Right => contentRectTransform.anchoredPosition.x +
+                        contentRectTransform.rect.width < RightInXPosition,
+                    _ => throw new ArgumentOutOfRangeException(nameof(timing), timing, null)
+                };
+
+            }
+
+            return t >= timing switch
+            {
+                PauseTiming.Left => (RightInXPosition - LeftOutXPosition) /
+                                    (RightOutXPosition - LeftOutXPosition),
+                PauseTiming.Middle => .5f,
+                PauseTiming.Right => (LeftInXPosition - LeftOutXPosition) /
+                                     (RightOutXPosition - LeftOutXPosition),
+                _ => throw new ArgumentOutOfRangeException(nameof(timing), timing, null)
+            };
         }
     }
 }

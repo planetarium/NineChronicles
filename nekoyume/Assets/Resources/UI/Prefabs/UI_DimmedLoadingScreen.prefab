@@ -169,6 +169,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 5
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -337,7 +338,7 @@ GameObject:
   - component: {fileID: 4836213977736103079}
   - component: {fileID: 7691548164863260619}
   m_Layer: 5
-  m_Name: UI_BlockSyncLoadingScreen
+  m_Name: UI_DimmedLoadingScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -415,6 +416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
+  messageText: {fileID: 6808901225498358680}
 --- !u!1 &8160225781607870918
 GameObject:
   m_ObjectHideFlags: 0
