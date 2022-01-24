@@ -673,7 +673,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var errorList = (List)eval.Extra[nameof(Action.Buy.errors)];
+            var errorList = eval.Action.errors;
             List<(Guid orderId, int errorCode)> errors = errorList
                 .Cast<List>()
                 .Select(t => (t[0].ToGuid(), t[1].ToInteger()))
