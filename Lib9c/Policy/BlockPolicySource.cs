@@ -58,12 +58,12 @@ namespace Nekoyume.BlockChain.Policy
         /// Current date: 2021/12/14 16:21
         /// Current block index: 2_965_521
         /// Temporary target date : 2021/12/20 12:00
-        /// Temporary block index: 
+        /// Temporary block index:
         /// </summary>
         public const long V100093ObsoleteIndex = 3_050_000;
 
         public const long V100095ObsoleteIndex = 3_317_632;
-        
+
         public const long V100096ObsoleteIndex = 3_317_632;
 
 
@@ -293,7 +293,8 @@ namespace Nekoyume.BlockChain.Policy
                 if (transaction.Actions.Count == 1 &&
                     transaction.Actions.First().InnerAction is IActivateAction aa)
                 {
-                    return blockChain.GetState(aa.GetPendingAddress()) is Dictionary rawPending &&
+                    return transaction.Nonce == 0 &&
+                        blockChain.GetState(aa.GetPendingAddress()) is Dictionary rawPending &&
                         new PendingActivationState(rawPending).Verify(aa.GetSignature())
                         ? null
                         : new TxPolicyViolationException(

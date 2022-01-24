@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using Bencodex.Types;
@@ -33,6 +34,9 @@ namespace Lib9c.Tests.Action
         {
             return _rawStates.TryGetValue(ToStateKey(address), out IValue value) ? value : null;
         }
+
+        public IReadOnlyList<IValue> GetStates(IReadOnlyList<Address> addresses) =>
+            addresses.Select(GetState).ToArray();
 
         public IAccountStateDelta SetState(Address address, IValue state)
         {

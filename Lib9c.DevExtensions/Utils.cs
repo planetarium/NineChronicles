@@ -6,8 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Bencodex;
 using Cocona;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
@@ -15,6 +17,7 @@ using Libplanet.Crypto;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
+using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
@@ -22,7 +25,7 @@ using Serilog;
 using Serilog.Core;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
-namespace Lib9c.Tools
+namespace Lib9c.DevExtensions
 {
     public static class Utils
     {
@@ -52,14 +55,17 @@ namespace Lib9c.Tools
             IBlockPolicy<NCAction> policy = policySource.GetPolicy();
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             IStore store = new RocksDBStore(storePath);
-            stateKeyValueStore ??= new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
+            if (stateKeyValueStore is null)
+            {
+                stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
+            }
             IStateStore stateStore = new TrieStateStore(stateKeyValueStore);
             Guid chainIdValue
                 = chainId ??
                   store.GetCanonicalChainId() ??
                   throw new CommandExitedException(
                       "No canonical chain ID.  Available chain IDs:\n    " +
-                      string.Join("\n    ", store.ListChainIds()),
+                      string.Join<Guid>("\n    ", store.ListChainIds()),
                       1);
 
             BlockHash genesisBlockHash;
@@ -71,7 +77,7 @@ namespace Lib9c.Tools
             {
                 throw new CommandExitedException(
                     $"The chain {chainIdValue} seems empty; try with another chain ID:\n    " +
-                        string.Join("\n    ", store.ListChainIds()),
+                        string.Join<Guid>("\n    ", store.ListChainIds()),
                     1
                 );
             }
@@ -123,13 +129,13 @@ namespace Lib9c.Tools
             string blockHashOrIndex,
             long defaultIndex = -1)
         {
-            if (!(blockHashOrIndex is {} blockStr))
+            if (!(blockHashOrIndex is string blockStr))
             {
                 return chain[defaultIndex];
             }
 
             if (long.TryParse(blockStr, out long idx) ||
-                blockStr.StartsWith('#') && long.TryParse(blockStr.Substring(1), out idx))
+                blockStr.StartsWith("#") && long.TryParse(blockStr.Substring(1), out idx))
             {
                 try
                 {
@@ -141,17 +147,30 @@ namespace Lib9c.Tools
                 }
             }
 
-            BlockHash blockHash = Utils.ParseBlockHash(blockStr);
+            BlockHash blockHash = ParseBlockHash(blockStr);
             return chain[blockHash];
         }
 
-        public static Dictionary<string, string> ImportSheets(string dir)
+        public static Dictionary<string, string> ImportSheets(string dir = null)
         {
-            var sheets = new Dictionary<string, string>();
+            if (dir is null)
+            {
+                dir = Path
+                    .GetFullPath($"..{Path.DirectorySeparatorChar}")
+                    .Replace(
+                        $"Lib9c.DevExtensions.Tests{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}",
+                        $"Lib9c{Path.DirectorySeparatorChar}TableCSV{Path.DirectorySeparatorChar}");
+            }
             var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
+            var sheets = new Dictionary<string, string>();
             foreach (var filePath in files)
             {
-                var fileName = Path.GetFileNameWithoutExtension(filePath);
+                string fileName = Path.GetFileName(filePath);
+                if (fileName.EndsWith(".csv"))
+                {
+                    fileName = fileName.Replace(".csv", "");
+                }
+
                 sheets[fileName] = File.ReadAllText(filePath);
             }
 
@@ -224,6 +243,18 @@ namespace Lib9c.Tools
             return activatedAccounts.Accounts
                 .Select(account => new Address(account))
                 .ToImmutableHashSet();
+        }
+
+        public static void ExportBlock(Block<PolymorphicAction<ActionBase>> block, string path)
+        {
+            Bencodex.Types.Dictionary dict = block.MarshalBlock();
+            byte[] encoded = new Codec().Encode(dict);
+            File.WriteAllBytes(path, encoded);
+        }
+
+        public static void ExportKeys(List<ActivationKey> keys, string path)
+        {
+            File.WriteAllLines(path, keys.Select(v => v.Encode()));
         }
 
         [Serializable]

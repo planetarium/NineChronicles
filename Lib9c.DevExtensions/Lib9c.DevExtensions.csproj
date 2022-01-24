@@ -21,7 +21,16 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Cocona.Core" Version="1.5.0" />
       <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
+      <PackageReference Include="System.Collections" Version="4.3.0" />
+      <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+      <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+      <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+      <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+      <PackageReference Include="System.Text.Encoding.Extensions" Version="4.3.0" />
+      <PackageReference Include="System.Xml.ReaderWriter" Version="4.3.0" />
     </ItemGroup>
 
 </Project>

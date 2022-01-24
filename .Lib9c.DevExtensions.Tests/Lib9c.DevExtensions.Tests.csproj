@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <TargetFramework>netcoreapp3.1</TargetFramework>
+      <LangVersion>8.0</LangVersion>
+      <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.assert" Version="2.4.1" />
+        <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Lib9c.DevExtensions\Lib9c.DevExtensions.csproj" />
+    </ItemGroup>
+
+</Project>
