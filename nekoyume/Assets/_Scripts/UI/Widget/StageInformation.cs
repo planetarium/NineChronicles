@@ -32,13 +32,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI titleText;
 
         [SerializeField]
-        private TextMeshProUGUI monstersAreaText;
-
-        [SerializeField]
         private List<VanillaCharacterView> monstersAreaCharacterViews;
-
-        [SerializeField]
-        private TextMeshProUGUI rewardsAreaText;
 
         [SerializeField]
         private List<StageRewardItemView> rewardsAreaItemViews;
@@ -75,8 +69,6 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            monstersAreaText.text = L10nManager.Localize("UI_WORLD_MAP_MONSTERS");
-            rewardsAreaText.text = L10nManager.Localize("UI_REWARDS");
             submitButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
 
             var tooltip = Find<ItemInformationTooltip>();
