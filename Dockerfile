@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 
 COPY nekoyume /src
-COPY scripts /scripts
 RUN dotnet build /src/Assets/_Scripts/NineChronicles.RPC.Shared/NineChronicles.RPC.Shared/NineChronicles.RPC.Shared.csproj
 
 FROM gableroux/unity3d:2019.1.0f2 AS build
