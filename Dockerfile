@@ -25,7 +25,7 @@ COPY --from=build-env /src /src
 COPY scripts /scripts
 RUN chmod +x /scripts/*.sh
 
-RUN /scripts/build.sh
+RUN /scripts/build-player.sh LinuxHeadless
 
 FROM bitnami/minideb:stretch
 
