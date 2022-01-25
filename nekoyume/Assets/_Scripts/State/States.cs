@@ -153,19 +153,26 @@ namespace Nekoyume.State
                 return new AvatarState(dict);
             }
 
-            foreach (var key in new[]
+            var addressPairList = new List<string>
             {
                 LegacyInventoryKey,
                 LegacyWorldInformationKey,
-                LegacyQuestListKey,
-            })
+                LegacyQuestListKey
+            }.Select(key => (Key: key, KeyAddress: address.Derive(key))).ToArray();
+
+            var states = await agent.GetStateBulk(addressPairList.Select(value => value.KeyAddress));
+            // Make Tuple list by state value and state address key.
+            var stateAndKeys = states
+                .Join(addressPairList,
+                    state => state.Key,
+                    tuple => tuple.KeyAddress,
+                    (state, tuple) => (state.Value, tuple.Key));
+
+            foreach (var (stateIValue, key) in stateAndKeys)
             {
-                var address2 = address.Derive(key);
-                var value = await agent.GetStateAsync(address2);
-                if (value is null)
+                if (stateIValue is null)
                 {
-                    if (allowBrokenState &&
-                        dict.ContainsKey(key))
+                    if (allowBrokenState && dict.ContainsKey(key))
                     {
                         dict = new Bencodex.Types.Dictionary(dict.Remove((Text)key));
                     }
@@ -173,7 +180,7 @@ namespace Nekoyume.State
                     continue;
                 }
 
-                dict = dict.SetItem(key, value);
+                dict = dict.SetItem(key, stateIValue);
             }
 
             return new AvatarState(dict);
