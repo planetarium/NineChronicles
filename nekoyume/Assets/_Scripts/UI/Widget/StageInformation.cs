@@ -105,6 +105,10 @@ namespace Nekoyume.UI
             submitButton.OnSubmitSubject
                 .Subscribe(_ => GoToPreparation())
                 .AddTo(gameObject);
+
+            L10nManager.OnLanguageChange
+                .Subscribe(_ => submitButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER"))
+                .AddTo(gameObject);
         }
 
         private void OnClickClose()
