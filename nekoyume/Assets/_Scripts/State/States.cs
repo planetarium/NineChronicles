@@ -121,11 +121,7 @@ namespace Nekoyume.State
             return null;
         }
 
-        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address) =>
-            await TryGetAvatarStateAsync(address, false);
-
-
-        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address, bool allowBrokenState)
+        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address, bool allowBrokenState = false)
         {
             AvatarState avatarState = null;
             bool exist = false;
