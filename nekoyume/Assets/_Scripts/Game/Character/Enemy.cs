@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Character
 
         protected override bool CanRun => base.CanRun && !TargetInAttackRange(_player);
 
-        private CharacterSpineController SpineController { get; set; }
+        public CharacterSpineController SpineController { get; private set; }
 
         public override string TargetTag => Tag.Player;
 
@@ -151,10 +151,39 @@ namespace Nekoyume.Game.Character
             }
 
             var origin = Resources.Load<GameObject>(spineResourcePath);
+            if (!origin)
+            {
+                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+            }
+
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);
             UpdateHitPoint();
+        }
+
+        public void ChangeSpineResource(string id)
+        {
+            var spineResourcePath = $"Character/Monster/{id}";
+
+            if (!(Animator.Target is null))
+            {
+                var animatorTargetName = spineResourcePath.Split('/').Last();
+                if (Animator.Target.name.Contains(animatorTargetName))
+                    return;
+
+                Animator.DestroyTarget();
+            }
+
+            var origin = Resources.Load<GameObject>(spineResourcePath);
+            if (!origin)
+            {
+                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+            }
+
+            var go = Instantiate(origin, gameObject.transform);
+            SpineController = go.GetComponent<CharacterSpineController>();
+            Animator.ResetTarget(go);
         }
 
         #endregion

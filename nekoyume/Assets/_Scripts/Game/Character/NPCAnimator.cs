@@ -24,5 +24,11 @@ namespace Nekoyume.Game.Character
             
             Animator.Play(type.ToString(), BaseLayerIndex, normalizedTime);
         }
+
+        public bool HasType(NPCAnimation.Type type)
+        {
+            var stateId = Animator.StringToHash(type.ToString());
+            return Animator.HasState(BaseLayerIndex, stateId);
+        }
     }
 }

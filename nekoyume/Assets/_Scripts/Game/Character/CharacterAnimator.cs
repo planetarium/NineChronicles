@@ -57,6 +57,34 @@ namespace Nekoyume.Game.Character
 
         #region Animation
 
+        public void Play(CharacterAnimation.Type type)
+        {
+            switch (type)
+            {
+                case CharacterAnimation.Type.Standing:
+                    Standing();
+                    break;
+                case CharacterAnimation.Type.StandingToIdle:
+                    StandingToIdle();
+                    break;
+                case CharacterAnimation.Type.Idle:
+                    Idle();
+                    break;
+                case CharacterAnimation.Type.Run:
+                    Run();
+                    break;
+                default:
+                    Animator.Rebind();
+                    Animator.Play(type.ToString(), BaseLayerIndex, 0f);
+                    break;
+            }
+        }
+        public bool HasType(CharacterAnimation.Type type)
+        {
+            var stateId = Animator.StringToHash(type.ToString());
+            return Animator.HasState(BaseLayerIndex, stateId);
+        }
+
         public void Standing()
         {
             Animator.SetFloat(PrologueSpeed, 0.1f);
