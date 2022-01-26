@@ -21,7 +21,7 @@ ARG ulf
 
 ENV ULF=$ulf
 
-COPY --from=build-env /src /src
+COPY --from=build-env /src /nekoyume
 COPY scripts /scripts
 RUN chmod +x /scripts/*.sh
 
