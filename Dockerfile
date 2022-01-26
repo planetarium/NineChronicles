@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 COPY nekoyume /src
 RUN dotnet build /src/Assets/_Scripts/NineChronicles.RPC.Shared/NineChronicles.RPC.Shared/NineChronicles.RPC.Shared.csproj
 
-FROM gableroux/unity3d:2019.1.0f2 AS build
+FROM unityci/editor:ubuntu-2020.3.4f1-linux-il2cpp-0.11 AS build
 
 ARG apt_source
 
