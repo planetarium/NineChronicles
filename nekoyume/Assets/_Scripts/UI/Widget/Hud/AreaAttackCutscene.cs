@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Nekoyume.Helper;
 using Spine.Unity;
 using Spine.Unity.AttachmentTools;
@@ -21,6 +21,8 @@ namespace Nekoyume.UI
             var time = UpdateCutscene(cutScene, armorId);
             Destroy(cutScene.gameObject, time);
         }
+
+        public float UpdateCutscene(int armorId) => UpdateCutscene(this, armorId);
 
         private static float UpdateCutscene(AreaAttackCutscene cutscene, int armorId)
         {

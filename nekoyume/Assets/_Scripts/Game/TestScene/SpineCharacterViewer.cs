@@ -1,13 +1,14 @@
-using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
+using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Toggle = UnityEngine.UI.Toggle;
 
 namespace Nekoyume.TestScene
 {
@@ -42,6 +43,9 @@ namespace Nekoyume.TestScene
 
         [SerializeField]
         private Button loadBgButton;
+
+        [SerializeField]
+        private Toggle cutsceneToggle;
 
         [SerializeField]
         private Enemy enemy;
@@ -140,6 +144,15 @@ namespace Nekoyume.TestScene
                 resourceWarningText.text = e.Message;
                 resourceWarningText.gameObject.SetActive(true);
             }
+        }
+
+        private void ShowCutscene(int armorId)
+        {
+            var cutscenePath = $"UI/Prefabs/UI_{nameof(AreaAttackCutscene)}";
+            var cutscenePrefab = Resources.Load<AreaAttackCutscene>(cutscenePath);
+            var cutscene = Instantiate(cutscenePrefab, transform);
+            var animationTime = cutscene.UpdateCutscene(armorId);
+            Destroy(cutscene.gameObject, animationTime);
         }
 
         private void ShowMonster(string id)
@@ -259,9 +272,15 @@ namespace Nekoyume.TestScene
                             return;
                         }
                         characterAnimator.Play(animationType);
+
+                        if (cutsceneToggle.isOn)
+                        {
+                            ShowCutscene(player.GetArmorId());
+                        }
                     };
                 }
 
+                cutsceneToggle.gameObject.SetActive(animator is PlayerAnimator);
                 button.gameObject.SetActive(true);
                 _activeButtons.Enqueue(button);
             }
