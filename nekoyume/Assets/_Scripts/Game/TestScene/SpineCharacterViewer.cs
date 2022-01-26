@@ -68,6 +68,8 @@ namespace Nekoyume.TestScene
 
         private GameObject _background;
 
+        private string _currentId;
+
         #region Mono
 
         private void Awake()
@@ -105,6 +107,7 @@ namespace Nekoyume.TestScene
             npc.gameObject.SetActive(false);
             player.gameObject.SetActive(false);
             resourceWarningText.gameObject.SetActive(false);
+            _currentId = null;
 
             var text = spinePrefabIDField.text;
             if (string.IsNullOrEmpty(text))
@@ -114,6 +117,7 @@ namespace Nekoyume.TestScene
                 return;
             }
 
+            _currentId = text;
             try
             {
                 if (IsMonster(text))
@@ -151,7 +155,7 @@ namespace Nekoyume.TestScene
             var cutscenePath = $"UI/Prefabs/UI_{nameof(AreaAttackCutscene)}";
             var cutscenePrefab = Resources.Load<AreaAttackCutscene>(cutscenePath);
             var cutscene = Instantiate(cutscenePrefab, transform);
-            var animationTime = cutscene.UpdateCutscene(armorId);
+            var animationTime = cutscene.UpdateCutscene(40100007);
             Destroy(cutscene.gameObject, animationTime);
         }
 
@@ -275,7 +279,8 @@ namespace Nekoyume.TestScene
 
                         if (cutsceneToggle.isOn)
                         {
-                            ShowCutscene(player.GetArmorId());
+                            var armorId = int.Parse(_currentId);
+                            ShowCutscene(armorId);
                         }
                     };
                 }
