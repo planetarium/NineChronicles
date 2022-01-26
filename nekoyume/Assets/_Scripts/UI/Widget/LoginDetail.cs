@@ -23,7 +23,6 @@ namespace Nekoyume.UI
     {
         public GameObject btnLogin;
         public GameObject btnCreate;
-        public TextMeshProUGUI btnCreateText;
         public TextMeshProUGUI levelAndNameInfo;
         public GameObject palette;
         public TextMeshProUGUI paletteHairText;
@@ -56,7 +55,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            btnCreateText.text = L10nManager.Localize("UI_CREATE_CHARACTER_CONFIRM");
             jobDescriptionText.text = L10nManager.Localize("UI_WARRIOR_DESCRIPTION");
 
             Game.Event.OnLoginDetail.AddListener(Init);
