@@ -165,8 +165,8 @@ namespace Nekoyume.State
             var stateAndKeys = states
                 .Join(addressPairList,
                     state => state.Key,
-                    tuple => tuple.KeyAddress,
-                    (state, tuple) => (state.Value, tuple.Key));
+                    addressKeyTuple => addressKeyTuple.KeyAddress,
+                    (state, addressKeyTuple) => (state.Value, addressKeyTuple.Key));
 
             foreach (var (stateIValue, key) in stateAndKeys)
             {
