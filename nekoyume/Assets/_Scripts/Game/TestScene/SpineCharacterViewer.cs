@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Toggle = UnityEngine.UI.Toggle;
 
@@ -48,6 +49,9 @@ namespace Nekoyume.TestScene
         private Toggle cutsceneToggle;
 
         [SerializeField]
+        private FullCostumeCutscene fullCostumeCutscene;
+
+        [SerializeField]
         private Enemy enemy;
 
         [SerializeField]
@@ -83,6 +87,11 @@ namespace Nekoyume.TestScene
 
         private void Update()
         {
+            if (backgroundPrefabIDField.isFocused || spinePrefabIDField.isFocused)
+            {
+                return;
+            }
+
             var h = Input.GetAxis("Horizontal");
             var v = Input.GetAxis("Vertical");
 
@@ -150,13 +159,21 @@ namespace Nekoyume.TestScene
             }
         }
 
-        private void ShowCutscene(int armorId)
+        private void ShowCutscene(string id)
         {
-            var cutscenePath = $"UI/Prefabs/UI_{nameof(AreaAttackCutscene)}";
-            var cutscenePrefab = Resources.Load<AreaAttackCutscene>(cutscenePath);
-            var cutscene = Instantiate(cutscenePrefab, transform);
-            var animationTime = cutscene.UpdateCutscene(40100007);
-            Destroy(cutscene.gameObject, animationTime);
+            if (IsFullCostume(id))
+            {
+                fullCostumeCutscene.Show(40100007);
+            }
+            else if (IsPlayer(id))
+            {
+                var armorId = int.Parse(id);
+                var cutscenePath = $"UI/Prefabs/UI_{nameof(AreaAttackCutscene)}";
+                var cutscenePrefab = Resources.Load<AreaAttackCutscene>(cutscenePath);
+                var cutscene = Instantiate(cutscenePrefab, transform);
+                var animationTime = cutscene.UpdateCutscene(armorId);
+                Destroy(cutscene.gameObject, animationTime);
+            }
         }
 
         private void ShowMonster(string id)
@@ -279,8 +296,7 @@ namespace Nekoyume.TestScene
 
                         if (cutsceneToggle.isOn)
                         {
-                            var armorId = int.Parse(_currentId);
-                            ShowCutscene(armorId);
+                            ShowCutscene(_currentId);
                         }
                     };
                 }
