@@ -55,9 +55,7 @@ namespace Nekoyume.UI.Module
 
         private void GoTobigCatYearEventPage()
         {
-            var address = States.Instance.AgentState.address;
-            var url = string.Format(bigCatYearEventPageURLFormat, address);
-            Application.OpenURL(url);
+            Application.OpenURL(bigCatYearEventPageURLFormat);
         }
 
 
