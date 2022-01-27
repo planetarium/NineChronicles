@@ -43,7 +43,7 @@ namespace Nekoyume.UI
 
             if (toolTipChangeButton != null)
             {
-                toolTipChangeButton.onClick.AddListener(ChangeToolTip);
+                toolTipChangeButton.onClick.AddListener(SetToolTipText);
             }
         }
 
@@ -71,10 +71,8 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             base.OnEnable();
-            if (_tips != null)
-            {
-                toolTip.text = _tips[Random.Range(0, _tips.Count)];
-            }
+            
+            SetToolTipText();
         }
 
         protected override void OnDisable()
@@ -83,7 +81,7 @@ namespace Nekoyume.UI
             base.OnDisable();
         }
 
-        public void ChangeToolTip()
+        public void SetToolTipText()
         {
             if (_tips != null)
             {
