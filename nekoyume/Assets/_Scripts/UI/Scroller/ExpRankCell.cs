@@ -84,7 +84,7 @@ namespace Nekoyume.UI.Scroller
 
             if (_isCurrentUser)
             {
-                var player = Game.Game.instance.Stage.selectedPlayer;
+                var player = Game.Game.instance.Stage.SelectedPlayer;
                 if (player is null)
                 {
                     player = Game.Game.instance.Stage.GetPlayer();

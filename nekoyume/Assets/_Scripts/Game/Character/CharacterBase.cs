@@ -20,6 +20,9 @@ namespace Nekoyume.Game.Character
     {
         protected const float AnimatorTimeScale = 1.2f;
 
+        [SerializeField]
+        private bool shouldContainHUD = true;
+
         public GameObject attackPoint;
         public SortingGroup sortingGroup;
 
@@ -180,7 +183,7 @@ namespace Nekoyume.Game.Character
         {
             // No pooling. Widget.Create<HudContainer> didn't pooling HUD object.
             // HUD Pooling causes HUD positioning bug.
-            if (!HudContainer)
+            if (!HudContainer && shouldContainHUD)
             {
                 HudContainer = Widget.Create<HudContainer>(true);
             }

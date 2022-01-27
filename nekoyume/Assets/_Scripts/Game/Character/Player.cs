@@ -617,6 +617,30 @@ namespace Nekoyume.Game.Character
             UpdateHitPoint();
         }
 
+        public void ChangeSpineResource(string id, bool isFullCostume)
+        {
+            var spineResourcePath = isFullCostume ?
+                $"Character/FullCostume/{id}" : $"Character/Player/{id}";
+
+            if (!(Animator.Target is null))
+            {
+                var animatorTargetName = spineResourcePath.Split('/').Last();
+                if (Animator.Target.name.Contains(animatorTargetName))
+                    return;
+
+                Animator.DestroyTarget();
+            }
+
+            var origin = Resources.Load<GameObject>(spineResourcePath);
+            if (!origin)
+            {
+                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+            }
+
+            var go = Instantiate(origin, gameObject.transform);
+            SpineController = go.GetComponent<PlayerSpineController>();
+            Animator.ResetTarget(go);
+        }
 
         public IEnumerator CoGetExp(long exp)
         {
