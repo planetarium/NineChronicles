@@ -161,13 +161,22 @@ namespace Nekoyume.TestScene
 
         private void ShowCutscene(string id)
         {
+            var armorId = int.Parse(id);
+
             if (IsFullCostume(id))
             {
-                fullCostumeCutscene.Show(40100007);
+                try
+                {
+                    fullCostumeCutscene.Show(armorId);
+                }
+                catch (FailedToLoadResourceException<GameObject> e)
+                {
+                    resourceWarningText.text = e.Message;
+                    resourceWarningText.gameObject.SetActive(true);
+                }
             }
             else if (IsPlayer(id))
             {
-                var armorId = int.Parse(id);
                 var cutscenePath = $"UI/Prefabs/UI_{nameof(AreaAttackCutscene)}";
                 var cutscenePrefab = Resources.Load<AreaAttackCutscene>(cutscenePath);
                 var cutscene = Instantiate(cutscenePrefab, transform);

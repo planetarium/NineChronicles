@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
+  m_Name: cutscene_40100009_Atlas
+  m_EditorClassIdentifier: 
+  atlasFile: {fileID: 4900000, guid: 5a055d35c74f53d49aa1f0c68b4c2f69, type: 3}
+  materials:
+  - {fileID: 2100000, guid: 37ce1633aa914bb4b99029a1216df761, type: 2}
+  - {fileID: 2100000, guid: 5de7659261ac7484184ac15abc705182, type: 2}
+  - {fileID: 2100000, guid: 9743e8650b265ca43bcbbd1b590a62e0, type: 2}

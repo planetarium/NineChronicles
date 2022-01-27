@@ -18,6 +18,10 @@ namespace Nekoyume.UI
         {
             var assetPath = $"Character/FullCostumeCutscene/{costumeId}";
             var asset = Resources.Load<GameObject>(assetPath);
+            if (asset == null)
+            {
+                throw new FailedToLoadResourceException<GameObject>(assetPath);
+            }
 
             _cutscene = Instantiate(asset, transform);
             var skeletonAnimation = _cutscene.GetComponent<SkeletonAnimation>();
