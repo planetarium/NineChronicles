@@ -33,8 +33,6 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            submitButton.Text = L10nManager.Localize("UI_BACK_TO_ARENA");
-
             CloseWidget = null;
             SubmitWidget = BackToRanking;
             submitButton.OnClick = BackToRanking;

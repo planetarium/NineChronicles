@@ -23,7 +23,6 @@ namespace Nekoyume.UI
         public TextMeshProUGUI materialText;
         public SimpleCountableItemView[] materialItems;
         public Button submitButton;
-        public TextMeshProUGUI submitButtonText;
         public GameObject materialView;
         public TouchHandler touchHandler;
         public Image consumableHeader;
@@ -39,9 +38,6 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-
-            materialText.text = L10nManager.Localize("UI_COMBINATION_MATERIALS");
-            submitButtonText.text = L10nManager.Localize("UI_OK");
 
             submitButton.OnClickAsObservable().Subscribe(_ => Close()).AddTo(gameObject);
             touchHandler.OnClick.Subscribe(pointerEventData =>
