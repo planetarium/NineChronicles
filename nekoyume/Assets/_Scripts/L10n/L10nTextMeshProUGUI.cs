@@ -159,7 +159,7 @@ namespace Nekoyume.L10n
 
         private void SetLanguage()
         {
-            if (!string.IsNullOrEmpty(l10nKey))
+            if (!string.IsNullOrWhiteSpace(l10nKey))
             {
                 Text.text = L10nManager.Localize(l10nKey);
             }
