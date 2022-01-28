@@ -235,11 +235,33 @@ namespace Nekoyume.Action
                 avatarState.inventory.AddItem(itemBase);
             }
 
-            weeklyArenaMap = (Dictionary) weeklyArenaMap
-                .SetItem(arenaKey, arenaInfo.Serialize())
-                .SetItem(enemyKey, enemyArenaInfo.Serialize());
-            rawWeeklyArenaState = rawWeeklyArenaState.SetItem("map", weeklyArenaMap);
-            states = states.SetState(weeklyArenaAddress, rawWeeklyArenaState);
+            var arenaMapDict = new Dictionary<IKey, IValue>();
+            foreach (var kv in weeklyArenaMap)
+            {
+                var key = kv.Key;
+                var value = kv.Value;
+                if (key.Equals(arenaKey))
+                {
+                    value = arenaInfo.Serialize();
+                }
+
+                if (key.Equals(enemyKey))
+                {
+                    value = enemyArenaInfo.Serialize();
+                }
+
+                arenaMapDict[key] = value;
+            }
+
+            var weeklyArenaDict = new Dictionary<IKey, IValue>();
+            foreach (var kv in rawWeeklyArenaState)
+            {
+                weeklyArenaDict[kv.Key] = kv.Key.Equals((Text)"map")
+                    ? new Dictionary(arenaMapDict)
+                    : kv.Value;
+            }
+
+            states = states.SetState(weeklyArenaAddress, new Dictionary(weeklyArenaDict));
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Serialize WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
