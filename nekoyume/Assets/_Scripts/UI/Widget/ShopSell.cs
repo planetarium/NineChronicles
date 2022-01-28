@@ -542,15 +542,24 @@ namespace Nekoyume.UI
 
         private async void ResponseSellCancellation(Guid orderId, Guid tradableId)
         {
+            var count = SharedModel.ItemCountAndPricePopup.Value.Item.Value.Count.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             var itemName = await Util.GetItemNameByOrderId(orderId);
             ReactiveShopState.RemoveSellDigest(orderId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
-            OneLineSystem.Push(
-                MailType.Auction,
-                string.Format(format, itemName),
-                NotificationCell.NotificationType.Information);
+            
+            string message;
+            if (count > 1)
+            {
+                message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_CANCEL_START"),
+                    itemName, count);
+            }
+            else
+            {
+                message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START"), itemName);
+            }
+
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem =>
                 (inventoryItem.ItemBase.Value is ITradableItem));
         }
