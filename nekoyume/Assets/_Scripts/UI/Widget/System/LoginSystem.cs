@@ -51,16 +51,11 @@ namespace Nekoyume.UI
         public TextMeshProUGUI weakText;
         public TextMeshProUGUI correctText;
         public TextMeshProUGUI incorrectText;
-        public TextMeshProUGUI findPassphraseText;
-        public TextMeshProUGUI backToLoginText;
         public TextMeshProUGUI passPhraseText;
         public TextMeshProUGUI retypeText;
-        public TextMeshProUGUI loginText;
-        public TextMeshProUGUI enterPrivateKeyText;
         public TextMeshProUGUI accountAddressText;
         public TextMeshProUGUI accountAddressHolder;
         public TextMeshProUGUI accountWarningText;
-        public TextMeshProUGUI successText;
         public ConditionalButton submitButton;
         public Button findPassphraseButton;
         public Button backToLoginButton;
@@ -80,16 +75,6 @@ namespace Nekoyume.UI
             weakText.gameObject.SetActive(false);
             correctText.gameObject.SetActive(false);
             incorrectText.gameObject.SetActive(false);
-            contentText.text = L10nManager.Localize("UI_LOGIN_CONTENT");
-            accountAddressHolder.text = L10nManager.Localize("UI_ACCOUNT_PLACEHOLDERS");
-            findPassphraseTitle.text = L10nManager.Localize("UI_LOGIN_FIND_PASSPHRASE_TITLE");
-            findPassphraseText.text = L10nManager.Localize("UI_LOGIN_FIND_PASSPHRASE");
-            backToLoginText.text = L10nManager.Localize("UI_LOGIN_BACK_TO_LOGIN");
-            passPhraseText.text = L10nManager.Localize("UI_LOGIN_PASSWORD_INFO");
-            retypeText.text = L10nManager.Localize("UI_LOGIN_RETYPE_INFO");
-            loginText.text = L10nManager.Localize("UI_LOGIN_INFO");
-            enterPrivateKeyText.text = L10nManager.Localize("UI_LOGIN_PRIVATE_KEY_INFO");
-            successText.text = L10nManager.Localize("UI_ID_CREATE_SUCCESS");
             passPhraseField.placeholder.GetComponent<Text>().text =
                 L10nManager.Localize("UI_LOGIN_INPUT_PASSPHRASE");
             retypeField.placeholder.GetComponent<Text>().text =

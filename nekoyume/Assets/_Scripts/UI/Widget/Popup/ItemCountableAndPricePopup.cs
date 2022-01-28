@@ -150,6 +150,11 @@ namespace Nekoyume.UI
 
                 _data?.OnClickCancel.OnNext(_data);
             };
+            
+            L10nManager.OnLanguageChange.Subscribe(_ =>
+            {
+                reregisterButton.Text = L10nManager.Localize("UI_REREGISTER");
+            }).AddTo(_disposablesForAwake);
         }
 
         protected override void OnDestroy()

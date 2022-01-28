@@ -54,12 +54,6 @@ namespace Nekoyume.UI
         private GameObject emptyImage = null;
 
         [SerializeField]
-        private TextMeshProUGUI emptyText = null;
-
-        [SerializeField]
-        private string emptyTextL10nKey = null;
-
-        [SerializeField]
         private Blur blur = null;
 
         [SerializeField]
@@ -99,8 +93,6 @@ namespace Nekoyume.UI
                 .ObserveOnMainThread()
                 .Subscribe(UpdateNotification)
                 .AddTo(gameObject);
-
-            emptyText.text = L10nManager.Localize(emptyTextL10nKey);
         }
 
         public override void Show(bool ignoreShowAnimation = false)

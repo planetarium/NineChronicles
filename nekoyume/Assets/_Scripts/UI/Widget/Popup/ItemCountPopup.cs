@@ -56,6 +56,19 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForAwake);
 
             SubmitWidget = () => submitButton.OnSubmitSubject.OnNext(default);
+
+            L10nManager.OnLanguageChange.Subscribe(_ =>
+            {
+                submitButton.Text = L10nManager.Localize("UI_OK");
+                if (informationText != null)
+                {
+                    informationText.text = L10nManager.Localize("UI_RETRIEVE_INFO");
+                }
+                if (cancelButton != null)
+                {
+                    cancelButton.Text = L10nManager.Localize("UI_CANCEL");
+                }
+            }).AddTo(_disposablesForAwake);
         }
 
         protected override void OnDestroy()

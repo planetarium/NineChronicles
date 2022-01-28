@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
@@ -60,6 +61,9 @@ namespace Nekoyume.UI.Scroller
                     AudioController.PlayClick();
                     onClick.OnNext(this);
                 })
+                .AddTo(gameObject);
+            L10nManager.OnLanguageChange
+                .Subscribe(_ => SetContent(Quest))
                 .AddTo(gameObject);
         }
 

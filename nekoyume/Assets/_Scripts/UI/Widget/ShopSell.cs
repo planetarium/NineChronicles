@@ -34,9 +34,6 @@ namespace Nekoyume.UI
         private Module.ShopSellItems shopItems = null;
 
         [SerializeField]
-        private TextMeshProUGUI noticeText = null;
-
-        [SerializeField]
         private SpeechBubble speechBubble = null;
 
         [SerializeField]
@@ -53,7 +50,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
             SharedModel = new Shop();
-            noticeText.text = L10nManager.Localize("UI_SHOP_NOTICE");
             CloseWidget = null;
 
             buyButton.onClick.AddListener(() =>
