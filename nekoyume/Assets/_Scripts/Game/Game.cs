@@ -135,10 +135,7 @@ namespace Nekoyume.Game
             {
                 yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
                 
-                languageType.Subscribe(_ =>
-                {
-                    L10nManager.SetLanguage(languageType.Value);
-                }).AddTo(gameObject);
+                languageType.Subscribe(L10nManager.SetLanguage).AddTo(gameObject);
             }
 #else
             yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
