@@ -4,6 +4,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -78,8 +79,8 @@ namespace Nekoyume.UI
             Game.Game.instance.Stage.IsInStage = false;
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
-            Find<RankingBoard>().Show();
             Close();
+            Find<RankingBoard>().Show(States.Instance.WeeklyArenaState);
         }
     }
 }
