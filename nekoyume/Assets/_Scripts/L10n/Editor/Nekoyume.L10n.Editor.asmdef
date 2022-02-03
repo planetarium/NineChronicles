@@ -1,9 +1,10 @@
 {
     "name": "Nekoyume.L10n.Editor",
+    "rootNamespace": "",
     "references": [
-        "GUID:4917a533e46ad684ba1f3274c8c59bab"
+        "GUID:4917a533e46ad684ba1f3274c8c59bab",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -13,5 +14,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }
