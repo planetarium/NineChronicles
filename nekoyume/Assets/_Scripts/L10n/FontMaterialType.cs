@@ -36,5 +36,6 @@ namespace Nekoyume.L10n
 	ButtonMainDisable,
 	PopupTitleRed,
 	PopupTitleYellow,
+	CombinationTitle,
     }
 }
