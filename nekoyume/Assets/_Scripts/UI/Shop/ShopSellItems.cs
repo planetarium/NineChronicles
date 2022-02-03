@@ -124,6 +124,43 @@ namespace Nekoyume.UI.Module
             nextPageButton.OnClickAsObservable()
                 .Subscribe(OnNextPageButtonClick)
                 .AddTo(gameObject);
+
+            L10nManager.OnLanguageChange.Subscribe(_ =>
+            {
+                itemSubTypeFilter.ClearOptions();
+                itemSubTypeFilter.AddOptions(new[]
+                    {
+                        ItemSubTypeFilter.All,
+                        ItemSubTypeFilter.Weapon,
+                        ItemSubTypeFilter.Armor,
+                        ItemSubTypeFilter.Belt,
+                        ItemSubTypeFilter.Necklace,
+                        ItemSubTypeFilter.Ring,
+                        ItemSubTypeFilter.Food_HP,
+                        ItemSubTypeFilter.Food_ATK,
+                        ItemSubTypeFilter.Food_DEF,
+                        ItemSubTypeFilter.Food_CRI,
+                        ItemSubTypeFilter.Food_HIT,
+                        ItemSubTypeFilter.FullCostume,
+                        ItemSubTypeFilter.HairCostume,
+                        ItemSubTypeFilter.EarCostume,
+                        ItemSubTypeFilter.EyeCostume,
+                        ItemSubTypeFilter.TailCostume,
+                        ItemSubTypeFilter.Title,
+                        ItemSubTypeFilter.Materials,
+                    }
+                    .Select(type => type.TypeToString(true))
+                    .ToList());
+                sortFilter.ClearOptions();
+                sortFilter.AddOptions(new[]
+                    {
+                        ShopSortFilter.Class,
+                        ShopSortFilter.CP,
+                        ShopSortFilter.Price,
+                    }
+                    .Select(type => L10nManager.Localize($"UI_{type.ToString().ToUpper()}"))
+                    .ToList());
+            }).AddTo(gameObject);
         }
 
         public void Show()

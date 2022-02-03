@@ -34,15 +34,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private SpeechBubble speechBubble = null;
 
-        [SerializeField]
-        private TextMeshProUGUI rewardText = null;
-
-        [SerializeField]
-        private TextMeshProUGUI winText = null;
-
-        [SerializeField]
-        private TextMeshProUGUI loseText = null;
-
         private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
 
         private List<(int rank, ArenaInfo arenaInfo)> _weeklyCachedInfo =
@@ -65,10 +56,6 @@ namespace Nekoyume.UI
                     cell.RectTransform,
                     cell.ArenaInfo.AvatarAddress))
                 .AddTo(gameObject);
-
-            rewardText.text = L10nManager.Localize("UI_REWARDS");
-            winText.text = L10nManager.Localize("UI_WIN");
-            loseText.text = L10nManager.Localize("UI_LOSE");
 
             closeButton.onClick.AddListener(() =>
             {

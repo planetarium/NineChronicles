@@ -45,16 +45,7 @@ namespace Nekoyume.UI
         private Transform titleSocket = null;
 
         [SerializeField]
-        private TextMeshProUGUI consumableTitleText = null;
-
-        [SerializeField]
-        private TextMeshProUGUI costumeTitleText = null;
-
-        [SerializeField]
         private EquipmentSlots costumeSlots = null;
-
-        [SerializeField]
-        private TextMeshProUGUI equipmentTitleText = null;
 
         [SerializeField]
         private TextMeshProUGUI closeButtonText = null;
@@ -250,9 +241,6 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             inventory.SharedModel.State.Value = ItemType.Equipment;
-
-            consumableTitleText.text = L10nManager.Localize("UI_EQUIP_CONSUMABLES");
-            costumeTitleText.text = equipmentTitleText.text = L10nManager.Localize("UI_EQUIP_EQUIPMENTS");
 
             Analyzer.Instance.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;

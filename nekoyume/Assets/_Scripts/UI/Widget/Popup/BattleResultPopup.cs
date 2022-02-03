@@ -177,8 +177,6 @@ namespace Nekoyume.UI
             CloseWidget = closeButton.onClick.Invoke;
             SubmitWidget = nextButton.onClick.Invoke;
             defeatTextArea.root.SetActive(false);
-            defeatTextArea.defeatText.text =
-                L10nManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
 
             _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
         }

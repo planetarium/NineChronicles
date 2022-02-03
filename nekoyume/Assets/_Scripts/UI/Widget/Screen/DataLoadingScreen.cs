@@ -5,6 +5,7 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UniRx;
 
 namespace Nekoyume.UI
 {
@@ -45,6 +46,14 @@ namespace Nekoyume.UI
             {
                 toolTipChangeButton.onClick.AddListener(SetToolTipText);
             }
+            
+            L10nManager.OnLanguageChange
+                .Subscribe(_ =>
+                {
+                    Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
+                    _tips = L10nManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
+                })
+                .AddTo(gameObject);
         }
 
         protected override void Update()

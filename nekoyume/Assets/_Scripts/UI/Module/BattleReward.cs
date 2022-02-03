@@ -112,6 +112,12 @@ namespace Nekoyume.UI.Module
                     StartCoroutine(star.Set(false));
                 }
             }
+
+            L10nManager.OnLanguageChange.Subscribe(_ =>
+            {
+                _stageClearText = L10nManager.Localize("UI_BATTLE_RESULT_CLEAR");
+                failedText.text = GetFailedText();
+            });
         }
 
         private void OnDisable()
