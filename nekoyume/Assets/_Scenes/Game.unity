@@ -157,8 +157,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stage: {fileID: 1333831682}
-  useSystemLanguage: 0
-  languageType: 6
+  useSystemLanguage: 1
+  languageType:
+    value: 0
   prologue: {fileID: 76870001}
 --- !u!114 &76869999
 MonoBehaviour:
@@ -597,7 +598,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 32800
+    m_Bits: 32768
 --- !u!1 &599560687
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,7 +645,7 @@ GameObject:
   - component: {fileID: 721921032}
   - component: {fileID: 721921033}
   - component: {fileID: 721921034}
-  m_Layer: 5
+  m_Layer: 15
   m_Name: DevelopmentLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -707,7 +708,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 32800
+    m_Bits: 32768
 --- !u!1 &937548770
 GameObject:
   m_ObjectHideFlags: 0
@@ -745,7 +746,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 32
+    m_Bits: 32800
 --- !u!114 &937548772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2042,8 +2043,8 @@ Camera:
   m_GameObject: {fileID: 1950109039}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0.003921569}
+  m_ClearFlags: 4
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
