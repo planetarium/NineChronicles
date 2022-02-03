@@ -8,13 +8,40 @@ namespace Nekoyume.Game.ScriptableObject
     public class RecipeViewData : UnityEngine.ScriptableObject
     {
         [Serializable]
-        public struct Data
+        public class Data
         {
             [field: SerializeField]
             public int Grade { get; private set; }
 
             [field: SerializeField]
             public Sprite BgSprite { get; private set; }
+
+            [field: SerializeField]
+            public Material LevelTextMaterial { get; private set; }
+
+            [field: SerializeField]
+            public Color LevelBgHsvTargetColor { get; private set; }
+
+            [field: Tooltip("Color range to affect hsv shift [0 ~ 1].")]
+            [field: SerializeField]
+            [field: Range(0, 1)]
+            public float LevelBgHsvRange { get; private set; } = 0.1f;
+
+            [field: Header("Adjustment")]
+            [field: Tooltip("Hue shift [-0.5 ~ 0.5].")]
+            [field: SerializeField]
+            [field: Range(-0.5f, 0.5f)]
+            public float LevelBgHsvHue { get; private set; }
+
+            [field: Tooltip("Saturation shift [-0.5 ~ 0.5].")]
+            [field: SerializeField]
+            [field: Range(-0.5f, 0.5f)]
+            public float LevelBgHsvSaturation { get; private set; }
+
+            [field: Tooltip("Value shift [-0.5 ~ 0.5].")]
+            [field: SerializeField]
+            [field: Range(-0.5f, 0.5f)]
+            public float LevelBgHsvValue { get; private set; }
         }
 
         [SerializeField]
