@@ -35,7 +35,6 @@ namespace Nekoyume.UI.Module
         private SheetRow<int> _recipeRow = null;
         private bool _unlockable = false;
         private int _recipeIdToUnlock;
-        private const int UnlockConditionDisplayRange = 50;
 
         private readonly List<IDisposable> _disposablesForOnDisable = new List<IDisposable>();
 
@@ -66,27 +65,11 @@ namespace Nekoyume.UI.Module
                     {
                         if (_recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
                         {
-                            var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
-
                             var unlockStage = equipmentRow.UnlockStage;
-                            var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId) ?
-                                stageId : 0;
-                            var diff = unlockStage - clearedStage;
-
-                            if (diff > UnlockConditionDisplayRange)
-                            {
-                                OneLineSystem.Push(
-                                    MailType.System,
-                                    L10nManager.Localize("UI_RECIPE_LOCK_GUIDE"),
-                                    NotificationCell.NotificationType.UnlockCondition);
-                            }
-                            else
-                            {
-                                OneLineSystem.Push(
-                                    MailType.System,
-                                    L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE", equipmentRow.UnlockStage),
-                                    NotificationCell.NotificationType.UnlockCondition);
-                            }
+                            OneLineSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE", equipmentRow.UnlockStage),
+                                NotificationCell.NotificationType.UnlockCondition);
                         }
                     }
                 });
@@ -167,14 +150,13 @@ namespace Nekoyume.UI.Module
             var unlockStage = equipmentRow.UnlockStage;
             var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId) ?
                 stageId : 0;
-
             var diff = unlockStage - clearedStage;
 
             if (diff > 0)
             {
                 unlockConditionText.text = string.Format(
                     L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                    diff > UnlockConditionDisplayRange ? "???" : unlockStage.ToString());
+                    unlockStage.ToString());
                 unlockConditionText.enabled = true;
                 equipmentView.Hide();
                 IsLocked = true;
