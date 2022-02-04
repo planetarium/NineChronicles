@@ -1,13 +1,14 @@
-using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
+using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Toggle = UnityEngine.UI.Toggle;
 
 namespace Nekoyume.TestScene
 {
@@ -44,6 +45,12 @@ namespace Nekoyume.TestScene
         private Button loadBgButton;
 
         [SerializeField]
+        private Toggle cutsceneToggle;
+
+        [SerializeField]
+        private FullCostumeCutscene fullCostumeCutscene;
+
+        [SerializeField]
         private Enemy enemy;
 
         [SerializeField]
@@ -64,6 +71,8 @@ namespace Nekoyume.TestScene
 
         private GameObject _background;
 
+        private string _currentId;
+
         #region Mono
 
         private void Awake()
@@ -77,6 +86,11 @@ namespace Nekoyume.TestScene
 
         private void Update()
         {
+            if (backgroundPrefabIDField.isFocused || spinePrefabIDField.isFocused)
+            {
+                return;
+            }
+
             var h = Input.GetAxis("Horizontal");
             var v = Input.GetAxis("Vertical");
 
@@ -101,6 +115,7 @@ namespace Nekoyume.TestScene
             npc.gameObject.SetActive(false);
             player.gameObject.SetActive(false);
             resourceWarningText.gameObject.SetActive(false);
+            _currentId = null;
 
             var text = spinePrefabIDField.text;
             if (string.IsNullOrEmpty(text))
@@ -110,6 +125,7 @@ namespace Nekoyume.TestScene
                 return;
             }
 
+            _currentId = text;
             try
             {
                 if (IsMonster(text))
@@ -142,10 +158,37 @@ namespace Nekoyume.TestScene
             }
         }
 
+        private void ShowCutscene(string id)
+        {
+            var armorId = int.Parse(id);
+
+            if (IsFullCostume(id))
+            {
+                try
+                {
+                    fullCostumeCutscene.Show(armorId);
+                }
+                catch (FailedToLoadResourceException<GameObject> e)
+                {
+                    resourceWarningText.text = e.Message;
+                    resourceWarningText.gameObject.SetActive(true);
+                }
+            }
+            else if (IsPlayer(id))
+            {
+                var cutscenePath = $"UI/Prefabs/UI_{nameof(AreaAttackCutscene)}";
+                var cutscenePrefab = Resources.Load<AreaAttackCutscene>(cutscenePath);
+                var cutscene = Instantiate(cutscenePrefab, transform);
+                var animationTime = cutscene.UpdateCutscene(armorId);
+                Destroy(cutscene.gameObject, animationTime);
+            }
+        }
+
         private void ShowMonster(string id)
         {
+            var armorId = int.Parse(id);
             enemy.gameObject.SetActive(true);
-            enemy.ChangeSpineResource(id);
+            enemy.ChangeSpineResource(armorId);
             ShowCharacterAnimations(enemy.Animator);
         }
 
@@ -159,14 +202,14 @@ namespace Nekoyume.TestScene
         private void ShowPlayer(string id)
         {
             player.gameObject.SetActive(true);
-            player.ChangeSpineResource(id, false);
+            player.ChangeSpineResource(id, false, false);
             ShowCharacterAnimations(player.Animator);
         }
 
         private void ShowFullCostume(string id)
         {
             player.gameObject.SetActive(true);
-            player.ChangeSpineResource(id, true);
+            player.ChangeSpineResource(id, true, false);
             ShowCharacterAnimations(player.Animator);
         }
 
@@ -259,9 +302,15 @@ namespace Nekoyume.TestScene
                             return;
                         }
                         characterAnimator.Play(animationType);
+
+                        if (cutsceneToggle.isOn)
+                        {
+                            ShowCutscene(_currentId);
+                        }
                     };
                 }
 
+                cutsceneToggle.gameObject.SetActive(animator is PlayerAnimator);
                 button.gameObject.SetActive(true);
                 _activeButtons.Enqueue(button);
             }
@@ -269,25 +318,25 @@ namespace Nekoyume.TestScene
 
         #region Check Type
 
-        private bool IsPlayer(string prefabName)
+        public static bool IsFullCostume(string prefabName)
         {
-            return prefabName.StartsWith("1");
+            return prefabName.StartsWith("4");
         }
 
-        private bool IsMonster(string prefabName)
+        public static bool IsMonster(string prefabName)
         {
             return prefabName.StartsWith("2");
         }
 
-        private bool IsNPC(string prefabName)
+        public static bool IsNPC(string prefabName)
         {
             return prefabName.StartsWith("3") ||
                 prefabName.StartsWith("dialog_");
         }
 
-        private bool IsFullCostume(string prefabName)
+        public static bool IsPlayer(string prefabName)
         {
-            return prefabName.StartsWith("4");
+            return prefabName.StartsWith("1");
         }
 
         #endregion
