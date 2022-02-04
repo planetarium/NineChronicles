@@ -165,7 +165,6 @@ namespace Nekoyume.UI.Module
 
         public void Reset()
         {
-            toggleDropdowns.ForEach(toggleDropdown => toggleDropdown.items.ForEach(item => item.isOn = false));
             toggleDropdowns.First().isOn = true;
             toggleDropdowns.First().items.First().isOn = true;
             inputField.text = string.Empty;

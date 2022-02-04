@@ -1148,7 +1148,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 94.5, y: -305}
-  m_SizeDelta: {x: 125, y: 40}
+  m_SizeDelta: {x: 115, y: 36}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1076093313842105754
 CanvasRenderer:
@@ -1258,6 +1258,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 3447232383559078}
+  button: {fileID: 8401795131513511984}
 --- !u!1 &4869736497953721311
 GameObject:
   m_ObjectHideFlags: 0
@@ -2016,36 +2017,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8394007451006322099, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8394007451006322099, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8394007451006322099, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 125
-      objectReference: {fileID: 0}
-    - target: {fileID: 8394007451006322099, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 40
-      objectReference: {fileID: 0}
-    - target: {fileID: 8394007451006322099, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 57
-      objectReference: {fileID: 0}
-    - target: {fileID: 8394007451006322099, guid: 4bc425b6a451d495a87d6ff37b4a1029,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4bc425b6a451d495a87d6ff37b4a1029, type: 3}
