@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UILobbyController@Shop_XmasLoop
+  m_Name: UILobbyController@Shop_ValentineLoop
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -69,7 +69,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/1
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/1
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -124,7 +124,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/2
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/2
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -161,7 +161,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/ShopStar
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/ShopStar
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -198,7 +198,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/ShopStar_01
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/ShopStar_01
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -235,7 +235,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/ShopStar_02
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/ShopStar_02
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -272,7 +272,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/ShopStar_02
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/ShopStar_02
       (1)
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
@@ -285,42 +285,42 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 1052355807
+      path: 881830702
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2813394277
+      path: 2911304340
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3243264642
+      path: 1602283029
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2507521794
+      path: 3913822424
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 209514168
+      path: 1883332962
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3259046314
+      path: 1385851203
       attribute: 304273561
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
@@ -400,7 +400,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/1
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/1
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -455,7 +455,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/2
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/2
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -492,7 +492,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/ShopStar
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/ShopStar
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -529,7 +529,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/ShopStar_01
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/ShopStar_01
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -566,7 +566,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/ShopStar_02
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/ShopStar_02
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -603,7 +603,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.a
-    path: MenuObject/ShopBtn/EventObjects/ChristmasContainer/ShopEffect/ShopStar_02
+    path: MenuObject/ShopBtn/EventObjects/ValentineContainer/ShopEffect/ShopStar_02
       (1)
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}

@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UILobbyController@Combination_XmasLoop
+  m_Name: UILobbyController@Quest_ValentineLoop
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -30,14 +30,14 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.33333334
+        time: 0.25
         value: 0
         inSlope: -0
-        outSlope: 2.659181
+        outSlope: 1.7497869
         tangentMode: 5
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.17206922
+        outWeight: 0.11541915
       - serializedVersion: 3
         time: 1
         value: 1
@@ -50,11 +50,11 @@ AnimationClip:
       - serializedVersion: 3
         time: 1.8333334
         value: 0
-        inSlope: -1.7599652
+        inSlope: -1.6243894
         outSlope: 0
         tangentMode: 65
         weightedMode: 0
-        inWeight: 0.13646364
+        inWeight: 0.09705304
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 2.0166667
@@ -69,7 +69,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/CombinationBtn/EventObjects/ChristmasContainer/CombinationEffect/1
+    path: MenuObject/QuestBtn/EventObjects/ValentineContainer/QuestEffect/1
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -87,11 +87,11 @@ AnimationClip:
       - serializedVersion: 3
         time: 0.8333333
         value: 0
-        inSlope: -1.9045955
+        inSlope: -1.5479788
         outSlope: 0
         tangentMode: 65
         weightedMode: 0
-        inWeight: 0.18792093
+        inWeight: 0.12261143
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
@@ -106,11 +106,11 @@ AnimationClip:
         time: 1.1666666
         value: 0
         inSlope: -0
-        outSlope: 1.8826584
+        outSlope: 1.8850758
         tangentMode: 5
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.20935577
+        outWeight: 0.061092377
       - serializedVersion: 3
         time: 2.0166667
         value: 1
@@ -124,7 +124,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/CombinationBtn/EventObjects/ChristmasContainer/CombinationEffect/2
+    path: MenuObject/QuestBtn/EventObjects/ValentineContainer/QuestEffect/2
     classID: 225
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -136,14 +136,14 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 515702221
+      path: 3109072757
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2276830327
+      path: 542768847
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
@@ -184,14 +184,14 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.33333334
+        time: 0.25
         value: 0
         inSlope: -0
-        outSlope: 2.659181
+        outSlope: 1.7497869
         tangentMode: 5
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.17206922
+        outWeight: 0.11541915
       - serializedVersion: 3
         time: 1
         value: 1
@@ -204,11 +204,11 @@ AnimationClip:
       - serializedVersion: 3
         time: 1.8333334
         value: 0
-        inSlope: -1.7599652
+        inSlope: -1.6243894
         outSlope: 0
         tangentMode: 65
         weightedMode: 0
-        inWeight: 0.13646364
+        inWeight: 0.09705304
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 2.0166667
@@ -223,7 +223,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/CombinationBtn/EventObjects/ChristmasContainer/CombinationEffect/1
+    path: MenuObject/QuestBtn/EventObjects/ValentineContainer/QuestEffect/1
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -241,11 +241,11 @@ AnimationClip:
       - serializedVersion: 3
         time: 0.8333333
         value: 0
-        inSlope: -1.9045955
+        inSlope: -1.5479788
         outSlope: 0
         tangentMode: 65
         weightedMode: 0
-        inWeight: 0.18792093
+        inWeight: 0.12261143
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
@@ -260,11 +260,11 @@ AnimationClip:
         time: 1.1666666
         value: 0
         inSlope: -0
-        outSlope: 1.8826584
+        outSlope: 1.8850758
         tangentMode: 5
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.20935577
+        outWeight: 0.061092377
       - serializedVersion: 3
         time: 2.0166667
         value: 1
@@ -278,7 +278,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/CombinationBtn/EventObjects/ChristmasContainer/CombinationEffect/2
+    path: MenuObject/QuestBtn/EventObjects/ValentineContainer/QuestEffect/2
     classID: 225
     script: {fileID: 0}
   m_EulerEditorCurves: []
