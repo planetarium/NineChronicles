@@ -592,7 +592,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        private void ChangeSpineObject(string spineResourcePath)
+        private void ChangeSpineObject(string spineResourcePath, bool updateHitPoint = true)
         {
             if (!(Animator.Target is null))
             {
@@ -606,32 +606,6 @@ namespace Nekoyume.Game.Character
             }
 
             var origin = Resources.Load<GameObject>(spineResourcePath);
-            if (origin is null)
-            {
-                return;
-            }
-
-            var go = Instantiate(origin, gameObject.transform);
-            SpineController = go.GetComponent<PlayerSpineController>();
-            Animator.ResetTarget(go);
-            UpdateHitPoint();
-        }
-
-        public void ChangeSpineResource(string id, bool isFullCostume)
-        {
-            var spineResourcePath = isFullCostume ?
-                $"Character/FullCostume/{id}" : $"Character/Player/{id}";
-
-            if (!(Animator.Target is null))
-            {
-                var animatorTargetName = spineResourcePath.Split('/').Last();
-                if (Animator.Target.name.Contains(animatorTargetName))
-                    return;
-
-                Animator.DestroyTarget();
-            }
-
-            var origin = Resources.Load<GameObject>(spineResourcePath);
             if (!origin)
             {
                 throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
@@ -640,6 +614,19 @@ namespace Nekoyume.Game.Character
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<PlayerSpineController>();
             Animator.ResetTarget(go);
+
+            if (updateHitPoint)
+            {
+                UpdateHitPoint();
+            }
+        }
+
+        public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint)
+        {
+            var spineResourcePath = isFullCostume ?
+                $"Character/FullCostume/{id}" : $"Character/Player/{id}";
+
+            ChangeSpineObject(spineResourcePath, updateHitPoint);
         }
 
         public IEnumerator CoGetExp(long exp)

@@ -139,30 +139,11 @@ namespace Nekoyume.Game.Character
         private void UpdateArmor()
         {
             var armorId = CharacterModel?.RowData.Id ?? DefaultCharacter;
-            var spineResourcePath = $"Character/Monster/{armorId}";
-
-            if (!(Animator.Target is null))
-            {
-                var animatorTargetName = spineResourcePath.Split('/').Last();
-                if (Animator.Target.name.Contains(animatorTargetName))
-                    return;
-
-                Animator.DestroyTarget();
-            }
-
-            var origin = Resources.Load<GameObject>(spineResourcePath);
-            if (!origin)
-            {
-                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
-            }
-
-            var go = Instantiate(origin, gameObject.transform);
-            SpineController = go.GetComponent<CharacterSpineController>();
-            Animator.ResetTarget(go);
+            ChangeSpineResource(armorId);
             UpdateHitPoint();
         }
 
-        public void ChangeSpineResource(string id)
+        public void ChangeSpineResource(int id)
         {
             var spineResourcePath = $"Character/Monster/{id}";
 

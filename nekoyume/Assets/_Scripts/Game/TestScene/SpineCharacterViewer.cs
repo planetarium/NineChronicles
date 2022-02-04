@@ -186,8 +186,9 @@ namespace Nekoyume.TestScene
 
         private void ShowMonster(string id)
         {
+            var armorId = int.Parse(id);
             enemy.gameObject.SetActive(true);
-            enemy.ChangeSpineResource(id);
+            enemy.ChangeSpineResource(armorId);
             ShowCharacterAnimations(enemy.Animator);
         }
 
@@ -201,14 +202,14 @@ namespace Nekoyume.TestScene
         private void ShowPlayer(string id)
         {
             player.gameObject.SetActive(true);
-            player.ChangeSpineResource(id, false);
+            player.ChangeSpineResource(id, false, false);
             ShowCharacterAnimations(player.Animator);
         }
 
         private void ShowFullCostume(string id)
         {
             player.gameObject.SetActive(true);
-            player.ChangeSpineResource(id, true);
+            player.ChangeSpineResource(id, true, false);
             ShowCharacterAnimations(player.Animator);
         }
 
@@ -317,25 +318,25 @@ namespace Nekoyume.TestScene
 
         #region Check Type
 
-        private bool IsPlayer(string prefabName)
+        public static bool IsFullCostume(string prefabName)
         {
-            return prefabName.StartsWith("1");
+            return prefabName.StartsWith("4");
         }
 
-        private bool IsMonster(string prefabName)
+        public static bool IsMonster(string prefabName)
         {
             return prefabName.StartsWith("2");
         }
 
-        private bool IsNPC(string prefabName)
+        public static bool IsNPC(string prefabName)
         {
             return prefabName.StartsWith("3") ||
                 prefabName.StartsWith("dialog_");
         }
 
-        private bool IsFullCostume(string prefabName)
+        public static bool IsPlayer(string prefabName)
         {
-            return prefabName.StartsWith("4");
+            return prefabName.StartsWith("1");
         }
 
         #endregion
