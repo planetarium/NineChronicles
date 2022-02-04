@@ -174,7 +174,7 @@ namespace Nekoyume.Action
                     throw new SheetRowNotFoundException(addressesHex, nameof(ItemRequirementSheet), item.item.Id);
                 }
 
-                if (requirementRow.Level > avatarState.level)
+                if (avatarState.level < requirementRow.Level)
                 {
                     throw new HighLevelItemRequirementException(
                         $"{addressesHex}avatar level must be higher than requirement level of equipments." +
