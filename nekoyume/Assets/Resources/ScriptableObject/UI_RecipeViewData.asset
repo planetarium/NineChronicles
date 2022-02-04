@@ -18,8 +18,8 @@ MonoBehaviour:
       type: 3}
     <LevelTextMaterial>k__BackingField: {fileID: 2100000, guid: 7da2b0342719040f5ac50480d422d295,
       type: 2}
-    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
-    <LevelBgHsvRange>k__BackingField: 0.1
+    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
+    <LevelBgHsvRange>k__BackingField: 1
     <LevelBgHsvHue>k__BackingField: 0
     <LevelBgHsvSaturation>k__BackingField: 0
     <LevelBgHsvValue>k__BackingField: 0
@@ -28,9 +28,9 @@ MonoBehaviour:
       type: 3}
     <LevelTextMaterial>k__BackingField: {fileID: 2100000, guid: f3bace7f28fe345aaaafe316ca1bcae5,
       type: 2}
-    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
-    <LevelBgHsvRange>k__BackingField: 0.1
-    <LevelBgHsvHue>k__BackingField: 0
+    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
+    <LevelBgHsvRange>k__BackingField: 1
+    <LevelBgHsvHue>k__BackingField: 0.179
     <LevelBgHsvSaturation>k__BackingField: 0
     <LevelBgHsvValue>k__BackingField: 0
   - <Grade>k__BackingField: 3
@@ -38,29 +38,29 @@ MonoBehaviour:
       type: 3}
     <LevelTextMaterial>k__BackingField: {fileID: 2100000, guid: 7784f3c749ea44faaa5a1f36b9360b0b,
       type: 2}
-    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
-    <LevelBgHsvRange>k__BackingField: 0.1
-    <LevelBgHsvHue>k__BackingField: 0
+    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
+    <LevelBgHsvRange>k__BackingField: 1
+    <LevelBgHsvHue>k__BackingField: 0.5
     <LevelBgHsvSaturation>k__BackingField: 0
     <LevelBgHsvValue>k__BackingField: 0
   - <Grade>k__BackingField: 4
     <BgSprite>k__BackingField: {fileID: 21300000, guid: 2ccc5e57f9ec549508dbc27349d3bfed,
       type: 3}
-    <LevelTextMaterial>k__BackingField: {fileID: 2100000, guid: 0429e1fcdb0674437ada97247c239677,
+    <LevelTextMaterial>k__BackingField: {fileID: 2100000, guid: 1fba1f67c30eb415b890a5d491395057,
       type: 2}
-    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
-    <LevelBgHsvRange>k__BackingField: 0.1
-    <LevelBgHsvHue>k__BackingField: 0
-    <LevelBgHsvSaturation>k__BackingField: 0
-    <LevelBgHsvValue>k__BackingField: 0
+    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
+    <LevelBgHsvRange>k__BackingField: 1
+    <LevelBgHsvHue>k__BackingField: 0.054
+    <LevelBgHsvSaturation>k__BackingField: 0.204
+    <LevelBgHsvValue>k__BackingField: 0.096
   - <Grade>k__BackingField: 5
     <BgSprite>k__BackingField: {fileID: 21300000, guid: bab990cfa756e49299b6b288c502eaf3,
       type: 3}
-    <LevelTextMaterial>k__BackingField: {fileID: 2100000, guid: 1fba1f67c30eb415b890a5d491395057,
+    <LevelTextMaterial>k__BackingField: {fileID: 2100000, guid: 4352bdbe2b8524a9fad1672b6e7de684,
       type: 2}
-    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
-    <LevelBgHsvRange>k__BackingField: 0.1
-    <LevelBgHsvHue>k__BackingField: 0
-    <LevelBgHsvSaturation>k__BackingField: 0
-    <LevelBgHsvValue>k__BackingField: 0
+    <LevelBgHsvTargetColor>k__BackingField: {r: 1, g: 0, b: 0, a: 1}
+    <LevelBgHsvRange>k__BackingField: 1
+    <LevelBgHsvHue>k__BackingField: -0.237
+    <LevelBgHsvSaturation>k__BackingField: 0.072
+    <LevelBgHsvValue>k__BackingField: 0.065
   fallbackGrade: 1
