@@ -828,8 +828,9 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public void EquipItems(IEnumerable<Guid> itemIds)
+        public List<Inventory.Item> EquipItems(IEnumerable<Guid> itemIds)
         {
+            var equipItemPairs = new List<Inventory.Item>();
             // Unequip items already equipped.
             var equippableItems = inventory.Items
                 .Select(item => item.item)
@@ -851,8 +852,11 @@ namespace Nekoyume.Model.State
                     continue;
                 }
 
+                equipItemPairs.Add(inventoryItem);
                 equippableItem.Equip();
             }
+
+            return equipItemPairs;
         }
 
         // FIXME: Use `EquipItems(IEnumerable<Guid>)` instead of this.
