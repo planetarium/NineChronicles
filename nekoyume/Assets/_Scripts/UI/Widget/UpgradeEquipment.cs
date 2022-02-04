@@ -73,6 +73,9 @@ namespace Nekoyume.UI
         private List<EnhancementOptionView> skillViews;
 
         [SerializeField]
+        private TextMeshProUGUI levelText;
+
+        [SerializeField]
         private GameObject noneContainer;
 
         [SerializeField]
@@ -465,8 +468,24 @@ namespace Nekoyume.UI
             nextLevelText.text = $"+{equipment.level + 1}";
             successRatioText.text =
                 ((row.GreatSuccessRatio + row.SuccessRatio).NormalizeFromTenThousandths())
-                .ToString("P0");
-            requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex} +";
+                .ToString("0%");
+            requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}";
+
+            var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            if (!sheet.TryGetValue(equipment.Id, out var requirementRow))
+            {
+                levelText.enabled = false;
+            }
+            else
+            {
+                levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", requirementRow.Level);
+                var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= requirementRow.Level;
+                levelText.color = hasEnoughLevel ?
+                    Palette.GetColor(EnumType.ColorType.ButtonEnabled) :
+                    Palette.GetColor(EnumType.ColorType.TextDenial);
+
+                levelText.enabled = true;
+            }
 
             var itemOptionInfo = new ItemOptionInfo(equipment);
 

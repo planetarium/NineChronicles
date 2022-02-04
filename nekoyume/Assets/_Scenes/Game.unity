@@ -157,8 +157,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stage: {fileID: 1333831682}
-  useSystemLanguage: 0
-  languageType: 6
+  useSystemLanguage: 1
+  languageType: 0
   prologue: {fileID: 76870001}
 --- !u!114 &76869999
 MonoBehaviour:
