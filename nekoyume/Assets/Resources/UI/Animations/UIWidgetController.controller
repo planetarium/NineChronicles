@@ -81,7 +81,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Monster_VaientineLoop
+  m_Name: bg_VaientineLoop
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -94,7 +94,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 35bac60d159674cd5be82fa6ade43703, type: 2}
+  m_Motion: {fileID: 7400000, guid: adbe096e925ba4333bff4db54b1eda26, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -401,7 +401,7 @@ AnimatorController:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: Monster-Valentine
+    m_Name: Bg-Valentine
     m_StateMachine: {fileID: 196715646605088032}
     m_Mask: {fileID: 0}
     m_Motions: []
@@ -419,7 +419,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Monster-Valentine
+  m_Name: Bg-Valentine
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -5173180747349710970}
