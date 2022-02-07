@@ -866,10 +866,13 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState;
 
-            var avatarAddress = avatarState.address;
-
             foreach (var requirementRow in _tableSheets.ItemRequirementSheet)
             {
+                if (avatarState.level >= requirementRow.Level)
+                {
+                    continue;
+                }
+
                 var costumes = new List<Guid>();
                 var equipments = new List<Guid>();
                 var random = new TestRandom(DateTimeOffset.Now.Millisecond);
@@ -886,39 +889,30 @@ namespace Lib9c.Tests.Action
                     costumes.Add(((INonFungibleItem)costume).NonFungibleId);
                 }
 
-                state = state.SetState(avatarAddress, avatarState.SerializeV2())
+                state = state.SetState(avatarState.address, avatarState.SerializeV2())
                     .SetState(
-                        avatarAddress.Derive(LegacyInventoryKey),
-                        avatarState.inventory.Serialize())
-                    .SetState(
-                        avatarAddress.Derive(LegacyWorldInformationKey),
-                        avatarState.worldInformation.Serialize())
-                    .SetState(
-                        avatarAddress.Derive(LegacyQuestListKey),
-                        avatarState.questList.Serialize());
+                        avatarState.address.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize());
 
-                if (avatarState.level < requirementRow.Level)
+                var action = new HackAndSlash
                 {
-                    var action = new HackAndSlash
-                    {
-                        costumes = costumes,
-                        equipments = equipments,
-                        foods = new List<Guid>(),
-                        worldId = 1,
-                        stageId = 1,
-                        playCount = 1,
-                        avatarAddress = avatarState.address,
-                    };
+                    costumes = costumes,
+                    equipments = equipments,
+                    foods = new List<Guid>(),
+                    worldId = 1,
+                    stageId = 1,
+                    playCount = 1,
+                    avatarAddress = avatarState.address,
+                };
 
-                    var exec = Assert.Throws<HighLevelItemRequirementException>(() => action.Execute(new ActionContext()
-                    {
-                        PreviousStates = state,
-                        Signer = avatarState.agentAddress,
-                        Random = random,
-                    }));
+                var exec = Assert.Throws<HighLevelItemRequirementException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = avatarState.agentAddress,
+                    Random = random,
+                }));
 
-                    SerializeException<HighLevelItemRequirementException>(exec);
-                }
+                SerializeException<HighLevelItemRequirementException>(exec);
             }
         }
 

@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class RankingBattleTest10
+    public class RankingBattle10Test
     {
         private readonly TableSheets _tableSheets;
         private readonly Address _agent1Address;
@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _weeklyArenaAddress;
         private readonly IAccountStateDelta _initialState;
 
-        public RankingBattleTest10(ITestOutputHelper outputHelper)
+        public RankingBattle10Test(ITestOutputHelper outputHelper)
         {
             _initialState = new State();
 
@@ -196,7 +196,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatar2Address, enemyAvatarState.SerializeV2());
             }
 
-            var action = new RankingBattle
+            var action = new RankingBattle10
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
@@ -234,7 +234,7 @@ namespace Lib9c.Tests.Action
                 action.EnemyAvatarState,
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
-                RankingBattle.StageId,
+                RankingBattle10.StageId,
                 action.ArenaInfo,
                 action.EnemyArenaInfo,
                 _tableSheets.CostumeStatSheet);
@@ -250,7 +250,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidAddressException()
         {
-            var action = new RankingBattle
+            var action = new RankingBattle10
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar1Address,
@@ -294,7 +294,7 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            var action = new RankingBattle
+            var action = new RankingBattle10
             {
                 avatarAddress = avatarAddress,
                 enemyAddress = enemyAddress,
@@ -328,7 +328,7 @@ namespace Lib9c.Tests.Action
                 _avatar1Address,
                 previousAvatar1State.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle10
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
@@ -359,7 +359,7 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle10
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
@@ -392,7 +392,7 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle10
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
@@ -432,7 +432,7 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle10
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
@@ -456,7 +456,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new RankingBattle
+            var action = new RankingBattle10
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,
@@ -523,7 +523,7 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatar1Address, previousAvatarState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle10
             {
                 avatarAddress = _avatar1Address,
                 enemyAddress = _avatar2Address,

@@ -453,6 +453,66 @@ namespace Lib9c.Tests.Action
             });
         }
 
+        [Theory]
+        [InlineData(15)]
+        [InlineData(30)]
+        [InlineData(50)]
+        [InlineData(75)]
+        [InlineData(100)]
+        [InlineData(120)]
+        [InlineData(150)]
+        [InlineData(200)]
+        public void ExecuteThrowHighLevelItemRequirementException(int avatarLevel)
+        {
+            var state = _initialState;
+            var avatarState = state.GetAvatarState(_avatar1Address);
+            avatarState.level = avatarLevel;
+            var enemyAddress = _avatar2Address;
+            var weeklyArenaAddress = _weeklyArenaAddress;
+
+            foreach (var requirementRow in _tableSheets.ItemRequirementSheet)
+            {
+                if (avatarState.level >= requirementRow.Level)
+                {
+                    continue;
+                }
+
+                var costumes = new List<Guid>();
+                var equipments = new List<Guid>();
+                var random = new TestRandom(DateTimeOffset.Now.Millisecond);
+                if (_tableSheets.EquipmentItemSheet.TryGetValue(requirementRow.ItemId, out var row))
+                {
+                    var equipment = ItemFactory.CreateItem(row, random);
+                    avatarState.inventory.AddItem(equipment);
+                    equipments.Add(((INonFungibleItem)equipment).NonFungibleId);
+                }
+                else if (_tableSheets.CostumeItemSheet.TryGetValue(requirementRow.ItemId, out var row2))
+                {
+                    var costume = ItemFactory.CreateItem(row2, random);
+                    avatarState.inventory.AddItem(costume);
+                    costumes.Add(((INonFungibleItem)costume).NonFungibleId);
+                }
+
+                state = state.SetState(avatarState.address, avatarState.SerializeV2());
+
+                var action = new RankingBattle
+                {
+                    avatarAddress = avatarState.address,
+                    enemyAddress = enemyAddress,
+                    weeklyArenaAddress = weeklyArenaAddress,
+                    costumeIds = costumes,
+                    equipmentIds = equipments,
+                };
+
+                Assert.Throws<HighLevelItemRequirementException>(() => action.Execute(new ActionContext
+                {
+                    PreviousStates = state,
+                    Signer = avatarState.agentAddress,
+                    Random = random,
+                }));
+            }
+        }
+
         [Fact]
         public void Rehearsal()
         {
