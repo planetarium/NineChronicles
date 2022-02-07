@@ -17,8 +17,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle11")]
-    public class RankingBattle : GameAction
+    [ActionType("ranking_battle10")]
+    public class RankingBattle10 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
@@ -82,6 +82,8 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
+            var items = equipmentIds.Concat(costumeIds);
+
             avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
             avatarState.ValidateCostume(costumeIds);
 
@@ -89,23 +91,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Validate Equipments: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var items = equipmentIds.Concat(costumeIds);
-            var equipItems = avatarState.EquipItems(items);
-            var requirementSheet = states.GetSheet<ItemRequirementSheet>();
-            foreach (var item in equipItems)
-            {
-                if(!requirementSheet.TryGetValue(item.item.Id, out var requirementRow))
-                {
-                    throw new SheetRowNotFoundException(addressesHex, nameof(ItemRequirementSheet), item.item.Id);
-                }
-                
-                if(avatarState.level < requirementRow.Level)
-                {
-                    throw new HighLevelItemRequirementException(
-                        $"{addressesHex}avatar level must be higher than requirement level of equipments." +
-                        $"{avatarState.level} < requirement level({requirementRow.Level})");
-                }
-            }
+            avatarState.EquipItems(items);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Equip Equipments: {Elapsed}", addressesHex, sw.Elapsed);

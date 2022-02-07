@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("mimisbrunnr_battle8")]
+    [ActionType("mimisbrunnr_battle9")]
     public class MimisbrunnrBattle : GameAction
     {
         public List<Guid> costumes;
@@ -192,11 +192,28 @@ namespace Nekoyume.Action
                     $"{avatarState.actionPoint} < totalAP({totalCostActionPoint}) = cost({stageRow.CostAP}) * boostCount({playCount})"
                 );
             }
-            avatarState.actionPoint -= totalCostActionPoint;
+            
             var equippableItem = new List<Guid>();
             equippableItem.AddRange(costumes);
             equippableItem.AddRange(equipments);
-            avatarState.EquipItems(equippableItem);
+            var equipItems = avatarState.EquipItems(equippableItem);
+            var requirementSheet = states.GetSheet<ItemRequirementSheet>();
+            foreach (var item in equipItems)
+            {
+                if (!requirementSheet.TryGetValue(item.item.Id, out var requirementRow))
+                {
+                    throw new SheetRowNotFoundException(addressesHex, nameof(ItemRequirementSheet), item.item.Id);
+                }
+
+                if (avatarState.level < requirementRow.Level)
+                {
+                    throw new HighLevelItemRequirementException(
+                        $"{addressesHex}avatar level must be higher than requirement level of equipments." +
+                        $"{avatarState.level} < requirement level({requirementRow.Level})");
+                }
+            }
+
+            avatarState.actionPoint -= totalCostActionPoint;
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 
