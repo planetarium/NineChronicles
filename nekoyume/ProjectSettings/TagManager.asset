@@ -23,7 +23,7 @@ TagManager:
   - InGameForegroundVFX
   - InGameBackgroundVFX
   - CharacterVFX
-  - UISystemInfoLayer
+  - UISystemLayer
   - PostProcess
   - 
   - 
@@ -68,6 +68,6 @@ TagManager:
   - name: VFX
     uniqueID: 764030297
     locked: 0
-  - name: SystemUI
+  - name: UISystemLayer
     uniqueID: 1092445747
     locked: 0

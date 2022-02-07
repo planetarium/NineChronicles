@@ -29,6 +29,8 @@ namespace Nekoyume.UI
 
     public class MimisbrunnrPreparation : Widget
     {
+        private const int BoostMaxCount = 6;
+
         [SerializeField]
         private Module.Inventory inventory = null;
 
@@ -217,7 +219,7 @@ namespace Nekoyume.UI
                     _stage.foodCount = consumables.Count;
                     ActionRenderHandler.Instance.Pending = true;
 
-                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables, 6,
+                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables, BoostMaxCount,
                         GameConfig.MimisbrunnrWorldId, _stageId.Value);
                 });
 

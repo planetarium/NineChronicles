@@ -142,61 +142,9 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            UpdateWeeklyArenaStateAsync().Forget();
-
             // NOTE: Unregister actions created before 300 blocks for optimization.
             // 300 * 12s = 3600s = 1h
             LocalLayerActions.Instance.UnregisterCreatedBefore(agent.BlockIndex - 1000);
-        }
-
-        private static async UniTaskVoid UpdateWeeklyArenaStateAsync()
-        {
-            var doNothing = true;
-            var agent = Game.Game.instance.Agent;
-            var gameConfigState = States.Instance.GameConfigState;
-            var challengeCountResetBlockIndex = States.Instance.WeeklyArenaState.ResetIndex;
-            var currentBlockIndex = agent.BlockIndex;
-            if (currentBlockIndex % gameConfigState.WeeklyArenaInterval == 0 &&
-                currentBlockIndex >= gameConfigState.WeeklyArenaInterval)
-            {
-                doNothing = false;
-            }
-
-            if (currentBlockIndex - challengeCountResetBlockIndex >=
-                gameConfigState.DailyArenaInterval)
-            {
-                doNothing = false;
-            }
-
-            if (doNothing)
-            {
-                return;
-            }
-
-            var weeklyArenaIndex =
-                (int) currentBlockIndex / gameConfigState.WeeklyArenaInterval;
-            var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
-
-            var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
-            {
-                WeeklyArenaState weeklyArenaState;
-                try
-                {
-                    weeklyArenaState = new WeeklyArenaState(
-                        (Bencodex.Types.Dictionary)await agent.GetStateAsync(weeklyArenaAddress));
-                }
-                catch (Exception e) when (!(e is OperationCanceledException))
-                {
-                    return (true, e);
-                }
-
-                States.Instance.SetWeeklyArenaState(weeklyArenaState);
-                return (false, null);
-            });
-            if (hasException && !(exception is OperationCanceledException))
-            {
-                Debug.LogException(exception);
-            }
         }
     }
 }

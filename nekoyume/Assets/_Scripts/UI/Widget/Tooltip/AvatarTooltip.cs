@@ -115,7 +115,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                characterView.SetByAvatarAddress(avatarState.address);
+                characterView.SetByAvatarState(avatarState);
             }
 
             levelText.text = $"<color=#B38271>LV.{avatarState.level}</color>";

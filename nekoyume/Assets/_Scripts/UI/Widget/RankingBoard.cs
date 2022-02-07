@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet;
+using Libplanet.Blocks;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
@@ -39,6 +40,8 @@ namespace Nekoyume.UI
         private List<(int rank, ArenaInfo arenaInfo)> _weeklyCachedInfo =
             new List<(int rank, ArenaInfo arenaInfo)>();
 
+        private BlockHash? _cachedBlockHash;
+
         private readonly List<IDisposable> _disposablesFromShow = new List<IDisposable>();
 
         protected override void Awake()
@@ -71,9 +74,9 @@ namespace Nekoyume.UI
             SubmitWidget = null;
         }
 
-        public void Show() => ShowAsync();
+        public void Show(WeeklyArenaState weeklyArenaState = null) => ShowAsync(weeklyArenaState);
 
-        private async void ShowAsync()
+        private async void ShowAsync(WeeklyArenaState weeklyArenaState = null)
         {
             Find<DataLoadingScreen>().Show();
 
@@ -81,17 +84,28 @@ namespace Nekoyume.UI
             stage.LoadBackground("ranking");
             stage.GetPlayer().gameObject.SetActive(false);
 
-            await UniTask.Run(async () =>
+            if (weeklyArenaState is null)
             {
                 var agent = Game.Game.instance.Agent;
-                var gameConfigState = States.Instance.GameConfigState;
-                var weeklyArenaIndex = (int)agent.BlockIndex / gameConfigState.WeeklyArenaInterval;
-                var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
-                var weeklyArenaState =
-                    new WeeklyArenaState((Bencodex.Types.Dictionary) await agent.GetStateAsync(weeklyArenaAddress));
-                States.Instance.SetWeeklyArenaState(weeklyArenaState);
-                await UpdateWeeklyCache(States.Instance.WeeklyArenaState);
-            });
+                if (!_cachedBlockHash.Equals(agent.BlockTipHash))
+                {
+                    _cachedBlockHash = agent.BlockTipHash;
+                    await UniTask.Run(async () =>
+                    {
+                        var gameConfigState = States.Instance.GameConfigState;
+                        var weeklyArenaIndex = (int)agent.BlockIndex / gameConfigState.WeeklyArenaInterval;
+                        var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
+                        weeklyArenaState =
+                            new WeeklyArenaState((Bencodex.Types.Dictionary) await agent.GetStateAsync(weeklyArenaAddress));
+                        States.Instance.SetWeeklyArenaState(weeklyArenaState);
+                        await UpdateWeeklyCache(States.Instance.WeeklyArenaState);
+                    });
+                }
+            }
+            else
+            {
+                await UpdateWeeklyCache(weeklyArenaState);
+            }
 
             base.Show(true);
 
