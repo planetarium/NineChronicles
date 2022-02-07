@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3454701059347656415}
   - component: {fileID: 5458679053040464929}
   m_Layer: 0
-  m_Name: 40100007
+  m_Name: 40100004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,11 +34,11 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 250, y: -1280}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0}
+  m_Pivot: {x: 0, y: 0}
 --- !u!33 &2091327446468188201
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -66,18 +66,20 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 92058b5044f6f40478f63fc4c1461478, type: 2}
-  - {fileID: 2100000, guid: 7f62102e78eab0a47ba92e64917102bf, type: 2}
-  - {fileID: 2100000, guid: 92058b5044f6f40478f63fc4c1461478, type: 2}
-  - {fileID: 2100000, guid: 7f62102e78eab0a47ba92e64917102bf, type: 2}
-  - {fileID: 2100000, guid: 92058b5044f6f40478f63fc4c1461478, type: 2}
-  - {fileID: 2100000, guid: 7f62102e78eab0a47ba92e64917102bf, type: 2}
-  - {fileID: 2100000, guid: 92058b5044f6f40478f63fc4c1461478, type: 2}
-  - {fileID: 2100000, guid: 7f62102e78eab0a47ba92e64917102bf, type: 2}
-  - {fileID: 2100000, guid: 92058b5044f6f40478f63fc4c1461478, type: 2}
-  - {fileID: 2100000, guid: 7f62102e78eab0a47ba92e64917102bf, type: 2}
-  - {fileID: 2100000, guid: 92058b5044f6f40478f63fc4c1461478, type: 2}
-  - {fileID: 2100000, guid: 7f62102e78eab0a47ba92e64917102bf, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: 2c70975790f5a7247bada9947db248d3, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: 2c70975790f5a7247bada9947db248d3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111,7 +113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 5ecb976dd2528414dae64294b18728e0, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 33cda9d62103a004fb247bae8cfd11f5, type: 2}
   initialSkinName: 
   initialFlipX: 0
   initialFlipY: 0
