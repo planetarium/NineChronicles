@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e3e95a05e4c9774397eeeb7bdee8ccb, type: 3}
-  m_Name: Cutscene
+  m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
+  m_Name: cutscene_40100005_Atlas
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 9097f07d56cc1034b8405214b028a47c, type: 2}
-  animationName: Cutscene
+  atlasFile: {fileID: 4900000, guid: c6d4d20cb3382494b95a2b9e071c6f2e, type: 3}
+  materials:
+  - {fileID: 2100000, guid: 3bc133fc946f9ed4d90a40cf40c67ebe, type: 2}

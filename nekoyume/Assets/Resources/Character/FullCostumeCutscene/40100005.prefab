@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3454701059347656415}
   - component: {fileID: 5458679053040464929}
   m_Layer: 0
-  m_Name: 40100003
+  m_Name: 40100005
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66,18 +66,20 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: aaeecfcf7a518204fbde26c6c68a2629, type: 2}
-  - {fileID: 2100000, guid: 4e7bc313c03c3f148a025a0b93b457e2, type: 2}
-  - {fileID: 2100000, guid: aaeecfcf7a518204fbde26c6c68a2629, type: 2}
-  - {fileID: 2100000, guid: 4e7bc313c03c3f148a025a0b93b457e2, type: 2}
-  - {fileID: 2100000, guid: aaeecfcf7a518204fbde26c6c68a2629, type: 2}
-  - {fileID: 2100000, guid: 4e7bc313c03c3f148a025a0b93b457e2, type: 2}
-  - {fileID: 2100000, guid: aaeecfcf7a518204fbde26c6c68a2629, type: 2}
-  - {fileID: 2100000, guid: 4e7bc313c03c3f148a025a0b93b457e2, type: 2}
-  - {fileID: 2100000, guid: aaeecfcf7a518204fbde26c6c68a2629, type: 2}
-  - {fileID: 2100000, guid: 7759aab4961301f4096ce5a83d4f8410, type: 2}
-  - {fileID: 2100000, guid: 9df9d3b1dea741c4bbd3561f7eac740d, type: 2}
-  - {fileID: 2100000, guid: aaeecfcf7a518204fbde26c6c68a2629, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: 2c70975790f5a7247bada9947db248d3, type: 2}
+  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
+  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
+  - {fileID: 2100000, guid: 2c70975790f5a7247bada9947db248d3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111,7 +113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 9097f07d56cc1034b8405214b028a47c, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 32a81993c8791364f86d58f006936dbe, type: 2}
   initialSkinName: 
   initialFlipX: 0
   initialFlipY: 0
