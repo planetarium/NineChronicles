@@ -82,10 +82,9 @@ namespace Nekoyume.BlockChain
                     _privateKey,
                     DateTimeOffset.UtcNow,
                     cancellationToken: cancellationToken,
-                    append: false,
+                    append: true,
                     txPriority: txPriority);
 
-                _chain.Append(block);
                 if (_swarm is Swarm<NCAction> s && s.Running)
                 {
                     s.BroadcastBlock(block);
