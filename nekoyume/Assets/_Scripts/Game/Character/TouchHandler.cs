@@ -7,19 +7,36 @@ namespace Nekoyume.Game.Character
 {
     public class TouchHandler : MonoBehaviour, IPointerClickHandler, IPointerDownHandler
     {
+        [Serializable]
+        public enum EventType
+        {
+            Click,
+            DoubleClick,
+            MultipleClick,
+            MiddleClick,
+            RightClick,
+            LeftDown,
+            MiddleDown,
+            RightDown,
+        }
+
         private readonly Subject<PointerEventData> _onClick = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onDoubleClick = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onMultipleClick = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onMouseDown = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onMiddleClick = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onRightClick = new Subject<PointerEventData>();
+        private readonly Subject<PointerEventData> _onLeftDown = new Subject<PointerEventData>();
+        private readonly Subject<PointerEventData> _onMiddleDown = new Subject<PointerEventData>();
+        private readonly Subject<PointerEventData> _onRightDown = new Subject<PointerEventData>();
 
         public IObservable<PointerEventData> OnClick => _onClick;
         public IObservable<PointerEventData> OnDoubleClick => _onDoubleClick;
         public IObservable<PointerEventData> OnMultipleClick => _onMultipleClick;
-        public IObservable<PointerEventData> OnMouseDown => _onMouseDown;
         public IObservable<PointerEventData> OnMiddleClick => _onMiddleClick;
         public IObservable<PointerEventData> OnRightClick => _onRightClick;
+        public IObservable<PointerEventData> OnLeftDown => _onLeftDown;
+        public IObservable<PointerEventData> OnMiddleDown => _onMiddleDown;
+        public IObservable<PointerEventData> OnRightDown => _onRightDown;
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -56,7 +73,7 @@ namespace Nekoyume.Game.Character
             switch (eventData.button)
             {
                 case PointerEventData.InputButton.Left:
-                    _onMouseDown.OnNext(eventData);
+                    _onLeftDown.OnNext(eventData);
                     break;
                 case PointerEventData.InputButton.Middle:
                     break;
