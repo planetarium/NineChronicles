@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class HackAndSlashTest11
+    public class HackAndSlash11Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -41,7 +41,7 @@ namespace Lib9c.Tests.Action
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public HackAndSlashTest11()
+        public HackAndSlash11Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
