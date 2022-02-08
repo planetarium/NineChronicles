@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eca135eb4a2a4605942fbf0e09d9886e, type: 3}
   m_Name: EventData
   m_EditorClassIdentifier: 
-  type: 0
+  type: 2
   enums: []
   DefaultEvent:
     EventType: 0
@@ -30,3 +30,10 @@ MonoBehaviour:
     StageIcon: {fileID: 21300000, guid: a9ff32e70226c43dbbfcb26d6eae5228, type: 3}
     StageIconOffset: {x: 0, y: 7.5}
     mainBGM: {fileID: 8300000, guid: 7093635f328f84c59af6f67a2e028a3e, type: 3}
+  - EventType: 2
+    BeginDateTime: 02/11 15:00:00
+    EndDateTime: 02/20 14:59:00
+    Intro: {fileID: 21300000, guid: 6d32eb725ef59455da599ad4577932f6, type: 3}
+    StageIcon: {fileID: 21300000, guid: 393ebe8864bbd4f04982ced1bf53943e, type: 3}
+    StageIconOffset: {x: 0, y: 0}
+    mainBGM: {fileID: 8300000, guid: 09471cca651f74acb8b5223ac301ef79, type: 3}
