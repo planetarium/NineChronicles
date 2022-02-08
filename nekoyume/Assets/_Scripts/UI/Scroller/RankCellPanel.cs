@@ -1,3 +1,5 @@
+using Libplanet;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -50,39 +52,48 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private int addressStringCount = 6;
 
+        private RankingModel _model = null;
+
         private void Awake()
         {
             characterView.OnClickCharacterIcon
-                .Subscribe(avatarState =>
+                .Subscribe(async avatarState =>
                 {
+                    var loadingScreen = Widget.Find<GrayLoadingScreen>();
+                    loadingScreen.Show("UI_LOADING_STATES", true);
                     if (avatarState is null)
                     {
-                        return;
+                        // remove "0x"
+                        var address = new Address(_model.AvatarAddress.Substring(2));
+                        var (exist, state) = await States.TryGetAvatarStateAsync(address);
+                        avatarState = exist ? state : null;
                     }
-
                     Widget.Find<FriendInfoPopup>().Show(avatarState);
+                    loadingScreen.Close();
                 })
                 .AddTo(gameObject);
         }
 
         public void SetData<T>(T rankingInfo) where T : RankingModel
         {
-            var avatarState = rankingInfo.AvatarState;
-            nicknameText.text = avatarState.name;
+            _model = rankingInfo;
+            nicknameText.text = rankingInfo.Name;
             nicknameText.gameObject.SetActive(true);
-            addressText.text = avatarState.address
-                .ToString()
+            addressText.text = rankingInfo.AvatarAddress
                 .Remove(addressStringCount);
 
             UpdateRank(rankingInfo.Rank);
-            characterView.SetByAvatarState(avatarState);
+            characterView.SetByArmorId(
+                rankingInfo.ArmorId,
+                rankingInfo.TitleId,
+                rankingInfo.AvatarLevel);
             gameObject.SetActive(true);
 
             switch (rankingInfo)
             {
                 case AbilityRankingModel abilityInfo:
                     firstElementCpText.text = abilityInfo.Cp.ToString();
-                    secondElementText.text = avatarState.level.ToString();
+                    secondElementText.text = rankingInfo.AvatarLevel.ToString();
 
                     firstElementText.gameObject.SetActive(false);
                     firstElementCpText.gameObject.SetActive(true);
@@ -126,10 +137,11 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        private void UpdateRank(int rank)
+        private void UpdateRank(int? rank)
         {
             switch (rank)
             {
+                case null:
                 case 0:
                     rankImage.gameObject.SetActive(false);
                     rankText.gameObject.SetActive(true);
