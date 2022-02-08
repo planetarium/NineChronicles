@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Security.Cryptography;
 using Libplanet;
 using Libplanet.Action;
@@ -28,7 +29,8 @@ namespace Nekoyume
             bool isActivateAdminAddress = false,
             IEnumerable<string> credits = null,
             PrivateKey privateKey = null,
-            DateTimeOffset? timestamp = null
+            DateTimeOffset? timestamp = null,
+            IEnumerable<ActionBase> actionBases = null
         )
         {
             if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
@@ -64,10 +66,16 @@ namespace Nekoyume
                 authorizedMinersState: authorizedMinersState,
                 creditsState: credits is null ? null : new CreditsState(credits)
             );
-            var actions = new PolymorphicAction<ActionBase>[]
+            List<PolymorphicAction<ActionBase>> actions = new List<PolymorphicAction<ActionBase>>
             {
                 initialStatesAction,
             };
+            if (!(actionBases is null))
+            {
+                actions.AddRange(actionBases.Select(actionBase =>
+                    new PolymorphicAction<ActionBase>(actionBase)));
+            }
+
             var blockAction = new BlockPolicySource(Log.Logger).GetPolicy().BlockAction;
             return
                 BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
