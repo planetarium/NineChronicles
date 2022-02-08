@@ -60,9 +60,6 @@ namespace Nekoyume.UI
         private string emptyTextL10nKey = null;
 
         [SerializeField]
-        private Blur blur = null;
-
-        [SerializeField]
         private Button closeButton = null;
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
@@ -111,35 +108,21 @@ namespace Nekoyume.UI
             ChangeState(0);
             UpdateTabs();
             base.Show(ignoreShowAnimation);
-
-            if (blur)
-            {
-                blur.Show();
-            }
             HelpTooltip.HelpMe(100010, true);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            if (blur && blur.isActiveAndEnabled)
-            {
-                blur.Close();
-            }
-
-            base.Close(ignoreCloseAnimation);
         }
 
         #endregion
 
         public void ChangeState(int state)
         {
-            tabState = (MailTabState) state;
+            tabState = (MailTabState)state;
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             UpdateMailList(blockIndex);
         }
 
-        private IEnumerable<Nekoyume.Model.Mail.Mail> GetAvailableMailList(long blockIndex, MailTabState state)
+        private IEnumerable<Nekoyume.Model.Mail.Mail> GetAvailableMailList(long blockIndex,
+            MailTabState state)
         {
             bool predicate(Nekoyume.Model.Mail.Mail mail)
             {
@@ -148,11 +131,11 @@ namespace Nekoyume.UI
                     return true;
                 }
 
-                return mail.MailType == (MailType) state;
+                return mail.MailType == (MailType)state;
             }
 
             return MailBox?.Where(mail =>
-                mail.requiredBlockIndex <= blockIndex)
+                    mail.requiredBlockIndex <= blockIndex)
                 .Where(predicate)
                 .OrderByDescending(mail => mail.New);
         }
@@ -205,7 +188,7 @@ namespace Nekoyume.UI
             }
 
             MailBox = mailBox;
-            ChangeState((int) tabState);
+            ChangeState((int)tabState);
         }
 
         private void UpdateNotification(long blockIndex)
@@ -251,7 +234,8 @@ namespace Nekoyume.UI
             }).ToObservable().SubscribeOnMainThread().Subscribe(async avatarState =>
             {
                 Debug.Log("CombinationMail LocalLayer task completed");
-                await States.Instance.AddOrReplaceAvatarStateAsync(avatarState, States.Instance.CurrentAvatarKey);
+                await States.Instance.AddOrReplaceAvatarStateAsync(avatarState,
+                    States.Instance.CurrentAvatarKey);
             });
             // ~LocalLayer
 
@@ -275,7 +259,8 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var order = await Util.GetOrder(orderBuyerMail.OrderId);
-            var itemBase = await Util.GetItemBaseByTradableId(order.TradableId, order.ExpiredBlockIndex);
+            var itemBase =
+                await Util.GetItemBaseByTradableId(order.TradableId, order.ExpiredBlockIndex);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             var popup = Find<BuyItemInformationPopup>();
             var model = new UI.Model.BuyItemInformationPopup(new CountableItem(itemBase, count))
@@ -285,7 +270,8 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
+                LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex,
+                    count);
                 LocalLayerModifier.RemoveNewMail(avatarAddress, orderBuyerMail.id, true);
             }).AddTo(gameObject);
             popup.Pop(model);
@@ -310,7 +296,8 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
-                    LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, 1);
+                    LocalLayerModifier.AddItem(avatarAddress, order.TradableId,
+                        order.ExpiredBlockIndex, 1);
                     LocalLayerModifier.RemoveNewMail(avatarAddress, orderExpirationMail.id);
                 });
         }
@@ -324,7 +311,8 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
-                    LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, 1);
+                    LocalLayerModifier.AddItem(avatarAddress, order.TradableId,
+                        order.ExpiredBlockIndex, 1);
                     LocalLayerModifier.RemoveNewMail(avatarAddress, cancelOrderMail.id);
                     var shopSell = Find<ShopSell>();
                     if (shopSell.isActiveAndEnabled)
@@ -354,7 +342,8 @@ namespace Nekoyume.UI
                     itemUsable.RequiredBlockIndex,
                     1,
                     false);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, false);
+                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id,
+                    false);
                 var (exist, avatarState) = await States.TryGetAvatarStateAsync(avatarAddress);
                 if (!exist)
                 {
@@ -365,7 +354,8 @@ namespace Nekoyume.UI
             }).ToObservable().SubscribeOnMainThread().Subscribe(async avatarState =>
             {
                 Debug.Log("ItemEnhanceMail LocalLayer task completed");
-                await States.Instance.AddOrReplaceAvatarStateAsync(avatarState, States.Instance.CurrentAvatarKey);
+                await States.Instance.AddOrReplaceAvatarStateAsync(avatarState,
+                    States.Instance.CurrentAvatarKey);
             });
             // ~LocalLayer
 
@@ -379,7 +369,8 @@ namespace Nekoyume.UI
 
         public void Read(MonsterCollectionMail monsterCollectionMail)
         {
-            if (!(monsterCollectionMail.attachment is MonsterCollectionResult monsterCollectionResult))
+            if (!(monsterCollectionMail.attachment is MonsterCollectionResult
+                    monsterCollectionResult))
             {
                 return;
             }
@@ -392,16 +383,16 @@ namespace Nekoyume.UI
                 {
                     var rewardInfo = monsterCollectionResult.rewards[i];
                     if (!rewardInfo.ItemId.TryParseAsTradableId(
-                        Game.Game.instance.TableSheets.ItemSheet,
-                        out var tradableId))
+                            Game.Game.instance.TableSheets.ItemSheet,
+                            out var tradableId))
                     {
                         continue;
                     }
 
 
                     if (!rewardInfo.ItemId.TryGetFungibleId(
-                        Game.Game.instance.TableSheets.ItemSheet,
-                        out var fungibleId))
+                            Game.Game.instance.TableSheets.ItemSheet,
+                            out var fungibleId))
                     {
                         continue;
                     }
@@ -412,13 +403,14 @@ namespace Nekoyume.UI
                     if (item != null && item is ITradableItem tradableItem)
                     {
                         LocalLayerModifier.AddItem(monsterCollectionResult.avatarAddress,
-                                                   tradableId,
-                                                   tradableItem.RequiredBlockIndex,
-                                                   rewardInfo.Quantity);
+                            tradableId,
+                            tradableItem.RequiredBlockIndex,
+                            rewardInfo.Quantity);
                     }
                 }
 
-                LocalLayerModifier.RemoveNewAttachmentMail(monsterCollectionResult.avatarAddress, monsterCollectionMail.id, true);
+                LocalLayerModifier.RemoveNewAttachmentMail(monsterCollectionResult.avatarAddress,
+                    monsterCollectionMail.id, true);
                 // ~LocalLayer
 
                 widget.Close();
@@ -430,14 +422,16 @@ namespace Nekoyume.UI
         {
             if (MailBox.Count == 0)
             {
-                Debug.LogError("TutorialActionClickFirstCombinationMailSubmitButton() MailBox.Count == 0");
+                Debug.LogError(
+                    "TutorialActionClickFirstCombinationMailSubmitButton() MailBox.Count == 0");
                 return;
             }
 
             var mail = MailBox[0] as CombinationMail;
             if (mail is null)
             {
-                Debug.LogError("TutorialActionClickFirstCombinationMailSubmitButton() mail is null");
+                Debug.LogError(
+                    "TutorialActionClickFirstCombinationMailSubmitButton() mail is null");
                 return;
             }
 
@@ -445,12 +439,18 @@ namespace Nekoyume.UI
         }
 
         [Obsolete]
-        public void Read(SellCancelMail mail) { }
+        public void Read(SellCancelMail mail)
+        {
+        }
 
         [Obsolete]
-        public void Read(BuyerMail buyerMail) { }
+        public void Read(BuyerMail buyerMail)
+        {
+        }
 
         [Obsolete]
-        public void Read(SellerMail sellerMail) { }
+        public void Read(SellerMail sellerMail)
+        {
+        }
     }
 }

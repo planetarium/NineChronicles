@@ -1,5 +1,11 @@
+using System;
+using System.Linq;
 using Coffee.UIEffects;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.ScriptableObject;
+using Nekoyume.Helper;
+using Nekoyume.Model.Item;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -9,6 +15,9 @@ namespace Nekoyume
 {
     public class BaseItemView : MonoBehaviour
     {
+        [SerializeField]
+        private GameObject container;
+
         [SerializeField]
         private ItemViewDataScriptableObject itemViewData;
 
@@ -52,6 +61,9 @@ namespace Nekoyume
         private TouchHandler minusTouchHandler;
 
         [SerializeField]
+        private GameObject focusObject;
+
+        [SerializeField]
         private GameObject expiredObject;
 
         [SerializeField]
@@ -69,7 +81,7 @@ namespace Nekoyume
         [SerializeField]
         private GameObject shadowObject;
 
-        public ItemViewDataScriptableObject ItemViewData => itemViewData;
+        public GameObject Container => container;
         public TouchHandler TouchHandler => touchHandler;
         public Image GradeImage => gradeImage;
         public UIHsvModifier GradeHsv => gradeHsv;
@@ -83,11 +95,44 @@ namespace Nekoyume
         public GameObject NotificationObject => notificationObject;
         public GameObject EquippedObject => equippedObject;
         public TouchHandler MinusTouchHandler => minusTouchHandler;
+        public GameObject FocusObject => focusObject;
         public GameObject ExpiredObject => expiredObject;
         public GameObject DisableObject => disableObject;
         public GameObject SelectObject => selectObject;
         public GameObject SelectEnchantItemObject => selectEnchantItemObject;
         public GameObject LockObject => lockObject;
         public GameObject ShadowObject => shadowObject;
+
+        private ItemSheet.Row GetRow(ItemBase itemBase)
+        {
+            var sheet = Game.Game.instance.TableSheets;
+            var row = sheet.ItemSheet.Values.FirstOrDefault(r => r.Id == itemBase.Id);
+
+            if (row is null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row), itemBase.Id, null);
+            }
+
+            return row;
+        }
+
+        public Sprite GetItemIcon(ItemBase itemBase)
+        {
+            var row = GetRow(itemBase);
+            var icon = SpriteHelper.GetItemIcon(row.Id);
+            if (icon is null)
+            {
+                throw new FailedToLoadResourceException<Sprite>(row.Id.ToString());
+            }
+
+            return icon;
+        }
+
+        public ItemViewData GetItemViewData(ItemBase itemBase)
+        {
+            var row = GetRow(itemBase);
+            var add = itemBase is TradableMaterial ? 1 : 0;
+            return itemViewData.GetItemViewData(row.Grade + add);
+        }
     }
 }

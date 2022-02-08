@@ -320,6 +320,8 @@ namespace Nekoyume.UI
             yield return null;
 
             // tooltip
+            secondWidgets.Add(Widget.Create<ItemTooltip>());
+            yield return null;
             secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
             yield return null;
             secondWidgets.Add(Widget.Create<AvatarTooltip>());

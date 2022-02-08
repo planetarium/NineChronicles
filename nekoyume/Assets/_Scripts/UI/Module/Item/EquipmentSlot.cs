@@ -45,6 +45,9 @@ namespace Nekoyume.UI.Module
         private ItemSubType itemSubType = ItemSubType.Armor;
 
         [SerializeField]
+        private ItemType itemType = ItemType.Equipment;
+
+        [SerializeField]
         private int itemSubTypeIndex = 1;
 
         [SerializeField]
@@ -75,6 +78,7 @@ namespace Nekoyume.UI.Module
 
         public RectTransform RectTransform { get; private set; }
         public ItemSubType ItemSubType => itemSubType;
+        public ItemType ItemType => itemType;
         public int ItemSubTypeIndex => itemSubTypeIndex;
         public ItemBase Item { get; private set; }
         public bool ShowUnlockTooltip { get; set; }

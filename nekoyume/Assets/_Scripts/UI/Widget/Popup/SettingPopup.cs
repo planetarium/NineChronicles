@@ -33,7 +33,6 @@ namespace Nekoyume.UI
         public TextMeshProUGUI resetStoreText;
         public TextMeshProUGUI confirmText;
         public TextMeshProUGUI redeemCodeText;
-        public Blur blur;
         public RedeemCode redeemCode;
         public Dropdown resolutionDropdown;
         public Toggle windowedToggle;
@@ -80,17 +79,8 @@ namespace Nekoyume.UI
                         NotificationCell.NotificationType.Notification))
                 .AddTo(privateKeyCopyButton);
 
-            redeemCode.OnRequested.AddListener(() =>
-            {
-                Close(true);
-            });
-
-            closeButton.onClick.AddListener(() =>
-            {
-                ApplyCurrentSettings();
-                AudioController.PlayClick();
-            });
-            blur.button.onClick.AddListener(ApplyCurrentSettings);
+            redeemCode.OnRequested.AddListener(() => Close(true));
+            closeButton.onClick.AddListener(() => Close());
             redeemCode.Close();
 
             InitResolution();
@@ -103,11 +93,18 @@ namespace Nekoyume.UI
             base.OnEnable();
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            AudioController.PlayClick();
+            ApplyCurrentSettings();
+        }
 
         private void InitResolution()
         {
             var settings = Nekoyume.Settings.Instance;
-            var options = settings.Resolutions.Select(resolution => $"{resolution.Width} x {resolution.Height}").ToList();
+            var options = settings.Resolutions
+                .Select(resolution => $"{resolution.Width} x {resolution.Height}").ToList();
             resolutionDropdown.onValueChanged.AddListener(SetResolution);
             resolutionDropdown.AddOptions(options);
             resolutionDropdown.value = settings.resolutionIndex;
@@ -115,6 +112,7 @@ namespace Nekoyume.UI
 
             windowedToggle.onValueChanged.AddListener(SetWindowed);
         }
+
         #endregion
 
         public override void Show(bool ignoreStartAnimation = false)
@@ -134,7 +132,8 @@ namespace Nekoyume.UI
                 else
                 {
                     addressContentInputField.text = Game.Game.instance.Agent.Address.ToString();
-                    privateKeyContentInputField.text = ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
+                    privateKeyContentInputField.text =
+                        ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
                 }
             }
 
@@ -152,11 +151,6 @@ namespace Nekoyume.UI
             windowedToggle.isOn = settings.isWindowed;
 
             base.Show(true);
-
-            if (blur)
-            {
-                blur.Show();
-            }
             HelpTooltip.HelpMe(100014, true);
         }
 
@@ -178,11 +172,6 @@ namespace Nekoyume.UI
             var settings = Nekoyume.Settings.Instance;
             SetVolumeMaster(settings.volumeMaster);
             SetVolumeMasterMute(settings.isVolumeMasterMuted);
-        }
-
-        public void UpdateResolution()
-        {
-
         }
 
         public void UpdatePrivateKey(string privateKeyHex)
@@ -225,8 +214,9 @@ namespace Nekoyume.UI
 
         private void UpdateVolumeMasterText()
         {
-            var volumeString = Mathf.Approximately(AudioListener.volume, 0.0f) ?
-                L10nManager.Localize("UI_MUTE_AUDIO") : $"{Mathf.CeilToInt(AudioListener.volume * 100.0f)}%";
+            var volumeString = Mathf.Approximately(AudioListener.volume, 0.0f)
+                ? L10nManager.Localize("UI_MUTE_AUDIO")
+                : $"{Mathf.CeilToInt(AudioListener.volume * 100.0f)}%";
             volumeMasterText.text = $"{L10nManager.Localize("UI_MASTER_VOLUME")} : {volumeString}";
         }
 
@@ -269,16 +259,6 @@ namespace Nekoyume.UI
         public void RedeemCode()
         {
             redeemCode.Show();
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            if (blur && blur.isActiveAndEnabled)
-            {
-                blur.Close();
-            }
-
-            base.Close(ignoreCloseAnimation);
         }
     }
 }
