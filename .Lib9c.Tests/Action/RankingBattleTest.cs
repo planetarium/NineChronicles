@@ -468,7 +468,12 @@ namespace Lib9c.Tests.Action
             var avatarState = state.GetAvatarState(_avatar1Address);
             avatarState.level = avatarLevel;
             var enemyAddress = _avatar2Address;
-            var weeklyArenaAddress = _weeklyArenaAddress;
+
+            var previousWeeklyArenaState = state.GetWeeklyArenaState(_weeklyArenaAddress);
+
+            state = state.SetState(
+                _weeklyArenaAddress,
+                previousWeeklyArenaState.Serialize());
 
             foreach (var requirementRow in _tableSheets.ItemRequirementSheet)
             {
@@ -493,13 +498,22 @@ namespace Lib9c.Tests.Action
                     costumes.Add(((INonFungibleItem)costume).NonFungibleId);
                 }
 
-                state = state.SetState(avatarState.address, avatarState.SerializeV2());
+                state = state.SetState(avatarState.address, avatarState.SerializeV2())
+                    .SetState(
+                        avatarState.address.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize())
+                    .SetState(
+                        avatarState.address.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(
+                        avatarState.address.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize());
 
                 var action = new RankingBattle
                 {
                     avatarAddress = avatarState.address,
                     enemyAddress = enemyAddress,
-                    weeklyArenaAddress = weeklyArenaAddress,
+                    weeklyArenaAddress = _weeklyArenaAddress,
                     costumeIds = costumes,
                     equipmentIds = equipments,
                 };
@@ -507,7 +521,7 @@ namespace Lib9c.Tests.Action
                 Assert.Throws<HighLevelItemRequirementException>(() => action.Execute(new ActionContext
                 {
                     PreviousStates = state,
-                    Signer = avatarState.agentAddress,
+                    Signer = _agent1Address,
                     Random = random,
                 }));
             }

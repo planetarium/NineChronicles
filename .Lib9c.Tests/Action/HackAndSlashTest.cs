@@ -143,16 +143,16 @@ namespace Lib9c.Tests.Action
 
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon)
             {
-                var weaponId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Weapon)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
+                var weaponEnumerable = _tableSheets
+                    .EquipmentItemSheet
+                    .Values
+                    .Where(r => r.ItemSubType == ItemSubType.Weapon)
+                    .OrderBy(r => r.Stat.ValueAsInt);
 
+                // If avatar level is higher than 200, Get strongest weapon.
+                // If not, Get weakest weapon.
                 var weapon = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[weaponId],
+                    _tableSheets.EquipmentItemSheet[avatarLevel >= 200 ? weaponEnumerable.Last().Id : weaponEnumerable.First().Id],
                     random)
                     as Equipment;
                 equipments.Add(weapon.ItemId);
@@ -167,16 +167,14 @@ namespace Lib9c.Tests.Action
 
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor)
             {
-                var armorId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Armor)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
+                var armorEnumerable = _tableSheets
+                    .EquipmentItemSheet
+                    .Values
+                    .Where(r => r.ItemSubType == ItemSubType.Armor)
+                    .OrderBy(r => r.Stat.ValueAsInt);
 
                 var armor = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[armorId],
+                    _tableSheets.EquipmentItemSheet[avatarLevel >= 200 ? armorEnumerable.Last().Id : armorEnumerable.First().Id],
                     random)
                     as Equipment;
                 equipments.Add(armor.ItemId);

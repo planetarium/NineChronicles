@@ -560,6 +560,23 @@ namespace Lib9c.Tests.Action
             avatarState.actionPoint = 99999999;
             avatarState.level = avatarLevel;
 
+            avatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                100
+            );
+
+            avatarState.worldInformation.ClearStage(
+                2,
+                100,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.WorldUnlockSheet);
+
+            state = state.SetState(
+                avatarState.address.Derive(LegacyWorldInformationKey),
+                avatarState.worldInformation.Serialize());
+
             foreach (var requirementRow in _tableSheets.ItemRequirementSheet)
             {
                 if (avatarState.level >= requirementRow.Level)
@@ -574,7 +591,11 @@ namespace Lib9c.Tests.Action
                 {
                     var equipment = ItemFactory.CreateItem(row, random);
                     avatarState.inventory.AddItem(equipment);
-                    equipments.Add(((INonFungibleItem)equipment).NonFungibleId);
+
+                    if (equipment.ElementalType != ElementalType.Fire)
+                    {
+                        continue;
+                    }
                 }
                 else if (_tableSheets.CostumeItemSheet.TryGetValue(requirementRow.ItemId, out var row2))
                 {
@@ -583,7 +604,15 @@ namespace Lib9c.Tests.Action
                     costumes.Add(((INonFungibleItem)costume).NonFungibleId);
                 }
 
-                state = state.SetState(avatarState.address, avatarState.SerializeV2());
+                if (!equipments.Any())
+                {
+                    continue;
+                }
+
+                state = state.SetState(avatarState.address, avatarState.SerializeV2())
+                    .SetState(
+                        avatarState.address.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize());
 
                 var action = new MimisbrunnrBattle
                 {
