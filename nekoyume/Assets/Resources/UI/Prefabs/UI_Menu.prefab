@@ -11534,7 +11534,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 185.2, y: 109.1}
+  m_AnchoredPosition: {x: 185.2, y: 109}
   m_SizeDelta: {x: 77, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1464144312201949513
@@ -30862,7 +30862,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 199.6, y: 84.7}
+  m_AnchoredPosition: {x: 199.6, y: 84}
   m_SizeDelta: {x: 75, y: 48}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1520872556100501242
@@ -34353,6 +34353,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1364233019979254292, guid: a2541dad114aa4c15b654d8e9f99929b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1690350990649029527, guid: a2541dad114aa4c15b654d8e9f99929b,
         type: 3}
@@ -38871,6 +38876,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: UI_Lobby_bg_Main_Valentine1VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250388112110623496, guid: 991ab2525f97a4a44903b05d5256a191,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 6250388112110623496, guid: 991ab2525f97a4a44903b05d5256a191,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.732052
       objectReference: {fileID: 0}
     - target: {fileID: 6250388113119355363, guid: 991ab2525f97a4a44903b05d5256a191,
         type: 3}
