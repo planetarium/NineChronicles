@@ -184,6 +184,8 @@ GameObject:
   - component: {fileID: 616071917255989468}
   - component: {fileID: 1930999126341773991}
   - component: {fileID: 1942520776992069567}
+  - component: {fileID: 6591319355579261103}
+  - component: {fileID: 6490126064801196115}
   m_Layer: 5
   m_Name: UI_Lobby_bg_Main_ValentineVFX
   m_TagString: Untagged
@@ -239,7 +241,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 3
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -328,6 +330,47 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6591319355579261103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5159959622891250532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2410c6e911349d6ad72dc1f01bb7559, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6490126064801196115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5159959622891250532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ca7edf97344533b3a8f43f745333bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _eventSettings:
+  - When: 0
+    Invoke:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1942520776992069567}
+          m_TargetAssemblyTypeName: UnityEngine.Animator, UnityEngine
+          m_MethodName: SetTrigger
+          m_Mode: 5
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: PlayClick
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &6089038623745493275
 GameObject:
   m_ObjectHideFlags: 0
@@ -597,10 +640,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4967811514958830973}
     m_Modifications:
+    - target: {fileID: 307600166417833564, guid: 0c5571affd15fee499f36b4a807665b9,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1842117475060823346, guid: 0c5571affd15fee499f36b4a807665b9,
         type: 3}
       propertyPath: m_Name
       value: UI_bg_valentine_monster_click
+      objectReference: {fileID: 0}
+    - target: {fileID: 2346013186270699978, guid: 0c5571affd15fee499f36b4a807665b9,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2511132786294124993, guid: 0c5571affd15fee499f36b4a807665b9,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2787226480619205959, guid: 0c5571affd15fee499f36b4a807665b9,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3651086594562542374, guid: 0c5571affd15fee499f36b4a807665b9,
         type: 3}
@@ -649,6 +712,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3651086594562542374, guid: 0c5571affd15fee499f36b4a807665b9,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651086594562542374, guid: 0c5571affd15fee499f36b4a807665b9,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651086594562542374, guid: 0c5571affd15fee499f36b4a807665b9,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3651086594562542374, guid: 0c5571affd15fee499f36b4a807665b9,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -685,12 +763,12 @@ PrefabInstance:
     - target: {fileID: 3651086594562542374, guid: 0c5571affd15fee499f36b4a807665b9,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -9.740418
       objectReference: {fileID: 0}
     - target: {fileID: 3651086594562542374, guid: 0c5571affd15fee499f36b4a807665b9,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -14.285958
       objectReference: {fileID: 0}
     - target: {fileID: 3651086594562542374, guid: 0c5571affd15fee499f36b4a807665b9,
         type: 3}
@@ -705,6 +783,16 @@ PrefabInstance:
     - target: {fileID: 3651086594562542374, guid: 0c5571affd15fee499f36b4a807665b9,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5657119299415615705, guid: 0c5571affd15fee499f36b4a807665b9,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8463657856058868610, guid: 0c5571affd15fee499f36b4a807665b9,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
