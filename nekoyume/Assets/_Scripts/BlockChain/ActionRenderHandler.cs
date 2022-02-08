@@ -22,6 +22,7 @@ using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using mixpanel;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -64,6 +65,24 @@ namespace Nekoyume.BlockChain
             _actionRenderer.BlockEndSubject.ObserveOnMainThread().Subscribe(_ =>
             {
                 Debug.Log($"[{nameof(BlockRenderHandler)}] Render actions end");
+            }).AddTo(_disposables);
+            _actionRenderer.ActionRenderSubject.ObserveOnMainThread().Subscribe(eval =>
+            {
+                if (!(eval.Action is GameAction gameAction))
+                {
+                    return;
+                }
+
+                if (ActionManager.Instance.TryPopActionEnqueuedDateTime(gameAction.Id, out var enqueuedDateTime))
+                {
+                    var actionType = gameAction.GetActionTypeAttribute();
+                    var elapsed = (DateTime.Now - enqueuedDateTime).TotalSeconds;
+                    Analyzer.Instance.Track($"Unity/ActionRender", new Value
+                    {
+                        ["ActionType"] = actionType.TypeIdentifier,
+                        ["Elapsed"] = elapsed,
+                    });
+                }
             }).AddTo(_disposables);
 
             RewardGold();
