@@ -89,11 +89,11 @@ namespace Nekoyume.UI
             });
 
             equipmentSubRecipeView.CombinationActionSubject
-                .Subscribe(CombinationEquipmentAction)
+                .Subscribe(OnClickEquipmentAction)
                 .AddTo(gameObject);
 
             consumableSubRecipeView.CombinationActionSubject
-                .Subscribe(CombinationConsumableAction)
+                .Subscribe(OnClickConsumableAction)
                 .AddTo(gameObject);
         }
 
@@ -254,6 +254,82 @@ namespace Nekoyume.UI
 
             var stageId = row.UnlockStage;
             SharedModel.NotifiedRow.Value = clearedStage >= stageId ? row : null;
+        }
+
+        private void OnClickEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
+        {
+            var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            if (!recipeSheet.TryGetValue(recipeInfo.RecipeId, out var recipeRow))
+            {
+                return;
+            }
+
+            var resultItemRow = recipeRow.GetResultEquipmentItemRow();
+            if (!requirementSheet.TryGetValue(resultItemRow.Id, out var requirementRow))
+            {
+                CombinationEquipmentAction(recipeInfo);
+                return;
+            }
+
+            if (requirementRow.Level > States.Instance.CurrentAvatarState.level)
+            {
+                var confirm = Find<ConfirmPopup>();
+                var title = L10nManager.Localize("UI_CONFIRM");
+                var content = L10nManager.Localize("UI_WARNING_CRAFT_RESULT_ITEM", requirementRow.Level);
+                var labelYes = L10nManager.Localize("UI_YES");
+                var labelNo = L10nManager.Localize("UI_NO");
+                confirm.Show(title, content, labelYes, labelNo, false);
+                confirm.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.Yes)
+                    {
+                        CombinationEquipmentAction(recipeInfo);
+                    }
+                };
+            }
+            else
+            {
+                CombinationEquipmentAction(recipeInfo);
+            }
+        }
+
+        private void OnClickConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
+        {
+            var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            var recipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
+            if (!recipeSheet.TryGetValue(recipeInfo.RecipeId, out var recipeRow))
+            {
+                return;
+            }
+
+            var resultItemRow = recipeRow.GetResultConsumableItemRow();
+            if (!requirementSheet.TryGetValue(resultItemRow.Id, out var requirementRow))
+            {
+                CombinationConsumableAction(recipeInfo);
+                return;
+            }
+
+            if (requirementRow.Level > States.Instance.CurrentAvatarState.level)
+            {
+                var confirm = Find<ConfirmPopup>();
+                var title = L10nManager.Localize("UI_CONFIRM");
+                var content = L10nManager.Localize("UI_WARNING_CRAFT_RESULT_ITEM", requirementRow.Level);
+                var labelYes = L10nManager.Localize("UI_YES");
+                var labelNo = L10nManager.Localize("UI_NO");
+                confirm.Show(title, content, labelYes, labelNo, false);
+                confirm.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.Yes)
+                    {
+                        CombinationConsumableAction(recipeInfo);
+                    }
+                };
+            }
+            else
+            {
+                CombinationConsumableAction(recipeInfo);
+            }
         }
 
         private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
