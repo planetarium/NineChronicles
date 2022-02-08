@@ -10,33 +10,57 @@ namespace Nekoyume.Game.Character
         [Serializable]
         public enum EventType
         {
+            Enter,
+            LeftDown,
+            MiddleDown,
+            RightDown,
             Click,
             DoubleClick,
             MultipleClick,
             MiddleClick,
             RightClick,
-            LeftDown,
-            MiddleDown,
-            RightDown,
+            Exit,
         }
 
+        private readonly Subject<PointerEventData> _onEnter = new Subject<PointerEventData>();
+        private readonly Subject<PointerEventData> _onLeftDown = new Subject<PointerEventData>();
+        private readonly Subject<PointerEventData> _onMiddleDown = new Subject<PointerEventData>();
+        private readonly Subject<PointerEventData> _onRightDown = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onClick = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onDoubleClick = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onMultipleClick = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onMiddleClick = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onRightClick = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onLeftDown = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onMiddleDown = new Subject<PointerEventData>();
-        private readonly Subject<PointerEventData> _onRightDown = new Subject<PointerEventData>();
+        private readonly Subject<PointerEventData> _onExit = new Subject<PointerEventData>();
 
+        public IObservable<PointerEventData> OnEnter => _onEnter;
         public IObservable<PointerEventData> OnClick => _onClick;
+        public IObservable<PointerEventData> OnLeftDown => _onLeftDown;
+        public IObservable<PointerEventData> OnMiddleDown => _onMiddleDown;
+        public IObservable<PointerEventData> OnRightDown => _onRightDown;
         public IObservable<PointerEventData> OnDoubleClick => _onDoubleClick;
         public IObservable<PointerEventData> OnMultipleClick => _onMultipleClick;
         public IObservable<PointerEventData> OnMiddleClick => _onMiddleClick;
         public IObservable<PointerEventData> OnRightClick => _onRightClick;
-        public IObservable<PointerEventData> OnLeftDown => _onLeftDown;
-        public IObservable<PointerEventData> OnMiddleDown => _onMiddleDown;
-        public IObservable<PointerEventData> OnRightDown => _onRightDown;
+        public IObservable<PointerEventData> OnExit => _onExit;
+
+        public void OnPointerEnter(PointerEventData eventData) => _onEnter.OnNext(eventData);
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            switch (eventData.button)
+            {
+                case PointerEventData.InputButton.Left:
+                    _onLeftDown.OnNext(eventData);
+                    break;
+                case PointerEventData.InputButton.Middle:
+                    break;
+                case PointerEventData.InputButton.Right:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -68,21 +92,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            switch (eventData.button)
-            {
-                case PointerEventData.InputButton.Left:
-                    _onLeftDown.OnNext(eventData);
-                    break;
-                case PointerEventData.InputButton.Middle:
-                    break;
-                case PointerEventData.InputButton.Right:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+        public void OnPointerExit(PointerEventData eventData) => _onExit.OnNext(eventData);
 
         public void SetCollider(BoxCollider boxCollider, Vector3 localPosition, Vector3 localScale)
         {
