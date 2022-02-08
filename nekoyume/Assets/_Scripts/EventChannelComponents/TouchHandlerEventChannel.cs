@@ -60,8 +60,7 @@ namespace Nekoyume.EventChannelComponents
 
         private void OnEvent(PointerEventData eventData, TouchHandler.EventType eventType)
         {
-            Debug.Log($"[TouchHandlerEventChannel] OnEvent({eventData}, {eventType})");
-
+            // Debug.Log($"[TouchHandlerEventChannel] OnEvent({eventData}, {eventType})");
             foreach (var eventSetting in _eventSettings)
             {
                 if (eventSetting.When != eventType)
