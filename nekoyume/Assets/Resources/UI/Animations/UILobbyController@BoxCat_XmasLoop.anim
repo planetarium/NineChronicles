@@ -69,7 +69,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/BoxCatBtn/BoxCatEffect/1
+    path: MenuObject/BoxCatBtn/EventObjects/ChristmasContainer/BoxCatEffect/1
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -124,7 +124,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/BoxCatBtn/BoxCatEffect/2
+    path: MenuObject/BoxCatBtn/EventObjects/ChristmasContainer/BoxCatEffect/2
     classID: 225
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -136,14 +136,14 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 1724538026
+      path: 3639260930
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 4290972944
+      path: 1105454776
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
@@ -223,7 +223,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/BoxCatBtn/BoxCatEffect/1
+    path: MenuObject/BoxCatBtn/EventObjects/ChristmasContainer/BoxCatEffect/1
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -278,7 +278,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/BoxCatBtn/BoxCatEffect/2
+    path: MenuObject/BoxCatBtn/EventObjects/ChristmasContainer/BoxCatEffect/2
     classID: 225
     script: {fileID: 0}
   m_EulerEditorCurves: []
