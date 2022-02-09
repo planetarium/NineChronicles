@@ -12,7 +12,6 @@ namespace Nekoyume.UI
 {
     using System.Collections;
     using UniRx;
-    using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
     public class ItemTooltip : NewVerticalTooltipWidget
@@ -38,7 +37,7 @@ namespace Nekoyume.UI
         private bool _isClickedButtonArea;
         private bool _isShopItem;
 
-        private new Model.ItemInformationTooltip Model { get; set; }
+        private Model.ItemInformationTooltip Model { get; set; }
 
         private System.Action onSubmit;
         private System.Action onClose;
@@ -56,18 +55,8 @@ namespace Nekoyume.UI
                 onSubmit?.Invoke();
                 Close();
             }).AddTo(gameObject);
-
-            submitButton.OnClickDisabledSubject.Subscribe(_ =>
-            {
-                onBlocked?.Invoke();
-                Close();
-            }).AddTo(gameObject);
-
-            CloseWidget = () =>
-            {
-                Close();
-            };
-
+            submitButton.OnClickDisabledSubject.Subscribe(_ => onBlocked?.Invoke()).AddTo(gameObject);
+            CloseWidget = () => Close();
             SubmitWidget = () =>
             {
                 if (!submitButton.IsSubmittable)
@@ -269,6 +258,9 @@ namespace Nekoyume.UI
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
             panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)verticalLayoutGroup.transform);
+            panel.MoveToRelatedPosition(target, TargetPivotPresetType, OffsetFromTarget);
+            panel.MoveInsideOfParent(MarginFromParent);
 
             if (!(target is null) && panel.position.x - target.position.x < 0)
             {

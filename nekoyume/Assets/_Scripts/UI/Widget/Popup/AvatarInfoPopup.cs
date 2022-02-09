@@ -221,7 +221,7 @@ namespace Nekoyume.UI
                 }
 
                 inventoryView.DisableFocus();
-                ShowItemTooltip(model);
+                ShowItemTooltip(model, slot.RectTransform);
             }
         }
 
@@ -381,9 +381,9 @@ namespace Nekoyume.UI
         }
 
         private (string, bool, System.Action, System.Action) GetToolTipParams(
-            InventoryItemViewModel inventoryItem)
+            InventoryItemViewModel model)
         {
-            var item = inventoryItem.ItemBase;
+            var item = model.ItemBase;
             var submitText = string.Empty;
             var interactable = false;
             System.Action submit = null;
@@ -395,12 +395,25 @@ namespace Nekoyume.UI
                     break;
                 case ItemType.Costume:
                 case ItemType.Equipment:
-                    submitText = inventoryItem.Equipped.Value
+                    submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-                    interactable = !Game.Game.instance.Stage.IsInStage;
-                    submit = () => Equip(inventoryItem);
-                    blocked = () => ShowNotification("UI_BLOCK_EQUIP");
+
+                    if (!Game.Game.instance.Stage.IsInStage)
+                    {
+                        interactable = !model.Disabled.Value;
+                    }
+
+                    submit = () => Equip(model);
+
+                    if (Game.Game.instance.Stage.IsInStage)
+                    {
+                        blocked = () => ShowNotification("UI_BLOCK_EQUIP");
+                    }
+                    else
+                    {
+                        blocked = () => ShowNotification("UI_EQUIP_FAILED");
+                    }
                     break;
                 case ItemType.Material:
                     if (item.ItemSubType == ItemSubType.ApStone)
@@ -462,6 +475,11 @@ namespace Nekoyume.UI
         private void Equip(InventoryItemViewModel inventoryItem)
         {
             if (Game.Game.instance.Stage.IsInStage)
+            {
+                return;
+            }
+
+            if (inventoryItem.Disabled.Value)
             {
                 return;
             }
@@ -576,10 +594,9 @@ namespace Nekoyume.UI
             GameConfigStateSubject.ActionPointState.Add(address, true);
         }
 
-        private void ShowItemTooltip(InventoryItemViewModel model)
+        private void ShowItemTooltip(InventoryItemViewModel model, RectTransform target)
         {
             var tooltip = Find<ItemTooltip>();
-            var target = transform.GetComponent<RectTransform>();
             var (submitText, interactable, submit, blocked) = GetToolTipParams(model);
             tooltip.Show(target, model, submitText, interactable,
                 submit, () => inventoryView.ClearSelectedItem(), blocked);

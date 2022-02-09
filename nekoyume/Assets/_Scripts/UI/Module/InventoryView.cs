@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Module
 
         private InventoryItemViewModel _selectedItemViewModel;
 
-        private Action<InventoryItemViewModel> _onClickItem;
+        private Action<InventoryItemViewModel, RectTransform> _onClickItem;
         private Action<InventoryItemViewModel> _onDoubleClickItem;
         private System.Action onToggleEquipment;
         private System.Action onToggleCostume;
@@ -77,7 +77,8 @@ namespace Nekoyume.UI.Module
                     onToggleCostume?.Invoke();
                 })
                 .AddTo(gameObject);
-            consumableButton.OnClick.Subscribe(_ => SetToggle(consumableButton, ItemType.Consumable))
+            consumableButton.OnClick
+                .Subscribe(_ => SetToggle(consumableButton, ItemType.Consumable))
                 .AddTo(gameObject);
             materialButton.OnClick.Subscribe(_ => SetToggle(materialButton, ItemType.Material))
                 .AddTo(gameObject);
@@ -99,7 +100,8 @@ namespace Nekoyume.UI.Module
                 }
 
                 _selectedItemViewModel = null;
-                foreach (var item in inventory.Items.OrderByDescending(x => x.item is ITradableItem))
+                foreach (var item in
+                         inventory.Items.OrderByDescending(x => x.item is ITradableItem))
                 {
                     if (item.Locked)
                     {
@@ -153,19 +155,22 @@ namespace Nekoyume.UI.Module
             switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
-                    inventoryItem = CreateInventoryItem(itemBase, count);
+                    inventoryItem = CreateInventoryItem(itemBase, count,
+                        disabled:IsUsableItem(itemBase.Id));
                     _consumables.Add(inventoryItem);
                     break;
                 case ItemType.Costume:
                     var costume = (Costume)itemBase;
-                    inventoryItem =
-                        CreateInventoryItem(itemBase, count, equipped: costume.equipped);
+                    inventoryItem = CreateInventoryItem(itemBase, count,
+                        equipped: costume.equipped,
+                        disabled:IsUsableItem(itemBase.Id));
                     _costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment)itemBase;
-                    inventoryItem =
-                        CreateInventoryItem(itemBase, count, equipped: equipment.equipped);
+                    inventoryItem = CreateInventoryItem(itemBase, count,
+                            equipped: equipment.equipped,
+                            disabled: IsUsableItem(itemBase.Id));
                     _equipments.Add(inventoryItem);
                     break;
                 case ItemType.Material:
@@ -185,7 +190,8 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private bool TryGetMaterial(Material material, bool istTradable, out InventoryItemViewModel inventoryItem)
+        private bool TryGetMaterial(Material material, bool istTradable,
+            out InventoryItemViewModel inventoryItem)
         {
             foreach (var item in _materials)
             {
@@ -208,9 +214,26 @@ namespace Nekoyume.UI.Module
         }
 
         private static InventoryItemViewModel CreateInventoryItem(ItemBase itemBase, int count,
-            bool equipped = false)
+            bool equipped = false, bool disabled = false)
         {
-            return new InventoryItemViewModel(itemBase, count, equipped);
+            return new InventoryItemViewModel(itemBase, count, equipped, disabled);
+        }
+
+        private bool IsUsableItem(int itemId)
+        {
+            var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentAvatarState is null)
+            {
+                return false;
+            }
+
+            if (sheet.TryGetValue(itemId, out var value))
+            {
+                return currentAvatarState.level < value.Level;
+            }
+
+            return false;
         }
 
         private void OnClickItem(InventoryItemViewModel item)
@@ -219,7 +242,7 @@ namespace Nekoyume.UI.Module
             {
                 _selectedItemViewModel = item;
                 _selectedItemViewModel.Selected.SetValueAndForceNotify(true);
-                _onClickItem?.Invoke(_selectedItemViewModel); // Show tooltip popup
+                _onClickItem?.Invoke(_selectedItemViewModel, _selectedItemViewModel.View); // Show tooltip popup
             }
             else
             {
@@ -233,7 +256,7 @@ namespace Nekoyume.UI.Module
                     _selectedItemViewModel.Selected.SetValueAndForceNotify(false);
                     _selectedItemViewModel = item;
                     _selectedItemViewModel.Selected.SetValueAndForceNotify(true);
-                    _onClickItem?.Invoke(_selectedItemViewModel); // Show tooltip popup
+                    _onClickItem?.Invoke(_selectedItemViewModel, _selectedItemViewModel.View); // Show tooltip popup
                 }
             }
         }
@@ -257,7 +280,7 @@ namespace Nekoyume.UI.Module
             _onDoubleClickItem?.Invoke(item);
         }
 
-         private void UpdateEquipmentNotification(List<ElementalType> elementalTypes = null)
+        private void UpdateEquipmentNotification(List<ElementalType> elementalTypes = null)
         {
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             if (currentAvatarState is null)
@@ -288,11 +311,12 @@ namespace Nekoyume.UI.Module
                     matchedEquipments = matchedEquipments.Where(e =>
                         elementalTypes.Exists(x => x == e.ItemBase.ElementalType));
                 }
+
                 var equippedEquipments =
                     matchedEquipments.Where(e => e.Equipped.Value);
                 var unequippedEquipments =
                     matchedEquipments.Where(e => !e.Equipped.Value)
-                    .OrderByDescending(i => CPHelper.GetCP(i.ItemBase as Equipment));
+                        .OrderByDescending(i => CPHelper.GetCP(i.ItemBase as Equipment));
 
                 var equippedCount = equippedEquipments.Count();
                 if (equippedCount < slotCount)
@@ -309,7 +333,8 @@ namespace Nekoyume.UI.Module
                         unequippedEquipments.Where(e =>
                         {
                             var cp = CPHelper.GetCP(e.ItemBase as Equipment);
-                            return equippedEquipments.Any(i => CPHelper.GetCP(i.ItemBase as Equipment) < cp);
+                            return equippedEquipments.Any(i =>
+                                CPHelper.GetCP(i.ItemBase as Equipment) < cp);
                         }).Take(slotCount);
                     foreach (var item in itemsToNotify)
                     {
@@ -319,7 +344,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetAction(Action<InventoryItemViewModel> clickItem,
+        public void SetAction(Action<InventoryItemViewModel, RectTransform> clickItem,
             Action<InventoryItemViewModel> doubleClickItem,
             System.Action clickEquipmentToggle,
             System.Action clickCostumeToggle)
@@ -386,6 +411,7 @@ namespace Nekoyume.UI.Module
                     }
                 }
             }
+
             return false;
         }
     }
