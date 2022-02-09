@@ -83,17 +83,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
+  addressTitleText: {fileID: 4955539356675482337}
   addressContentInputField: {fileID: 7714575298455756374}
   addressCopyButton: {fileID: 5516932253099972138}
+  privateKeyTitleText: {fileID: 2282929625535178436}
   privateKeyContentInputField: {fileID: 5640418588470272948}
   privateKeyCopyButton: {fileID: 4373738899197490749}
   closeButton: {fileID: 4712267050541225019}
+  warningText: {fileID: 4250014521826080825}
   volumeMasterText: {fileID: 5946224160674032276}
   volumeMasterSlider: {fileID: 3487503863863795689}
   volumeMasterToggle: {fileID: 2522020326844154982}
   muteTexts:
   - {fileID: 279599236719151732}
-  blur: {fileID: 4364962393925945222}
+  resetKeyStoreText: {fileID: 6697517952566586225}
+  resetStoreText: {fileID: 804156997819666877}
+  confirmText: {fileID: 7989619649265553413}
+  redeemCodeText: {fileID: 5261396801801733739}
   redeemCode: {fileID: 2642083645772511609}
   resolutionDropdown: {fileID: 4707287349502532673}
   windowedToggle: {fileID: 712378895654132330}
@@ -5465,7 +5471,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 410.27502, y: -50}
+  m_AnchoredPosition: {x: 382.55, y: -50}
   m_SizeDelta: {x: 92.55, y: 50}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &7663771022698718645
@@ -8348,18 +8354,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1734889137708128112}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4364962393925945222 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2630355418658099446, guid: 087d608eb50946b409525e83801de9d2,
-    type: 3}
-  m_PrefabInstance: {fileID: 1734889137708128112}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0398d8905be44004b803f2412d77ef52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &3302901591400591963
 PrefabInstance:
   m_ObjectHideFlags: 0
