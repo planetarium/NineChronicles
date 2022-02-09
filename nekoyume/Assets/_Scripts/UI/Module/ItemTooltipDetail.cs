@@ -139,11 +139,17 @@ namespace Nekoyume.UI.Module
                 row.StarImages.ForEach(x => x.SetActive(false));
             }
 
+            var isUsable = Util.IsUsableItem(itemBase.Id);
+            var level = Util.GetItemRequirementLevel(itemBase.Id);
+            descriptionArea.levelLimitText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", level);
+            descriptionArea.levelLimitText.color = isUsable ?
+                Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
+            descriptionArea.levelLimitGameObject.SetActive(level > 0);
+
             switch (itemBase)
             {
                 case Equipment equipment:
                 {
-                    descriptionArea.levelLimitGameObject.SetActive(false);
                     iconArea.combatPowerObject.SetActive(true);
                     iconArea.combatPowerText.text = equipment.GetCPText();
                     iconArea.countObject.SetActive(false);
@@ -162,7 +168,6 @@ namespace Nekoyume.UI.Module
                 }
                 case ItemUsable itemUsable:
                 {
-                    descriptionArea.levelLimitGameObject.SetActive(false);
                     iconArea.combatPowerObject.SetActive(false);
                     iconArea.countObject.SetActive(false);
                     statView.gameObject.SetActive(false);
@@ -179,7 +184,6 @@ namespace Nekoyume.UI.Module
                 {
                     statView.gameObject.SetActive(false);
                     var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-                    descriptionArea.levelLimitGameObject.SetActive(false);
                     iconArea.countObject.SetActive(false);
                     var statsMap = new StatsMap();
                     foreach (var row in costumeSheet.OrderedList.Where(r => r.CostumeId == costume.Id))
@@ -205,7 +209,6 @@ namespace Nekoyume.UI.Module
                 case Material _:
                 {
                     statView.gameObject.SetActive(false);
-                    descriptionArea.levelLimitGameObject.SetActive(false);
                     iconArea.combatPowerObject.SetActive(false);
 
                     var countFormat = L10nManager.Localize("UI_COUNT_FORMAT");
@@ -216,7 +219,6 @@ namespace Nekoyume.UI.Module
                 }
                 default:
                     statView.gameObject.SetActive(false);
-                    descriptionArea.levelLimitGameObject.SetActive(false);
                     iconArea.combatPowerObject.SetActive(false);
                     iconArea.countObject.SetActive(false);
                     break;

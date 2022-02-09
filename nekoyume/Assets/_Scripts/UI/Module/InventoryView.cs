@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -156,21 +157,21 @@ namespace Nekoyume.UI.Module
             {
                 case ItemType.Consumable:
                     inventoryItem = CreateInventoryItem(itemBase, count,
-                        disabled:IsUsableItem(itemBase.Id));
+                        disabled:!Util.IsUsableItem(itemBase.Id));
                     _consumables.Add(inventoryItem);
                     break;
                 case ItemType.Costume:
                     var costume = (Costume)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
                         equipped: costume.equipped,
-                        disabled:IsUsableItem(itemBase.Id));
+                        disabled:!Util.IsUsableItem(itemBase.Id));
                     _costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
                             equipped: equipment.equipped,
-                            disabled: IsUsableItem(itemBase.Id));
+                            disabled: !Util.IsUsableItem(itemBase.Id));
                     _equipments.Add(inventoryItem);
                     break;
                 case ItemType.Material:
@@ -217,23 +218,6 @@ namespace Nekoyume.UI.Module
             bool equipped = false, bool disabled = false)
         {
             return new InventoryItemViewModel(itemBase, count, equipped, disabled);
-        }
-
-        private bool IsUsableItem(int itemId)
-        {
-            var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            if (currentAvatarState is null)
-            {
-                return false;
-            }
-
-            if (sheet.TryGetValue(itemId, out var value))
-            {
-                return currentAvatarState.level < value.Level;
-            }
-
-            return false;
         }
 
         private void OnClickItem(InventoryItemViewModel item)

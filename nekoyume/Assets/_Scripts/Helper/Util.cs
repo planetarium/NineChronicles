@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using UnityEngine;
 
@@ -174,6 +175,35 @@ namespace Nekoyume.Helper
             var agentAddress = Game.Game.instance.Agent.Address;
             var key = $"{StoredSlotIndex}{agentAddress}";
             PlayerPrefs.SetInt(key, slotIndex);
+        }
+
+        public static bool IsUsableItem(int itemId)
+        {
+            var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentAvatarState is null)
+            {
+                return false;
+            }
+
+            if (!sheet.TryGetValue(itemId, out var value))
+            {
+                return false;
+            }
+
+            return currentAvatarState.level >= value.Level;
+        }
+
+        public static int GetItemRequirementLevel(int itemId)
+        {
+            var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentAvatarState is null)
+            {
+                return 0;
+            }
+
+            return sheet.TryGetValue(itemId, out var value) ? value.Level : 0;
         }
     }
 }
