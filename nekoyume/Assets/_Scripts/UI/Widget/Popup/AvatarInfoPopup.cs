@@ -98,8 +98,8 @@ namespace Nekoyume.UI
             });
 
             inventoryView.SetAction(
-                clickItem:ShowItemTooltip,
-                doubleClickItem:Equip,
+                clickItem: ShowItemTooltip,
+                doubleClickItem: Equip,
                 clickEquipmentToggle: () =>
                 {
                     costumeSlots.gameObject.SetActive(false);
@@ -114,11 +114,10 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            IsTweenEnd.Value = false;
             Destroy(_cachedCharacterTitle);
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            IsTweenEnd.Value = false;
             CreatePlayer(currentAvatarState);
-            _player.gameObject.SetActive(true);
             UpdateSlotView(currentAvatarState);
             UpdateStatViews();
             HelpTooltip.HelpMe(100013, true);
@@ -156,12 +155,7 @@ namespace Nekoyume.UI
             var t = _player.transform;
             t.localScale = Vector3.one;
             t.position = PlayerPosition;
-        }
-
-        private void UpdateUIPlayer()
-        {
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            _player.Set(currentAvatarState);
+            _player.gameObject.SetActive(true);
         }
 
         private void UpdateSlotView(AvatarState avatarState)
@@ -198,30 +192,7 @@ namespace Nekoyume.UI
                 avatarCP.UpdateCP(cp);
             }
 
-            UpdateUIPlayer();
-        }
-
-        private void OnClickSlot(EquipmentSlot slot)
-        {
-            if (slot.IsEmpty)
-            {
-                inventoryView.Focus(slot.ItemType, slot.ItemSubType);
-            }
-            else
-            {
-                if (!inventoryView.TryGetItemViewModel(slot.Item, out var model))
-                {
-                    return;
-                }
-
-                inventoryView.DisableFocus();
-                ShowItemTooltip(model, slot.RectTransform);
-            }
-        }
-
-        private void OnDoubleClickSlot(EquipmentSlot slot)
-        {
-            Unequip(slot, false);
+            _player.Set(currentAvatarState);
         }
 
         private void UpdateStatViews()
@@ -254,7 +225,30 @@ namespace Nekoyume.UI
                 null, Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet);
             stats.SetOption(statModifiers);
             avatarStats.SetData(stats);
-            UpdateUIPlayer();
+            _player.Set(currentAvatarState);
+        }
+
+        private void OnClickSlot(EquipmentSlot slot)
+        {
+            if (slot.IsEmpty)
+            {
+                inventoryView.Focus(slot.ItemType, slot.ItemSubType);
+            }
+            else
+            {
+                if (!inventoryView.TryGetItemViewModel(slot.Item, out var model))
+                {
+                    return;
+                }
+
+                inventoryView.DisableFocus();
+                ShowItemTooltip(model, slot.RectTransform);
+            }
+        }
+
+        private void OnDoubleClickSlot(EquipmentSlot slot)
+        {
+            Unequip(slot, false);
         }
 
         private void Equip(InventoryItemViewModel inventoryItem)
@@ -329,9 +323,11 @@ namespace Nekoyume.UI
                             player.EquipWeapon((Weapon)slot.Item);
                             break;
                     }
+
                     break;
                 }
             }
+
             Game.Event.OnUpdatePlayerEquip.OnNext(player);
             PostEquipOrUnequip(slot);
         }
@@ -342,7 +338,6 @@ namespace Nekoyume.UI
             {
                 return;
             }
-
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
@@ -355,7 +350,8 @@ namespace Nekoyume.UI
             var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
             avatarCP.PlayAnimation(prevCp, currentCp);
 
-            var player = considerInventoryOnly ? null : Game.Game.instance.Stage.GetPlayer();
+            var selectedPlayer =
+                considerInventoryOnly ? null : Game.Game.instance.Stage.GetPlayer();
             if (!considerInventoryOnly)
             {
                 switch (slotItem)
@@ -363,10 +359,10 @@ namespace Nekoyume.UI
                     default:
                         return;
                     case Costume costume:
-                        player.UnequipCostume(costume, true);
-                        player.EquipEquipmentsAndUpdateCustomize((Armor)_armorSlot.Item,
+                        selectedPlayer.UnequipCostume(costume, true);
+                        selectedPlayer.EquipEquipmentsAndUpdateCustomize((Armor)_armorSlot.Item,
                             (Weapon)_weaponSlot.Item);
-                        Game.Event.OnUpdatePlayerEquip.OnNext(player);
+                        Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
 
                         if (costume.ItemSubType == ItemSubType.Title)
                         {
@@ -379,18 +375,21 @@ namespace Nekoyume.UI
                         {
                             case ItemSubType.Armor:
                             {
-                                player.EquipEquipmentsAndUpdateCustomize((Armor)_armorSlot.Item,
+                                selectedPlayer.EquipEquipmentsAndUpdateCustomize(
+                                    (Armor)_armorSlot.Item,
                                     (Weapon)_weaponSlot.Item);
                                 break;
                             }
                             case ItemSubType.Weapon:
-                                player.EquipWeapon((Weapon)_weaponSlot.Item);
+                                selectedPlayer.EquipWeapon((Weapon)_weaponSlot.Item);
                                 break;
                         }
-                        Game.Event.OnUpdatePlayerEquip.OnNext(player);
+
+                        Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
                         break;
                 }
             }
+
             PostEquipOrUnequip(slot);
         }
 
@@ -413,8 +412,6 @@ namespace Nekoyume.UI
             LocalLayerModifier.SetItemEquip(States.Instance.CurrentAvatarState.address,
                 nonFungibleItem.NonFungibleId, equip);
         }
-
-
 
         private (string, bool, System.Action, System.Action) GetToolTipParams(
             InventoryItemViewModel model)
@@ -444,11 +441,15 @@ namespace Nekoyume.UI
 
                     if (Game.Game.instance.Stage.IsInStage)
                     {
-                        blocked = () => ShowNotification("UI_BLOCK_EQUIP");
+                        blocked = () => NotificationSystem.Push(MailType.System,
+                            L10nManager.Localize("UI_BLOCK_EQUIP"),
+                            NotificationCell.NotificationType.Alert);
                     }
                     else
                     {
-                        blocked = () => ShowNotification("UI_EQUIP_FAILED");
+                        blocked = () => NotificationSystem.Push(MailType.System,
+                            L10nManager.Localize("UI_EQUIP_FAILED"),
+                            NotificationCell.NotificationType.Alert);
                     }
 
                     break;
@@ -469,11 +470,15 @@ namespace Nekoyume.UI
 
                         if (Game.Game.instance.Stage.IsInStage)
                         {
-                            blocked = () => ShowNotification("UI_BLOCK_CHARGE_AP");
+                            blocked = () => NotificationSystem.Push(MailType.System,
+                                L10nManager.Localize("UI_BLOCK_CHARGE_AP"),
+                                NotificationCell.NotificationType.Alert);
                         }
                         else
                         {
-                            blocked = () => ShowNotification("UI_AP_IS_FULL");
+                            blocked = () => NotificationSystem.Push(MailType.System,
+                                L10nManager.Localize("UI_AP_IS_FULL"),
+                                NotificationCell.NotificationType.Alert);
                         }
                     }
 
@@ -501,14 +506,6 @@ namespace Nekoyume.UI
             return !Game.Game.instance.Stage.IsInStage;
         }
 
-        private void ShowNotification(string message,
-            NotificationCell.NotificationType notificationType =
-                NotificationCell.NotificationType.Alert)
-        {
-            NotificationSystem.Push(MailType.System, L10nManager.Localize(message),
-                notificationType);
-        }
-
         private void ShowRefillConfirmPopup(ItemBase itemBase)
         {
             var confirm = Find<IconAndButtonSystem>();
@@ -526,7 +523,9 @@ namespace Nekoyume.UI
                 return;
             }
 
-            ShowNotification("UI_CHARGE_AP", NotificationCell.NotificationType.Information);
+            NotificationSystem.Push(MailType.System,
+                L10nManager.Localize("UI_CHARGE_AP"),
+                NotificationCell.NotificationType.Information);
             Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
             var address = States.Instance.CurrentAvatarState.address;
             if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
@@ -544,21 +543,6 @@ namespace Nekoyume.UI
             tooltip.Show(target, model, submitText, interactable,
                 submit, () => inventoryView.ClearSelectedItem(), blocked);
         }
-
-        public void TutorialActionClickAvatarInfoFirstInventoryCellView()
-        {
-            if (inventoryView.TryGetFirstCell(out var item))
-            {
-                item.Selected.Value = true;
-            }
-            else
-            {
-                Debug.LogError(
-                    $"TutorialActionClickAvatarInfoFirstInventoryCellView() throw error.");
-            }
-        }
-
-        public void TutorialActionCloseAvatarInfoWidget() => Close();
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
         {
@@ -587,5 +571,24 @@ namespace Nekoyume.UI
                     return false;
             }
         }
+
+        #region For tutorial
+
+        public void TutorialActionClickAvatarInfoFirstInventoryCellView()
+        {
+            if (inventoryView.TryGetFirstCell(out var item))
+            {
+                item.Selected.Value = true;
+            }
+            else
+            {
+                Debug.LogError(
+                    $"TutorialActionClickAvatarInfoFirstInventoryCellView() throw error.");
+            }
+        }
+
+        public void TutorialActionCloseAvatarInfoWidget() => Close();
+
+        #endregion
     }
 }
