@@ -162,21 +162,21 @@ namespace Nekoyume.UI.Module
             {
                 case ItemType.Consumable:
                     inventoryItem = CreateInventoryItem(itemBase, count,
-                        disabled:!Util.IsUsableItem(itemBase.Id));
+                        disabled: !Util.IsUsableItem(itemBase.Id));
                     _consumables.Add(inventoryItem);
                     break;
                 case ItemType.Costume:
                     var costume = (Costume)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
                         equipped: costume.equipped,
-                        disabled:!Util.IsUsableItem(itemBase.Id));
+                        disabled: !Util.IsUsableItem(itemBase.Id));
                     _costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
-                            equipped: equipment.equipped,
-                            disabled: !Util.IsUsableItem(itemBase.Id));
+                        equipped: equipment.equipped,
+                        disabled: !Util.IsUsableItem(itemBase.Id));
                     _equipments.Add(inventoryItem);
                     break;
                 case ItemType.Material:
@@ -282,7 +282,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            foreach (var item in _equipments)
+            var usableEquipments =
+                _equipments.Where(x => Util.IsUsableItem(x.ItemBase.Id)).ToList();
+            foreach (var item in usableEquipments)
             {
                 item.HasNotification.Value = false;
             }
@@ -292,7 +294,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var (type, slotCount) in availableSlots)
             {
-                var matchedEquipments = _equipments
+                var matchedEquipments = usableEquipments
                     .Where(e => e.ItemBase.ItemSubType == type);
 
                 if (elementalTypes != null)
@@ -301,11 +303,9 @@ namespace Nekoyume.UI.Module
                         elementalTypes.Exists(x => x == e.ItemBase.ElementalType));
                 }
 
-                var equippedEquipments =
-                    matchedEquipments.Where(e => e.Equipped.Value);
-                var unequippedEquipments =
-                    matchedEquipments.Where(e => !e.Equipped.Value)
-                        .OrderByDescending(i => CPHelper.GetCP(i.ItemBase as Equipment));
+                var equippedEquipments = matchedEquipments.Where(e => e.Equipped.Value);
+                var unequippedEquipments = matchedEquipments.Where(e => !e.Equipped.Value)
+                    .OrderByDescending(i => CPHelper.GetCP(i.ItemBase as Equipment));
 
                 var equippedCount = equippedEquipments.Count();
                 if (equippedCount < slotCount)
