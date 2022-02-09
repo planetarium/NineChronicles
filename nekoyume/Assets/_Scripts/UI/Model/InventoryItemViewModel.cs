@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Model
         public ItemBase ItemBase { get; }
 
         public readonly ReactiveProperty<int> Count;
-        public readonly ReactiveProperty<bool> Disabled;
+        public readonly ReactiveProperty<bool> Limited;
         public readonly ReactiveProperty<bool> Selected;
         public readonly ReactiveProperty<bool> Focused;
         public readonly ReactiveProperty<bool> Equipped;
@@ -18,11 +18,11 @@ namespace Nekoyume.UI.Model
 
         public RectTransform View { get; set; }
 
-        public InventoryItemViewModel(ItemBase itemBase, int count, bool equipped, bool disabled)
+        public InventoryItemViewModel(ItemBase itemBase, int count, bool equipped, bool limited)
         {
             ItemBase = itemBase;
             Count = new ReactiveProperty<int>(count);
-            Disabled = new ReactiveProperty<bool>(disabled);
+            Limited = new ReactiveProperty<bool>(limited);
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
             Equipped = new ReactiveProperty<bool>(equipped);
@@ -32,7 +32,6 @@ namespace Nekoyume.UI.Model
         public void Dispose()
         {
             Count.Dispose();
-            Disabled.Dispose();
             Selected.Dispose();
             Focused.Dispose();
             Equipped.Dispose();

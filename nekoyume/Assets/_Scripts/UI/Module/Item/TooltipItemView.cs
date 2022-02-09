@@ -18,6 +18,7 @@ namespace Nekoyume.UI.Module
             baseItemView.FocusObject.SetActive(false);
             baseItemView.ExpiredObject.SetActive(false);
             baseItemView.DisableObject.SetActive(false);
+            baseItemView.LimitObject.SetActive(false);
             baseItemView.SelectObject.SetActive(false);
             baseItemView.SelectEnchantItemObject.SetActive(false);
             baseItemView.LockObject.SetActive(false);

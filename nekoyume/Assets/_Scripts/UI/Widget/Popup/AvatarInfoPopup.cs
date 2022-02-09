@@ -401,7 +401,7 @@ namespace Nekoyume.UI
 
                     if (!Game.Game.instance.Stage.IsInStage)
                     {
-                        interactable = !model.Disabled.Value;
+                        interactable = !model.Limited.Value;
                     }
 
                     submit = () => Equip(model);
@@ -479,7 +479,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (inventoryItem.Disabled.Value)
+            if (inventoryItem.Limited.Value)
             {
                 return;
             }
