@@ -53,8 +53,9 @@ namespace Nekoyume.UI.Module
 
         private Action<InventoryItemViewModel, RectTransform> _onClickItem;
         private Action<InventoryItemViewModel> _onDoubleClickItem;
-        private System.Action onToggleEquipment;
-        private System.Action onToggleCostume;
+        private System.Action _onToggleEquipment;
+        private System.Action _onToggleCostume;
+        private System.Action _onToggleConsumable;
         private ItemType _activeItemType = ItemType.Equipment;
 
         public bool HasNotification => _equipments.Any(x => x.HasNotification.Value);
@@ -69,17 +70,21 @@ namespace Nekoyume.UI.Module
             equipmentButton.OnClick.Subscribe(_ =>
                 {
                     SetToggle(equipmentButton, ItemType.Equipment);
-                    onToggleEquipment?.Invoke();
+                    _onToggleEquipment?.Invoke();
                 })
                 .AddTo(gameObject);
             costumeButton.OnClick.Subscribe(_ =>
                 {
                     SetToggle(costumeButton, ItemType.Costume);
-                    onToggleCostume?.Invoke();
+                    _onToggleCostume?.Invoke();
                 })
                 .AddTo(gameObject);
             consumableButton.OnClick
-                .Subscribe(_ => SetToggle(consumableButton, ItemType.Consumable))
+                .Subscribe(_ =>
+                {
+                    SetToggle(consumableButton, ItemType.Consumable);
+                    _onToggleConsumable?.Invoke();
+                })
                 .AddTo(gameObject);
             materialButton.OnClick.Subscribe(_ => SetToggle(materialButton, ItemType.Material))
                 .AddTo(gameObject);
@@ -330,13 +335,15 @@ namespace Nekoyume.UI.Module
 
         public void SetAction(Action<InventoryItemViewModel, RectTransform> clickItem,
             Action<InventoryItemViewModel> doubleClickItem,
-            System.Action clickEquipmentToggle,
-            System.Action clickCostumeToggle)
+            System.Action clickEquipmentToggle = null,
+            System.Action clickCostumeToggle = null,
+            System.Action onToggleConsumable = null)
         {
             _onClickItem = clickItem;
             _onDoubleClickItem = doubleClickItem;
-            onToggleEquipment = clickEquipmentToggle;
-            onToggleCostume = clickCostumeToggle;
+            _onToggleEquipment = clickEquipmentToggle;
+            _onToggleCostume = clickCostumeToggle;
+            _onToggleConsumable = onToggleConsumable;
         }
 
         public void ClearSelectedItem()

@@ -41,16 +41,7 @@ namespace Nekoyume.UI
         private Transform titleSocket = null;
 
         [SerializeField]
-        private TextMeshProUGUI cpText = null;
-
-        [SerializeField]
-        private DigitTextTweener cpTextValueTweener = null;
-
-        [SerializeField]
-        private GameObject additionalCpArea = null;
-
-        [SerializeField]
-        private TextMeshProUGUI additionalCpText = null;
+        private AvatarCP avatarCP;
 
         [SerializeField]
         private EquipmentSlots costumeSlots = null;
@@ -106,13 +97,15 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
-            inventoryView.SetAction(ShowItemTooltip, Equip,
-                () =>
+            inventoryView.SetAction(
+                clickItem:ShowItemTooltip,
+                doubleClickItem:Equip,
+                clickEquipmentToggle: () =>
                 {
                     costumeSlots.gameObject.SetActive(false);
                     equipmentSlots.gameObject.SetActive(true);
                 },
-                () =>
+                clickCostumeToggle: () =>
                 {
                     costumeSlots.gameObject.SetActive(true);
                     equipmentSlots.gameObject.SetActive(false);
@@ -199,9 +192,10 @@ namespace Nekoyume.UI
             var currentAvatarState = game.States.CurrentAvatarState;
             if (avatarState.Equals(currentAvatarState))
             {
-                var currentPlayer = game.Stage.SelectedPlayer;
-                cpText.text = CPHelper.GetCP(currentPlayer.Model, game.TableSheets.CostumeStatSheet)
-                    .ToString();
+                var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+                var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                var cp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
+                avatarCP.UpdateCP(cp);
             }
 
             UpdateUIPlayer();
@@ -249,7 +243,8 @@ namespace Nekoyume.UI
             {
                 var stat = costumeStatSheet.OrderedList
                     .Where(r => r.CostumeId == itemId)
-                    .Select(row => new StatModifier(row.StatType, StatModifier.OperationType.Add, (int)row.Stat));
+                    .Select(row => new StatModifier(row.StatType, StatModifier.OperationType.Add,
+                        (int)row.Stat));
                 statModifiers.AddRange(stat);
             }
 
@@ -262,10 +257,83 @@ namespace Nekoyume.UI
             UpdateUIPlayer();
         }
 
-        private IEnumerator CoDisableIncreasedCp()
+        private void Equip(InventoryItemViewModel inventoryItem)
         {
-            yield return new WaitForSeconds(1.5f);
-            additionalCpArea.gameObject.SetActive(false);
+            if (Game.Game.instance.Stage.IsInStage)
+            {
+                return;
+            }
+
+            if (inventoryItem.Limited.Value)
+            {
+                return;
+            }
+
+            var itemBase = inventoryItem.ItemBase;
+            if (TryToFindSlotAlreadyEquip(itemBase, out var slot))
+            {
+                Unequip(slot, false);
+                return;
+            }
+
+            if (!TryToFindSlotToEquip(itemBase, out slot))
+            {
+                return;
+            }
+
+            if (!slot.IsEmpty)
+            {
+                Unequip(slot, true);
+            }
+
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var prevCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
+            slot.Set(itemBase, OnClickSlot, OnDoubleClickSlot);
+            LocalStateItemEquipModify(slot.Item, true);
+
+            var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
+            avatarCP.PlayAnimation(prevCp, currentCp);
+
+            var player = Game.Game.instance.Stage.GetPlayer();
+            switch (itemBase)
+            {
+                default:
+                    return;
+                case Costume costume:
+                {
+                    player.EquipCostume(costume);
+                    if (costume.ItemSubType == ItemSubType.Title)
+                    {
+                        Destroy(_cachedCharacterTitle);
+                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
+                            costume.GetLocalizedNonColoredName(false));
+                        _cachedCharacterTitle = Instantiate(clone, titleSocket);
+                    }
+
+                    break;
+                }
+                case Equipment _:
+                {
+                    switch (slot.ItemSubType)
+                    {
+                        case ItemSubType.Armor:
+                        {
+                            var armor = (Armor)_armorSlot.Item;
+                            var weapon = (Weapon)_weaponSlot.Item;
+                            player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
+                            break;
+                        }
+                        case ItemSubType.Weapon:
+                            player.EquipWeapon((Weapon)slot.Item);
+                            break;
+                    }
+                    break;
+                }
+            }
+            Game.Event.OnUpdatePlayerEquip.OnNext(player);
+            PostEquipOrUnequip(slot);
         }
 
         private void Unequip(EquipmentSlot slot, bool considerInventoryOnly)
@@ -275,22 +343,19 @@ namespace Nekoyume.UI
                 return;
             }
 
+
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
             var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var prevCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
-
             var slotItem = slot.Item;
             slot.Clear();
             LocalStateItemEquipModify(slotItem, false);
 
             var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
-            cpTextValueTweener.Play(prevCp, currentCp);
+            avatarCP.PlayAnimation(prevCp, currentCp);
 
-            var player = considerInventoryOnly
-                ? null
-                : Game.Game.instance.Stage.GetPlayer();
-
+            var player = considerInventoryOnly ? null : Game.Game.instance.Stage.GetPlayer();
             if (!considerInventoryOnly)
             {
                 switch (slotItem)
@@ -298,7 +363,6 @@ namespace Nekoyume.UI
                     default:
                         return;
                     case Costume costume:
-                        UpdateStatViews();
                         player.UnequipCostume(costume, true);
                         player.EquipEquipmentsAndUpdateCustomize((Armor)_armorSlot.Item,
                             (Weapon)_weaponSlot.Item);
@@ -311,7 +375,6 @@ namespace Nekoyume.UI
 
                         break;
                     case Equipment _:
-                        UpdateStatViews();
                         switch (slot.ItemSubType)
                         {
                             case ItemSubType.Armor:
@@ -324,21 +387,20 @@ namespace Nekoyume.UI
                                 player.EquipWeapon((Weapon)_weaponSlot.Item);
                                 break;
                         }
-
                         Game.Event.OnUpdatePlayerEquip.OnNext(player);
                         break;
                 }
             }
-
             PostEquipOrUnequip(slot);
         }
 
         private void PostEquipOrUnequip(EquipmentSlot slot)
         {
+            UpdateStatViews();
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
-            Find<HeaderMenuStatic>().UpdateInventoryNotification(HasNotification);
+            Find<HeaderMenuStatic>().UpdateInventoryNotification(inventoryView.HasNotification);
         }
 
         private void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
@@ -352,33 +414,7 @@ namespace Nekoyume.UI
                 nonFungibleItem.NonFungibleId, equip);
         }
 
-        private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
-        {
-            switch (item.ItemType)
-            {
-                case ItemType.Costume:
-                    return costumeSlots.TryGetAlreadyEquip(item, out slot);
-                case ItemType.Equipment:
-                    return equipmentSlots.TryGetAlreadyEquip(item, out slot);
-                default:
-                    slot = null;
-                    return false;
-            }
-        }
 
-        private bool TryToFindSlotToEquip(ItemBase item, out EquipmentSlot slot)
-        {
-            switch (item.ItemType)
-            {
-                case ItemType.Costume:
-                    return costumeSlots.TryGetToEquip((Costume)item, out slot);
-                case ItemType.Equipment:
-                    return equipmentSlots.TryGetToEquip((Equipment)item, out slot);
-                default:
-                    slot = null;
-                    return false;
-            }
-        }
 
         private (string, bool, System.Action, System.Action) GetToolTipParams(
             InventoryItemViewModel model)
@@ -414,6 +450,7 @@ namespace Nekoyume.UI
                     {
                         blocked = () => ShowNotification("UI_EQUIP_FAILED");
                     }
+
                     break;
                 case ItemType.Material:
                     if (item.ItemSubType == ItemSubType.ApStone)
@@ -472,100 +509,6 @@ namespace Nekoyume.UI
                 notificationType);
         }
 
-        private void Equip(InventoryItemViewModel inventoryItem)
-        {
-            if (Game.Game.instance.Stage.IsInStage)
-            {
-                return;
-            }
-
-            if (inventoryItem.Limited.Value)
-            {
-                return;
-            }
-
-            var itemBase = inventoryItem.ItemBase;
-            if (TryToFindSlotAlreadyEquip(itemBase, out var slot))
-            {
-                Unequip(slot, false);
-                return;
-            }
-
-            if (!TryToFindSlotToEquip(itemBase, out slot))
-            {
-                return;
-            }
-
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-            var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            var prevCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
-
-            if (!slot.IsEmpty)
-            {
-                Unequip(slot, true);
-            }
-
-            slot.Set(itemBase, OnClickSlot, OnDoubleClickSlot);
-            LocalStateItemEquipModify(slot.Item, true);
-
-            if (!(_disableCpTween is null))
-                StopCoroutine(_disableCpTween);
-            additionalCpArea.gameObject.SetActive(false);
-
-            var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
-            cpTextValueTweener.Play(prevCp, currentCp);
-            if (prevCp < currentCp)
-            {
-                additionalCpArea.gameObject.SetActive(true);
-                additionalCpText.text = (currentCp - prevCp).ToString();
-                _disableCpTween = StartCoroutine(CoDisableIncreasedCp());
-            }
-
-            var player = Game.Game.instance.Stage.GetPlayer();
-            switch (itemBase)
-            {
-                default:
-                    return;
-                case Costume costume:
-                {
-                    player.EquipCostume(costume);
-                    UpdateStatViews();
-                    if (costume.ItemSubType == ItemSubType.Title)
-                    {
-                        Destroy(_cachedCharacterTitle);
-                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
-                            costume.GetLocalizedNonColoredName(false));
-                        _cachedCharacterTitle = Instantiate(clone, titleSocket);
-                    }
-
-                    break;
-                }
-                case Equipment _:
-                {
-                    UpdateStatViews();
-                    switch (slot.ItemSubType)
-                    {
-                        case ItemSubType.Armor:
-                        {
-                            var armor = (Armor)_armorSlot.Item;
-                            var weapon = (Weapon)_weaponSlot.Item;
-                            player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
-                            break;
-                        }
-                        case ItemSubType.Weapon:
-                            player.EquipWeapon((Weapon)slot.Item);
-                            break;
-                    }
-
-                    break;
-                }
-            }
-
-            Game.Event.OnUpdatePlayerEquip.OnNext(player);
-            PostEquipOrUnequip(slot);
-        }
-
         private void ShowRefillConfirmPopup(ItemBase itemBase)
         {
             var confirm = Find<IconAndButtonSystem>();
@@ -616,5 +559,33 @@ namespace Nekoyume.UI
         }
 
         public void TutorialActionCloseAvatarInfoWidget() => Close();
+
+        private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
+        {
+            switch (item.ItemType)
+            {
+                case ItemType.Costume:
+                    return costumeSlots.TryGetAlreadyEquip(item, out slot);
+                case ItemType.Equipment:
+                    return equipmentSlots.TryGetAlreadyEquip(item, out slot);
+                default:
+                    slot = null;
+                    return false;
+            }
+        }
+
+        private bool TryToFindSlotToEquip(ItemBase item, out EquipmentSlot slot)
+        {
+            switch (item.ItemType)
+            {
+                case ItemType.Costume:
+                    return costumeSlots.TryGetToEquip((Costume)item, out slot);
+                case ItemType.Equipment:
+                    return equipmentSlots.TryGetToEquip((Equipment)item, out slot);
+                default:
+                    slot = null;
+                    return false;
+            }
+        }
     }
 }
