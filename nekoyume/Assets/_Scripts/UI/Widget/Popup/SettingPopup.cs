@@ -89,15 +89,15 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             SubmitWidget = () => Close(true);
-            CloseWidget = ApplyCurrentSettings;
+            CloseWidget = () => Close(true);
             base.OnEnable();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             base.Close(ignoreCloseAnimation);
+            Settings.Instance.ApplyCurrentSettings();
             AudioController.PlayClick();
-            ApplyCurrentSettings();
         }
 
         private void InitResolution()
@@ -152,12 +152,6 @@ namespace Nekoyume.UI
 
             base.Show(true);
             HelpTooltip.HelpMe(100014, true);
-        }
-
-        public void ApplyCurrentSettings()
-        {
-            Nekoyume.Settings.Instance.ApplyCurrentSettings();
-            Close(true);
         }
 
         public void RevertSettings()
