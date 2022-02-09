@@ -193,25 +193,10 @@ namespace Nekoyume.Action
                 );
             }
             
-            var equippableItem = new List<Guid>();
-            equippableItem.AddRange(costumes);
-            equippableItem.AddRange(equipments);
+            var equippableItem = costumes.Concat(equipments);
             var equipItems = avatarState.EquipItems(equippableItem);
             var requirementSheet = states.GetSheet<ItemRequirementSheet>();
-            foreach (var item in equipItems)
-            {
-                if (!requirementSheet.TryGetValue(item.item.Id, out var requirementRow))
-                {
-                    throw new SheetRowNotFoundException(addressesHex, nameof(ItemRequirementSheet), item.item.Id);
-                }
-
-                if (avatarState.level < requirementRow.Level)
-                {
-                    throw new HighLevelItemRequirementException(
-                        $"{addressesHex}avatar level must be higher than requirement level of equipments." +
-                        $"{avatarState.level} < requirement level({requirementRow.Level})");
-                }
-            }
+            avatarState.ValidateItemRequirement(equipItems, requirementSheet, addressesHex);
 
             avatarState.actionPoint -= totalCostActionPoint;
             sw.Stop();

@@ -828,6 +828,27 @@ namespace Nekoyume.Model.State
             }
         }
 
+        public void ValidateItemRequirement(
+            List<Inventory.Item> equipItems,
+            ItemRequirementSheet requirementSheet, 
+            string addressesHex)
+        {
+            foreach (var item in equipItems)
+            {
+                if (!requirementSheet.TryGetValue(item.item.Id, out var requirementRow))
+                {
+                    throw new SheetRowNotFoundException(addressesHex, nameof(ItemRequirementSheet), item.item.Id);
+                }
+
+                if (level < requirementRow.Level)
+                {
+                    throw new HighLevelItemRequirementException(
+                        $"{addressesHex}avatar level must be higher than requirement level of equipments." +
+                        $"{level} < requirement level({requirementRow.Level})");
+                }
+            }
+        }
+
         public List<Inventory.Item> EquipItems(IEnumerable<Guid> itemIds)
         {
             var equipItems = new List<Inventory.Item>();

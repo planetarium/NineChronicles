@@ -92,20 +92,7 @@ namespace Nekoyume.Action
             var items = equipmentIds.Concat(costumeIds);
             var equipItems = avatarState.EquipItems(items);
             var requirementSheet = states.GetSheet<ItemRequirementSheet>();
-            foreach (var item in equipItems)
-            {
-                if(!requirementSheet.TryGetValue(item.item.Id, out var requirementRow))
-                {
-                    throw new SheetRowNotFoundException(addressesHex, nameof(ItemRequirementSheet), item.item.Id);
-                }
-                
-                if(avatarState.level < requirementRow.Level)
-                {
-                    throw new HighLevelItemRequirementException(
-                        $"{addressesHex}avatar level must be higher than requirement level of equipments." +
-                        $"{avatarState.level} < requirement level({requirementRow.Level})");
-                }
-            }
+            avatarState.ValidateItemRequirement(equipItems, requirementSheet, addressesHex);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Equip Equipments: {Elapsed}", addressesHex, sw.Elapsed);
