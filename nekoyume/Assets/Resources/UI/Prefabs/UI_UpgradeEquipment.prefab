@@ -1502,6 +1502,7 @@ MonoBehaviour:
   - {fileID: 5987449368685970711}
   - {fileID: 6438935035963822058}
   - {fileID: 6306610331769088163}
+  levelText: {fileID: 4801058207924251683}
   noneContainer: {fileID: 4264069782330966274}
   itemInformationContainer: {fileID: 9033703093585415908}
   blockInformationContainer: {fileID: 675753384982089682}
@@ -50313,7 +50314,7 @@ PrefabInstance:
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 48
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -50323,7 +50324,7 @@ PrefabInstance:
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}

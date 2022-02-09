@@ -20,6 +20,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Mail;
+using Nekoyume.State.Subjects;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
@@ -367,18 +368,18 @@ namespace Nekoyume.UI
                     tooltip.Show(
                         view.RectTransform,
                         view.Model,
-                        AvatarInfoPopup.DimmedFuncForChargeActionPoint,
+                        DimmedFuncForChargeActionPoint,
                         L10nManager.Localize("UI_CHARGE_AP"),
                          _ =>
                          {
                              if (States.Instance.CurrentAvatarState.actionPoint > 0)
                              {
-                                 AvatarInfoPopup.ShowRefillConfirmPopup(tooltip.itemInformation.Model
+                                 ShowRefillConfirmPopup(tooltip.itemInformation.Model
                                      .item.Value);
                              }
                              else
                              {
-                                 AvatarInfoPopup.ChargeActionPoint(tooltip.itemInformation.Model.item
+                                 ChargeActionPoint(tooltip.itemInformation.Model.item
                                      .Value);
                              }
                          }
@@ -1015,6 +1016,58 @@ namespace Nekoyume.UI
             }
 
             return mimisbrunnrSheetRow.ElementalTypes;
+        }
+
+        private static void ShowRefillConfirmPopup(CountableItem item)
+        {
+            var confirm = Find<IconAndButtonSystem>();
+            confirm.ShowWithTwoButton(
+                "UI_CONFIRM",
+                "UI_AP_REFILL_CONFIRM_CONTENT",
+                "UI_OK",
+                "UI_CANCEL",
+                true,
+                IconAndButtonSystem.SystemType.Information);
+            confirm.ConfirmCallback = () => ChargeActionPoint(item);
+            confirm.CancelCallback = () => confirm.Close();
+        }
+
+        private static void ChargeActionPoint(CountableItem item)
+        {
+            if (!(item.ItemBase.Value is Nekoyume.Model.Item.Material material))
+            {
+                return;
+            }
+
+            NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
+                L10nManager.Localize("UI_CHARGE_AP"),
+                NotificationCell.NotificationType.Information);
+            Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
+
+            var address = States.Instance.CurrentAvatarState.address;
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(address);
+            }
+
+            GameConfigStateSubject.ActionPointState.Add(address, true);
+        }
+
+        private static bool DimmedFuncForChargeActionPoint(CountableItem item)
+        {
+            if (Find<HeaderMenuStatic>().ChargingAP)
+            {
+                return false;
+            }
+
+            if (item is null || item.Count.Value < 1)
+            {
+                return false;
+            }
+
+            return States.Instance.CurrentAvatarState.actionPoint !=
+                   States.Instance.GameConfigState.ActionPointMax
+                   && !Game.Game.instance.Stage.IsInStage;
         }
     }
 }

@@ -24,9 +24,6 @@ namespace Nekoyume.UI
         private static readonly Vector3 NPCPositionInLobbyCamera = new Vector3(5000f, 4999.13f, 0f);
 
         [SerializeField]
-        private Button blurButton = null;
-
-        [SerializeField]
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
@@ -62,10 +59,6 @@ namespace Nekoyume.UI
 
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
-
-            blurButton.OnClickAsObservable()
-                .Subscribe(_ => Close())
-                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
