@@ -608,9 +608,10 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public void ValidateEquipmentsV2(List<Guid> equipmentIds, long blockIndex)
+        public List<int> ValidateEquipmentsV2(List<Guid> equipmentIds, long blockIndex)
         {
             var countMap = new Dictionary<ItemSubType, int>();
+            var list = new List<int>();
             foreach (var itemId in equipmentIds)
             {
                 if (!inventory.TryGetNonFungibleItem(itemId, out ItemUsable outNonFungibleItem))
@@ -677,11 +678,16 @@ namespace Nekoyume.Model.State
                 {
                     throw new EquipmentSlotUnlockException($"{equipment.ItemSubType} / not enough level. required: {requiredLevel}");
                 }
+
+                list.Add(equipment.Id);
             }
+
+            return list;
         }
 
-        public void ValidateConsumable(List<Guid> consumableIds, long currentBlockIndex)
+        public List<int> ValidateConsumable(List<Guid> consumableIds, long currentBlockIndex)
         {
+            var list = new List<int>();
             for (var slotIndex = 0; slotIndex < consumableIds.Count; slotIndex++)
             {
                 var consumableId = consumableIds[slotIndex];
@@ -724,12 +730,17 @@ namespace Nekoyume.Model.State
                 {
                     throw new ConsumableSlotUnlockException($"not enough level. required: {requiredLevel}");
                 }
+
+                list.Add(equipment.Id);
             }
+
+            return list;
         }
 
-        public void ValidateCostume(IEnumerable<Guid> costumeIds)
+        public List<int> ValidateCostume(IEnumerable<Guid> costumeIds)
         {
             var subTypes = new List<ItemSubType>();
+            var list = new List<int>();
             foreach (var costumeId in costumeIds)
             {
                 if (!inventory.TryGetNonFungibleItem<Costume>(costumeId, out var costume))
@@ -774,7 +785,11 @@ namespace Nekoyume.Model.State
                 {
                     throw new CostumeSlotUnlockException($"not enough level. required: {requiredLevel}");
                 }
+
+                list.Add(costume.Id);
             }
+
+            return list;
         }
 
         public void ValidateCostume(HashSet<int> costumeIds)
@@ -829,15 +844,15 @@ namespace Nekoyume.Model.State
         }
 
         public void ValidateItemRequirement(
-            List<Inventory.Item> equipItems,
-            ItemRequirementSheet requirementSheet, 
+            List<int> itemIds,
+            ItemRequirementSheet requirementSheet,
             string addressesHex)
         {
-            foreach (var item in equipItems)
+            foreach (var id in itemIds)
             {
-                if (!requirementSheet.TryGetValue(item.item.Id, out var requirementRow))
+                if (!requirementSheet.TryGetValue(id, out var requirementRow))
                 {
-                    throw new SheetRowNotFoundException(addressesHex, nameof(ItemRequirementSheet), item.item.Id);
+                    throw new SheetRowNotFoundException(addressesHex, nameof(ItemRequirementSheet), id);
                 }
 
                 if (level < requirementRow.Level)
@@ -849,9 +864,8 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public List<Inventory.Item> EquipItems(IEnumerable<Guid> itemIds)
+        public void EquipItems(IEnumerable<Guid> itemIds)
         {
-            var equipItems = new List<Inventory.Item>();
             // Unequip items already equipped.
             var equippableItems = inventory.Items
                 .Select(item => item.item)
@@ -873,11 +887,8 @@ namespace Nekoyume.Model.State
                     continue;
                 }
 
-                equipItems.Add(inventoryItem);
                 equippableItem.Equip();
             }
-
-            return equipItems;
         }
 
         // FIXME: Use `EquipItems(IEnumerable<Guid>)` instead of this.

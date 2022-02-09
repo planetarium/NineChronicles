@@ -136,9 +136,9 @@ namespace Nekoyume.Action
                 throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
             }
 
-            avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            avatarState.ValidateConsumable(foods, context.BlockIndex);
-            avatarState.ValidateCostume(costumes);
+            var equipmentIds = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
+            var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
+            var costumeIds = avatarState.ValidateCostume(costumes);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Validate: {Elapsed}", addressesHex, sw.Elapsed);
@@ -165,9 +165,9 @@ namespace Nekoyume.Action
             }
 
             var items = equipments.Concat(costumes);
-            var equipItems = avatarState.EquipItems(items);
+            avatarState.EquipItems(items);
             var requirementSheet = states.GetSheet<ItemRequirementSheet>();
-            avatarState.ValidateItemRequirement(equipItems, requirementSheet, addressesHex);
+            avatarState.ValidateItemRequirement(equipmentIds.Concat(costumeIds).Concat(foodIds).ToList(), requirementSheet, addressesHex);
 
             avatarState.actionPoint -= totalCostActionPoint;
             sw.Stop();

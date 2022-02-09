@@ -82,17 +82,17 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
-            avatarState.ValidateCostume(costumeIds);
+            var equipmentItemIds = avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
+            var costumeItemIds = avatarState.ValidateCostume(costumeIds);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Validate Equipments: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var items = equipmentIds.Concat(costumeIds);
-            var equipItems = avatarState.EquipItems(items);
+            avatarState.EquipItems(items);
             var requirementSheet = states.GetSheet<ItemRequirementSheet>();
-            avatarState.ValidateItemRequirement(equipItems, requirementSheet, addressesHex);
+            avatarState.ValidateItemRequirement(equipmentItemIds.Concat(costumeItemIds).ToList(), requirementSheet, addressesHex);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Equip Equipments: {Elapsed}", addressesHex, sw.Elapsed);

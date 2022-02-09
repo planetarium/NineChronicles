@@ -172,9 +172,9 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Check Equipments ElementalType: {Elapsed}", addressesHex, sw.Elapsed);
 
-            avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            avatarState.ValidateConsumable(foods, context.BlockIndex);
-            avatarState.ValidateCostume(costumes);
+            var equipmentIds = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
+            var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
+            var costumeIds = avatarState.ValidateCostume(costumes);
 
             sw.Restart();
 
@@ -192,11 +192,11 @@ namespace Nekoyume.Action
                     $"{avatarState.actionPoint} < totalAP({totalCostActionPoint}) = cost({stageRow.CostAP}) * boostCount({playCount})"
                 );
             }
-            
+
             var equippableItem = costumes.Concat(equipments);
-            var equipItems = avatarState.EquipItems(equippableItem);
+            avatarState.EquipItems(equippableItem);
             var requirementSheet = states.GetSheet<ItemRequirementSheet>();
-            avatarState.ValidateItemRequirement(equipItems, requirementSheet, addressesHex);
+            avatarState.ValidateItemRequirement(equipmentIds.Concat(costumeIds).Concat(foodIds).ToList(), requirementSheet, addressesHex);
 
             avatarState.actionPoint -= totalCostActionPoint;
             sw.Stop();
