@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private InventoryItemViewModel _selectedItemViewModel;
+        private InventoryItemViewModel _selectedItem;
 
         private Action<InventoryItemViewModel, RectTransform> _onClickItem;
         private Action<InventoryItemViewModel> _onDoubleClickItem;
@@ -100,7 +100,7 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                _selectedItemViewModel = null;
+                _selectedItem = null;
                 foreach (var item in
                          inventory.Items.OrderByDescending(x => x.item is ITradableItem))
                 {
@@ -222,25 +222,25 @@ namespace Nekoyume.UI.Module
 
         private void OnClickItem(InventoryItemViewModel item)
         {
-            if (_selectedItemViewModel == null)
+            if (_selectedItem == null)
             {
-                _selectedItemViewModel = item;
-                _selectedItemViewModel.Selected.SetValueAndForceNotify(true);
-                _onClickItem?.Invoke(_selectedItemViewModel, _selectedItemViewModel.View); // Show tooltip popup
+                _selectedItem = item;
+                _selectedItem.Selected.SetValueAndForceNotify(true);
+                _onClickItem?.Invoke(_selectedItem, _selectedItem.View); // Show tooltip popup
             }
             else
             {
-                if (_selectedItemViewModel.Equals(item))
+                if (_selectedItem.Equals(item))
                 {
-                    _selectedItemViewModel.Selected.SetValueAndForceNotify(false);
-                    _selectedItemViewModel = null;
+                    _selectedItem.Selected.SetValueAndForceNotify(false);
+                    _selectedItem = null;
                 }
                 else
                 {
-                    _selectedItemViewModel.Selected.SetValueAndForceNotify(false);
-                    _selectedItemViewModel = item;
-                    _selectedItemViewModel.Selected.SetValueAndForceNotify(true);
-                    _onClickItem?.Invoke(_selectedItemViewModel, _selectedItemViewModel.View); // Show tooltip popup
+                    _selectedItem.Selected.SetValueAndForceNotify(false);
+                    _selectedItem = item;
+                    _selectedItem.Selected.SetValueAndForceNotify(true);
+                    _onClickItem?.Invoke(_selectedItem, _selectedItem.View); // Show tooltip popup
                 }
             }
         }
@@ -259,8 +259,8 @@ namespace Nekoyume.UI.Module
 
         private void OnDoubleClick(InventoryItemViewModel item)
         {
-            _selectedItemViewModel?.Selected.SetValueAndForceNotify(false);
-            _selectedItemViewModel = null;
+            _selectedItem?.Selected.SetValueAndForceNotify(false);
+            _selectedItem = null;
             _onDoubleClickItem?.Invoke(item);
         }
 
@@ -341,8 +341,8 @@ namespace Nekoyume.UI.Module
 
         public void ClearSelectedItem()
         {
-            _selectedItemViewModel?.Selected.SetValueAndForceNotify(false);
-            _selectedItemViewModel = null;
+            _selectedItem?.Selected.SetValueAndForceNotify(false);
+            _selectedItem = null;
             DisableFocus();
         }
 
