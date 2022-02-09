@@ -1683,8 +1683,8 @@
         </member>
         <member name="F:Libplanet.Net.Transports.NetMQTransport._differentAppProtocolVersionEncountered">
             <summary>
-            The <see cref="T:System.EventHandler" /> triggered when the different version of
-            <see cref="T:Libplanet.Net.Peer" /> is discovered.
+            The <see cref="T:System.EventHandler"/> triggered when the different version of
+            <see cref="T:Libplanet.Net.Peer"/> is discovered.
             </summary>
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan})">
@@ -1754,7 +1754,7 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.BroadcastMessage(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Net.Messages.Message)">
-            <inheritdoc />
+            <inheritdoc/>
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.ReplyMessageAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
             <inheritdoc/>

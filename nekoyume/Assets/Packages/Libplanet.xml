@@ -6726,6 +6726,22 @@
             <seealso cref="P:Libplanet.Crypto.SymmetricKey.ByteArray"/>
             <seealso cref="M:Libplanet.Crypto.SymmetricKey.#ctor(System.Byte[])"/>
         </member>
+        <member name="M:Libplanet.EnumerableExtensions.Greatest``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})">
+            <summary>
+            Similar to <see
+            cref="M:System.Linq.Enumerable.Max``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})"/>
+            method, but it returns the source element with the maximum value of the given
+            <paramref name="selector"/>, instead of the maximum value.
+            </summary>
+            <param name="source">The source enumerable.</param>
+            <param name="selector">A function to select the value to compare.</param>
+            <typeparam name="TSource">The type of the source elements.</typeparam>
+            <typeparam name="TComparable">The type of the value to compare.</typeparam>
+            <returns>The source element with the maximum value of the given
+            <paramref name="selector"/>.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when the source sequence is empty.
+            </exception>
+        </member>
         <member name="T:Libplanet.EnumerableMeasurement">
             <summary>
             Extension methods for measuring exact evaluation time of lazy <see cref="T:System.Collections.Generic.IEnumerable`1"/>
