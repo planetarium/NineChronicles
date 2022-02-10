@@ -234,8 +234,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<RankingBoard>());
             yield return null;
-            // secondWidgets.Add(Widget.Create<MimisbrunnrPreparation>());
-            // yield return null;
             secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
 
