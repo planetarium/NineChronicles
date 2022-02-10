@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Nekoyume.Game.Character;
+using Nekoyume.Game.Factory;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -204,6 +207,16 @@ namespace Nekoyume.Helper
             }
 
             return sheet.TryGetValue(itemId, out var value) ? value.Level : 0;
+        }
+
+        public static Player CreatePlayer(AvatarState avatarState, Vector3 position)
+        {
+            var player = PlayerFactory.Create(avatarState).GetComponent<Player>();
+            var t = player.transform;
+            t.localScale = Vector3.one;
+            t.position = position;
+            player.gameObject.SetActive(true);
+            return player;
         }
     }
 }

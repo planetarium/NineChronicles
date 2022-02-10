@@ -1,25 +1,20 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Tween;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI
 {
@@ -32,28 +27,28 @@ namespace Nekoyume.UI
         private static readonly Vector3 PlayerPosition = new Vector3(3000f, 2999.2f, 2.15f);
 
         [SerializeField]
-        private InventoryView inventoryView;
+        private InventoryView inventory;
 
         [SerializeField]
-        private TextMeshProUGUI nicknameText = null;
+        private TextMeshProUGUI nicknameText;
 
         [SerializeField]
-        private Transform titleSocket = null;
+        private Transform titleSocket;
 
         [SerializeField]
-        private AvatarCP avatarCP;
+        private EquipmentSlots costumeSlots;
 
         [SerializeField]
-        private EquipmentSlots costumeSlots = null;
+        private EquipmentSlots equipmentSlots;
 
         [SerializeField]
-        private EquipmentSlots equipmentSlots = null;
+        private AvatarCP cp;
 
         [SerializeField]
-        private AvatarStats avatarStats = null;
+        private AvatarStats stats;
 
         [SerializeField]
-        private Button closeButton = null;
+        private Button closeButton;
 
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
@@ -63,7 +58,7 @@ namespace Nekoyume.UI
 
         private readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
 
-        public bool HasNotification => inventoryView.HasNotification;
+        public bool HasNotification => inventory.HasNotification;
 
         #region Override
 
@@ -97,7 +92,7 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
-            inventoryView.SetAction(
+            inventory.SetAction(
                 clickItem: ShowItemTooltip,
                 doubleClickItem: Equip,
                 clickEquipmentToggle: () =>
@@ -116,10 +111,13 @@ namespace Nekoyume.UI
         {
             IsTweenEnd.Value = false;
             Destroy(_cachedCharacterTitle);
+
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            CreatePlayer(currentAvatarState);
-            UpdateSlotView(currentAvatarState);
-            UpdateStatViews();
+            _player = Util.CreatePlayer(currentAvatarState, PlayerPosition);
+            UpdateNickname(currentAvatarState.level, currentAvatarState.NameWithHash);
+            UpdateTitle(currentAvatarState);
+            UpdateSlot(currentAvatarState);
+            UpdateStat(currentAvatarState);
             HelpTooltip.HelpMe(100013, true);
             base.Show(ignoreShowAnimation);
         }
@@ -149,99 +147,64 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private void CreatePlayer(AvatarState avatarState)
+        private void UpdateNickname(int level, string nameWithHash)
         {
-            _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
-            var t = _player.transform;
-            t.localScale = Vector3.one;
-            t.position = PlayerPosition;
-            _player.gameObject.SetActive(true);
+            nicknameText.text = string.Format(NicknameTextFormat, level, nameWithHash);
         }
 
-        private void UpdateSlotView(AvatarState avatarState)
+        private void UpdateTitle(AvatarState avatarState)
         {
-            var game = Game.Game.instance;
-            var playerModel = _player.Model;
-
-            nicknameText.text = string.Format(
-                NicknameTextFormat,
-                avatarState.level,
-                avatarState.NameWithHash);
-
             var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
-                costume.ItemSubType == ItemSubType.Title &&
-                costume.equipped);
-
-            if (!(title is null))
+                costume.ItemSubType == ItemSubType.Title && costume.equipped);
+            if (title is null)
             {
-                Destroy(_cachedCharacterTitle);
-                var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
-                    title.GetLocalizedNonColoredName(false));
-                _cachedCharacterTitle = Instantiate(clone, titleSocket);
+                return;
             }
 
-            costumeSlots.SetPlayerCostumes(playerModel, OnClickSlot, OnDoubleClickSlot);
-            equipmentSlots.SetPlayerEquipments(playerModel, OnClickSlot, OnDoubleClickSlot);
-
-            var currentAvatarState = game.States.CurrentAvatarState;
-            if (avatarState.Equals(currentAvatarState))
-            {
-                var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-                var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-                var cp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
-                avatarCP.UpdateCP(cp);
-            }
-
-            _player.Set(currentAvatarState);
+            Destroy(_cachedCharacterTitle);
+            var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
+                title.GetLocalizedNonColoredName(false));
+            _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }
 
-        private void UpdateStatViews()
+        private void UpdateSlot(AvatarState avatarState)
         {
-            var equipments = equipmentSlots
-                .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => slot.Item as Equipment)
-                .Where(item => !(item is null))
-                .ToList();
-
-            var costumeIds = costumeSlots
-                .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => slot.Item.Id)
-                .ToList();
-
+            costumeSlots.SetPlayerCostumes(_player.Model, OnClickSlot, OnDoubleClickSlot);
+            equipmentSlots.SetPlayerEquipments(_player.Model, OnClickSlot, OnDoubleClickSlot);
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
             var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            var statModifiers = new List<StatModifier>();
-            foreach (var itemId in costumeIds)
-            {
-                var stat = costumeStatSheet.OrderedList
-                    .Where(r => r.CostumeId == itemId)
-                    .Select(row => new StatModifier(row.StatType, StatModifier.OperationType.Add,
-                        (int)row.Stat));
-                statModifiers.AddRange(stat);
-            }
+            var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
+            this.cp.UpdateCP(cp);
+        }
 
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            _player.Set(currentAvatarState);
-            var stats = _player.Model.Stats.SetAll(_player.Model.Stats.Level, equipments,
-                null, Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet);
-            stats.SetOption(statModifiers);
-            avatarStats.SetData(stats);
-            _player.Set(currentAvatarState);
+        private void UpdateStat(AvatarState avatarState)
+        {
+            _player.Set(avatarState);
+            var equipments = _player.Equipments;
+            var costumes = _player.Costumes;
+            var equipmentSetEffectSheet =
+                Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var stats = _player.Model.Stats.SetAll(_player.Model.Stats.Level,
+                equipments, costumes, null,
+                equipmentSetEffectSheet, costumeSheet);
+            this.stats.SetData(stats); // view
         }
 
         private void OnClickSlot(EquipmentSlot slot)
         {
             if (slot.IsEmpty)
             {
-                inventoryView.Focus(slot.ItemType, slot.ItemSubType);
+                inventory.Focus(slot.ItemType, slot.ItemSubType);
             }
             else
             {
-                if (!inventoryView.TryGetItemViewModel(slot.Item, out var model))
+                if (!inventory.TryGetItemViewModel(slot.Item, out var model))
                 {
                     return;
                 }
 
-                inventoryView.DisableFocus();
+                inventory.DisableFocus();
                 ShowItemTooltip(model, slot.RectTransform);
             }
         }
@@ -288,7 +251,7 @@ namespace Nekoyume.UI
             LocalStateItemEquipModify(slot.Item, true);
 
             var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
-            avatarCP.PlayAnimation(prevCp, currentCp);
+            cp.PlayAnimation(prevCp, currentCp);
 
             var player = Game.Game.instance.Stage.GetPlayer();
             switch (itemBase)
@@ -348,12 +311,11 @@ namespace Nekoyume.UI
             LocalStateItemEquipModify(slotItem, false);
 
             var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
-            avatarCP.PlayAnimation(prevCp, currentCp);
+            cp.PlayAnimation(prevCp, currentCp);
 
-            var selectedPlayer =
-                considerInventoryOnly ? null : Game.Game.instance.Stage.GetPlayer();
             if (!considerInventoryOnly)
             {
+                var selectedPlayer = Game.Game.instance.Stage.GetPlayer();
                 switch (slotItem)
                 {
                     default:
@@ -395,11 +357,11 @@ namespace Nekoyume.UI
 
         private void PostEquipOrUnequip(EquipmentSlot slot)
         {
-            UpdateStatViews();
+            UpdateStat(Game.Game.instance.States.CurrentAvatarState);
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
-            Find<HeaderMenuStatic>().UpdateInventoryNotification(inventoryView.HasNotification);
+            Find<HeaderMenuStatic>().UpdateInventoryNotification(inventory.HasNotification);
         }
 
         private void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
@@ -413,8 +375,41 @@ namespace Nekoyume.UI
                 nonFungibleItem.NonFungibleId, equip);
         }
 
-        private (string, bool, System.Action, System.Action) GetToolTipParams(
-            InventoryItemViewModel model)
+        private bool IsInteractableMaterial()
+        {
+            if (Find<HeaderMenuStatic>().ChargingAP) // is charging?
+            {
+                return false;
+            }
+
+            if (States.Instance.CurrentAvatarState.actionPoint ==
+                States.Instance.GameConfigState.ActionPointMax) // full?
+            {
+                return false;
+            }
+
+            return !Game.Game.instance.Stage.IsInStage;
+        }
+
+        private void ShowRefillConfirmPopup(Material material)
+        {
+            var confirm = Find<IconAndButtonSystem>();
+            confirm.ShowWithTwoButton("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT",
+                "UI_OK", "UI_CANCEL",
+                true, IconAndButtonSystem.SystemType.Information);
+            confirm.ConfirmCallback = () => Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
+            confirm.CancelCallback = () => confirm.Close();
+        }
+
+        private void ShowItemTooltip(InventoryItemViewModel model, RectTransform target)
+        {
+            var tooltip = Find<ItemTooltip>();
+            var (submitText, interactable, submit, blocked) = GetToolTipParams(model);
+            tooltip.Show(target, model, submitText, interactable,
+                submit, () => inventory.ClearSelectedItem(), blocked);
+        }
+
+        private (string, bool, System.Action, System.Action) GetToolTipParams(InventoryItemViewModel model)
         {
             var item = model.ItemBase;
             var submitText = string.Empty;
@@ -461,11 +456,11 @@ namespace Nekoyume.UI
 
                         if (States.Instance.CurrentAvatarState.actionPoint > 0)
                         {
-                            submit = () => ShowRefillConfirmPopup(item);
+                            submit = () => ShowRefillConfirmPopup(item as Material);
                         }
                         else
                         {
-                            submit = () => ChargeActionPoint(item);
+                            submit = () => Game.Game.instance.ActionManager.ChargeActionPoint(item as Material).Subscribe();
                         }
 
                         if (Game.Game.instance.Stage.IsInStage)
@@ -488,60 +483,6 @@ namespace Nekoyume.UI
             }
 
             return (submitText, interactable, submit, blocked);
-        }
-
-        private bool IsInteractableMaterial()
-        {
-            if (Find<HeaderMenuStatic>().ChargingAP) // is charging?
-            {
-                return false;
-            }
-
-            if (States.Instance.CurrentAvatarState.actionPoint ==
-                States.Instance.GameConfigState.ActionPointMax) // full?
-            {
-                return false;
-            }
-
-            return !Game.Game.instance.Stage.IsInStage;
-        }
-
-        private void ShowRefillConfirmPopup(ItemBase itemBase)
-        {
-            var confirm = Find<IconAndButtonSystem>();
-            confirm.ShowWithTwoButton("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT",
-                "UI_OK", "UI_CANCEL",
-                true, IconAndButtonSystem.SystemType.Information);
-            confirm.ConfirmCallback = () => ChargeActionPoint(itemBase);
-            confirm.CancelCallback = () => confirm.Close();
-        }
-
-        private void ChargeActionPoint(ItemBase itemBase)
-        {
-            if (!(itemBase is Nekoyume.Model.Item.Material material))
-            {
-                return;
-            }
-
-            NotificationSystem.Push(MailType.System,
-                L10nManager.Localize("UI_CHARGE_AP"),
-                NotificationCell.NotificationType.Information);
-            Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
-            var address = States.Instance.CurrentAvatarState.address;
-            if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
-            {
-                GameConfigStateSubject.ActionPointState.Remove(address);
-            }
-
-            GameConfigStateSubject.ActionPointState.Add(address, true);
-        }
-
-        private void ShowItemTooltip(InventoryItemViewModel model, RectTransform target)
-        {
-            var tooltip = Find<ItemTooltip>();
-            var (submitText, interactable, submit, blocked) = GetToolTipParams(model);
-            tooltip.Show(target, model, submitText, interactable,
-                submit, () => inventoryView.ClearSelectedItem(), blocked);
         }
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
@@ -576,7 +517,7 @@ namespace Nekoyume.UI
 
         public void TutorialActionClickAvatarInfoFirstInventoryCellView()
         {
-            if (inventoryView.TryGetFirstCell(out var item))
+            if (inventory.TryGetFirstCell(out var item))
             {
                 item.Selected.Value = true;
             }

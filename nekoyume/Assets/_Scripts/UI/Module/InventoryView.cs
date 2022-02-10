@@ -140,6 +140,7 @@ namespace Nekoyume.UI.Module
         {
             _activeItemType = itemType;
             scroll.UpdateData(GetModels(itemType), !toggle.IsToggledOn);
+            UpdateEquipmentNotification();
             DisableFocus();
             _toggleGroup.SetToggledOffAll();
             toggle.SetToggledOn();
