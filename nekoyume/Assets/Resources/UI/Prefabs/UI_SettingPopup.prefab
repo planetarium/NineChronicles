@@ -83,16 +83,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
+  addressTitleText: {fileID: 4955539356675482337}
   addressContentInputField: {fileID: 7714575298455756374}
   addressCopyButton: {fileID: 5516932253099972138}
+  privateKeyTitleText: {fileID: 2282929625535178436}
   privateKeyContentInputField: {fileID: 5640418588470272948}
   privateKeyCopyButton: {fileID: 4373738899197490749}
   closeButton: {fileID: 4712267050541225019}
+  warningText: {fileID: 4250014521826080825}
   volumeMasterText: {fileID: 5946224160674032276}
   volumeMasterSlider: {fileID: 3487503863863795689}
   volumeMasterToggle: {fileID: 2522020326844154982}
   muteTexts:
   - {fileID: 279599236719151732}
+  resetKeyStoreText: {fileID: 6697517952566586225}
+  resetStoreText: {fileID: 804156997819666877}
+  confirmText: {fileID: 7989619649265553413}
+  redeemCodeText: {fileID: 5261396801801733739}
   blur: {fileID: 4364962393925945222}
   redeemCode: {fileID: 2642083645772511609}
   resolutionDropdown: {fileID: 4707287349502532673}

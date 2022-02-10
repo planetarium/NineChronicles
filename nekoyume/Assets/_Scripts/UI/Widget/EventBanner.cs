@@ -7,21 +7,11 @@ namespace Nekoyume.UI.Module
 {
     public class EventBanner : Widget
     {
-        // [SerializeField]
-        // private Button ArenaEventButton;
-
-        [SerializeField]
-        private Button bigCatYearEventButton;
-
         [SerializeField]
         private Button playToEarnGoldEventButton;
 
         [SerializeField]
         private Button playToEarnInviteEventButton;
-
-        private const string ArenaEventPageURLFormat = "https://ninechronicles.medium.com/announcing-nine-chronicles-arena-season-0-896k-ncg-prize-pool-season-exclusive-nfts-%EF%B8%8F-ce0b12bc7e08";
-
-        private const string bigCatYearEventPageURLFormat = "https://onboarding.nine-chronicles.com/";
 
         private const string GoldEventPageURLFormat = "https://onboarding.nine-chronicles.com/earn?nc_address={0}";
 
@@ -29,14 +19,6 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            // ArenaEventButton.onClick.AsObservable()
-            //     .Subscribe(_ => GoToArenaEventPage())
-            //     .AddTo(gameObject);
-
-            bigCatYearEventButton.onClick.AsObservable()
-                .Subscribe(_ => GoTobigCatYearEventPage())
-                .AddTo(gameObject);
-
             playToEarnGoldEventButton.onClick.AsObservable()
                 .Subscribe(_ => GoToGoldEventPage())
                 .AddTo(gameObject);
@@ -46,27 +28,14 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        private void GoToArenaEventPage()
-        {
-            var address = States.Instance.AgentState.address;
-            var url = string.Format(ArenaEventPageURLFormat, address);
-            Application.OpenURL(url);
-        }
-
-        private void GoTobigCatYearEventPage()
-        {
-            Application.OpenURL(bigCatYearEventPageURLFormat);
-        }
-
-
-        private void GoToGoldEventPage()
+        private static void GoToGoldEventPage()
         {
             var address = States.Instance.AgentState.address;
             var url = string.Format(GoldEventPageURLFormat, address);
             Application.OpenURL(url);
         }
 
-        private void GoToInviteEventPage()
+        private static void GoToInviteEventPage()
         {
             var address = States.Instance.AgentState.address;
             var url = string.Format(InvitePageURLFormat, address);
