@@ -171,6 +171,73 @@ namespace Lib9c.Tests.Action
             Assert.True(equipment.optionCountFromCombination > 0);
         }
 
+        [Theory]
+        [InlineData(1, 375)]
+        [InlineData(2, 3)]
+        [InlineData(3, 6)]
+        [InlineData(5, 12)]
+        [InlineData(10, 24)]
+        [InlineData(20, 48)]
+        public void MadeWithMimisbrunnrRecipe(int recipeId, int? subRecipeId)
+        {
+            var currency = new Currency("NCG", 2, minter: null);
+            var row = _tableSheets.EquipmentItemRecipeSheet[recipeId];
+            var requiredStage = row.UnlockStage;
+            var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
+            var material = ItemFactory.CreateItem(materialRow, _random);
+
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+
+            avatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                requiredStage);
+
+            avatarState.inventory.AddItem(material, row.MaterialCount);
+
+            if (subRecipeId.HasValue)
+            {
+                var subRow = _tableSheets.EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
+
+                foreach (var materialInfo in subRow.Materials)
+                {
+                    material = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet[materialInfo.Id], _random);
+                    avatarState.inventory.AddItem(material, materialInfo.Count);
+                }
+            }
+
+            var previousState = _initialState
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    avatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                .SetState(_avatarAddress, avatarState.SerializeV2());
+
+            previousState = previousState.MintAsset(_agentAddress, 10_000 * currency);
+
+            var action = new CombinationEquipment
+            {
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+                recipeId = recipeId,
+                subRecipeId = subRecipeId,
+            };
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = previousState,
+                Signer = _agentAddress,
+                BlockIndex = 1,
+                Random = _random,
+            });
+
+            var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
+            Assert.NotNull(slotState.Result);
+            Assert.NotNull(slotState.Result.itemUsable);
+            Assert.True(((Equipment)slotState.Result.itemUsable).MadeWithMimisbrunnrRecipe);
+        }
+
         private void Execute(bool backward, int recipeId, int? subRecipeId, int mintNCG)
         {
             var currency = new Currency("NCG", 2, minter: null);
