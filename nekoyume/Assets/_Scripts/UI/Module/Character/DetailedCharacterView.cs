@@ -1,5 +1,4 @@
 using Nekoyume.Game.Character;
-using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using TMPro;
 using UnityEngine;
@@ -21,17 +20,6 @@ namespace Nekoyume.UI.Module
         {
             base.SetByPlayer(player);
             levelText.text = $"Lv.{player.Level}";
-        }
-
-        public void SetByArmorId(int armorId, int? titleId, int level)
-        {
-            SetByArmorId(armorId);
-            if (titleId.HasValue)
-            {
-                var sprite = SpriteHelper.GetTitleFrame(titleId.Value);
-                SetFrame(sprite);
-            }
-            levelText.text = $"Lv.{level}";
         }
 
         public void SetByArenaInfo(ArenaInfo arenaInfo)

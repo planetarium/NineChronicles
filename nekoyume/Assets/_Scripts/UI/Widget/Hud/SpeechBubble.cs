@@ -112,34 +112,24 @@ namespace Nekoyume.UI
             gameObject.SetActive(true);
         }
 
-        public void ShowText(bool instant)
-        {
-            if (!enable || SpeechCount == 0)
-            {
-                return;
-            }
-
-            BeforeSpeech();
-            var speech =
-                L10nManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
-            _coroutine = StartCoroutine(ShowText(speech, instant, false));
-        }
-
-        public IEnumerator CoShowText(bool instant = false)
+        public IEnumerator CoShowText(bool instant = false, bool forceFixed = false)
         {
             if (!enable || SpeechCount == 0)
             {
                 yield break;
             }
 
-            ShowText(instant);
+            BeforeSpeech();
+            var speech =
+                L10nManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
+            _coroutine = StartCoroutine(ShowText(speech, instant, forceFixed));
             yield return _coroutine;
         }
 
-        public IEnumerator CoShowText(string speech, bool instant = false)
+        public IEnumerator CoShowText(string speech, bool instant = false, bool forceFixed = false)
         {
             BeforeSpeech();
-            _coroutine = StartCoroutine(ShowText(speech, instant, false));
+            _coroutine = StartCoroutine(ShowText(speech, instant, forceFixed));
             yield return _coroutine;
         }
 

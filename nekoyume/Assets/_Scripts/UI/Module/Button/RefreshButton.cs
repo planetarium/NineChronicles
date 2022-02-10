@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
                 .Merge(TouchHandler.OnMultipleClick)
                 .Subscribe(_ => PlayAnimation(NPCAnimation.Type.Click))
                 .AddTo(gameObject);
-            TouchHandler.OnLeftDown
+            TouchHandler.OnMouseDown
                 .Subscribe(_ => PlayAnimation(NPCAnimation.Type.Over))
                 .AddTo(gameObject);
 

@@ -170,7 +170,7 @@ namespace Nekoyume.UI.Module
             }
 
             gameObject.SetActive(true);
-            speechBubble.Init();
+            speechBubble.Init(true);
         }
     }
 }
