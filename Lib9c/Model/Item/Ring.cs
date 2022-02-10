@@ -8,14 +8,16 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class Ring : Equipment
     {
-        public Ring(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data, id, requiredBlockIndex)
+        public Ring(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex,
+            bool madeWithMimisbrunnrRecipe) : base(data, id, requiredBlockIndex,
+            madeWithMimisbrunnrRecipe)
         {
         }
 
         public Ring(Dictionary serialized) : base(serialized)
         {
         }
-        
+
         protected Ring(SerializationInfo info, StreamingContext _)
             : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {

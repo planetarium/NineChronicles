@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Bencodex.Types;
 using Libplanet.Action;
+using Nekoyume.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -23,6 +24,7 @@ namespace Nekoyume.Model.Item
         public DecimalStat Stat { get; }
         public int SetId { get; }
         public string SpineResourcePath { get; }
+        public bool MadeWithMimisbrunnrRecipe { get; }
         public StatType UniqueStatType => Stat.Type;
         public bool Equipped => equipped;
 
@@ -31,12 +33,13 @@ namespace Nekoyume.Model.Item
             return Math.Max(1.0m, StatsMap.GetStat(UniqueStatType, true) * 0.1m);
         }
 
-        public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex)
+        public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex, bool madeWithMimisbrunnrRecipe = false)
             : base(data, id, requiredBlockIndex)
         {
             Stat = data.Stat;
             SetId = data.SetId;
             SpineResourcePath = data.SpineResourcePath;
+            MadeWithMimisbrunnrRecipe = madeWithMimisbrunnrRecipe;
         }
 
         public Equipment(Dictionary serialized) : base(serialized)
@@ -77,6 +80,11 @@ namespace Nekoyume.Model.Item
             {
                 optionCountFromCombination = value.ToInteger();
             }
+
+            if(serialized.TryGetValue((Text) MadeWithMimisbrunnrRecipeKey, out value))
+            {
+                MadeWithMimisbrunnrRecipe = value.ToBoolean();
+            }
         }
 
         protected Equipment(SerializationInfo info, StreamingContext _)
@@ -99,6 +107,11 @@ namespace Nekoyume.Model.Item
             if (optionCountFromCombination > 0)
             {
                 dict = dict.SetItem(OptionCountFromCombinationKey, optionCountFromCombination.Serialize());
+            }
+
+            if (MadeWithMimisbrunnrRecipe)
+            {
+                dict = dict.SetItem(MadeWithMimisbrunnrRecipeKey, MadeWithMimisbrunnrRecipe.Serialize());
             }
 
             return dict;

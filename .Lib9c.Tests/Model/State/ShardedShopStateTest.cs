@@ -53,7 +53,8 @@ namespace Lib9c.Tests.Model.State
             var itemUsable = new Weapon(
                 _tableSheets.EquipmentItemSheet.First,
                 itemId,
-                0);
+                0,
+                false);
             ShopItem shopItem = new ShopItem(
                 default,
                 default,
@@ -73,7 +74,8 @@ namespace Lib9c.Tests.Model.State
                 var itemUsable = new Weapon(
                     _tableSheets.EquipmentItemSheet.First,
                     Guid.NewGuid(),
-                    0);
+                    0,
+                    false);
                 ShopItem shopItem = new ShopItem(
                     default,
                     default,
