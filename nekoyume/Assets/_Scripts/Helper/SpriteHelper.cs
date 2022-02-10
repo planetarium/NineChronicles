@@ -118,7 +118,7 @@ namespace Nekoyume.Helper
                         string.Format(MenuIllustratePathFormat, "UI_bg_shop"));
                     break;
 
-                case nameof(MimisbrunnrPreparation):
+                case "Mimisbrunnr":
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_mimisbrunnr"));
                     break;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Quest;
@@ -18,13 +19,6 @@ namespace Nekoyume.UI
 
     public class StageInformation : Widget
     {
-        public enum StageType
-        {
-            None,
-            Quest,
-            Mimisbrunnr,
-        }
-
         [SerializeField]
         private HelpButton stageHelpButton;
 
@@ -250,17 +244,19 @@ namespace Nekoyume.UI
         {
             switch (_stageType)
             {
-                case StageType.Quest:
-                    Find<QuestPreparation>().Show(
+                case StageType.HackAndSlash:
+                    Find<BattlePreparation>().Show(StageType.HackAndSlash,
+                        _sharedViewModel.SelectedWorldId.Value,
+                        _sharedViewModel.SelectedStageId.Value,
                         $"{closeButtonText.text} {_sharedViewModel.SelectedStageId.Value}",
                         true);
                     break;
 
                 case StageType.Mimisbrunnr:
-                    var stageId = _sharedViewModel.SelectedStageId.Value;
-                    Find<MimisbrunnrPreparation>().Show(
-                        $"{closeButtonText.text} {stageId % 10000000}",
-                        stageId,
+                    Find<BattlePreparation>().Show(StageType.Mimisbrunnr,
+                        GameConfig.MimisbrunnrWorldId,
+                        _sharedViewModel.SelectedStageId.Value,
+                        $"{closeButtonText.text} {_sharedViewModel.SelectedStageId.Value % 10000000}",
                         true);
                     break;
             }

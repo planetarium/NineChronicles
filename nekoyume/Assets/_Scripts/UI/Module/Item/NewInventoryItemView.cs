@@ -34,7 +34,6 @@ namespace Nekoyume.UI.Module
             baseItemView.SelectEnchantItemObject.SetActive(false);
             baseItemView.LockObject.SetActive(false);
             baseItemView.ShadowObject.SetActive(false);
-            baseItemView.DisableObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
 
             baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(model.ItemBase);
@@ -72,11 +71,12 @@ namespace Nekoyume.UI.Module
                 model.ItemBase.ItemType == ItemType.Material);
             baseItemView.CountText.text = model.Count.Value.ToString();
 
-            model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b)).AddTo(_disposables);
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b)).AddTo(_disposables);
+            model.Limited.Subscribe(b => baseItemView.LimitObject.SetActive(b)).AddTo(_disposables);
+            model.Disabled.Subscribe(b => baseItemView.DisableObject.SetActive(b)).AddTo(_disposables);
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
             model.Focused.Subscribe(b => baseItemView.FocusObject.SetActive(b)).AddTo(_disposables);
-            model.Limited.Subscribe(b => baseItemView.LimitObject.SetActive(b)).AddTo(_disposables);
+            model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b)).AddTo(_disposables);
             model.View = GetComponent<RectTransform>();
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)

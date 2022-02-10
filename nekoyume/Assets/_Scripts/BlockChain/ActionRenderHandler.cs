@@ -642,11 +642,11 @@ namespace Nekoyume.BlockChain
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
             LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
-            
+
             string message;
             if (count > 1)
             {
-                message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_CANCEL_COMPLETE"), 
+                message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_CANCEL_COMPLETE"),
                     itemName, count);
             }
             else
@@ -673,7 +673,7 @@ namespace Nekoyume.BlockChain
             var itemName = await Util.GetItemNameByOrderId(eval.Action.orderId);
             var order = await Util.GetOrder(eval.Action.orderId);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-            
+
             string message;
             if (count > 1)
             {
@@ -731,7 +731,7 @@ namespace Nekoyume.BlockChain
 
                         var errorType = ((ShopErrorType) errorCode).ToString();
                         LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                        
+
                         string message;
                         if (count > 1)
                         {
@@ -740,7 +740,7 @@ namespace Nekoyume.BlockChain
                         }
                         else
                         {
-                            message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"), 
+                            message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
                                 itemName, L10nManager.Localize(errorType), price);
                         }
                         OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Alert);
@@ -879,9 +879,9 @@ namespace Nekoyume.BlockChain
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
-                    if (Widget.Find<QuestPreparation>().IsActive())
+                    if (Widget.Find<BattlePreparation>().IsActive())
                     {
-                        Widget.Find<QuestPreparation>().GoToStage(log);
+                        Widget.Find<BattlePreparation>().GoToStage(log);
                     }
                     else if (Widget.Find<Menu>().IsActive())
                     {
@@ -959,9 +959,9 @@ namespace Nekoyume.BlockChain
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
-                    if (Widget.Find<MimisbrunnrPreparation>().IsActive())
+                    if (Widget.Find<BattlePreparation>().IsActive())
                     {
-                        Widget.Find<MimisbrunnrPreparation>().GoToStage(log);
+                        Widget.Find<BattlePreparation>().GoToStage(log);
                     }
                     else if (Widget.Find<Menu>().IsActive())
                     {

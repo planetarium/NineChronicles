@@ -191,6 +191,8 @@ namespace Nekoyume.Helper
 
             if (!sheet.TryGetValue(itemId, out var value))
             {
+                return true;
+                Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemId}");
                 return false;
             }
 

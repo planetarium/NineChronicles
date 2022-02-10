@@ -5,6 +5,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -55,10 +56,7 @@ namespace Nekoyume.UI
         private Player _player;
         private GameObject _cachedCharacterTitle;
         private Coroutine _disableCpTween;
-
         private readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
-
-        public bool HasNotification => inventory.HasNotification;
 
         #region Override
 
@@ -114,6 +112,12 @@ namespace Nekoyume.UI
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             _player = Util.CreatePlayer(currentAvatarState, PlayerPosition);
+
+            var bp = Find<BattlePreparation>();
+            var elementalTypes = bp.isActiveAndEnabled
+                ? bp.GetElementalTypes() : ElementalTypeExtension.GetAllTypes();
+            inventory.SetElementalTypes(elementalTypes);
+
             UpdateNickname(currentAvatarState.level, currentAvatarState.NameWithHash);
             UpdateTitle(currentAvatarState);
             UpdateStat(currentAvatarState);
@@ -197,7 +201,10 @@ namespace Nekoyume.UI
         {
             if (slot.IsEmpty)
             {
-                inventory.Focus(slot.ItemType, slot.ItemSubType);
+                var bp = Find<BattlePreparation>();
+                var elementalTypes = bp.isActiveAndEnabled
+                    ? bp.GetElementalTypes() : ElementalTypeExtension.GetAllTypes();
+                inventory.Focus(slot.ItemType, slot.ItemSubType, elementalTypes);
             }
             else
             {
@@ -206,7 +213,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                inventory.DisableFocus();
+                inventory.ClearFocus();
                 ShowItemTooltip(model, slot.RectTransform);
             }
         }
@@ -417,12 +424,18 @@ namespace Nekoyume.UI
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-
                     if (!Game.Game.instance.Stage.IsInStage)
                     {
-                        interactable = !model.Limited.Value;
+                        if (model.Disabled.Value)
+                        {
+                            interactable = model.Equipped.Value;
+                        }
+                        else
+                        {
+                            interactable = !model.Limited.Value;
+                        }
                     }
-
+                    
                     submit = () => Equip(model);
 
                     if (Game.Game.instance.Stage.IsInStage)

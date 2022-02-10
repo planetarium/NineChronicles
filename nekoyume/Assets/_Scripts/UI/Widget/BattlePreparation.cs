@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.BattleStatus;
@@ -18,8 +19,10 @@ using UnityEngine.UI;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
-using Toggle = Nekoyume.UI.Module.Toggle;
 using Nekoyume.Game.Character;
+using Nekoyume.Model.Elemental;
+using Nekoyume.TableData;
+using Toggle = Nekoyume.UI.Module.Toggle;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI
@@ -27,9 +30,8 @@ namespace Nekoyume.UI
     using Nekoyume.UI.Scroller;
     using UniRx;
 
-    public class QuestPreparation : Widget
+    public class BattlePreparation : Widget
     {
-        private const int BoostMaxCount = 24;
         private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
 
         [SerializeField]
@@ -60,7 +62,7 @@ namespace Nekoyume.UI
         private TMP_InputField levelField;
 
         [SerializeField]
-        private ConditionalCostButton questButton;
+        private ConditionalCostButton startButton;
 
         [SerializeField]
         private Button closeButton;
@@ -90,12 +92,19 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button boostPopupButton;
 
+        [SerializeField]
+        private GameObject mimisbrunnrBg;
+
+        [SerializeField]
+        private GameObject hasBg;
+
         private Stage _stage;
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
         private Player _player;
         private GameObject _cachedCharacterTitle;
 
+        private StageType _stageType = StageType.None;
         private int _worldId;
         private int _requiredCost;
         private bool _reset = true;
@@ -105,7 +114,7 @@ namespace Nekoyume.UI
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            (questButton.Interactable || !EnoughToPlay);
+            (startButton.Interactable || !EnoughToPlay);
 
         private bool EnoughToPlay =>
             States.Instance.CurrentAvatarState.actionPoint >= _requiredCost;
@@ -172,34 +181,14 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            questButton.OnSubmitSubject.Where(_ => !_stage.IsInStage)
+            startButton.OnSubmitSubject.Where(_ => !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ => QuestClick(repeatToggle.isOn))
+                .Subscribe(_ => OnClickBattle(repeatToggle.isOn))
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
                 .Where(_ => EnoughToPlay && !_stage.IsInStage)
-                .Subscribe(_ =>
-                {
-                    var costumes = _player.Costumes;
-                    var equipments = equipmentSlots
-                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                        .Select(slot => (Equipment)slot.Item)
-                        .ToList();
-
-                    var consumables = consumableSlots
-                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                        .Select(slot => (Consumable)slot.Item)
-                        .ToList();
-
-                    _stage.IsExitReserved = false;
-                    _stage.IsRepeatStage = false;
-                    _stage.foodCount = consumables.Count;
-                    ActionRenderHandler.Instance.Pending = true;
-
-                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables,
-                        BoostMaxCount, _worldId, _stageId.Value);
-                });
+                .Subscribe(_ => ShowBoosterPopup());
 
             boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
@@ -213,20 +202,16 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(b => Close());
         }
 
-        public void Show(string closeButtonName, bool ignoreShowAnimation = false)
-        {
-            closeButtonText.text = closeButtonName;
-            Show(ignoreShowAnimation);
-        }
-
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show(StageType stageType,
+            int worldId,
+            int stageId,
+            string closeButtonName,
+            bool ignoreShowAnimation = false)
         {
             Analyzer.Instance.Track("Unity/Click Stage");
 
             _stage = Game.Game.instance.Stage;
             _stage.IsRepeatStage = false;
-            _stage.LoadBackground("dungeon_01");
-
             repeatToggle.isOn = false;
             repeatToggle.interactable = true;
 
@@ -246,25 +231,27 @@ namespace Nekoyume.UI
                 _player.Set(currentAvatarState);
             }
 
+            _stageType = stageType;
+            _worldId = worldId;
+            _stageId.Value = stageId;
+
+            inventory.SetElementalTypes(GetElementalTypes());
+
+            UpdateBackground(stageType);
             UpdateTitle();
             UpdateStat(currentAvatarState);
             UpdateSlot(currentAvatarState, true);
 
-            var worldMap = Find<WorldMap>();
-            _worldId = worldMap.SelectedWorldId;
-            _stageId.Value = worldMap.SelectedStageId;
-            ReactiveAvatarState.ActionPoint.Subscribe(_ => ReadyToQuest()).AddTo(_disposables);
-            questButton.gameObject.SetActive(true);
-            questButton.Interactable = true;
+            closeButtonText.text = closeButtonName;
+            startButton.gameObject.SetActive(true);
+            startButton.Interactable = true;
             coverToBlockClick.SetActive(false);
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
-            HelpTooltip.HelpMe(100004, true);
+            ShowHelpTooltip(stageType);
+            ReactiveAvatarState.ActionPoint.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
+            ReactiveAvatarState.Inventory.Subscribe(_ => UpdateSlot(Game.Game.instance.States.CurrentAvatarState)).AddTo(_disposables);
             base.Show(ignoreShowAnimation);
-            ReactiveAvatarState.Inventory.Subscribe(_ =>
-            {
-                UpdateSlot(Game.Game.instance.States.CurrentAvatarState);
-            }).AddTo(_disposables);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -276,6 +263,24 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        private void UpdateBackground(StageType stageType)
+        {
+            switch (stageType)
+            {
+                case StageType.HackAndSlash:
+                    hasBg.SetActive(true);
+                    mimisbrunnrBg.SetActive(false);
+                    break;
+                case StageType.Mimisbrunnr:
+                    hasBg.SetActive(false);
+                    mimisbrunnrBg.SetActive(true);
+                    break;
+                case StageType.None:
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
+            }
+        }
 
         private void UpdateTitle()
         {
@@ -295,7 +300,9 @@ namespace Nekoyume.UI
         private void UpdateSlot(AvatarState avatarState, bool isResetConsumableSlot = false)
         {
             _player.Set(avatarState);
-            equipmentSlots.SetPlayerEquipments(_player.Model, OnClickSlot, OnDoubleClickSlot);
+            equipmentSlots.SetPlayerEquipments(_player.Model,
+                OnClickSlot, OnDoubleClickSlot,
+                GetElementalTypes());
             costumeSlots.SetPlayerCostumes(_player.Model, OnClickSlot, OnDoubleClickSlot);
             if (isResetConsumableSlot)
             {
@@ -310,9 +317,7 @@ namespace Nekoyume.UI
             var costumes = _player.Costumes;
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => slot.Item as Consumable)
-                .Where(item => !(item is null))
-                .ToList();
+                .Select(slot => (Consumable)slot.Item).ToList();
             var equipmentSetEffectSheet =
                 Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
@@ -326,7 +331,7 @@ namespace Nekoyume.UI
         {
             if (slot.IsEmpty)
             {
-                inventory.Focus(slot.ItemType, slot.ItemSubType);
+                inventory.Focus(slot.ItemType, slot.ItemSubType, GetElementalTypes());
             }
             else
             {
@@ -335,7 +340,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                inventory.DisableFocus();
+                inventory.ClearFocus();
                 ShowItemTooltip(model, slot.RectTransform);
             }
         }
@@ -506,7 +511,14 @@ namespace Nekoyume.UI
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-                    interactable = !model.Limited.Value;
+                    if (model.Disabled.Value)
+                    {
+                        interactable = model.Equipped.Value;
+                    }
+                    else
+                    {
+                        interactable = !model.Limited.Value;
+                    }
                     submit = () => Equip(model);
                     blocked = () => NotificationSystem.Push(MailType.System,
                         L10nManager.Localize("UI_EQUIP_FAILED"),
@@ -555,12 +567,12 @@ namespace Nekoyume.UI
         }
 
 
-        private void ReadyToQuest()
+        private void ReadyToBattle()
         {
-            questButton.UpdateObjects();
+            startButton.UpdateObjects();
             foreach (var particle in particles)
             {
-                if (questButton.IsSubmittable)
+                if (startButton.IsSubmittable)
                 {
                     particle.Play();
                 }
@@ -579,24 +591,32 @@ namespace Nekoyume.UI
             if (stage is null)
                 return;
             _requiredCost = stage.CostAP;
-            questButton.SetCost(ConditionalCostButton.CostType.ActionPoint, _requiredCost);
+            startButton.SetCost(ConditionalCostButton.CostType.ActionPoint, _requiredCost);
         }
 
-        private void QuestClick(bool repeat)
+        private void OnClickBattle(bool repeat)
         {
             if (_stage.IsInStage)
             {
                 return;
             }
 
+            if (_stageType == StageType.Mimisbrunnr && !CheckEquipmentElementalType(_stageId.Value))
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAILED"),
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
             _stage.IsInStage = true;
             _stage.IsShowHud = true;
-            StartCoroutine(CoQuestClick(repeat));
+            StartCoroutine(CoBattleStart(_stageType, repeat));
             repeatToggle.interactable = false;
             coverToBlockClick.SetActive(true);
         }
 
-        private IEnumerator CoQuestClick(bool repeat)
+        private IEnumerator CoBattleStart(StageType stageType, bool repeat)
         {
             var actionPointImage = Find<HeaderMenuStatic>().ActionPointImage;
             var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
@@ -611,11 +631,34 @@ namespace Nekoyume.UI
                 -_requiredCost);
             yield return new WaitWhile(() => animation.IsPlaying);
 
-            Quest(repeat);
+            Battle(stageType, repeat);
             AudioController.PlayClick();
         }
 
-        #region slot
+        private void ShowBoosterPopup()
+        {
+            if (_stageType == StageType.Mimisbrunnr && !CheckEquipmentElementalType(_stageId.Value))
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAILED"),
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
+            var equipments = _player.Equipments;
+            var costumes = _player.Costumes;
+            var consumables = consumableSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Consumable)slot.Item).ToList();
+
+            _stage.IsExitReserved = false;
+            _stage.IsRepeatStage = false;
+            _stage.foodCount = consumables.Count;
+            ActionRenderHandler.Instance.Pending = true;
+
+            Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables,
+                GetBoostMaxCount(_stageId.Value), _worldId, _stageId.Value);
+        }
 
         private void PostEquipOrUnequip(EquipmentSlot slot)
         {
@@ -670,42 +713,53 @@ namespace Nekoyume.UI
             }
         }
 
-        #endregion
-
-        private void Quest(bool repeat)
+        private void Battle(StageType stageType, bool repeat)
         {
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
             Find<LoadingScreen>().Show();
 
-            questButton.gameObject.SetActive(false);
+            startButton.gameObject.SetActive(false);
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
+            var equipments = _player.Equipments;
             var costumes = _player.Costumes;
-            var equipments = equipmentSlots
-                .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Equipment)slot.Item)
-                .ToList();
-
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Consumable)slot.Item)
-                .ToList();
+                .Select(slot => (Consumable)slot.Item).ToList();
 
             _stage.IsExitReserved = false;
             _stage.IsRepeatStage = repeat;
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
 
-            Game.Game.instance.ActionManager.HackAndSlash(
-                costumes,
-                equipments,
-                consumables,
-                _worldId,
-                _stageId.Value,
-                1
-            ).Subscribe();
+            switch (stageType)
+            {
+                case StageType.HackAndSlash:
+                    Game.Game.instance.ActionManager.HackAndSlash(
+                        costumes,
+                        equipments,
+                        consumables,
+                        _worldId,
+                        _stageId.Value,
+                        1
+                    ).Subscribe();
+                    break;
+                case StageType.Mimisbrunnr:
+                    Game.Game.instance.ActionManager.MimisbrunnrBattle(
+                        costumes,
+                        equipments,
+                        consumables,
+                        _worldId,
+                        _stageId.Value,
+                        1
+                    ).Subscribe();
+                    break;
+                case StageType.None:
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
+            }
         }
 
         public void GoToStage(BattleLog battleLog)
@@ -726,6 +780,63 @@ namespace Nekoyume.UI
             confirm.CancelCallback = () => confirm.Close();
         }
 
+        private int GetBoostMaxCount(int stageId)
+        {
+            if (!Game.Game.instance.TableSheets.GameConfigSheet.TryGetValue("action_point_max",
+                    out var ap))
+            {
+                return 1;
+            }
+
+            var stage = Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(
+                    i => i.Id == stageId);
+
+            if (stage is null)
+            {
+                return 1;
+            }
+
+            var maxActionPoint = TableExtensions.ParseInt(ap.Value);
+            return maxActionPoint / stage.CostAP;
+        }
+
+        private static void ShowHelpTooltip(StageType stageType)
+        {
+            switch (stageType)
+            {
+                case StageType.HackAndSlash:
+                    HelpTooltip.HelpMe(100004, true);
+                    break;
+                case StageType.Mimisbrunnr:
+                    HelpTooltip.HelpMe(100020, true);
+                    break;
+                case StageType.None:
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
+            }
+        }
+
+        private bool CheckEquipmentElementalType(int stageId)
+        {
+            return _player.Equipments.All(x => IsExistElementalType(x.ElementalType));
+        }
+
+        private bool IsExistElementalType(ElementalType elementalType)
+        {
+            return GetElementalTypes().Exists(x => x == elementalType);
+        }
+
+        public List<ElementalType> GetElementalTypes()
+        {
+            var mimisbrunnrSheet = Game.Game.instance.TableSheets.MimisbrunnrSheet;
+            if (mimisbrunnrSheet.TryGetValue(_stageId.Value, out var mimisbrunnrSheetRow))
+            {
+                return mimisbrunnrSheetRow.ElementalTypes;
+            }
+
+            return ElementalTypeExtension.GetAllTypes();
+        }
+
         public void SimulateBattle()
         {
             var level = States.Instance.CurrentAvatarState.level;
@@ -739,7 +850,7 @@ namespace Nekoyume.UI
 
             Find<LoadingScreen>().Show();
 
-            questButton.gameObject.SetActive(false);
+            startButton.gameObject.SetActive(false);
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
@@ -752,12 +863,10 @@ namespace Nekoyume.UI
             var avatarState = new AvatarState(States.Instance.CurrentAvatarState) { level = level };
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => ((Consumable)slot.Item).ItemId)
-                .ToList();
+                .Select(slot => ((Consumable)slot.Item).ItemId).ToList();
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Equipment)slot.Item)
-                .ToList();
+                .Select(slot => (Equipment)slot.Item).ToList();
             var inventoryEquipments = avatarState.inventory.Items
                 .Select(i => i.item)
                 .OfType<Equipment>()

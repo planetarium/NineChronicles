@@ -55,6 +55,7 @@ namespace Nekoyume.UI.Module
         private Action<InventoryItemViewModel> _onDoubleClickItem;
         private System.Action _onToggleEquipment;
         private System.Action _onToggleCostume;
+        private readonly List<ElementalType> _elementalTypes = new List<ElementalType>();
         private ItemType _activeItemType = ItemType.Equipment;
 
         public bool HasNotification => _equipments.Any(x => x.HasNotification.Value);
@@ -79,10 +80,7 @@ namespace Nekoyume.UI.Module
                 })
                 .AddTo(gameObject);
             consumableButton.OnClick
-                .Subscribe(_ =>
-                {
-                    SetToggle(consumableButton, ItemType.Consumable);
-                })
+                .Subscribe(_ => { SetToggle(consumableButton, ItemType.Consumable); })
                 .AddTo(gameObject);
             materialButton.OnClick.Subscribe(_ => SetToggle(materialButton, ItemType.Material))
                 .AddTo(gameObject);
@@ -116,7 +114,8 @@ namespace Nekoyume.UI.Module
                 }
 
                 scroll.UpdateData(GetModels(_activeItemType), false);
-                UpdateEquipmentNotification();
+                UpdateEquipmentNotification(_elementalTypes);
+                UpdateDisabled(_elementalTypes);
             }).AddTo(_disposables);
 
             SetToggle(equipmentButton, ItemType.Equipment);
@@ -139,7 +138,7 @@ namespace Nekoyume.UI.Module
             _activeItemType = itemType;
             scroll.UpdateData(GetModels(itemType), !toggle.IsToggledOn);
             UpdateEquipmentNotification();
-            DisableFocus();
+            ClearFocus();
             _toggleGroup.SetToggledOffAll();
             toggle.SetToggledOn();
             AudioController.PlayClick();
@@ -161,21 +160,21 @@ namespace Nekoyume.UI.Module
             {
                 case ItemType.Consumable:
                     inventoryItem = CreateInventoryItem(itemBase, count,
-                        disabled: !Util.IsUsableItem(itemBase.Id));
+                        limited: !Util.IsUsableItem(itemBase.Id));
                     _consumables.Add(inventoryItem);
                     break;
                 case ItemType.Costume:
                     var costume = (Costume)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
                         equipped: costume.equipped,
-                        disabled: !Util.IsUsableItem(itemBase.Id));
+                        limited: !Util.IsUsableItem(itemBase.Id));
                     _costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
                         equipped: equipment.equipped,
-                        disabled: !Util.IsUsableItem(itemBase.Id));
+                        limited: !Util.IsUsableItem(itemBase.Id));
                     _equipments.Add(inventoryItem);
                     break;
                 case ItemType.Material:
@@ -219,9 +218,9 @@ namespace Nekoyume.UI.Module
         }
 
         private static InventoryItemViewModel CreateInventoryItem(ItemBase itemBase, int count,
-            bool equipped = false, bool disabled = false)
+            bool equipped = false, bool limited = false)
         {
-            return new InventoryItemViewModel(itemBase, count, equipped, disabled);
+            return new InventoryItemViewModel(itemBase, count, equipped, limited);
         }
 
         private void OnClickItem(InventoryItemViewModel item)
@@ -346,16 +345,30 @@ namespace Nekoyume.UI.Module
         {
             _selectedItem?.Selected.SetValueAndForceNotify(false);
             _selectedItem = null;
-            DisableFocus();
+            ClearFocus();
         }
 
-        public void Focus(ItemType itemType, ItemSubType subType)
+        public void Focus(ItemType itemType, ItemSubType subType, List<ElementalType> elementalTypes)
         {
             foreach (var model in GetModels(itemType))
             {
                 if (model.ItemBase.ItemSubType.Equals(subType))
                 {
-                    model.Focused.Value = !model.Focused.Value;
+                    if (model.ItemBase.ItemType == ItemType.Equipment)
+                    {
+                        if (elementalTypes.Exists(x => x.Equals(model.ItemBase.ElementalType)))
+                        {
+                            model.Focused.Value = !model.Focused.Value;
+                        }
+                        else
+                        {
+                            model.Focused.Value = false;
+                        }
+                    }
+                    else
+                    {
+                        model.Focused.Value = !model.Focused.Value;
+                    }
                 }
                 else
                 {
@@ -364,7 +377,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void DisableFocus()
+        public void ClearFocus()
         {
             foreach (var model in _equipments)
             {
@@ -375,6 +388,21 @@ namespace Nekoyume.UI.Module
             {
                 model.Focused.Value = false;
             }
+        }
+
+        private void UpdateDisabled(List<ElementalType> elementalTypes)
+        {
+            foreach (var model in _equipments)
+            {
+                var elementalType = model.ItemBase.ElementalType;
+                model.Disabled.Value = !elementalTypes.Exists(x => x.Equals(elementalType));
+            }
+        }
+
+        public void SetElementalTypes(IEnumerable<ElementalType> elementalTypes)
+        {
+            _elementalTypes.Clear();
+            _elementalTypes.AddRange(elementalTypes);
         }
 
         public bool TryGetFirstCell(out InventoryItemViewModel cell)

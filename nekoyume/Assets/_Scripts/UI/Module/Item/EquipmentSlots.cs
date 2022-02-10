@@ -79,7 +79,8 @@ namespace Nekoyume.UI.Module
         public void SetPlayerEquipments(
             Player player,
             Action<EquipmentSlot> onClick,
-            Action<EquipmentSlot> onDoubleClick)
+            Action<EquipmentSlot> onDoubleClick,
+            List<ElementalType> elementalTypes = null)
         {
             Clear();
 
@@ -92,11 +93,11 @@ namespace Nekoyume.UI.Module
             _onSlotDoubleClicked = onDoubleClick;
 
             UpdateSlots(player.Level);
-
             foreach (var equipment in player.Equipments)
             {
                 TryToEquip(equipment);
             }
+            UpdateDim(elementalTypes);
         }
 
         public void SetPlayerConsumables(int avatarLevel,
@@ -260,9 +261,28 @@ namespace Nekoyume.UI.Module
 
         private void UpdateSlots(int avatarLevel)
         {
-            foreach (var equipmentSlot in slots)
+            foreach (var slot in slots)
             {
-                equipmentSlot.Set(avatarLevel);
+                slot.Set(avatarLevel);
+            }
+        }
+
+        private void UpdateDim(List<ElementalType> elementalTypes)
+        {
+            if (elementalTypes is null)
+            {
+                return;
+            }
+
+            foreach (var slot in slots)
+            {
+                if (slot.Item == null)
+                {
+                    slot.SetDim(false);
+                    continue;
+                }
+
+                slot.SetDim(!elementalTypes.Exists(x => x.Equals(slot.Item.ElementalType)));
             }
         }
 
