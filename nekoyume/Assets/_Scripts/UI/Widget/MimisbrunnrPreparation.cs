@@ -858,18 +858,23 @@ namespace Nekoyume.UI
                 .Select(slot => slot.Item as Equipment)
                 .Where(item => !(item is null))
                 .ToList();
+
+            var costumes = costumeSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => slot.Item as Costume)
+                .Where(item => !(item is null))
+                .ToList();
+
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => slot.Item as Consumable)
                 .Where(item => !(item is null))
                 .ToList();
 
-            var stats = _tempStats.SetAll(
-                _tempStats.Level,
-                equipments,
-                consumables,
-                Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet
-            );
+            var equipEffectSheet = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var stats = _tempStats.SetAll(_tempStats.Level, equipments, costumes, consumables,
+                equipEffectSheet, costumeSheet);
             using (var enumerator = stats.GetBaseAndAdditionalStats().GetEnumerator())
             {
                 foreach (var statView in statusRows)

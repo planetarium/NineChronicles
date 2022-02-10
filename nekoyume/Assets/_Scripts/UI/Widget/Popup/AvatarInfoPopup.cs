@@ -53,8 +53,8 @@ namespace Nekoyume.UI
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
         private Player _player;
-        private Coroutine _disableCpTween;
         private GameObject _cachedCharacterTitle;
+        private Coroutine _disableCpTween;
 
         private readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
 
@@ -116,8 +116,10 @@ namespace Nekoyume.UI
             _player = Util.CreatePlayer(currentAvatarState, PlayerPosition);
             UpdateNickname(currentAvatarState.level, currentAvatarState.NameWithHash);
             UpdateTitle(currentAvatarState);
-            UpdateSlot(currentAvatarState);
             UpdateStat(currentAvatarState);
+            UpdateSlot(currentAvatarState);
+            costumeSlots.gameObject.SetActive(false);
+            equipmentSlots.gameObject.SetActive(true);
             HelpTooltip.HelpMe(100013, true);
             base.Show(ignoreShowAnimation);
         }
@@ -154,8 +156,8 @@ namespace Nekoyume.UI
 
         private void UpdateTitle(AvatarState avatarState)
         {
-            var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
-                costume.ItemSubType == ItemSubType.Title && costume.equipped);
+            var title = _player.Costumes
+                .FirstOrDefault(x => x.ItemSubType == ItemSubType.Title && x.Equipped);
             if (title is null)
             {
                 return;
@@ -185,10 +187,10 @@ namespace Nekoyume.UI
             var equipmentSetEffectSheet =
                 Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            var stats = _player.Model.Stats.SetAll(_player.Model.Stats.Level,
+            var s = _player.Model.Stats.SetAll(_player.Model.Stats.Level,
                 equipments, costumes, null,
                 equipmentSetEffectSheet, costumeSheet);
-            this.stats.SetData(stats); // view
+            stats.SetData(s);
         }
 
         private void OnClickSlot(EquipmentSlot slot)
@@ -248,7 +250,7 @@ namespace Nekoyume.UI
             var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
             var prevCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
             slot.Set(itemBase, OnClickSlot, OnDoubleClickSlot);
-            LocalStateItemEquipModify(slot.Item, true);
+            LocalLayerModifier.SetItemEquip(currentAvatarState.address, slot.Item, true);
 
             var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
             cp.PlayAnimation(prevCp, currentCp);
@@ -308,7 +310,7 @@ namespace Nekoyume.UI
             var prevCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
             var slotItem = slot.Item;
             slot.Clear();
-            LocalStateItemEquipModify(slotItem, false);
+            LocalLayerModifier.SetItemEquip(currentAvatarState.address, slotItem, false);
 
             var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
             cp.PlayAnimation(prevCp, currentCp);
@@ -362,17 +364,6 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
             Find<HeaderMenuStatic>().UpdateInventoryNotification(inventory.HasNotification);
-        }
-
-        private void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
-        {
-            if (!(itemBase is INonFungibleItem nonFungibleItem))
-            {
-                return;
-            }
-
-            LocalLayerModifier.SetItemEquip(States.Instance.CurrentAvatarState.address,
-                nonFungibleItem.NonFungibleId, equip);
         }
 
         private bool IsInteractableMaterial()

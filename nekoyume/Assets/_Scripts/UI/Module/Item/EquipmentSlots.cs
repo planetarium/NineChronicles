@@ -99,6 +99,21 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public void SetPlayerConsumables(int avatarLevel,
+            Action<EquipmentSlot> onClick,
+            Action<EquipmentSlot> onDoubleClick)
+        {
+            Clear();
+
+            foreach (var slot in slots)
+            {
+                slot.Set(avatarLevel);
+            }
+
+            _onSlotClicked = onClick;
+            _onSlotDoubleClicked = onDoubleClick;
+        }
+
         public bool TryToEquip(Costume costume)
         {
             if (!TryGetToEquip(costume, out var slot))

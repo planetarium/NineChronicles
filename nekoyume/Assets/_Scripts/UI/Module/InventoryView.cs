@@ -55,7 +55,6 @@ namespace Nekoyume.UI.Module
         private Action<InventoryItemViewModel> _onDoubleClickItem;
         private System.Action _onToggleEquipment;
         private System.Action _onToggleCostume;
-        private System.Action _onToggleConsumable;
         private ItemType _activeItemType = ItemType.Equipment;
 
         public bool HasNotification => _equipments.Any(x => x.HasNotification.Value);
@@ -83,7 +82,6 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ =>
                 {
                     SetToggle(consumableButton, ItemType.Consumable);
-                    _onToggleConsumable?.Invoke();
                 })
                 .AddTo(gameObject);
             materialButton.OnClick.Subscribe(_ => SetToggle(materialButton, ItemType.Material))
@@ -334,17 +332,14 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetAction(Action<InventoryItemViewModel, RectTransform> clickItem,
-            Action<InventoryItemViewModel> doubleClickItem,
-            System.Action clickEquipmentToggle = null,
-            System.Action clickCostumeToggle = null,
-            System.Action onToggleConsumable = null)
+        public void SetAction(Action<InventoryItemViewModel,
+                RectTransform> clickItem, Action<InventoryItemViewModel> doubleClickItem,
+            System.Action clickEquipmentToggle, System.Action clickCostumeToggle)
         {
             _onClickItem = clickItem;
             _onDoubleClickItem = doubleClickItem;
             _onToggleEquipment = clickEquipmentToggle;
             _onToggleCostume = clickCostumeToggle;
-            _onToggleConsumable = onToggleConsumable;
         }
 
         public void ClearSelectedItem()

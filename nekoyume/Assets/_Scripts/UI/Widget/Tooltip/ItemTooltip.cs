@@ -48,10 +48,8 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-
             submitButton.OnSubmitSubject.Subscribe(_ =>
             {
-                AudioController.PlayClick();
                 onSubmit?.Invoke();
                 Close();
             }).AddTo(gameObject);
@@ -82,12 +80,6 @@ namespace Nekoyume.UI
             }
 
             base.OnEnable();
-        }
-
-        public void Show(RectTransform target, CountableItem item,
-            Action<ItemInformationTooltip> onClose = null)
-        {
-            Show(target, item, null, null, null, onClose);
         }
 
         public void Show(RectTransform target,
@@ -297,13 +289,6 @@ namespace Nekoyume.UI
                     {
                         yield return null;
                         continue;
-                    }
-
-                    var position = selectedGameObjectCache.transform.position;
-                    if (position != positionCache)
-                    {
-                        Close();
-                        yield break;
                     }
 
                     if (!_isClickedButtonArea)
