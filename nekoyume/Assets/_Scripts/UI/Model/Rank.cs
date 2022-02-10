@@ -39,10 +39,6 @@ namespace Nekoyume.UI.Model
         public Dictionary<int, Dictionary<ItemSubType, EquipmentRankingModel>> AgentEquipmentRankingInfos =
             new Dictionary<int, Dictionary<ItemSubType, EquipmentRankingModel>>();
 
-        private HashSet<Nekoyume.Model.State.RankingInfo> _rankingInfoSet = null;
-
-        private bool _rankingMapLoaded;
-
         public Task Update(int displayCount)
         {
             var apiClient = Game.Game.instance.ApiClient;
@@ -51,42 +47,11 @@ namespace Nekoyume.UI.Model
             {
                 return Task.Run(async () =>
                 {
-                    //if (!_rankingMapLoaded)
-                    //{
-                    //    var addressList = new List<Address>();
-                    //    for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
-                    //    {
-                    //        var address = RankingState.Derive(0);
-                    //        addressList.Add(address);
-                    //    }
-
-                    //    var iValues = await Game.Game.instance.Agent.GetStateBulk(addressList);
-                    //    foreach (var kv in iValues)
-                    //    {
-                    //        var mapState = kv.Value is Bencodex.Types.Dictionary serialized
-                    //            ? new RankingMapState(serialized)
-                    //            : new RankingMapState(kv.Key);
-                    //        States.Instance.SetRankingMapStates(mapState);
-                    //    }
-
-                    //    var rankingMapStates = States.Instance.RankingMapStates;
-                    //    _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
-                    //    foreach (var pair in rankingMapStates)
-                    //    {
-                    //        var rankingInfo = pair.Value.GetRankingInfos(null);
-                    //        _rankingInfoSet.UnionWith(rankingInfo);
-                    //    }
-
-                    //    _rankingMapLoaded = true;
-                    //}
-
-                    //Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
-
                     var sw = new Stopwatch();
                     sw.Start();
 
                     await Task.WhenAll(
-                        //LoadAbilityRankingInfos(displayCount),
+                        LoadAbilityRankingInfos(apiClient, displayCount),
                         LoadStageRankingInfos(apiClient, displayCount),
                         LoadMimisbrunnrRankingInfos(apiClient, displayCount),
                         LoadCraftRankingInfos(apiClient, displayCount),
@@ -101,70 +66,86 @@ namespace Nekoyume.UI.Model
             return Task.CompletedTask;
         }
 
-        private async Task LoadAbilityRankingInfos(int displayCount)
+        private async Task LoadAbilityRankingInfos(NineChroniclesAPIClient apiClient, int displayCount)
         {
-            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-            var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var query =
+                $@"query {{
+                        abilityRanking(limit: {displayCount}) {{
+                            ranking
+                            avatarAddress
+                            name
+                            avatarLevel
+                            armorId
+                            titleId
+                            cp
+                        }}
+                    }}";
 
-            var rankOffset = 1;
-            var addressList = _rankingInfoSet.Select(i => i.AvatarAddress).ToList();
-            var avatarDictionary = await Game.Game.instance.Agent.GetAvatarStates(addressList);
-            AbilityRankingInfos = _rankingInfoSet
-                .OrderByDescending(i => i.Level)
-                .Take(displayCount)
-                .Select(async rankingInfo =>
+            var response = await apiClient.GetObjectAsync<AbilityRankingResponse>(query);
+            if (response is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(AbilityRankingResponse)}");
+                return;
+            }
+
+            AbilityRankingInfos = response.AbilityRanking
+                .Select(e =>
                 {
-                    var avatarAddress = rankingInfo.AvatarAddress;
-                    if (!avatarDictionary.ContainsKey(avatarAddress))
-                    {
-                        return null;
-                    }
-
-                    var avatarState = avatarDictionary[avatarAddress];
-
                     return new AbilityRankingModel
                     {
-                        AvatarState = avatarState,
-                        Cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet),
+                        Rank = e.Ranking,
+                        AvatarAddress = e.AvatarAddress,
+                        Name = e.Name,
+                        AvatarLevel = e.AvatarLevel,
+                        ArmorId = e.ArmorId,
+                        TitleId = e.TitleId,
+                        Cp = e.Cp,
                     };
                 })
-                .Select(t => t?.Result)
+                .Select(t => t)
                 .Where(e => e != null)
-                .ToList()
-                .OrderByDescending(i => i.Cp)
-                .ThenByDescending(i => i.AvatarState.level)
                 .ToList();
-            AbilityRankingInfos.ForEach(i => i.Rank = rankOffset++);
 
             var avatarStates = States.Instance.AvatarStates.ToList();
             foreach (var pair in avatarStates)
             {
-                var avatarState = pair.Value;
-                var avatarAddress = avatarState.address;
-                var index = AbilityRankingInfos.FindIndex(i => i.AvatarState.address.Equals(avatarAddress));
-                if (index >= 0)
-                {
-                    var info = AbilityRankingInfos[index];
+                var myInfoQuery =
+                    $@"query {{
+                            abilityRanking(avatarAddress: ""{pair.Value.address}"") {{
+                                ranking
+                                avatarAddress
+                                name
+                                avatarLevel
+                                armorId
+                                titleId
+                                cp
+                            }}
+                        }}";
 
-                    AgentAbilityRankingInfos[pair.Key] =
-                        new AbilityRankingModel
-                        {
-                            Rank = index + 1,
-                            AvatarState = avatarState,
-                            Cp = info.Cp,
-                        };
-                }
-                else
+                var myInfoResponse = await apiClient.GetObjectAsync<AbilityRankingResponse>(myInfoQuery);
+                if (myInfoResponse is null)
                 {
-                    var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
-
-                    AgentAbilityRankingInfos[pair.Key] =
-                        new AbilityRankingModel
-                        {
-                            AvatarState = avatarState,
-                            Cp = cp,
-                        };
+                    Debug.LogError("Failed getting my ranking record.");
+                    continue;
                 }
+
+                var myRecord = myInfoResponse.AbilityRanking.FirstOrDefault();
+                if (myRecord is null)
+                {
+                    Debug.LogWarning($"{nameof(AbilityRankingRecord)} not exists.");
+                    continue;
+                }
+
+                AgentAbilityRankingInfos[pair.Key] = new AbilityRankingModel
+                {
+                    Rank = myRecord.Ranking,
+                    AvatarAddress = myRecord.AvatarAddress,
+                    Name = myRecord.Name,
+                    AvatarLevel = myRecord.AvatarLevel,
+                    ArmorId = myRecord.ArmorId,
+                    TitleId = myRecord.TitleId,
+                    Cp = myRecord.Cp,
+                };
             }
         }
 
@@ -175,8 +156,11 @@ namespace Nekoyume.UI.Model
                         stageRanking(limit: {displayCount}) {{
                             ranking
                             avatarAddress
-                            clearedStageId
                             name
+                            avatarLevel
+                            armorId
+                            titleId
+                            clearedStageId
                         }}
                     }}";
 
@@ -187,25 +171,18 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var addressList = response.StageRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
-            var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
             StageRankingInfos = response.StageRanking
                 .Select(e =>
                 {
-                    var addressString = e.AvatarAddress.Substring(2);
-                    var address = new Address(addressString);
-                    if (!avatarDict.ContainsKey(address))
-                    {
-                        return null;
-                    }
-
-                    var avatarState = avatarDict[address];
-
                     return new StageRankingModel
                     {
-                        AvatarState = avatarState,
-                        ClearedStageId = e.ClearedStageId,
                         Rank = e.Ranking,
+                        AvatarAddress = e.AvatarAddress,
+                        Name = e.Name,
+                        AvatarLevel = e.AvatarLevel,
+                        ArmorId = e.ArmorId,
+                        TitleId = e.TitleId,
+                        ClearedStageId = e.ClearedStageId,
                     };
                 })
                 .Select(t => t)
@@ -220,8 +197,11 @@ namespace Nekoyume.UI.Model
                             stageRanking(avatarAddress: ""{pair.Value.address}"") {{
                                 ranking
                                 avatarAddress
-                                clearedStageId
                                 name
+                                avatarLevel
+                                armorId
+                                titleId
+                                clearedStageId
                             }}
                         }}";
 
@@ -241,9 +221,13 @@ namespace Nekoyume.UI.Model
 
                 AgentStageRankingInfos[pair.Key] = new StageRankingModel
                 {
-                    AvatarState = pair.Value,
-                    ClearedStageId = myRecord.ClearedStageId,
                     Rank = myRecord.Ranking,
+                    AvatarAddress = myRecord.AvatarAddress,
+                    Name = myRecord.Name,
+                    AvatarLevel = myRecord.AvatarLevel,
+                    ArmorId = myRecord.ArmorId,
+                    TitleId = myRecord.TitleId,
+                    ClearedStageId = myRecord.ClearedStageId,
                 };
             }
         }
@@ -255,8 +239,11 @@ namespace Nekoyume.UI.Model
                         stageRanking(limit: {displayCount}, mimisbrunnr: true) {{
                             ranking
                             avatarAddress
-                            clearedStageId
                             name
+                            avatarLevel
+                            armorId
+                            titleId
+                            clearedStageId
                         }}
                     }}";
 
@@ -267,27 +254,19 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var addressList = response.StageRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
-            var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
-
             MimisbrunnrRankingInfos = response.StageRanking
                 .Select(e =>
                 {
-                    var addressString = e.AvatarAddress.Substring(2);
-                    var address = new Address(addressString);
-                    if (!avatarDict.ContainsKey(address))
-                    {
-                        return null;
-                    }
-
-                    var avatarState = avatarDict[address];
-
                     return new StageRankingModel
                     {
-                        AvatarState = avatarState,
+                        Rank = e.Ranking,
+                        AvatarAddress = e.AvatarAddress,
+                        Name = e.Name,
+                        AvatarLevel = e.AvatarLevel,
+                        ArmorId = e.ArmorId,
+                        TitleId = e.TitleId,
                         ClearedStageId = e.ClearedStageId > 0 ?
                             e.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1 : 0,
-                        Rank = e.Ranking,
                     };
                 })
                 .Select(t => t)
@@ -302,8 +281,11 @@ namespace Nekoyume.UI.Model
                             stageRanking(avatarAddress: ""{pair.Value.address}"", mimisbrunnr: true) {{
                                 ranking
                                 avatarAddress
-                                clearedStageId
                                 name
+                                avatarLevel
+                                armorId
+                                titleId
+                                clearedStageId
                             }}
                         }}";
 
@@ -323,9 +305,13 @@ namespace Nekoyume.UI.Model
 
                 AgentMimisbrunnrRankingInfos[pair.Key] = new StageRankingModel
                 {
-                    AvatarState = pair.Value,
-                    ClearedStageId = myRecord.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1,
                     Rank = myRecord.Ranking,
+                    AvatarAddress = myRecord.AvatarAddress,
+                    Name = myRecord.Name,
+                    AvatarLevel = myRecord.AvatarLevel,
+                    ArmorId = myRecord.ArmorId,
+                    TitleId = myRecord.TitleId,
+                    ClearedStageId = myRecord.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1,
                 };
             }
         }
@@ -337,6 +323,10 @@ namespace Nekoyume.UI.Model
                         craftRanking(limit: {displayCount}) {{
                             ranking
                             avatarAddress
+                            name
+                            avatarLevel
+                            armorId
+                            titleId
                             craftCount
                         }}
                     }}";
@@ -348,26 +338,18 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            var addressList = response.CraftRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
-            var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
-
             CraftRankingInfos = response.CraftRanking
                 .Select(e =>
                 {
-                    var addressString = e.AvatarAddress.Substring(2);
-                    var address = new Address(addressString);
-                    if (!avatarDict.ContainsKey(address))
-                    {
-                        return null;
-                    }
-
-                    var avatarState = avatarDict[address];
-
                     return new CraftRankingModel
                     {
-                        AvatarState = avatarState,
-                        CraftCount = e.CraftCount,
                         Rank = e.Ranking,
+                        AvatarAddress = e.AvatarAddress,
+                        Name = e.Name,
+                        AvatarLevel = e.AvatarLevel,
+                        ArmorId = e.ArmorId,
+                        TitleId = e.TitleId,
+                        CraftCount = e.CraftCount,
                     };
                 })
                 .Select(t => t)
@@ -382,6 +364,10 @@ namespace Nekoyume.UI.Model
                             craftRanking(avatarAddress: ""{pair.Value.address}"") {{
                                 ranking
                                 avatarAddress
+                                name
+                                avatarLevel
+                                armorId
+                                titleId
                                 craftCount
                             }}
                         }}";
@@ -402,9 +388,13 @@ namespace Nekoyume.UI.Model
 
                 AgentCraftRankingInfos[pair.Key] = new CraftRankingModel
                 {
-                    AvatarState = pair.Value,
-                    CraftCount = myRecord.CraftCount,
                     Rank = myRecord.Ranking,
+                    AvatarAddress = myRecord.AvatarAddress,
+                    Name = myRecord.Name,
+                    AvatarLevel = myRecord.AvatarLevel,
+                    ArmorId = myRecord.ArmorId,
+                    TitleId = myRecord.TitleId,
+                    CraftCount = myRecord.CraftCount,
                 };
             }
         }
@@ -422,6 +412,10 @@ namespace Nekoyume.UI.Model
                         equipmentRanking(itemSubType: ""{subType}"", limit: {displayCount}) {{
                             ranking
                             avatarAddress
+                            name
+                            avatarLevel
+                            armorId
+                            titleId
                             level
                             equipmentId
                             cp
@@ -435,25 +429,17 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
-                var addressList = response.EquipmentRanking.Select(i => new Address(i.AvatarAddress.Substring(2)));
-                var avatarDict = await Game.Game.instance.Agent.GetAvatarStates(addressList);
-
                 EquipmentRankingInfosMap[subType] = response.EquipmentRanking
                     .Select(e =>
                     {
-                        var addressString = e.AvatarAddress.Substring(2);
-                        var address = new Address(addressString);
-                        if (!avatarDict.ContainsKey(address))
-                        {
-                            return null;
-                        }
-
-                        var avatarState = avatarDict[address];
-
                         return new EquipmentRankingModel
                         {
-                            AvatarState = avatarState,
                             Rank = e.Ranking,
+                            AvatarAddress = e.AvatarAddress,
+                            Name = e.Name,
+                            AvatarLevel = e.AvatarLevel,
+                            ArmorId = e.ArmorId,
+                            TitleId = e.TitleId,
                             Level = e.Level,
                             Cp = e.Cp,
                             EquipmentId = e.EquipmentId,
@@ -471,6 +457,10 @@ namespace Nekoyume.UI.Model
                             equipmentRanking(itemSubType: ""{subType}"", avatarAddress: ""{pair.Value.address}"", limit: 1) {{
                                 ranking
                                 avatarAddress
+                                name
+                                avatarLevel
+                                armorId
+                                titleId
                                 level
                                 equipmentId
                                 cp
@@ -498,8 +488,12 @@ namespace Nekoyume.UI.Model
 
                     AgentEquipmentRankingInfos[pair.Key][subType] = new EquipmentRankingModel
                     {
-                        AvatarState = pair.Value,
                         Rank = myRecord.Ranking,
+                        AvatarAddress = myRecord.AvatarAddress,
+                        Name = myRecord.Name,
+                        AvatarLevel = myRecord.AvatarLevel,
+                        ArmorId = myRecord.ArmorId,
+                        TitleId = myRecord.TitleId,
                         Level = myRecord.Level,
                         Cp = myRecord.Cp,
                         EquipmentId = myRecord.EquipmentId,
