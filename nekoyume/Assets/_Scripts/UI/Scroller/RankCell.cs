@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Scroller
         public override void UpdateContent(RankingModel viewModel)
         {
             var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
-            var isMyInfo = viewModel.AvatarAddress.Equals(currentAvatarAddress.ToString());
+            var isMyInfo = viewModel.AvatarState.address.Equals(currentAvatarAddress);
             var cell = isMyInfo ? myInfoRankCell : rankCell;
             rankCell.gameObject.SetActive(!isMyInfo);
             myInfoRankCell.gameObject.SetActive(isMyInfo);

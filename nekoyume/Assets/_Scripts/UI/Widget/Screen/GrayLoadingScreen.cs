@@ -15,16 +15,5 @@ namespace Nekoyume.UI
 
             text.text = L10nManager.Localize("UI_IN_MINING_A_BLOCK");
         }
-
-        public void Show(string message, bool localize)
-        {
-            if (localize)
-            {
-                message = L10nManager.Localize(message);
-            }
-            text.text = message;
-
-            base.Show();
-        }
     }
 }

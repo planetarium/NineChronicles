@@ -93,7 +93,7 @@ namespace Nekoyume.UI.Module
             frameImage.color = GetColor(frameImage.color, alpha);
         }
 
-        protected void SetFrame(Sprite image)
+        private void SetFrame(Sprite image)
         {
             if (image is null)
             {

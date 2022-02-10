@@ -42,8 +42,6 @@ namespace Nekoyume.BlockChain
         private readonly Dictionary<Guid, (TxId txId, long updatedBlockIndex)> _actionIdToTxIdBridge =
             new Dictionary<Guid, (TxId txId, long updatedBlockIndex)>();
 
-        private readonly Dictionary<Guid, DateTime> _actionEnqueuedDateTimes = new Dictionary<Guid, DateTime>();
-
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         public static ActionManager Instance => Game.Game.instance.ActionManager;
@@ -91,24 +89,13 @@ namespace Nekoyume.BlockChain
             }).AddTo(_disposables);
         }
 
-        public bool TryPopActionEnqueuedDateTime(Guid actionId, out DateTime enqueuedDateTime)
-        {
-            if (!_actionEnqueuedDateTimes.TryGetValue(actionId, out enqueuedDateTime))
-            {
-                return false;
-            }
-
-            _actionEnqueuedDateTimes.Remove(actionId);
-            return true;
-        }
-
         private void ProcessAction<T>(T gameAction) where T : GameAction
         {
-            var actionType = gameAction.GetActionTypeAttribute();
+            var actionType =
+                (ActionTypeAttribute)Attribute.GetCustomAttribute(typeof(T), typeof(ActionTypeAttribute));
             Debug.Log($"[{nameof(ActionManager)}] {nameof(ProcessAction)}() called. \"{actionType.TypeIdentifier}\"");
 
             _agent.EnqueueAction(gameAction);
-            _actionEnqueuedDateTimes[gameAction.Id] = DateTime.Now;
         }
 
         #region Actions

@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Nekoyume.UI.Tween
@@ -40,8 +41,8 @@ namespace Nekoyume.UI.Tween
 
         public void AddCondition(System.Func<bool> enter = null, System.Func<bool> exit = null)
         {
-            gameObject.AddComponent<ObservablePointerEnterTrigger>()
-                .OnPointerEnterAsObservable().Subscribe(x =>
+            ObservableExtensions.Subscribe(gameObject.AddComponent<ObservablePointerEnterTrigger>()
+                    .OnPointerEnterAsObservable(), x =>
                 {
                     if (enter == null)
                     {
@@ -56,8 +57,8 @@ namespace Nekoyume.UI.Tween
                 })
                 .AddTo(gameObject);
 
-            gameObject.AddComponent<ObservablePointerExitTrigger>()
-                .OnPointerExitAsObservable().Subscribe(x =>
+            ObservableExtensions.Subscribe(gameObject.AddComponent<ObservablePointerExitTrigger>()
+                    .OnPointerExitAsObservable(), x =>
                 {
                     if (exit == null)
                     {
