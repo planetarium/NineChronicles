@@ -9,15 +9,11 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class RankingBattleResultPopup : PopupWidget
     {
-        [SerializeField]
-        private CanvasGroup canvasGroup = null;
-
         [SerializeField]
         private GameObject victoryImageContainer = null;
 
@@ -38,8 +34,6 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            submitButton.Text = L10nManager.Localize("UI_BACK_TO_ARENA");
-
             CloseWidget = null;
             SubmitWidget = BackToRanking;
             submitButton.OnClick = BackToRanking;
@@ -73,7 +67,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void BackToRanking()
+        private void BackToRanking()
         {
             Game.Game.instance.Stage.objectPool.ReleaseAll();
             Game.Game.instance.Stage.IsInStage = false;

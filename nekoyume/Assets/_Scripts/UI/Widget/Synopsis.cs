@@ -12,7 +12,6 @@ using Spine.Unity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using mixpanel;
 using Nekoyume.L10n;
 using System.Threading.Tasks;
 using Nekoyume.Helper;
@@ -171,23 +170,14 @@ namespace Nekoyume.UI
                         tweener.Play();
                         skeletonTweener?.Play();
 
-                        var fadeInPlaying = true;
-                        while (fadeInPlaying)
-                        {
-                            if (skipSynopsis)
-                            {
-                                fadeInPlaying = false;
-                            }
-                            else
-                            {
-                                fadeInPlaying = tweener != null && tweener.IsActive() && tweener.IsPlaying();
-                            }
-                            yield return null;
-                        }
-
                         if (skipSynopsis)
                         {
                             tweener.Complete();
+                        }
+                        else
+                        {
+                            yield return new WaitWhile(() =>
+                                tweener != null && tweener.IsActive() && tweener.IsPlaying());
                         }
 
                         break;
@@ -209,23 +199,14 @@ namespace Nekoyume.UI
                         tweener.Play();
                         skeletonTweener?.Play();
 
-                        var fadeOutPlaying = true;
-                        while (fadeOutPlaying)
-                        {
-                            if (skipSynopsis)
-                            {
-                                fadeOutPlaying = false;
-                            }
-                            else
-                            {
-                                fadeOutPlaying = tweener != null && tweener.IsActive() && tweener.IsPlaying();
-                            }
-                            yield return null;
-                        }
-
                         if (skipSynopsis)
                         {
                             tweener.Complete();
+                        }
+                        else
+                        {
+                            yield return new WaitWhile(() =>
+                                tweener != null && tweener.IsActive() && tweener.IsPlaying());
                         }
 
                         break;
@@ -307,19 +288,11 @@ namespace Nekoyume.UI
                     tweener1.Play();
                     tweener2.Play();
 
-                    var playing = true;
-                    while (playing)
+                    if (!skipSynopsis)
                     {
-                        if (skipSynopsis)
-                        {
-                            playing = false;
-                        }
-                        else
-                        {
-                            playing = tweener1 != null && tweener1.IsActive() && tweener1.IsPlaying() &&
-                                      tweener2 != null && tweener2.IsActive() && tweener2.IsPlaying();
-                        }
-                        yield return null;
+                        yield return new WaitWhile(() =>
+                            tweener1 != null && tweener1.IsActive() && tweener1.IsPlaying() &&
+                            tweener2 != null && tweener2.IsActive() && tweener2.IsPlaying());
                     }
                 }
                 else

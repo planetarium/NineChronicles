@@ -22,9 +22,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private Slider additionalSlider = null;
 
-        [SerializeField]
-        private Transform titleSocket = default;
-
         public HpBarVFX HpVFX { get; private set; }
 
         public void SetBuffs(IReadOnlyDictionary<int, Buff> buffs)

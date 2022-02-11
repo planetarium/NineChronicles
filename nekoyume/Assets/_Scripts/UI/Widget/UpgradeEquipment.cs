@@ -108,8 +108,6 @@ namespace Nekoyume.UI
         private static readonly int HashToUnregisterMaterial = Animator.StringToHash("UnregisterMaterial");
         private static readonly int HashToClose = Animator.StringToHash("Close");
 
-        private State _state = State.Empty;
-
         protected override void Awake()
         {
             base.Awake();

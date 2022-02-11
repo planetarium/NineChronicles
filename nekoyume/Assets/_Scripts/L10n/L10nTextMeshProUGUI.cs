@@ -75,6 +75,7 @@ namespace Nekoyume.L10n
         [SerializeField, HideInInspector]
         private float defaultLineSpacing;
 
+        private IDisposable _l10nManagerOnLanguageChangeDisposable;
         private IDisposable _l10nManagerOnLanguageTypeSettingsChangeDisposable;
 
         private TextMeshProUGUI Text => _textCache
@@ -123,6 +124,7 @@ namespace Nekoyume.L10n
 
             if (L10nManager.CurrentState == L10nManager.State.Initialized)
             {
+                SetLanguage();
                 SetLanguageTypeSettings(L10nManager.CurrentLanguageTypeSettings);
                 SubscribeLanguageChange();
             }
@@ -130,30 +132,39 @@ namespace Nekoyume.L10n
             {
                 L10nManager.OnInitialize.Subscribe(_ =>
                 {
+                    SetLanguage();
                     SetLanguageTypeSettings(L10nManager.CurrentLanguageTypeSettings);
                     SubscribeLanguageChange();
                 }).AddTo(gameObject);
-            }
-
-            if (!string.IsNullOrEmpty(l10nKey))
-            {
-                Text.text = L10nManager.Localize(l10nKey);
             }
         }
 
         private void OnDestroy()
         {
+            _l10nManagerOnLanguageChangeDisposable?.Dispose();
+            _l10nManagerOnLanguageChangeDisposable = null;
             _l10nManagerOnLanguageTypeSettingsChangeDisposable?.Dispose();
             _l10nManagerOnLanguageTypeSettingsChangeDisposable = null;
         }
 
         private void SubscribeLanguageChange()
         {
+            _l10nManagerOnLanguageChangeDisposable?.Dispose();
+            _l10nManagerOnLanguageChangeDisposable = 
+                L10nManager.OnLanguageChange.Subscribe(_ => SetLanguage());
             _l10nManagerOnLanguageTypeSettingsChangeDisposable?.Dispose();
             _l10nManagerOnLanguageTypeSettingsChangeDisposable =
                 L10nManager.OnLanguageTypeSettingsChange.Subscribe(SetLanguageTypeSettings);
         }
 
+        private void SetLanguage()
+        {
+            if (!string.IsNullOrWhiteSpace(l10nKey))
+            {
+                Text.text = L10nManager.Localize(l10nKey);
+            }
+        }
+        
         private void SetLanguageTypeSettings(LanguageTypeSettings settings)
         {
             var data = settings.fontAssetData;

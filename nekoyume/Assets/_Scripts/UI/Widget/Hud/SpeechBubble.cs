@@ -55,14 +55,29 @@ namespace Nekoyume.UI
 
         private void KillTween()
         {
-            _tweenScale?.Complete();
-            _tweenScale?.Kill();
-            _tweenScale = null;
-            _tweenMoveBy?.Complete();
-            _tweenMoveBy?.Kill();
-            _tweenMoveBy = null;
-            bubbleContainer?.DOKill();
-            contentSize?.DOKill();
+            if (_tweenScale != null)
+            {
+                _tweenScale.Complete();
+                _tweenScale.Kill();
+                _tweenScale = null;
+            }
+
+            if (_tweenMoveBy != null)
+            {
+                _tweenMoveBy.Complete();
+                _tweenMoveBy.Kill();
+                _tweenMoveBy = null;
+            }
+
+            if (bubbleContainer != null)
+            {
+                bubbleContainer.DOKill();
+            }
+
+            if (contentSize != null)
+            {
+                contentSize.DOKill();
+            }
         }
 
         public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
@@ -112,24 +127,34 @@ namespace Nekoyume.UI
             gameObject.SetActive(true);
         }
 
-        public IEnumerator CoShowText(bool instant = false, bool forceFixed = false)
+        public void ShowText(bool instant)
+        {
+            if (!enable || SpeechCount == 0)
+            {
+                return;
+            }
+
+            BeforeSpeech();
+            var speech =
+                L10nManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
+            _coroutine = StartCoroutine(ShowText(speech, instant, false));
+        }
+
+        public IEnumerator CoShowText(bool instant = false)
         {
             if (!enable || SpeechCount == 0)
             {
                 yield break;
             }
 
-            BeforeSpeech();
-            var speech =
-                L10nManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
-            _coroutine = StartCoroutine(ShowText(speech, instant, forceFixed));
+            ShowText(instant);
             yield return _coroutine;
         }
 
-        public IEnumerator CoShowText(string speech, bool instant = false, bool forceFixed = false)
+        public IEnumerator CoShowText(string speech, bool instant = false)
         {
             BeforeSpeech();
-            _coroutine = StartCoroutine(ShowText(speech, instant, forceFixed));
+            _coroutine = StartCoroutine(ShowText(speech, instant, false));
             yield return _coroutine;
         }
 
@@ -153,7 +178,7 @@ namespace Nekoyume.UI
                 contentSize.DOScale(0.0f, 0.0f);
                 contentSize.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
 
-                if (_tweenScale is null ||
+                if (_tweenScale == null ||
                     !_tweenScale.IsActive() ||
                     !_tweenScale.IsPlaying())
                 {
@@ -165,7 +190,7 @@ namespace Nekoyume.UI
                     _tweenScale.onComplete = () => _tweenScale = null;
                 }
 
-                if (_tweenMoveBy is null ||
+                if (_tweenMoveBy == null ||
                     !_tweenMoveBy.IsActive() ||
                     !_tweenMoveBy.IsPlaying())
                 {

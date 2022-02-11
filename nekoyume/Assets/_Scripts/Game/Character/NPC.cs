@@ -8,6 +8,7 @@ using UnityEngine.Rendering;
 
 namespace Nekoyume.Game.Character
 {
+    using System.Linq;
     using UniRx;
 
     [RequireComponent(typeof(SortingGroup))]
@@ -18,7 +19,7 @@ namespace Nekoyume.Game.Character
         private SortingGroup _sortingGroup;
         private TouchHandler _touchHandler;
 
-        private NPCAnimator Animator { get; set; }
+        public NPCAnimator Animator { get; private set; }
         public NPCSpineController SpineController { get; private set; }
 
         private void Awake()
@@ -75,6 +76,30 @@ namespace Nekoyume.Game.Character
         public void PlayAnimation(NPCAnimation.Type type)
         {
             Animator.Play(type);
+        }
+
+        public void ChangeSpineResource(string id)
+        {
+            var spineResourcePath = $"Character/NPC/{id}";
+
+            if (!(Animator.Target is null))
+            {
+                var animatorTargetName = spineResourcePath.Split('/').Last();
+                if (Animator.Target.name.Contains(animatorTargetName))
+                    return;
+
+                Animator.DestroyTarget();
+            }
+
+            var origin = Resources.Load<GameObject>(spineResourcePath);
+            if (!origin)
+            {
+                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+            }
+
+            var go = Instantiate(origin, gameObject.transform);
+            SpineController = go.GetComponent<NPCSpineController>();
+            Animator.ResetTarget(go);
         }
 
         private void UpdateAnimatorTarget()

@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Character
 
         protected override bool CanRun => base.CanRun && !TargetInAttackRange(_player);
 
-        private CharacterSpineController SpineController { get; set; }
+        public CharacterSpineController SpineController { get; private set; }
 
         public override string TargetTag => Tag.Player;
 
@@ -139,7 +139,13 @@ namespace Nekoyume.Game.Character
         private void UpdateArmor()
         {
             var armorId = CharacterModel?.RowData.Id ?? DefaultCharacter;
-            var spineResourcePath = $"Character/Monster/{armorId}";
+            ChangeSpineResource(armorId);
+            UpdateHitPoint();
+        }
+
+        public void ChangeSpineResource(int id)
+        {
+            var spineResourcePath = $"Character/Monster/{id}";
 
             if (!(Animator.Target is null))
             {
@@ -151,10 +157,14 @@ namespace Nekoyume.Game.Character
             }
 
             var origin = Resources.Load<GameObject>(spineResourcePath);
+            if (!origin)
+            {
+                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
+            }
+
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);
-            UpdateHitPoint();
         }
 
         #endregion

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Nekoyume.Game.Character;
+using Nekoyume.TestScene;
 using Spine.Unity;
 using Spine.Unity.Editor;
 using UnityEditor;
@@ -87,22 +88,22 @@ namespace Planetarium.Nekoyume.Editor
         private static string GetPrefabPath(string prefabName)
         {
             string pathFormat = null;
-            if (IsFullCostume(prefabName))
+            if (SpineCharacterViewer.IsFullCostume(prefabName))
             {
                 pathFormat = FullCostumePrefabPath;
             }
 
-            if (IsMonster(prefabName))
+            if (SpineCharacterViewer.IsMonster(prefabName))
             {
                 pathFormat = MonsterPrefabPath;
             }
 
-            if (IsNPC(prefabName))
+            if (SpineCharacterViewer.IsNPC(prefabName))
             {
                 pathFormat = NPCPrefabPath;
             }
 
-            if (IsPlayer(prefabName))
+            if (SpineCharacterViewer.IsPlayer(prefabName))
             {
                 pathFormat = PlayerPrefabPath;
             }
@@ -123,7 +124,7 @@ namespace Planetarium.Nekoyume.Editor
 
             if (!ValidateSpineResource(prefabName, skeletonDataAsset))
             {
-                if (IsPlayer(prefabName))
+                if (SpineCharacterViewer.IsPlayer(prefabName))
                 {
                     Debug.LogError("ValidationSpineResource() return false");
                     return;
@@ -372,53 +373,28 @@ namespace Planetarium.Nekoyume.Editor
             return controller;
         }
 
-        #region Character Type
-
-        private static bool IsFullCostume(string prefabName)
-        {
-            return prefabName.StartsWith("4");
-        }
-
-        private static bool IsMonster(string prefabName)
-        {
-            return prefabName.StartsWith("2");
-        }
-
-        private static bool IsNPC(string prefabName)
-        {
-            return prefabName.StartsWith("3") ||
-                prefabName.StartsWith("dialog_");
-        }
-
-        private static bool IsPlayer(string prefabName)
-        {
-            return prefabName.StartsWith("1");
-        }
-
-        #endregion
-
         #region Validate Spine Resource
 
         private static bool ValidateSpineResource(
             string prefabName,
             SkeletonDataAsset skeletonDataAsset)
         {
-            if (IsFullCostume(prefabName))
+            if (SpineCharacterViewer.IsFullCostume(prefabName))
             {
                 return ValidateForFullCostume(skeletonDataAsset);
             }
 
-            if (IsMonster(prefabName))
+            if (SpineCharacterViewer.IsMonster(prefabName))
             {
                 return ValidateForMonster(skeletonDataAsset);
             }
 
-            if (IsNPC(prefabName))
+            if (SpineCharacterViewer.IsNPC(prefabName))
             {
                 return ValidateForNPC(skeletonDataAsset);
             }
 
-            if (IsPlayer(prefabName))
+            if (SpineCharacterViewer.IsPlayer(prefabName))
             {
                 return ValidateForPlayer(skeletonDataAsset);
             }
@@ -531,13 +507,13 @@ namespace Planetarium.Nekoyume.Editor
         private static SpineController GetOrCreateSpineController(string prefabName,
             GameObject target)
         {
-            if (IsPlayer(prefabName) ||
-                IsFullCostume(prefabName))
+            if (SpineCharacterViewer.IsPlayer(prefabName) ||
+                SpineCharacterViewer.IsFullCostume(prefabName))
             {
                 return target.AddComponent<PlayerSpineController>();
             }
 
-            if (IsNPC(prefabName))
+            if (SpineCharacterViewer.IsNPC(prefabName))
             {
                 return target.AddComponent<NPCSpineController>();
             }

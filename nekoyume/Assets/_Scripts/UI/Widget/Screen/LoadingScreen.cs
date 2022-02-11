@@ -3,6 +3,7 @@ using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,8 +44,16 @@ namespace Nekoyume.UI
 
             if (toolTipChangeButton != null)
             {
-                toolTipChangeButton.onClick.AddListener(ChangeToolTip);
+                toolTipChangeButton.onClick.AddListener(SetToolTipText);
             }
+
+            L10nManager.OnLanguageChange
+                .Subscribe(_ =>
+                {
+                    Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
+                    _tips = L10nManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
+                })
+                .AddTo(gameObject);
         }
 
         protected override void Update()
@@ -71,10 +80,8 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             base.OnEnable();
-            if (_tips != null)
-            {
-                toolTip.text = _tips[Random.Range(0, _tips.Count)];
-            }
+            
+            SetToolTipText();
         }
 
         protected override void OnDisable()
@@ -83,7 +90,7 @@ namespace Nekoyume.UI
             base.OnDisable();
         }
 
-        public void ChangeToolTip()
+        public void SetToolTipText()
         {
             if (_tips != null)
             {

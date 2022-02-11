@@ -592,7 +592,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        private void ChangeSpineObject(string spineResourcePath)
+        private void ChangeSpineObject(string spineResourcePath, bool updateHitPoint = true)
         {
             if (!(Animator.Target is null))
             {
@@ -606,17 +606,28 @@ namespace Nekoyume.Game.Character
             }
 
             var origin = Resources.Load<GameObject>(spineResourcePath);
-            if (origin is null)
+            if (!origin)
             {
-                return;
+                throw new FailedToLoadResourceException<GameObject>(spineResourcePath);
             }
 
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<PlayerSpineController>();
             Animator.ResetTarget(go);
-            UpdateHitPoint();
+
+            if (updateHitPoint)
+            {
+                UpdateHitPoint();
+            }
         }
 
+        public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint)
+        {
+            var spineResourcePath = isFullCostume ?
+                $"Character/FullCostume/{id}" : $"Character/Player/{id}";
+
+            ChangeSpineObject(spineResourcePath, updateHitPoint);
+        }
 
         public IEnumerator CoGetExp(long exp)
         {

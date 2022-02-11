@@ -27,9 +27,6 @@ namespace Nekoyume.UI
         private Button blurButton = null;
 
         [SerializeField]
-        private RectTransform modal = null;
-
-        [SerializeField]
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]

@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.Callbacks;
+#if UNITY_STANDALONE_OSX
+using UnityEditor.OSXStandalone;
+#endif
 
 namespace Editor
 {
@@ -16,17 +19,50 @@ namespace Editor
         [MenuItem("Build/Standalone/Windows + macOS + Linux")]
         public static void BuildAll()
         {
+#if UNITY_STANDALONE_OSX
             BuildMacOS();
+            // BuildMacOSArm64();
+#endif
             BuildWindows();
             BuildLinux();
         }
 
-        [MenuItem("Build/Standalone/macOS")]
+#if UNITY_STANDALONE_OSX
+        [MenuItem("Build/Standalone/macOS (Intel)")]
         public static void BuildMacOS()
         {
-            Debug.Log("Build macOS");
-            Build(BuildTarget.StandaloneOSX, targetDirName: "macOS");
+            Debug.Log("Build macOS (Intel)");
+            var originalArchitecture = UserBuildSettings.architecture;
+            try
+            {
+                UserBuildSettings.architecture = MacOSArchitecture.x64;
+                Build(BuildTarget.StandaloneOSX, targetDirName: "macOS");
+            }
+            finally
+            {
+                UserBuildSettings.architecture = originalArchitecture;
+            }
         }
+
+        /*
+        // TODO: macOS Apple Silicon
+        [MenuItem("Build/Standalone/macOS (Apple Silicon)")]
+        public static void BuildMacOSArm64()
+        {
+            Debug.Log("Build macOS (Apple Silicon)");
+            var originalArchitecture = UserBuildSettings.architecture;
+            try
+            {
+                UserBuildSettings.architecture = MacOSArchitecture.ARM64;
+                Build(BuildTarget.StandaloneOSX, targetDirName: "macOS (Apple Silicon)");
+            }
+            finally
+            {
+                UserBuildSettings.architecture = originalArchitecture;
+            }
+        }
+        */
+#endif
 
         [MenuItem("Build/Standalone/Windows")]
         public static void BuildWindows()
