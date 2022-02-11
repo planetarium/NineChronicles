@@ -37,7 +37,7 @@ namespace Nekoyume.Model.Elemental
     public static class ElementalTypeExtension
     {
         public const decimal WinMultiplier = 1.2m;
-        
+
         public static bool TryGetWinCase(this ElementalType win, out ElementalType lose)
         {
             switch (win)
@@ -85,9 +85,9 @@ namespace Nekoyume.Model.Elemental
                     throw new ArgumentOutOfRangeException(nameof(lose), lose, null);
             }
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
@@ -133,6 +133,18 @@ namespace Nekoyume.Model.Elemental
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public static List<ElementalType> GetAllTypes()
+        {
+            return new List<ElementalType>()
+            {
+                ElementalType.Normal,
+                ElementalType.Fire,
+                ElementalType.Water,
+                ElementalType.Land,
+                ElementalType.Wind,
+            };
         }
     }
 }
