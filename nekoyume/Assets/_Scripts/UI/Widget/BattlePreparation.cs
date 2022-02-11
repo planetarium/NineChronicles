@@ -165,19 +165,6 @@ namespace Nekoyume.UI
 
             CloseWidget = () => Close(true);
 
-            inventory.SetAction(
-                clickItem: ShowItemTooltip,
-                doubleClickItem: Equip,
-                clickEquipmentToggle: () =>
-                {
-                    costumeSlots.gameObject.SetActive(false);
-                    equipmentSlots.gameObject.SetActive(true);
-                },
-                clickCostumeToggle: () =>
-                {
-                    costumeSlots.gameObject.SetActive(true);
-                    equipmentSlots.gameObject.SetActive(false);
-                });
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
@@ -235,8 +222,7 @@ namespace Nekoyume.UI
             _worldId = worldId;
             _stageId.Value = stageId;
 
-            inventory.SetElementalTypes(GetElementalTypes());
-
+            UpdateInventory();
             UpdateBackground(stageType);
             UpdateTitle();
             UpdateStat(currentAvatarState);
@@ -263,6 +249,24 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        private void UpdateInventory()
+        {
+            inventory.SetAvatarInfo(
+                clickItem: ShowItemTooltip,
+                doubleClickItem: Equip,
+                clickEquipmentToggle: () =>
+                {
+                    costumeSlots.gameObject.SetActive(false);
+                    equipmentSlots.gameObject.SetActive(true);
+                },
+                clickCostumeToggle: () =>
+                {
+                    costumeSlots.gameObject.SetActive(true);
+                    equipmentSlots.gameObject.SetActive(false);
+                },
+                GetElementalTypes());
+        }
 
         private void UpdateBackground(StageType stageType)
         {
@@ -335,7 +339,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                if (!inventory.TryGetItemViewModel(slot.Item, out var model))
+                if (!inventory.TryGetModel(slot.Item, out var model))
                 {
                     return;
                 }

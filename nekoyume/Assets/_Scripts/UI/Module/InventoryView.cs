@@ -86,7 +86,24 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        public void OnEnable()
+        private void SetAction(Action<InventoryItemViewModel, RectTransform> clickItem,
+            Action<InventoryItemViewModel> doubleClickItem,
+            System.Action clickEquipmentToggle = null,
+            System.Action clickCostumeToggle = null)
+        {
+            _onClickItem = clickItem;
+            _onDoubleClickItem = doubleClickItem;
+            _onToggleEquipment = clickEquipmentToggle;
+            _onToggleCostume = clickCostumeToggle;
+        }
+
+        private void SetElementalTypes(IEnumerable<ElementalType> elementalTypes)
+        {
+            _elementalTypes.Clear();
+            _elementalTypes.AddRange(elementalTypes);
+        }
+
+        private void Set()
         {
             _disposables.DisposeAllAndClear();
             ReactiveAvatarState.Inventory.Subscribe(inventory =>
@@ -115,7 +132,7 @@ namespace Nekoyume.UI.Module
 
                 scroll.UpdateData(GetModels(_activeItemType), false);
                 UpdateEquipmentNotification(_elementalTypes);
-                UpdateDisabled(_elementalTypes);
+                ApplyElementalType(_elementalTypes);
             }).AddTo(_disposables);
 
             SetToggle(equipmentButton, ItemType.Equipment);
@@ -194,8 +211,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private bool TryGetMaterial(Material material, bool istTradable,
-            out InventoryItemViewModel inventoryItem)
+        private bool TryGetMaterial(Material material, bool isTradable, out InventoryItemViewModel model)
         {
             foreach (var item in _materials)
             {
@@ -204,16 +220,16 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                if (istTradable != item.ItemBase is TradableMaterial)
+                if (isTradable != item.ItemBase is TradableMaterial)
                 {
                     continue;
                 }
 
-                inventoryItem = item;
+                model = item;
                 return true;
             }
 
-            inventoryItem = null;
+            model = null;
             return false;
         }
 
@@ -331,14 +347,29 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetAction(Action<InventoryItemViewModel,
-                RectTransform> clickItem, Action<InventoryItemViewModel> doubleClickItem,
-            System.Action clickEquipmentToggle, System.Action clickCostumeToggle)
+        private void ApplyElementalType(List<ElementalType> elementalTypes)
         {
-            _onClickItem = clickItem;
-            _onDoubleClickItem = doubleClickItem;
-            _onToggleEquipment = clickEquipmentToggle;
-            _onToggleCostume = clickCostumeToggle;
+            if (elementalTypes == null || !elementalTypes.Any())
+            {
+                return;
+            }
+
+            foreach (var model in _equipments)
+            {
+                var elementalType = model.ItemBase.ElementalType;
+                model.Disabled.Value = !elementalTypes.Exists(x => x.Equals(elementalType));
+            }
+        }
+
+        public void SetAvatarInfo(Action<InventoryItemViewModel, RectTransform> clickItem,
+            Action<InventoryItemViewModel> doubleClickItem,
+            System.Action clickEquipmentToggle,
+            System.Action clickCostumeToggle,
+            IEnumerable<ElementalType> elementalTypes)
+        {
+            SetAction(clickItem, doubleClickItem, clickEquipmentToggle, clickCostumeToggle);
+            SetElementalTypes(elementalTypes);
+            Set();
         }
 
         public void ClearSelectedItem()
@@ -390,27 +421,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void UpdateDisabled(List<ElementalType> elementalTypes)
-        {
-            foreach (var model in _equipments)
-            {
-                var elementalType = model.ItemBase.ElementalType;
-                model.Disabled.Value = !elementalTypes.Exists(x => x.Equals(elementalType));
-            }
-        }
-
-        public void SetElementalTypes(IEnumerable<ElementalType> elementalTypes)
-        {
-            _elementalTypes.Clear();
-            _elementalTypes.AddRange(elementalTypes);
-        }
-
-        public bool TryGetFirstCell(out InventoryItemViewModel cell)
-        {
-            return scroll.TryGetFirstItem(out cell);
-        }
-
-        public bool TryGetItemViewModel(ItemBase itemBase, out InventoryItemViewModel result)
+        public bool TryGetModel(ItemBase itemBase, out InventoryItemViewModel result)
         {
             result = null;
             var item = itemBase as INonFungibleItem;
@@ -429,5 +440,14 @@ namespace Nekoyume.UI.Module
 
             return false;
         }
+
+        #region For tutorial
+
+        public bool TryGetFirstCell(out InventoryItemViewModel cell)
+        {
+            return scroll.TryGetFirstItem(out cell);
+        }
+
+        #endregion
     }
 }

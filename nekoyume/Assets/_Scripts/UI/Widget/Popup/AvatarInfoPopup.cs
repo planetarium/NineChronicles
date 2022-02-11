@@ -89,20 +89,6 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
-
-            inventory.SetAction(
-                clickItem: ShowItemTooltip,
-                doubleClickItem: Equip,
-                clickEquipmentToggle: () =>
-                {
-                    costumeSlots.gameObject.SetActive(false);
-                    equipmentSlots.gameObject.SetActive(true);
-                },
-                clickCostumeToggle: () =>
-                {
-                    costumeSlots.gameObject.SetActive(true);
-                    equipmentSlots.gameObject.SetActive(false);
-                });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -113,11 +99,7 @@ namespace Nekoyume.UI
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             _player = Util.CreatePlayer(currentAvatarState, PlayerPosition);
 
-            var bp = Find<BattlePreparation>();
-            var elementalTypes = bp.isActiveAndEnabled
-                ? bp.GetElementalTypes() : ElementalTypeExtension.GetAllTypes();
-            inventory.SetElementalTypes(elementalTypes);
-
+            UpdateInventory();
             UpdateNickname(currentAvatarState.level, currentAvatarState.NameWithHash);
             UpdateTitle(currentAvatarState);
             UpdateStat(currentAvatarState);
@@ -152,6 +134,27 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        private void UpdateInventory()
+        {
+            var bp = Find<BattlePreparation>();
+            var elementalTypes = bp.isActiveAndEnabled
+                ? bp.GetElementalTypes() : ElementalTypeExtension.GetAllTypes();
+            inventory.SetAvatarInfo(
+                clickItem: ShowItemTooltip,
+                doubleClickItem: Equip,
+                clickEquipmentToggle: () =>
+                {
+                    costumeSlots.gameObject.SetActive(false);
+                    equipmentSlots.gameObject.SetActive(true);
+                },
+                clickCostumeToggle: () =>
+                {
+                    costumeSlots.gameObject.SetActive(true);
+                    equipmentSlots.gameObject.SetActive(false);
+                },
+                elementalTypes);
+        }
 
         private void UpdateNickname(int level, string nameWithHash)
         {
@@ -208,7 +211,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                if (!inventory.TryGetItemViewModel(slot.Item, out var model))
+                if (!inventory.TryGetModel(slot.Item, out var model))
                 {
                     return;
                 }
@@ -435,7 +438,7 @@ namespace Nekoyume.UI
                             interactable = !model.Limited.Value;
                         }
                     }
-                    
+
                     submit = () => Equip(model);
 
                     if (Game.Game.instance.Stage.IsInStage)
