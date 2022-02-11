@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Nekoyume.UI.Tween;
 using TMPro;
@@ -20,6 +21,15 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI additionalCpText = null;
 
         private Coroutine _disableCpTween;
+
+        private void OnDisable()
+        {
+            if (!(_disableCpTween is null))
+            {
+                StopCoroutine(_disableCpTween);
+            }
+            additionalCpArea.gameObject.SetActive(false);
+        }
 
         public void UpdateCP(int cp)
         {
