@@ -8,6 +8,7 @@ using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.Action;
+using Nekoyume.Model;
 using Nekoyume.Model.State;
 using System;
 using System.Collections.Generic;
@@ -229,8 +230,8 @@ namespace Lib9c.Tools.SubCommand
         {
             var RecordType = new
             {
+                EncodedActivationKey = string.Empty,
                 NonceHex = string.Empty,
-                PublicKeyHex = string.Empty,
             };
             using var reader = new StreamReader(csvPath);
             using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -238,7 +239,7 @@ namespace Lib9c.Tools.SubCommand
                 csv.GetRecords(RecordType)
                     .Select(r => new PendingActivationState(
                         ByteUtil.ParseHex(r.NonceHex),
-                        new PublicKey(ByteUtil.ParseHex(r.PublicKeyHex).ToImmutableArray()))
+                        ActivationKey.Decode(r.EncodedActivationKey).PrivateKey.PublicKey)
                     )
                     .ToList();
             var action = new CreatePendingActivations(activations);
@@ -266,6 +267,32 @@ namespace Lib9c.Tools.SubCommand
             );
             byte[] raw = _codec.Encode(encoded);
             Console.WriteLine(ByteUtil.Hex(raw));
+        }
+
+        [Command(Description = "Create ActvationKey-nonce pairs and dump them as csv")]
+        public void CreateActivationKeys(
+            [Argument("COUNT", Description = "An amount of pairs")] int count
+        )
+        {
+            var rng = new Random();
+            var nonce = new byte[4];
+            Console.WriteLine("EncodedActivationKey,NonceHex");
+            foreach (int i in Enumerable.Range(0, count))
+            {
+                PrivateKey key;
+                while (true)
+                {
+                    key = new PrivateKey();
+                    if (key.ToByteArray().Length == 32)
+                    {
+                        break;
+                    }
+                }
+
+                rng.NextBytes(nonce);
+                var (ak, _) = ActivationKey.Create(key, nonce);
+                Console.WriteLine($"{ak.Encode()},{ByteUtil.Hex(nonce)}");
+            }
         }
     }
 }
