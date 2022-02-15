@@ -9,6 +9,7 @@ using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Battle;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
@@ -608,10 +609,10 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public List<int> ValidateEquipmentsV2(List<Guid> equipmentIds, long blockIndex)
+        public List<Equipment> ValidateEquipmentsV2(List<Guid> equipmentIds, long blockIndex)
         {
             var countMap = new Dictionary<ItemSubType, int>();
-            var list = new List<int>();
+            var list = new List<Equipment>();
             foreach (var itemId in equipmentIds)
             {
                 if (!inventory.TryGetNonFungibleItem(itemId, out ItemUsable outNonFungibleItem))
@@ -679,7 +680,7 @@ namespace Nekoyume.Model.State
                     throw new EquipmentSlotUnlockException($"{equipment.ItemSubType} / not enough level. required: {requiredLevel}");
                 }
 
-                list.Add(equipment.Id);
+                list.Add(equipment);
             }
 
             return list;
@@ -845,7 +846,11 @@ namespace Nekoyume.Model.State
 
         public void ValidateItemRequirement(
             List<int> itemIds,
+            List<Equipment> equipments,
             ItemRequirementSheet requirementSheet,
+            EquipmentItemRecipeSheet recipeSheet,
+            EquipmentItemSubRecipeSheetV2 subRecipeSheet,
+            EquipmentItemOptionSheet itemOptionSheet,
             string addressesHex)
         {
             foreach (var id in itemIds)
@@ -856,6 +861,28 @@ namespace Nekoyume.Model.State
                 }
 
                 if (level < requirementRow.Level)
+                {
+                    throw new HighLevelItemRequirementException(
+                        $"{addressesHex}avatar level must be higher than requirement level of equipments." +
+                        $"{level} < requirement level({requirementRow.Level})");
+                }
+            }
+
+            foreach (var equipment in equipments)
+            {
+                if (!requirementSheet.TryGetValue(equipment.Id, out var requirementRow))
+                {
+                    throw new SheetRowNotFoundException(addressesHex, nameof(ItemRequirementSheet), equipment.Id);
+                }
+
+                var requirementLevel = equipment.IsMadeWithMimisbrunnrRecipe(
+                    recipeSheet,
+                    subRecipeSheet,
+                    itemOptionSheet
+                )
+                    ? requirementRow.MimisLevel
+                    : requirementRow.Level;
+                if (level < requirementLevel)
                 {
                     throw new HighLevelItemRequirementException(
                         $"{addressesHex}avatar level must be higher than requirement level of equipments." +

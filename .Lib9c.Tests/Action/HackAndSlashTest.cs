@@ -152,7 +152,7 @@ namespace Lib9c.Tests.Action
                 // If avatar level is higher than 200, Get strongest weapon.
                 // If not, Get weakest weapon.
                 var weapon = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[avatarLevel >= 200 ? weaponEnumerable.Last().Id : weaponEnumerable.First().Id],
+                    _tableSheets.EquipmentItemSheet[avatarLevel >= 200 ? weaponEnumerable.Last().Id : weaponEnumerable.ToArray()[1].Id],
                     random)
                     as Equipment;
                 equipments.Add(weapon.ItemId);
@@ -174,7 +174,7 @@ namespace Lib9c.Tests.Action
                     .OrderBy(r => r.Stat.ValueAsInt);
 
                 var armor = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[avatarLevel >= 200 ? armorEnumerable.Last().Id : armorEnumerable.First().Id],
+                    _tableSheets.EquipmentItemSheet[avatarLevel >= 200 ? armorEnumerable.Last().Id : armorEnumerable.ToArray()[1].Id],
                     random)
                     as Equipment;
                 equipments.Add(armor.ItemId);
