@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Model.Item
         {
             Assert.NotNull(_beltRow);
 
-            var costume = new Belt(_beltRow, Guid.NewGuid(), 0);
+            var costume = new Belt(_beltRow, Guid.NewGuid(), 0, false);
             var serialized = costume.Serialize();
             var deserialized = new Belt((Bencodex.Types.Dictionary)serialized);
 
@@ -36,7 +36,7 @@ namespace Lib9c.Tests.Model.Item
         {
             Assert.NotNull(_beltRow);
 
-            var costume = new Belt(_beltRow, Guid.NewGuid(), 0);
+            var costume = new Belt(_beltRow, Guid.NewGuid(), 0, false);
             var formatter = new BinaryFormatter();
             using var ms = new MemoryStream();
             formatter.Serialize(ms, costume);

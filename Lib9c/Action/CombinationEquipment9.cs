@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -16,8 +16,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_equipment10")]
-    public class CombinationEquipment : GameAction
+    [ActionType("combination_equipment9")]
+    public class CombinationEquipment9 : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
 
@@ -263,14 +263,11 @@ namespace Nekoyume.Action
             }
             // ~Transfer Required NCG
 
-            // UnityEngine.Debug.LogError($"recipe id : {recipeRow.Id}, sub id : {subRecipeId ?? -1} sub key : {SubRecipeIdKey}");
-
             // Create Equipment
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
                 equipmentRow,
                 context.Random.GenerateRandomGuid(),
-                endBlockIndex,
-                madeWithMimisbrunnrRecipe: recipeRow.IsMimisBrunnrSubRecipe(subRecipeId));
+                endBlockIndex);
 
             if (!(subRecipeRow is null))
             {
