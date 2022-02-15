@@ -11,6 +11,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Extensions;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
@@ -236,6 +237,11 @@ namespace Lib9c.Tests.Action
             Assert.NotNull(slotState.Result);
             Assert.NotNull(slotState.Result.itemUsable);
             Assert.True(((Equipment)slotState.Result.itemUsable).MadeWithMimisbrunnrRecipe);
+            Assert.True(((Equipment)slotState.Result.itemUsable).IsMadeWithMimisbrunnrRecipe(
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheetV2,
+                _tableSheets.EquipmentItemOptionSheet
+            ));
         }
 
         private void Execute(bool backward, int recipeId, int? subRecipeId, int mintNCG)
