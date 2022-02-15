@@ -1,7 +1,9 @@
-﻿namespace Nekoyume.UI.Model
+﻿using UnityEngine;
+
+namespace Nekoyume.UI.Model
 {
     public interface IItemViewModel
     {
-        public void Dispose();
+        public RectTransform View { get; set; }
     }
 }

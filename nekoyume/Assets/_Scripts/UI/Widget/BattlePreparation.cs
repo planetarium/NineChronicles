@@ -356,7 +356,7 @@ namespace Nekoyume.UI
 
         private void Equip(InventoryItemViewModel inventoryItem)
         {
-            if (inventoryItem.Limited.Value)
+            if (inventoryItem.LevelLimited.Value)
             {
                 return;
             }
@@ -503,7 +503,7 @@ namespace Nekoyume.UI
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-                    interactable = !model.Limited.Value;
+                    interactable = !model.LevelLimited.Value;
                     submit = () => Equip(model);
                     blocked = () => NotificationSystem.Push(MailType.System,
                         L10nManager.Localize("UI_EQUIP_FAILED"),
@@ -521,7 +521,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        interactable = !model.Limited.Value;
+                        interactable = !model.LevelLimited.Value;
                     }
                     submit = () => Equip(model);
                     blocked = () => NotificationSystem.Push(MailType.System,

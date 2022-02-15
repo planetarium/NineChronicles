@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,6 +40,9 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
         public Model.ShopSellItems SharedModel { get; private set; }
+
+        [SerializeField]
+        private InventoryViewScroll scroll = null;
 
         #region Mono
 

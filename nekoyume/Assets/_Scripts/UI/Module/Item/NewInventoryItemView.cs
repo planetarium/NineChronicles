@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Module
 
         public void Set(InventoryItemViewModel model, InventoryViewScroll.ContextModel context)
         {
-            if (model == null)
+            if (model is null)
             {
                 baseItemView.Container.SetActive(false);
                 return;
@@ -72,8 +72,9 @@ namespace Nekoyume.UI.Module
             baseItemView.CountText.text = model.Count.Value.ToString();
 
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b)).AddTo(_disposables);
-            model.Limited.Subscribe(b => baseItemView.LimitObject.SetActive(b)).AddTo(_disposables);
+            model.LevelLimited.Subscribe(b => baseItemView.LevelLimitObject.SetActive(b)).AddTo(_disposables);
             model.Disabled.Subscribe(b => baseItemView.DisableObject.SetActive(b)).AddTo(_disposables);
+            model.Tradable.Subscribe(b => baseItemView.DisableObject.SetActive(b)).AddTo(_disposables);
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
             model.Focused.Subscribe(b => baseItemView.FocusObject.SetActive(b)).AddTo(_disposables);
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b)).AddTo(_disposables);

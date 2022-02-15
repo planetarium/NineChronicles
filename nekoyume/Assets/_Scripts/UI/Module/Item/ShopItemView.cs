@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Helper;
-using Nekoyume.Model.Item;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

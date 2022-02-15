@@ -233,7 +233,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (inventoryItem.Limited.Value)
+            if (inventoryItem.LevelLimited.Value)
             {
                 return;
             }
@@ -435,7 +435,7 @@ namespace Nekoyume.UI
                         }
                         else
                         {
-                            interactable = !model.Limited.Value;
+                            interactable = !model.LevelLimited.Value;
                         }
                     }
 

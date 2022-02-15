@@ -4,16 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
-using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Assets;
+using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Model;
-using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 
@@ -73,58 +71,42 @@ namespace Nekoyume.State
                 new ReactiveProperty<IReadOnlyDictionary<ItemSubTypeFilter,
                     Dictionary<ShopSortFilter, Dictionary<int, List<OrderDigest>>>>>();
 
-        private static List<OrderDigest> _buyDigests = new List<OrderDigest>();
-        private static List<OrderDigest> _sellDigests = new List<OrderDigest>();
-
+        public static List<OrderDigest> BuyDigest { get; private set; } = new List<OrderDigest>();
+        public static ReactiveProperty<List<OrderDigest>> SellDigest { get; } = new ReactiveProperty<List<OrderDigest>>();
 
         // key: orderId
         private static ConcurrentDictionary<Guid, ItemBase> CachedShopItems { get; } = new ConcurrentDictionary<Guid, ItemBase>();
-
+        private const int buyItemsPerPage = 24;
 
         public static OrderDigest GetSellDigest(Guid tradableId,
             long requiredBlockIndex,
             FungibleAssetValue price,
             int count)
         {
-            return _sellDigests.FirstOrDefault(x =>
+            return SellDigest.Value.FirstOrDefault(x =>
                 x.TradableId.Equals(tradableId) &&
                 x.ExpiredBlockIndex.Equals(requiredBlockIndex) &&
                 x.Price.Equals(price) &&
                 x.ItemCount.Equals(count));
         }
 
-        private const int buyItemsPerPage = 24;
-        private const int sellItemsPerPage = 20;
-
         public static async Task InitAndUpdateBuyDigests()
         {
-            _buyDigests = await GetBuyOrderDigests();
-            var result = await UpdateCachedShopItems(_buyDigests);
+            BuyDigest = await GetBuyOrderDigests();
+            var result = await UpdateCachedShopItems(BuyDigest);
             if (result)
             {
                 UpdateBuyDigests();
             }
         }
 
-        public static async void InitSellDigests()
+        public static async void UpdateSellDigests()
         {
-            if (_sellDigests != null)
-            {
-                await UniTask.Run(async () =>
-                {
-                    _sellDigests = await GetSellOrderDigests();
-                    await UpdateCachedShopItems(_sellDigests);
-                });
-            }
-        }
-
-        public static async void InitAndUpdateSellDigests()
-        {
-            _sellDigests = await GetSellOrderDigests();
-            var result = await UpdateCachedShopItems(_sellDigests);
+            var digests = await GetSellOrderDigests();
+            var result = await UpdateCachedShopItems(digests);
             if (result)
             {
-                UpdateSellDigests();
+                SellDigest.Value = digests;
             }
         }
 
@@ -171,24 +153,18 @@ namespace Nekoyume.State
 
         private static void UpdateBuyDigests()
         {
-            var buyDigests = _buyDigests.Where(digest =>
+            var buyDigests = BuyDigest.Where(digest =>
                 !digest.SellerAgentAddress.Equals(States.Instance.AgentState.address)).ToList();
             BuyDigests.Value =
                 GetGroupedOrderDigestsByItemSubTypeFilter(buyDigests, buyItemsPerPage);
         }
 
-        private static void UpdateSellDigests()
-        {
-            SellDigests.Value =
-                GetGroupedOrderDigestsByItemSubTypeFilter(_sellDigests, sellItemsPerPage);
-        }
-
         public static void RemoveBuyDigest(Guid orderId)
         {
-            var item = _buyDigests.FirstOrDefault(x => x.OrderId.Equals(orderId));
+            var item = BuyDigest.FirstOrDefault(x => x.OrderId.Equals(orderId));
             if (item != null)
             {
-                _buyDigests.Remove(item);
+                BuyDigest.Remove(item);
             }
 
             UpdateBuyDigests();
@@ -196,13 +172,11 @@ namespace Nekoyume.State
 
         public static void RemoveSellDigest(Guid orderId)
         {
-            var item = _sellDigests.FirstOrDefault(x => x.OrderId.Equals(orderId));
+            var item = SellDigest.Value.FirstOrDefault(x => x.OrderId.Equals(orderId));
             if (item != null)
             {
-                _sellDigests.Remove(item);
+                SellDigest.Value.Remove(item);
             }
-
-            UpdateSellDigests();
         }
 
         public static bool TryGetShopItem(OrderDigest orderDigest, out ItemBase itemBase)

@@ -70,7 +70,7 @@ namespace Nekoyume
         private GameObject disableObject;
 
         [SerializeField]
-        private GameObject limitObject;
+        private GameObject levelLimitObject;
 
         [SerializeField]
         private GameObject selectObject;
@@ -101,7 +101,7 @@ namespace Nekoyume
         public GameObject FocusObject => focusObject;
         public GameObject ExpiredObject => expiredObject;
         public GameObject DisableObject => disableObject;
-        public GameObject LimitObject => limitObject;
+        public GameObject LevelLimitObject => levelLimitObject;
         public GameObject SelectObject => selectObject;
         public GameObject SelectEnchantItemObject => selectEnchantItemObject;
         public GameObject LockObject => lockObject;

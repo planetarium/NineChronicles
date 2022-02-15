@@ -621,11 +621,7 @@ namespace Nekoyume.BlockChain
                     NotificationCell.NotificationType.Information);
 
                 UpdateCurrentAvatarStateAsync(eval);
-                var shopSell = Widget.Find<ShopSell>();
-                if (shopSell.isActiveAndEnabled)
-                {
-                    shopSell.Refresh();
-                }
+                ReactiveShopState.UpdateSellDigests();
             }
         }
 
@@ -656,11 +652,7 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
 
             UpdateCurrentAvatarStateAsync(eval);
-            var shopSell = Widget.Find<ShopSell>();
-            if (shopSell.isActiveAndEnabled)
-            {
-                shopSell.Refresh();
-            }
+            ReactiveShopState.UpdateSellDigests();
         }
 
         private async void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
@@ -686,11 +678,7 @@ namespace Nekoyume.BlockChain
             }
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
-            var shopSell = Widget.Find<ShopSell>();
-            if (shopSell.isActiveAndEnabled)
-            {
-                shopSell.Refresh();
-            }
+            ReactiveShopState.UpdateSellDigests();
         }
 
         private async void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)

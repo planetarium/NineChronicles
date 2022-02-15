@@ -219,5 +219,23 @@ namespace Nekoyume.Helper
             player.gameObject.SetActive(true);
             return player;
         }
+
+        public static int GetGridItemCount(float cellSize, float spacing, float size)
+        {
+            var s = size;
+            var count = 0;
+            while (s > cellSize)
+            {
+                s -= cellSize;
+                s -= spacing;
+                count++;
+                if (s < 0)
+                {
+                    return count;
+                }
+            }
+
+            return count;
+        }
     }
 }

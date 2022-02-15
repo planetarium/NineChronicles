@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private InventoryItemViewModel _selectedItem;
+        private InventoryItemViewModel _selectedModel;
 
         private Action<InventoryItemViewModel, RectTransform> _onClickItem;
         private Action<InventoryItemViewModel> _onDoubleClickItem;
@@ -57,6 +57,7 @@ namespace Nekoyume.UI.Module
         private System.Action _onToggleCostume;
         private readonly List<ElementalType> _elementalTypes = new List<ElementalType>();
         private ItemType _activeItemType = ItemType.Equipment;
+        private bool _checkTradable;
 
         public bool HasNotification => _equipments.Any(x => x.HasNotification.Value);
 
@@ -87,7 +88,7 @@ namespace Nekoyume.UI.Module
         }
 
         private void SetAction(Action<InventoryItemViewModel, RectTransform> clickItem,
-            Action<InventoryItemViewModel> doubleClickItem,
+            Action<InventoryItemViewModel> doubleClickItem = null,
             System.Action clickEquipmentToggle = null,
             System.Action clickCostumeToggle = null)
         {
@@ -108,19 +109,18 @@ namespace Nekoyume.UI.Module
             _disposables.DisposeAllAndClear();
             ReactiveAvatarState.Inventory.Subscribe(inventory =>
             {
-                DisposeModels(_equipments);
-                DisposeModels(_consumables);
-                DisposeModels(_materials);
-                DisposeModels(_costumes);
+                _equipments.Clear();
+                _consumables.Clear();
+                _materials.Clear();
+                _costumes.Clear();
 
                 if (inventory is null)
                 {
                     return;
                 }
 
-                _selectedItem = null;
-                foreach (var item in
-                         inventory.Items.OrderByDescending(x => x.item is ITradableItem))
+                _selectedModel = null;
+                foreach (var item in inventory.Items.OrderByDescending(x => x.item is ITradableItem))
                 {
                     if (item.Locked)
                     {
@@ -132,22 +132,12 @@ namespace Nekoyume.UI.Module
 
                 scroll.UpdateData(GetModels(_activeItemType), false);
                 UpdateEquipmentNotification(_elementalTypes);
-                ApplyElementalType(_elementalTypes);
+                UpdateElementalTypeDisable(_elementalTypes);
             }).AddTo(_disposables);
 
             SetToggle(equipmentButton, ItemType.Equipment);
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
             scroll.OnDoubleClick.Subscribe(OnDoubleClick).AddTo(_disposables);
-        }
-
-        private void DisposeModels(ReactiveCollection<InventoryItemViewModel> models)
-        {
-            foreach (var model in models)
-            {
-                model.Dispose();
-            }
-
-            models.Clear();
         }
 
         private void SetToggle(IToggleable toggle, ItemType itemType)
@@ -201,9 +191,11 @@ namespace Nekoyume.UI.Module
                     {
                         inventoryItem.Count.Value += count;
                     }
-
-                    inventoryItem = CreateInventoryItem(itemBase, count);
-                    _materials.Add(inventoryItem);
+                    else
+                    {
+                        inventoryItem = CreateInventoryItem(itemBase, count);
+                        _materials.Add(inventoryItem);
+                    }
                     break;
 
                 default:
@@ -233,33 +225,34 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        private static InventoryItemViewModel CreateInventoryItem(ItemBase itemBase, int count,
+        private InventoryItemViewModel CreateInventoryItem(ItemBase itemBase, int count,
             bool equipped = false, bool limited = false)
         {
-            return new InventoryItemViewModel(itemBase, count, equipped, limited);
+            return new InventoryItemViewModel(itemBase, count, equipped, limited,
+                _checkTradable && !(itemBase is ITradableItem));
         }
 
         private void OnClickItem(InventoryItemViewModel item)
         {
-            if (_selectedItem == null)
+            if (_selectedModel == null)
             {
-                _selectedItem = item;
-                _selectedItem.Selected.SetValueAndForceNotify(true);
-                _onClickItem?.Invoke(_selectedItem, _selectedItem.View); // Show tooltip popup
+                _selectedModel = item;
+                _selectedModel.Selected.SetValueAndForceNotify(true);
+                _onClickItem?.Invoke(_selectedModel, _selectedModel.View); // Show tooltip popup
             }
             else
             {
-                if (_selectedItem.Equals(item))
+                if (_selectedModel.Equals(item))
                 {
-                    _selectedItem.Selected.SetValueAndForceNotify(false);
-                    _selectedItem = null;
+                    _selectedModel.Selected.SetValueAndForceNotify(false);
+                    _selectedModel = null;
                 }
                 else
                 {
-                    _selectedItem.Selected.SetValueAndForceNotify(false);
-                    _selectedItem = item;
-                    _selectedItem.Selected.SetValueAndForceNotify(true);
-                    _onClickItem?.Invoke(_selectedItem, _selectedItem.View); // Show tooltip popup
+                    _selectedModel.Selected.SetValueAndForceNotify(false);
+                    _selectedModel = item;
+                    _selectedModel.Selected.SetValueAndForceNotify(true);
+                    _onClickItem?.Invoke(_selectedModel, _selectedModel.View); // Show tooltip popup
                 }
             }
         }
@@ -278,8 +271,8 @@ namespace Nekoyume.UI.Module
 
         private void OnDoubleClick(InventoryItemViewModel item)
         {
-            _selectedItem?.Selected.SetValueAndForceNotify(false);
-            _selectedItem = null;
+            _selectedModel?.Selected.SetValueAndForceNotify(false);
+            _selectedModel = null;
             _onDoubleClickItem?.Invoke(item);
         }
 
@@ -347,7 +340,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void ApplyElementalType(List<ElementalType> elementalTypes)
+        private void UpdateElementalTypeDisable(List<ElementalType> elementalTypes)
         {
             if (elementalTypes == null || !elementalTypes.Any())
             {
@@ -372,10 +365,17 @@ namespace Nekoyume.UI.Module
             Set();
         }
 
+        public void SetShop(Action<InventoryItemViewModel, RectTransform> clickItem)
+        {
+            _checkTradable = true;
+            SetAction(clickItem);
+            Set();
+        }
+
         public void ClearSelectedItem()
         {
-            _selectedItem?.Selected.SetValueAndForceNotify(false);
-            _selectedItem = null;
+            _selectedModel?.Selected.SetValueAndForceNotify(false);
+            _selectedModel = null;
             ClearFocus();
         }
 

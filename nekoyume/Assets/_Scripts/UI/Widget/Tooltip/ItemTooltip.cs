@@ -35,7 +35,6 @@ namespace Nekoyume.UI
 
         private bool _isPointerOnScrollArea;
         private bool _isClickedButtonArea;
-        private bool _isShopItem;
 
         private Model.ItemInformationTooltip Model { get; set; }
 
@@ -64,177 +63,6 @@ namespace Nekoyume.UI
                 onSubmit?.Invoke();
                 Close();
             };
-        }
-
-        protected override void OnEnable()
-        {
-            if (_isShopItem)
-            {
-                Game.Game.instance.Agent.BlockIndexSubject.Subscribe((long blockIndex) =>
-                {
-                    var isExpired = Model.ExpiredBlockIndex.Value - blockIndex <= 0;
-                    Model.SubmitButtonEnabled.SetValueAndForceNotify(
-                        Model.SubmitButtonEnabledFunc.Value.Invoke(Model.ItemInformation.item
-                            .Value) && !isExpired);
-                }).AddTo(_disposablesForModel);
-            }
-
-            base.OnEnable();
-        }
-
-        public void Show(RectTransform target,
-            CountableItem item,
-            Func<CountableItem, bool> submitEnabledFunc,
-            string submitText,
-            Action<ItemInformationTooltip> onSubmit,
-            Action<ItemInformationTooltip> onClose = null,
-            Action<ItemInformationTooltip> onClickBlocked = null,
-            bool isShopItem = false)
-        {
-            if (item?.ItemBase.Value is null)
-            {
-                return;
-            }
-
-            submitButton.gameObject.SetActive(submitEnabledFunc != null);
-            buy.gameObject.SetActive(false);
-            sell.gameObject.SetActive(false);
-
-            _disposablesForModel.DisposeAllAndClear();
-            Model.target.Value = target;
-            Model.ItemInformation.item.Value = item;
-            Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
-            Model.SubmitButtonText.Value = submitText;
-
-            // Show(Model);
-            // itemInformation.SetData(Model.ItemInformation);
-
-            // Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
-            Model.SubmitButtonText.SubscribeTo(submitButton).AddTo(_disposablesForModel);
-            Model.SubmitButtonEnabled.Subscribe(value => submitButton.Interactable = value)
-                .AddTo(_disposablesForModel);
-            Model.OnSubmitClick.Subscribe(onSubmit).AddTo(_disposablesForModel);
-            if (onClose != null)
-            {
-                Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
-            }
-
-            if (onClickBlocked != null)
-            {
-                Model.OnClickBlocked.Subscribe(onClickBlocked).AddTo(_disposablesForModel);
-            }
-
-            Model.ItemInformation.item.Subscribe(value => UpdatePosition(Model.target.Value))
-                .AddTo(_disposablesForModel);
-
-            scrollbar.value = 1f;
-            _isShopItem = isShopItem;
-            StartCoroutine(CoUpdate(submitButton.gameObject));
-        }
-
-        public void ShowForSell(RectTransform target,
-            CountableItem item,
-            Func<CountableItem, bool> submitEnabledFunc,
-            string submitText,
-            Action<ItemInformationTooltip> onSell,
-            Action<ItemInformationTooltip> onSellCancellation,
-            Action<ItemInformationTooltip> onClose)
-        {
-            if (item?.ItemBase.Value is null)
-            {
-                return;
-            }
-
-            submitButton.gameObject.SetActive(false);
-            buy.gameObject.SetActive(false);
-            sell.gameObject.SetActive(true);
-            sell.Set(Model.ExpiredBlockIndex.Value,
-                () =>
-                {
-                    // onSellCancellation.Invoke(this);
-                    // Model.OnCloseClick.OnNext(this);
-                    Close();
-                }, () =>
-                {
-                    // onSell.Invoke(this);
-                    // Model.OnCloseClick.OnNext(this);
-                    Close();
-                });
-            _disposablesForModel.DisposeAllAndClear();
-            Model.target.Value = target;
-            Model.ItemInformation.item.Value = item;
-            Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
-            Model.SubmitButtonText.Value = submitText;
-
-            // Show(Model);
-            // itemInformation.SetData(Model.ItemInformation);
-
-            // Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
-
-            if (onClose != null)
-            {
-                Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
-            }
-
-            Model.ItemInformation.item
-                .Subscribe(value => UpdatePosition(Model.target.Value))
-                .AddTo(_disposablesForModel);
-
-            scrollbar.value = 1f;
-            _isShopItem = true;
-            StartCoroutine(CoUpdate(sell.gameObject));
-        }
-
-        public void ShowForBuy(RectTransform target,
-            CountableItem item,
-            Func<CountableItem, bool> submitEnabledFunc,
-            string submitText,
-            Action<ItemInformationTooltip> onBuy,
-            Action<ItemInformationTooltip> onClose)
-        {
-            if (item?.ItemBase.Value is null)
-            {
-                return;
-            }
-
-            submitButton.gameObject.SetActive(false);
-            buy.gameObject.SetActive(true);
-            sell.gameObject.SetActive(false);
-            buy.Set(Model.ExpiredBlockIndex.Value, Model.Price.Value,
-                Model.Price.Value <= States.Instance.GoldBalanceState.Gold,
-                () => { }); // todo : 콜백넣어줘야됨
-
-            _disposablesForModel.DisposeAllAndClear();
-            Model.target.Value = target;
-            Model.ItemInformation.item.Value = item;
-            Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
-            Model.SubmitButtonText.Value = submitText;
-            // Show(Model);
-            // itemInformation.SetData(Model.ItemInformation);
-
-            // Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
-            // Model.SubmitButtonText.SubscribeTo(buyButton).AddTo(_disposablesForModel);
-            // Model.SubmitButtonEnabled.Subscribe(buyButton.SetSubmittable)
-            //     .AddTo(_disposablesForModel);
-            // Model.Price.Subscribe(price =>
-            // {
-            //     buyButton.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
-            // }).AddTo(_disposablesForModel);
-
-            Model.OnSubmitClick.Subscribe(onBuy).AddTo(_disposablesForModel);
-            if (onClose != null)
-            {
-                Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
-            }
-
-            Model.ItemInformation.item
-                .Subscribe(value => UpdatePosition(Model.target.Value))
-                .AddTo(_disposablesForModel);
-
-            scrollbar.value = 1f;
-            _isShopItem = true;
-            StartCoroutine(CoUpdate(buy.gameObject));
-            // buyTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -340,10 +168,99 @@ namespace Nekoyume.UI
             onBlocked = blocked;
 
             scrollbar.value = 1f;
-            _isShopItem = false;
             UpdatePosition(target);
             base.Show();
             StartCoroutine(CoUpdate(submitButton.gameObject));
+        }
+
+        public void Show(RectTransform target,
+            ShopItemViewModel item,
+            System.Action register,
+            System.Action sellCancellation,
+            System.Action close = null)
+        {
+            submitButton.gameObject.SetActive(false);
+            buy.gameObject.SetActive(false);
+            sell.gameObject.SetActive(true);
+            sell.Set(item.OrderDigest.ExpiredBlockIndex,
+                () =>
+                {
+                    sellCancellation?.Invoke();
+                    close?.Invoke();
+                    Close();
+                }, () =>
+                {
+                    register?.Invoke();
+                    close?.Invoke();
+                    Close();
+                });
+            detail.Set(item.ItemBase, item.OrderDigest.ItemCount);
+            onClose = close;
+
+            scrollbar.value = 1f;
+            UpdatePosition(target);
+
+            // Game.Game.instance.Agent.BlockIndexSubject.Subscribe((long blockIndex) =>
+            // {
+            //     var isExpired = item.OrderDigest.ExpiredBlockIndex - blockIndex <= 0;
+            //     Model.SubmitButtonEnabled.SetValueAndForceNotify(
+            //         Model.SubmitButtonEnabledFunc.Value.Invoke(Model.ItemInformation.item
+            //             .Value) && !isExpired);
+            // }).AddTo(_disposablesForModel);
+
+            base.Show();
+            StartCoroutine(CoUpdate(sell.gameObject));
+        }
+
+        public void ShowForBuy(RectTransform target,
+            CountableItem item,
+            Func<CountableItem, bool> submitEnabledFunc,
+            string submitText,
+            Action<ItemInformationTooltip> onBuy,
+            Action<ItemInformationTooltip> onClose)
+        {
+            if (item?.ItemBase.Value is null)
+            {
+                return;
+            }
+
+            submitButton.gameObject.SetActive(false);
+            buy.gameObject.SetActive(true);
+            sell.gameObject.SetActive(false);
+            buy.Set(Model.ExpiredBlockIndex.Value, Model.Price.Value,
+                Model.Price.Value <= States.Instance.GoldBalanceState.Gold,
+                () => { }); // todo : 콜백넣어줘야됨
+
+            _disposablesForModel.DisposeAllAndClear();
+            Model.target.Value = target;
+            Model.ItemInformation.item.Value = item;
+            Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
+            Model.SubmitButtonText.Value = submitText;
+            // Show(Model);
+            // itemInformation.SetData(Model.ItemInformation);
+
+            // Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
+            // Model.SubmitButtonText.SubscribeTo(buyButton).AddTo(_disposablesForModel);
+            // Model.SubmitButtonEnabled.Subscribe(buyButton.SetSubmittable)
+            //     .AddTo(_disposablesForModel);
+            // Model.Price.Subscribe(price =>
+            // {
+            //     buyButton.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
+            // }).AddTo(_disposablesForModel);
+
+            Model.OnSubmitClick.Subscribe(onBuy).AddTo(_disposablesForModel);
+            if (onClose != null)
+            {
+                Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
+            }
+
+            Model.ItemInformation.item
+                .Subscribe(value => UpdatePosition(Model.target.Value))
+                .AddTo(_disposablesForModel);
+
+            scrollbar.value = 1f;
+            StartCoroutine(CoUpdate(buy.gameObject));
+            // buyTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
     }
 }

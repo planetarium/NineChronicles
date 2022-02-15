@@ -7509,7 +7509,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -15, y: 2.5}
+  m_AnchoredPosition: {x: -15, y: 5}
   m_SizeDelta: {x: 28, y: 28}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &8206162676037353965
@@ -8431,7 +8431,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7640358342650765785}
   m_Layer: 5
-  m_Name: Limit
+  m_Name: LevelLimit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8590,8 +8590,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 6, y: -22}
-  m_SizeDelta: {x: 0, y: -43}
+  m_AnchoredPosition: {x: 4, y: -39.2}
+  m_SizeDelta: {x: 0, y: -41.100002}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8958129877358215107
 CanvasRenderer:
@@ -8839,7 +8839,7 @@ MonoBehaviour:
   focusObject: {fileID: 5117087550775234120}
   expiredObject: {fileID: 2847014229285217265}
   disableObject: {fileID: 9086740733052354264}
-  limitObject: {fileID: 8315741372232338610}
+  levelLimitObject: {fileID: 8315741372232338610}
   selectObject: {fileID: 7088231090474577018}
   selectEnchantItemObject: {fileID: 1855059774757318264}
   lockObject: {fileID: 3627254525406549401}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Lib9c.Model.Order;
+using Nekoyume.EnumType;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 
