@@ -91,10 +91,6 @@ namespace Nekoyume.Action
 
             var items = equipmentIds.Concat(costumeIds);
             avatarState.EquipItems(items);
-            states.GetSheet<ItemRequirementSheet>();
-            states.GetSheet<EquipmentItemRecipeSheet>();
-            states.GetSheet<EquipmentItemSubRecipeSheetV2>();
-            states.GetSheet<EquipmentItemOptionSheet>();
             avatarState.ValidateItemRequirement(
                 costumeItemIds.ToList(),
                 equipments,
