@@ -38,7 +38,7 @@ namespace Nekoyume.EnumType
 
     public static class ItemSubTypeFilterExtension
     {
-        public static IEnumerable<ItemSubTypeFilter> ItemSubTypeFilters
+        public static IEnumerable<ItemSubTypeFilter> Filters
         {
             get
             {
