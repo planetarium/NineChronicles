@@ -625,7 +625,7 @@ namespace Lib9c.Tests.Action
                     avatarAddress = avatarState.address,
                 };
 
-                Assert.Throws<HighLevelItemRequirementException>(() => action.Execute(new ActionContext
+                Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
                 {
                     PreviousStates = state,
                     Signer = avatarState.agentAddress,

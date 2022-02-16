@@ -518,7 +518,7 @@ namespace Lib9c.Tests.Action
                     equipmentIds = equipments,
                 };
 
-                Assert.Throws<HighLevelItemRequirementException>(() => action.Execute(new ActionContext
+                Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
                 {
                     PreviousStates = state,
                     Signer = _agent1Address,

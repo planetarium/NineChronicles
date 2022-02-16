@@ -862,9 +862,7 @@ namespace Nekoyume.Model.State
 
                 if (level < requirementRow.Level)
                 {
-                    throw new HighLevelItemRequirementException(
-                        $"{addressesHex}avatar level must be higher than requirement level of equipments." +
-                        $"{level} < requirement level({requirementRow.Level})");
+                    throw new NotEnoughAvatarLevelException(id, false, requirementRow.Level, level);
                 }
             }
 
@@ -875,18 +873,17 @@ namespace Nekoyume.Model.State
                     throw new SheetRowNotFoundException(addressesHex, nameof(ItemRequirementSheet), equipment.Id);
                 }
 
-                var requirementLevel = equipment.IsMadeWithMimisbrunnrRecipe(
+                var isMadeWithMimisbrunnrRecipe = equipment.IsMadeWithMimisbrunnrRecipe(
                     recipeSheet,
                     subRecipeSheet,
                     itemOptionSheet
-                )
+                );
+                var requirementLevel = isMadeWithMimisbrunnrRecipe
                     ? requirementRow.MimisLevel
                     : requirementRow.Level;
                 if (level < requirementLevel)
                 {
-                    throw new HighLevelItemRequirementException(
-                        $"{addressesHex}avatar level must be higher than requirement level of equipments." +
-                        $"{level} < requirement level({requirementRow.Level})");
+                    throw new NotEnoughAvatarLevelException(equipment.Id, isMadeWithMimisbrunnrRecipe, requirementRow.Level, level);
                 }
             }
         }

@@ -903,14 +903,14 @@ namespace Lib9c.Tests.Action
                     avatarAddress = avatarState.address,
                 };
 
-                var exec = Assert.Throws<HighLevelItemRequirementException>(() => action.Execute(new ActionContext()
+                var exec = Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext()
                 {
                     PreviousStates = state,
                     Signer = avatarState.agentAddress,
                     Random = random,
                 }));
 
-                SerializeException<HighLevelItemRequirementException>(exec);
+                SerializeException<NotEnoughAvatarLevelException>(exec);
             }
         }
 
