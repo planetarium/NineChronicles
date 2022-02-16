@@ -102,14 +102,12 @@ namespace Nekoyume.Model.Stat
         public CharacterStats SetAll(
             int level,
             IEnumerable<Equipment> equipments,
-            IEnumerable<Costume> costumes,
             IEnumerable<Consumable> consumables,
-            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
-            CostumeStatSheet costumeStatSheet)
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
+        )
         {
             SetLevel(level, false);
             SetEquipments(equipments, equipmentItemSetEffectSheet, false);
-            SetCostumes(costumes, costumeStatSheet);
             SetConsumables(consumables, false);
             UpdateLevelStats();
             EqualizeCurrentHPWithHP();
@@ -139,7 +137,7 @@ namespace Nekoyume.Model.Stat
         }
 
         /// <summary>
-        /// 장비들을 바탕으로 장비 스탯을 재설정한다. 또한 소모품 스탯과 버프 스탯을 다시 계산한다.
+        /// 장비들을 바탕으로 장비 스탯을 재설정한다. 또한 소모품 스탯과 버프 스탯을 다시 계산한다. 
         /// </summary>
         /// <param name="value"></param>
         /// <param name="updateImmediate"></param>
@@ -321,20 +319,6 @@ namespace Nekoyume.Model.Stat
         {
             _optionalStatModifiers.AddRange(statModifiers);
             UpdateOptionalStats();
-        }
-
-        private void SetCostumes(IEnumerable<Costume> costumes, CostumeStatSheet costumeStatSheet)
-        {
-            var statModifiers = new List<StatModifier>();
-            foreach (var costume in costumes)
-            {
-                var stat = costumeStatSheet.OrderedList
-                    .Where(r => r.CostumeId == costume.Id)
-                    .Select(row => new StatModifier(row.StatType, StatModifier.OperationType.Add,
-                        (int)row.Stat));
-                statModifiers.AddRange(stat);
-            }
-            SetOption(statModifiers);
         }
 
         public void SetOption(IEnumerable<StatModifier> statModifiers)
