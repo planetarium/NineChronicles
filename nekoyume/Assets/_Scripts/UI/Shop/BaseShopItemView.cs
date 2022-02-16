@@ -56,6 +56,7 @@ namespace Nekoyume.UI.Module
 
         protected abstract void OnAwake();
         protected abstract void OnClickItem(ShopItemViewModel item);
+        protected abstract void Reset();
 
         protected abstract IEnumerable<ShopItemViewModel> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItemViewModel>> items);
@@ -63,6 +64,7 @@ namespace Nekoyume.UI.Module
         public void Show(ReactiveProperty<List<OrderDigest>> digests,
             Action<ShopItemViewModel, RectTransform> clickItem)
         {
+            Reset();
             InstantiateItemView();
             SetAction(clickItem);
             Set(digests);
@@ -82,12 +84,12 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            OnAwake();
-
             foreach (var filter in ItemSubTypeFilterExtension.Filters)
             {
                 _items.Add(filter, new List<ShopItemViewModel>());
             }
+
+            OnAwake();
 
             nextPageButton.onClick.AddListener(() =>
             {

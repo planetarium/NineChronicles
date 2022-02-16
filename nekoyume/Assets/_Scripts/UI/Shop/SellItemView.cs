@@ -21,8 +21,13 @@ namespace Nekoyume
         private TMP_Dropdown sortFilter = null;
 
         private ShopItemViewModel _selectedModel;
-        private ItemSubTypeFilter _activeSubTypeFilter = ItemSubTypeFilter.All;
-        private ShopSortFilter _activeSortFilter = ShopSortFilter.Class;
+
+        // search condition
+        private readonly ReactiveProperty<ItemSubTypeFilter> _selectedSubTypeFilter =
+            new ReactiveProperty<ItemSubTypeFilter>(ItemSubTypeFilter.All);
+
+        private readonly ReactiveProperty<ShopSortFilter> _selectedSortFilter =
+            new ReactiveProperty<ShopSortFilter>(ShopSortFilter.Class);
 
         public void ClearSelectedItem()
         {
@@ -33,8 +38,7 @@ namespace Nekoyume
         protected override void OnAwake()
         {
             itemSubTypeFilter.AddOptions(ItemSubTypeFilterExtension.Filters
-                .Select(type => type.TypeToString(true))
-                .ToList());
+                .Select(type => type.TypeToString(true)).ToList());
             itemSubTypeFilter.onValueChanged.AsObservable()
                 .Select(index =>
                 {
@@ -47,16 +51,10 @@ namespace Nekoyume
                         return ItemSubTypeFilter.All;
                     }
                 })
-                .Subscribe(filter =>
-                {
-                    _activeSubTypeFilter = filter;
-                    UpdateView();
-                })
-                .AddTo(gameObject);
+                .Subscribe(filter => _selectedSubTypeFilter.Value = filter).AddTo(gameObject);
 
             sortFilter.AddOptions(ShopSortFilterExtension.ShopSortFilters
-                .Select(type => L10nManager.Localize($"UI_{type.ToString().ToUpper()}"))
-                .ToList());
+                .Select(type => L10nManager.Localize($"UI_{type.ToString().ToUpper()}")).ToList());
             sortFilter.onValueChanged.AsObservable()
                 .Select(index =>
                 {
@@ -69,12 +67,10 @@ namespace Nekoyume
                         return ShopSortFilter.Class;
                     }
                 })
-                .Subscribe(filter =>
-                {
-                    _activeSortFilter = filter;
-                    UpdateView();
-                })
-                .AddTo(gameObject);
+                .Subscribe(filter => _selectedSortFilter.Value = filter).AddTo(gameObject);
+
+            _selectedSubTypeFilter.Subscribe(_ => UpdateView()).AddTo(gameObject);
+            _selectedSortFilter.Subscribe(_ => UpdateView()).AddTo(gameObject);
         }
 
         protected override void OnClickItem(ShopItemViewModel item)
@@ -103,11 +99,20 @@ namespace Nekoyume
             }
         }
 
+        protected override void Reset()
+        {
+            itemSubTypeFilter.SetValueWithoutNotify(0);
+            sortFilter.SetValueWithoutNotify(0);
+            _selectedSubTypeFilter.Value = ItemSubTypeFilter.All;
+            _selectedSortFilter.Value = ShopSortFilter.Class;
+            _selectedModel = null;
+        }
+
         protected override IEnumerable<ShopItemViewModel> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItemViewModel>> items)
         {
-            var models = items[_activeSubTypeFilter];
-            return _activeSortFilter switch
+            var models = items[_selectedSubTypeFilter.Value];
+            return _selectedSortFilter.Value switch
             {
                 ShopSortFilter.CP => models.OrderByDescending(x => x.OrderDigest.CombatPoint)
                     .ToList(),
