@@ -16,6 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100096ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle7")]
     public class MimisbrunnrBattle7 : GameAction
     {

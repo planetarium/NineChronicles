@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class MimisbrunnrBattleTest
+    public class MimisbrunnrBattle8Test
     {
         private readonly TableSheets _tableSheets;
 
@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
 
         private readonly IAccountStateDelta _initialState;
 
-        public MimisbrunnrBattleTest()
+        public MimisbrunnrBattle8Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -169,7 +169,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, previousAvatarState.SerializeV2());
             }
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = equipments,
@@ -242,7 +242,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid> { costume.ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
@@ -268,7 +268,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -292,7 +292,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFound()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -316,7 +316,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowColumn()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -355,7 +355,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 _tableSheets.WorldUnlockSheet);
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -441,7 +441,7 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
@@ -480,7 +480,7 @@ namespace Lib9c.Tests.Action
             avatarState.worldInformation = new WorldInformation(0, worldSheet, alreadyClearedStageId);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -524,7 +524,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
@@ -542,96 +542,6 @@ namespace Lib9c.Tests.Action
                 Rehearsal = false,
                 Random = new TestRandom(),
             });
-        }
-
-        [Theory]
-        [InlineData(15)]
-        [InlineData(30)]
-        [InlineData(50)]
-        [InlineData(75)]
-        [InlineData(100)]
-        [InlineData(120)]
-        [InlineData(150)]
-        [InlineData(200)]
-        public void ExecuteThrowHighLevelItemRequirementException(int avatarLevel)
-        {
-            var state = _initialState;
-            var avatarState = state.GetAvatarState(_avatarAddress);
-            avatarState.actionPoint = 99999999;
-            avatarState.level = avatarLevel;
-
-            avatarState.worldInformation = new WorldInformation(
-                0,
-                _tableSheets.WorldSheet,
-                100
-            );
-
-            avatarState.worldInformation.ClearStage(
-                2,
-                100,
-                0,
-                _tableSheets.WorldSheet,
-                _tableSheets.WorldUnlockSheet);
-
-            state = state.SetState(
-                avatarState.address.Derive(LegacyWorldInformationKey),
-                avatarState.worldInformation.Serialize());
-
-            foreach (var requirementRow in _tableSheets.ItemRequirementSheet)
-            {
-                if (avatarState.level >= requirementRow.Level)
-                {
-                    continue;
-                }
-
-                var costumes = new List<Guid>();
-                var equipments = new List<Guid>();
-                var random = new TestRandom(DateTimeOffset.Now.Millisecond);
-                if (_tableSheets.EquipmentItemSheet.TryGetValue(requirementRow.ItemId, out var row))
-                {
-                    var equipment = ItemFactory.CreateItem(row, random);
-                    avatarState.inventory.AddItem(equipment);
-
-                    if (equipment.ElementalType != ElementalType.Fire)
-                    {
-                        continue;
-                    }
-                }
-                else if (_tableSheets.CostumeItemSheet.TryGetValue(requirementRow.ItemId, out var row2))
-                {
-                    var costume = ItemFactory.CreateItem(row2, random);
-                    avatarState.inventory.AddItem(costume);
-                    costumes.Add(((INonFungibleItem)costume).NonFungibleId);
-                }
-
-                if (!equipments.Any())
-                {
-                    continue;
-                }
-
-                state = state.SetState(avatarState.address, avatarState.SerializeV2())
-                    .SetState(
-                        avatarState.address.Derive(LegacyInventoryKey),
-                        avatarState.inventory.Serialize());
-
-                var action = new MimisbrunnrBattle
-                {
-                    costumes = costumes,
-                    equipments = equipments,
-                    foods = new List<Guid>(),
-                    worldId = GameConfig.MimisbrunnrWorldId,
-                    stageId = GameConfig.MimisbrunnrStartStageId,
-                    playCount = 1,
-                    avatarAddress = avatarState.address,
-                };
-
-                Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
-                {
-                    PreviousStates = state,
-                    Signer = avatarState.agentAddress,
-                    Random = random,
-                }));
-            }
         }
 
         [Theory]
@@ -734,7 +644,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
             }
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = costumes,
                 equipments = equipments,
@@ -776,7 +686,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
