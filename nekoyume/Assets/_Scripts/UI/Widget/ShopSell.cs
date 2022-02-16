@@ -127,7 +127,7 @@ namespace Nekoyume.UI
             UpdateSpeechBubble();
             ReactiveShopState.UpdateSellDigests();
             inventory.SetShop(ShowItemTooltip);
-            itemView.SetSell(ShowSellTooltip);
+            itemView.Show(ReactiveShopState.SellDigest, ShowSellTooltip);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
