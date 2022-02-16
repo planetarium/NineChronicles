@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\.Libplanet\Libplanet.Net\Libplanet.Net.csproj" />
+    <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" />
     <ProjectReference Include="..\.Libplanet\Libplanet.Analyzers\Libplanet.Analyzers.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <OutputItemType>Analyzer</OutputItemType>
