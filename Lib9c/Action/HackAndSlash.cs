@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -15,7 +15,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash11")]
+    [ActionType("hack_and_slash12")]
     public class HackAndSlash : GameAction
     {
         public List<Guid> costumes;
@@ -136,9 +136,9 @@ namespace Nekoyume.Action
                 throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
             }
 
-            avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            avatarState.ValidateConsumable(foods, context.BlockIndex);
-            avatarState.ValidateCostume(costumes);
+            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
+            var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
+            var costumeIds = avatarState.ValidateCostume(costumes);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Validate: {Elapsed}", addressesHex, sw.Elapsed);
@@ -164,10 +164,18 @@ namespace Nekoyume.Action
                 );
             }
 
-            avatarState.actionPoint -= totalCostActionPoint;
-
             var items = equipments.Concat(costumes);
             avatarState.EquipItems(items);
+            avatarState.ValidateItemRequirement(
+                costumeIds.Concat(foodIds).ToList(),
+                equipmentList,
+                states.GetSheet<ItemRequirementSheet>(),
+                states.GetSheet<EquipmentItemRecipeSheet>(),
+                states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                states.GetSheet<EquipmentItemOptionSheet>(),
+                addressesHex);
+
+            avatarState.actionPoint -= totalCostActionPoint;
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();

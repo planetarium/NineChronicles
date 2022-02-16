@@ -17,8 +17,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle11")]
-    public class RankingBattle : GameAction
+    [ActionType("ranking_battle10")]
+    public class RankingBattle10 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
@@ -82,23 +82,16 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var equipments = avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
-            var costumeItemIds = avatarState.ValidateCostume(costumeIds);
+            var items = equipmentIds.Concat(costumeIds);
+
+            avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
+            avatarState.ValidateCostume(costumeIds);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Validate Equipments: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var items = equipmentIds.Concat(costumeIds);
             avatarState.EquipItems(items);
-            avatarState.ValidateItemRequirement(
-                costumeItemIds.ToList(),
-                equipments,
-                states.GetSheet<ItemRequirementSheet>(),
-                states.GetSheet<EquipmentItemRecipeSheet>(),
-                states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
-                states.GetSheet<EquipmentItemOptionSheet>(),
-                addressesHex);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Equip Equipments: {Elapsed}", addressesHex, sw.Elapsed);

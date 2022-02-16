@@ -16,8 +16,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("mimisbrunnr_battle9")]
-    public class MimisbrunnrBattle : GameAction
+    [ActionType("mimisbrunnr_battle8")]
+    public class MimisbrunnrBattle8 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -172,9 +172,9 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Check Equipments ElementalType: {Elapsed}", addressesHex, sw.Elapsed);
 
-            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
-            var costumeIds = avatarState.ValidateCostume(costumes);
+            avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
+            avatarState.ValidateConsumable(foods, context.BlockIndex);
+            avatarState.ValidateCostume(costumes);
 
             sw.Restart();
 
@@ -192,20 +192,11 @@ namespace Nekoyume.Action
                     $"{avatarState.actionPoint} < totalAP({totalCostActionPoint}) = cost({stageRow.CostAP}) * boostCount({playCount})"
                 );
             }
-
-            var equippableItem = costumes.Concat(equipments);
-            avatarState.EquipItems(equippableItem);
-            var requirementSheet = states.GetSheet<ItemRequirementSheet>();
-            avatarState.ValidateItemRequirement(
-                costumeIds.Concat(foodIds).ToList(),
-                equipmentList,
-                requirementSheet,
-                states.GetSheet<EquipmentItemRecipeSheet>(),
-                states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
-                states.GetSheet<EquipmentItemOptionSheet>(),
-                addressesHex);
-
             avatarState.actionPoint -= totalCostActionPoint;
+            var equippableItem = new List<Guid>();
+            equippableItem.AddRange(costumes);
+            equippableItem.AddRange(equipments);
+            avatarState.EquipItems(equippableItem);
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 
