@@ -35,7 +35,9 @@ namespace Nekoyume
             _selectedModel = null;
         }
 
-        protected override void OnAwake()
+        protected override void OnAwake() { }
+
+        protected override void InitInteractiveUI()
         {
             itemSubTypeFilter.AddOptions(ItemSubTypeFilterExtension.Filters
                 .Select(type => type.TypeToString(true)).ToList());
@@ -68,7 +70,10 @@ namespace Nekoyume
                     }
                 })
                 .Subscribe(filter => _selectedSortFilter.Value = filter).AddTo(gameObject);
+        }
 
+        protected override void SubscribeToSearchConditions()
+        {
             _selectedSubTypeFilter.Subscribe(_ => UpdateView()).AddTo(gameObject);
             _selectedSortFilter.Subscribe(_ => UpdateView()).AddTo(gameObject);
         }

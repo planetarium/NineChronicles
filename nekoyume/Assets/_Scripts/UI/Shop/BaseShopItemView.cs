@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
 {
     using UniRx;
 
-    public abstract class BaseShopItemView : MonoBehaviour
+    public abstract class BaseShopItemView : MonoBehaviour, IShopItemView
     {
         [SerializeField]
         protected Button nextPageButton;
@@ -53,8 +53,9 @@ namespace Nekoyume.UI.Module
         private int _pageCount = 1;
 
         protected Action<ShopItemViewModel, RectTransform> ClickItemAction;
-
         protected abstract void OnAwake();
+        protected abstract void InitInteractiveUI();
+        protected abstract void SubscribeToSearchConditions();
         protected abstract void OnClickItem(ShopItemViewModel item);
         protected abstract void Reset();
 
@@ -84,12 +85,15 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
+            OnAwake();
+
             foreach (var filter in ItemSubTypeFilterExtension.Filters)
             {
                 _items.Add(filter, new List<ShopItemViewModel>());
             }
 
-            OnAwake();
+            InitInteractiveUI();
+            SubscribeToSearchConditions();
 
             nextPageButton.onClick.AddListener(() =>
             {
