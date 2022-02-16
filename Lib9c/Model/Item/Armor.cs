@@ -9,7 +9,7 @@ namespace Nekoyume.Model.Item
     public class Armor : Equipment
     {
         public Armor(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex,
-            bool madeWithMimisbrunnrRecipe) : base(data, id, requiredBlockIndex, madeWithMimisbrunnrRecipe)
+            bool madeWithMimisbrunnrRecipe = false) : base(data, id, requiredBlockIndex, madeWithMimisbrunnrRecipe)
         {
         }
 

@@ -9,7 +9,7 @@ namespace Nekoyume.Model.Item
     public class Ring : Equipment
     {
         public Ring(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex,
-            bool madeWithMimisbrunnrRecipe) : base(data, id, requiredBlockIndex,
+            bool madeWithMimisbrunnrRecipe = false) : base(data, id, requiredBlockIndex,
             madeWithMimisbrunnrRecipe)
         {
         }

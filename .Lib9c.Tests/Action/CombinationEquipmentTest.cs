@@ -173,13 +173,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 375)]
-        [InlineData(2, 3)]
-        [InlineData(3, 6)]
-        [InlineData(5, 12)]
-        [InlineData(10, 24)]
-        [InlineData(20, 48)]
-        public void MadeWithMimisbrunnrRecipe(int recipeId, int? subRecipeId)
+        [InlineData(1, 375, true)]
+        [InlineData(1, 374, false)]
+        [InlineData(2, 3, true)]
+        [InlineData(2, 2, false)]
+        [InlineData(3, 6, true)]
+        [InlineData(3, 5, false)]
+        public void MadeWithMimisbrunnrRecipe(int recipeId, int? subRecipeId, bool isMadeWithMimisbrunnrRecipe)
         {
             var currency = new Currency("NCG", 2, minter: null);
             var row = _tableSheets.EquipmentItemRecipeSheet[recipeId];
@@ -236,8 +236,8 @@ namespace Lib9c.Tests.Action
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
             Assert.NotNull(slotState.Result);
             Assert.NotNull(slotState.Result.itemUsable);
-            Assert.True(((Equipment)slotState.Result.itemUsable).MadeWithMimisbrunnrRecipe);
-            Assert.True(((Equipment)slotState.Result.itemUsable).IsMadeWithMimisbrunnrRecipe(
+            Assert.Equal(isMadeWithMimisbrunnrRecipe, ((Equipment)slotState.Result.itemUsable).MadeWithMimisbrunnrRecipe);
+            Assert.Equal(isMadeWithMimisbrunnrRecipe, ((Equipment)slotState.Result.itemUsable).IsMadeWithMimisbrunnrRecipe(
                 _tableSheets.EquipmentItemRecipeSheet,
                 _tableSheets.EquipmentItemSubRecipeSheetV2,
                 _tableSheets.EquipmentItemOptionSheet

@@ -263,8 +263,6 @@ namespace Nekoyume.Action
             }
             // ~Transfer Required NCG
 
-            // UnityEngine.Debug.LogError($"recipe id : {recipeRow.Id}, sub id : {subRecipeId ?? -1} sub key : {SubRecipeIdKey}");
-
             // Create Equipment
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
                 equipmentRow,
