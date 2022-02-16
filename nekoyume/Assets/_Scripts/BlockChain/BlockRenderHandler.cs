@@ -33,6 +33,8 @@ namespace Nekoyume.BlockChain
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private BlockRenderer _blockRenderer;
+        private static bool _balanceUpdateRequired = true;
+        private static bool _avatarUpdateRequired = true;
 
         private BlockRenderHandler()
         {
@@ -59,6 +61,14 @@ namespace Nekoyume.BlockChain
             {
                 Debug.Log($"[{nameof(BlockRenderHandler)}] Reorg end");
             }).AddTo(_disposables);
+            if (Game.Game.instance.Agent is RPCAgent rpcAgent)
+            {
+                rpcAgent.OnRetryStarted.Subscribe(_ =>
+                {
+                    _balanceUpdateRequired = true;
+                    _avatarUpdateRequired = true;
+                }).AddTo(_disposables);
+            }
         }
 
         public void Stop()
@@ -75,7 +85,7 @@ namespace Nekoyume.BlockChain
             }
 
             var agentState = States.Instance.AgentState;
-            if (agentState != null)
+            if (agentState != null && _balanceUpdateRequired)
             {
                 var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
                 {
@@ -92,6 +102,7 @@ namespace Nekoyume.BlockChain
                     }
 
                     AgentStateSubject.OnNextGold(value);
+                    _balanceUpdateRequired = false;
                     return (false, null);
                 });
                 if (hasException && !(exception is OperationCanceledException))
@@ -101,7 +112,7 @@ namespace Nekoyume.BlockChain
             }
 
             var currentAvatarState = States.Instance.CurrentAvatarState;
-            if (currentAvatarState != null)
+            if (currentAvatarState != null && _avatarUpdateRequired)
             {
                 var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
                 {
@@ -134,6 +145,7 @@ namespace Nekoyume.BlockChain
                             ? (int)(Bencodex.Types.Integer)dict[LegacyDailyRewardReceivedIndexKey]
                             : 0;
                     ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
+                    _avatarUpdateRequired = false;
                     return (false, null);
                 });
                 if (hasException && !(exception is OperationCanceledException))
