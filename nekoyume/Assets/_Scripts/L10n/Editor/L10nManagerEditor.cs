@@ -153,14 +153,17 @@ namespace Nekoyume.L10n.Editor
         public static void GenerateFontAssetFiles()
         {
             GenerateUnicodeHexRangeFiles();
-            var characterPath = Path.Combine(Application.dataPath, "Font/CharacterFiles");
+            var charactersPath = Path.Combine(Application.dataPath, "Font/CharacterFiles");
             
-            var filePath = Path.Combine(characterPath, $"{LanguageType.English.ToString()}-unicode-hex-range-{1:00}.txt");
-            var unicodeHexes = File.ReadAllLines(filePath);
+            var fontPath = "Assets/Font/TTF/PoorStory-Regular.ttf";
+            var fontAssetPath = "Assets/Resources/Font/SDF/English SDF.asset";
+            var fontAssetPath2 = Path.Combine(Application.dataPath, "Resources/Font/SDF/English SDF.asset");
+            var characterPath = Path.Combine(charactersPath, $"{LanguageType.English.ToString()}-unicode-hex-range-{1:00}.txt");
+            var unicodeHexes = File.ReadAllLines(characterPath);
 
             var settings = new FontAssetCreationSettings
             {
-                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/PoorStory-Regular.ttf"),
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID(fontPath),
                 pointSizeSamplingMode = 1,
                 pointSize = 80,
                 padding = 9,
@@ -168,20 +171,20 @@ namespace Nekoyume.L10n.Editor
                 atlasWidth = 1024,
                 atlasHeight = 1024,
                 characterSetSelectionMode = 6,
-                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/English SDF.asset"),
+                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID(fontAssetPath),
                 characterSequence = unicodeHexes[0],
                 renderMode = (int) GlyphRenderMode.SDFAA,
                 includeFontFeatures = true
             };
 
             var window = EditorWindow.GetWindow<TMPro_FontAssetCreatorWindow>();
-            var generator = new FontAssetGererator(window);
+            var generator = new FontAssetGenerator(window);
         
             generator.GenerateAtlas(settings);
             
-            // Save as [fontAssetPath]
+            generator.SaveFontAssetToSDF(fontAssetPath2);
         }
-        
+
 
         private static void PrepareCharacterFilesDirectory()
         {

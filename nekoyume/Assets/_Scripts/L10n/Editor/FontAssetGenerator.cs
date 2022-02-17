@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿/*
+ * reference: https://gitlab.com/-/snippets/2077829
+ */
+using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
@@ -9,10 +12,11 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore;
 using UnityEngine.TextCore.LowLevel;
+using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.L10n.Editor
 {
-    public class FontAssetGererator
+    public class FontAssetGenerator
     {
         class ProxyList<T>
         {
@@ -483,9 +487,16 @@ namespace Nekoyume.L10n.Editor
             return (FontAssetCreationSettings) saveFontCreationSettings.Invoke(window, new object[0]);
         }
 
+        MethodInfo save_SDF_FontAsset;
+        
+        void Save_SDF_FontAsset(string filePath)
+        {
+            save_SDF_FontAsset.Invoke(window, new object[] {filePath});
+        }
+        
         #endregion
 
-        public FontAssetGererator(TMPro_FontAssetCreatorWindow window)
+        public FontAssetGenerator(TMPro_FontAssetCreatorWindow window)
         {
             this.window = window;
 
@@ -536,6 +547,7 @@ namespace Nekoyume.L10n.Editor
             parseNumberSequence = GetStaticMethod("ParseNumberSequence");
             saveCreationSettingsToEditorPrefs = GetNonStaticMethod("SaveCreationSettingsToEditorPrefs");
             saveFontCreationSettings = GetNonStaticMethod("SaveFontCreationSettings");
+            save_SDF_FontAsset = GetNonStaticMethod("Save_SDF_FontAsset");
 
             tryPackGlyphsInAtlas = typeof(FontEngine)
                 .GetMethod("TryPackGlyphsInAtlas", BindingFlags.Static | BindingFlags.NonPublic);
@@ -1012,6 +1024,30 @@ namespace Nekoyume.L10n.Editor
 
                 SaveCreationSettingsToEditorPrefs(SaveFontCreationSettings());
             }
+        }
+
+        public void SaveFontAssetToSDF(string filePath)
+        {
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                // if(!m_IsRenderingDone) return;
+                if (filePath.Length == 0)
+                {
+                    Debug.LogError("[FontAssetGenerator/SaveFontAssetToSDF] File Path is empty.");
+                    return;
+                }
+
+                if (!(((GlyphRasterModes) m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
+                      GlyphRasterModes.RASTER_MODE_BITMAP))
+                {
+                    Save_SDF_FontAsset(filePath);
+                    Debug.Log("[FontAssetGenerator/SaveFontAssetToSDF] Font Asset has been saved to disk.");
+                }
+                else
+                {
+                    Debug.LogError("[FontAssetGenerator/SaveFontAssetToSDF] Glyph Raster Mode is invalid : It must be SDF.");
+                }
+            });
         }
     }
 }
