@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using TMPro;
+using TMPro.EditorUtilities;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.TextCore.LowLevel;
 
 namespace Nekoyume.L10n.Editor
 {
@@ -145,6 +148,40 @@ namespace Nekoyume.L10n.Editor
                 }
             }
         }
+        
+        [MenuItem("Tools/L10n/Generate Font Asset Files")]
+        public static void GenerateFontAssetFiles()
+        {
+            GenerateUnicodeHexRangeFiles();
+            var characterPath = Path.Combine(Application.dataPath, "Font/CharacterFiles");
+            
+            var filePath = Path.Combine(characterPath, $"{LanguageType.English.ToString()}-unicode-hex-range-{1:00}.txt");
+            var unicodeHexes = File.ReadAllLines(filePath);
+
+            var settings = new FontAssetCreationSettings
+            {
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/PoorStory-Regular.ttf"),
+                pointSizeSamplingMode = 1,
+                pointSize = 80,
+                padding = 9,
+                packingMode = 0,
+                atlasWidth = 1024,
+                atlasHeight = 1024,
+                characterSetSelectionMode = 6,
+                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/English SDF.asset"),
+                characterSequence = unicodeHexes[0],
+                renderMode = (int) GlyphRenderMode.SDFAA,
+                includeFontFeatures = true
+            };
+
+            var window = EditorWindow.GetWindow<TMPro_FontAssetCreatorWindow>();
+            var generator = new FontAssetGererator(window);
+        
+            generator.GenerateAtlas(settings);
+            
+            // Save as [fontAssetPath]
+        }
+        
 
         private static void PrepareCharacterFilesDirectory()
         {
