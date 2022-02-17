@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -33,14 +32,12 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
+        private System.Action _onSubmit;
+        private System.Action _onClose;
+        private System.Action _onBlocked;
+
         private bool _isPointerOnScrollArea;
         private bool _isClickedButtonArea;
-
-        private Model.ItemInformationTooltip Model { get; set; }
-
-        private System.Action onSubmit;
-        private System.Action onClose;
-        private System.Action onBlocked;
 
         protected override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
 
@@ -49,10 +46,11 @@ namespace Nekoyume.UI
             base.Awake();
             submitButton.OnSubmitSubject.Subscribe(_ =>
             {
-                onSubmit?.Invoke();
+                _onSubmit?.Invoke();
                 Close();
             }).AddTo(gameObject);
-            submitButton.OnClickDisabledSubject.Subscribe(_ => onBlocked?.Invoke()).AddTo(gameObject);
+            submitButton.OnClickDisabledSubject.Subscribe(_ => _onBlocked?.Invoke())
+                .AddTo(gameObject);
             CloseWidget = () => Close();
             SubmitWidget = () =>
             {
@@ -60,25 +58,104 @@ namespace Nekoyume.UI
                     return;
 
                 AudioController.PlayClick();
-                onSubmit?.Invoke();
+                _onSubmit?.Invoke();
                 Close();
             };
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            onClose?.Invoke();
+            _onClose?.Invoke();
             _isPointerOnScrollArea = false;
             _isClickedButtonArea = false;
             _disposablesForModel.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
         }
 
+        public void Show(RectTransform target,
+            InventoryItemViewModel item,
+            string submitText,
+            bool interactable,
+            System.Action onSubmit,
+            System.Action onClose = null,
+            System.Action onBlocked = null)
+        {
+            buy.gameObject.SetActive(false);
+            sell.gameObject.SetActive(false);
+            detail.Set(item.ItemBase, item.Count.Value);
+
+            submitButton.gameObject.SetActive(onSubmit != null);
+            submitButton.Interactable = interactable;
+            submitButton.Text = submitText;
+            _onSubmit = onSubmit;
+            _onClose = onClose;
+            _onBlocked = onBlocked;
+
+            scrollbar.value = 1f;
+            UpdatePosition(target);
+            base.Show();
+            StartCoroutine(CoUpdate(submitButton.gameObject));
+        }
+
+        public void Show(RectTransform target,
+            ShopItemViewModel item,
+            System.Action onRegister,
+            System.Action onSellCancellation,
+            System.Action onClose)
+        {
+            submitButton.gameObject.SetActive(false);
+            buy.gameObject.SetActive(false);
+            sell.gameObject.SetActive(true);
+            sell.Set(item.OrderDigest.ExpiredBlockIndex,
+                () =>
+                {
+                    onSellCancellation?.Invoke();
+                    Close();
+                }, () =>
+                {
+                    onRegister?.Invoke();
+                    Close();
+                });
+            detail.Set(item.ItemBase, item.OrderDigest.ItemCount);
+            _onClose = onClose;
+
+            scrollbar.value = 1f;
+            UpdatePosition(target);
+            base.Show();
+            StartCoroutine(CoUpdate(sell.gameObject));
+        }
+
+        public void Show(RectTransform target,
+            ShopItemViewModel item,
+            System.Action onBuy,
+            System.Action onClose)
+        {
+            submitButton.gameObject.SetActive(false);
+            sell.gameObject.SetActive(false);
+            buy.gameObject.SetActive(true);
+            buy.Set(item.OrderDigest.ExpiredBlockIndex,
+                item.OrderDigest.Price,
+                () =>
+                {
+                    onBuy?.Invoke();
+                    Close();
+                });
+
+            detail.Set(item.ItemBase, item.OrderDigest.ItemCount);
+            _onClose = onClose;
+
+            scrollbar.value = 1f;
+            UpdatePosition(target);
+            base.Show();
+            StartCoroutine(CoUpdate(buy.gameObject));
+        }
+
         private void UpdatePosition(RectTransform target)
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
             panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
-            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)verticalLayoutGroup.transform);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(
+                (RectTransform)verticalLayoutGroup.transform);
             panel.MoveToRelatedPosition(target, TargetPivotPresetType, OffsetFromTarget);
             panel.MoveInsideOfParent(MarginFromParent);
 
@@ -146,121 +223,6 @@ namespace Nekoyume.UI
         public void OnEnterButtonArea(bool value)
         {
             _isPointerOnScrollArea = value;
-        }
-
-        public void Show(RectTransform target,
-            InventoryItemViewModel item,
-            string submitText,
-            bool interactable,
-            System.Action submit,
-            System.Action close = null,
-            System.Action blocked = null)
-        {
-            buy.gameObject.SetActive(false);
-            sell.gameObject.SetActive(false);
-            detail.Set(item.ItemBase, item.Count.Value);
-
-            submitButton.gameObject.SetActive(submit != null);
-            submitButton.Interactable = interactable;
-            submitButton.Text = submitText;
-            onSubmit = submit;
-            onClose = close;
-            onBlocked = blocked;
-
-            scrollbar.value = 1f;
-            UpdatePosition(target);
-            base.Show();
-            StartCoroutine(CoUpdate(submitButton.gameObject));
-        }
-
-        public void Show(RectTransform target,
-            ShopItemViewModel item,
-            System.Action register,
-            System.Action sellCancellation,
-            System.Action close = null)
-        {
-            submitButton.gameObject.SetActive(false);
-            buy.gameObject.SetActive(false);
-            sell.gameObject.SetActive(true);
-            sell.Set(item.OrderDigest.ExpiredBlockIndex,
-                () =>
-                {
-                    sellCancellation?.Invoke();
-                    close?.Invoke();
-                    Close();
-                }, () =>
-                {
-                    register?.Invoke();
-                    close?.Invoke();
-                    Close();
-                });
-            detail.Set(item.ItemBase, item.OrderDigest.ItemCount);
-            onClose = close;
-
-            scrollbar.value = 1f;
-            UpdatePosition(target);
-
-            // Game.Game.instance.Agent.BlockIndexSubject.Subscribe((long blockIndex) =>
-            // {
-            //     var isExpired = item.OrderDigest.ExpiredBlockIndex - blockIndex <= 0;
-            //     Model.SubmitButtonEnabled.SetValueAndForceNotify(
-            //         Model.SubmitButtonEnabledFunc.Value.Invoke(Model.ItemInformation.item
-            //             .Value) && !isExpired);
-            // }).AddTo(_disposablesForModel);
-
-            base.Show();
-            StartCoroutine(CoUpdate(sell.gameObject));
-        }
-
-        public void ShowForBuy(RectTransform target,
-            CountableItem item,
-            Func<CountableItem, bool> submitEnabledFunc,
-            string submitText,
-            Action<ItemInformationTooltip> onBuy,
-            Action<ItemInformationTooltip> onClose)
-        {
-            if (item?.ItemBase.Value is null)
-            {
-                return;
-            }
-
-            submitButton.gameObject.SetActive(false);
-            buy.gameObject.SetActive(true);
-            sell.gameObject.SetActive(false);
-            buy.Set(Model.ExpiredBlockIndex.Value, Model.Price.Value,
-                Model.Price.Value <= States.Instance.GoldBalanceState.Gold,
-                () => { }); // todo : 콜백넣어줘야됨
-
-            _disposablesForModel.DisposeAllAndClear();
-            Model.target.Value = target;
-            Model.ItemInformation.item.Value = item;
-            Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
-            Model.SubmitButtonText.Value = submitText;
-            // Show(Model);
-            // itemInformation.SetData(Model.ItemInformation);
-
-            // Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
-            // Model.SubmitButtonText.SubscribeTo(buyButton).AddTo(_disposablesForModel);
-            // Model.SubmitButtonEnabled.Subscribe(buyButton.SetSubmittable)
-            //     .AddTo(_disposablesForModel);
-            // Model.Price.Subscribe(price =>
-            // {
-            //     buyButton.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
-            // }).AddTo(_disposablesForModel);
-
-            Model.OnSubmitClick.Subscribe(onBuy).AddTo(_disposablesForModel);
-            if (onClose != null)
-            {
-                Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
-            }
-
-            Model.ItemInformation.item
-                .Subscribe(value => UpdatePosition(Model.target.Value))
-                .AddTo(_disposablesForModel);
-
-            scrollbar.value = 1f;
-            StartCoroutine(CoUpdate(buy.gameObject));
-            // buyTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
     }
 }
