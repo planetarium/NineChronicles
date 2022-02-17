@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    public interface IShopItemView
+    public interface IShopView
     {
         public void Show(ReactiveProperty<List<OrderDigest>> digests,
             System.Action<ShopItemViewModel, RectTransform> clickItem);

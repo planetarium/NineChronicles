@@ -174,9 +174,9 @@ namespace Nekoyume.UI.Module
             sortFilter.SetValueWithoutNotify(0);
             SharedModel.sortFilter = 0;
 
-            ReactiveShopState.SellDigests
-                .Subscribe(SharedModel.ResetItems)
-                .AddTo(_disposablesAtOnEnable);
+            // ReactiveShopState.SellDigests
+            //     .Subscribe(SharedModel.ResetItems)
+            //     .AddTo(_disposablesAtOnEnable);
         }
 
         public void Close()

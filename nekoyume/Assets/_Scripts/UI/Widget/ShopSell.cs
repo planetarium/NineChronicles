@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using Libplanet.Assets;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -29,7 +30,7 @@ namespace Nekoyume.UI
         private InventoryView inventory;
 
         [SerializeField]
-        private SellItemView itemView;
+        private SellView view;
 
         [SerializeField]
         private SpeechBubble speechBubble = null;
@@ -118,17 +119,31 @@ namespace Nekoyume.UI
             tooltip.Show(target, model,
                 () => ShowUpdateSellPopup(model),
                 () => ShowRetrievePopup(model),
-                itemView.ClearSelectedItem);
+                view.ClearSelectedItem);
         }
 
-        public void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show();
-            UpdateSpeechBubble();
-            ReactiveShopState.UpdateSellDigests();
-            inventory.SetShop(ShowItemTooltip);
-            itemView.Show(ReactiveShopState.SellDigest, ShowSellTooltip);
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+            ShowAsync(ignoreShowAnimation);
+        }
+
+        private async void ShowAsync(bool ignoreShowAnimation = false)
+        {
+            var task = Task.Run(async () =>
+            {
+                await ReactiveShopState.UpdateSellDigests();
+                return true;
+            });
+
+            var result = await task;
+            if (result)
+            {
+                base.Show(ignoreShowAnimation);
+                UpdateSpeechBubble();
+                inventory.SetShop(ShowItemTooltip);
+                view.Show(ReactiveShopState.SellDigest, ShowSellTooltip);
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+            }
         }
 
         private void UpdateSpeechBubble()

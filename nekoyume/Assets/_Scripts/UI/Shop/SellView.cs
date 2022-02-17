@@ -12,7 +12,7 @@ namespace Nekoyume
 {
     using UniRx;
 
-    public class SellItemView : BaseShopItemView
+    public class SellView : ShopView
     {
         [SerializeField]
         private TMP_Dropdown itemSubTypeFilter = null;
@@ -20,7 +20,7 @@ namespace Nekoyume
         [SerializeField]
         private TMP_Dropdown sortFilter = null;
 
-        private ShopItemViewModel _selectedModel;
+        private ShopItemViewModel _selectedItem;
 
         // search condition
         private readonly ReactiveProperty<ItemSubTypeFilter> _selectedSubTypeFilter =
@@ -31,8 +31,8 @@ namespace Nekoyume
 
         public void ClearSelectedItem()
         {
-            _selectedModel?.Selected.SetValueAndForceNotify(false);
-            _selectedModel = null;
+            _selectedItem?.Selected.SetValueAndForceNotify(false);
+            _selectedItem = null;
         }
 
         protected override void OnAwake() { }
@@ -80,26 +80,25 @@ namespace Nekoyume
 
         protected override void OnClickItem(ShopItemViewModel item)
         {
-            if (_selectedModel == null)
+            if (_selectedItem == null)
             {
-                _selectedModel = item;
-                _selectedModel.Selected.SetValueAndForceNotify(true);
-                ClickItemAction?.Invoke(_selectedModel, _selectedModel.View); // Show tooltip popup
+                _selectedItem = item;
+                _selectedItem.Selected.SetValueAndForceNotify(true);
+                ClickItemAction?.Invoke(_selectedItem, _selectedItem.View); // Show tooltip popup
             }
             else
             {
-                if (_selectedModel.Equals(item))
+                if (_selectedItem.Equals(item))
                 {
-                    _selectedModel.Selected.SetValueAndForceNotify(false);
-                    _selectedModel = null;
+                    _selectedItem.Selected.SetValueAndForceNotify(false);
+                    _selectedItem = null;
                 }
                 else
                 {
-                    _selectedModel.Selected.SetValueAndForceNotify(false);
-                    _selectedModel = item;
-                    _selectedModel.Selected.SetValueAndForceNotify(true);
-                    ClickItemAction?.Invoke(_selectedModel,
-                        _selectedModel.View); // Show tooltip popup
+                    _selectedItem.Selected.SetValueAndForceNotify(false);
+                    _selectedItem = item;
+                    _selectedItem.Selected.SetValueAndForceNotify(true);
+                    ClickItemAction?.Invoke(_selectedItem, _selectedItem.View); // Show tooltip popup
                 }
             }
         }
@@ -110,7 +109,7 @@ namespace Nekoyume
             sortFilter.SetValueWithoutNotify(0);
             _selectedSubTypeFilter.Value = ItemSubTypeFilter.All;
             _selectedSortFilter.Value = ShopSortFilter.Class;
-            _selectedModel = null;
+            _selectedItem = null;
         }
 
         protected override IEnumerable<ShopItemViewModel> GetSortedModels(

@@ -58,7 +58,7 @@ namespace Nekoyume
         private GameObject equippedObject;
 
         [SerializeField]
-        private TouchHandler minusTouchHandler;
+        private GameObject minusObject;
 
         [SerializeField]
         private GameObject focusObject;
@@ -97,7 +97,7 @@ namespace Nekoyume
         public ItemOptionTag OptionTag => optionTag;
         public GameObject NotificationObject => notificationObject;
         public GameObject EquippedObject => equippedObject;
-        public TouchHandler MinusTouchHandler => minusTouchHandler;
+        public GameObject MinusObject => minusObject;
         public GameObject FocusObject => focusObject;
         public GameObject ExpiredObject => expiredObject;
         public GameObject DisableObject => disableObject;

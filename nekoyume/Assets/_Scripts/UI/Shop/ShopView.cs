@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading;
 using Lib9c.Model.Order;
 using Nekoyume.EnumType;
 using Nekoyume.Helper;
@@ -17,7 +18,7 @@ namespace Nekoyume.UI.Module
 {
     using UniRx;
 
-    public abstract class BaseShopItemView : MonoBehaviour, IShopItemView
+    public abstract class ShopView : MonoBehaviour, IShopView
     {
         [SerializeField]
         protected Button nextPageButton;
@@ -48,6 +49,7 @@ namespace Nekoyume.UI.Module
         private readonly ReactiveProperty<int> _page = new ReactiveProperty<int>();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
+        private Thread _mainThread = Thread.CurrentThread;
         private int _column = 0;
         private int _row = 0;
         private int _pageCount = 1;
@@ -62,17 +64,7 @@ namespace Nekoyume.UI.Module
         protected abstract IEnumerable<ShopItemViewModel> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItemViewModel>> items);
 
-        public void Show(ReactiveProperty<List<OrderDigest>> digests,
-            Action<ShopItemViewModel, RectTransform> clickItem)
-        {
-            Reset();
-            InstantiateItemView();
-            SetAction(clickItem);
-            Set(digests);
-            UpdateView();
-        }
-
-        protected void UpdateView()
+        protected virtual void UpdateView()
         {
             _selectedModels.Clear();
             _selectedModels.AddRange(GetSortedModels(_items));
@@ -81,6 +73,16 @@ namespace Nekoyume.UI.Module
                 : 1;
             _page.SetValueAndForceNotify(0);
             UpdateExpired(Game.Game.instance.Agent.BlockIndex);
+        }
+
+        public void Show(ReactiveProperty<List<OrderDigest>> digests,
+            Action<ShopItemViewModel, RectTransform> clickItem)
+        {
+            Reset();
+            InstantiateItemView();
+            SetAction(clickItem);
+            Set(digests);
+            UpdateView();
         }
 
         private void Awake()
@@ -106,10 +108,16 @@ namespace Nekoyume.UI.Module
             });
 
             _page.Subscribe(UpdatePage).AddTo(gameObject);
+            _mainThread = Thread.CurrentThread;
         }
 
         private void UpdatePage(int page)
         {
+            if(!_mainThread.Equals(Thread.CurrentThread))
+            {
+                return;
+            }
+
             var index = page * _itemViews.Count();
             foreach (var view in _itemViews)
             {
