@@ -156,7 +156,7 @@ namespace Nekoyume.UI.Module
             {
                 unlockConditionText.text = string.Format(
                     L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                    unlockStage.ToString());
+                    unlockStage != 999 ? unlockStage.ToString() : "???");
                 unlockConditionText.enabled = true;
                 equipmentView.Hide();
                 IsLocked = true;
