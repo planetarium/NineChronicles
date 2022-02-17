@@ -264,8 +264,8 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (skillName, power, chance) = skillOptions[i];
-                optionView.UpdateAsSkill(skillName, power, chance);
+                var (skillRow, power, chance) = skillOptions[i];
+                optionView.UpdateAsSkill(skillRow.GetLocalizedName(), power, chance);
             }
 
             if (itemUsable.ItemType == ItemType.Equipment)

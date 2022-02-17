@@ -528,7 +528,7 @@ namespace Nekoyume.UI
             for (var i = 0; i < skills.Count; i++)
             {
                 skillViews[i].gameObject.SetActive(true);
-                var skillName = skills[i].name;
+                var skillName = skills[i].skillRow.GetLocalizedName();
                 var power = skills[i].power;
                 var chance = skills[i].chance;
 

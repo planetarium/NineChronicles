@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
 {
     using UniRx;
 
-    public abstract class BaseShopItemView : MonoBehaviour
+    public abstract class BaseShopItemView : MonoBehaviour, IShopItemView
     {
         [SerializeField]
         protected Button nextPageButton;
@@ -53,9 +53,11 @@ namespace Nekoyume.UI.Module
         private int _pageCount = 1;
 
         protected Action<ShopItemViewModel, RectTransform> ClickItemAction;
-
         protected abstract void OnAwake();
+        protected abstract void InitInteractiveUI();
+        protected abstract void SubscribeToSearchConditions();
         protected abstract void OnClickItem(ShopItemViewModel item);
+        protected abstract void Reset();
 
         protected abstract IEnumerable<ShopItemViewModel> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItemViewModel>> items);
@@ -63,6 +65,7 @@ namespace Nekoyume.UI.Module
         public void Show(ReactiveProperty<List<OrderDigest>> digests,
             Action<ShopItemViewModel, RectTransform> clickItem)
         {
+            Reset();
             InstantiateItemView();
             SetAction(clickItem);
             Set(digests);
@@ -88,6 +91,9 @@ namespace Nekoyume.UI.Module
             {
                 _items.Add(filter, new List<ShopItemViewModel>());
             }
+
+            InitInteractiveUI();
+            SubscribeToSearchConditions();
 
             nextPageButton.onClick.AddListener(() =>
             {

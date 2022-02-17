@@ -192,7 +192,9 @@ namespace Nekoyume.UI
 
             var statOptionRows = ItemOptionHelper.GetStatOptionRows(
                 resultModel.subRecipeId.Value,
-                resultModel.itemUsable);
+                resultModel.itemUsable,
+                Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2,
+                Game.Game.instance.TableSheets.EquipmentItemOptionSheet);
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
                 var optionView = information.StatOptions[i];
@@ -232,8 +234,8 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (skillName, _, _) = itemOptionInfo.SkillOptions[i];
-                optionView.UpdateView(skillName, string.Empty);
+                var (skillRow, _, _) = itemOptionInfo.SkillOptions[i];
+                optionView.UpdateView(skillRow.GetLocalizedName(), string.Empty);
                 optionView.Show();
             }
         }
