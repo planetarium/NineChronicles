@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Nekoyume;
     using Nekoyume.Model.Elemental;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Stat;
@@ -10,6 +11,20 @@ namespace Lib9c.Tests.Action
 
     public static class Doomfist
     {
+        public static readonly (int equipmentSlotLevel, ItemSubType itemSubType)[]
+            OrderedEquipmentSlotLevelAndItemSubType
+                =
+                new (int equipmentSlotLevel, ItemSubType itemSubType)[]
+                    {
+                        (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor, ItemSubType.Armor),
+                        (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt, ItemSubType.Belt),
+                        (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace, ItemSubType.Necklace),
+                        (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1, ItemSubType.Ring),
+                        (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2, ItemSubType.Ring),
+                        (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon, ItemSubType.Weapon),
+                    }.OrderBy(tuple => tuple.equipmentSlotLevel)
+                    .ToArray();
+
         public static Equipment GetOne(
             TableSheets tableSheets,
             int avatarLevel = 1,
@@ -56,13 +71,24 @@ namespace Lib9c.Tests.Action
         public static List<Equipment> GetAllParts(
             TableSheets tableSheets,
             int avatarLevel = 1,
-            ElementalType? elementalType = null) => new List<Equipment>
+            ElementalType? elementalType = null,
+            int? totalCount = null)
         {
-            GetOne(tableSheets, avatarLevel, ItemSubType.Armor, elementalType),
-            GetOne(tableSheets, avatarLevel, ItemSubType.Belt, elementalType),
-            GetOne(tableSheets, avatarLevel, ItemSubType.Necklace, elementalType),
-            GetOne(tableSheets, avatarLevel, ItemSubType.Ring, elementalType),
-            GetOne(tableSheets, avatarLevel, ItemSubType.Weapon, elementalType),
-        };
+            var result = new List<Equipment>();
+            var tuples = OrderedEquipmentSlotLevelAndItemSubType;
+            var count = totalCount.HasValue ? Math.Min(totalCount.Value, tuples.Length) : tuples.Length;
+            for (var i = 0; i < count; i++)
+            {
+                var (equipmentSlotLevel, itemSubType) = tuples[i];
+                if (avatarLevel < equipmentSlotLevel)
+                {
+                    break;
+                }
+
+                result.Add(GetOne(tableSheets, avatarLevel, itemSubType, elementalType));
+            }
+
+            return result;
+        }
     }
 }

@@ -106,7 +106,7 @@ namespace Lib9c.Tests.Action
         [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, 1, true, false, false)]
         [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, 1, false, false, false)]
         [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, 1, true, false, false)]
-        public void Execute(int avatarLevel, int worldId, int stageId, int playCount, bool backward, bool isLock, bool isClearedBefore)
+        public void Execute(int avatarLevel, int worldId, int stageId, int playCount, bool backward, bool isWeaponLock, bool isClearedBefore)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -123,7 +123,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 clearedStageId);
 
-            List<Guid> costumes = new List<Guid>();
+            var costumes = new List<Guid>();
             IRandom random = new TestRandom();
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot)
             {
@@ -139,31 +139,13 @@ namespace Lib9c.Tests.Action
                 costumes.Add(costume.ItemId);
             }
 
-            var equipments = new List<Guid>();
-            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon)
+            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
+            foreach (var equipment in equipments)
             {
-                var weapon = Doomfist.GetOne(_tableSheets, _avatarState.level, ItemSubType.Weapon);
-                equipments.Add(weapon.ItemId);
-                OrderLock? orderLock = null;
-                if (isLock)
-                {
-                    orderLock = new OrderLock(Guid.NewGuid());
-                }
-
-                previousAvatarState.inventory.AddItem(weapon, iLock: orderLock);
-            }
-
-            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor)
-            {
-                var armorEnumerable = _tableSheets
-                    .EquipmentItemSheet
-                    .Values
-                    .Where(r => r.ItemSubType == ItemSubType.Armor)
-                    .OrderBy(r => r.Stat.ValueAsInt);
-
-                var armor = Doomfist.GetOne(_tableSheets, _avatarState.level, ItemSubType.Armor);
-                equipments.Add(armor.ItemId);
-                previousAvatarState.inventory.AddItem(armor);
+                var iLock = equipment.ItemSubType == ItemSubType.Weapon && isWeaponLock
+                    ? new OrderLock(Guid.NewGuid())
+                    : (ILock)null;
+                previousAvatarState.inventory.AddItem(equipment, iLock: iLock);
             }
 
             var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
@@ -200,7 +182,7 @@ namespace Lib9c.Tests.Action
             var action = new HackAndSlash
             {
                 costumes = costumes,
-                equipments = equipments,
+                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
@@ -221,7 +203,7 @@ namespace Lib9c.Tests.Action
 
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
-            Assert.Equal(!isLock, nextAvatarState.inventory.Equipments.OfType<Weapon>().Any(w => w.equipped));
+            Assert.Equal(!isWeaponLock, nextAvatarState.inventory.Equipments.OfType<Weapon>().Any(w => w.equipped));
         }
 
         [Theory]
