@@ -154,36 +154,130 @@ namespace Nekoyume.L10n.Editor
         {
             GenerateUnicodeHexRangeFiles();
             var charactersPath = Path.Combine(Application.dataPath, "Font/CharacterFiles");
+            var window = EditorWindow.GetWindow<TMPro_FontAssetCreatorWindow>();
             
-            var fontPath = "Assets/Font/TTF/PoorStory-Regular.ttf";
-            var fontAssetPath = "Assets/Resources/Font/SDF/English SDF.asset";
-            var fontAssetPath2 = Path.Combine(Application.dataPath, "Resources/Font/SDF/English SDF.asset");
-            var characterPath = Path.Combine(charactersPath, $"{LanguageType.English.ToString()}-unicode-hex-range-{1:00}.txt");
+            var languageTypes = Enum.GetValues(typeof(LanguageType)).OfType<LanguageType>();
+            var languageType = languageTypes.First();
+            
+            var settings = DefaultSettings[(int) languageType];
+            var characterPath = Path.Combine(charactersPath, $"{languageType.ToString()}-unicode-hex-range-{1:00}.txt");
             var unicodeHexes = File.ReadAllLines(characterPath);
-
-            var settings = new FontAssetCreationSettings
+            settings.characterSequence = unicodeHexes[0];
+            var fontAssetFullPath = Path.GetFullPath(AssetDatabase.GUIDToAssetPath(settings.referencedFontAssetGUID));
+            
+            var generator = new FontAssetGenerator(window);
+            generator.GenerateAtlas(settings);
+            generator.SaveFontAssetToSDF(fontAssetFullPath);
+        }
+        
+        public static readonly FontAssetCreationSettings[] DefaultSettings = new FontAssetCreationSettings[]
+        {
+            new FontAssetCreationSettings  // English
             {
-                sourceFontFileGUID = AssetDatabase.AssetPathToGUID(fontPath),
-                pointSizeSamplingMode = 1,
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/PoorStory-Regular.ttf"),
+                pointSizeSamplingMode = 1,  // 0: Auto, 1: Custom
                 pointSize = 80,
                 padding = 9,
-                packingMode = 0,
+                packingMode = 0,  // 0: Fast, 4: Optimum
                 atlasWidth = 1024,
                 atlasHeight = 1024,
-                characterSetSelectionMode = 6,
-                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID(fontAssetPath),
-                characterSequence = unicodeHexes[0],
+                characterSetSelectionMode = 6,  // 6: Unicode Range (Hex)
+                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/English SDF.asset"),
+                characterSequence = "",
                 renderMode = (int) GlyphRenderMode.SDFAA,
                 includeFontFeatures = true
-            };
-
-            var window = EditorWindow.GetWindow<TMPro_FontAssetCreatorWindow>();
-            var generator = new FontAssetGenerator(window);
-        
-            generator.GenerateAtlas(settings);
-            
-            generator.SaveFontAssetToSDF(fontAssetPath2);
-        }
+            },
+            new FontAssetCreationSettings  // Korean
+            {
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/PoorStory-Regular.ttf"),
+                pointSizeSamplingMode = 1,  // 0: Auto, 1: Custom
+                pointSize = 80,
+                padding = 9,
+                packingMode = 0,  // 0: Fast, 4: Optimum
+                atlasWidth = 4096,
+                atlasHeight = 4096,
+                characterSetSelectionMode = 6,  // 6: Unicode Range (Hex)
+                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/Korean SDF.asset"),
+                characterSequence = "",
+                renderMode = (int) GlyphRenderMode.SDFAA,
+                includeFontFeatures = true
+            },
+            new FontAssetCreationSettings  // PortugueseBrazil
+            {
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/PoorStory-Latin.otf"),
+                pointSizeSamplingMode = 1,    // 0: Auto, 1: Custom
+                pointSize = 80,
+                padding = 9,
+                packingMode = 0,  // 0: Fast, 4: Optimum
+                atlasWidth = 1024,
+                atlasHeight = 1024,
+                characterSetSelectionMode = 6,  // 6: Unicode Range (Hex)
+                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/PortugueseBrazil SDF.asset"),
+                characterSequence = "",
+                renderMode = (int) GlyphRenderMode.SDFAA,
+                includeFontFeatures = true
+            },
+            new FontAssetCreationSettings  // Polish
+            {
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/PoorStory-Latin.otf"),
+                pointSizeSamplingMode = 1,  // 0: Auto, 1: Custom
+                pointSize = 80,
+                padding = 9,
+                packingMode = 0,  // 0: Fast, 4: Optimum
+                atlasWidth = 1024,
+                atlasHeight = 1024,
+                characterSetSelectionMode = 6,  // 6: Unicode Range (Hex)
+                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/PortugueseBrazil SDF.asset"),
+                characterSequence = "",
+                renderMode = (int) GlyphRenderMode.SDFAA,
+                includeFontFeatures = true
+            },
+            new FontAssetCreationSettings  // Japanese
+            {
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/NotoSansCJKjp-Regular.otf"),
+                pointSizeSamplingMode = 1,  // 0: Auto, 1: Custom
+                pointSize = 80,
+                padding = 7,
+                packingMode = 0,  // 0: Fast, 4: Optimum
+                atlasWidth = 4096,
+                atlasHeight = 4096,
+                characterSetSelectionMode = 6,  // 6: Unicode Range (Hex)
+                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/Japanese SDF.asset"),
+                characterSequence = "",
+                renderMode = (int) GlyphRenderMode.SDFAA,
+                includeFontFeatures = true
+            },
+            new FontAssetCreationSettings  // ChineseSimplified
+            {
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/NotoSansCJKsc-Regular.otf"),
+                pointSizeSamplingMode = 1,  // 0: Auto, 1: Custom
+                pointSize = 80,
+                padding = 7,
+                packingMode = 0,  // 0: Fast, 4: Optimum
+                atlasWidth = 4096,
+                atlasHeight = 4096,
+                characterSetSelectionMode = 6,  // 6: Unicode Range (Hex)
+                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/ChineseSimplified SDF.asset"),
+                characterSequence = "",
+                renderMode = (int) GlyphRenderMode.SDFAA,
+                includeFontFeatures = true
+            },
+            new FontAssetCreationSettings  // Thai
+            {
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/kanit-light.otf"),
+                pointSizeSamplingMode = 1,  // 0: Auto, 1: Custom
+                pointSize = 80,
+                padding = 7,
+                packingMode = 0,  // 0: Fast, 4: Optimum
+                atlasWidth = 1024,
+                atlasHeight = 1024,
+                characterSetSelectionMode = 6,  // 6: Unicode Range (Hex)
+                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/Thai SDF.asset"),
+                characterSequence = "",
+                renderMode = (int) GlyphRenderMode.SDFAA,
+                includeFontFeatures = true
+            },
+        };
 
 
         private static void PrepareCharacterFilesDirectory()

@@ -4,11 +4,14 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using TMPro;
 using TMPro.EditorUtilities;
 using UnityEditor;
+using UnityEditor.TextCore.LowLevel;
 using UnityEngine;
 using UnityEngine.TextCore;
 using UnityEngine.TextCore.LowLevel;
@@ -233,7 +236,11 @@ namespace Nekoyume.L10n.Editor
 
         Texture2D m_FontAtlasTexture
         {
-            get { return GetValue<Texture2D>(fontAtlasTexture); }
+            get
+            {
+                var result = GetValue<Texture2D>(fontAtlasTexture);
+                return result;
+            }
             set { SetValue<Texture2D>(fontAtlasTexture, value); }
         }
 
@@ -429,6 +436,22 @@ namespace Nekoyume.L10n.Editor
             set { SetValue<bool>(isGlyphRenderingDone, value); }
         }
 
+        private FieldInfo referencedFontAsset;
+        
+        TMP_FontAsset m_ReferencedFontAsset
+        {
+            get { return GetValue<TMP_FontAsset>(referencedFontAsset); }
+            set { SetValue<TMP_FontAsset>(referencedFontAsset, value); }
+        }
+        
+        FieldInfo includeFontFeatures;
+        
+        bool m_IncludeFontFeatures
+        {
+            get { return GetValue<bool>(includeFontFeatures); }
+            set { SetValue<bool>(includeFontFeatures, value); }
+        }
+
         #endregion
 
         #region Methods
@@ -509,8 +532,10 @@ namespace Nekoyume.L10n.Editor
             atlasWidth = GetField("m_AtlasWidth");
             atlasHeight = GetField("m_AtlasHeight");
             characterSetSelectionMode = GetField("m_CharacterSetSelectionMode");
+            referencedFontAsset = GetField("m_ReferencedFontAsset");
             characterSequence = GetField("m_CharacterSequence");
             glyphRenderMode = GetField("m_GlyphRenderMode");
+            includeFontFeatures = GetField("m_IncludeFontFeatures");
             //////////////////////
             atlasGenerationProgress = GetField("m_AtlasGenerationProgress");
             isProcessing = GetField("m_IsProcessing");
@@ -579,7 +604,9 @@ namespace Nekoyume.L10n.Editor
 
         public void GenerateAtlas(FontAssetCreationSettings settings)
         {
-            var m_sourceFontFile = AssetDatabase.LoadAssetAtPath<Font>(AssetDatabase.GUIDToAssetPath(settings.sourceFontFileGUID));
+            isGenerateAtlasDone = false;
+            var m_sourceFontFile =
+                AssetDatabase.LoadAssetAtPath<Font>(AssetDatabase.GUIDToAssetPath(settings.sourceFontFileGUID));
             SetValue(sourceFontFile, m_sourceFontFile);
             SetValue(pointSizeSamplingMode, settings.pointSizeSamplingMode);
             SetValue(pointSize, settings.pointSize);
@@ -588,10 +615,12 @@ namespace Nekoyume.L10n.Editor
             SetValue(atlasWidth, settings.atlasWidth);
             SetValue(atlasHeight, settings.atlasHeight);
             SetValue(characterSetSelectionMode, settings.characterSetSelectionMode);
-            // m_ReferencedFontAsset
+            var m_ReferencedFontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
+                    AssetDatabase.GUIDToAssetPath(settings.referencedFontAssetGUID));
+            SetValue(referencedFontAsset, m_ReferencedFontAsset);
             SetValue(characterSequence, settings.characterSequence);
             SetValue(glyphRenderMode, settings.renderMode);
-            // m_IncludeFontFeatures
+            SetValue(includeFontFeatures, settings.includeFontFeatures);
             
             var stringBuilder = new StringBuilder();
             stringBuilder.Append($"sourceFontFile : {AssetDatabase.GetAssetPath(GetValue<Object>(sourceFontFile))}\n");
@@ -605,6 +634,7 @@ namespace Nekoyume.L10n.Editor
             stringBuilder.Append($"characterSequence : {GetValue<string>(characterSequence)}\n");
             stringBuilder.Append($"glyphRenderMode : {GetValue<int>(glyphRenderMode)}\n");
             UnityEngine.Debug.Log(stringBuilder.ToString());
+            
             if (!m_IsProcessing && m_SourceFontFile != null)
             {
                 DestroyImmediate(m_FontAtlasTexture);
@@ -1018,6 +1048,7 @@ namespace Nekoyume.L10n.Editor
                             m_GlyphRenderingGenerationTime = m_StopWatch.Elapsed.TotalMilliseconds;
                             m_IsGlyphRenderingDone = true;
                             m_StopWatch.Reset();
+                            isGenerateAtlasDone = true;
                         }
                     });
                 }
@@ -1026,28 +1057,34 @@ namespace Nekoyume.L10n.Editor
             }
         }
 
-        public void SaveFontAssetToSDF(string filePath)
+        private bool isGenerateAtlasDone = false;
+        
+        public async void SaveFontAssetToSDF(string filePath)
         {
-            ThreadPool.QueueUserWorkItem(_ =>
+            var task = Task.Run(() =>
             {
-                // if(!m_IsRenderingDone) return;
-                if (filePath.Length == 0)
-                {
-                    Debug.LogError("[FontAssetGenerator/SaveFontAssetToSDF] File Path is empty.");
-                    return;
-                }
-
-                if (!(((GlyphRasterModes) m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
-                      GlyphRasterModes.RASTER_MODE_BITMAP))
-                {
-                    Save_SDF_FontAsset(filePath);
-                    Debug.Log("[FontAssetGenerator/SaveFontAssetToSDF] Font Asset has been saved to disk.");
-                }
-                else
-                {
-                    Debug.LogError("[FontAssetGenerator/SaveFontAssetToSDF] Glyph Raster Mode is invalid : It must be SDF.");
-                }
+                while (!isGenerateAtlasDone) ;
             });
+            
+            if (filePath.Length == 0)
+            {
+                Debug.LogError("[FontAssetGenerator/SaveFontAssetToSDF] File Path is empty.");
+                return;
+            }
+            
+            Debug.Log("[FontAssetGenerator/SaveFontAssetToSDF] Saving Font Asset to SDF File...");
+            
+            await task;
+            if (!(((GlyphRasterModes) m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
+                  GlyphRasterModes.RASTER_MODE_BITMAP))
+            {
+                Save_SDF_FontAsset(filePath);
+                Debug.Log("[FontAssetGenerator/SaveFontAssetToSDF] Font Asset has been saved to disk.");
+            }
+            else
+            {
+                Debug.LogError("[FontAssetGenerator/SaveFontAssetToSDF] Glyph Raster Mode is invalid : It must be SDF.");
+            }
         }
     }
 }
