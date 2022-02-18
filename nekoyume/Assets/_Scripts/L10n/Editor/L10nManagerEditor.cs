@@ -149,7 +149,7 @@ namespace Nekoyume.L10n.Editor
             }
         }
         
-        [MenuItem("Tools/L10n/Generate Font Asset Files")]
+        // [MenuItem("Tools/L10n/Generate Font Asset Files")]
         public static void GenerateFontAssetFiles()
         {
             GenerateUnicodeHexRangeFiles();
@@ -158,17 +158,94 @@ namespace Nekoyume.L10n.Editor
             
             var languageTypes = Enum.GetValues(typeof(LanguageType)).OfType<LanguageType>();
             var languageType = languageTypes.First();
+            // foreach (var languageType in languageTypes)
+            {
+                var settings = DefaultSettings[(int) languageType];
+                var characterPath = Path.Combine(charactersPath,
+                    $"{languageType.ToString()}-unicode-hex-range-{1:00}.txt");
+                var unicodeHexes = File.ReadAllLines(characterPath);
+                settings.characterSequence = unicodeHexes[0];
+                var fontAssetFullPath = Path.GetFullPath(AssetDatabase.GUIDToAssetPath(settings.referencedFontAssetGUID))
+                    .Replace("\\", "/");
+
+                var generator = new FontAssetGenerator(window);
+                generator.GenerateAtlas(settings);
+                generator.SaveFontAssetToSDF(fontAssetFullPath);
+            }
+        }
+
+        public static void GenerateFontAssetFile(LanguageType languageType)
+        {
+            // GenerateUnicodeHexRangeFile
+            PrepareCharacterFilesDirectory();
+
+            var defaultCharacters = Enumerable.Range(32, 127 - 32)
+                .Union(new List<int>
+                {
+                    // NOTE: 이빠진 곳에 넣을 네모입니다.
+                    '\x25A1'
+                })
+                .Select(Convert.ToChar)
+                .ToList();
+
+            var dict = L10nManager.GetDictionary(languageType);
+            var unicodeHexes = dict.Values
+                .SelectMany(value => value.ToCharArray())
+                .Union(defaultCharacters)
+                .Distinct()
+                .Select(character =>
+                    Convert.ToInt32(
+                        Encoding.Unicode.GetString(BitConverter.GetBytes(character))[0]))
+                .OrderBy(characterNumber => characterNumber)
+                .Select(characterNumber => characterNumber.ToString("X4"))
+                .ToList();
+            var unicodeHexesCount = unicodeHexes.Count;
+            Debug.LogWarning($"{languageType} unicodeHexes count: {unicodeHexesCount}");
+            var maxCharacterCountForEachFile = GetMaxCharacterCountForEachSDF(languageType);
+            var fileIndex = 0;
+            while (true)
+            {
+                var characterCountForEachFile =
+                    unicodeHexesCount - maxCharacterCountForEachFile * fileIndex;
+                if (characterCountForEachFile <= 0)
+                {
+                    break;
+                }
+
+                characterCountForEachFile = Math.Min(
+                    characterCountForEachFile,
+                    maxCharacterCountForEachFile);
+                var filePath = Path.Combine(
+                    characterFilesPath,
+                    $"{languageType.ToString()}-unicode-hex-range-{fileIndex + 1:00}.txt");
+                var joined = string.Join(
+                    ",",
+                    unicodeHexes.GetRange(fileIndex, characterCountForEachFile));
+                File.WriteAllText(filePath, joined);
+
+                fileIndex++;
+            }
+            // GenerateFontAssetFile
+            var charactersPath = Path.Combine(Application.dataPath, "Font/CharacterFiles");
+            var window = EditorWindow.GetWindow<TMPro_FontAssetCreatorWindow>();
             
             var settings = DefaultSettings[(int) languageType];
-            var characterPath = Path.Combine(charactersPath, $"{languageType.ToString()}-unicode-hex-range-{1:00}.txt");
-            var unicodeHexes = File.ReadAllLines(characterPath);
-            settings.characterSequence = unicodeHexes[0];
+            var characterPath = Path.Combine(charactersPath,
+                $"{languageType.ToString()}-unicode-hex-range-{1:00}.txt");
+            var unicodeHex = File.ReadAllLines(characterPath)[0];
+            settings.characterSequence = unicodeHex;
             var fontAssetFullPath = Path.GetFullPath(AssetDatabase.GUIDToAssetPath(settings.referencedFontAssetGUID))
                 .Replace("\\", "/");
-            
+
             var generator = new FontAssetGenerator(window);
             generator.GenerateAtlas(settings);
             generator.SaveFontAssetToSDF(fontAssetFullPath);
+        }
+        
+        [MenuItem("Tools/L10n/Generate Font Asset File - English")]
+        public static void GenerateFontAssetFileToEnglish()
+        {
+            GenerateFontAssetFile(LanguageType.English);
         }
         
         public static readonly FontAssetCreationSettings[] DefaultSettings = new FontAssetCreationSettings[]
