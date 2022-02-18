@@ -65,11 +65,21 @@ namespace Nekoyume.UI.Module
                     {
                         if (_recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
                         {
-                            var unlockStage = equipmentRow.UnlockStage;
-                            OneLineSystem.Push(
-                                MailType.System,
-                                L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE", equipmentRow.UnlockStage),
-                                NotificationCell.NotificationType.UnlockCondition);
+                            if (equipmentRow.UnlockStage == 999)
+                            {
+                                OneLineSystem.Push(
+                                    MailType.System,
+                                    L10nManager.Localize("UI_RECIPE_LOCK_GUIDE"),
+                                    NotificationCell.NotificationType.UnlockCondition);
+                            }
+                            else
+                            {
+                                OneLineSystem.Push(
+                                    MailType.System,
+                                    L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE",
+                                        equipmentRow.UnlockStage),
+                                    NotificationCell.NotificationType.UnlockCondition);
+                            }
                         }
                     }
                 });
@@ -154,9 +164,11 @@ namespace Nekoyume.UI.Module
 
             if (diff > 0)
             {
-                unlockConditionText.text = string.Format(
-                    L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                    unlockStage.ToString());
+                unlockConditionText.text = unlockStage != 999
+                    ? string.Format(
+                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        unlockStage.ToString())
+                    : string.Empty;
                 unlockConditionText.enabled = true;
                 equipmentView.Hide();
                 IsLocked = true;
