@@ -670,6 +670,7 @@ MonoBehaviour:
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
+  allowSwitchOffWhenIsOn: 0
 --- !u!1 &6218582078676038530
 GameObject:
   m_ObjectHideFlags: 0
