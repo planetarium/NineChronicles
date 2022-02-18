@@ -265,8 +265,6 @@
             var worldQuestSheet = state.GetSheet<WorldQuestSheet>();
             var targetRow = worldQuestSheet.OrderedList.FirstOrDefault(e => e.Goal == stageId);
             Assert.NotNull(targetRow);
-            var worldQuestSheetCsv = state.GetSheetCsv<WorldQuestSheet>();
-            var worldQuestSheetAddress = Addresses.GetSheetAddress<WorldQuestSheet>();
 
             // Update new AvatarState
             var avatarState = new AvatarState(
@@ -281,7 +279,7 @@
                 exp = state.GetSheet<CharacterLevelSheet>().OrderedList.First(e => e.Level == 400).Exp,
                 worldInformation = new WorldInformation(0, state.GetSheet<WorldSheet>(), stageId),
             };
-            var equipments = Doomfist.GetAllParts(_tableSheets);
+            var equipments = Doomfist.GetAllParts(_tableSheets, avatarState.level);
             foreach (var equipment in equipments)
             {
                 avatarState.inventory.AddItem2(equipment);

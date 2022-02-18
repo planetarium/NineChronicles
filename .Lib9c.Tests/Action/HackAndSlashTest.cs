@@ -139,22 +139,10 @@ namespace Lib9c.Tests.Action
                 costumes.Add(costume.ItemId);
             }
 
-            List<Guid> equipments = new List<Guid>();
-
+            var equipments = new List<Guid>();
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon)
             {
-                var weaponEnumerable = _tableSheets
-                    .EquipmentItemSheet
-                    .Values
-                    .Where(r => r.ItemSubType == ItemSubType.Weapon)
-                    .OrderBy(r => r.Stat.ValueAsInt);
-
-                // If avatar level is higher than 200, Get strongest weapon.
-                // If not, Get weakest weapon.
-                var weapon = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[avatarLevel >= 200 ? weaponEnumerable.Last().Id : weaponEnumerable.ToArray()[1].Id],
-                    random)
-                    as Equipment;
+                var weapon = Doomfist.GetOne(_tableSheets, _avatarState.level, ItemSubType.Weapon);
                 equipments.Add(weapon.ItemId);
                 OrderLock? orderLock = null;
                 if (isLock)
@@ -173,10 +161,7 @@ namespace Lib9c.Tests.Action
                     .Where(r => r.ItemSubType == ItemSubType.Armor)
                     .OrderBy(r => r.Stat.ValueAsInt);
 
-                var armor = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[avatarLevel >= 200 ? armorEnumerable.Last().Id : armorEnumerable.ToArray()[1].Id],
-                    random)
-                    as Equipment;
+                var armor = Doomfist.GetOne(_tableSheets, _avatarState.level, ItemSubType.Armor);
                 equipments.Add(armor.ItemId);
                 previousAvatarState.inventory.AddItem(armor);
             }
@@ -263,7 +248,7 @@ namespace Lib9c.Tests.Action
                 exp = state.GetSheet<CharacterLevelSheet>().OrderedList.First(e => e.Level == 400).Exp,
                 worldInformation = new WorldInformation(0, state.GetSheet<WorldSheet>(), stageId),
             };
-            var equipments = Doomfist.GetAllParts(_tableSheets);
+            var equipments = Doomfist.GetAllParts(_tableSheets, avatarState.level);
             foreach (var equipment in equipments)
             {
                 avatarState.inventory.AddItem(equipment);
@@ -281,7 +266,7 @@ namespace Lib9c.Tests.Action
             var avatarWorldQuests = avatarState.questList.OfType<WorldQuest>().ToList();
             Assert.Equal(worldQuestSheet.Count, avatarWorldQuests.Count);
             Assert.Empty(avatarState.questList.completedQuestIds);
-            Assert.Equal(2, avatarState.inventory.Items.Count);
+            Assert.Equal(equipments.Count, avatarState.inventory.Items.Count);
 
             // HackAndSlash
             var action = new HackAndSlash
@@ -325,11 +310,21 @@ namespace Lib9c.Tests.Action
             previousAvatarState.level = maxLevel;
             previousAvatarState.exp = maxLevelExp + requiredExp - 1;
 
-            var stageId = _tableSheets.StageSheet
-                .FirstOrDefault(row =>
-                (previousAvatarState.level - row.Value.Id) <= StageRewardExpHelper.DifferLowerLimit ||
-                (previousAvatarState.level - row.Value.Id) > StageRewardExpHelper.DifferUpperLimit)
-                .Value.Id;
+            var stageId = 0;
+            try
+            {
+                stageId = _tableSheets.StageSheet
+                    .FirstOrDefault(row =>
+                        previousAvatarState.level - row.Value.Id <= StageRewardExpHelper.DifferLowerLimit ||
+                        previousAvatarState.level - row.Value.Id > StageRewardExpHelper.DifferUpperLimit)
+                    .Value.Id;
+            }
+            catch
+            {
+                // There is no stage that a avatar state which level is max can earning exp.
+                return;
+            }
+
             var worldRow = _tableSheets.WorldSheet
                 .FirstOrDefault(row => stageId >= row.Value.StageBegin &&
                 stageId <= row.Value.StageEnd);
@@ -452,7 +447,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), null!);
             }
 
-            var exec = Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
@@ -476,7 +471,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
@@ -502,7 +497,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
@@ -529,7 +524,7 @@ namespace Lib9c.Tests.Action
             var state = _initialState;
             state = state.SetState(Addresses.TableSheet.Derive(nameof(StageSheet)), "test".Serialize());
 
-            var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
@@ -564,7 +559,7 @@ namespace Lib9c.Tests.Action
 
             Assert.False(avatarState.worldInformation.IsStageCleared(0));
 
-            var exec = Assert.Throws<FailedAddWorldException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<FailedAddWorldException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
@@ -590,7 +585,7 @@ namespace Lib9c.Tests.Action
 
             Assert.False(_avatarState.worldInformation.IsStageCleared(51));
 
-            var exec = Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
@@ -631,7 +626,7 @@ namespace Lib9c.Tests.Action
             var state = _initialState;
             state = state.SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var exec = Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
@@ -658,7 +653,7 @@ namespace Lib9c.Tests.Action
             _avatarState.worldInformation.TryGetWorld(1, out var world);
             Assert.False(world.IsStageCleared);
 
-            var exec = Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
@@ -684,7 +679,7 @@ namespace Lib9c.Tests.Action
             var action = new HackAndSlash
             {
                 costumes = new List<Guid>(),
-                equipments = new List<Guid>()
+                equipments = new List<Guid>
                 {
                     equipment.ItemId,
                 },
@@ -699,7 +694,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.SerializeV2())
                 .SetState(_inventoryAddress, avatarState.inventory.Serialize());
 
-            var exec = Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
@@ -743,7 +738,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
@@ -775,7 +770,7 @@ namespace Lib9c.Tests.Action
             var state = _initialState;
             state = state.SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var exec = Assert.Throws<NotEnoughActionPointException>(() => action.Execute(new ActionContext()
+            var exec = Assert.Throws<NotEnoughActionPointException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
@@ -854,7 +849,7 @@ namespace Lib9c.Tests.Action
         [InlineData(120)]
         [InlineData(150)]
         [InlineData(200)]
-        public void ExecuteThrowHighLevelItemRequirementException(int avatarLevel)
+        public void Execute_Throw_NotEnoughAvatarLevelException(int avatarLevel)
         {
             var avatarState = new AvatarState(_avatarState)
             {
@@ -863,54 +858,54 @@ namespace Lib9c.Tests.Action
             };
 
             var state = _initialState;
-
-            foreach (var requirementRow in _tableSheets.ItemRequirementSheet)
+            var itemIds = new[] { GameConfig.DefaultAvatarWeaponId, 40100000 };
+            foreach (var itemId in itemIds)
             {
-                if (avatarState.level >= requirementRow.Level)
+                foreach (var requirementRow in _tableSheets.ItemRequirementSheet.OrderedList
+                    .Where(e => e.ItemId >= itemId && e.Level > avatarState.level)
+                    .Take(3))
                 {
-                    continue;
+                    var costumes = new List<Guid>();
+                    var equipments = new List<Guid>();
+                    var random = new TestRandom(DateTimeOffset.Now.Millisecond);
+                    if (_tableSheets.EquipmentItemSheet.TryGetValue(requirementRow.ItemId, out var row))
+                    {
+                        var equipment = ItemFactory.CreateItem(row, random);
+                        avatarState.inventory.AddItem(equipment);
+                        equipments.Add(((INonFungibleItem)equipment).NonFungibleId);
+                    }
+                    else if (_tableSheets.CostumeItemSheet.TryGetValue(requirementRow.ItemId, out var row2))
+                    {
+                        var costume = ItemFactory.CreateItem(row2, random);
+                        avatarState.inventory.AddItem(costume);
+                        costumes.Add(((INonFungibleItem)costume).NonFungibleId);
+                    }
+
+                    state = state.SetState(avatarState.address, avatarState.SerializeV2())
+                        .SetState(
+                            avatarState.address.Derive(LegacyInventoryKey),
+                            avatarState.inventory.Serialize());
+
+                    var action = new HackAndSlash
+                    {
+                        costumes = costumes,
+                        equipments = equipments,
+                        foods = new List<Guid>(),
+                        worldId = 1,
+                        stageId = 1,
+                        playCount = 1,
+                        avatarAddress = avatarState.address,
+                    };
+
+                    var exec = Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
+                    {
+                        PreviousStates = state,
+                        Signer = avatarState.agentAddress,
+                        Random = random,
+                    }));
+
+                    SerializeException<NotEnoughAvatarLevelException>(exec);
                 }
-
-                var costumes = new List<Guid>();
-                var equipments = new List<Guid>();
-                var random = new TestRandom(DateTimeOffset.Now.Millisecond);
-                if (_tableSheets.EquipmentItemSheet.TryGetValue(requirementRow.ItemId, out var row))
-                {
-                    var equipment = ItemFactory.CreateItem(row, random);
-                    avatarState.inventory.AddItem(equipment);
-                    equipments.Add(((INonFungibleItem)equipment).NonFungibleId);
-                }
-                else if (_tableSheets.CostumeItemSheet.TryGetValue(requirementRow.ItemId, out var row2))
-                {
-                    var costume = ItemFactory.CreateItem(row2, random);
-                    avatarState.inventory.AddItem(costume);
-                    costumes.Add(((INonFungibleItem)costume).NonFungibleId);
-                }
-
-                state = state.SetState(avatarState.address, avatarState.SerializeV2())
-                    .SetState(
-                        avatarState.address.Derive(LegacyInventoryKey),
-                        avatarState.inventory.Serialize());
-
-                var action = new HackAndSlash
-                {
-                    costumes = costumes,
-                    equipments = equipments,
-                    foods = new List<Guid>(),
-                    worldId = 1,
-                    stageId = 1,
-                    playCount = 1,
-                    avatarAddress = avatarState.address,
-                };
-
-                var exec = Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext()
-                {
-                    PreviousStates = state,
-                    Signer = avatarState.agentAddress,
-                    Random = random,
-                }));
-
-                SerializeException<NotEnoughAvatarLevelException>(exec);
             }
         }
 
@@ -953,68 +948,11 @@ namespace Lib9c.Tests.Action
             previousAvatarState.inventory.AddItem(costume);
             costumes.Add(costume.ItemId);
 
-            List<Guid> equipments = new List<Guid>();
-
-            var weaponId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Weapon)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
-
-            var weapon = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[weaponId],
-                    random)
-                as Equipment;
-            equipments.Add(weapon.ItemId);
-            OrderLock? orderLock = null;
-            previousAvatarState.inventory.AddItem(weapon, iLock: orderLock);
-
-            var armorId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Armor)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
-
-            var armor = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[armorId],
-                    random)
-                as Equipment;
-            equipments.Add(armor.ItemId);
-            previousAvatarState.inventory.AddItem(armor);
-
-            var beltId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Belt)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
-
-            var belt = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[beltId],
-                    random)
-                as Equipment;
-            equipments.Add(belt.ItemId);
-            previousAvatarState.inventory.AddItem(belt);
-
-            var necklaceId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Necklace)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
-
-            var necklace = ItemFactory.CreateItem(
-                    _tableSheets.EquipmentItemSheet[necklaceId],
-                    random)
-                as Equipment;
-            equipments.Add(necklace.ItemId);
-            previousAvatarState.inventory.AddItem(necklace);
+            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
+            foreach (var equipment in equipments)
+            {
+                previousAvatarState.inventory.AddItem(equipment);
+            }
 
             var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
@@ -1056,7 +994,7 @@ namespace Lib9c.Tests.Action
             var action = new HackAndSlash
             {
                 costumes = costumes,
-                equipments = equipments,
+                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
@@ -1109,8 +1047,8 @@ namespace Lib9c.Tests.Action
                 .Sum(rewardId => selectedIdn[rewardId]);
             var min = stageRow.Rewards.OrderBy(x => x.Min).First().Min;
             var max = stageRow.Rewards.OrderBy(x => x.Max).First().Max;
-            var totalMin = (min * playCount * stageRow.DropItemMin) + questSum;
-            var totalMax = (max * playCount * stageRow.DropItemMax) + questSum;
+            var totalMin = min * playCount * stageRow.DropItemMin + questSum;
+            var totalMax = max * playCount * stageRow.DropItemMax + questSum;
             var totalCount = rewardItem.Sum(x => x.count);
             Assert.InRange(totalCount, totalMin, totalMax);
         }
@@ -1129,7 +1067,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            var updatedAddresses = new List<Address>()
+            var updatedAddresses = new List<Address>
             {
                 _agentAddress,
                 _avatarAddress,
@@ -1140,7 +1078,7 @@ namespace Lib9c.Tests.Action
 
             var state = new State();
 
-            var nextState = action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
