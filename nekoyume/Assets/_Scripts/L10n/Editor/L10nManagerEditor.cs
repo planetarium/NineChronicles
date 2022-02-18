@@ -163,7 +163,8 @@ namespace Nekoyume.L10n.Editor
             var characterPath = Path.Combine(charactersPath, $"{languageType.ToString()}-unicode-hex-range-{1:00}.txt");
             var unicodeHexes = File.ReadAllLines(characterPath);
             settings.characterSequence = unicodeHexes[0];
-            var fontAssetFullPath = Path.GetFullPath(AssetDatabase.GUIDToAssetPath(settings.referencedFontAssetGUID));
+            var fontAssetFullPath = Path.GetFullPath(AssetDatabase.GUIDToAssetPath(settings.referencedFontAssetGUID))
+                .Replace("\\", "/");
             
             var generator = new FontAssetGenerator(window);
             generator.GenerateAtlas(settings);

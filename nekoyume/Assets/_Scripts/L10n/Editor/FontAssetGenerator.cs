@@ -1,6 +1,8 @@
 ﻿/*
  * reference: https://gitlab.com/-/snippets/2077829
  */
+
+using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,6 +18,7 @@ using UnityEngine;
 using UnityEngine.TextCore;
 using UnityEngine.TextCore.LowLevel;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 namespace Nekoyume.L10n.Editor
 {
@@ -637,8 +640,12 @@ namespace Nekoyume.L10n.Editor
             
             if (!m_IsProcessing && m_SourceFontFile != null)
             {
-                DestroyImmediate(m_FontAtlasTexture);
-                DestroyImmediate(m_GlyphRectPreviewTexture);
+                try
+                {
+                    DestroyImmediate(m_FontAtlasTexture);
+                    DestroyImmediate(m_GlyphRectPreviewTexture);
+                }
+                catch (Exception e) { }
                 m_FontAtlasTexture = null;
                 m_SavedFontAtlas = null;
                 m_OutputFeedback = string.Empty;
