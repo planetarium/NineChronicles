@@ -156,29 +156,34 @@ namespace Nekoyume.Action
 
         public static AvatarState GetAvatarStateV2(this IAccountStateDelta states, Address address)
         {
-            if (!(states.GetState(address) is Dictionary serializedAvatar))
+            var addresses = new List<Address>
             {
-                Log.Warning("No avatar state ({AvatarAddress})", address.ToHex());
-                return null;
-            }
-
+                address,
+            };
             string[] keys =
             {
                 LegacyInventoryKey,
                 LegacyWorldInformationKey,
                 LegacyQuestListKey,
             };
-
-            foreach (var key in keys)
+            addresses.AddRange(keys.Select(key => address.Derive(key)));
+            var serializedValues = states.GetStates(addresses);
+            if (!(serializedValues[0] is Dictionary serializedAvatar))
             {
-                var keyAddress = address.Derive(key);
-                var serialized = states.GetState(keyAddress);
-                if (serialized is null)
+                Log.Warning("No avatar state ({AvatarAddress})", address.ToHex());
+                return null;
+            }
+
+            for (var i = 0; i < keys.Length; i++)
+            {
+                var key = keys[i];
+                var serializedValue = serializedValues[i + 1];
+                if (serializedValue is null)
                 {
                     throw new FailedLoadStateException($"failed to load {key}.");
                 }
 
-                serializedAvatar = serializedAvatar.SetItem(key, serialized);
+                serializedAvatar = serializedAvatar.SetItem(key, serializedValue);
             }
             try
             {
