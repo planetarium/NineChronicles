@@ -67,7 +67,10 @@ namespace Nekoyume
         private GameObject expiredObject;
 
         [SerializeField]
-        private GameObject disableObject;
+        private GameObject tradableObject;
+
+        [SerializeField]
+        private GameObject elementalDisableObject;
 
         [SerializeField]
         private GameObject levelLimitObject;
@@ -100,7 +103,8 @@ namespace Nekoyume
         public GameObject MinusObject => minusObject;
         public GameObject FocusObject => focusObject;
         public GameObject ExpiredObject => expiredObject;
-        public GameObject DisableObject => disableObject;
+        public GameObject TradableObject => tradableObject;
+        public GameObject ElementalDisableObject => elementalDisableObject;
         public GameObject LevelLimitObject => levelLimitObject;
         public GameObject SelectObject => selectObject;
         public GameObject SelectEnchantItemObject => selectEnchantItemObject;

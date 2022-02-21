@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -82,7 +83,7 @@ namespace Nekoyume.UI
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
-            detail.Set(item.ItemBase, item.Count.Value);
+            detail.Set(item.ItemBase, item.Count.Value, !Util.IsUsableItem(item.ItemBase.Id));
 
             submitButton.gameObject.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
@@ -116,7 +117,8 @@ namespace Nekoyume.UI
                     onRegister?.Invoke();
                     Close();
                 });
-            detail.Set(item.ItemBase, item.OrderDigest.ItemCount);
+            detail.Set(item.ItemBase, item.OrderDigest.ItemCount,
+                !Util.IsUsableItem(item.OrderDigest.ItemId));
             _onClose = onClose;
 
             scrollbar.value = 1f;
@@ -141,7 +143,8 @@ namespace Nekoyume.UI
                     Close();
                 });
 
-            detail.Set(item.ItemBase, item.OrderDigest.ItemCount);
+            detail.Set(item.ItemBase, item.OrderDigest.ItemCount,
+                !Util.IsUsableItem(item.OrderDigest.ItemId));
             _onClose = onClose;
 
             scrollbar.value = 1f;

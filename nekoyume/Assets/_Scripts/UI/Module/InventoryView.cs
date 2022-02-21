@@ -144,7 +144,8 @@ namespace Nekoyume.UI.Module
         {
             _activeItemType = itemType;
             scroll.UpdateData(GetModels(itemType), !toggle.IsToggledOn);
-            UpdateEquipmentNotification();
+            UpdateEquipmentNotification(_elementalTypes);
+            UpdateElementalTypeDisable(_elementalTypes);
             ClearFocus();
             _toggleGroup.SetToggledOffAll();
             toggle.SetToggledOn();
@@ -167,21 +168,21 @@ namespace Nekoyume.UI.Module
             {
                 case ItemType.Consumable:
                     inventoryItem = CreateInventoryItem(itemBase, count,
-                        limited: !Util.IsUsableItem(itemBase.Id));
+                        levelLimited: !Util.IsUsableItem(itemBase.Id));
                     _consumables.Add(inventoryItem);
                     break;
                 case ItemType.Costume:
                     var costume = (Costume)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
                         equipped: costume.equipped,
-                        limited: !Util.IsUsableItem(itemBase.Id));
+                        levelLimited: !Util.IsUsableItem(itemBase.Id));
                     _costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
                         equipped: equipment.equipped,
-                        limited: !Util.IsUsableItem(itemBase.Id));
+                        levelLimited: !Util.IsUsableItem(itemBase.Id));
                     _equipments.Add(inventoryItem);
                     break;
                 case ItemType.Material:
@@ -226,9 +227,9 @@ namespace Nekoyume.UI.Module
         }
 
         private InventoryItemViewModel CreateInventoryItem(ItemBase itemBase, int count,
-            bool equipped = false, bool limited = false)
+            bool equipped = false, bool levelLimited = false)
         {
-            return new InventoryItemViewModel(itemBase, count, equipped, limited,
+            return new InventoryItemViewModel(itemBase, count, equipped, levelLimited,
                 _checkTradable && !(itemBase is ITradableItem));
         }
 
@@ -350,7 +351,7 @@ namespace Nekoyume.UI.Module
             foreach (var model in _equipments)
             {
                 var elementalType = model.ItemBase.ElementalType;
-                model.Disabled.Value = !elementalTypes.Exists(x => x.Equals(elementalType));
+                model.ElementalTypeDisabled.Value = !elementalTypes.Exists(x => x.Equals(elementalType));
             }
         }
 

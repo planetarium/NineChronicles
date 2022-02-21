@@ -73,8 +73,8 @@ namespace Nekoyume.UI.Module
 
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b)).AddTo(_disposables);
             model.LevelLimited.Subscribe(b => baseItemView.LevelLimitObject.SetActive(b)).AddTo(_disposables);
-            model.Disabled.Subscribe(b => baseItemView.DisableObject.SetActive(b)).AddTo(_disposables);
-            model.Tradable.Subscribe(b => baseItemView.DisableObject.SetActive(b)).AddTo(_disposables);
+            model.ElementalTypeDisabled.Subscribe(b => baseItemView.ElementalDisableObject.SetActive(b)).AddTo(_disposables);
+            model.Tradable.Subscribe(b => baseItemView.TradableObject.SetActive(b)).AddTo(_disposables);
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
             model.Focused.Subscribe(b => baseItemView.FocusObject.SetActive(b)).AddTo(_disposables);
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b)).AddTo(_disposables);

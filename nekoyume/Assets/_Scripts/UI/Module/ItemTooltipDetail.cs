@@ -77,9 +77,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<SkillView> skills;
 
-        public void Set(ItemBase itemBase, int itemCount)
+        public void Set(ItemBase itemBase, int itemCount, bool levelLimit)
         {
-            UpdateViewIconArea(itemBase, itemCount);
+            UpdateViewIconArea(itemBase, itemCount, levelLimit);
             UpdateDescriptionArea(itemBase);
             UpdateOptionArea(itemBase, itemCount);
             UpdateTradableText(itemBase);
@@ -94,10 +94,10 @@ namespace Nekoyume.UI.Module
             optionAreaRoot.SetActive(hasOptions);
         }
 
-        private void UpdateViewIconArea(ItemBase itemBase, int itemCount)
+        private void UpdateViewIconArea(ItemBase itemBase, int itemCount, bool levelLimit)
         {
             itemName.text = itemBase.GetLocalizedName(false);
-            itemView.Set(itemBase, itemCount);
+            itemView.Set(itemBase, itemCount, levelLimit);
 
             var gradeColor = itemBase.GetItemGradeColor();
             iconArea.gradeText.text = itemBase.GetGradeText();

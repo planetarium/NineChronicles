@@ -10,15 +10,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private BaseItemView baseItemView;
 
-        public void Set(ItemBase itemBase, int count)
+        public void Set(ItemBase itemBase, int count, bool levelLimit)
         {
             baseItemView.Container.SetActive(true);
             baseItemView.EnoughObject.SetActive(false);
             baseItemView.MinusObject.SetActive(false);
             baseItemView.FocusObject.SetActive(false);
             baseItemView.ExpiredObject.SetActive(false);
-            baseItemView.DisableObject.SetActive(false);
-            baseItemView.LevelLimitObject.SetActive(false);
+            baseItemView.TradableObject.SetActive(false);
+            baseItemView.ElementalDisableObject.SetActive(false);
             baseItemView.SelectObject.SetActive(false);
             baseItemView.SelectEnchantItemObject.SetActive(false);
             baseItemView.LockObject.SetActive(false);
@@ -60,6 +60,8 @@ namespace Nekoyume.UI.Module
 
             baseItemView.CountText.gameObject.SetActive(itemBase.ItemType == ItemType.Material);
             baseItemView.CountText.text = count.ToString();
+
+            baseItemView.LevelLimitObject.SetActive(levelLimit);
         }
     }
 }
