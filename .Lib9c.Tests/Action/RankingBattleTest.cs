@@ -462,7 +462,7 @@ namespace Lib9c.Tests.Action
         [InlineData(120)]
         [InlineData(150)]
         [InlineData(200)]
-        public void ExecuteThrowHighLevelItemRequirementException(int avatarLevel)
+        public void Execute_Throw_NotEnoughAvatarLevelException(int avatarLevel)
         {
             var state = _initialState;
             var avatarState = state.GetAvatarState(_avatar1Address);
@@ -475,55 +475,56 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            foreach (var requirementRow in _tableSheets.ItemRequirementSheet)
+            var itemIds = new[] { GameConfig.DefaultAvatarWeaponId, 40100000 };
+            foreach (var itemId in itemIds)
             {
-                if (avatarState.level >= requirementRow.Level)
+                foreach (var requirementRow in _tableSheets.ItemRequirementSheet.OrderedList
+                    .Where(e => e.ItemId >= itemId && e.Level > avatarState.level)
+                    .Take(3))
                 {
-                    continue;
+                    var costumes = new List<Guid>();
+                    var equipments = new List<Guid>();
+                    var random = new TestRandom(DateTimeOffset.Now.Millisecond);
+                    if (_tableSheets.EquipmentItemSheet.TryGetValue(requirementRow.ItemId, out var row))
+                    {
+                        var equipment = ItemFactory.CreateItem(row, random);
+                        avatarState.inventory.AddItem(equipment);
+                        equipments.Add(((INonFungibleItem)equipment).NonFungibleId);
+                    }
+                    else if (_tableSheets.CostumeItemSheet.TryGetValue(requirementRow.ItemId, out var row2))
+                    {
+                        var costume = ItemFactory.CreateItem(row2, random);
+                        avatarState.inventory.AddItem(costume);
+                        costumes.Add(((INonFungibleItem)costume).NonFungibleId);
+                    }
+
+                    state = state.SetState(avatarState.address, avatarState.SerializeV2())
+                        .SetState(
+                            avatarState.address.Derive(LegacyInventoryKey),
+                            avatarState.inventory.Serialize())
+                        .SetState(
+                            avatarState.address.Derive(LegacyWorldInformationKey),
+                            avatarState.worldInformation.Serialize())
+                        .SetState(
+                            avatarState.address.Derive(LegacyQuestListKey),
+                            avatarState.questList.Serialize());
+
+                    var action = new RankingBattle
+                    {
+                        avatarAddress = avatarState.address,
+                        enemyAddress = enemyAddress,
+                        weeklyArenaAddress = _weeklyArenaAddress,
+                        costumeIds = costumes,
+                        equipmentIds = equipments,
+                    };
+
+                    Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
+                    {
+                        PreviousStates = state,
+                        Signer = _agent1Address,
+                        Random = random,
+                    }));
                 }
-
-                var costumes = new List<Guid>();
-                var equipments = new List<Guid>();
-                var random = new TestRandom(DateTimeOffset.Now.Millisecond);
-                if (_tableSheets.EquipmentItemSheet.TryGetValue(requirementRow.ItemId, out var row))
-                {
-                    var equipment = ItemFactory.CreateItem(row, random);
-                    avatarState.inventory.AddItem(equipment);
-                    equipments.Add(((INonFungibleItem)equipment).NonFungibleId);
-                }
-                else if (_tableSheets.CostumeItemSheet.TryGetValue(requirementRow.ItemId, out var row2))
-                {
-                    var costume = ItemFactory.CreateItem(row2, random);
-                    avatarState.inventory.AddItem(costume);
-                    costumes.Add(((INonFungibleItem)costume).NonFungibleId);
-                }
-
-                state = state.SetState(avatarState.address, avatarState.SerializeV2())
-                    .SetState(
-                        avatarState.address.Derive(LegacyInventoryKey),
-                        avatarState.inventory.Serialize())
-                    .SetState(
-                        avatarState.address.Derive(LegacyWorldInformationKey),
-                        avatarState.worldInformation.Serialize())
-                    .SetState(
-                        avatarState.address.Derive(LegacyQuestListKey),
-                        avatarState.questList.Serialize());
-
-                var action = new RankingBattle
-                {
-                    avatarAddress = avatarState.address,
-                    enemyAddress = enemyAddress,
-                    weeklyArenaAddress = _weeklyArenaAddress,
-                    costumeIds = costumes,
-                    equipmentIds = equipments,
-                };
-
-                Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
-                {
-                    PreviousStates = state,
-                    Signer = _agent1Address,
-                    Random = random,
-                }));
             }
         }
 

@@ -265,7 +265,7 @@ namespace Lib9c.Tests.Action
                 exp = state.GetSheet<CharacterLevelSheet>().OrderedList.First(e => e.Level == 400).Exp,
                 worldInformation = new WorldInformation(0, state.GetSheet<WorldSheet>(), stageId),
             };
-            var equipments = Doomfist.GetAllParts(_tableSheets);
+            var equipments = Doomfist.GetAllParts(_tableSheets, avatarState.level);
             foreach (var equipment in equipments)
             {
                 avatarState.inventory.AddItem(equipment);
@@ -283,7 +283,7 @@ namespace Lib9c.Tests.Action
             var avatarWorldQuests = avatarState.questList.OfType<WorldQuest>().ToList();
             Assert.Equal(worldQuestSheet.Count, avatarWorldQuests.Count);
             Assert.Empty(avatarState.questList.completedQuestIds);
-            Assert.Equal(2, avatarState.inventory.Items.Count);
+            Assert.Equal(equipments.Count, avatarState.inventory.Items.Count);
 
             // HackAndSlash
             var action = new HackAndSlash11
