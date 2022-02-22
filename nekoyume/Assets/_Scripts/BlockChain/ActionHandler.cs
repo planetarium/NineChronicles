@@ -119,6 +119,10 @@ namespace Nekoyume.BlockChain
 
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
         {
+            if (Game.Game.instance.Agent.Address.Equals(goldBalanceState.address))
+            {
+                Game.Game.instance.CachedBalance[goldBalanceState.address] = goldBalanceState.Gold;
+            }
             States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 

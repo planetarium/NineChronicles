@@ -182,6 +182,13 @@ namespace Nekoyume.BlockChain
 
         public async Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency)
         {
+            if (Game.Game.instance.CachedBalance.TryGetValue(address, out FungibleAssetValue value) &&
+                !value.Equals(default) && Game.Game.instance.CachedAddresses.TryGetValue(address, out bool cached) &&
+                cached)
+            {
+                await Task.CompletedTask;
+                return value;
+            }
             // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
             byte[] raw = await _service.GetBalance(
                 address.ToByteArray(),
@@ -189,9 +196,15 @@ namespace Nekoyume.BlockChain
                 BlockTipHash.ToByteArray()
             );
             var serialized = (Bencodex.Types.List) _codec.Decode(raw);
-            return FungibleAssetValue.FromRawValue(
+            var balance = FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
+            if (address.Equals(Address))
+            {
+                Game.Game.instance.CachedBalance[Address] = balance;
+            }
+
+            return balance;
         }
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
