@@ -27,7 +27,7 @@ namespace Nekoyume.Extensions
                 row.ResultEquipmentId == equipment.Id);
             if (recipeRow == null)
             {
-                throw new SheetRowNotFoundException("EquipmentItemRecipeSheet", equipment.Id);
+                return false;
             }
 
             if (recipeRow.SubRecipeIds.Count < 3)
