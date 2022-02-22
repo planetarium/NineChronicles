@@ -16,8 +16,9 @@ namespace Nekoyume.UI
 
         private static string _defaultBlockSyncingMessage;
 
-        public void Start()
+        protected override void Awake()
         {
+            base.Awake();
             _defaultBlockSyncingMessage = L10nManager.Localize("UI_SYNCING_BLOCKS");
         }
 
