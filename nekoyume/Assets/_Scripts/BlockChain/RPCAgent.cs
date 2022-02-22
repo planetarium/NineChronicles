@@ -232,6 +232,7 @@ namespace Nekoyume.BlockChain
             OnPreloadEnded
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended"))
                 .AddTo(_disposables);
+            Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
         }
 
         private async void OnDestroy()
