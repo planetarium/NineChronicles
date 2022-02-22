@@ -111,8 +111,11 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGameConfigState(state);
         }
 
-        private static UniTask UpdateAgentStateAsync(AgentState state) =>
-            States.Instance.SetAgentStateAsync(state);
+        private static UniTask UpdateAgentStateAsync(AgentState state)
+        {
+            UpdateCache(state);
+            return States.Instance.SetAgentStateAsync(state);
+        }
 
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
         {
@@ -150,7 +153,19 @@ namespace Nekoyume.BlockChain
                 }
             }
 
+            UpdateCache(avatarState);
             await UpdateAvatarState(avatarState, States.Instance.CurrentAvatarKey);
+        }
+
+        internal static void UpdateCombinationSlotState(int slotIndex, CombinationSlotState state)
+        {
+            States.Instance.UpdateCombinationSlotState(slotIndex, state);
+            UpdateCache(state);
+        }
+
+        private static void UpdateCache(Model.State.State state)
+        {
+            Game.Game.instance.CachedStates[state.address] = state.Serialize();
         }
     }
 }

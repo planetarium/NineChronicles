@@ -11,6 +11,7 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Formatters;
 using Libplanet;
+using LruCacheNet;
 using MessagePack;
 using MessagePack.Resolvers;
 using Nekoyume.Action;
@@ -72,6 +73,9 @@ namespace Nekoyume.Game
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
         public NineChroniclesAPIClient ApiClient => _apiClient;
+
+        public readonly LruCache<Address, IValue> CachedStates = new LruCache<Address, IValue>();
+        public readonly Dictionary<Address, bool> CachedAddresses = new Dictionary<Address, bool>();
 
         private CommandLineOptions _options;
 

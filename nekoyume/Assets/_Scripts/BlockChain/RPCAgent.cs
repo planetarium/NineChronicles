@@ -145,8 +145,24 @@ namespace Nekoyume.BlockChain
 
         public async Task<IValue> GetStateAsync(Address address)
         {
+            // Check state & cached because force update state after rpc disconnected.
+            if (Game.Game.instance.CachedAddresses.TryGetValue(address, out bool cached) && cached &&
+                Game.Game.instance.CachedStates.TryGetValue(address, out IValue value) && !(value is Null))
+            {
+                await Task.CompletedTask;
+                return value;
+            }
             byte[] raw = await _service.GetState(address.ToByteArray(), BlockTipHash.ToByteArray());
-            return _codec.Decode(raw);
+            IValue result = _codec.Decode(raw);
+            if (Game.Game.instance.CachedAddresses.ContainsKey(address))
+            {
+                Game.Game.instance.CachedAddresses[address] = true;
+            }
+            if (Game.Game.instance.CachedStates.ContainsKey(address))
+            {
+                Game.Game.instance.CachedStates.AddOrUpdate(address, result);
+            }
+            return result;
         }
 
         public FungibleAssetValue GetBalance(Address address, Currency currency)
@@ -559,6 +575,16 @@ namespace Nekoyume.BlockChain
             }
 
             Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
+
+            foreach (var address in addresses)
+            {
+                Game.Game.instance.CachedAddresses[address] = false;
+                if (!Game.Game.instance.CachedStates.ContainsKey(address))
+                {
+                    Game.Game.instance.CachedStates.Add(address, new Null());
+                }
+            }
+
             _service.SetAddressesToSubscribe(Address.ToByteArray(), addresses.Select(addr => addr.ToByteArray()));
         }
 
