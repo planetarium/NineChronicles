@@ -548,7 +548,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5809345281819812582}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2729468917560364934}
+        m_TargetAssemblyTypeName: Nekoyume.UI.XTweenPopupWidget, Nekoyume
+        m_MethodName: Close
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4440314444098330108
 GameObject:
   m_ObjectHideFlags: 0
@@ -862,7 +874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cca3fcde07a4a65b290c49ca74a2b8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startWithPlay: 0
+  playAtStart: 1
   startDelay: 0
   duration: 0.5
   tweenType: 0
@@ -890,7 +902,7 @@ MonoBehaviour:
   endValue: -494
   snapping: 0
   isFrom: 1
-  single: 0
+  axisType: 0
 --- !u!1 &8651601265192141224
 GameObject:
   m_ObjectHideFlags: 0
@@ -1193,8 +1205,6 @@ MonoBehaviour:
   - {fileID: 8174717150636554073}
   - {fileID: 8373316632627378338}
   - {fileID: 4641064169886390598}
-  blur: {fileID: 3207418638022211939}
-  closeButton: {fileID: 8578247668863715340}
 --- !u!82 &2487338847641967169
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1682,18 +1692,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 577564734445070741}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3207418638022211939 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2630355418658099446, guid: 087d608eb50946b409525e83801de9d2,
-    type: 3}
-  m_PrefabInstance: {fileID: 577564734445070741}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0398d8905be44004b803f2412d77ef52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1344196206815120576
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1918,12 +1916,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eeeffb220c339d847b17be5d29a0e84d, type: 3}
---- !u!224 &8743050267115336019 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7778286864631315859, guid: eeeffb220c339d847b17be5d29a0e84d,
-    type: 3}
-  m_PrefabInstance: {fileID: 1344196206815120576}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8174717150636554073 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7193909674273979289, guid: eeeffb220c339d847b17be5d29a0e84d,
@@ -1936,6 +1928,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 275dd9be7e0640acb94dee79471df097, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &8743050267115336019 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7778286864631315859, guid: eeeffb220c339d847b17be5d29a0e84d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1344196206815120576}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1722092111740224315
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2160,12 +2158,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eeeffb220c339d847b17be5d29a0e84d, type: 3}
---- !u!224 &8940805348070588072 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7778286864631315859, guid: eeeffb220c339d847b17be5d29a0e84d,
-    type: 3}
-  m_PrefabInstance: {fileID: 1722092111740224315}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8373316632627378338 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7193909674273979289, guid: eeeffb220c339d847b17be5d29a0e84d,
@@ -2178,6 +2170,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 275dd9be7e0640acb94dee79471df097, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &8940805348070588072 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7778286864631315859, guid: eeeffb220c339d847b17be5d29a0e84d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1722092111740224315}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1823791509454342725
 PrefabInstance:
   m_ObjectHideFlags: 0
