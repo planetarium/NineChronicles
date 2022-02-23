@@ -13,6 +13,7 @@ using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI.Module
 {
@@ -41,10 +42,10 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject shopPrefab;
 
-        private readonly Dictionary<ItemSubTypeFilter, List<ShopItemViewModel>> _items =
-            new Dictionary<ItemSubTypeFilter, List<ShopItemViewModel>>();
+        private readonly Dictionary<ItemSubTypeFilter, List<ShopItem>> _items =
+            new Dictionary<ItemSubTypeFilter, List<ShopItem>>();
 
-        private readonly List<ShopItemViewModel> _selectedModels = new List<ShopItemViewModel>();
+        private readonly List<ShopItem> _selectedModels = new List<ShopItem>();
         private readonly List<NewShopItemView> _itemViews = new List<NewShopItemView>();
         private readonly ReactiveProperty<int> _page = new ReactiveProperty<int>();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
@@ -54,15 +55,15 @@ namespace Nekoyume.UI.Module
         private int _row = 0;
         private int _pageCount = 1;
 
-        protected Action<ShopItemViewModel, RectTransform> ClickItemAction;
+        protected Action<ShopItem, RectTransform> ClickItemAction;
         protected abstract void OnAwake();
         protected abstract void InitInteractiveUI();
         protected abstract void SubscribeToSearchConditions();
-        protected abstract void OnClickItem(ShopItemViewModel item);
+        protected abstract void OnClickItem(ShopItem item);
         protected abstract void Reset();
 
-        protected abstract IEnumerable<ShopItemViewModel> GetSortedModels(
-            Dictionary<ItemSubTypeFilter, List<ShopItemViewModel>> items);
+        protected abstract IEnumerable<ShopItem> GetSortedModels(
+            Dictionary<ItemSubTypeFilter, List<ShopItem>> items);
 
         protected virtual void UpdateView()
         {
@@ -76,7 +77,7 @@ namespace Nekoyume.UI.Module
         }
 
         public void Show(ReactiveProperty<List<OrderDigest>> digests,
-            Action<ShopItemViewModel, RectTransform> clickItem)
+            Action<ShopItem, RectTransform> clickItem)
         {
             Reset();
             InstantiateItemView();
@@ -91,7 +92,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var filter in ItemSubTypeFilterExtension.Filters)
             {
-                _items.Add(filter, new List<ShopItemViewModel>());
+                _items.Add(filter, new List<ShopItem>());
             }
 
             InitInteractiveUI();
@@ -170,7 +171,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SetAction(Action<ShopItemViewModel, RectTransform> clickItem)
+        private void SetAction(Action<ShopItem, RectTransform> clickItem)
         {
             ClickItemAction = clickItem;
         }
@@ -228,13 +229,13 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private static ShopItemViewModel CreateItem(ItemBase item, OrderDigest digest,
+        private static ShopItem CreateItem(ItemBase item, OrderDigest digest,
             ItemSheet sheet)
         {
             var itemId = digest.ItemId;
             var grade = sheet[itemId].Grade;
             var limit = item.ItemType != ItemType.Material && !Util.IsUsableItem(itemId);
-            return new ShopItemViewModel(item, digest, grade, limit);
+            return new ShopItem(item, digest, grade, limit);
         }
 
         private void UpdateExpired(long blockIndex)

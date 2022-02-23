@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class EquipmentInventoryViewModel : IItemViewModel
+    public class EquipmentInventoryItem : IItemViewModel
     {
         public ItemBase ItemBase { get; }
 
@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Model
 
         public RectTransform View { get; set; }
 
-        public EquipmentInventoryViewModel(ItemBase itemBase, bool equipped, bool levelLimited)
+        public EquipmentInventoryItem(ItemBase itemBase, bool equipped, bool levelLimited)
         {
             ItemBase = itemBase;
             Equipped = new ReactiveProperty<bool>(equipped);

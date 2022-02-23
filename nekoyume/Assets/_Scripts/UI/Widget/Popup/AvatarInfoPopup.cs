@@ -226,7 +226,7 @@ namespace Nekoyume.UI
             Unequip(slot, false);
         }
 
-        private void Equip(InventoryItemViewModel inventoryItem)
+        private void Equip(InventoryItem inventoryItem)
         {
             if (Game.Game.instance.Stage.IsInStage)
             {
@@ -402,7 +402,7 @@ namespace Nekoyume.UI
             confirm.CancelCallback = () => confirm.Close();
         }
 
-        private void ShowItemTooltip(InventoryItemViewModel model, RectTransform target)
+        private void ShowItemTooltip(InventoryItem model, RectTransform target)
         {
             var tooltip = Find<ItemTooltip>();
             var (submitText, interactable, submit, blocked) = GetToolTipParams(model);
@@ -410,7 +410,7 @@ namespace Nekoyume.UI
                 submit, () => inventory.ClearSelectedItem(), blocked);
         }
 
-        private (string, bool, System.Action, System.Action) GetToolTipParams(InventoryItemViewModel model)
+        private (string, bool, System.Action, System.Action) GetToolTipParams(InventoryItem model)
         {
             var item = model.ItemBase;
             var submitText = string.Empty;

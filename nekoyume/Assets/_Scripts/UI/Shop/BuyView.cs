@@ -105,7 +105,7 @@ namespace Nekoyume
                 },
             };
 
-        private readonly List<ShopItemViewModel> _selectedItems = new List<ShopItemViewModel>();
+        private readonly List<ShopItem> _selectedItems = new List<ShopItem>();
         private readonly List<int> _itemIds = new List<int>();
         private readonly int _hashNormal = Animator.StringToHash("Normal");
         private readonly int _hashDisabled = Animator.StringToHash("Disabled");
@@ -126,7 +126,7 @@ namespace Nekoyume
         private readonly ReactiveProperty<BuyMode> _mode =
             new ReactiveProperty<BuyMode>(BuyMode.Single);
 
-        private Action<List<ShopItemViewModel>> _onBuyMultiple;
+        private Action<List<ShopItem>> _onBuyMultiple;
         private Animator _resetAnimator;
         private TextMeshProUGUI _sortText;
 
@@ -143,7 +143,7 @@ namespace Nekoyume
             cartView.UpdateCart(_selectedItems);
         }
 
-        public void SetAction(Action<List<ShopItemViewModel>> onBuyMultiple)
+        public void SetAction(Action<List<ShopItem>> onBuyMultiple)
         {
             _onBuyMultiple = onBuyMultiple;
         }
@@ -288,7 +288,7 @@ namespace Nekoyume
             }).AddTo(gameObject);
         }
 
-        protected override void OnClickItem(ShopItemViewModel item)
+        protected override void OnClickItem(ShopItem item)
         {
             switch (_mode.Value)
             {
@@ -373,8 +373,8 @@ namespace Nekoyume
             ClearSelectedItems();
         }
 
-        protected override IEnumerable<ShopItemViewModel> GetSortedModels(
-            Dictionary<ItemSubTypeFilter, List<ShopItemViewModel>> items)
+        protected override IEnumerable<ShopItem> GetSortedModels(
+            Dictionary<ItemSubTypeFilter, List<ShopItem>> items)
         {
             var models = items[_selectedSubTypeFilter.Value];
             models = models.Where(x => !x.Expired.Value).ToList();

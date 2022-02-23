@@ -1,12 +1,11 @@
 ﻿using Lib9c.Model.Order;
-using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class ShopItemViewModel : IItemViewModel
+    public class ShopItem : IItemViewModel
     {
         public ItemBase ItemBase { get; }
         public OrderDigest OrderDigest { get; }
@@ -18,7 +17,7 @@ namespace Nekoyume.UI.Model
 
         public RectTransform View { get; set; }
 
-        public ShopItemViewModel(ItemBase itemBase, OrderDigest orderDigest,
+        public ShopItem(ItemBase itemBase, OrderDigest orderDigest,
             int grade, bool limited)
         {
             ItemBase = itemBase;

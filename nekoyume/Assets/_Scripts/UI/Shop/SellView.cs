@@ -20,7 +20,7 @@ namespace Nekoyume
         [SerializeField]
         private TMP_Dropdown sortFilter = null;
 
-        private ShopItemViewModel _selectedItem;
+        private ShopItem _selectedItem;
 
         // search condition
         private readonly ReactiveProperty<ItemSubTypeFilter> _selectedSubTypeFilter =
@@ -78,7 +78,7 @@ namespace Nekoyume
             _selectedSortFilter.Subscribe(_ => UpdateView()).AddTo(gameObject);
         }
 
-        protected override void OnClickItem(ShopItemViewModel item)
+        protected override void OnClickItem(ShopItem item)
         {
             if (_selectedItem == null)
             {
@@ -112,8 +112,8 @@ namespace Nekoyume
             _selectedItem = null;
         }
 
-        protected override IEnumerable<ShopItemViewModel> GetSortedModels(
-            Dictionary<ItemSubTypeFilter, List<ShopItemViewModel>> items)
+        protected override IEnumerable<ShopItem> GetSortedModels(
+            Dictionary<ItemSubTypeFilter, List<ShopItem>> items)
         {
             var models = items[_selectedSubTypeFilter.Value];
             return _selectedSortFilter.Value switch

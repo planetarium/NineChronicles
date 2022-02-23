@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class InventoryViewCell : GridCell<Model.InventoryItemViewModel, InventoryViewScroll.ContextModel>
+    public class InventoryCell : GridCell<Model.InventoryItem, InventoryScroll.ContextModel>
     {
         [SerializeField]
-        private NewInventoryItemView view;
+        private InventoryItemView view;
 
-        public override void UpdateContent(Model.InventoryItemViewModel viewModel)
+        public override void UpdateContent(Model.InventoryItem viewModel)
         {
             view.Set(viewModel, Context);
 

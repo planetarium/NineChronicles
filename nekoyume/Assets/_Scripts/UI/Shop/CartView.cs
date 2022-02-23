@@ -110,7 +110,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void UpdateCart(List<ShopItemViewModel> selectedItems)
+        public void UpdateCart(List<ShopItem> selectedItems)
         {
             if (!_mainThread.Equals(Thread.CurrentThread))
             {
