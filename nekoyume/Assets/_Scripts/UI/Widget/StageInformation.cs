@@ -5,9 +5,11 @@ using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -65,17 +67,15 @@ namespace Nekoyume.UI
             base.Initialize();
             submitButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
 
-            var tooltip = Find<ItemInformationTooltip>();
+            var tooltip = Find<ItemTooltip>();
             foreach (var view in rewardsAreaItemViews)
             {
                 view.touchHandler.OnClick.Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    var model = new Model.CountableItem(
-                        new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row),
-                        1);
-                    tooltip.Show(view.RectTransform, model);
-                    tooltip.itemInformation.iconArea.itemView.countText.enabled = false;
+                    var material = new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row);
+                    var item = new InventoryItemViewModel(material, 0, true, false, true);
+                    tooltip.Show(view.RectTransform, item, string.Empty, false, null);
                 }).AddTo(view);
             }
 

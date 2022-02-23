@@ -71,6 +71,7 @@ namespace Nekoyume.UI
         {
             TerminatePlayer();
         }
+
         #endregion
 
         public void Show(AvatarState avatarState, bool ignoreShowAnimation = false)
@@ -129,12 +130,14 @@ namespace Nekoyume.UI
             if (!(title is null))
             {
                 Destroy(_cachedCharacterTitle);
-                var clone = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName(false));
+                var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
+                    title.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 
             cpText.text = CPHelper
-                .GetCPV2(avatarState, game.TableSheets.CharacterSheet, game.TableSheets.CostumeStatSheet)
+                .GetCPV2(avatarState, game.TableSheets.CharacterSheet,
+                    game.TableSheets.CostumeStatSheet)
                 .ToString();
 
             costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, null);
@@ -165,16 +168,9 @@ namespace Nekoyume.UI
 
         private static void ShowTooltip(EquipmentSlot slot)
         {
-            var tooltip = Find<ItemInformationTooltip>();
-            if (slot is null ||
-                slot.RectTransform == tooltip.Target)
-            {
-                tooltip.Close();
-
-                return;
-            }
-
-            tooltip.Show(slot.RectTransform, new InventoryItem(slot.Item, 1));
+            var item = new InventoryItemViewModel(slot.Item, 1, true, false, true);
+            var tooltip = Find<ItemTooltip>();
+            tooltip.Show(slot.RectTransform, item, string.Empty, false, null);
         }
     }
 }

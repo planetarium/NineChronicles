@@ -58,8 +58,8 @@ namespace Nekoyume.UI.Module
             }
 
             baseItemView.OptionTag.Set(itemBase);
-
-            baseItemView.CountText.gameObject.SetActive(itemBase.ItemType == ItemType.Material);
+            baseItemView.CountText.gameObject.SetActive(count > 0 &&
+                                                        itemBase.ItemType == ItemType.Material);
             baseItemView.CountText.text = count.ToString();
 
             baseItemView.LevelLimitObject.SetActive(levelLimit);

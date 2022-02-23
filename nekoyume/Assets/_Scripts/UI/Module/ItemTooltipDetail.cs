@@ -214,7 +214,7 @@ namespace Nekoyume.UI.Module
                     var countFormat = L10nManager.Localize("UI_COUNT_FORMAT");
                     var countString = string.Format(countFormat, itemCount);
                     iconArea.countText.text = countString;
-                    iconArea.countObject.SetActive(true);
+                    iconArea.countObject.SetActive(itemCount > 0);
                     break;
                 }
                 default:
