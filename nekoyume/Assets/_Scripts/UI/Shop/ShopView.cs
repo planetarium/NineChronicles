@@ -50,7 +50,6 @@ namespace Nekoyume.UI.Module
         private readonly ReactiveProperty<int> _page = new ReactiveProperty<int>();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private Thread _mainThread = Thread.CurrentThread;
         private int _column = 0;
         private int _row = 0;
         private int _pageCount = 1;
@@ -108,17 +107,11 @@ namespace Nekoyume.UI.Module
                 _page.Value = math.max(0, _page.Value - 1);
             });
 
-            _page.Subscribe(UpdatePage).AddTo(gameObject);
-            _mainThread = Thread.CurrentThread;
+            _page.ObserveOnMainThread().Subscribe(UpdatePage).AddTo(gameObject);
         }
 
         private void UpdatePage(int page)
         {
-            if(!_mainThread.Equals(Thread.CurrentThread))
-            {
-                return;
-            }
-
             var index = page * _itemViews.Count();
             foreach (var view in _itemViews)
             {
@@ -179,7 +172,7 @@ namespace Nekoyume.UI.Module
         private void Set(IObservable<List<OrderDigest>> orderDigests)
         {
             _disposables.DisposeAllAndClear();
-            orderDigests.Subscribe(digests =>
+            orderDigests.ObserveOnMainThread().Subscribe(digests =>
             {
                 foreach (var item in _items)
                 {

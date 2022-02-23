@@ -43,16 +43,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI priceText;
 
-        private Thread _mainThread = Thread.CurrentThread;
-
         private System.Action _onClickBuy;
         private System.Action _onClickShowCart;
         private System.Action _onClickHideCart;
 
         private void Awake()
         {
-            _mainThread = Thread.CurrentThread;
-
             historyButton.onClick.AddListener(() =>
             {
                 Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE",
@@ -112,11 +108,6 @@ namespace Nekoyume.UI.Module
 
         public void UpdateCart(List<ShopItem> selectedItems)
         {
-            if (!_mainThread.Equals(Thread.CurrentThread))
-            {
-                return;
-            }
-
             var sortedItems = selectedItems.Where(x => !x.Expired.Value).ToList();
             var price = new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0 ,0);
             for (var i = 0; i < cartItems.Count; i++)
