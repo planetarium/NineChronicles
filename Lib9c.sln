@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.DevExtensions", "Lib9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.DevExtensions.Tests", ".Lib9c.DevExtensions.Tests\Lib9c.DevExtensions.Tests.csproj", "{805D6BE8-E2CC-46CB-B503-2A114064432C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Net", ".Libplanet\Libplanet.Net\Libplanet.Net.csproj", "{E879E951-62DF-4682-B78D-7E8A7165B58B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{805D6BE8-E2CC-46CB-B503-2A114064432C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{805D6BE8-E2CC-46CB-B503-2A114064432C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{805D6BE8-E2CC-46CB-B503-2A114064432C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E879E951-62DF-4682-B78D-7E8A7165B58B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E879E951-62DF-4682-B78D-7E8A7165B58B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E879E951-62DF-4682-B78D-7E8A7165B58B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E879E951-62DF-4682-B78D-7E8A7165B58B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{5C9F5F97-367E-4F8B-A123-D9AADE786CA1} = {AFA609F0-8CAE-4494-A4E2-EABD9E95D678}
 		{659722A9-132F-4B41-87BC-1B56A97A98FA} = {AFA609F0-8CAE-4494-A4E2-EABD9E95D678}
 		{17AAB5B1-695B-4597-8B36-1DF5012EE686} = {AFA609F0-8CAE-4494-A4E2-EABD9E95D678}
+		{E879E951-62DF-4682-B78D-7E8A7165B58B} = {AFA609F0-8CAE-4494-A4E2-EABD9E95D678}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {547C7D6E-6301-4BB4-AEF7-979CD504D913}
