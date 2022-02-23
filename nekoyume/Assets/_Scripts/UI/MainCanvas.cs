@@ -248,7 +248,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Craft>());
             yield return null;
-            secondWidgets.Add(Widget.Create<UpgradeEquipment>());
+            secondWidgets.Add(Widget.Create<Enhancement>());
             yield return null;
 
             // header menu

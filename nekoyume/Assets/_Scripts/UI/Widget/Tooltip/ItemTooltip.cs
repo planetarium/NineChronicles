@@ -153,6 +153,31 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(buy.gameObject));
         }
 
+        public void Show(RectTransform target,
+            EquipmentInventoryViewModel item,
+            string submitText,
+            bool interactable,
+            System.Action onSubmit,
+            System.Action onClose = null,
+            System.Action onBlocked = null)
+        {
+            buy.gameObject.SetActive(false);
+            sell.gameObject.SetActive(false);
+            detail.Set(item.ItemBase, 1, !Util.IsUsableItem(item.ItemBase.Id));
+
+            submitButton.gameObject.SetActive(onSubmit != null);
+            submitButton.Interactable = interactable;
+            submitButton.Text = submitText;
+            _onSubmit = onSubmit;
+            _onClose = onClose;
+            _onBlocked = onBlocked;
+
+            scrollbar.value = 1f;
+            UpdatePosition(target);
+            base.Show();
+            StartCoroutine(CoUpdate(submitButton.gameObject));
+        }
+
         private void UpdatePosition(RectTransform target)
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(panel);

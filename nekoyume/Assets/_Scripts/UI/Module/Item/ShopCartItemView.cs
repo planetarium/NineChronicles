@@ -28,7 +28,8 @@ namespace Nekoyume.UI.Module
             _disposables.DisposeAllAndClear();
             baseItemView.Container.SetActive(true);
             baseItemView.EnoughObject.SetActive(false);
-            baseItemView.SelectEnchantItemObject.SetActive(false);
+            baseItemView.SelectBaseItemObject.SetActive(false);
+            baseItemView.SelectMaterialItemObject.SetActive(false);
             baseItemView.LockObject.SetActive(false);
             baseItemView.ShadowObject.SetActive(false);
             baseItemView.NotificationObject.SetActive(false);

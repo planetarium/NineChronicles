@@ -20,7 +20,8 @@ namespace Nekoyume.UI.Module
             baseItemView.TradableObject.SetActive(false);
             baseItemView.ElementalDisableObject.SetActive(false);
             baseItemView.SelectObject.SetActive(false);
-            baseItemView.SelectEnchantItemObject.SetActive(false);
+            baseItemView.SelectBaseItemObject.SetActive(false);
+            baseItemView.SelectMaterialItemObject.SetActive(false);
             baseItemView.LockObject.SetActive(false);
             baseItemView.ShadowObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);

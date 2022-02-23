@@ -180,6 +180,7 @@ MonoBehaviour:
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
+  allowSwitchOffWhenIsOn: 1
 --- !u!1 &302079171140195670
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,6 +494,7 @@ MonoBehaviour:
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
+  allowSwitchOffWhenIsOn: 1
 --- !u!1 &603594570560939289
 GameObject:
   m_ObjectHideFlags: 0
@@ -1525,7 +1527,7 @@ GameObject:
   - component: {fileID: 6937746025776212025}
   - component: {fileID: 226614546827944106}
   - component: {fileID: 8615999690407369153}
-  - component: {fileID: 5387317070024931606}
+  - component: {fileID: 4093876328674768839}
   m_Layer: 5
   m_Name: EquipmentInventory
   m_TagString: Untagged
@@ -1594,7 +1596,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5387317070024931606
+--- !u!114 &4093876328674768839
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1603,9 +1605,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1231985687502486420}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01099a345f894b53a6b901391485745b, type: 3}
+  m_Script: {fileID: 11500000, guid: f14696a639364cfb8b3d2a2b35c67a22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scroll: {fileID: 0}
   categoryToggles:
   - Toggle: {fileID: 3307991623006760143}
     Type: 6
@@ -1617,7 +1620,6 @@ MonoBehaviour:
     Type: 9
   - Toggle: {fileID: 3817605487851796039}
     Type: 10
-  scroll: {fileID: 8081961528551641959}
   gradeFilter: {fileID: 2207248537032472293}
   elementalFilter: {fileID: 507054262338959276}
 --- !u!1 &1297613994568048283
@@ -1977,7 +1979,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Grade
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: b9a80818af3d38b4d8ba09e45c91740d, type: 2}
@@ -3487,6 +3489,7 @@ MonoBehaviour:
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
+  allowSwitchOffWhenIsOn: 1
 --- !u!1 &2782013887003527907
 GameObject:
   m_ObjectHideFlags: 0
@@ -3794,6 +3797,7 @@ MonoBehaviour:
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
+  allowSwitchOffWhenIsOn: 1
 --- !u!1 &3048280781542717994
 GameObject:
   m_ObjectHideFlags: 0
@@ -6375,7 +6379,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Element
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: b9a80818af3d38b4d8ba09e45c91740d, type: 2}
@@ -8629,6 +8633,7 @@ MonoBehaviour:
   onClickToggle:
     m_PersistentCalls:
       m_Calls: []
+  allowSwitchOffWhenIsOn: 1
 --- !u!1 &8680020606063181038
 GameObject:
   m_ObjectHideFlags: 0
@@ -9161,7 +9166,7 @@ GameObject:
   - component: {fileID: 3533682818334525431}
   - component: {fileID: 168369037492338310}
   - component: {fileID: 1978996699507812588}
-  - component: {fileID: 8081961528551641959}
+  - component: {fileID: 6056138216070264072}
   m_Layer: 5
   m_Name: Scroll View
   m_TagString: Untagged
@@ -9254,7 +9259,7 @@ MonoBehaviour:
     Easing: 24
   draggable: 1
   scrollbar: {fileID: 7329688888543730001}
---- !u!114 &8081961528551641959
+--- !u!114 &6056138216070264072
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9263,7 +9268,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 9023666819244436371}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 796ce6a76e824578a73aecb9b64e45ff, type: 3}
+  m_Script: {fileID: 11500000, guid: ab1d61622be44412ad4b956adc8615e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cellInterval: -0.6666667
@@ -9279,7 +9284,7 @@ MonoBehaviour:
   cellSize: {x: 96, y: 96}
   forcedScrollSensitivity: 20
   fillWithNullToEmptyViewport: 1
-  cellTemplate: {fileID: 4631120942989665084, guid: 7b6d37b1945369443925fd19e318a7e6,
+  cellTemplate: {fileID: 7118558718880983813, guid: 162f3151c78299e4dac84179d5f5ad71,
     type: 3}
 --- !u!1 &9054314389906798386
 GameObject:

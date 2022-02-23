@@ -11,14 +11,14 @@ namespace Nekoyume.UI.Module
     using UniRx;
 
     [RequireComponent(typeof(BaseItemView))]
-    public class NewInventoryItemView : MonoBehaviour
+    public class EquipmentInventoryItemView : MonoBehaviour
     {
         [SerializeField]
         private BaseItemView baseItemView;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public void Set(InventoryItemViewModel model, InventoryViewScroll.ContextModel context)
+        public void Set(EquipmentInventoryViewModel model, EquipmentInventoryViewScroll.ContextModel context)
         {
             if (model is null)
             {
@@ -31,11 +31,14 @@ namespace Nekoyume.UI.Module
             baseItemView.EnoughObject.SetActive(false);
             baseItemView.MinusObject.SetActive(false);
             baseItemView.ExpiredObject.SetActive(false);
-            baseItemView.SelectBaseItemObject.SetActive(false);
-            baseItemView.SelectMaterialItemObject.SetActive(false);
+
             baseItemView.LockObject.SetActive(false);
             baseItemView.ShadowObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
+            baseItemView.CountText.gameObject.SetActive(false);
+            baseItemView.FocusObject.SetActive(false);
+            baseItemView.TradableObject.SetActive(false);
+            baseItemView.NotificationObject.SetActive(false);
 
             baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(model.ItemBase);
 
@@ -68,23 +71,17 @@ namespace Nekoyume.UI.Module
 
             baseItemView.OptionTag.Set(model.ItemBase);
 
-            baseItemView.CountText.gameObject.SetActive(
-                model.ItemBase.ItemType == ItemType.Material);
-            baseItemView.CountText.text = model.Count.Value.ToString();
-
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b)).AddTo(_disposables);
             model.LevelLimited.Subscribe(b => baseItemView.LevelLimitObject.SetActive(b)).AddTo(_disposables);
-            model.ElementalTypeDisabled.Subscribe(b => baseItemView.ElementalDisableObject.SetActive(b)).AddTo(_disposables);
-            model.Tradable.Subscribe(b => baseItemView.TradableObject.SetActive(b)).AddTo(_disposables);
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
-            model.Focused.Subscribe(b => baseItemView.FocusObject.SetActive(b)).AddTo(_disposables);
-            model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b)).AddTo(_disposables);
+            model.SelectedBase.Subscribe(b => baseItemView.SelectBaseItemObject.SetActive(b)).AddTo(_disposables);
+            model.SelectedMaterial.Subscribe(b => baseItemView.SelectMaterialItemObject.SetActive(b)).AddTo(_disposables);
+            model.Disabled.Subscribe(b => baseItemView.ElementalDisableObject.SetActive(b)).AddTo(_disposables);
+
             model.View = GetComponent<RectTransform>();
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)
                 .Subscribe(context.OnClick.OnNext).AddTo(_disposables);
-            baseItemView.TouchHandler.OnDoubleClick.Select(_ => model)
-                .Subscribe(context.OnDoubleClick.OnNext).AddTo(_disposables);
         }
     }
 }
