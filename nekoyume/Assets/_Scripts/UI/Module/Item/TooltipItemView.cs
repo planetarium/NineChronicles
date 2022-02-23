@@ -13,6 +13,7 @@ namespace Nekoyume.UI.Module
         public void Set(ItemBase itemBase, int count, bool levelLimit)
         {
             baseItemView.Container.SetActive(true);
+            baseItemView.EmptyObject.SetActive(false);
             baseItemView.EnoughObject.SetActive(false);
             baseItemView.MinusObject.SetActive(false);
             baseItemView.FocusObject.SetActive(false);

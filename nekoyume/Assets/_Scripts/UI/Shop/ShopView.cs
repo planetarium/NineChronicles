@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Module
             new Dictionary<ItemSubTypeFilter, List<ShopItem>>();
 
         private readonly List<ShopItem> _selectedModels = new List<ShopItem>();
-        private readonly List<NewShopItemView> _itemViews = new List<NewShopItemView>();
+        private readonly List<ShopItemView> _itemViews = new List<ShopItemView>();
         private readonly ReactiveProperty<int> _page = new ReactiveProperty<int>();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -154,7 +154,7 @@ namespace Nekoyume.UI.Module
             for (var i = 0; i < sum; i++)
             {
                 var go = Instantiate(shopPrefab, gridLayoutGroup.transform);
-                var view = go.GetComponent<NewShopItemView>();
+                var view = go.GetComponent<ShopItemView>();
                 _itemViews.Add(view);
             }
 

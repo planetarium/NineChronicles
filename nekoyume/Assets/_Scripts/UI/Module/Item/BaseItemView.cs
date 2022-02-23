@@ -19,6 +19,9 @@ namespace Nekoyume
         private GameObject container;
 
         [SerializeField]
+        private GameObject emptyObject;
+
+        [SerializeField]
         private ItemViewDataScriptableObject itemViewData;
 
         [SerializeField]
@@ -91,6 +94,7 @@ namespace Nekoyume
         private GameObject shadowObject;
 
         public GameObject Container => container;
+        public GameObject EmptyObject => emptyObject;
         public TouchHandler TouchHandler => touchHandler;
         public Image GradeImage => gradeImage;
         public UIHsvModifier GradeHsv => gradeHsv;

@@ -23,11 +23,13 @@ namespace Nekoyume.UI.Module
             if (model is null)
             {
                 baseItemView.Container.SetActive(false);
+                baseItemView.EmptyObject.SetActive(true);
                 return;
             }
 
             _disposables.DisposeAllAndClear();
             baseItemView.Container.SetActive(true);
+            baseItemView.EmptyObject.SetActive(false);
             baseItemView.EnoughObject.SetActive(false);
             baseItemView.MinusObject.SetActive(false);
             baseItemView.ExpiredObject.SetActive(false);

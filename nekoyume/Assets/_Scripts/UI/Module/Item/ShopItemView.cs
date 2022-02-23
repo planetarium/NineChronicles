@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
-using Nekoyume.UI.Model;
 using UnityEngine;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
@@ -11,7 +10,7 @@ namespace Nekoyume.UI.Module
     using UniRx;
 
     [RequireComponent(typeof(BaseItemView))]
-    public class NewShopItemView : MonoBehaviour
+    public class ShopItemView : MonoBehaviour
     {
         [SerializeField]
         private BaseItemView baseItemView;
@@ -28,12 +27,12 @@ namespace Nekoyume.UI.Module
 
             _disposables.DisposeAllAndClear();
             baseItemView.Container.SetActive(true);
+            baseItemView.EmptyObject.SetActive(false);
             baseItemView.EnoughObject.SetActive(false);
             baseItemView.MinusObject.SetActive(false);
             baseItemView.SelectBaseItemObject.SetActive(false);
             baseItemView.SelectMaterialItemObject.SetActive(false);
             baseItemView.LockObject.SetActive(false);
-            baseItemView.ShadowObject.SetActive(false);
             baseItemView.NotificationObject.SetActive(false);
             baseItemView.FocusObject.SetActive(false);
             baseItemView.TradableObject.SetActive(false);
