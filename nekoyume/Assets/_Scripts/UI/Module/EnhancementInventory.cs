@@ -210,6 +210,29 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
+        private void OnDoubleClickItem(EnhancementInventoryItem item)
+        {
+            ClearSelectedItem();
+
+            if (_baseModel is null)
+            {
+                _baseModel = item;
+                _baseModel.SelectedBase.SetValueAndForceNotify(true);
+            }
+            else
+            {
+                if (item.Disabled.Value)
+                {
+                    return;
+                }
+                _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
+                _materialModel = item;
+                _materialModel.SelectedMaterial.SetValueAndForceNotify(true);
+            }
+
+            UpdateView();
+        }
+
         private void DisableItem(IEnumerable<EnhancementInventoryItem> items)
         {
             if (_baseModel is null)
@@ -307,6 +330,7 @@ namespace Nekoyume.UI.Module
             }).AddTo(_disposables);
 
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
+            scroll.OnDoubleClick.Subscribe(OnDoubleClickItem).AddTo(_disposables);
         }
 
         private void AddItem(ItemBase itemBase)

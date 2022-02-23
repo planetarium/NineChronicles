@@ -14,10 +14,12 @@ namespace Nekoyume.UI.Scroller
     public class ContextModel : GridScrollDefaultContext
     {
         public readonly Subject<EnhancementInventoryItem> OnClick = new Subject<EnhancementInventoryItem>();
+        public readonly Subject<EnhancementInventoryItem> OnDoubleClick = new Subject<EnhancementInventoryItem>();
 
         public override void Dispose()
         {
             OnClick?.Dispose();
+            OnDoubleClick?.Dispose();
             base.Dispose();
         }
     }
@@ -30,6 +32,7 @@ namespace Nekoyume.UI.Scroller
     private EnhancementInventoryCell cellTemplate = null;
 
     public IObservable<EnhancementInventoryItem> OnClick => Context.OnClick;
+    public IObservable<EnhancementInventoryItem> OnDoubleClick => Context.OnDoubleClick;
 
     protected override FancyCell<EnhancementInventoryItem, ContextModel> CellTemplate => cellTemplate;
     }
