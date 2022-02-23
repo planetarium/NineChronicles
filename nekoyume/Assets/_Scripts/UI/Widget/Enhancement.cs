@@ -112,8 +112,6 @@ namespace Nekoyume.UI
                 .Subscribe(_ => Action())
                 .AddTo(gameObject);
 
-
-
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
 
             baseSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem(true));
@@ -136,7 +134,7 @@ namespace Nekoyume.UI
             Find<CombinationMain>().Show();
         }
 
-        private void ShowItemTooltip(EquipmentInventoryItem model, RectTransform target)
+        private void ShowItemTooltip(EnhancementInventoryItem model, RectTransform target)
         {
             var tooltip = Find<ItemTooltip>();
             tooltip.Show(target, model, enhancementInventory.GetSubmitText(),
@@ -257,8 +255,8 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateInformation(EquipmentInventoryItem baseModel,
-            EquipmentInventoryItem materialModel)
+        private void UpdateInformation(EnhancementInventoryItem baseModel,
+            EnhancementInventoryItem materialModel)
         {
             if (baseModel is null)
             {

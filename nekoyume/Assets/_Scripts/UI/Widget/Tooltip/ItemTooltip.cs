@@ -154,7 +154,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(RectTransform target,
-            EquipmentInventoryItem item,
+            EnhancementInventoryItem item,
             string submitText,
             bool interactable,
             System.Action onSubmit,

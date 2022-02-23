@@ -45,7 +45,7 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
-        private EquipmentInventoryScroll scroll;
+        private EnhancementInventoryScroll scroll;
 
         [SerializeField]
         private List<CategoryToggle> categoryToggles = null;
@@ -56,9 +56,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TMP_Dropdown elementalFilter = null;
 
-        private readonly Dictionary<ItemSubType, List<EquipmentInventoryItem>>
+        private readonly Dictionary<ItemSubType, List<EnhancementInventoryItem>>
             _equipments =
-                new Dictionary<ItemSubType, List<EquipmentInventoryItem>>();
+                new Dictionary<ItemSubType, List<EnhancementInventoryItem>>();
 
 
         private readonly ReactiveProperty<ItemSubType> _selectedItemSubType =
@@ -72,13 +72,13 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private EquipmentInventoryItem _selectedModel;
-        private EquipmentInventoryItem _baseModel;
-        private EquipmentInventoryItem _materialModel;
+        private EnhancementInventoryItem _selectedModel;
+        private EnhancementInventoryItem _baseModel;
+        private EnhancementInventoryItem _materialModel;
 
-        private Action<EquipmentInventoryItem, RectTransform> _onSelectItem;
+        private Action<EnhancementInventoryItem, RectTransform> _onSelectItem;
 
-        private Action<EquipmentInventoryItem, EquipmentInventoryItem> _onUpdateView;
+        private Action<EnhancementInventoryItem, EnhancementInventoryItem> _onUpdateView;
 
         private void Awake()
         {
@@ -182,7 +182,7 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        private void OnClickItem(EquipmentInventoryItem item)
+        private void OnClickItem(EnhancementInventoryItem item)
         {
             if (item.Equals(_baseModel)) // 둘다 해제
             {
@@ -207,7 +207,7 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        private void DisableItem(IEnumerable<EquipmentInventoryItem> items)
+        private void DisableItem(IEnumerable<EnhancementInventoryItem> items)
         {
             if (_baseModel is null)
             {
@@ -225,7 +225,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private bool IsDisable(EquipmentInventoryItem a, EquipmentInventoryItem b)
+        private bool IsDisable(EnhancementInventoryItem a, EnhancementInventoryItem b)
         {
             if (a.ItemBase.ItemSubType != b.ItemBase.ItemSubType)
             {
@@ -250,11 +250,11 @@ namespace Nekoyume.UI.Module
             scroll.UpdateData(models, jumpToFirst);
         }
 
-        private IEnumerable<EquipmentInventoryItem> GetSortedModels()
+        private IEnumerable<EnhancementInventoryItem> GetSortedModels()
         {
             if (!_equipments.ContainsKey(_selectedItemSubType.Value))
             {
-                return new List<EquipmentInventoryItem>();
+                return new List<EnhancementInventoryItem>();
             }
 
             var result = _equipments[_selectedItemSubType.Value].ToList();
@@ -273,8 +273,8 @@ namespace Nekoyume.UI.Module
             return result;
         }
 
-        public void Set(Action<EquipmentInventoryItem, RectTransform> onSelectItem,
-            Action<EquipmentInventoryItem, EquipmentInventoryItem> onUpdateView)
+        public void Set(Action<EnhancementInventoryItem, RectTransform> onSelectItem,
+            Action<EnhancementInventoryItem, EnhancementInventoryItem> onUpdateView)
         {
             _onSelectItem = onSelectItem;
             _onUpdateView = onUpdateView;
@@ -318,14 +318,14 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            var inventoryItem = new EquipmentInventoryItem(itemBase,
+            var inventoryItem = new EnhancementInventoryItem(itemBase,
                 equipped: equipment.equipped,
                 levelLimited: !Util.IsUsableItem(itemBase.Id));
 
             if (!_equipments.ContainsKey(inventoryItem.ItemBase.ItemSubType))
             {
                 _equipments.Add(inventoryItem.ItemBase.ItemSubType,
-                    new List<EquipmentInventoryItem>());
+                    new List<EnhancementInventoryItem>());
             }
 
             _equipments[inventoryItem.ItemBase.ItemSubType].Add(inventoryItem);

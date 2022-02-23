@@ -1529,7 +1529,7 @@ GameObject:
   - component: {fileID: 8615999690407369153}
   - component: {fileID: 4093876328674768839}
   m_Layer: 5
-  m_Name: EquipmentInventory
+  m_Name: EnhancementInventory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1608,7 +1608,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f14696a639364cfb8b3d2a2b35c67a22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scroll: {fileID: 0}
+  scroll: {fileID: 6056138216070264072}
   categoryToggles:
   - Toggle: {fileID: 3307991623006760143}
     Type: 6

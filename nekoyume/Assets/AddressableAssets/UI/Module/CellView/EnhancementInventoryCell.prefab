@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8938824311837650261}
   - component: {fileID: 7118558718880983813}
   m_Layer: 5
-  m_Name: EquipmentInventoryCell
+  m_Name: EnhancementInventoryCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -185,7 +185,7 @@ PrefabInstance:
     - target: {fileID: 3922463978809685081, guid: c384dcd949f47424f8058127a30f36cd,
         type: 3}
       propertyPath: m_Name
-      value: ItemView_EquipmentInventory
+      value: ItemView_EnhancementInventory
       objectReference: {fileID: 0}
     - target: {fileID: 4615593778797352112, guid: c384dcd949f47424f8058127a30f36cd,
         type: 3}
