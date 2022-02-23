@@ -25,7 +25,7 @@ namespace Nekoyume.UI
     public class Enhancement : Widget
     {
         [SerializeField]
-        private EnhancementInventoryView enhancementInventory;
+        private EnhancementInventory enhancementInventory;
 
         [SerializeField]
         private ConditionalCostButton upgradeButton;

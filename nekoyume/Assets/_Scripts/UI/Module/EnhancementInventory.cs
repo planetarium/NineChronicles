@@ -15,7 +15,7 @@ namespace Nekoyume.UI.Module
 {
     using UniRx;
 
-    public class EnhancementInventoryView : MonoBehaviour
+    public class EnhancementInventory : MonoBehaviour
     {
         private enum Grade
         {
@@ -45,9 +45,6 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
-        private EnhancementInventoryScroll scroll;
-
-        [SerializeField]
         private List<CategoryToggle> categoryToggles = null;
 
         [SerializeField]
@@ -55,6 +52,12 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private TMP_Dropdown elementalFilter = null;
+
+        [SerializeField]
+        private EnhancementInventoryScroll scroll;
+
+        [SerializeField]
+        private bool resetScrollOnEnable;
 
         private readonly Dictionary<ItemSubType, List<EnhancementInventoryItem>>
             _equipments =
@@ -300,7 +303,7 @@ namespace Nekoyume.UI.Module
                     AddItem(item.item);
                 }
 
-                UpdateView(false);
+                UpdateView(resetScrollOnEnable);
             }).AddTo(_disposables);
 
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);

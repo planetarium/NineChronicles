@@ -2996,7 +2996,7 @@ GameObject:
   - component: {fileID: 4682249089816918155}
   - component: {fileID: 4100081935161556727}
   m_Layer: 5
-  m_Name: InventoryView
+  m_Name: Inventory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3083,6 +3083,7 @@ MonoBehaviour:
   materialButton: {fileID: 1284933532856369684}
   costumeButton: {fileID: 9134396430624545873}
   scroll: {fileID: 3669903297582199154}
+  resetScrollOnEnable: 0
 --- !u!1 &4714281320301330323
 GameObject:
   m_ObjectHideFlags: 0

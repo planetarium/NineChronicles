@@ -22,6 +22,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Game.Character;
 using Nekoyume.Model.Elemental;
 using Nekoyume.TableData;
+using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using Material = Nekoyume.Model.Item.Material;
 
@@ -35,7 +36,7 @@ namespace Nekoyume.UI
         private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
 
         [SerializeField]
-        private InventoryView inventory;
+        private Inventory inventory;
 
         [SerializeField]
         private EquipmentSlots equipmentSlots;

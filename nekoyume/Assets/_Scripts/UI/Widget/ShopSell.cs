@@ -12,6 +12,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
+using Inventory = Nekoyume.UI.Module.Inventory;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
@@ -28,7 +29,7 @@ namespace Nekoyume.UI
         }
 
         [SerializeField]
-        private InventoryView inventory;
+        private Inventory inventory;
 
         [SerializeField]
         private SellView view;

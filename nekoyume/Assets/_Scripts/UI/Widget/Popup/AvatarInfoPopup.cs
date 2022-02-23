@@ -15,6 +15,7 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Inventory = Nekoyume.UI.Module.Inventory;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI
@@ -28,7 +29,7 @@ namespace Nekoyume.UI
         private static readonly Vector3 PlayerPosition = new Vector3(3000f, 2999.2f, 2.15f);
 
         [SerializeField]
-        private InventoryView inventory;
+        private Inventory inventory;
 
         [SerializeField]
         private TextMeshProUGUI nicknameText;

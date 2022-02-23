@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Module
 {
     using UniRx;
 
-    public class InventoryView : MonoBehaviour
+    public class Inventory : MonoBehaviour
     {
         [SerializeField]
         private CategoryTabButton equipmentButton = null;
@@ -32,6 +32,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private InventoryScroll scroll = null;
+
+        [SerializeField]
+        private bool resetScrollOnEnable;
 
         private readonly ReactiveCollection<InventoryItem> _equipments =
             new ReactiveCollection<InventoryItem>();
@@ -130,7 +133,7 @@ namespace Nekoyume.UI.Module
                     AddItem(item.item, item.count);
                 }
 
-                scroll.UpdateData(GetModels(_activeItemType), false);
+                scroll.UpdateData(GetModels(_activeItemType), resetScrollOnEnable);
                 UpdateEquipmentNotification(_elementalTypes);
                 UpdateElementalTypeDisable(_elementalTypes);
             }).AddTo(_disposables);
