@@ -272,26 +272,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (requirementRow.Level > States.Instance.CurrentAvatarState.level)
-            {
-                var confirm = Find<ConfirmPopup>();
-                var title = L10nManager.Localize("UI_CONFIRM");
-                var content = L10nManager.Localize("UI_WARNING_CRAFT_RESULT_ITEM", requirementRow.Level);
-                var labelYes = L10nManager.Localize("UI_YES");
-                var labelNo = L10nManager.Localize("UI_NO");
-                confirm.Show(title, content, labelYes, labelNo, false);
-                confirm.CloseCallback = result =>
-                {
-                    if (result == ConfirmResult.Yes)
-                    {
-                        CombinationEquipmentAction(recipeInfo);
-                    }
-                };
-            }
-            else
-            {
-                CombinationEquipmentAction(recipeInfo);
-            }
+            CombinationEquipmentAction(recipeInfo);
         }
 
         private void OnClickConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
@@ -309,27 +290,8 @@ namespace Nekoyume.UI
                 CombinationConsumableAction(recipeInfo);
                 return;
             }
-
-            if (requirementRow.Level > States.Instance.CurrentAvatarState.level)
-            {
-                var confirm = Find<ConfirmPopup>();
-                var title = L10nManager.Localize("UI_CONFIRM");
-                var content = L10nManager.Localize("UI_WARNING_CRAFT_RESULT_ITEM", requirementRow.Level);
-                var labelYes = L10nManager.Localize("UI_YES");
-                var labelNo = L10nManager.Localize("UI_NO");
-                confirm.Show(title, content, labelYes, labelNo, false);
-                confirm.CloseCallback = result =>
-                {
-                    if (result == ConfirmResult.Yes)
-                    {
-                        CombinationConsumableAction(recipeInfo);
-                    }
-                };
-            }
-            else
-            {
-                CombinationConsumableAction(recipeInfo);
-            }
+            
+            CombinationConsumableAction(recipeInfo);
         }
 
         private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
