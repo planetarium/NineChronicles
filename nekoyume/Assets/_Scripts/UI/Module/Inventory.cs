@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.Elemental;
@@ -133,8 +134,9 @@ namespace Nekoyume.UI.Module
                     AddItem(item.item, item.count);
                 }
 
-                scroll.UpdateData(GetModels(_activeItemType), resetScrollOnEnable);
+
                 UpdateEquipmentNotification(_elementalTypes);
+                scroll.UpdateData(GetModels(_activeItemType), resetScrollOnEnable);
                 UpdateElementalTypeDisable(_elementalTypes);
             }).AddTo(_disposables);
 
@@ -267,10 +269,29 @@ namespace Nekoyume.UI.Module
             {
                 ItemType.Consumable => _consumables,
                 ItemType.Costume => _costumes,
-                ItemType.Equipment => _equipments,
+                ItemType.Equipment => GetOrderedEquipments(_equipments),// new ReactiveCollection<InventoryItem>(_equipments.OrderByDescending(equipment => equipment.ItemBase.Id)),
                 ItemType.Material => _materials,
                 _ => throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null)
             };
+        }
+
+        public static ReactiveCollection<InventoryItem> GetOrderedEquipments(
+            IEnumerable<InventoryItem> items)
+        {
+            var tableSheets = Game.Game.instance.TableSheets;
+            return new ReactiveCollection<InventoryItem>(items
+                .OrderByDescending(item => item.HasNotification.Value)
+                .ThenByDescending(item =>
+                {
+                    var itemBase = item.ItemBase;
+                    var isMadeWithMimisbrunnrRecipe = ((Equipment) itemBase).IsMadeWithMimisbrunnrRecipe(
+                        tableSheets.EquipmentItemRecipeSheet,
+                        tableSheets.EquipmentItemSubRecipeSheetV2,
+                        tableSheets.EquipmentItemOptionSheet);
+                    return (isMadeWithMimisbrunnrRecipe
+                        ? tableSheets.ItemRequirementSheet[itemBase.Id].MimisLevel
+                        : tableSheets.ItemRequirementSheet[itemBase.Id].Level) <= States.Instance.CurrentAvatarState.level;
+                }));
         }
 
         private void OnDoubleClick(InventoryItem item)
