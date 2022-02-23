@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public void Set(EquipmentInventoryViewModel model, EquipmentInventoryViewScroll.ContextModel context)
+        public void Set(EquipmentInventoryItem model, EquipmentInventoryScroll.ContextModel context)
         {
             if (model is null)
             {

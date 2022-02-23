@@ -11,14 +11,14 @@ namespace Nekoyume.UI.Module
     using UniRx;
 
     [RequireComponent(typeof(BaseItemView))]
-    public class NewInventoryItemView : MonoBehaviour
+    public class InventoryItemView : MonoBehaviour
     {
         [SerializeField]
         private BaseItemView baseItemView;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public void Set(InventoryItemViewModel model, InventoryViewScroll.ContextModel context)
+        public void Set(InventoryItem model, InventoryScroll.ContextModel context)
         {
             if (model is null)
             {

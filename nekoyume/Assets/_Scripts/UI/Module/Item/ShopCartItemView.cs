@@ -4,6 +4,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using UnityEngine;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI.Module
 {
@@ -17,7 +18,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public void Set(ShopItemViewModel model, Action<ShopItemViewModel> onClick)
+        public void Set(ShopItem model, Action<ShopItem> onClick)
         {
             if (model == null)
             {

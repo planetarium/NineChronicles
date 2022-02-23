@@ -74,7 +74,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(RectTransform target,
-            InventoryItemViewModel item,
+            InventoryItem item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
@@ -99,7 +99,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(RectTransform target,
-            ShopItemViewModel item,
+            ShopItem item,
             System.Action onRegister,
             System.Action onSellCancellation,
             System.Action onClose)
@@ -128,7 +128,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(RectTransform target,
-            ShopItemViewModel item,
+            ShopItem item,
             System.Action onBuy,
             System.Action onClose)
         {
@@ -154,7 +154,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(RectTransform target,
-            EquipmentInventoryViewModel item,
+            EquipmentInventoryItem item,
             string submitText,
             bool interactable,
             System.Action onSubmit,

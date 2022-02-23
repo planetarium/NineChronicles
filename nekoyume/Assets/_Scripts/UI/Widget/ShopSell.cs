@@ -12,6 +12,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
 {
@@ -103,7 +104,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        private void ShowItemTooltip(InventoryItemViewModel model, RectTransform target)
+        private void ShowItemTooltip(InventoryItem model, RectTransform target)
         {
             var tooltip = Find<ItemTooltip>();
             tooltip.Show(target, model, L10nManager.Localize("UI_SELL"),
@@ -113,7 +114,7 @@ namespace Nekoyume.UI
                 () => L10nManager.Localize("UI_UNTRADABLE"));
         }
 
-        private void ShowSellTooltip(ShopItemViewModel model, RectTransform target)
+        private void ShowSellTooltip(ShopItem model, RectTransform target)
         {
             var tooltip = Find<ItemTooltip>();
             tooltip.Show(target, model,
@@ -162,7 +163,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        private void ShowSell(InventoryItemViewModel model)
+        private void ShowSell(InventoryItem model)
         {
             if (model is null)
             {
@@ -187,7 +188,7 @@ namespace Nekoyume.UI
             data.Item.Value.CountEnabled.Value = false;
         }
 
-        private void ShowUpdateSellPopup(ShopItemViewModel model)
+        private void ShowUpdateSellPopup(ShopItem model)
         {
             var data = SharedModel.ItemCountableAndPricePopup.Value;
 
@@ -218,7 +219,7 @@ namespace Nekoyume.UI
             data.Item.Value.CountEnabled.Value = false;
         }
 
-        private void ShowRetrievePopup(ShopItemViewModel model)
+        private void ShowRetrievePopup(ShopItem model)
         {
             SharedModel.ItemCountAndPricePopup.Value.TitleText.Value =
                 L10nManager.Localize("UI_RETRIEVE");

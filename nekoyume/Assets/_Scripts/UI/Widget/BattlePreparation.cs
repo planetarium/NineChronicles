@@ -354,7 +354,7 @@ namespace Nekoyume.UI
             Unequip(slot, false);
         }
 
-        private void Equip(InventoryItemViewModel inventoryItem)
+        private void Equip(InventoryItem inventoryItem)
         {
             if (inventoryItem.LevelLimited.Value)
             {
@@ -480,7 +480,7 @@ namespace Nekoyume.UI
             PostEquipOrUnequip(slot);
         }
 
-        private void ShowItemTooltip(InventoryItemViewModel model, RectTransform target)
+        private void ShowItemTooltip(InventoryItem model, RectTransform target)
         {
             var tooltip = Find<ItemTooltip>();
             var (submitText, interactable, submit, blocked) = GetToolTipParams(model);
@@ -489,7 +489,7 @@ namespace Nekoyume.UI
         }
 
         private (string, bool, System.Action, System.Action) GetToolTipParams(
-            InventoryItemViewModel model)
+            InventoryItem model)
         {
             var item = model.ItemBase;
             var submitText = string.Empty;

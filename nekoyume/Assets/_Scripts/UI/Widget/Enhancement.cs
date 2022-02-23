@@ -25,7 +25,7 @@ namespace Nekoyume.UI
     public class Enhancement : Widget
     {
         [SerializeField]
-        private EquipmentInventoryView equipmentInventory;
+        private EnhancementInventoryView enhancementInventory;
 
         [SerializeField]
         private ConditionalCostButton upgradeButton;
@@ -116,15 +116,15 @@ namespace Nekoyume.UI
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
 
-            baseSlot.RemoveButton.onClick.AddListener(() => equipmentInventory.DeselectItem(true));
-            materialSlot.RemoveButton.onClick.AddListener(() => equipmentInventory.DeselectItem());
+            baseSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem(true));
+            materialSlot.RemoveButton.onClick.AddListener(() => enhancementInventory.DeselectItem());
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             Clear();
             HelpTooltip.HelpMe(100017, true);
-            equipmentInventory.Set(ShowItemTooltip, UpdateInformation);
+            enhancementInventory.Set(ShowItemTooltip, UpdateInformation);
             animator.Play(HashToShow);
             base.Show(ignoreShowAnimation);
         }
@@ -136,13 +136,13 @@ namespace Nekoyume.UI
             Find<CombinationMain>().Show();
         }
 
-        private void ShowItemTooltip(EquipmentInventoryViewModel model, RectTransform target)
+        private void ShowItemTooltip(EquipmentInventoryItem model, RectTransform target)
         {
             var tooltip = Find<ItemTooltip>();
-            tooltip.Show(target, model, equipmentInventory.GetSubmitText(),
+            tooltip.Show(target, model, enhancementInventory.GetSubmitText(),
                 !model.Disabled.Value,
-                () => equipmentInventory.SelectItem(),
-                () => equipmentInventory.ClearSelectedItem(),
+                () => enhancementInventory.SelectItem(),
+                () => enhancementInventory.ClearSelectedItem(),
                 () => NotificationSystem.Push(MailType.System,
                     L10nManager.Localize("NOTIFICATION_MISMATCH_MATERIAL"),
                     NotificationCell.NotificationType.Alert));
@@ -150,7 +150,7 @@ namespace Nekoyume.UI
 
         private void Action()
         {
-            var (baseItem, materialItem) = equipmentInventory.GetSelectedModels();
+            var (baseItem, materialItem) = enhancementInventory.GetSelectedModels();
             if (!IsInteractableButton(baseItem, materialItem))
             {
                 NotificationSystem.Push(MailType.System, errorMessage,
@@ -186,7 +186,7 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
 
-            equipmentInventory.DeselectItem(true);
+            enhancementInventory.DeselectItem(true);
 
             StartCoroutine(CoCombineNPCAnimation(baseItem, row.SuccessRequiredBlockIndex, Clear));
         }
@@ -194,7 +194,7 @@ namespace Nekoyume.UI
         private void Clear()
         {
             ClearInformation();
-            equipmentInventory.DeselectItem(true);
+            enhancementInventory.DeselectItem(true);
         }
 
         private bool IsInteractableButton(IItem item, IItem material)
@@ -257,8 +257,8 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateInformation(EquipmentInventoryViewModel baseModel,
-            EquipmentInventoryViewModel materialModel)
+        private void UpdateInformation(EquipmentInventoryItem baseModel,
+            EquipmentInventoryItem materialModel)
         {
             if (baseModel is null)
             {

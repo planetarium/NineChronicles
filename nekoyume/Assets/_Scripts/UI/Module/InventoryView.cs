@@ -31,28 +31,28 @@ namespace Nekoyume.UI.Module
         private CategoryTabButton costumeButton = null;
 
         [SerializeField]
-        private InventoryViewScroll scroll = null;
+        private InventoryScroll scroll = null;
 
-        private readonly ReactiveCollection<InventoryItemViewModel> _equipments =
-            new ReactiveCollection<InventoryItemViewModel>();
+        private readonly ReactiveCollection<InventoryItem> _equipments =
+            new ReactiveCollection<InventoryItem>();
 
-        private readonly ReactiveCollection<InventoryItemViewModel> _consumables =
-            new ReactiveCollection<InventoryItemViewModel>();
+        private readonly ReactiveCollection<InventoryItem> _consumables =
+            new ReactiveCollection<InventoryItem>();
 
-        private readonly ReactiveCollection<InventoryItemViewModel> _materials =
-            new ReactiveCollection<InventoryItemViewModel>();
+        private readonly ReactiveCollection<InventoryItem> _materials =
+            new ReactiveCollection<InventoryItem>();
 
-        private readonly ReactiveCollection<InventoryItemViewModel> _costumes =
-            new ReactiveCollection<InventoryItemViewModel>();
+        private readonly ReactiveCollection<InventoryItem> _costumes =
+            new ReactiveCollection<InventoryItem>();
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private InventoryItemViewModel _selectedModel;
+        private InventoryItem _selectedModel;
 
-        private Action<InventoryItemViewModel, RectTransform> _onClickItem;
-        private Action<InventoryItemViewModel> _onDoubleClickItem;
+        private Action<InventoryItem, RectTransform> _onClickItem;
+        private Action<InventoryItem> _onDoubleClickItem;
         private System.Action _onToggleEquipment;
         private System.Action _onToggleCostume;
         private readonly List<ElementalType> _elementalTypes = new List<ElementalType>();
@@ -87,8 +87,8 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        private void SetAction(Action<InventoryItemViewModel, RectTransform> clickItem,
-            Action<InventoryItemViewModel> doubleClickItem = null,
+        private void SetAction(Action<InventoryItem, RectTransform> clickItem,
+            Action<InventoryItem> doubleClickItem = null,
             System.Action clickEquipmentToggle = null,
             System.Action clickCostumeToggle = null)
         {
@@ -163,7 +163,7 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            InventoryItemViewModel inventoryItem;
+            InventoryItem inventoryItem;
             switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
@@ -204,7 +204,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private bool TryGetMaterial(Material material, bool isTradable, out InventoryItemViewModel model)
+        private bool TryGetMaterial(Material material, bool isTradable, out InventoryItem model)
         {
             foreach (var item in _materials)
             {
@@ -226,14 +226,14 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        private InventoryItemViewModel CreateInventoryItem(ItemBase itemBase, int count,
+        private InventoryItem CreateInventoryItem(ItemBase itemBase, int count,
             bool equipped = false, bool levelLimited = false)
         {
-            return new InventoryItemViewModel(itemBase, count, equipped, levelLimited,
+            return new InventoryItem(itemBase, count, equipped, levelLimited,
                 _checkTradable && !(itemBase is ITradableItem));
         }
 
-        private void OnClickItem(InventoryItemViewModel item)
+        private void OnClickItem(InventoryItem item)
         {
             if (_selectedModel == null)
             {
@@ -258,7 +258,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private ReactiveCollection<InventoryItemViewModel> GetModels(ItemType itemType)
+        private ReactiveCollection<InventoryItem> GetModels(ItemType itemType)
         {
             return itemType switch
             {
@@ -270,7 +270,7 @@ namespace Nekoyume.UI.Module
             };
         }
 
-        private void OnDoubleClick(InventoryItemViewModel item)
+        private void OnDoubleClick(InventoryItem item)
         {
             _selectedModel?.Selected.SetValueAndForceNotify(false);
             _selectedModel = null;
@@ -355,8 +355,8 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetAvatarInfo(Action<InventoryItemViewModel, RectTransform> clickItem,
-            Action<InventoryItemViewModel> doubleClickItem,
+        public void SetAvatarInfo(Action<InventoryItem, RectTransform> clickItem,
+            Action<InventoryItem> doubleClickItem,
             System.Action clickEquipmentToggle,
             System.Action clickCostumeToggle,
             IEnumerable<ElementalType> elementalTypes)
@@ -366,7 +366,7 @@ namespace Nekoyume.UI.Module
             Set();
         }
 
-        public void SetShop(Action<InventoryItemViewModel, RectTransform> clickItem)
+        public void SetShop(Action<InventoryItem, RectTransform> clickItem)
         {
             _checkTradable = true;
             SetAction(clickItem);
@@ -422,7 +422,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public bool TryGetModel(ItemBase itemBase, out InventoryItemViewModel result)
+        public bool TryGetModel(ItemBase itemBase, out InventoryItem result)
         {
             result = null;
             var item = itemBase as INonFungibleItem;
@@ -444,7 +444,7 @@ namespace Nekoyume.UI.Module
 
         #region For tutorial
 
-        public bool TryGetFirstCell(out InventoryItemViewModel cell)
+        public bool TryGetFirstCell(out InventoryItem cell)
         {
             return scroll.TryGetFirstItem(out cell);
         }

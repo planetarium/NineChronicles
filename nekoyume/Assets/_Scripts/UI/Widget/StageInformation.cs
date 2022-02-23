@@ -74,7 +74,7 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
                     var material = new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row);
-                    var item = new InventoryItemViewModel(material, 0, true, false, true);
+                    var item = new InventoryItem(material, 0, true, false, true);
                     tooltip.Show(view.RectTransform, item, string.Empty, false, null);
                 }).AddTo(view);
             }

@@ -113,15 +113,15 @@ namespace Nekoyume.UI
             base.Close(true);
         }
 
-        private void ShowItemTooltip(ShopItemViewModel model, RectTransform target)
+        private void ShowItemTooltip(ShopItem model, RectTransform target)
         {
             var tooltip = Find<ItemTooltip>();
             tooltip.Show(target, model,
-                () => ShowBuyPopup(new List<ShopItemViewModel> { model }),
+                () => ShowBuyPopup(new List<ShopItem> { model }),
                 view.ClearSelectedItems);
         }
 
-        private void ShowBuyPopup(List<ShopItemViewModel> models)
+        private void ShowBuyPopup(List<ShopItem> models)
         {
             if (!models.Any())
             {
@@ -150,7 +150,7 @@ namespace Nekoyume.UI
                 (() => Buy(models)));
         }
 
-        private async void Buy(List<ShopItemViewModel> models)
+        private async void Buy(List<ShopItem> models)
         {
             var purchaseInfos = new ConcurrentBag<PurchaseInfo>();
             await foreach (var item in models.ToAsyncEnumerable())
