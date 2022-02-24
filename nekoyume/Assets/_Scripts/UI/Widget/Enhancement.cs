@@ -136,7 +136,7 @@ namespace Nekoyume.UI
 
         private void ShowItemTooltip(EnhancementInventoryItem model, RectTransform target)
         {
-            var tooltip = Find<ItemTooltip>();
+            var tooltip = ItemTooltip.GetItemTooltipByItemType(model.ItemBase.ItemType);
             tooltip.Show(target, model, enhancementInventory.GetSubmitText(),
                 !model.Disabled.Value,
                 () => enhancementInventory.SelectItem(),

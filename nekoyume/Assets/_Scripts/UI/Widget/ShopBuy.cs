@@ -115,7 +115,7 @@ namespace Nekoyume.UI
 
         private void ShowItemTooltip(ShopItem model, RectTransform target)
         {
-            var tooltip = Find<ItemTooltip>();
+            var tooltip = ItemTooltip.GetItemTooltipByItemType(model.ItemBase.ItemType);
             tooltip.Show(target, model,
                 () => ShowBuyPopup(new List<ShopItem> { model }),
                 view.ClearSelectedItems);

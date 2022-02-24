@@ -405,7 +405,7 @@ namespace Nekoyume.UI
 
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
         {
-            var tooltip = Find<ItemTooltip>();
+            var tooltip = ItemTooltip.GetItemTooltipByItemType(model.ItemBase.ItemType);
             var (submitText, interactable, submit, blocked) = GetToolTipParams(model);
             tooltip.Show(target, model, submitText, interactable,
                 submit, () => inventory.ClearSelectedItem(), blocked);
