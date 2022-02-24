@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Grpc.Core;
+using Ionic.Zlib;
 using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Action;
@@ -386,14 +388,32 @@ namespace Nekoyume.BlockChain
 
         public void OnRender(byte[] evaluation)
         {
-            var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(evaluation).ToActionEvaluation();
-            ActionRenderer.ActionRenderSubject.OnNext(ev);
+            using (var cp = new MemoryStream(evaluation))
+            using (var decompressed = new MemoryStream())
+            using (var df = new DeflateStream(cp, CompressionMode.Decompress))
+            {
+                df.CopyTo(decompressed);
+                decompressed.Seek(0, SeekOrigin.Begin);
+                var dec = decompressed.ToArray();
+                var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
+                    .ToActionEvaluation();
+                ActionRenderer.ActionRenderSubject.OnNext(ev);
+            }
         }
 
         public void OnUnrender(byte[] evaluation)
         {
-            var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(evaluation).ToActionEvaluation();
-            ActionRenderer.ActionUnrenderSubject.OnNext(ev);
+            using (var cp = new MemoryStream(evaluation))
+            using (var decompressed = new MemoryStream())
+            using (var df = new DeflateStream(cp, CompressionMode.Decompress))
+            {
+                df.CopyTo(decompressed);
+                decompressed.Seek(0, SeekOrigin.Begin);
+                var dec = decompressed.ToArray();
+                var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
+                    .ToActionEvaluation();
+                ActionRenderer.ActionUnrenderSubject.OnNext(ev);
+            }
         }
 
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
