@@ -83,6 +83,9 @@ namespace Nekoyume.UI.Module
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)
                 .Subscribe(onClick).AddTo(_disposables);
+
+            baseItemView.MinusTouchHandler.OnClick.Select(_ => model)
+                .Subscribe(onClick).AddTo(_disposables);
         }
     }
 }

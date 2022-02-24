@@ -128,7 +128,7 @@ namespace Nekoyume.UI.Module
                 index++;
             }
 
-            pageText.text = $"{page + 1} / {_pageCount}";
+            pageText.text = $"{page + 1}";
         }
 
         private void InstantiateItemView()

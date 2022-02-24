@@ -28,6 +28,9 @@ namespace Nekoyume
         private TouchHandler touchHandler;
 
         [SerializeField]
+        private TouchHandler minusTouchHandler;
+
+        [SerializeField]
         private Image gradeImage;
 
         [SerializeField]
@@ -96,6 +99,7 @@ namespace Nekoyume
         public GameObject Container => container;
         public GameObject EmptyObject => emptyObject;
         public TouchHandler TouchHandler => touchHandler;
+        public TouchHandler MinusTouchHandler => minusTouchHandler;
         public Image GradeImage => gradeImage;
         public UIHsvModifier GradeHsv => gradeHsv;
         public GameObject EnoughObject => enoughObject;
