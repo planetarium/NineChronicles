@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Battle;
+using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -270,6 +272,8 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView(bool jumpToFirst = false)
         {
+            // There are restrictions on the method call sequence. After calling UpdateEquipmentNotification, you must call GetSortedModels.
+            UpdateEquipmentNotification();
             var models = GetSortedModels();
             DisableItem(models);
             _onUpdateView?.Invoke(_baseModel, _materialModel);
@@ -296,7 +300,77 @@ namespace Nekoyume.UI.Module
                 result = result.Where(x => (int)x.ItemBase.ElementalType == value).ToList();
             }
 
-            return result;
+            var tableSheets = Game.Game.instance.TableSheets;
+
+            return result.OrderByDescending(item => item.HasNotification.Value)
+                .ThenByDescending(item =>
+                {
+                    var itemBase = item.ItemBase;
+                    var isMadeWithMimisbrunnrRecipe = ((Equipment) itemBase).IsMadeWithMimisbrunnrRecipe(
+                        tableSheets.EquipmentItemRecipeSheet,
+                        tableSheets.EquipmentItemSubRecipeSheetV2,
+                        tableSheets.EquipmentItemOptionSheet);
+                    return (isMadeWithMimisbrunnrRecipe
+                        ? tableSheets.ItemRequirementSheet[itemBase.Id].MimisLevel
+                        : tableSheets.ItemRequirementSheet[itemBase.Id].Level) <= States.Instance.CurrentAvatarState.level;
+                });
+        }
+
+        private void UpdateEquipmentNotification()
+        {
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentAvatarState is null)
+            {
+                return;
+            }
+
+            foreach (var itemList in _equipments)
+            {
+                var usableEquipments =
+                    itemList.Value.Where(x => Util.IsUsableItem(x.ItemBase.Id)).ToList();
+                foreach (var item in usableEquipments)
+                {
+                    item.HasNotification.Value = false;
+                }
+
+                var level = currentAvatarState.level;
+                var availableSlots = UnlockHelper.GetAvailableEquipmentSlots(level);
+
+                foreach (var (type, slotCount) in availableSlots)
+                {
+                    var matchedEquipments = usableEquipments
+                        .Where(e => e.ItemBase.ItemSubType == type);
+
+                    var equippedEquipments = matchedEquipments.Where(e => e.Equipped.Value);
+                    var unequippedEquipments = matchedEquipments.Where(e => !e.Equipped.Value)
+                        .OrderByDescending(i => CPHelper.GetCP(i.ItemBase as Equipment));
+
+                    var equippedCount = equippedEquipments.Count();
+                    if (equippedCount < slotCount)
+                    {
+                        var itemsToNotify =
+                            unequippedEquipments.Take(slotCount - equippedCount);
+                        foreach (var item in itemsToNotify)
+                        {
+                            item.HasNotification.Value = true;
+                        }
+                    }
+                    else
+                    {
+                        var itemsToNotify =
+                            unequippedEquipments.Where(e =>
+                            {
+                                var cp = CPHelper.GetCP(e.ItemBase as Equipment);
+                                return equippedEquipments.Any(i =>
+                                    CPHelper.GetCP(i.ItemBase as Equipment) < cp);
+                            }).Take(slotCount);
+                        foreach (var item in itemsToNotify)
+                        {
+                            item.HasNotification.Value = true;
+                        }
+                    }
+                }
+            }
         }
 
         public void Set(Action<EnhancementInventoryItem, RectTransform> onSelectItem,
