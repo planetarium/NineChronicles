@@ -36,8 +36,14 @@ namespace Lib9c.Tools.SubCommand
             Guid? chainId = null,
             [Option(
                 't',
-                Description = "Optional topmost block to execute last.  Tip by default.")]
+                Description = "Optional topmost block to execute last.  Can be either a block " +
+                    "hash or block index.  Tip by default.")]
             string topmost = null,
+            [Option(
+                new char[] { 'f', 'B' },
+                Description = "Optional bottommost block to execute first.  Can be either a " +
+                    "block hash or block index.  Genesis by default.")]
+            string bottommost = null,
             [Option('b', Description = "Bypass the state root hash check.")]
             bool bypassStateRootHashCheck = false,
             [Option(
@@ -62,29 +68,29 @@ namespace Lib9c.Tools.SubCommand
                 chainId,
                 useMemoryKvStore is string p ? new MemoryKeyValueStore(p, stderr) : null
             );
-            Block<NCAction> genesis = chain.Genesis;
-            Block<NCAction> tip = Utils.ParseBlockOffset(chain, topmost);
-
-            stderr.WriteLine("Clear the existing state store...");
-            foreach (KeyBytes key in stateKvStore.ListKeys())
-            {
-                stateKvStore.Delete(key);
-            }
+            Block<NCAction> bottom = Utils.ParseBlockOffset(chain, bottommost, 0);
+            Block<NCAction> top = Utils.ParseBlockOffset(chain, topmost);
 
             stderr.WriteLine("It will execute all actions (tx actions & block actions)");
             stderr.WriteLine(
                 "  ...from the block #{0} {1}",
-                "0".PadRight(tip.Index.ToString(CultureInfo.InvariantCulture).Length),
-                genesis.Hash);
-            stderr.WriteLine("    ...to the block #{0} {1}.", tip.Index, tip.Hash);
+                bottom.Index.ToString(CultureInfo.InvariantCulture).PadRight(
+                    top.Index.ToString(CultureInfo.InvariantCulture).Length),
+                bottom.Hash);
+            stderr.WriteLine("    ...to the block #{0} {1}.", top.Index, top.Hash);
 
             IBlockPolicy<NCAction> policy = chain.Policy;
             (Block<NCAction>, string)? invalidStateRootHashBlock = null;
-            long totalBlocks = tip.Index + 1L;
+            long totalBlocks = top.Index - bottom.Index + 1;
             long blocksExecuted = 0L;
             long txsExecuted = 0L;
             DateTimeOffset started = DateTimeOffset.Now;
-            foreach (BlockHash blockHash in chain.BlockHashes)
+            IEnumerable<BlockHash> blockHashes = store.IterateIndexes(
+                chain.Id,
+                (int)bottom.Index,
+                (int)(top.Index - bottom.Index + 1L)
+            );
+            foreach (BlockHash blockHash in blockHashes)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -101,8 +107,8 @@ namespace Lib9c.Tools.SubCommand
                 );
                 stderr.WriteLine(
                     "[{0}/{1}] Executing block #{2} {3}...",
-                    block.Index,
-                    tip.Index,
+                    block.Index - bottom.Index + 1L,
+                    top.Index - bottom.Index + 1L,
                     block.Index,
                     block.Hash
                 );
@@ -143,7 +149,7 @@ namespace Lib9c.Tools.SubCommand
                 txsExecuted += block.Transactions.Count;
                 TimeSpan elapsed = now - started;
 
-                if (blocksExecuted >= totalBlocks || block.Hash.Equals(tip.Hash))
+                if (blocksExecuted >= totalBlocks || block.Hash.Equals(top.Hash))
                 {
                     stderr.WriteLine("Elapsed: {0:c}.", elapsed);
                     break;
