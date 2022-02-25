@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using Bencodex;
 using Bencodex.Types;
 using Cocona;
@@ -25,7 +26,7 @@ namespace Lib9c.Tools.SubCommand
     {
         private static readonly Codec _codec = new Codec();
 
-        [Command("Rebuild the entire states by executing the chain from the genesis.")]
+        [Command(Description = "Rebuild entire states by executing the chain from the genesis.")]
         public void Rebuild(
             [Option('v', Description = "Print more logs.")]
             bool verbose,
@@ -48,6 +49,7 @@ namespace Lib9c.Tools.SubCommand
         )
         {
             using Logger logger = Utils.ConfigureLogger(verbose);
+            CancellationToken cancellationToken = GetInterruptSignalCancellationToken();
             TextWriter stderr = Console.Error;
             (
                 BlockChain<NCAction> chain,
@@ -84,6 +86,11 @@ namespace Lib9c.Tools.SubCommand
             DateTimeOffset started = DateTimeOffset.Now;
             foreach (BlockHash blockHash in chain.BlockHashes)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    throw new CommandExitedException(1);
+                }
+
                 Block<NCAction> block =
                     store.GetBlock<NCAction>(policy.GetHashAlgorithm, blockHash);
                 var preEvalBlock = new PreEvaluationBlock<NCAction>(
@@ -170,6 +177,18 @@ namespace Lib9c.Tools.SubCommand
             stderr.WriteLine("Avg tx execution time: {0:c}", totalElapsed / txsExecuted);
             stateKvStore.Dispose();
             stateStore.Dispose();
+        }
+
+        private static CancellationToken GetInterruptSignalCancellationToken()
+        {
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (_, e) =>
+            {
+                e.Cancel = true;
+                cts.Cancel();
+            };
+
+            return cts.Token;
         }
 
         private static string DumpBencodexToFile(IValue value, string name)
