@@ -7,9 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Black Drama SDF Material - SeasonTItle
+  m_Name: Black Drama SDF Material - SeasonTItle Number
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
-  m_ShaderKeywords: BEVEL_ON UNDERLAY_ON
+  m_ShaderKeywords: BEVEL_ON GLOW_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -37,45 +37,45 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
-        m_Texture: {fileID: 2800000, guid: 11f91cf890f684f16bf9676f7beaf572, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Ambient: 1
-    - _Bevel: 0.443
-    - _BevelClamp: 0.582
-    - _BevelOffset: -0.133
-    - _BevelRoundness: 1
-    - _BevelWidth: 0.012
+    - _Ambient: 0
+    - _Bevel: 0.48
+    - _BevelClamp: 0.352
+    - _BevelOffset: -0.019
+    - _BevelRoundness: 0.411
+    - _BevelWidth: 0
     - _BumpFace: 0
     - _BumpOutline: 0
     - _ColorMask: 15
-    - _Diffuse: 0.546
-    - _FaceDilate: 0.16
+    - _Diffuse: 0
+    - _FaceDilate: -0.12
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
-    - _GlowInner: 1
-    - _GlowOffset: 0.168
-    - _GlowOuter: 1
-    - _GlowPower: 0.26
+    - _GlowInner: 0.231
+    - _GlowOffset: 0.06
+    - _GlowOuter: 0.341
+    - _GlowPower: 0.452
     - _GradientScale: 6
-    - _LightAngle: 1.34
+    - _LightAngle: 3
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
     - _OutlineSoftness: 0
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
-    - _OutlineWidth: 0.166
+    - _OutlineWidth: 0.063
     - _PerspectiveFilter: 0.875
-    - _Reflectivity: 5.68
+    - _Reflectivity: 6.92
     - _ScaleRatioA: 0.8333333
-    - _ScaleRatioB: 0.4655394
-    - _ScaleRatioC: 0.48549107
+    - _ScaleRatioB: 0.77708334
+    - _ScaleRatioC: 0.77708334
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 1
     - _Sharpness: 0
-    - _SpecularPower: 4
+    - _SpecularPower: 1.89
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
@@ -83,10 +83,10 @@ Material:
     - _StencilWriteMask: 255
     - _TextureHeight: 256
     - _TextureWidth: 256
-    - _UnderlayDilate: 0.25
-    - _UnderlayOffsetX: 0.28
-    - _UnderlayOffsetY: 0.27
-    - _UnderlaySoftness: 0.59
+    - _UnderlayDilate: 0
+    - _UnderlayOffsetX: 0.24
+    - _UnderlayOffsetY: -0.33
+    - _UnderlaySoftness: 0
     - _VertexOffsetX: 0
     - _VertexOffsetY: 0
     - _WeightBold: 0.75
@@ -94,12 +94,12 @@ Material:
     m_Colors:
     - _ClipRect: {r: -32767, g: -32767, b: 32767, a: 32767}
     - _EnvMatrixRotation: {r: 0, g: 0, b: 0, a: 0}
-    - _FaceColor: {r: 1, g: 0.98601174, b: 0.7971698, a: 1}
-    - _GlowColor: {r: 0.2264151, g: 0.05446778, b: 0.1475216, a: 1}
+    - _FaceColor: {r: 1, g: 1, b: 1, a: 1}
+    - _GlowColor: {r: 0.09411764, g: 0.5764706, b: 0.3880586, a: 0.34117648}
     - _MaskCoord: {r: 0, g: 0, b: 32767, a: 32767}
-    - _OutlineColor: {r: 0.99182993, g: 1, b: 0.8443396, a: 1}
+    - _OutlineColor: {r: 0.044811323, g: 0.1792453, b: 0.11538917, a: 0.46666667}
     - _ReflectFaceColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecularColor: {r: 0.4528302, g: 0.39296624, b: 0.3011748, a: 1}
-    - _UnderlayColor: {r: 0.066037714, g: 0.032317504, b: 0.012771443, a: 0.8}
+    - _SpecularColor: {r: 0.509434, g: 0.31324434, b: 0.18022428, a: 1}
+    - _UnderlayColor: {r: 1, g: 0.9205101, b: 0.8349056, a: 0.8}
   m_BuildTextureStacks: []
