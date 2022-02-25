@@ -1,0 +1,97 @@
+
+main_com.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_L_1
+  rotate: false
+  xy: 163, 198
+  size: 23, 29
+  orig: 23, 29
+  offset: 0, 0
+  index: -1
+arm_L_2
+  rotate: false
+  xy: 2, 60
+  size: 42, 56
+  orig: 42, 56
+  offset: 0, 0
+  index: -1
+arm_R
+  rotate: false
+  xy: 2, 5
+  size: 32, 53
+  orig: 32, 53
+  offset: 0, 0
+  index: -1
+body
+  rotate: false
+  xy: 2, 118
+  size: 49, 60
+  orig: 49, 60
+  offset: 0, 0
+  index: -1
+ear_L
+  rotate: false
+  xy: 80, 176
+  size: 9, 13
+  orig: 9, 13
+  offset: 0, 0
+  index: -1
+ear_R
+  rotate: true
+  xy: 62, 176
+  size: 13, 16
+  orig: 13, 16
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 2, 180
+  size: 58, 68
+  orig: 58, 68
+  offset: 0, 0
+  index: -1
+leg
+  rotate: false
+  xy: 115, 189
+  size: 46, 38
+  orig: 46, 38
+  offset: 0, 0
+  index: -1
+shadow
+  rotate: false
+  xy: 115, 229
+  size: 79, 19
+  orig: 79, 19
+  offset: 0, 0
+  index: -1
+smile
+  rotate: false
+  xy: 91, 180
+  size: 12, 9
+  orig: 12, 9
+  offset: 0, 0
+  index: -1
+tail
+  rotate: false
+  xy: 62, 191
+  size: 51, 57
+  orig: 51, 57
+  offset: 0, 0
+  index: -1
+waepon_1
+  rotate: false
+  xy: 196, 233
+  size: 32, 15
+  orig: 32, 15
+  offset: 0, 0
+  index: -1
+weapon_2
+  rotate: false
+  xy: 230, 238
+  size: 20, 10
+  orig: 20, 10
+  offset: 0, 0
+  index: -1

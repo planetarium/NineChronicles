@@ -1,0 +1,48 @@
+
+main_rock.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+rock_01
+  rotate: false
+  xy: 445, 328
+  size: 64, 179
+  orig: 64, 179
+  offset: 0, 0
+  index: -1
+rock_02
+  rotate: false
+  xy: 130, 231
+  size: 131, 276
+  orig: 131, 276
+  offset: 0, 0
+  index: -1
+rock_03
+  rotate: true
+  xy: 263, 243
+  size: 73, 224
+  orig: 73, 224
+  offset: 0, 0
+  index: -1
+rock_04
+  rotate: false
+  xy: 2, 82
+  size: 126, 425
+  orig: 126, 425
+  offset: 0, 0
+  index: -1
+rock_05
+  rotate: false
+  xy: 130, 86
+  size: 67, 143
+  orig: 67, 143
+  offset: 0, 0
+  index: -1
+rock_06
+  rotate: false
+  xy: 263, 318
+  size: 180, 189
+  orig: 180, 189
+  offset: 0, 0
+  index: -1
