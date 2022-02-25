@@ -11343,7 +11343,7 @@ PrefabInstance:
     - target: {fileID: 156945409535703279, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 261.625
       objectReference: {fileID: 0}
     - target: {fileID: 156945409535703279, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
@@ -11368,7 +11368,7 @@ PrefabInstance:
     - target: {fileID: 1125479489405975212, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 173.375
       objectReference: {fileID: 0}
     - target: {fileID: 1125479489405975212, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
@@ -11403,7 +11403,7 @@ PrefabInstance:
     - target: {fileID: 2204868689264845332, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 34.875
       objectReference: {fileID: 0}
     - target: {fileID: 2204868689264845332, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
@@ -11428,7 +11428,7 @@ PrefabInstance:
     - target: {fileID: 4097521782406767794, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 104.625
       objectReference: {fileID: 0}
     - target: {fileID: 4097521782406767794, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
@@ -11468,12 +11468,12 @@ PrefabInstance:
     - target: {fileID: 5660055395241285240, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
       propertyPath: cellInterval
-      value: -0.44757035
+      value: -0.4337051
       objectReference: {fileID: 0}
     - target: {fileID: 5660055395241285240, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
       propertyPath: scrollOffset
-      value: -0.44757035
+      value: -0.4337051
       objectReference: {fileID: 0}
     - target: {fileID: 6572217869335317874, guid: 5650171301b87ec4d93602825aaede14,
         type: 3}
@@ -11660,6 +11660,16 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9146391196684327190, guid: 5650171301b87ec4d93602825aaede14,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9146391196684327190, guid: 5650171301b87ec4d93602825aaede14,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -2.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5650171301b87ec4d93602825aaede14, type: 3}
 --- !u!1 &4577499752851267221 stripped
@@ -11756,7 +11766,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
