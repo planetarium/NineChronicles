@@ -179,6 +179,131 @@ namespace Lib9c.Tools.SubCommand
             stateStore.Dispose();
         }
 
+        [Command(Description = "Check if states for the specified block are available " +
+            "in the state store.")]
+        public void Check(
+            [Option('s', Description = "Path to the chain store.")]
+            string storePath,
+            [Argument(
+                Description = "A block to check.  Can be either a block hash or block index.  " +
+                    "Tip by default.")]
+            string block = null,
+            [Option('c', Description = "Optional chain ID.  Default is the canonical chain ID.")]
+            Guid? chainId = null,
+            [Option('v', Description = "Print more logs.")]
+            bool verbose = false
+        )
+        {
+            using Logger logger = Utils.ConfigureLogger(verbose);
+            CancellationToken cancellationToken = GetInterruptSignalCancellationToken();
+            TextWriter stderr = Console.Error;
+            (
+                BlockChain<NCAction> chain,
+                IStore store,
+                IKeyValueStore stateKvStore,
+                IStateStore stateStore
+            ) = Utils.GetBlockChain(
+                logger,
+                storePath,
+                chainId
+            );
+            Block<NCAction> checkBlock = Utils.ParseBlockOffset(chain, block);
+            HashDigest<SHA256> stateRootHash = checkBlock.StateRootHash;
+            ITrie stateRoot = stateStore.GetStateRoot(stateRootHash);
+            bool exist = stateRoot.Recorded;
+            Console.WriteLine(
+                exist
+                    ? "Block #{0} {1} has states in the state store."
+                    : "Block #{0} {1} does not have states in the state store.",
+                checkBlock.Index,
+                checkBlock.Hash
+            );
+            Console.WriteLine("State root hash: {0}", stateRootHash);
+            if (exist)
+            {
+                return;
+            }
+
+            logger.Information("Finding the latest ancestor block having its states...");
+
+            bool WillGoFurther(Block<NCAction> b)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    throw new CommandExitedException(1);
+                }
+                else if (stateStore.GetStateRoot(b.StateRootHash).Recorded)
+                {
+                    logger.Information("#{0} {1} has states.", b.Index, b.Hash);
+                    return false;
+                }
+
+                logger.Information("#{0} {1} has no states.", b.Index, b.Hash);
+                return true;
+            }
+
+            if (BisectBlocks(chain, checkBlock.Index, 0, WillGoFurther) is { } upper)
+            {
+                Console.WriteLine(
+                    "\nThe latest ancestor block that has states in the state store is:\n" +
+                    "Block #{0} {1}\nState root hash: {2}",
+                    upper.Index,
+                    upper.Hash,
+                    stateRootHash
+                );
+            }
+
+            if (BisectBlocks(chain, checkBlock.Index, chain.Tip.Index, WillGoFurther) is { } lower)
+            {
+                Console.WriteLine(
+                    "\nThe earliest descendant block that has states in the state store is:\n" +
+                    "Block #{0} {1}\nState root hash: {2}",
+                    lower.Index,
+                    lower.Hash,
+                    stateRootHash
+                );
+            }
+
+            throw new CommandExitedException(1);
+        }
+
+        private static Block<NCAction> BisectBlocks(
+            BlockChain<NCAction> chain,
+            long start,
+            long end,
+            Predicate<Block<NCAction>> willGoFurther
+        )
+        {
+            long tip = chain.Tip.Index;
+            while (start != end)
+            {
+                long upper = Math.Max(start, end);
+                long lower = Math.Min(start, end);
+                long dir = (end > start ? 1L : -1L);
+                long idx = lower + (upper - lower) / 2L;
+                idx = Math.Min(upper, idx);
+                idx = Math.Max(lower, idx);
+
+                Block<NCAction> b = chain[idx];
+                if (willGoFurther(b))
+                {
+                    long nextStart = idx == end ? idx + dir : idx;
+                    nextStart = Math.Min(nextStart, tip);
+                    nextStart = Math.Max(nextStart, 0L);
+                    start = nextStart + (nextStart == start ? dir : 0L);
+                }
+                else
+                {
+                    long nextEnd = idx == start ? idx + dir : idx;
+                    nextEnd = Math.Min(nextEnd, tip);
+                    nextEnd = Math.Max(nextEnd, 0L);
+                    end = nextEnd - (nextEnd == end ? dir : 0L);
+                }
+            }
+
+            return willGoFurther(chain[start]) ? null : chain[start];
+        }
+
         private static CancellationToken GetInterruptSignalCancellationToken()
         {
             CancellationTokenSource cts = new CancellationTokenSource();
