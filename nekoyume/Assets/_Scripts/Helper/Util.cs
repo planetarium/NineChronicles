@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Nekoyume.Extensions;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
 using Nekoyume.L10n;
@@ -180,22 +181,47 @@ namespace Nekoyume.Helper
             PlayerPrefs.SetInt(key, slotIndex);
         }
 
-        public static bool IsUsableItem(int itemId)
+        public static bool IsUsableItem(ItemBase itemBase)
         {
-            var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            var sheets = Game.Game.instance.TableSheets;
+            var requirementSheet = sheets.ItemRequirementSheet;
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             if (currentAvatarState is null)
             {
                 return false;
             }
 
-            if (!sheet.TryGetValue(itemId, out var value))
+            switch (itemBase.ItemType)
             {
-                Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemId}");
-                return false;
-            }
+                case ItemType.Equipment:
+                    var equipment = (Equipment)itemBase;
+                    if (!requirementSheet.TryGetValue(itemBase.Id, out var equipmentRow))
+                    {
+                        Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
+                        return false;
+                    }
 
-            return currentAvatarState.level >= value.Level;
+                    var recipeSheet = sheets.EquipmentItemRecipeSheet;
+                    var subRecipeSheet = sheets.EquipmentItemSubRecipeSheetV2;
+                    var itemOptionSheet = sheets.EquipmentItemOptionSheet;
+                    var isMadeWithMimisbrunnrRecipe = equipment.IsMadeWithMimisbrunnrRecipe(
+                        recipeSheet,
+                        subRecipeSheet,
+                        itemOptionSheet
+                    );
+
+                    var requirementLevel = isMadeWithMimisbrunnrRecipe ? equipmentRow.MimisLevel : equipmentRow.Level;
+                    return currentAvatarState.level >= requirementLevel;
+
+                default:
+                    if (!requirementSheet.TryGetValue(itemBase.Id, out var row))
+                    {
+                        Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
+                        return false;
+                    }
+
+                    return currentAvatarState.level >= row.Level;
+            }
         }
 
         public static int GetItemRequirementLevel(int itemId)

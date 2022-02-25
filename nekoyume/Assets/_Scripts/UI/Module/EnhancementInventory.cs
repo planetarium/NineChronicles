@@ -61,10 +61,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private bool resetScrollOnEnable;
 
-        private readonly Dictionary<ItemSubType, List<EnhancementInventoryItem>>
-            _equipments =
-                new Dictionary<ItemSubType, List<EnhancementInventoryItem>>();
-
+        private readonly Dictionary<ItemSubType, List<EnhancementInventoryItem>> _equipments =
+            new Dictionary<ItemSubType, List<EnhancementInventoryItem>>();
 
         private readonly ReactiveProperty<ItemSubType> _selectedItemSubType =
             new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
@@ -227,6 +225,7 @@ namespace Nekoyume.UI.Module
                 {
                     return;
                 }
+
                 _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
                 _materialModel = item;
                 _materialModel.SelectedMaterial.SetValueAndForceNotify(true);
@@ -272,105 +271,56 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView(bool jumpToFirst = false)
         {
-            // There are restrictions on the method call sequence. After calling UpdateEquipmentNotification, you must call GetSortedModels.
-            UpdateEquipmentNotification();
-            var models = GetSortedModels();
+            var models = GetModels();
             DisableItem(models);
             _onUpdateView?.Invoke(_baseModel, _materialModel);
             scroll.UpdateData(models, jumpToFirst);
         }
 
-        private IEnumerable<EnhancementInventoryItem> GetSortedModels()
+        private List<EnhancementInventoryItem> GetModels()
         {
             if (!_equipments.ContainsKey(_selectedItemSubType.Value))
             {
                 return new List<EnhancementInventoryItem>();
             }
 
-            var result = _equipments[_selectedItemSubType.Value].ToList();
+            var equipments = _equipments[_selectedItemSubType.Value].ToList();
             if (_grade.Value != Grade.All)
             {
                 var value = (int)(_grade.Value);
-                result = result.Where(x => x.ItemBase.Grade == value).ToList();
+                equipments = equipments.Where(x => x.ItemBase.Grade == value).ToList();
             }
 
             if (_elemental.Value != Elemental.All)
             {
                 var value = (int)_elemental.Value - 1;
-                result = result.Where(x => (int)x.ItemBase.ElementalType == value).ToList();
+                equipments = equipments.Where(x => (int)x.ItemBase.ElementalType == value).ToList();
             }
 
-            var tableSheets = Game.Game.instance.TableSheets;
-
-            return result.OrderByDescending(item => item.HasNotification.Value)
-                .ThenByDescending(item =>
-                {
-                    var itemBase = item.ItemBase;
-                    var isMadeWithMimisbrunnrRecipe = ((Equipment) itemBase).IsMadeWithMimisbrunnrRecipe(
-                        tableSheets.EquipmentItemRecipeSheet,
-                        tableSheets.EquipmentItemSubRecipeSheetV2,
-                        tableSheets.EquipmentItemOptionSheet);
-                    return (isMadeWithMimisbrunnrRecipe
-                        ? tableSheets.ItemRequirementSheet[itemBase.Id].MimisLevel
-                        : tableSheets.ItemRequirementSheet[itemBase.Id].Level) <= States.Instance.CurrentAvatarState.level;
-                });
-        }
-
-        private void UpdateEquipmentNotification()
-        {
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            if (currentAvatarState is null)
+            var usableItems = new List<EnhancementInventoryItem>();
+            var unusableItems = new List<EnhancementInventoryItem>();
+            foreach (var item in equipments)
             {
-                return;
-            }
-
-            foreach (var itemList in _equipments)
-            {
-                var usableEquipments =
-                    itemList.Value.Where(x => Util.IsUsableItem(x.ItemBase.Id)).ToList();
-                foreach (var item in usableEquipments)
+                if (Util.IsUsableItem(item.ItemBase))
                 {
-                    item.HasNotification.Value = false;
+                    usableItems.Add(item);
                 }
-
-                var level = currentAvatarState.level;
-                var availableSlots = UnlockHelper.GetAvailableEquipmentSlots(level);
-
-                foreach (var (type, slotCount) in availableSlots)
+                else
                 {
-                    var matchedEquipments = usableEquipments
-                        .Where(e => e.ItemBase.ItemSubType == type);
-
-                    var equippedEquipments = matchedEquipments.Where(e => e.Equipped.Value);
-                    var unequippedEquipments = matchedEquipments.Where(e => !e.Equipped.Value)
-                        .OrderByDescending(i => CPHelper.GetCP(i.ItemBase as Equipment));
-
-                    var equippedCount = equippedEquipments.Count();
-                    if (equippedCount < slotCount)
-                    {
-                        var itemsToNotify =
-                            unequippedEquipments.Take(slotCount - equippedCount);
-                        foreach (var item in itemsToNotify)
-                        {
-                            item.HasNotification.Value = true;
-                        }
-                    }
-                    else
-                    {
-                        var itemsToNotify =
-                            unequippedEquipments.Where(e =>
-                            {
-                                var cp = CPHelper.GetCP(e.ItemBase as Equipment);
-                                return equippedEquipments.Any(i =>
-                                    CPHelper.GetCP(i.ItemBase as Equipment) < cp);
-                            }).Take(slotCount);
-                        foreach (var item in itemsToNotify)
-                        {
-                            item.HasNotification.Value = true;
-                        }
-                    }
+                    unusableItems.Add(item);
                 }
             }
+
+            if (usableItems.Any())
+            {
+                var bestItem = usableItems
+                    .OrderByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment)).First();
+                usableItems = usableItems.OrderByDescending(x => x.Equals(bestItem))
+                    .ToList();
+            }
+
+            usableItems.AddRange(unusableItems);
+            return usableItems;
         }
 
         public void Set(Action<EnhancementInventoryItem, RectTransform> onSelectItem,
@@ -421,7 +371,7 @@ namespace Nekoyume.UI.Module
 
             var inventoryItem = new EnhancementInventoryItem(itemBase,
                 equipped: equipment.equipped,
-                levelLimited: !Util.IsUsableItem(itemBase.Id));
+                levelLimited: !Util.IsUsableItem(itemBase));
 
             if (!_equipments.ContainsKey(inventoryItem.ItemBase.ItemSubType))
             {

@@ -225,9 +225,8 @@ namespace Nekoyume.UI.Module
         private static ShopItem CreateItem(ItemBase item, OrderDigest digest,
             ItemSheet sheet)
         {
-            var itemId = digest.ItemId;
-            var grade = sheet[itemId].Grade;
-            var limit = item.ItemType != ItemType.Material && !Util.IsUsableItem(itemId);
+            var grade = sheet[digest.ItemId].Grade;
+            var limit = item.ItemType != ItemType.Material && !Util.IsUsableItem(item);
             return new ShopItem(item, digest, grade, limit);
         }
 
