@@ -50,6 +50,8 @@ namespace Nekoyume.UI.Module
         private readonly ReactiveProperty<int> _page = new ReactiveProperty<int>();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
+        private Image nextPageImage;
+        private Image previousPageImage;
         private int _column = 0;
         private int _row = 0;
         private int _pageCount = 1;
@@ -97,11 +99,13 @@ namespace Nekoyume.UI.Module
             InitInteractiveUI();
             SubscribeToSearchConditions();
 
+            nextPageImage = nextPageButton.GetComponent<Image>();
             nextPageButton.onClick.AddListener(() =>
             {
                 _page.Value = math.min(_pageCount - 1, _page.Value + 1);
             });
 
+            previousPageImage = previousPageButton.GetComponent<Image>();
             previousPageButton.onClick.AddListener(() =>
             {
                 _page.Value = math.max(0, _page.Value - 1);
@@ -129,6 +133,23 @@ namespace Nekoyume.UI.Module
             }
 
             pageText.text = $"{page + 1}";
+            UpdatePageButtonImage();
+        }
+
+        private void UpdatePageButtonImage()
+        {
+            previousPageButton.gameObject.SetActive(_pageCount > 1);
+            nextPageButton.gameObject.SetActive(_pageCount > 1);
+
+            previousPageButton.interactable = _page.Value != 0;
+            previousPageImage.color = previousPageButton.interactable
+                ? previousPageButton.colors.normalColor
+                : previousPageButton.colors.disabledColor;
+
+            nextPageButton.interactable = _page.Value != _pageCount - 1;
+            nextPageImage.color = nextPageButton.interactable
+                ? nextPageButton.colors.normalColor
+                : nextPageButton.colors.disabledColor;
         }
 
         private void InstantiateItemView()
