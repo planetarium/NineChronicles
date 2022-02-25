@@ -578,6 +578,12 @@ namespace Nekoyume.BlockChain
 
         public void UpdateSubscribeAddresses()
         {
+            // Avoid NRE in development mode
+            if (PrivateKey is null)
+            {
+                return;
+            }
+
             var addresses = new List<Address> { Address };
 
             var currentAvatarState = States.Instance.CurrentAvatarState;
