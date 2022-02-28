@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Model.Mail
             Guid guid = new Guid("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
             Address address = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
             List<MonsterCollectionRewardSheet.RewardInfo> rewards = _tableSheets.MonsterCollectionRewardSheet.First!.Rewards;
-            Assert.Single(rewards);
+            Assert.Equal(2, rewards.Count);
 
             MonsterCollectionResult result = new MonsterCollectionResult(guid, address, rewards);
             MonsterCollectionMail mail = new MonsterCollectionMail(result, 1, guid, 2);
@@ -38,7 +38,7 @@ namespace Lib9c.Tests.Model.Mail
             Assert.Equal(2, deserialized.requiredBlockIndex);
             Assert.Equal(guid, deserialized.id);
             MonsterCollectionResult attachment = (MonsterCollectionResult)deserialized.attachment;
-            Assert.Single(attachment.rewards);
+            Assert.Equal(2, attachment.rewards.Count);
             Assert.Equal(rewards.First(), attachment.rewards.First());
         }
 
@@ -48,7 +48,7 @@ namespace Lib9c.Tests.Model.Mail
             Guid guid = new Guid("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
             Address address = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
             List<MonsterCollectionRewardSheet.RewardInfo> rewards = _tableSheets.MonsterCollectionRewardSheet.First!.Rewards;
-            Assert.Single(rewards);
+            Assert.Equal(2, rewards.Count);
 
             MonsterCollectionResult result = new MonsterCollectionResult(guid, address, rewards);
             MonsterCollectionMail mail = new MonsterCollectionMail(result, 1, guid, 2);
@@ -63,7 +63,7 @@ namespace Lib9c.Tests.Model.Mail
             Assert.Equal(2, deserialized.requiredBlockIndex);
             Assert.Equal(guid, deserialized.id);
             MonsterCollectionResult attachment = (MonsterCollectionResult)deserialized.attachment;
-            Assert.Single(attachment.rewards);
+            Assert.Equal(2, attachment.rewards.Count);
             Assert.Equal(rewards.First(), attachment.rewards.First());
         }
     }
