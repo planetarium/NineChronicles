@@ -36,21 +36,24 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private bool resetScrollOnEnable;
 
-        private readonly ReactiveCollection<InventoryItem> _equipments =
-            new ReactiveCollection<InventoryItem>();
+        private readonly Dictionary<ItemSubType, List<InventoryItem>> _equipments =
+            new Dictionary<ItemSubType, List<InventoryItem>>();
 
-        private readonly ReactiveCollection<InventoryItem> _consumables =
-            new ReactiveCollection<InventoryItem>();
+        private readonly List<InventoryItem> _consumables =
+            new List<InventoryItem>();
 
-        private readonly ReactiveCollection<InventoryItem> _materials =
-            new ReactiveCollection<InventoryItem>();
+        private readonly List<InventoryItem> _materials =
+            new List<InventoryItem>();
 
-        private readonly ReactiveCollection<InventoryItem> _costumes =
-            new ReactiveCollection<InventoryItem>();
+        private readonly List<InventoryItem> _costumes =
+            new List<InventoryItem>();
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<InventoryItem> _cachedNotificationItems = new List<InventoryItem>();
+        private readonly List<InventoryItem> _cachedFocusItems = new List<InventoryItem>();
+        private readonly List<InventoryItem> _cachedBestItems = new List<InventoryItem>();
 
         private InventoryItem _selectedModel;
 
@@ -62,7 +65,7 @@ namespace Nekoyume.UI.Module
         private ItemType _activeItemType = ItemType.Equipment;
         private bool _checkTradable;
 
-        public bool HasNotification => _equipments.Any(x => x.HasNotification.Value);
+        public bool HasNotification => _equipments.Any(x => x.Value.Any(item=> item.HasNotification.Value));
 
         protected void Awake()
         {
@@ -123,7 +126,8 @@ namespace Nekoyume.UI.Module
                 }
 
                 _selectedModel = null;
-                foreach (var item in inventory.Items.OrderByDescending(x => x.item is ITradableItem))
+                foreach (var item in
+                         inventory.Items.OrderByDescending(x => x.item is ITradableItem))
                 {
                     if (item.Locked)
                     {
@@ -134,7 +138,6 @@ namespace Nekoyume.UI.Module
                 }
 
                 scroll.UpdateData(GetModels(_activeItemType), resetScrollOnEnable);
-                UpdateEquipmentNotification(_elementalTypes);
                 UpdateElementalTypeDisable(_elementalTypes);
             }).AddTo(_disposables);
 
@@ -147,7 +150,6 @@ namespace Nekoyume.UI.Module
         {
             _activeItemType = itemType;
             scroll.UpdateData(GetModels(itemType), !toggle.IsToggledOn);
-            UpdateEquipmentNotification(_elementalTypes);
             UpdateElementalTypeDisable(_elementalTypes);
             ClearFocus();
             _toggleGroup.SetToggledOffAll();
@@ -171,22 +173,27 @@ namespace Nekoyume.UI.Module
             {
                 case ItemType.Consumable:
                     inventoryItem = CreateInventoryItem(itemBase, count,
-                        levelLimited: !Util.IsUsableItem(itemBase.Id));
+                        levelLimited: !Util.IsUsableItem(itemBase));
                     _consumables.Add(inventoryItem);
                     break;
                 case ItemType.Costume:
                     var costume = (Costume)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
                         equipped: costume.equipped,
-                        levelLimited: !Util.IsUsableItem(itemBase.Id));
+                        levelLimited: !Util.IsUsableItem(itemBase));
                     _costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment)itemBase;
                     inventoryItem = CreateInventoryItem(itemBase, count,
                         equipped: equipment.equipped,
-                        levelLimited: !Util.IsUsableItem(itemBase.Id));
-                    _equipments.Add(inventoryItem);
+                        levelLimited: !Util.IsUsableItem(itemBase));
+
+                    if (!_equipments.ContainsKey(itemBase.ItemSubType))
+                    {
+                        _equipments.Add(itemBase.ItemSubType, new List<InventoryItem>());
+                    }
+                    _equipments[itemBase.ItemSubType].Add(inventoryItem);
                     break;
                 case ItemType.Material:
                     var material = (Material)itemBase;
@@ -200,6 +207,7 @@ namespace Nekoyume.UI.Module
                         inventoryItem = CreateInventoryItem(itemBase, count);
                         _materials.Add(inventoryItem);
                     }
+
                     break;
 
                 default:
@@ -261,13 +269,13 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private ReactiveCollection<InventoryItem> GetModels(ItemType itemType)
+        private List<InventoryItem> GetModels(ItemType itemType)
         {
             return itemType switch
             {
                 ItemType.Consumable => _consumables,
                 ItemType.Costume => _costumes,
-                ItemType.Equipment => _equipments,
+                ItemType.Equipment => GetOrderedEquipments(),
                 ItemType.Material => _materials,
                 _ => throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null)
             };
@@ -280,68 +288,95 @@ namespace Nekoyume.UI.Module
             _onDoubleClickItem?.Invoke(item);
         }
 
-        private void UpdateEquipmentNotification(List<ElementalType> elementalTypes = null)
+        private List<InventoryItem> GetOrderedEquipments()
         {
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            if (currentAvatarState is null)
+            var bestItems = GetUsableBestEquipments();
+            UpdateEquipmentNotification(bestItems);
+            var result = new List<InventoryItem>();
+            foreach (var pair in _equipments)
             {
-                return;
+                result.AddRange(pair.Value);
             }
 
+            if (_elementalTypes.Any())
+            {
+                result = result.OrderByDescending(x =>
+                    _elementalTypes.Exists(y => y.Equals(x.ItemBase.ElementalType))).ToList();
+            }
+
+            result = result.OrderByDescending(x => bestItems.Exists(y => y.Equals(x)))
+                .ThenByDescending(x => Util.IsUsableItem(x.ItemBase)).ToList();
+            return result;
+        }
+
+        private void UpdateEquipmentNotification(IEnumerable<InventoryItem> bestItems)
+        {
             if (_activeItemType != ItemType.Equipment)
             {
                 return;
             }
 
-            var usableEquipments =
-                _equipments.Where(x => Util.IsUsableItem(x.ItemBase.Id)).ToList();
-            foreach (var item in usableEquipments)
+            foreach (var item in _cachedNotificationItems)
             {
                 item.HasNotification.Value = false;
+            }
+            _cachedNotificationItems.Clear();
+
+            foreach (var item in bestItems.Where(item => !item.Equipped.Value))
+            {
+                item.HasNotification.Value = true;
+                _cachedNotificationItems.Add(item);
+            }
+        }
+
+        private List<InventoryItem> GetUsableBestEquipments()
+        {
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentAvatarState is null)
+            {
+                return new List<InventoryItem>();
             }
 
             var level = currentAvatarState.level;
             var availableSlots = UnlockHelper.GetAvailableEquipmentSlots(level);
 
-            foreach (var (type, slotCount) in availableSlots)
+            var bestItems = new List<InventoryItem>();
+            var selectedEquipments = new Dictionary<ItemSubType, List<InventoryItem>>();
+            if (_elementalTypes.Any())
             {
-                var matchedEquipments = usableEquipments
-                    .Where(e => e.ItemBase.ItemSubType == type);
-
-                if (elementalTypes != null)
+                foreach (var pair in _equipments)
                 {
-                    matchedEquipments = matchedEquipments.Where(e =>
-                        elementalTypes.Exists(x => x == e.ItemBase.ElementalType));
-                }
-
-                var equippedEquipments = matchedEquipments.Where(e => e.Equipped.Value);
-                var unequippedEquipments = matchedEquipments.Where(e => !e.Equipped.Value)
-                    .OrderByDescending(i => CPHelper.GetCP(i.ItemBase as Equipment));
-
-                var equippedCount = equippedEquipments.Count();
-                if (equippedCount < slotCount)
-                {
-                    var itemsToNotify = unequippedEquipments.Take(slotCount - equippedCount);
-                    foreach (var item in itemsToNotify)
+                    foreach (var item in pair.Value)
                     {
-                        item.HasNotification.Value = true;
-                    }
-                }
-                else
-                {
-                    var itemsToNotify =
-                        unequippedEquipments.Where(e =>
+                        if (!_elementalTypes.Exists(x => x.Equals(item.ItemBase.ElementalType)))
                         {
-                            var cp = CPHelper.GetCP(e.ItemBase as Equipment);
-                            return equippedEquipments.Any(i =>
-                                CPHelper.GetCP(i.ItemBase as Equipment) < cp);
-                        }).Take(slotCount);
-                    foreach (var item in itemsToNotify)
-                    {
-                        item.HasNotification.Value = true;
+                            continue;
+                        }
+
+                        if (!selectedEquipments.ContainsKey(item.ItemBase.ItemSubType))
+                        {
+                            selectedEquipments.Add(item.ItemBase.ItemSubType , new List<InventoryItem>());
+                        }
+
+                        selectedEquipments[item.ItemBase.ItemSubType].Add(item);
                     }
                 }
             }
+            else
+            {
+                selectedEquipments = _equipments;
+            }
+
+            foreach (var pair in selectedEquipments)
+            {
+                var (_, slotCount) = availableSlots.FirstOrDefault(x=> x.Item1.Equals(pair.Key));
+                var item = pair.Value.Where(x => Util.IsUsableItem(x.ItemBase))
+                    .OrderByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
+                    .Take(slotCount);
+                bestItems.AddRange(item);
+            }
+
+            return bestItems;
         }
 
         private void UpdateElementalTypeDisable(List<ElementalType> elementalTypes)
@@ -351,10 +386,14 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            foreach (var model in _equipments)
+            foreach (var pair in _equipments)
             {
-                var elementalType = model.ItemBase.ElementalType;
-                model.ElementalTypeDisabled.Value = !elementalTypes.Exists(x => x.Equals(elementalType));
+                foreach (var item in pair.Value)
+                {
+                    var elementalType = item.ItemBase.ElementalType;
+                    item.ElementalTypeDisabled.Value =
+                        !elementalTypes.Exists(x => x.Equals(elementalType));
+                }
             }
         }
 
@@ -383,7 +422,8 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
-        public void Focus(ItemType itemType, ItemSubType subType, List<ElementalType> elementalTypes)
+        public void Focus(ItemType itemType, ItemSubType subType,
+            List<ElementalType> elementalTypes)
         {
             foreach (var model in GetModels(itemType))
             {
@@ -394,6 +434,11 @@ namespace Nekoyume.UI.Module
                         if (elementalTypes.Exists(x => x.Equals(model.ItemBase.ElementalType)))
                         {
                             model.Focused.Value = !model.Focused.Value;
+                            if (model.Focused.Value)
+                            {
+                                _cachedFocusItems.Add(model);
+                            }
+
                         }
                         else
                         {
@@ -403,6 +448,10 @@ namespace Nekoyume.UI.Module
                     else
                     {
                         model.Focused.Value = !model.Focused.Value;
+                        if (model.Focused.Value)
+                        {
+                            _cachedFocusItems.Add(model);
+                        }
                     }
                 }
                 else
@@ -414,15 +463,11 @@ namespace Nekoyume.UI.Module
 
         public void ClearFocus()
         {
-            foreach (var model in _equipments)
+            foreach (var item in _cachedFocusItems)
             {
-                model.Focused.Value = false;
+                item.Focused.Value = false;
             }
-
-            foreach (var model in _costumes)
-            {
-                model.Focused.Value = false;
-            }
+            _cachedFocusItems.Clear();
         }
 
         public bool TryGetModel(ItemBase itemBase, out InventoryItem result)

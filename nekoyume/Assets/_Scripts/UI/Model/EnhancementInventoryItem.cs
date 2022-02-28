@@ -14,6 +14,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> SelectedBase;
         public readonly ReactiveProperty<bool> SelectedMaterial;
         public readonly ReactiveProperty<bool> Disabled;
+        public readonly ReactiveProperty<bool> HasNotification;
 
         public RectTransform View { get; set; }
 
@@ -26,6 +27,7 @@ namespace Nekoyume.UI.Model
             SelectedBase = new ReactiveProperty<bool>();
             SelectedMaterial = new ReactiveProperty<bool>();
             Disabled = new ReactiveProperty<bool>();
+            HasNotification = new ReactiveProperty<bool>();
         }
     }
 }

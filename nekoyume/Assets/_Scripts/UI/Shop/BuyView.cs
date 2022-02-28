@@ -387,7 +387,7 @@ namespace Nekoyume
 
             if (_levelLimit.Value)
             {
-                models = models.Where(x => Util.IsUsableItem(x.ItemBase.Id)).ToList();
+                models = models.Where(x => Util.IsUsableItem(x.ItemBase)).ToList();
             }
 
             return _selectedSortFilter.Value switch

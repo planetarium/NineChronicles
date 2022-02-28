@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Battle;
+using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -59,10 +61,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private bool resetScrollOnEnable;
 
-        private readonly Dictionary<ItemSubType, List<EnhancementInventoryItem>>
-            _equipments =
-                new Dictionary<ItemSubType, List<EnhancementInventoryItem>>();
-
+        private readonly Dictionary<ItemSubType, List<EnhancementInventoryItem>> _equipments =
+            new Dictionary<ItemSubType, List<EnhancementInventoryItem>>();
 
         private readonly ReactiveProperty<ItemSubType> _selectedItemSubType =
             new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
@@ -225,6 +225,7 @@ namespace Nekoyume.UI.Module
                 {
                     return;
                 }
+
                 _materialModel?.SelectedMaterial.SetValueAndForceNotify(false);
                 _materialModel = item;
                 _materialModel.SelectedMaterial.SetValueAndForceNotify(true);
@@ -270,33 +271,56 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView(bool jumpToFirst = false)
         {
-            var models = GetSortedModels();
+            var models = GetModels();
             DisableItem(models);
             _onUpdateView?.Invoke(_baseModel, _materialModel);
             scroll.UpdateData(models, jumpToFirst);
         }
 
-        private IEnumerable<EnhancementInventoryItem> GetSortedModels()
+        private List<EnhancementInventoryItem> GetModels()
         {
             if (!_equipments.ContainsKey(_selectedItemSubType.Value))
             {
                 return new List<EnhancementInventoryItem>();
             }
 
-            var result = _equipments[_selectedItemSubType.Value].ToList();
+            var equipments = _equipments[_selectedItemSubType.Value].ToList();
             if (_grade.Value != Grade.All)
             {
                 var value = (int)(_grade.Value);
-                result = result.Where(x => x.ItemBase.Grade == value).ToList();
+                equipments = equipments.Where(x => x.ItemBase.Grade == value).ToList();
             }
 
             if (_elemental.Value != Elemental.All)
             {
                 var value = (int)_elemental.Value - 1;
-                result = result.Where(x => (int)x.ItemBase.ElementalType == value).ToList();
+                equipments = equipments.Where(x => (int)x.ItemBase.ElementalType == value).ToList();
             }
 
-            return result;
+            var usableItems = new List<EnhancementInventoryItem>();
+            var unusableItems = new List<EnhancementInventoryItem>();
+            foreach (var item in equipments)
+            {
+                if (Util.IsUsableItem(item.ItemBase))
+                {
+                    usableItems.Add(item);
+                }
+                else
+                {
+                    unusableItems.Add(item);
+                }
+            }
+
+            if (usableItems.Any())
+            {
+                var bestItem = usableItems
+                    .OrderByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment)).First();
+                usableItems = usableItems.OrderByDescending(x => x.Equals(bestItem))
+                    .ToList();
+            }
+
+            usableItems.AddRange(unusableItems);
+            return usableItems;
         }
 
         public void Set(Action<EnhancementInventoryItem, RectTransform> onSelectItem,
@@ -347,7 +371,7 @@ namespace Nekoyume.UI.Module
 
             var inventoryItem = new EnhancementInventoryItem(itemBase,
                 equipped: equipment.equipped,
-                levelLimited: !Util.IsUsableItem(itemBase.Id));
+                levelLimited: !Util.IsUsableItem(itemBase));
 
             if (!_equipments.ContainsKey(inventoryItem.ItemBase.ItemSubType))
             {
