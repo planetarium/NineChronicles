@@ -1020,6 +1020,12 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
+#if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
+                if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+                {
+                    Widget.Find<RankingBoard>().GoToStage(eval.Action.Result);
+                }
+#else
                 var ead = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyAvatarState)];
                 var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
                 var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
@@ -1045,6 +1051,7 @@ namespace Nekoyume.BlockChain
                 {
                     Widget.Find<RankingBoard>().GoToStage(log);
                 }
+#endif
             }
             else
             {
