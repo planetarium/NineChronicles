@@ -298,14 +298,15 @@ namespace Nekoyume.UI.Module
                 result.AddRange(pair.Value);
             }
 
+            result = result.OrderByDescending(x => bestItems.Exists(y => y.Equals(x)))
+                .ThenByDescending(x => Util.IsUsableItem(x.ItemBase)).ToList();
+
             if (_elementalTypes.Any())
             {
                 result = result.OrderByDescending(x =>
                     _elementalTypes.Exists(y => y.Equals(x.ItemBase.ElementalType))).ToList();
             }
 
-            result = result.OrderByDescending(x => bestItems.Exists(y => y.Equals(x)))
-                .ThenByDescending(x => Util.IsUsableItem(x.ItemBase)).ToList();
             return result;
         }
 
