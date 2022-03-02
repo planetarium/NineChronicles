@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button playToEarnInviteEventButton;
 
-        private const string ArenaEventPageURLFormat = "https://ninechronicles.medium.com/announcing-nine-chronicles-arena-season-0-896k-ncg-prize-pool-season-exclusive-nfts-%EF%B8%8F-ce0b12bc7e08";
+        private const string ArenaEventPageURLFormat = "https://ninechronicles.medium.com/nine-chronicles-arena-season-2-224k-ncg-reward-pool-begins-march-4th-88c947d507d6";
 
         private const string bigCatYearEventPageURLFormat = "https://onboarding.nine-chronicles.com/";
 
