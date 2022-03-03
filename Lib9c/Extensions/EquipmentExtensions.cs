@@ -21,8 +21,6 @@ namespace Nekoyume.Extensions
                 return true;
             }
 
-            var itemOptionInfo = new ItemOptionInfo(equipment);
-
             var recipeRow = recipeSheet.OrderedList.FirstOrDefault(row =>
                 row.ResultEquipmentId == equipment.Id);
             if (recipeRow == null)
@@ -56,8 +54,8 @@ namespace Nekoyume.Extensions
                 throw new SheetRowNotFoundException("EquipmentItemOptionSheet", e.Message);
             }
 
+            var itemOptionInfo = new ItemOptionInfo(equipment);
             (StatType type, int value, int count) uniqueStatOption;
-
             try
             {
                 uniqueStatOption = itemOptionInfo.StatOptions
@@ -70,6 +68,15 @@ namespace Nekoyume.Extensions
 
             if (optionRows.Length < uniqueStatOption.count)
             {
+                // NOTE: Old mimisbrunnr equipments can enter here.
+                // Old mimisbrunnr: Combined by the CombinationEquipment action before release the NineChronicles with this PR: https://github.com/planetarium/NineChronicles/pull/542
+                // Check old mimisbrunnr
+                if (itemOptionInfo.SkillOptions.Count >= 2)
+                {
+                    return true;
+                }
+                // ~Check old mimisbrunnr
+
                 throw new Exception($"optionRows.Length({optionRows.Length}) less than uniqueStatOption.count({uniqueStatOption.count})");
             }
 
