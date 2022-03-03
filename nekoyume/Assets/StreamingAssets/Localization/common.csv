@@ -818,63 +818,63 @@ UI_TRANSACTION_HISTORY,History,거래 내역,História,,歴史,Geschichte,Histor
 UI_NOT_ENOUGH_NCG,Insufficient balance.,잔액이 부족합니다.,Saldo insuficiente.,,残高不足。,Mangelhaftes Gleichgewicht.,Saldo insuficiente.,ยอดเงินไม่เพียงพอ,Niewystarczająca ilość środków.,Nepakankama balansas.,Onvoldoende balans.,mencukupi.,Solde insuffisant.,Недостаточный баланс.,សមតុល្យមិនគ្រប់គ្រាន់។,,余额不足。,
 UI_NOT_ENOUGH_AP,Insufficient action point.,행동력이 부족합니다.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,Insufficient action point.,
 UI_CLOSE_BUY_WISH_LIST,The shopping cart will be emptied. Do you want to proceed?,장바구니가 비워집니다. 계속 진행하시겠습니까?,O carrinho de compras será esvaziado. Você quer prosseguir?,,ショッピングカートは空になります。続行しますか？,Der Warenkorb wird geleert. Möchten Sie fortfahren?,La cesta de la compra se vaciará. Quieres proceder?,รถเข็นช้อปปิ้งจะได้รับการยอบ คุณต้องการที่จะดำเนินการอย่างไร,Wózek na zakupy zostanie opróżniony. Czy chcesz kontynuować?,Krepšelis bus ištuštinti. Ar norite testi?,De winkelwagen wordt geleegd. Wil je doorgaan?,Keranjang belanja akan dikosongkan. Apakah Anda ingin melanjutkan?,Le panier sera vidé. Voulez-vous poursuivre?,Корзина будет очищена. Вы хотите продолжить?,រទេះដើរទិញឥវ៉ាន់នឹងត្រូវទទេ។ តើអ្នកចង់បន្តឬ?,,购物车将被清空。你想继续吗？,
-UI_BUY_MULTIPLE_FORMAT,"<color=#FFC777><b>Try to purchase {0} items and pay {1} NCG.</b></color>
+UI_BUY_MULTIPLE_FORMAT,"<color=#FF9983><b>Try to purchase {0} items and pay {1} NCG.</b></color>
 
 Items purchased will be sent by mail.
 NCG is not deducted for failed purchase items.
-If NCG is insufficient, the transaction will fail.","<color=#FFC777><b>{0}개 아이템을 구매 시도하고 {1} NCG를 지불합니다.</b></color>
+If NCG is insufficient, the transaction will fail.","<color=#FF9983><b>{0}개 아이템을 구매 시도하고 {1} NCG를 지불합니다.</b></color>
 
 구매에 성공한 아이템은 메일로 도착합니다.
 구매에 실패한 아이템은 NCG를 차감하지 않습니다.
-NCG가 부족한 경우 구매는 실패합니다.","<color=#FFC777><b>Tente comprar {0} itens e pague {1} NCG.</b></color>
+NCG가 부족한 경우 구매는 실패합니다.","<color=#FF9983><b>Tente comprar {0} itens e pague {1} NCG.</b></color>
 
 Itens comprados será enviado pelo correio.
 NCG não é deduzido para comprar itens que falharam.
-Se NCG é insuficiente, a transação irá falhar.",,"<color=#FFC777><b>購入{0}アイテムと有料{1} NCGに試してみてください。</b></color>
+Se NCG é insuficiente, a transação irá falhar.",,"<color=#FF9983><b>購入{0}アイテムと有料{1} NCGに試してみてください。</b></color>
 
 購入したアイテムはメールで送信されます。
 NCGは、失敗した購入アイテムのために控除されていません。
-NCGが不十分な場合、トランザクションは失敗します。","<color=#FFC777><b>Versuchen Sie, Kauf {0} Artikel und bezahle {1} NCG.</b></color>
+NCGが不十分な場合、トランザクションは失敗します。","<color=#FF9983><b>Versuchen Sie, Kauf {0} Artikel und bezahle {1} NCG.</b></color>
 
 Gekaufte Artikel werden per Post geschickt werden.
 NCG ist nicht für die gescheiterten Kauf von Gegenständen in Abzug gebracht.
-Wenn NCG nicht ausreicht, wird scheitern die Transaktion.","<color=#FFC777><b>Trate de comprar {0} artículos y paga {1} NCG.</b></color>
+Wenn NCG nicht ausreicht, wird scheitern die Transaktion.","<color=#FF9983><b>Trate de comprar {0} artículos y paga {1} NCG.</b></color>
 
 Los artículos comprados serán enviados por correo.
 NCG no se deduce de los artículos de compra que han fallado.
-Si NCG es insuficiente, la operación fallará.","<color=#FFC777><b>พยายามที่จะซื้อ {0} รายการและจ่าย {1} NCG</b></color>
+Si NCG es insuficiente, la operación fallará.","<color=#FF9983><b>พยายามที่จะซื้อ {0} รายการและจ่าย {1} NCG</b></color>
 
 รายการที่ซื้อจะถูกส่งทางไปรษณีย์
 NCG ไม่ได้หักรายการซื้อล้มเหลว
-หาก NCG ไม่เพียงพอการทำธุรกรรมที่จะล้มเหลว","<color=#FFC777><b>Spróbuj na zakup {0} elementów i wynagrodzenia {1} NCG.</b></color>
+หาก NCG ไม่เพียงพอการทำธุรกรรมที่จะล้มเหลว","<color=#FF9983><b>Spróbuj na zakup {0} elementów i wynagrodzenia {1} NCG.</b></color>
 
 Zakupione przedmioty zostaną wysłane pocztą.
 NCG nie odlicza się do nieudanych zakup rzeczy.
-Jeśli NCG jest niewystarczająca, transakcja zakończy się niepowodzeniem.","<color=#FFC777><b>Pabandykite įsigyti {0} daiktų ir darbo užmokesčio {1} NCG.</b></color>
+Jeśli NCG jest niewystarczająca, transakcja zakończy się niepowodzeniem.","<color=#FF9983><b>Pabandykite įsigyti {0} daiktų ir darbo užmokesčio {1} NCG.</b></color>
 
 įsigytų daiktų bus išsiųstas paštu.
 NCG Netiksli išskaičiuojamas nepavykusių pirkti daiktus.
-Jei NCG yra nepakankamas, kad sandoris žlugs.","<color=#FFC777><b>Probeer te kopen {0} artikelen en pay {1} NCG.</b></color>
+Jei NCG yra nepakankamas, kad sandoris žlugs.","<color=#FF9983><b>Probeer te kopen {0} artikelen en pay {1} NCG.</b></color>
 
 Objecten die worden verzonden via e-mail.
 NCG wordt niet in mindering gebracht voor mislukte aankoop items.
-Als NCG onvoldoende is, zal de transactie mislukken.","<color=#FFC777><b>Cobalah untuk pembelian {0} item dan membayar {1} NCG.</b></color>
+Als NCG onvoldoende is, zal de transactie mislukken.","<color=#FF9983><b>Cobalah untuk pembelian {0} item dan membayar {1} NCG.</b></color>
 
 Barang yang dibeli akan dikirim melalui pos.
 NCG tidak dipotong untuk item pembelian gagal.
-Jika NCG tidak mencukupi, transaksi akan gagal.","<color=#FFC777><b>Essayez d'acheter {0} articles et payer {1} NCG.</b></color>
+Jika NCG tidak mencukupi, transaksi akan gagal.","<color=#FF9983><b>Essayez d'acheter {0} articles et payer {1} NCG.</b></color>
 
 Les articles achetés seront envoyés par la poste.
 NCG n'est pas déduit des articles d'achat ont échoué.
-Si NCG est insuffisante, la transaction échouera.","<color=#FFC777><b>Попробуйте покупку {0} элементов и оплаты {1} NCG.</b></color>
+Si NCG est insuffisante, la transaction échouera.","<color=#FF9983><b>Попробуйте покупку {0} элементов и оплаты {1} NCG.</b></color>
 
 Приобретенные товары будут отправлены по почте.
 NCG не вычитаются невыполненных пунктов покупки.
-Если NCG недостаточно, сделка не будет выполнена.","<color=#FFC777><b>សូមព្យាយាមដើម្បីទិញ {0} ធាតុនិងការបង់ប្រាក់ {1} NCG ។</b></color>
+Если NCG недостаточно, сделка не будет выполнена.","<color=#FF9983><b>សូមព្យាយាមដើម្បីទិញ {0} ធាតុនិងការបង់ប្រាក់ {1} NCG ។</b></color>
 
 ធាតុដែលបានទិញនឹងត្រូវបានផ្ញើតាមអ៊ីម៉ែល។
 NCG មិនត្រូវបានកាត់សម្រាប់ការបរាជ័យក្នុងធាតុទិញ។
-ប្រសិនបើមាន NCG គឺមិនគ្រប់គ្រាន់, ប្រតិបត្តិការនេះនឹងបរាជ័យ។",,"<color=#FFC777><b>尽量购买{0}项目和支付{1}NCG。</b></color>
+ប្រសិនបើមាន NCG គឺមិនគ្រប់គ្រាន់, ប្រតិបត្តិការនេះនឹងបរាជ័យ។",,"<color=#FF9983><b>尽量购买{0}项目和支付{1}NCG。</b></color>
 
 购买的物品将通过邮件发送。
 不扣除未能购买物品NCG。
@@ -1033,10 +1033,10 @@ UI_BLOCK_CHARGE_AP,AP Potion cannot be used during battle.,전투 중에는 AP P
 UI_SYNCING_BLOCKS,Syncing blocks. Please wait for a while...,블록을 동기화 하는 중입니다...,,,,,,,,,,,,,,,,
 UI_AP_IS_FULL,AP Potion is not available while the AP is full.,AP가 가득차 있는 중에는 AP Potion을 사용할 수 없습니다.,AP Po Potion não está disponível enquanto o AP está cheio.,,APがいっぱいになっている間は、APポーションはできません。,"Der AP-Trank ist nicht verfügbar, während der AP voll ist.",AP Pocion no está disponible mientras que el AP está lleno.,AP Potion ไม่สามารถใช้ได้ในขณะที่ AP เต็ม,"AP Mikstura nie jest dostępna, gdy AP jest pełny.","""Ap Potion"" nėra prieinama, kai AP yra pilna.",AP-drankje is niet beschikbaar terwijl de AP vol is.,Ramuan AP tidak tersedia saat AP penuh.,Potion AP n'est pas disponible pendant que l'AP est plein.,"AP-зелье недоступна, пока AP заполнен.",AP Potion មិនមានទេខណៈពេលដែល AP ពេញ។,,AP完整时不可用AP药水。,"Az AP bájital nem áll rendelkezésre, míg az AP tele van."
 UI_LOADING_STATES,Loading states...,상태를 불러오는 중입니다...,Estados de carregamento ...,,積載状態...,Ladezustände ...,Cargando estados ...,กำลังโหลด ...,Ładowanie państw ...,Pakrovimo valstybės ...,Staten laden ...,Memuat Negara ...,Chargement des états ...,Загрузка состояний ...,កំពុងផ្ទុករដ្ឋ ...,,加载状态......,Betöltési államok ...
-UI_REQUIRED_LEVEL,Required Lv : {0},착용가능 레벨 : {0},LV necessário: {0},,必須LV：{0},Erforderlich lv: {0},Requerido lv: {0},LV ที่จำเป็น: {0},Wymagane lv: {0},Reikalinga LV: {0},Vereist LV: {0},Diperlukan lv: {0},Nécessaire LV: {0},Требуется LV: {0},ទាមទារ LV: {0},,必填lv：{0},Szükséges LV: {0}
+UI_REQUIRED_LEVEL,Required Lv : {0},요구 레벨 : {0},LV necessário: {0},,必須LV：{0},Erforderlich lv: {0},Requerido lv: {0},LV ที่จำเป็น: {0},Wymagane lv: {0},Reikalinga LV: {0},Vereist LV: {0},Diperlukan lv: {0},Nécessaire LV: {0},Требуется LV: {0},ទាមទារ LV: {0},,必填lv：{0},Szükséges LV: {0}
 UI_WARNING_CRAFT_RESULT_ITEM,"Check the level.
 Required level of result item : {0}","레벨을 확인해주세요.
-제작할 아이템의 착용가능 레벨 : {0}","Verifique o nível.
+제작할 아이템의 요구 레벨 : {0}","Verifique o nível.
 Nível requerido do item de resultado: {0}",,"レベルを確認してください。
 必要なレベル項目：{0}","Überprüfen Sie das Niveau.
 Erforderliches Ergebnisstufenelement: {0}","Compruebe el nivel.
@@ -1051,5 +1051,5 @@ Niveau requis Niveau de résultat: {0}","Проверьте уровень.
 កម្រិតដែលត្រូវការនៃធាតុលទ្ធផល: {0}",,"检查水平。
 所需的结果级别项目：{0}","Ellenőrizze a szintet.
 A szükséges eredménytétel szintje: {0}"
-UI_EQUIP_FAILED,This item is currently unavailable.,현재는 사용이 불가능한 아이템입니다.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.,This item is currently unavailable.
-UI_SHOW_AVAILABLE_ITEM,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items,Show only available items
+UI_EQUIP_FAILED,This item is currently unavailable.,현재는 사용이 불가능한 아이템입니다.,Este item está indisponível no momento.,,このアイテムは現在利用できません。,Dieses Produkt ist zur Zeit nicht verfügbar.,Este artículo no está disponible actualmente.,รายการนี้ไม่สามารถใช้งานในปัจจุบัน.,Ten przedmiot jest obecnie niedostępny.,Šis elementas šiuo metu nepasiekiamas.,Dit item is momenteel niet beschikbaar.,Barang ini tidak tersedia saat ini.,Cet article est actuellement indisponible.,Этот пункт в настоящее время недоступен.,ធាតុនេះមិនមានទេ។,,此产品目前无法使用。,Ez az elem jelenleg nem érhető el.
+UI_SHOW_AVAILABLE_ITEM,Show only available items.,사용가능한 것만 보기,Mostrar apenas itens disponíveis.,,利用可能なアイテムのみを表示します。,Nur verfügbare Artikel anzeigen.,Mostrar solo artículos disponibles.,แสดงเฉพาะรายการที่มีอยู่,Pokaż tylko dostępne przedmioty.,Rodyti tik turimus elementus.,Toon alleen beschikbare items.,Tampilkan hanya barang yang tersedia.,Afficher uniquement les éléments disponibles.,Показать только доступные предметы.,បង្ហាញតែធាតុដែលមាន។,,仅显示可用物品。,Csak az elérhető elemek megjelenítése.
