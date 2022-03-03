@@ -142,7 +142,8 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize());
             }
 
-            Assert.True(states.TryGetAvatarStateV2(_agentAddress, _avatarAddress, out _));
+            Assert.True(states.TryGetAvatarStateV2(_agentAddress, _avatarAddress, out _, out bool migrationRequired));
+            Assert.Equal(backward, migrationRequired);
         }
 
         [Theory]
