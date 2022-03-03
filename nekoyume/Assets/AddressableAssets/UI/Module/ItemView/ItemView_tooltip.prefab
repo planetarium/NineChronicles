@@ -113,6 +113,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 13772405470630431, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 665062492853426375, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -151,6 +156,16 @@ PrefabInstance:
     - target: {fileID: 842998767822749533, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 884970658245107802, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1492351078052482262, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1499761865216367145, guid: fd7a738610a297e41bd57e2eebf6fe64,
