@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using Bencodex;
 using Bencodex.Types;
 using Cocona;
@@ -25,7 +26,7 @@ namespace Lib9c.Tools.SubCommand
     {
         private static readonly Codec _codec = new Codec();
 
-        [Command("Rebuild the entire states by executing the chain from the genesis.")]
+        [Command(Description = "Rebuild entire states by executing the chain from the genesis.")]
         public void Rebuild(
             [Option('v', Description = "Print more logs.")]
             bool verbose,
@@ -35,8 +36,14 @@ namespace Lib9c.Tools.SubCommand
             Guid? chainId = null,
             [Option(
                 't',
-                Description = "Optional topmost block to execute last.  Tip by default.")]
+                Description = "Optional topmost block to execute last.  Can be either a block " +
+                    "hash or block index.  Tip by default.")]
             string topmost = null,
+            [Option(
+                new char[] { 'f', 'B' },
+                Description = "Optional bottommost block to execute first.  Can be either a " +
+                    "block hash or block index.  Genesis by default.")]
+            string bottommost = null,
             [Option('b', Description = "Bypass the state root hash check.")]
             bool bypassStateRootHashCheck = false,
             [Option(
@@ -48,6 +55,7 @@ namespace Lib9c.Tools.SubCommand
         )
         {
             using Logger logger = Utils.ConfigureLogger(verbose);
+            CancellationToken cancellationToken = GetInterruptSignalCancellationToken();
             TextWriter stderr = Console.Error;
             (
                 BlockChain<NCAction> chain,
@@ -60,30 +68,35 @@ namespace Lib9c.Tools.SubCommand
                 chainId,
                 useMemoryKvStore is string p ? new MemoryKeyValueStore(p, stderr) : null
             );
-            Block<NCAction> genesis = chain.Genesis;
-            Block<NCAction> tip = Utils.ParseBlockOffset(chain, topmost);
-
-            stderr.WriteLine("Clear the existing state store...");
-            foreach (KeyBytes key in stateKvStore.ListKeys())
-            {
-                stateKvStore.Delete(key);
-            }
+            Block<NCAction> bottom = Utils.ParseBlockOffset(chain, bottommost, 0);
+            Block<NCAction> top = Utils.ParseBlockOffset(chain, topmost);
 
             stderr.WriteLine("It will execute all actions (tx actions & block actions)");
             stderr.WriteLine(
                 "  ...from the block #{0} {1}",
-                "0".PadRight(tip.Index.ToString(CultureInfo.InvariantCulture).Length),
-                genesis.Hash);
-            stderr.WriteLine("    ...to the block #{0} {1}.", tip.Index, tip.Hash);
+                bottom.Index.ToString(CultureInfo.InvariantCulture).PadRight(
+                    top.Index.ToString(CultureInfo.InvariantCulture).Length),
+                bottom.Hash);
+            stderr.WriteLine("    ...to the block #{0} {1}.", top.Index, top.Hash);
 
             IBlockPolicy<NCAction> policy = chain.Policy;
             (Block<NCAction>, string)? invalidStateRootHashBlock = null;
-            long totalBlocks = tip.Index + 1L;
+            long totalBlocks = top.Index - bottom.Index + 1;
             long blocksExecuted = 0L;
             long txsExecuted = 0L;
             DateTimeOffset started = DateTimeOffset.Now;
-            foreach (BlockHash blockHash in chain.BlockHashes)
+            IEnumerable<BlockHash> blockHashes = store.IterateIndexes(
+                chain.Id,
+                (int)bottom.Index,
+                (int)(top.Index - bottom.Index + 1L)
+            );
+            foreach (BlockHash blockHash in blockHashes)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    throw new CommandExitedException(1);
+                }
+
                 Block<NCAction> block =
                     store.GetBlock<NCAction>(policy.GetHashAlgorithm, blockHash);
                 var preEvalBlock = new PreEvaluationBlock<NCAction>(
@@ -94,8 +107,8 @@ namespace Lib9c.Tools.SubCommand
                 );
                 stderr.WriteLine(
                     "[{0}/{1}] Executing block #{2} {3}...",
-                    block.Index,
-                    tip.Index,
+                    block.Index - bottom.Index + 1L,
+                    top.Index - bottom.Index + 1L,
                     block.Index,
                     block.Hash
                 );
@@ -136,7 +149,7 @@ namespace Lib9c.Tools.SubCommand
                 txsExecuted += block.Transactions.Count;
                 TimeSpan elapsed = now - started;
 
-                if (blocksExecuted >= totalBlocks || block.Hash.Equals(tip.Hash))
+                if (blocksExecuted >= totalBlocks || block.Hash.Equals(top.Hash))
                 {
                     stderr.WriteLine("Elapsed: {0:c}.", elapsed);
                     break;
@@ -170,6 +183,143 @@ namespace Lib9c.Tools.SubCommand
             stderr.WriteLine("Avg tx execution time: {0:c}", totalElapsed / txsExecuted);
             stateKvStore.Dispose();
             stateStore.Dispose();
+        }
+
+        [Command(Description = "Check if states for the specified block are available " +
+            "in the state store.")]
+        public void Check(
+            [Option('s', Description = "Path to the chain store.")]
+            string storePath,
+            [Argument(
+                Description = "A block to check.  Can be either a block hash or block index.  " +
+                    "Tip by default.")]
+            string block = null,
+            [Option('c', Description = "Optional chain ID.  Default is the canonical chain ID.")]
+            Guid? chainId = null,
+            [Option('v', Description = "Print more logs.")]
+            bool verbose = false
+        )
+        {
+            using Logger logger = Utils.ConfigureLogger(verbose);
+            CancellationToken cancellationToken = GetInterruptSignalCancellationToken();
+            TextWriter stderr = Console.Error;
+            (
+                BlockChain<NCAction> chain,
+                IStore store,
+                IKeyValueStore stateKvStore,
+                IStateStore stateStore
+            ) = Utils.GetBlockChain(
+                logger,
+                storePath,
+                chainId
+            );
+            Block<NCAction> checkBlock = Utils.ParseBlockOffset(chain, block);
+            HashDigest<SHA256> stateRootHash = checkBlock.StateRootHash;
+            ITrie stateRoot = stateStore.GetStateRoot(stateRootHash);
+            bool exist = stateRoot.Recorded;
+            Console.WriteLine(
+                exist
+                    ? "Block #{0} {1} has states in the state store."
+                    : "Block #{0} {1} does not have states in the state store.",
+                checkBlock.Index,
+                checkBlock.Hash
+            );
+            Console.WriteLine("State root hash: {0}", stateRootHash);
+            if (exist)
+            {
+                return;
+            }
+
+            logger.Information("Finding the latest ancestor block having its states...");
+
+            bool WillGoFurther(Block<NCAction> b)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    throw new CommandExitedException(1);
+                }
+                else if (stateStore.GetStateRoot(b.StateRootHash).Recorded)
+                {
+                    logger.Information("#{0} {1} has states.", b.Index, b.Hash);
+                    return false;
+                }
+
+                logger.Information("#{0} {1} has no states.", b.Index, b.Hash);
+                return true;
+            }
+
+            if (BisectBlocks(chain, checkBlock.Index, 0, WillGoFurther) is { } upper)
+            {
+                Console.WriteLine(
+                    "\nThe latest ancestor block that has states in the state store is:\n" +
+                    "Block #{0} {1}\nState root hash: {2}",
+                    upper.Index,
+                    upper.Hash,
+                    stateRootHash
+                );
+            }
+
+            if (BisectBlocks(chain, checkBlock.Index, chain.Tip.Index, WillGoFurther) is { } lower)
+            {
+                Console.WriteLine(
+                    "\nThe earliest descendant block that has states in the state store is:\n" +
+                    "Block #{0} {1}\nState root hash: {2}",
+                    lower.Index,
+                    lower.Hash,
+                    stateRootHash
+                );
+            }
+
+            throw new CommandExitedException(1);
+        }
+
+        private static Block<NCAction> BisectBlocks(
+            BlockChain<NCAction> chain,
+            long start,
+            long end,
+            Predicate<Block<NCAction>> willGoFurther
+        )
+        {
+            long tip = chain.Tip.Index;
+            while (start != end)
+            {
+                long upper = Math.Max(start, end);
+                long lower = Math.Min(start, end);
+                long dir = (end > start ? 1L : -1L);
+                long idx = lower + (upper - lower) / 2L;
+                idx = Math.Min(upper, idx);
+                idx = Math.Max(lower, idx);
+
+                Block<NCAction> b = chain[idx];
+                if (willGoFurther(b))
+                {
+                    long nextStart = idx == end ? idx + dir : idx;
+                    nextStart = Math.Min(nextStart, tip);
+                    nextStart = Math.Max(nextStart, 0L);
+                    start = nextStart + (nextStart == start ? dir : 0L);
+                }
+                else
+                {
+                    long nextEnd = idx == start ? idx + dir : idx;
+                    nextEnd = Math.Min(nextEnd, tip);
+                    nextEnd = Math.Max(nextEnd, 0L);
+                    end = nextEnd - (nextEnd == end ? dir : 0L);
+                }
+            }
+
+            return willGoFurther(chain[start]) ? null : chain[start];
+        }
+
+        private static CancellationToken GetInterruptSignalCancellationToken()
+        {
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Console.CancelKeyPress += (_, e) =>
+            {
+                e.Cancel = true;
+                cts.Cancel();
+            };
+
+            return cts.Token;
         }
 
         private static string DumpBencodexToFile(IValue value, string name)
