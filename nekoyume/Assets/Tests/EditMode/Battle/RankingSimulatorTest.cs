@@ -37,7 +37,7 @@ namespace Tests.EditMode.Battle
                 default
             );
             var arenaInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
-            var simulator = new RankingSimulator(
+            var simulator = new RankingSimulatorV1(
                 new Cheat.DebugRandom(),
                 avatarState,
                 avatarState,

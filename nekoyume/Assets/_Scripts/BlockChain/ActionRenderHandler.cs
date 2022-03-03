@@ -23,6 +23,7 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using mixpanel;
+using Nekoyume.Model;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -642,11 +643,11 @@ namespace Nekoyume.BlockChain
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
             LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
-            
+
             string message;
             if (count > 1)
             {
-                message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_CANCEL_COMPLETE"), 
+                message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_CANCEL_COMPLETE"),
                     itemName, count);
             }
             else
@@ -673,7 +674,7 @@ namespace Nekoyume.BlockChain
             var itemName = await Util.GetItemNameByOrderId(eval.Action.orderId);
             var order = await Util.GetOrder(eval.Action.orderId);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-            
+
             string message;
             if (count > 1)
             {
@@ -731,7 +732,7 @@ namespace Nekoyume.BlockChain
 
                         var errorType = ((ShopErrorType) errorCode).ToString();
                         LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                        
+
                         string message;
                         if (count > 1)
                         {
@@ -740,7 +741,7 @@ namespace Nekoyume.BlockChain
                         }
                         else
                         {
-                            message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"), 
+                            message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
                                 itemName, L10nManager.Localize(errorType), price);
                         }
                         OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Alert);
@@ -1020,17 +1021,29 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
-                var ead = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyAvatarState)];
+
                 var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
                 var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
-                var enemyAvatarState = new AvatarState(ead);
                 var arenaInfo = new ArenaInfo(aid);
                 var enemyInfo = new ArenaInfo(eid);
 
+                var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+                var levelSheet = Game.Game.instance.TableSheets.CharacterLevelSheet;
+                var equipmentItemSetEffectSheet =
+                    Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
+
+                var player = new Player(States.Instance.CurrentAvatarState,
+                    characterSheet,
+                    levelSheet,
+                    equipmentItemSetEffectSheet);
+                var enemyPlayer = new EnemyPlayer(eval.Action.EnemyPlayer,
+                    characterSheet,
+                    levelSheet,
+                    equipmentItemSetEffectSheet);
                 var simulator = new RankingSimulator(
                     new LocalRandom(eval.RandomSeed),
-                    States.Instance.CurrentAvatarState,
-                    enemyAvatarState,
+                    player,
+                    enemyPlayer,
                     new List<Guid>(),
                     Game.Game.instance.TableSheets.GetRankingSimulatorSheets(),
                     Action.RankingBattle.StageId,
@@ -1038,6 +1051,8 @@ namespace Nekoyume.BlockChain
                     enemyInfo,
                     Game.Game.instance.TableSheets.CostumeStatSheet
                 );
+                player.Simulator = simulator;
+                enemyPlayer.Simulator = simulator;
                 simulator.Simulate();
                 var log = simulator.Log;
 
