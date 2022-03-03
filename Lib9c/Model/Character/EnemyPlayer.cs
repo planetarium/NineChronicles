@@ -7,7 +7,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model
 {
     [Serializable]
-    public class EnemyPlayer: Player
+    public class EnemyPlayer : Player
     {
         public readonly string NameWithHash;
         public EnemyPlayer(AvatarState avatarState, Simulator simulator) : base(avatarState, simulator)
@@ -27,6 +27,21 @@ namespace Nekoyume.Model
             equipmentItemSetEffectSheet
         )
         {
+            NameWithHash = avatarState.NameWithHash;
+        }
+
+        public EnemyPlayer(SimulationEnemyPlayer enemyPlayer,
+            CharacterSheet characterSheet,
+            CharacterLevelSheet characterLevelSheet,
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
+        ) : base(
+            enemyPlayer,
+            characterSheet,
+            characterLevelSheet,
+            equipmentItemSetEffectSheet
+        )
+        {
+            NameWithHash = enemyPlayer.NameWithHash;
         }
 
         public EnemyPlayer(
@@ -41,6 +56,12 @@ namespace Nekoyume.Model
             equipmentItemSetEffectSheet
         )
         {
+        }
+
+        public EnemyPlayer(AvatarState avatarState, SimulatorSheets simulatorSheets) : base(
+            avatarState, simulatorSheets)
+        {
+            NameWithHash = avatarState.NameWithHash;
         }
 
         private EnemyPlayer(EnemyPlayer value) : base(value)

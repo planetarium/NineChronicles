@@ -100,6 +100,34 @@ namespace Nekoyume.Model
             PostConstruction(simulator.CharacterLevelSheet, simulator.EquipmentItemSetEffectSheet);
         }
 
+        protected Player(SimulationEnemyPlayer enemyPlayer,
+            CharacterSheet characterSheet,
+            CharacterLevelSheet levelSheet,
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
+        ) : base(
+            null,
+            characterSheet,
+            enemyPlayer.CharacterId,
+            enemyPlayer.Level)
+        {
+            weapon = null;
+            armor = null;
+            belt = null;
+            necklace = null;
+            ring = null;
+            monsterMap = new CollectionMap();
+            eventMap = new CollectionMap();
+            hairIndex = enemyPlayer.HairIndex;
+            lensIndex = enemyPlayer.LensIndex;
+            earIndex = enemyPlayer.EarIndex;
+            tailIndex = enemyPlayer.TailIndex;
+            _equipments = enemyPlayer.Equipments as List<Equipment>;
+            _costumes = enemyPlayer.Costumes as List<Costume>;
+            characterLevelSheet = levelSheet;
+            AttackCountMax = AttackCountHelper.GetCountMax(Level);
+            SetEquipmentStat(equipmentItemSetEffectSheet);
+        }
+
         public Player(
             AvatarState avatarState,
             CharacterSheet characterSheet,
@@ -155,6 +183,12 @@ namespace Nekoyume.Model
             earIndex = 0;
             tailIndex = 0;
             PostConstruction(characterLevelSheet, equipmentItemSetEffectSheet);
+        }
+
+        public Player(AvatarState avatarState, SimulatorSheets simulatorSheets) : this(avatarState,
+            simulatorSheets.CharacterSheet, simulatorSheets.CharacterLevelSheet,
+            simulatorSheets.EquipmentItemSetEffectSheet)
+        {
         }
 
         protected Player(Player value) : base(value)
@@ -231,6 +265,11 @@ namespace Nekoyume.Model
                 .OfType<Equipment>()
                 .Where(e => e.equipped)
                 .ToList();
+            SetEquipmentStat(sheet);
+        }
+
+        private void SetEquipmentStat(EquipmentItemSetEffectSheet sheet)
+        {
             foreach (var equipment in _equipments)
             {
                 switch (equipment.ItemSubType)
