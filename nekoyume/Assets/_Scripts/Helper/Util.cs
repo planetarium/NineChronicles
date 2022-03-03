@@ -224,7 +224,7 @@ namespace Nekoyume.Helper
             }
         }
 
-        public static int GetItemRequirementLevel(int itemId)
+        public static int GetItemRequirementLevel(ItemBase itemBase)
         {
             var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
@@ -233,7 +233,32 @@ namespace Nekoyume.Helper
                 return 0;
             }
 
-            return sheet.TryGetValue(itemId, out var value) ? value.Level : 0;
+            switch (itemBase.ItemType)
+            {
+                case ItemType.Equipment:
+                    var sheets = Game.Game.instance.TableSheets;
+                    var equipment = (Equipment)itemBase;
+                    var requirementSheet = sheets.ItemRequirementSheet;
+                    if (!requirementSheet.TryGetValue(itemBase.Id, out var equipmentRow))
+                    {
+                        Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
+                        return 0;
+                    }
+
+                    var recipeSheet = sheets.EquipmentItemRecipeSheet;
+                    var subRecipeSheet = sheets.EquipmentItemSubRecipeSheetV2;
+                    var itemOptionSheet = sheets.EquipmentItemOptionSheet;
+                    var isMadeWithMimisbrunnrRecipe = equipment.IsMadeWithMimisbrunnrRecipe(
+                        recipeSheet,
+                        subRecipeSheet,
+                        itemOptionSheet
+                    );
+
+                    var requirementLevel = isMadeWithMimisbrunnrRecipe ? equipmentRow.MimisLevel : equipmentRow.Level;
+                    return requirementLevel;
+                default:
+                    return sheet.TryGetValue(itemBase.Id, out var value) ? value.Level : 0;
+            }
         }
 
         public static Player CreatePlayer(AvatarState avatarState, Vector3 position)
