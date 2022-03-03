@@ -29,7 +29,7 @@ namespace Nekoyume.UI
 
     public class MimisbrunnrPreparation : Widget
     {
-        private const int BoostMaxCount = 6;
+        private const int BoostMaxCount = 12;
 
         [SerializeField]
         private Module.Inventory inventory = null;

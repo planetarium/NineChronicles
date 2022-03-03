@@ -33,9 +33,9 @@ namespace Nekoyume.UI.Module
             //     .Subscribe(_ => GoToArenaEventPage())
             //     .AddTo(gameObject);
 
-            bigCatYearEventButton.onClick.AsObservable()
-                .Subscribe(_ => GoTobigCatYearEventPage())
-                .AddTo(gameObject);
+            // bigCatYearEventButton.onClick.AsObservable()
+            //     .Subscribe(_ => GoTobigCatYearEventPage())
+            //     .AddTo(gameObject);
 
             playToEarnGoldEventButton.onClick.AsObservable()
                 .Subscribe(_ => GoToGoldEventPage())

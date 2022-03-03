@@ -363,6 +363,18 @@
             <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect to.
             </summary>
         </member>
+        <member name="T:Libplanet.Net.InvalidMessageSignatureException">
+            <summary>
+            An exception that is thrown when the signature of an encoded <see cref="T:Libplanet.Net.Messages.Message"/> is
+            invalid.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.InvalidMessageTimestampException">
+            <summary>
+            An exception that is thrown when the timestamp of an encoded <see cref="T:Libplanet.Net.Messages.Message"/> is
+            invalid.
+            </summary>
+        </member>
         <member name="P:Libplanet.Net.Messages.BlockHashes.StartIndex">
             <summary>
             The block index of the first hash in <see cref="P:Libplanet.Net.Messages.BlockHashes.Hashes"/>.
@@ -423,8 +435,10 @@
             local version does not match with given <paramref name="encoded"/>'s
             <see cref="T:System.Version"/> by given <paramref name="appProtocolVersionValidator"/>.
             </exception>
-            <exception cref="T:Libplanet.Net.InvalidMessageException">
-            Thrown when given <paramref name="encoded"/>'s signer is invalid.</exception>
+            <exception cref="T:Libplanet.Net.InvalidMessageTimestampException"> Thrown when the timestamp of
+            <paramref name="encoded"/> is invalid.</exception>
+            <exception cref="T:Libplanet.Net.InvalidMessageSignatureException"> Thrown when the signer of
+            <paramref name="encoded"/> is invalid.</exception>
         </member>
         <member name="T:Libplanet.Net.Messages.Message">
             <summary>
@@ -1205,9 +1219,7 @@
             this tries to render <em>all</em> actions in the behind blocks so that there are
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
-            these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Threading.CancellationToken)"
-            /> method too.</remarks>
+            these actions in the behind blocks use <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)"/> method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
@@ -1234,9 +1246,7 @@
             this tries to render <em>all</em> actions in the behind blocks so that there are
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
-            these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Threading.CancellationToken)"
-            /> method too.</remarks>
+            these actions in the behind blocks use <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)"/> method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <summary>
@@ -1279,7 +1289,7 @@
             </param>
             <returns><see cref="T:Libplanet.Net.PeerChainState"/> of the connected <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
@@ -1293,6 +1303,10 @@
             </param>
             <param name="render">
             The value indicates whether to render blocks and actions while preloading.</param>
+            <param name="tipDeltaThreshold">The threshold of the difference between the topmost tip
+            among peers and the local tip.  If the local tip is still behind the topmost tip among
+            peers by more than this threshold after a preloading is once done, the preloading
+            is repeated.  25 by default.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
