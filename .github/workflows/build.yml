@@ -71,7 +71,7 @@ jobs:
           - Windows
           - macOS
     needs: build-unity
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/testnet' }}
     steps:
       - uses: actions/checkout@v2
 
