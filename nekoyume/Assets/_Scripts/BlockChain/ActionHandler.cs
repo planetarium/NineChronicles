@@ -169,7 +169,10 @@ namespace Nekoyume.BlockChain
 
         private static void UpdateCache(Model.State.State state)
         {
-            Game.Game.instance.CachedStates[state.address] = state.Serialize();
+            if (Game.Game.instance.CachedStates.ContainsKey(state.address))
+            {
+                Game.Game.instance.CachedStates[state.address] = state.Serialize();
+            }
         }
     }
 }
