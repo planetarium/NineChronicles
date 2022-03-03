@@ -3,14 +3,10 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.IO;
     using System.Linq;
-    using System.Runtime.Serialization.Formatters.Binary;
-    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
-    using MessagePack;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
@@ -156,6 +152,7 @@ namespace Lib9c.Tests.Action
             var enemyAvatarState = _initialState.GetAvatarState(_avatar2Address);
             enemyAvatarState.inventory.AddItem(enemyCostume);
 
+            Address worldInformationAddress = _avatar1Address.Derive(LegacyWorldInformationKey);
             if (avatarBackward)
             {
                 previousState =
@@ -168,7 +165,7 @@ namespace Lib9c.Tests.Action
                         _avatar1Address.Derive(LegacyInventoryKey),
                         previousAvatar1State.inventory.Serialize())
                     .SetState(
-                        _avatar1Address.Derive(LegacyWorldInformationKey),
+                        worldInformationAddress,
                         previousAvatar1State.worldInformation.Serialize())
                     .SetState(
                         _avatar1Address.Derive(LegacyQuestListKey),
@@ -245,6 +242,9 @@ namespace Lib9c.Tests.Action
             Assert.Equal(result.score, log.score);
             Assert.Equal(result.Count, log.Count);
             Assert.Equal(result.result, log.result);
+
+            Assert.Equal(previousAvatar1State.SerializeV2(), nextAvatar1State.SerializeV2());
+            Assert.Equal(previousAvatar1State.worldInformation.Serialize(), nextAvatar1State.worldInformation.Serialize());
         }
 
         [Fact]
