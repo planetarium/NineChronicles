@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ using Nekoyume.Game.Factory;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.State;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -236,6 +239,19 @@ namespace Nekoyume.Helper
             }
 
             return count;
+        }
+
+        public static List<StageSheet.Row> GetStagesByItemId(StageSheet sheet, int id)
+        {
+            if (States.Instance.CurrentAvatarState.worldInformation == null)
+            {
+                return null;
+            }
+
+            return sheet
+                .Where(s => s.Value.Rewards.Any(reward => reward.ItemId == id))
+                .Select(s => s.Value)
+                .ToList();
         }
     }
 }
