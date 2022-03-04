@@ -186,7 +186,7 @@ namespace Nekoyume.Helper
             var sheets = Game.Game.instance.TableSheets;
             var requirementSheet = sheets.ItemRequirementSheet;
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            if (currentAvatarState is null)
+            if (currentAvatarState is null || itemBase is null)
             {
                 return false;
             }
