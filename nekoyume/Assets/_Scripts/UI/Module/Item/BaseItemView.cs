@@ -123,6 +123,8 @@ namespace Nekoyume
         public GameObject LockObject => lockObject;
         public GameObject ShadowObject => shadowObject;
 
+        public GameObject ItemGradeParticle { get; set; }
+
         private ItemSheet.Row GetRow(ItemBase itemBase)
         {
             var sheet = Game.Game.instance.TableSheets;
@@ -153,6 +155,14 @@ namespace Nekoyume
             var row = GetRow(itemBase);
             var add = itemBase is TradableMaterial ? 1 : 0;
             return itemViewData.GetItemViewData(row.Grade + add);
+        }
+
+        public void OnDisable()
+        {
+            if (ItemGradeParticle)
+            {
+                Destroy(ItemGradeParticle);
+            }
         }
     }
 }

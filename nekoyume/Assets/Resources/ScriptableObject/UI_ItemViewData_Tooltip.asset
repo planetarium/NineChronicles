@@ -22,6 +22,8 @@ MonoBehaviour:
     gradeHsvValue: 0
     enhancementMaterial: {fileID: 2100000, guid: d0ba5015ebc174e1980d7df502f1ebb6,
       type: 2}
+    itemGradeParticle: {fileID: 7756120939619406518, guid: 74b881cc3a74149c8b5ecc1219a5ba19,
+      type: 3}
   - grade: 1
     gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
     gradeHsvRange: 0.5
@@ -30,6 +32,8 @@ MonoBehaviour:
     gradeHsvValue: 0
     enhancementMaterial: {fileID: 2100000, guid: fffce470be0364f8fac6ed42147cdb68,
       type: 2}
+    itemGradeParticle: {fileID: 7756120939619406518, guid: 913a6617bb4da40f78193a2145f9c26b,
+      type: 3}
   - grade: 2
     gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
     gradeHsvRange: 1
@@ -38,6 +42,8 @@ MonoBehaviour:
     gradeHsvValue: 0.021
     enhancementMaterial: {fileID: 2100000, guid: e71700ec08bb942f484e04f6fb84b27b,
       type: 2}
+    itemGradeParticle: {fileID: 7756120939619406518, guid: cab5bf6238945417baf05974e716ac4e,
+      type: 3}
   - grade: 3
     gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
     gradeHsvRange: 1
@@ -46,6 +52,8 @@ MonoBehaviour:
     gradeHsvValue: 0.032
     enhancementMaterial: {fileID: 2100000, guid: d44a5a5c027c940f0b81b37678e9d7ef,
       type: 2}
+    itemGradeParticle: {fileID: 7756120939619406518, guid: 2a5a03595d73b4656b96693686fd845c,
+      type: 3}
   - grade: 4
     gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
     gradeHsvRange: 1
@@ -54,6 +62,8 @@ MonoBehaviour:
     gradeHsvValue: 0.033
     enhancementMaterial: {fileID: 2100000, guid: 1d28cb217008f4359a1ca2bbf22f64aa,
       type: 2}
+    itemGradeParticle: {fileID: 7756120939619406518, guid: 4204f844ac9ac46dfb92972761c39629,
+      type: 3}
   - grade: 5
     gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
     gradeHsvRange: 1
@@ -62,3 +72,5 @@ MonoBehaviour:
     gradeHsvValue: 0.032
     enhancementMaterial: {fileID: 2100000, guid: d0ba5015ebc174e1980d7df502f1ebb6,
       type: 2}
+    itemGradeParticle: {fileID: 7756120939619406518, guid: 74b881cc3a74149c8b5ecc1219a5ba19,
+      type: 3}

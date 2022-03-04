@@ -21,9 +21,15 @@ namespace Nekoyume.Game.ScriptableObject
         [Tooltip("Value shift [-0.5 ~ 0.5].")] [SerializeField] [Range(-0.5f, 0.5f)]
         private float gradeHsvValue;
 
-        [SerializeField] private Material enhancementMaterial;
+        [SerializeField]
+        private Material enhancementMaterial;
+
+        [SerializeField]
+        private GameObject itemGradeParticle;
 
         public Material EnhancementMaterial => enhancementMaterial;
+
+        public GameObject ItemGradeParticle => itemGradeParticle;
 
         public float GradeHsvValue => gradeHsvValue;
 
