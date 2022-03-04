@@ -91,7 +91,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Combination exec started", addressesHex);
 
-            if (!states.TryGetAvatarStateV2(ctx.Signer, AvatarAddress, out AvatarState avatarState))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, AvatarAddress, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }

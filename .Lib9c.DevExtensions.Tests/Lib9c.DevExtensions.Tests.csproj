@@ -6,11 +6,27 @@
       <IsPackable>false</IsPackable>
     </PropertyGroup>
 
+    <PropertyGroup Condition="
+      '$([System.Runtime.InteropServices.RuntimeInformation]::
+        OSArchitecture.ToString())' == 'Arm64' ">
+      <TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
+
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.assert" Version="2.4.1" />
         <PackageReference Include="xunit.extensibility.core" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Data\TableCSV\Cost\EnhancementCostSheet.csv">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Data\TableCSV\GameConfigSheet.csv">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
     <ItemGroup>

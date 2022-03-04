@@ -73,7 +73,7 @@ namespace Nekoyume.Action
                 throw new InvalidAddressException($"{addressesHex}Aborted as the signer tried to battle for themselves.");
             }
 
-            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out var avatarState))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out var avatarState, out bool migrationRequired))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
@@ -269,9 +269,14 @@ namespace Nekoyume.Action
 
             states = states
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2());
+                .SetState(questListAddress, avatarState.questList.Serialize());
+
+            if (migrationRequired)
+            {
+                states = states
+                    .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                    .SetState(avatarAddress, avatarState.SerializeV2());
+            }
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Serialize AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
