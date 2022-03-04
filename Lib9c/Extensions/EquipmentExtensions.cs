@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -34,14 +33,12 @@ namespace Nekoyume.Extensions
             }
 
             var mimisSubRecipeId = recipeRow.SubRecipeIds[2];
-
             if (!subRecipeSheet.TryGetValue(mimisSubRecipeId, out var subRecipeRow))
             {
                 throw new SheetRowNotFoundException("EquipmentItemSubRecipeSheetV2", mimisSubRecipeId);
             }
 
             EquipmentItemOptionSheet.Row[] optionRows;
-
             try
             {
                 optionRows = subRecipeRow.Options
@@ -55,6 +52,26 @@ namespace Nekoyume.Extensions
             }
 
             var itemOptionInfo = new ItemOptionInfo(equipment);
+
+            // Check old mimisbrunnr
+            // Old mimisbrunnr: Combined by the CombinationEquipment action before release the NineChronicles with this
+            // PR: https://github.com/planetarium/NineChronicles/pull/542
+            // And this PR is not only one which should consider.
+            switch (equipment.Id)
+            {
+                case 10111000 when itemOptionInfo.SkillOptions.Any(e =>
+                    e.skillRow.Id == 110001 ||
+                    e.skillRow.Id == 110005):
+                case 10211000 when itemOptionInfo.StatOptions.Any(e => e.type == StatType.SPD):
+                case 10321000 when itemOptionInfo.StatOptions.Any(e =>
+                    e.type == StatType.ATK ||
+                    e.type == StatType.CRI):
+                case 10411000 when itemOptionInfo.StatOptions.Any(e => e.type == StatType.ATK):
+                case 10511000 when itemOptionInfo.StatOptions.Any(e => e.type == StatType.DEF):
+                    return true;
+            }
+            // ~Check old mimisbrunnr
+
             (StatType type, int value, int count) uniqueStatOption;
             try
             {
@@ -68,27 +85,19 @@ namespace Nekoyume.Extensions
 
             if (optionRows.Length < uniqueStatOption.count)
             {
-                // NOTE: Old mimisbrunnr equipments can enter here.
-                // Old mimisbrunnr: Combined by the CombinationEquipment action before release the NineChronicles with this PR: https://github.com/planetarium/NineChronicles/pull/542
-                // Check old mimisbrunnr
-                if (itemOptionInfo.SkillOptions.Count >= 2)
-                {
-                    return true;
-                }
-                // ~Check old mimisbrunnr
-
-                throw new Exception($"optionRows.Length({optionRows.Length}) less than uniqueStatOption.count({uniqueStatOption.count})");
+                // NOTE: Unfortunately we cannot throw any exception here. Sheet data has changed for a long times and will be.
+                // And here return false but `equipment` could be `mimisbrunner`.
+                return false;
             }
 
             switch (uniqueStatOption.count)
             {
-                case 1:
-                    return uniqueStatOption.value >= optionRows[0].StatMin;
-                case 2:
-                    return uniqueStatOption.value >= optionRows[0].StatMin + optionRows[1].StatMin;
-                default:
-                    throw new Exception($"Unexpected uniqueStatOption.count({uniqueStatOption.count})");
+                case 1 when uniqueStatOption.value >= optionRows[0].StatMin:
+                case 2 when uniqueStatOption.value >= optionRows[0].StatMin + optionRows[1].StatMin:
+                    return true;
             }
+
+            return false;
         }
     }
 }
