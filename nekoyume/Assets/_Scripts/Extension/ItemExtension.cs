@@ -52,7 +52,7 @@ namespace Nekoyume
         public static string GetCPText(this Costume costume, CostumeStatSheet sheet)
         {
             var cp = CPHelper.GetCP(costume, sheet);
-            return $"{cp}";
+            return $"CP {cp}";
         }
 
         public static bool TryGetOptionInfo(this ItemUsable itemUsable, out ItemOptionInfo itemOptionInfo) =>

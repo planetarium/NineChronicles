@@ -37,7 +37,6 @@ namespace Nekoyume.UI.Module
             baseItemView.GradeHsv.hue = data.GradeHsvHue;
             baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
             baseItemView.GradeHsv.value = data.GradeHsvValue;
-            baseItemView.ItemGradeParticle = Instantiate(data.ItemGradeParticle, baseItemView.Container.transform);
 
             if (itemBase is Equipment equipment && equipment.level > 0)
             {
@@ -47,6 +46,7 @@ namespace Nekoyume.UI.Module
                 {
                     baseItemView.EnhancementImage.material = data.EnhancementMaterial;
                     baseItemView.EnhancementImage.gameObject.SetActive(true);
+                    baseItemView.ItemGradeParticle = Instantiate(data.ItemGradeParticle, baseItemView.Container.transform);
                 }
                 else
                 {
