@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Extensions;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
@@ -207,25 +208,12 @@ namespace Lib9c.Tests.Action
         public void GetSheets()
         {
             IAccountStateDelta states = new State();
-            var sheetNameAndFiles = TableSheetsImporter.ImportSheets();
-            var sheetsAddressAndValues = sheetNameAndFiles.ToDictionary(
-                pair => Addresses.TableSheet.Derive(pair.Key),
-                pair => pair.Value.Serialize());
-            foreach (var (address, value) in sheetsAddressAndValues)
-            {
-                states = states.SetState(address, value);
-            }
-
-            var iSheetType = typeof(ISheet);
-            var sheetTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(asm => asm.GetTypes())
-                .Where(type =>
-                    iSheetType.IsAssignableFrom(type) &&
-                    !type.IsAbstract &&
-                    sheetNameAndFiles.ContainsKey(type.Name))
-                .ToArray();
-            Assert.NotEmpty(sheetTypes);
-            var stateSheets = states.GetSheets(sheetTypes);
+            SheetsExtensionsTest.InitSheets(
+                states,
+                out _,
+                out var sheetsAddressAndValues,
+                out var sheetTypes,
+                out var stateSheets);
             foreach (var sheetType in sheetTypes)
             {
                 Assert.True(stateSheets.ContainsKey(sheetType));
