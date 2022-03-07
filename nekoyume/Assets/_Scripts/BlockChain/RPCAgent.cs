@@ -12,7 +12,6 @@ using Grpc.Core;
 using Ionic.Zlib;
 using Lib9c.Renderer;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;

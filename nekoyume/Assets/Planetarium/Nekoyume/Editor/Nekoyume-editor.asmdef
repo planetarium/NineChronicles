@@ -1,15 +1,14 @@
 {
     "name": "Nekoyume-editor",
+    "rootNamespace": "",
     "references": [
         "GUID:4917a533e46ad684ba1f3274c8c59bab",
         "GUID:9e24947de15b9834991c9d8411ea37cf",
         "GUID:69448af7b92c7f342b298e06a37122aa",
         "GUID:0fda7ebe61ab2164383d10e32efb9c6e",
-        "GUID:645165c8169474bfbbeb8fb0bcfd26f5",
         "GUID:478a2357cc57436488a56e564b08d223",
         "GUID:d8b63aba1907145bea998dd612889d6b",
         "GUID:329b4ccd385744985bf3f83cfd77dfe7",
-        "GUID:15a615c733aa240909fe0b28b0d5143c",
         "GUID:84651a3751eca9349aac36a66bba901b",
         "GUID:5c1ff9bd975acec488150743d53a93ca",
         "GUID:c5ecc461727906345a35491a0440694f",
@@ -20,10 +19,8 @@
         "GUID:27fb11404301449859aa664f4cb020e0",
         "GUID:68765d262e2128e4ab49c983f3411946",
         "GUID:173464ddf4cdb6640a4dfa8a9281ad69",
-        "GUID:76ccc6f2bc7322d4f953eb88459d89c8",
-        "GUID:310eb4609be1c41459e5ebb1bde5ac5a"
+        "GUID:76ccc6f2bc7322d4f953eb88459d89c8"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -33,5 +30,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }
