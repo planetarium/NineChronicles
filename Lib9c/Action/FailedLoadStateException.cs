@@ -11,8 +11,8 @@ namespace Nekoyume.Action
         {
         }
         
-        public FailedLoadStateException(Type stateType, Address address) :
-            base($"state type: {stateType}, address: {address.ToHex()}")
+        public FailedLoadStateException(Address address, Type stateType) :
+            base($"address: {address.ToHex()}, state type: {stateType.FullName}")
         {
         }
 
