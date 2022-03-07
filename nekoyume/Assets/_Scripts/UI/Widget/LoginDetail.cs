@@ -156,6 +156,7 @@ namespace Nekoyume.UI
                 var loadingScreen = Find<DimmedLoadingScreen>();
                 loadingScreen.Show(L10nManager.Localize("UI_LOADING_BOOTSTRAP_START"));
                 await States.Instance.SelectAvatarAsync(_selectedIndex);
+                Game.Event.OnUpdateAddresses.Invoke();
                 loadingScreen.Close();
                 player = new Player(
                     States.Instance.CurrentAvatarState,
@@ -388,6 +389,7 @@ namespace Nekoyume.UI
         {
             Close();
             Game.Event.OnRoomEnter.Invoke(false);
+            Game.Event.OnUpdateAddresses.Invoke();
             Find<Login>()?.Close();
         }
     }
