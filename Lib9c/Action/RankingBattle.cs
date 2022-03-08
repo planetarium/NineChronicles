@@ -194,11 +194,11 @@ namespace Nekoyume.Action
             EnemyArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[enemyKey]);
             var rankingSheets = states.GetRankingSimulatorSheets();
             var player = new Player(avatarState, rankingSheets);
-            var enemyPlayer = new EnemyPlayer(enemyAvatarState, rankingSheets);
+            var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
             var simulator = new RankingSimulator(
                 ctx.Random,
                 player,
-                enemyPlayer,
+                enemyPlayerDigest,
                 new List<Guid>(),
                 rankingSheets,
                 StageId,
@@ -285,7 +285,7 @@ namespace Nekoyume.Action
 
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
-            EnemyPlayerDigest = new EnemyPlayerDigest(enemyPlayer);
+            EnemyPlayerDigest = enemyPlayerDigest;
             return states;
         }
 

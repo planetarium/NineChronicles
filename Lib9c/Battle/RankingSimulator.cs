@@ -30,7 +30,7 @@ namespace Nekoyume.Battle
         public RankingSimulator(
             IRandom random,
             Player player,
-            EnemyPlayer enemyPlayer,
+            EnemyPlayerDigest enemyPlayerDigest,
             List<Guid> foods,
             RankingSimulatorSheets rankingSimulatorSheets,
             int stageId,
@@ -44,8 +44,10 @@ namespace Nekoyume.Battle
             rankingSimulatorSheets
         )
         {
-            _enemyPlayer = enemyPlayer;
-            _enemyPlayer.Simulator = this;
+            _enemyPlayer = new EnemyPlayer(enemyPlayerDigest, CharacterSheet, CharacterLevelSheet, EquipmentItemSetEffectSheet)
+            {
+                Simulator = this
+            };
             _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
             _stageId = stageId;
             _arenaInfo = arenaInfo;
@@ -69,7 +71,7 @@ namespace Nekoyume.Battle
         ) : this(
             random,
             new Player(avatarState, rankingSimulatorSheets),
-            new EnemyPlayer(enemyAvatarState, rankingSimulatorSheets),
+            new EnemyPlayerDigest(enemyAvatarState),
             foods,
             rankingSimulatorSheets,
             stageId,

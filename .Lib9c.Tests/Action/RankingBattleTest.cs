@@ -225,15 +225,10 @@ namespace Lib9c.Tests.Action
                 _tableSheets.CharacterSheet,
                 _tableSheets.CharacterLevelSheet,
                 _tableSheets.EquipmentItemSetEffectSheet);
-            var enemyPlayer = new EnemyPlayer(
-                action.EnemyPlayerDigest,
-                _tableSheets.CharacterSheet,
-                _tableSheets.CharacterLevelSheet,
-                _tableSheets.EquipmentItemSetEffectSheet);
             var simulator = new RankingSimulator(
                 new TestRandom(),
                 player,
-                enemyPlayer,
+                action.EnemyPlayerDigest,
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
                 RankingBattle.StageId,

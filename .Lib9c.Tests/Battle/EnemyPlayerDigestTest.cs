@@ -15,7 +15,6 @@ namespace Lib9c.Tests
     public class EnemyPlayerDigestTest
     {
         private readonly AvatarState _avatarState;
-        private readonly EnemyPlayer _enemyPlayer;
 
         public EnemyPlayerDigestTest()
         {
@@ -29,6 +28,10 @@ namespace Lib9c.Tests
                 new PrivateKey().ToAddress(),
                 "test"
             );
+            avatarState.hair = 2;
+            avatarState.lens = 3;
+            avatarState.ear = 4;
+            avatarState.tail = 5;
 
             var costumeRow = tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
             var costume = (Costume)ItemFactory.CreateItem(tableSheets.ItemSheet[costumeRow.CostumeId], new TestRandom());
@@ -40,22 +43,30 @@ namespace Lib9c.Tests
             weapon.equipped = true;
             avatarState.inventory.AddItem(weapon);
             _avatarState = avatarState;
-            _enemyPlayer = new EnemyPlayer(avatarState, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet);
+        }
+
+        [Fact]
+        public void Constructor()
+        {
+            var digest = new EnemyPlayerDigest(_avatarState);
+
+            Assert.Equal(_avatarState.NameWithHash, digest.NameWithHash);
+            Assert.Equal(_avatarState.characterId, digest.CharacterId);
+            Assert.Equal(_avatarState.level, digest.Level);
+            Assert.Equal(2, digest.HairIndex);
+            Assert.Equal(3, digest.LensIndex);
+            Assert.Equal(4, digest.EarIndex);
+            Assert.Equal(5, digest.TailIndex);
+            Assert.Single(digest.Equipments);
+            Assert.Single(digest.Costumes);
         }
 
         [Fact]
         public void Serialize()
         {
-            var simulationPlayer = new EnemyPlayerDigest(_enemyPlayer);
-
-            Assert.Single(simulationPlayer.Costumes);
-            Assert.Single(simulationPlayer.Equipments);
-
-            var serialized = simulationPlayer.Serialize();
+            var digest = new EnemyPlayerDigest(_avatarState);
+            var serialized = digest.Serialize();
             var deserialized = new EnemyPlayerDigest((List)serialized);
-
-            Assert.Single(deserialized.Costumes);
-            Assert.Single(deserialized.Equipments);
 
             Assert.Equal(serialized, deserialized.Serialize());
         }

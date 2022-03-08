@@ -20,17 +20,17 @@ namespace Nekoyume.Battle
         public readonly IReadOnlyList<Costume> Costumes;
         public readonly IReadOnlyList<Equipment> Equipments;
 
-        public EnemyPlayerDigest(EnemyPlayer enemyPlayer)
+        public EnemyPlayerDigest(AvatarState enemyAvatarState)
         {
-            NameWithHash = enemyPlayer.NameWithHash;
-            CharacterId = enemyPlayer.CharacterId;
-            Level = enemyPlayer.Level;
-            HairIndex = enemyPlayer.hairIndex;
-            LensIndex = enemyPlayer.hairIndex;
-            EarIndex = enemyPlayer.earIndex;
-            TailIndex = enemyPlayer.tailIndex;
-            Costumes = enemyPlayer.Costumes;
-            Equipments = enemyPlayer.Equipments;
+            NameWithHash = enemyAvatarState.NameWithHash;
+            CharacterId = enemyAvatarState.characterId;
+            Level = enemyAvatarState.level;
+            HairIndex = enemyAvatarState.hair;
+            LensIndex = enemyAvatarState.lens;
+            EarIndex = enemyAvatarState.ear;
+            TailIndex = enemyAvatarState.tail;
+            Costumes = enemyAvatarState.inventory.Costumes.ToList();
+            Equipments = enemyAvatarState.inventory.Equipments.ToList();
         }
 
         public EnemyPlayerDigest(List serialized)
