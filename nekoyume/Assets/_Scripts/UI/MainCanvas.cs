@@ -318,7 +318,13 @@ namespace Nekoyume.UI
             yield return null;
 
             // tooltip
-            secondWidgets.Add(Widget.Create<ItemTooltip>());
+            secondWidgets.Add(Widget.Create<EquipmentTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ConsumableTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<MaterialTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CostumeTooltip>());
             yield return null;
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
             yield return null;

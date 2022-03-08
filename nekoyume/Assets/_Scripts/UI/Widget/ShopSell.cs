@@ -107,7 +107,7 @@ namespace Nekoyume.UI
 
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
         {
-            var tooltip = Find<ItemTooltip>();
+            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             tooltip.Show(target, model, L10nManager.Localize("UI_SELL"),
                 model.ItemBase is ITradableItem,
                 () => ShowSell(model),
@@ -117,7 +117,7 @@ namespace Nekoyume.UI
 
         private void ShowSellTooltip(ShopItem model, RectTransform target)
         {
-            var tooltip = Find<ItemTooltip>();
+            var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             tooltip.Show(target, model,
                 () => ShowUpdateSellPopup(model),
                 () => ShowRetrievePopup(model),

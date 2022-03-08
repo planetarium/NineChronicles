@@ -67,7 +67,6 @@ namespace Nekoyume.UI
             base.Initialize();
             submitButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
 
-            var tooltip = Find<ItemTooltip>();
             foreach (var view in rewardsAreaItemViews)
             {
                 view.touchHandler.OnClick.Subscribe(_ =>
@@ -75,7 +74,8 @@ namespace Nekoyume.UI
                     AudioController.PlayClick();
                     var material = new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row);
                     var item = new InventoryItem(material, 0, true, false, true);
-                    tooltip.Show(view.RectTransform, item, string.Empty, false, null);
+                    ItemTooltip.Find(item.ItemBase.ItemType)
+                        .Show(view.RectTransform, item, string.Empty, false, null);
                 }).AddTo(view);
             }
 

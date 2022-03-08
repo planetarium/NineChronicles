@@ -7,7 +7,6 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
-using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using UnityEngine;

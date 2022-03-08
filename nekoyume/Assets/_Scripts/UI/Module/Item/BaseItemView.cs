@@ -96,6 +96,9 @@ namespace Nekoyume
         [SerializeField]
         private GameObject shadowObject;
 
+        [SerializeField]
+        private ParticleSystem itemGradeParticle;
+
         public GameObject Container => container;
         public GameObject EmptyObject => emptyObject;
         public TouchHandler TouchHandler => touchHandler;
@@ -122,6 +125,7 @@ namespace Nekoyume
         public GameObject SelectMaterialItemObject => selectMaterialItemObject;
         public GameObject LockObject => lockObject;
         public GameObject ShadowObject => shadowObject;
+        public ParticleSystem ItemGradeParticle => itemGradeParticle;
 
         private ItemSheet.Row GetRow(ItemBase itemBase)
         {

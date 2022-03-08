@@ -60,7 +60,7 @@ namespace Nekoyume.UI.Module
         private DescriptionArea descriptionArea;
 
         [SerializeField]
-        private StatView statView;
+        private List<StatView> statViewList;
 
         [SerializeField]
         private GameObject optionSpacer;
@@ -89,7 +89,7 @@ namespace Nekoyume.UI.Module
         {
             var statCount = UpdateStatsArea(itemBase, itemCount);
             var skillCount = UpdateSkillsArea(itemBase);
-            var hasOptions = statView.gameObject.activeSelf || statCount + skillCount > 0;
+            var hasOptions = statViewList.First().gameObject.activeSelf || statCount + skillCount > 0;
             optionSpacer.SetActive(hasOptions);
             optionAreaRoot.SetActive(hasOptions);
         }
@@ -156,7 +156,7 @@ namespace Nekoyume.UI.Module
 
                     var optionInfo = new ItemOptionInfo(equipment);
                     var (mainStatType, _, mainStatTotalValue) = optionInfo.MainStat;
-                    statView.Show(mainStatType, mainStatTotalValue);
+                    statViewList.First().Show(mainStatType, mainStatTotalValue);
 
                     foreach (var (type, value, count) in optionInfo.StatOptions)
                     {
@@ -170,19 +170,19 @@ namespace Nekoyume.UI.Module
                 {
                     iconArea.combatPowerObject.SetActive(false);
                     iconArea.countObject.SetActive(false);
-                    statView.gameObject.SetActive(false);
 
-                    foreach (var statMapEx in itemUsable.StatsMap.GetStats())
+                    var stats = itemUsable.StatsMap.GetStats().ToList();
+                    var usableStatCount = stats.Count;
+                    for (int i = 0; i < usableStatCount; i++)
                     {
-                        AddStat(statMapEx);
-                        statCount++;
+                        statViewList[i].Show(stats[i].StatType, stats[i].TotalValueAsInt);
                     }
 
                     break;
                 }
                 case Costume costume:
                 {
-                    statView.gameObject.SetActive(false);
+                    statViewList.ForEach(view => view.gameObject.SetActive(false));
                     var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                     iconArea.countObject.SetActive(false);
                     var statsMap = new StatsMap();
@@ -191,9 +191,11 @@ namespace Nekoyume.UI.Module
                         statsMap.AddStatValue(row.StatType, row.Stat);
                     }
 
-                    foreach (var statMapEx in statsMap.GetStats())
+                    var stats = statsMap.GetStats().ToList();
+                    var usableStatCount = stats.Count;
+                    for (int i = 0; i < usableStatCount; i++)
                     {
-                        AddStat(statMapEx);
+                        statViewList[i].Show(stats[i].StatType, stats[i].TotalValueAsInt);
                         statCount++;
                     }
 
@@ -208,7 +210,7 @@ namespace Nekoyume.UI.Module
                 }
                 case Material _:
                 {
-                    statView.gameObject.SetActive(false);
+                    statViewList.ForEach(view => view.gameObject.SetActive(false));
                     iconArea.combatPowerObject.SetActive(false);
 
                     var countFormat = L10nManager.Localize("UI_COUNT_FORMAT");
@@ -218,7 +220,7 @@ namespace Nekoyume.UI.Module
                     break;
                 }
                 default:
-                    statView.gameObject.SetActive(false);
+                    statViewList.ForEach(view => view.gameObject.SetActive(false));
                     iconArea.combatPowerObject.SetActive(false);
                     iconArea.countObject.SetActive(false);
                     break;

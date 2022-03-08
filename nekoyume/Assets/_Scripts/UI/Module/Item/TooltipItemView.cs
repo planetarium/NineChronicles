@@ -28,6 +28,7 @@ namespace Nekoyume.UI.Module
             baseItemView.PriceText.gameObject.SetActive(false);
             baseItemView.EquippedObject.SetActive(false);
             baseItemView.NotificationObject.SetActive(false);
+            baseItemView.ItemGradeParticle.gameObject.SetActive(false);
 
             baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(itemBase);
 
@@ -46,6 +47,10 @@ namespace Nekoyume.UI.Module
                 {
                     baseItemView.EnhancementImage.material = data.EnhancementMaterial;
                     baseItemView.EnhancementImage.gameObject.SetActive(true);
+                    baseItemView.ItemGradeParticle.gameObject.SetActive(true);
+                    var mainModule = baseItemView.ItemGradeParticle.main;
+                    mainModule.startColor = data.ItemGradeParticleColor;
+                    baseItemView.ItemGradeParticle.Play();
                 }
                 else
                 {

@@ -4,9 +4,11 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
 {
@@ -14,31 +16,31 @@ namespace Nekoyume.UI
     using UniRx;
     using UnityEngine.UI;
 
-    public class ItemTooltip : NewVerticalTooltipWidget
+    public abstract class ItemTooltip : NewVerticalTooltipWidget
     {
         [SerializeField]
-        private ItemTooltipDetail detail;
+        protected ItemTooltipDetail detail;
 
         [SerializeField]
-        private ConditionalButton submitButton;
+        protected ConditionalButton submitButton;
 
         [SerializeField]
-        private ItemTooltipBuy buy;
+        protected ItemTooltipBuy buy;
 
         [SerializeField]
-        private ItemTooltipSell sell;
+        protected ItemTooltipSell sell;
 
         [SerializeField]
-        private Scrollbar scrollbar;
+        protected Scrollbar scrollbar;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        protected readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
-        private System.Action _onSubmit;
-        private System.Action _onClose;
-        private System.Action _onBlocked;
+        protected System.Action _onSubmit;
+        protected System.Action _onClose;
+        protected System.Action _onBlocked;
 
-        private bool _isPointerOnScrollArea;
-        private bool _isClickedButtonArea;
+        protected bool _isPointerOnScrollArea;
+        protected bool _isClickedButtonArea;
 
         protected override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
 
@@ -73,7 +75,7 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void Show(RectTransform target,
+        public virtual void Show(RectTransform target,
             InventoryItem item,
             string submitText,
             bool interactable,
@@ -98,7 +100,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
-        public void Show(RectTransform target,
+        public virtual void Show(RectTransform target,
             ShopItem item,
             System.Action onRegister,
             System.Action onSellCancellation,
@@ -127,7 +129,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(sell.gameObject));
         }
 
-        public void Show(RectTransform target,
+        public virtual void Show(RectTransform target,
             ShopItem item,
             System.Action onBuy,
             System.Action onClose)
@@ -153,7 +155,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(buy.gameObject));
         }
 
-        public void Show(RectTransform target,
+        public virtual void Show(RectTransform target,
             EnhancementInventoryItem item,
             string submitText,
             bool interactable,
@@ -178,7 +180,19 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
-        private void UpdatePosition(RectTransform target)
+        public static ItemTooltip Find(ItemType type)
+        {
+            return type switch
+            {
+                ItemType.Consumable => Find<ConsumableTooltip>(),
+                ItemType.Costume => Find<CostumeTooltip>(),
+                ItemType.Equipment => Find<EquipmentTooltip>(),
+                ItemType.Material => Find<MaterialTooltip>(),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, $"invalid ItemType : {type}")
+            };
+        }
+
+        protected void UpdatePosition(RectTransform target)
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
             panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
@@ -196,7 +210,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator CoUpdate(GameObject target)
+        protected IEnumerator CoUpdate(GameObject target)
         {
             var selectedGameObjectCache = TouchHandler.currentSelectedGameObject;
             while (selectedGameObjectCache is null)
