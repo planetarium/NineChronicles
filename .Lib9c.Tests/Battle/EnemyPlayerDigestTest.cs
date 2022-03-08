@@ -12,12 +12,12 @@ namespace Lib9c.Tests
     using Nekoyume.Model.State;
     using Xunit;
 
-    public class SimulationEnemyPlayerTest
+    public class EnemyPlayerDigestTest
     {
         private readonly AvatarState _avatarState;
         private readonly EnemyPlayer _enemyPlayer;
 
-        public SimulationEnemyPlayerTest()
+        public EnemyPlayerDigestTest()
         {
             var tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             var avatarState = new AvatarState(
@@ -46,13 +46,13 @@ namespace Lib9c.Tests
         [Fact]
         public void Serialize()
         {
-            var simulationPlayer = new SimulationEnemyPlayer(_enemyPlayer);
+            var simulationPlayer = new EnemyPlayerDigest(_enemyPlayer);
 
             Assert.Single(simulationPlayer.Costumes);
             Assert.Single(simulationPlayer.Equipments);
 
             var serialized = simulationPlayer.Serialize();
-            var deserialized = new SimulationEnemyPlayer((List)serialized);
+            var deserialized = new EnemyPlayerDigest((List)serialized);
 
             Assert.Single(deserialized.Costumes);
             Assert.Single(deserialized.Equipments);

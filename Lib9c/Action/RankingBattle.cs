@@ -29,7 +29,7 @@ namespace Nekoyume.Action
         public Address weeklyArenaAddress;
         public List<Guid> costumeIds;
         public List<Guid> equipmentIds;
-        public SimulationEnemyPlayer EnemyPlayer;
+        public EnemyPlayerDigest EnemyPlayerDigest;
         public ArenaInfo ArenaInfo;
         public ArenaInfo EnemyArenaInfo;
 
@@ -285,7 +285,7 @@ namespace Nekoyume.Action
 
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
-            EnemyPlayer = new SimulationEnemyPlayer(enemyPlayer);
+            EnemyPlayerDigest = new EnemyPlayerDigest(enemyPlayer);
             return states;
         }
 

@@ -7,7 +7,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Battle
 {
-    public readonly struct SimulationEnemyPlayer: IState
+    public readonly struct EnemyPlayerDigest: IState
     {
         public readonly string NameWithHash;
         public readonly int CharacterId;
@@ -20,7 +20,7 @@ namespace Nekoyume.Battle
         public readonly IReadOnlyList<Costume> Costumes;
         public readonly IReadOnlyList<Equipment> Equipments;
 
-        public SimulationEnemyPlayer(EnemyPlayer enemyPlayer)
+        public EnemyPlayerDigest(EnemyPlayer enemyPlayer)
         {
             NameWithHash = enemyPlayer.NameWithHash;
             CharacterId = enemyPlayer.CharacterId;
@@ -33,7 +33,7 @@ namespace Nekoyume.Battle
             Equipments = enemyPlayer.Equipments;
         }
 
-        public SimulationEnemyPlayer(List serialized)
+        public EnemyPlayerDigest(List serialized)
         {
             NameWithHash = serialized[0].ToDotnetString();
             CharacterId = serialized[1].ToInteger();

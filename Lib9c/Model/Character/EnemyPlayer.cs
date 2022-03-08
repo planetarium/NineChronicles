@@ -30,18 +30,18 @@ namespace Nekoyume.Model
             NameWithHash = avatarState.NameWithHash;
         }
 
-        public EnemyPlayer(SimulationEnemyPlayer enemyPlayer,
+        public EnemyPlayer(EnemyPlayerDigest enemyPlayerDigest,
             CharacterSheet characterSheet,
             CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
         ) : base(
-            enemyPlayer,
+            enemyPlayerDigest,
             characterSheet,
             characterLevelSheet,
             equipmentItemSetEffectSheet
         )
         {
-            NameWithHash = enemyPlayer.NameWithHash;
+            NameWithHash = enemyPlayerDigest.NameWithHash;
         }
 
         public EnemyPlayer(

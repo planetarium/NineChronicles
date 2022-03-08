@@ -226,7 +226,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.CharacterLevelSheet,
                 _tableSheets.EquipmentItemSetEffectSheet);
             var enemyPlayer = new EnemyPlayer(
-                action.EnemyPlayer,
+                action.EnemyPlayerDigest,
                 _tableSheets.CharacterSheet,
                 _tableSheets.CharacterLevelSheet,
                 _tableSheets.EquipmentItemSetEffectSheet);

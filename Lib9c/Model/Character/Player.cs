@@ -100,15 +100,15 @@ namespace Nekoyume.Model
             PostConstruction(simulator.CharacterLevelSheet, simulator.EquipmentItemSetEffectSheet);
         }
 
-        protected Player(SimulationEnemyPlayer enemyPlayer,
+        protected Player(EnemyPlayerDigest enemyPlayerDigest,
             CharacterSheet characterSheet,
             CharacterLevelSheet levelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
         ) : base(
             null,
             characterSheet,
-            enemyPlayer.CharacterId,
-            enemyPlayer.Level)
+            enemyPlayerDigest.CharacterId,
+            enemyPlayerDigest.Level)
         {
             weapon = null;
             armor = null;
@@ -117,12 +117,12 @@ namespace Nekoyume.Model
             ring = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
-            hairIndex = enemyPlayer.HairIndex;
-            lensIndex = enemyPlayer.LensIndex;
-            earIndex = enemyPlayer.EarIndex;
-            tailIndex = enemyPlayer.TailIndex;
-            _equipments = enemyPlayer.Equipments as List<Equipment>;
-            _costumes = enemyPlayer.Costumes as List<Costume>;
+            hairIndex = enemyPlayerDigest.HairIndex;
+            lensIndex = enemyPlayerDigest.LensIndex;
+            earIndex = enemyPlayerDigest.EarIndex;
+            tailIndex = enemyPlayerDigest.TailIndex;
+            _equipments = enemyPlayerDigest.Equipments as List<Equipment>;
+            _costumes = enemyPlayerDigest.Costumes as List<Costume>;
             characterLevelSheet = levelSheet;
             AttackCountMax = AttackCountHelper.GetCountMax(Level);
             SetEquipmentStat(equipmentItemSetEffectSheet);
