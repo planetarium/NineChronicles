@@ -306,6 +306,41 @@ namespace Nekoyume.L10n
                     pair => pair.Value);
         }
 
+        public static string LocalizeWorldName(int stageId)
+        {
+            if (stageId <= 50)
+            {
+                return Localize("WORLD_NAME_YGGDRASIL");
+            }
+
+            if (stageId <= 100)
+            {
+                return Localize("WORLD_NAME_ALFHEIM");
+            }
+
+            if (stageId <= 150)
+            {
+                return Localize("WORLD_NAME_SVARTALFHEIM");
+            }
+
+            if (stageId <= 200)
+            {
+                return Localize("WORLD_NAME_ASGARD");
+            }
+
+            if (stageId <= 300)
+            {
+                return Localize("WORLD_NAME_MUSPELHEIM");
+            }
+
+            if (stageId > 10_000_000)
+            {
+                return Localize("WORLD_NAME_MIMISBRUNNR");
+            }
+
+            return string.Empty;
+        }
+
         #endregion
 
         private static void ValidateStateAndKey(string key)

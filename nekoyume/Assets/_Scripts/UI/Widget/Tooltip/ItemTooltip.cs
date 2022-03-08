@@ -180,14 +180,14 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
-        public static ItemTooltip GetItemTooltipByItemType(ItemType type)
+        public static ItemTooltip Find(ItemType type)
         {
             return type switch
             {
-                ItemType.Consumable => Find<ConsumableItemTooltip>(),
-                ItemType.Costume => Find<CostumeItemTooltip>(),
-                ItemType.Equipment => Find<EquipmentItemTooltip>(),
-                ItemType.Material => Find<MaterialItemTooltip>(),
+                ItemType.Consumable => Find<ConsumableTooltip>(),
+                ItemType.Costume => Find<CostumeTooltip>(),
+                ItemType.Equipment => Find<EquipmentTooltip>(),
+                ItemType.Material => Find<MaterialTooltip>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, $"invalid ItemType : {type}")
             };
         }

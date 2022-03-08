@@ -240,18 +240,5 @@ namespace Nekoyume.Helper
 
             return count;
         }
-
-        public static List<StageSheet.Row> GetStagesByItemId(StageSheet sheet, int id)
-        {
-            if (States.Instance.CurrentAvatarState.worldInformation == null)
-            {
-                return null;
-            }
-
-            return sheet
-                .Where(s => s.Value.Rewards.Any(reward => reward.ItemId == id))
-                .Select(s => s.Value)
-                .ToList();
-        }
     }
 }
