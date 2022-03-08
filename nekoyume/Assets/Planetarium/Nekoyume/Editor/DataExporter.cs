@@ -50,6 +50,7 @@ namespace Planetarium.Nekoyume.Editor
             });
             strings.AddRange(GetItemBaseArray(ReactiveShopState.BuyDigests.Value));
             File.WriteAllLines(path, strings, Encoding.UTF8);
+            Debug.Log("Export store data finished");
         }
 
         private static IEnumerable<string> GetItemBaseArray(IReadOnlyDictionary<ItemSubTypeFilter,
