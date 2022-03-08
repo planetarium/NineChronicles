@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,11 +7,8 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
-using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
-using Nekoyume.State;
-using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Helper

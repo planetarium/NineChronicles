@@ -35,7 +35,7 @@ namespace Nekoyume
             return result;
         }
 
-        public static List<StageSheet.Row> GetStagesContainsReward(this StageSheet sheet, int id)
+        public static List<StageSheet.Row> GetStagesContainsReward(this StageSheet sheet, int itemId)
         {
             if (States.Instance.CurrentAvatarState.worldInformation == null)
             {
@@ -43,7 +43,7 @@ namespace Nekoyume
             }
 
             return sheet
-                .Where(s => s.Value.Rewards.Any(reward => reward.ItemId == id))
+                .Where(s => s.Value.Rewards.Any(reward => reward.ItemId == itemId))
                 .Select(s => s.Value)
                 .ToList();
         }

@@ -16,10 +16,7 @@ namespace Nekoyume.UI
             int id)
         {
             var result = new List<StageSheet.Row>();
-            // (int order, StageSheet.Row row) result = (0, null);
-            var rowList = rows.ToList();
-
-            rowList = rowList.Where(s =>
+            var rowList = rows.Where(s =>
             {
                 if (States.Instance.CurrentAvatarState.worldInformation
                     .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
@@ -75,11 +72,17 @@ namespace Nekoyume.UI
                 .OrderByDescending(s => s.Key);
 
             var stages = GetStageByOrder(stageRowList, item.ItemBase.Id);
-
-            Debug.Log(
-                $"stageRow.Id : {stages[0].Id}, world name : {L10nManager.LocalizeWorldName(stages[0].Id)}");
-            Debug.Log(
-                $"stageRow.Id : {stages[1].Id}, world name : {L10nManager.LocalizeWorldName(stages[1].Id)}");
+            var worldSheet = Game.Game.instance.TableSheets.WorldSheet;
+            if (worldSheet.TryGetByStageId(stages[0].Id, out var row))
+            {
+                Debug.Log(
+                    $"stageRow.Id : {stages[0].Id}, world name : {L10nManager.LocalizeWorldName(row.Id)}");
+            }
+            if (worldSheet.TryGetByStageId(stages[1].Id, out row))
+            {
+                Debug.Log(
+                    $"stageRow.Id : {stages[1].Id}, world name : {L10nManager.LocalizeWorldName(row.Id)}");
+            }
         }
     }
 }
