@@ -1,16 +1,30 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.CloudWatchLogs.Model.Internal.MarshallTransformations;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class MaterialTooltip : ItemTooltip
     {
+        [SerializeField]
+        private List<AcquisitionPlaceButton> acquisitionPlaceButtons;
+
+        public override void Show(RectTransform target, InventoryItem item, string submitText, bool interactable,
+            System.Action onSubmit, System.Action onClose = null, System.Action onBlocked = null)
+        {
+            base.Show(target, item, submitText, interactable, onSubmit, onClose, onBlocked);
+            SetAcquisitionPlaceButtons(item.ItemBase);
+        }
+
         private static List<StageSheet.Row> GetStageByOrder(
             IOrderedEnumerable<StageSheet.Row> rows,
             int id)
@@ -46,11 +60,11 @@ namespace Nekoyume.UI
                     result.Add(secondRow);
                 }
 
-                Debug.Log("select in cleared stage");
+                Debug.LogError("select in cleared stage");
                 return result;
             }
 
-            Debug.Log("select in not cleared stage");
+            Debug.LogError("select in not cleared stage");
             return rows.Where(r =>
             {
                 if (States.Instance.CurrentAvatarState.worldInformation
@@ -63,26 +77,82 @@ namespace Nekoyume.UI
             }).OrderBy(sheet => sheet.Key).Take(2).ToList();
         }
 
-        public override void Show(RectTransform target, InventoryItem item, string submitText, bool interactable,
-            System.Action onSubmit, System.Action onClose = null, System.Action onBlocked = null)
+        private void SetAcquisitionPlaceButtons(ItemBase itemBase)
         {
-            base.Show(target, item, submitText, interactable, onSubmit, onClose, onBlocked);
-            var stageRowList = Game.Game.instance.TableSheets.StageSheet
-                .GetStagesContainsReward(item.ItemBase.Id)
-                .OrderByDescending(s => s.Key);
+            acquisitionPlaceButtons.ForEach(button => button.gameObject.SetActive(false));
+            var acquisitionPlaceList = new List<AcquisitionPlaceButton.Model>();
 
-            var stages = GetStageByOrder(stageRowList, item.ItemBase.Id);
-            var worldSheet = Game.Game.instance.TableSheets.WorldSheet;
-            if (worldSheet.TryGetByStageId(stages[0].Id, out var row))
+            switch (itemBase.ItemSubType)
             {
-                Debug.Log(
-                    $"stageRow.Id : {stages[0].Id}, world name : {L10nManager.LocalizeWorldName(row.Id)}");
+                case ItemSubType.EquipmentMaterial:
+                case ItemSubType.MonsterPart:
+                case ItemSubType.NormalMaterial:
+                    var stageRowList = Game.Game.instance.TableSheets.StageSheet
+                        .GetStagesContainsReward(itemBase.Id)
+                        .OrderByDescending(s => s.Key);
+
+                    var stages = GetStageByOrder(stageRowList, itemBase.Id);
+                    // Acquisition place is stage...
+                    if (stages.Any())
+                    {
+                        var worldSheet = Game.Game.instance.TableSheets.WorldSheet;
+                        if (worldSheet.TryGetByStageId(stages[0].Id, out var row))
+                        {
+                            Debug.LogError(
+                                $"stageRow.Id : {stages[0].Id}, world name : {L10nManager.LocalizeWorldName(row.Id)}");
+                        }
+
+                        if (worldSheet.TryGetByStageId(stages[1].Id, out row))
+                        {
+                            Debug.LogError(
+                                $"stageRow.Id : {stages[1].Id}, world name : {L10nManager.LocalizeWorldName(row.Id)}");
+                        }
+
+                        acquisitionPlaceList.AddRange(stages.Select(stage =>
+                        {
+                            if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stage.Id, out var row))
+                            {
+                                return new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Stage,
+                                    null,
+                                    $"{L10nManager.LocalizeWorldName(row.Id)} {stage.Id % 10_000_000}",
+                                    itemBase,
+                                    row);
+                            }
+
+                            return null;
+                        }));
+                    }
+                    break;
+                case ItemSubType.FoodMaterial:
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Arena, null, "아레나", itemBase));
+                    break;
+                case ItemSubType.Hourglass:
+                case ItemSubType.ApStone:
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Quest, null, "퀘스트", itemBase));
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Shop, null, "상점", itemBase));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-            if (worldSheet.TryGetByStageId(stages[1].Id, out row))
+
+            if (acquisitionPlaceList.All(model =>
+                    model.Type != AcquisitionPlaceButton.PlaceType.Quest))
             {
-                Debug.Log(
-                    $"stageRow.Id : {stages[1].Id}, world name : {L10nManager.LocalizeWorldName(row.Id)}");
+                // Acquisition place is quest...
+                if (States.Instance.CurrentAvatarState.questList.Any(quest => !quest.Complete && quest.Reward.ItemMap.ContainsKey(itemBase.Id)))
+                {
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Quest, null, "퀘스트", itemBase));
+                }
             }
+
+            var placeCount = acquisitionPlaceList.Count;
+            for (int i = 0; i < placeCount && i < 4; i++)
+            {
+                acquisitionPlaceButtons[i].gameObject.SetActive(true);
+                acquisitionPlaceButtons[i].Set(acquisitionPlaceList[i]);
+            }
+
+            Debug.LogError($"subtype : {itemBase.ItemSubType}");
         }
     }
 }
