@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
@@ -32,16 +34,31 @@ namespace Nekoyume.Model
 
         public EnemyPlayer(EnemyPlayerDigest enemyPlayerDigest,
             CharacterSheet characterSheet,
-            CharacterLevelSheet characterLevelSheet,
+            CharacterLevelSheet levelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
         ) : base(
-            enemyPlayerDigest,
+            enemyPlayerDigest.Level,
             characterSheet,
-            characterLevelSheet,
-            equipmentItemSetEffectSheet
-        )
+            levelSheet,
+            equipmentItemSetEffectSheet)
         {
             NameWithHash = enemyPlayerDigest.NameWithHash;
+            weapon = null;
+            armor = null;
+            belt = null;
+            necklace = null;
+            ring = null;
+            monsterMap = new CollectionMap();
+            eventMap = new CollectionMap();
+            hairIndex = enemyPlayerDigest.HairIndex;
+            lensIndex = enemyPlayerDigest.LensIndex;
+            earIndex = enemyPlayerDigest.EarIndex;
+            tailIndex = enemyPlayerDigest.TailIndex;
+            equipments = enemyPlayerDigest.Equipments as List<Equipment>;
+            costumes = enemyPlayerDigest.Costumes as List<Costume>;
+            characterLevelSheet = levelSheet;
+            AttackCountMax = AttackCountHelper.GetCountMax(Level);
+            SetEquipmentStat(equipmentItemSetEffectSheet);
         }
 
         public EnemyPlayer(
