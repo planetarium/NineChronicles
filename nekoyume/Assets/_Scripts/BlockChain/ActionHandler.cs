@@ -81,7 +81,7 @@ namespace Nekoyume.BlockChain
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.AgentState.avatarAddresses[index];
-            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
             {
                 await UpdateAvatarState(avatarState, index);
             }
@@ -91,7 +91,7 @@ namespace Nekoyume.BlockChain
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
             {
                 await UpdateCurrentAvatarStateAsync(avatarState);
             }
