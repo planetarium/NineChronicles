@@ -418,10 +418,12 @@ namespace Nekoyume.UI
             }
 
             guidedQuest.Show(States.Instance.CurrentAvatarState);
+            Find<NoticePopup>().Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            Find<NoticePopup>().Close(true);
             StopSpeeches();
 
             guidedQuest.Hide(true);
