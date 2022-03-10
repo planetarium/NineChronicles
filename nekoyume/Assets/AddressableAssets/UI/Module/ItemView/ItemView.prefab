@@ -17158,9 +17158,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2778342736168298330}
   - component: {fileID: 2839249850442299238}
-  - component: {fileID: 889054244758995626}
   - component: {fileID: 6972057653353820459}
-  - component: {fileID: 5631973793079407619}
+  - component: {fileID: 2483519318837342646}
   m_Layer: 5
   m_Name: ItemImage_Spine
   m_TagString: Untagged
@@ -17184,9 +17183,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 220.2, y: -251.9}
-  m_SizeDelta: {x: 426.69055, y: 754.25586}
-  m_Pivot: {x: 0.5, y: 0.02546884}
+  m_AnchoredPosition: {x: 220, y: -150}
+  m_SizeDelta: {x: 500, y: 500}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!222 &2839249850442299238
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -17195,52 +17194,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6197503354668204404}
   m_CullTransparentMesh: 1
---- !u!114 &889054244758995626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6197503354668204404}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d85b887af7e6c3f45a2e2d2920d641bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: dc942dca126d847e5bc58b9af051ef38, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  skeletonDataAsset: {fileID: 11400000, guid: 58417021c09290b4a9d145caafd834f1, type: 2}
-  initialSkinName: 
-  initialFlipX: 0
-  initialFlipY: 0
-  startingAnimation: Idle
-  startingLoop: 0
-  timeScale: 1
-  freeze: 0
-  updateWhenInvisible: 3
-  unscaledTime: 0
-  allowMultipleCanvasRenderers: 0
-  canvasRenderers: []
-  separatorSlotNames: []
-  enableSeparatorSlots: 0
-  separatorParts: []
-  updateSeparatorPartLocation: 1
-  meshGenerator:
-    settings:
-      useClipping: 1
-      zSpacing: 0
-      pmaVertexColors: 1
-      tintBlack: 0
-      canvasGroupTintBlack: 0
-      calculateTangents: 0
-      addNormals: 0
-      immutableTriangles: 0
 --- !u!114 &6972057653353820459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17281,11 +17234,11 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 889054244758995626}
+  m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5631973793079407619
+--- !u!114 &2483519318837342646
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -17294,12 +17247,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 6197503354668204404}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76be27e850e46024da43907616ed0acf, type: 3}
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingAnimationName: Greeting
-  idleAnimationName: Idle
-  onClickAnimationName: Touch
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 8400000, guid: 58796ef987d59f642b5569f035088cd1, type: 2}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 --- !u!1 &6209377862909158894
 GameObject:
   m_ObjectHideFlags: 0
@@ -19526,6 +19491,7 @@ MonoBehaviour:
   gradeHsv: {fileID: 1073936053208349577}
   enoughObject: {fileID: 2097812866563924827}
   itemImage: {fileID: 7607444175775405095}
+  spineItemImage: {fileID: 8829343238035662273}
   enhancementImage: {fileID: 7539872729065808942}
   enhancementText: {fileID: 2808821110765317604}
   countText: {fileID: 6734565281713029821}
@@ -19544,3 +19510,4 @@ MonoBehaviour:
   selectMaterialItemObject: {fileID: 7599593880860009807}
   lockObject: {fileID: 3627254525406549401}
   shadowObject: {fileID: 5977983775739720328}
+  itemGradeParticle: {fileID: 0}

@@ -1,4 +1,4 @@
-﻿using Nekoyume.Helper;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using UnityEngine;
 
@@ -8,7 +8,17 @@ namespace Nekoyume.UI.Module
     public class TooltipItemView : MonoBehaviour
     {
         [SerializeField]
+        private SpineTooltipDataScriptableObject tooltipDataScriptableObject;
+
+        [SerializeField]
         private BaseItemView baseItemView;
+
+        [SerializeField]
+        private ParticleSystem gradeEffect;
+
+        private GameObject _costumeSpineObject;
+
+        private readonly Vector3 DefaultSpineObjectPosition = new Vector3(6000f, 5999.5f, 2.15f);
 
         public void Set(ItemBase itemBase, int count, bool levelLimit)
         {
@@ -29,6 +39,8 @@ namespace Nekoyume.UI.Module
             baseItemView.EquippedObject.SetActive(false);
             baseItemView.NotificationObject.SetActive(false);
             baseItemView.ItemGradeParticle.gameObject.SetActive(false);
+            baseItemView.ItemImage.gameObject.SetActive(true);
+            baseItemView.SpineItemImage.gameObject.SetActive(false);
 
             baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(itemBase);
 
@@ -57,6 +69,30 @@ namespace Nekoyume.UI.Module
                     baseItemView.EnhancementImage.gameObject.SetActive(false);
                 }
             }
+            else if (itemBase is Costume costume)
+            {
+                baseItemView.EnhancementText.gameObject.SetActive(false);
+                baseItemView.EnhancementImage.gameObject.SetActive(false);
+                var tooltipData = tooltipDataScriptableObject.GetSpineTooltipData(costume.Id);
+                if (tooltipData != null)
+                {
+                    if (_costumeSpineObject)
+                    {
+                        Destroy(_costumeSpineObject);
+                    }
+
+                    _costumeSpineObject = Instantiate(tooltipData.Prefab);
+                    _costumeSpineObject.transform.position =
+                        DefaultSpineObjectPosition + tooltipData.Offset;
+                    _costumeSpineObject.transform.localScale = tooltipData.Scale;
+                    _costumeSpineObject.transform.rotation = Quaternion.Euler(tooltipData.Rotation);
+                    var particle = gradeEffect.main;
+                    particle.startColor = tooltipData.GradeColor;
+
+                    baseItemView.ItemImage.gameObject.SetActive(false);
+                    baseItemView.SpineItemImage.gameObject.SetActive(true);
+                }
+            }
             else
             {
                 baseItemView.EnhancementText.gameObject.SetActive(false);
@@ -69,6 +105,14 @@ namespace Nekoyume.UI.Module
             baseItemView.CountText.text = count.ToString();
 
             baseItemView.LevelLimitObject.SetActive(levelLimit);
+        }
+
+        private void OnDisable()
+        {
+            if (_costumeSpineObject)
+            {
+                Destroy(_costumeSpineObject);
+            }
         }
     }
 }
