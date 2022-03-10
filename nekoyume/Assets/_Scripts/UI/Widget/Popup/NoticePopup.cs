@@ -21,12 +21,19 @@ namespace Nekoyume.UI
         {
             get
             {
+                var worldInfo = Game.Game.instance.States.CurrentAvatarState.worldInformation;
+                if (worldInfo is null) return false;
+                var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
+                if (TutorialController.GetCheckPoint(clearedStageId) != 0) return false;
+                
+                var tutorialControllerIsPlaying = Game.Game.instance.Stage.TutorialController.IsPlaying;
+                if (tutorialControllerIsPlaying) return false;
+
                 var now = DateTime.UtcNow;
                 var begin = DateTime.Parse(NoticeBeginTime);
                 var end = DateTime.Parse(NoticeEndTime);
                 var isInTime = now >= begin && now <= end;
-                
-                if(!isInTime) return false;
+                if (!isInTime) return false;
                 
                 var lastNoticeData = PlayerPrefs.GetString(LastNoticeDayKey, "2022/03/01 00:00:00");
                 var lastNoticeDay = DateTime.Parse(lastNoticeData);
