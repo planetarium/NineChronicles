@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
@@ -22,20 +23,20 @@ namespace Nekoyume.UI.Module
 
         public class Model
         {
-            public Model(PlaceType type, Action onClick, string guideText, ItemBase itemBase, WorldSheet.Row worldRow = null)
+            public Model(PlaceType type, Action onClick, string guideText, ItemBase itemBase, StageSheet.Row stageRow = null)
             {
                 Type = type;
                 OnClick = onClick;
                 GuideText = guideText;
                 ItemBase = itemBase;
-                WorldRow = worldRow;
+                StageRow = stageRow;
             }
 
             public PlaceType Type { get; }
             public Action OnClick { get; }
             public string GuideText { get; }
             public ItemBase ItemBase { get; }
-            public WorldSheet.Row WorldRow { get; }
+            public StageSheet.Row StageRow { get; }
         }
 
         [SerializeField]
@@ -50,6 +51,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI lockedText;
 
+        [SerializeField]
+        private GameObject enableObject;
+
+        [SerializeField]
+        private GameObject disableObject;
+
         private Model _model;
 
         private Action _onClick;
@@ -58,25 +65,47 @@ namespace Nekoyume.UI.Module
 
         private const string IconNameFormat = "icon_Navigation_{0}";
 
+        private const string MimisbrunnrIconIndex = "006";
+
         public void Set(Model model)
         {
             _model = model;
             lockedText.text = guideText.text = model.GuideText;
             _onClick = model.OnClick;
+            enableObject.SetActive(false);
+            disableObject.SetActive(false);
 
             switch (model.Type)
             {
                 case PlaceType.Stage:
-                    if (_iconDictionary.TryGetValue(
-                            string.Format(
-                                IconNameFormat,
-                                model.WorldRow.Id < 10000
-                                    ? (100 + model.WorldRow.Id).ToString()
-                                    : "006"),
-                            out var icon))
+                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(model.StageRow.Id,
+                            out var worldRow))
                     {
-                        iconImage.sprite = icon;
+                        if (_iconDictionary.TryGetValue(
+                                string.Format(
+                                    IconNameFormat,
+                                    worldRow.Id < 10000
+                                        ? (100 + worldRow.Id).ToString()
+                                        : MimisbrunnrIconIndex),
+                                out var icon))
+                        {
+                            iconImage.sprite = icon;
+                        }
                     }
+
+                    if (States.Instance.CurrentAvatarState.worldInformation
+                        .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+                    {
+                        if (model.StageRow.Id > world.StageClearedId + 1)
+                        {
+                            disableObject.SetActive(true);
+                        }
+                        else
+                        {
+                            enableObject.SetActive(true);
+                        }
+                    }
+
                     break;
                 case PlaceType.Shop:
                 case PlaceType.Arena:
@@ -89,9 +118,21 @@ namespace Nekoyume.UI.Module
                         iconImage.sprite = sprite;
                     }
 
+                    enableObject.SetActive(true);
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+
+            if (model.Type == PlaceType.Shop)
+            {
+                if (States.Instance.CurrentAvatarState.level <
+                    GameConfig.RequireClearedStageLevel.UIMainMenuShop)
+                {
+                    enableObject.SetActive(false);
+                    disableObject.SetActive(true);
+                }
             }
         }
 
@@ -99,10 +140,7 @@ namespace Nekoyume.UI.Module
         {
             button.onClick.AddListener(() => _onClick?.Invoke());
 
-            if (_iconDictionary == null)
-            {
-                _iconDictionary = Resources.LoadAll<Sprite>("UI/Icons/Navigation/").ToDictionary(image => image.name);
-            }
+            _iconDictionary ??= Resources.LoadAll<Sprite>("UI/Icons/Navigation/").ToDictionary(image => image.name);
         }
     }
 }

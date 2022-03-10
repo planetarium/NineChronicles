@@ -15,9 +15,6 @@ namespace Nekoyume.UI
 {
     public class MaterialTooltip : ItemTooltip
     {
-        [SerializeField]
-        private List<AcquisitionPlaceButton> acquisitionPlaceButtons;
-
         public override void Show(RectTransform target, InventoryItem item, string submitText, bool interactable,
             System.Action onSubmit, System.Action onClose = null, System.Action onBlocked = null)
         {
@@ -113,10 +110,10 @@ namespace Nekoyume.UI
                             if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stage.Id, out var row))
                             {
                                 return new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Stage,
-                                    null,
+                                    () => Debug.LogError("stage"),
                                     $"{L10nManager.LocalizeWorldName(row.Id)} {stage.Id % 10_000_000}",
                                     itemBase,
-                                    row);
+                                    stage);
                             }
 
                             return null;
@@ -124,12 +121,12 @@ namespace Nekoyume.UI
                     }
                     break;
                 case ItemSubType.FoodMaterial:
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Arena, null, "아레나", itemBase));
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Arena, () => Debug.LogError("arena"), "아레나", itemBase));
                     break;
                 case ItemSubType.Hourglass:
                 case ItemSubType.ApStone:
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Quest, null, "퀘스트", itemBase));
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Shop, null, "상점", itemBase));
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Quest, () => Debug.LogError("quest"), "퀘스트", itemBase));
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Shop, () => Debug.LogError("shop"), "상점", itemBase));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -141,7 +138,7 @@ namespace Nekoyume.UI
                 // Acquisition place is quest...
                 if (States.Instance.CurrentAvatarState.questList.Any(quest => !quest.Complete && quest.Reward.ItemMap.ContainsKey(itemBase.Id)))
                 {
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Quest, null, "퀘스트", itemBase));
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Quest, () => Debug.LogError("quest"), "퀘스트", itemBase));
                 }
             }
 
