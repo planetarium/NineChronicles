@@ -59,8 +59,6 @@ namespace Nekoyume.UI.Module
 
         private Model _model;
 
-        private Action _onClick;
-
         private static Dictionary<string, Sprite> _iconDictionary;
 
         private const string IconNameFormat = "icon_Navigation_{0}";
@@ -71,7 +69,8 @@ namespace Nekoyume.UI.Module
         {
             _model = model;
             lockedText.text = guideText.text = model.GuideText;
-            _onClick = model.OnClick;
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => model.OnClick?.Invoke());
             enableObject.SetActive(false);
             disableObject.SetActive(false);
 
@@ -90,19 +89,6 @@ namespace Nekoyume.UI.Module
                                 out var icon))
                         {
                             iconImage.sprite = icon;
-                        }
-                    }
-
-                    if (States.Instance.CurrentAvatarState.worldInformation
-                        .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
-                    {
-                        if (model.StageRow.Id > world.StageClearedId + 1)
-                        {
-                            disableObject.SetActive(true);
-                        }
-                        else
-                        {
-                            enableObject.SetActive(true);
                         }
                     }
 
@@ -125,21 +111,63 @@ namespace Nekoyume.UI.Module
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (model.Type == PlaceType.Shop)
+            EnableSettingByPlaceType(model.Type, model);
+        }
+
+        private void EnableSettingByPlaceType(PlaceType type, Model model)
+        {
+            switch (type)
             {
-                if (States.Instance.CurrentAvatarState.level <
-                    GameConfig.RequireClearedStageLevel.UIMainMenuShop)
-                {
-                    enableObject.SetActive(false);
-                    disableObject.SetActive(true);
-                }
+                case PlaceType.Stage:
+                    if (States.Instance.CurrentAvatarState.worldInformation
+                        .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+                    {
+                        if (model.StageRow.Id > world.StageClearedId + 1)
+                        {
+                            disableObject.SetActive(true);
+                        }
+                        else
+                        {
+                            enableObject.SetActive(true);
+                        }
+                    }
+
+                    break;
+                case PlaceType.Shop:
+                    if (States.Instance.CurrentAvatarState.level <
+                        GameConfig.RequireClearedStageLevel.UIMainMenuShop)
+                    {
+                        disableObject.SetActive(true);
+                    }
+                    else
+                    {
+                        enableObject.SetActive(true);
+                    }
+
+                    break;
+                case PlaceType.Arena:
+                    if (States.Instance.CurrentAvatarState.level <
+                        GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
+                    {
+                        disableObject.SetActive(true);
+                    }
+                    else
+                    {
+                        enableObject.SetActive(true);
+                    }
+
+                    break;
+                case PlaceType.Quest:
+                case PlaceType.Staking:
+                    enableObject.SetActive(true);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
 
         private void Awake()
         {
-            button.onClick.AddListener(() => _onClick?.Invoke());
-
             _iconDictionary ??= Resources.LoadAll<Sprite>("UI/Icons/Navigation/").ToDictionary(image => image.name);
         }
     }
