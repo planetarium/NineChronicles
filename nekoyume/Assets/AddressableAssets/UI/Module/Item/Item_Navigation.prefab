@@ -872,6 +872,7 @@ GameObject:
   - component: {fileID: 5584837144613504258}
   - component: {fileID: 2896968124808277075}
   - component: {fileID: 5826747722121491410}
+  - component: {fileID: 7158761896613614394}
   m_Layer: 5
   m_Name: Item_Navigation
   m_TagString: Untagged
@@ -1010,3 +1011,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8541483151984459026}
   m_CullTransparentMesh: 1
+--- !u!114 &7158761896613614394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8541483151984459026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 44
+  m_PreferredWidth: -1
+  m_PreferredHeight: 44
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
