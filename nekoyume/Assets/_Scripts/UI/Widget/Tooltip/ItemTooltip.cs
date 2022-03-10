@@ -33,6 +33,9 @@ namespace Nekoyume.UI
         [SerializeField]
         protected Scrollbar scrollbar;
 
+        [SerializeField]
+        protected List<AcquisitionPlaceButton> acquisitionPlaceButtons;
+
         protected readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         protected System.Action _onSubmit;
@@ -85,6 +88,7 @@ namespace Nekoyume.UI
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
+            acquisitionPlaceButtons.ForEach(button => button.gameObject.SetActive(false));
             detail.Set(item.ItemBase, item.Count.Value, !Util.IsUsableItem(item.ItemBase.Id));
 
             submitButton.gameObject.SetActive(onSubmit != null);
