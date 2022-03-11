@@ -11,11 +11,13 @@ namespace Nekoyume.UI
         [SerializeField] private Blur blur;
         [SerializeField] private Button detailButton;
         [SerializeField] private Button closeButton;
+        private const string LastNoticeDayKeyFormat = "NOTICE_POPUP_LAST_DAY_{0}";
         
+        // Notice Info
+        private const string NoticeName = "ItemLevelRequirement";
         private const string NoticeBeginTime = "2022/03/01 00:00:00";
         private const string NoticeEndTime = "2022/03/31 00:00:00";
         private const string NoticePageUrlFormat = "https://www.notion.so/planetarium/1bc6de399b3b4ace95fca3a3020b4d79";
-        private const string LastNoticeDayKey = "NOTICE_POPUP_LAST_DAY";
 
         private static bool CanShowNoticePopup
         {
@@ -35,12 +37,12 @@ namespace Nekoyume.UI
                 var isInTime = now >= begin && now <= end;
                 if (!isInTime) return false;
                 
-                var lastNoticeData = PlayerPrefs.GetString(LastNoticeDayKey, "2022/03/01 00:00:00");
-                var lastNoticeDay = DateTime.Parse(lastNoticeData);
+                var lastNoticeDayKey = string.Format(LastNoticeDayKeyFormat, NoticeName);
+                var lastNoticeDay = DateTime.Parse(PlayerPrefs.GetString(lastNoticeDayKey, "2022/03/01 00:00:00"));
                 var isNewDay = now.Year != lastNoticeDay.Year || now.Month != lastNoticeDay.Month || now.Day != lastNoticeDay.Day;
                 if (isNewDay)
                 {
-                    PlayerPrefs.SetString(LastNoticeDayKey, now.ToString(CultureInfo.InvariantCulture));
+                    PlayerPrefs.SetString(lastNoticeDayKey, now.ToString(CultureInfo.InvariantCulture));
                 }
 
                 return isNewDay;
