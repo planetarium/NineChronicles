@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.CloudWatchLogs.Model.Internal.MarshallTransformations;
+using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -10,13 +11,20 @@ using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
+using Event = Nekoyume.Game.Event;
 
 namespace Nekoyume.UI
 {
     public class MaterialTooltip : ItemTooltip
     {
-        public override void Show(RectTransform target, InventoryItem item, string submitText, bool interactable,
-            System.Action onSubmit, System.Action onClose = null, System.Action onBlocked = null)
+        public override void Show(
+            RectTransform target,
+            InventoryItem item,
+            string submitText,
+            bool interactable,
+            System.Action onSubmit,
+            System.Action onClose = null,
+            System.Action onBlocked = null)
         {
             base.Show(target, item, submitText, interactable, onSubmit, onClose, onBlocked);
             SetAcquisitionPlaceButtons(item.ItemBase);
@@ -107,10 +115,25 @@ namespace Nekoyume.UI
 
                         acquisitionPlaceList.AddRange(stages.Select(stage =>
                         {
-                            if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stage.Id, out var row))
+                            if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stage.Id,
+                                    out var row))
                             {
-                                return new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Stage,
-                                    () => Debug.LogError("stage"),
+                                return new AcquisitionPlaceButton.Model(
+                                    AcquisitionPlaceButton.PlaceType.Stage,
+                                    () =>
+                                    {
+                                        Debug.LogError("stage");
+                                        CloseOtherWidgets();
+                                        var worldMap = Find<WorldMap>();
+                                        worldMap.Show(States.Instance.CurrentAvatarState.worldInformation);
+                                        worldMap.Show(row.Id, stage.Id, false);
+                                        worldMap.SharedViewModel.WorldInformation.TryGetWorld(row.Id, out var worldModel);
+                                        Find<BattlePreparation>().Show(StageType.HackAndSlash,
+                                            worldMap.SharedViewModel.SelectedWorldId.Value,
+                                            worldMap.SharedViewModel.SelectedStageId.Value,
+                                            $"{L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}")} {worldMap.SharedViewModel.SelectedStageId.Value}",
+                                            true);
+                                    },
                                     $"{L10nManager.LocalizeWorldName(row.Id)} {stage.Id % 10_000_000}",
                                     itemBase,
                                     stage);
@@ -119,14 +142,42 @@ namespace Nekoyume.UI
                             return null;
                         }));
                     }
+
                     break;
                 case ItemSubType.FoodMaterial:
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Arena, () => Debug.LogError("arena"), "아레나", itemBase));
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
+                        AcquisitionPlaceButton.PlaceType.Arena, () =>
+                        {
+                            CloseOtherWidgets();
+                            Event.OnRoomEnter.Invoke(false);
+                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+                            Find<RankingBoard>().Show();
+                        },
+                        L10nManager.Localize("UI_MAIN_MENU_RANKING"), itemBase));
                     break;
                 case ItemSubType.Hourglass:
                 case ItemSubType.ApStone:
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Quest, () => Debug.LogError("quest"), "퀘스트", itemBase));
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Shop, () => Debug.LogError("shop"), "상점", itemBase));
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
+                        AcquisitionPlaceButton.PlaceType.Quest, () =>
+                        {
+                            Debug.LogError("quest");
+                            Close();
+                            Find<AvatarInfoPopup>().Close();
+                            Find<QuestPopup>().Show();
+                        },
+                        L10nManager.Localize("UI_QUEST"),
+                        itemBase));
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
+                        AcquisitionPlaceButton.PlaceType.Shop, () =>
+                        {
+                            CloseOtherWidgets();
+                            Event.OnRoomEnter.Invoke(false);
+                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                            var shopBuy = Find<ShopBuy>();
+                            shopBuy.Show();
+                        },
+                        L10nManager.Localize("UI_MAIN_MENU_SHOP"),
+                        itemBase));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -136,9 +187,19 @@ namespace Nekoyume.UI
                     model.Type != AcquisitionPlaceButton.PlaceType.Quest))
             {
                 // Acquisition place is quest...
-                if (States.Instance.CurrentAvatarState.questList.Any(quest => !quest.Complete && quest.Reward.ItemMap.ContainsKey(itemBase.Id)))
+                if (States.Instance.CurrentAvatarState.questList.Any(quest =>
+                        !quest.Complete && quest.Reward.ItemMap.ContainsKey(itemBase.Id)))
                 {
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(AcquisitionPlaceButton.PlaceType.Quest, () => Debug.LogError("quest"), "퀘스트", itemBase));
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
+                        AcquisitionPlaceButton.PlaceType.Quest, () =>
+                        {
+                            Debug.LogError("quest");
+                            Close();
+                            Find<AvatarInfoPopup>().Close();
+                            Find<QuestPopup>().Show();
+                        },
+                        L10nManager.Localize("UI_QUEST"),
+                        itemBase));
                 }
             }
 
@@ -150,6 +211,14 @@ namespace Nekoyume.UI
             }
 
             Debug.LogError($"subtype : {itemBase.ItemSubType}");
+        }
+
+        private void CloseOtherWidgets()
+        {
+            Find<EventBanner>().Close(true);
+            Find<Status>().Close(true);
+            Find<AvatarInfoPopup>().Close(true);
+            Close(true);
         }
     }
 }
