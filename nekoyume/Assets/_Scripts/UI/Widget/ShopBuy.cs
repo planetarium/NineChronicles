@@ -113,6 +113,16 @@ namespace Nekoyume.UI
             base.Close(true);
         }
 
+        public void Close(bool ignoreOnRoomEnter, bool ignoreCloseAnimation)
+        {
+            Find<ItemCountAndPricePopup>().Close(ignoreCloseAnimation);
+            if (!ignoreOnRoomEnter)
+            {
+                Game.Event.OnRoomEnter.Invoke(true);
+            }
+            base.Close(ignoreCloseAnimation);
+        }
+
         private void ShowItemTooltip(ShopItem model, RectTransform target)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);

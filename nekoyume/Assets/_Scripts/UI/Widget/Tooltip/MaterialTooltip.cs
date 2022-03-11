@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.CloudWatchLogs.Model.Internal.MarshallTransformations;
@@ -11,6 +12,7 @@ using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
+using static Nekoyume.UI.Widget;
 using Event = Nekoyume.Game.Event;
 
 namespace Nekoyume.UI
@@ -124,6 +126,7 @@ namespace Nekoyume.UI
                                     {
                                         Debug.LogError("stage");
                                         CloseOtherWidgets();
+                                        Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
                                         var worldMap = Find<WorldMap>();
                                         worldMap.Show(States.Instance.CurrentAvatarState.worldInformation);
                                         worldMap.Show(row.Id, stage.Id, false);
@@ -149,7 +152,6 @@ namespace Nekoyume.UI
                         AcquisitionPlaceButton.PlaceType.Arena, () =>
                         {
                             CloseOtherWidgets();
-                            Event.OnRoomEnter.Invoke(false);
                             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
                             Find<RankingBoard>().Show();
                         },
@@ -171,7 +173,6 @@ namespace Nekoyume.UI
                         AcquisitionPlaceButton.PlaceType.Shop, () =>
                         {
                             CloseOtherWidgets();
-                            Event.OnRoomEnter.Invoke(false);
                             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                             var shopBuy = Find<ShopBuy>();
                             shopBuy.Show();
@@ -215,9 +216,23 @@ namespace Nekoyume.UI
 
         private void CloseOtherWidgets()
         {
+            var deletableWidgets = FindWidgets().Where(widget =>
+                !(widget is SystemWidget) &&
+                !(widget is MessageCatTooltip) &&
+                !(widget is Menu) &&
+                !(widget is HeaderMenuStatic) &&
+                !(widget is MaterialTooltip) &&
+                !(widget is ShopBuy) &&
+                !(widget is ShopSell) &&
+                widget.IsActive());
+            foreach (var widget in deletableWidgets)
+            {
+                widget.Close(true);
+            }
+            Find<ShopBuy>().Close(true, true);
+            Find<ShopSell>().Close(true, true);
             Find<EventBanner>().Close(true);
             Find<Status>().Close(true);
-            Find<AvatarInfoPopup>().Close(true);
             Close(true);
         }
     }

@@ -130,8 +130,11 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfCloseAnimationInternal()
         {
-            _player?.gameObject.SetActive(false);
-            _player = null;
+            if (_player != null)
+            {
+                _player.gameObject.SetActive(false);
+                _player = null;
+            }
         }
 
         #endregion

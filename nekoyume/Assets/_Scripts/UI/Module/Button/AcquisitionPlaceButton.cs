@@ -70,7 +70,13 @@ namespace Nekoyume.UI.Module
             _model = model;
             lockedText.text = guideText.text = model.GuideText;
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => model.OnClick?.Invoke());
+            button.onClick.AddListener(() =>
+            {
+                if (CanGoToAcquisitionPlace(model.Type))
+                {
+                    model.OnClick?.Invoke();
+                }
+            });
             enableObject.SetActive(false);
             disableObject.SetActive(false);
 
@@ -164,6 +170,19 @@ namespace Nekoyume.UI.Module
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
+        }
+
+        private static bool CanGoToAcquisitionPlace(PlaceType type)
+        {
+            return type switch
+            {
+                PlaceType.Stage => !Game.Game.instance.Stage.IsInStage,
+                PlaceType.Shop => !Game.Game.instance.Stage.IsInStage,
+                PlaceType.Arena => !Game.Game.instance.Stage.IsInStage,
+                PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() && !Widget.Find<RankingBattleResultPopup>().IsActive(),
+                PlaceType.Staking => true,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
         }
 
         private void Awake()
