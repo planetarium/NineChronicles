@@ -14,10 +14,7 @@ namespace Nekoyume.UI.Module
         // private Button ArenaEventButton;
 
         // [SerializeField]
-        // private Button ArenaEventButton;
-
-        [SerializeField]
-        private Button bigCatYearEventButton;
+        // private Button bigCatYearEventButton;
 
         [SerializeField]
         private Button playToEarnGoldEventButton;
