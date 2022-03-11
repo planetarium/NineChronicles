@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Assets;
@@ -89,17 +90,21 @@ namespace Nekoyume.State
             return true;
         }
 
-        public static async Task BuyDigests(List<ItemSubType> list)
+        public static async Task SetBuyDigests(List<ItemSubType> list)
         {
-            foreach (var itemSubType in list)
+            await UniTask.Run(async () =>
             {
-                var digests = await GetBuyOrderDigests(itemSubType);
-                var result = await UpdateCachedShopItems(digests);
-                if (result)
+                foreach (var itemSubType in list)
                 {
-                    AddBuyDigest(digests, itemSubType);
+                    var digests = await GetBuyOrderDigests(itemSubType);
+                    var result = await UpdateCachedShopItems(digests);
+                    if (result)
+                    {
+                        AddBuyDigest(digests, itemSubType);
+                    }
                 }
-            }
+                return true;
+            });
         }
 
         private static void AddBuyDigest(IEnumerable<OrderDigest> digests, ItemSubType itemSubType)

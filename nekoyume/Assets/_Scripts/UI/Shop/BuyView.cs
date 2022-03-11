@@ -433,6 +433,7 @@ namespace Nekoyume
             {
                 loading.SetActive(false);
                 inputField.interactable = true;
+                levelLimitToggle.interactable = true;
                 _sortAnimator.Play(_hashNormal);
                 _sortOrderAnimator.Play(_hashNormal);
                 _levelLimitAnimator.Play(_hashNormal);
@@ -441,10 +442,16 @@ namespace Nekoyume
             {
                 loading.SetActive(models.Count == 0);
                 inputField.interactable = models.Count > 0;
+                levelLimitToggle.interactable = models.Count > 0;
                 var hash = models.Count > 0 ? _hashNormal : _hashDisabled;
                 _sortAnimator.Play(hash);
                 _sortOrderAnimator.Play(hash);
                 _levelLimitAnimator.Play(hash);
+
+                if (models.Count == 0)
+                {
+                    levelLimitToggle.isOn = false;
+                }
             }
 
             return loading.activeSelf;

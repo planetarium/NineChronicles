@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Libplanet.Assets;
 using mixpanel;
@@ -30,6 +31,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private BuyView view;
+
+        private readonly CancellationTokenSource _cancellationTokenSource =
+            new CancellationTokenSource();
 
         private Shop SharedModel { get; set; }
 
@@ -85,15 +89,15 @@ namespace Nekoyume.UI
             Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
-            var task = Task.Run(async () =>
+            var initWeaponTask = Task.Run(async () =>
             {
                 var list = new List<ItemSubType>() { ItemSubType.Weapon, };
-                await ReactiveShopState.BuyDigests(list);
+                await ReactiveShopState.SetBuyDigests(list);
                 return true;
             });
 
-            var result = await task;
-            if (result)
+            var initWeaponResult = await initWeaponTask;
+            if (initWeaponResult)
             {
                 base.Show(ignoreShowAnimation);
                 view.Show(ReactiveShopState.BuyDigest, ShowItemTooltip);
@@ -102,7 +106,7 @@ namespace Nekoyume.UI
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             }
 
-            var task2 = Task.Run(async () =>
+            var initOthersTask = Task.Run(async () =>
             {
                 var list = new List<ItemSubType>()
                 {
@@ -120,15 +124,22 @@ namespace Nekoyume.UI
                     ItemSubType.Hourglass,
                     ItemSubType.ApStone,
                 };
-                await ReactiveShopState.BuyDigests(list);
+                await ReactiveShopState.SetBuyDigests(list);
                 return true;
-            });
+            }, _cancellationTokenSource.Token);
 
-            var result2 = await task2;
-            if (result2)
+            if (initOthersTask.IsCanceled)
             {
-                view.IsDoneLoadItem = true;
+                return;
             }
+
+            var initOthersResult = await initOthersTask;
+            if (!initOthersResult)
+            {
+                return;
+            }
+
+            view.IsDoneLoadItem = true;
         }
 
         public void Open()
@@ -141,6 +152,7 @@ namespace Nekoyume.UI
         {
             Find<ItemCountAndPricePopup>().Close();
             Game.Event.OnRoomEnter.Invoke(true);
+            _cancellationTokenSource.Cancel();
             base.Close(true);
         }
 
