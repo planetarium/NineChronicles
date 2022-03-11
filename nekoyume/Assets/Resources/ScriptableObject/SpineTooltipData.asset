@@ -13,29 +13,38 @@ MonoBehaviour:
   m_Name: SpineTooltipData
   m_EditorClassIdentifier: 
   datas:
-  - resourceID: 40100000
-    prefab: {fileID: 3371912511396292841, guid: 96fa9b4f123b848529cbfa93780302e0,
-      type: 3}
-    offset: {x: 0, y: -0.1, z: 0}
-    scale: {x: 0.64, y: 0.64, z: 1}
-    rotation: {x: 0, y: 0, z: 0}
-    gradeColor: {r: 0.83137256, g: 0.74509805, b: 0.18431373, a: 1}
   - resourceID: 40100001
-    prefab: {fileID: 212627827708448737, guid: 55ebb96162c714e10bd0c6db72e12efa, type: 3}
-    offset: {x: 0, y: -0.1, z: 0}
-    scale: {x: 0.64, y: 0.64, z: 1}
+    prefab: {fileID: 6445644217478880480, guid: f1a815c5a880a534e822a41b8ec0b107,
+      type: 3}
+    offset: {x: -1.333, y: -1.396, z: 0}
+    scale: {x: 0.25, y: 0.25, z: 1}
     rotation: {x: 0, y: 0, z: 0}
     gradeColor: {r: 0.3019608, g: 0.5764706, b: 0.77254903, a: 1}
-  - resourceID: 40100005
-    prefab: {fileID: 7770656758917334316, guid: 0a2a44f874dd68f459e7d9ee40720e34,
+  - resourceID: 40100002
+    prefab: {fileID: 6445644217478880480, guid: 7ef4c704b6505af408d06155c72b511f,
       type: 3}
-    offset: {x: 0, y: -0.2, z: 0}
-    scale: {x: 0.64, y: 0.64, z: 1}
+    offset: {x: 0.988, y: -1.207, z: 0}
+    scale: {x: 0.2, y: 0.2, z: 1}
+    rotation: {x: 0, y: -180, z: 0}
+    gradeColor: {r: 0.69803923, g: 0.20392157, b: 0.7372549, a: 1}
+  - resourceID: 40100003
+    prefab: {fileID: 6445644217478880480, guid: 3daefa1e0bfd03942a63fbba504ac31b,
+      type: 3}
+    offset: {x: 0.704, y: -1.237, z: 0}
+    scale: {x: 0.2, y: 0.2, z: 1}
+    rotation: {x: 0, y: -180, z: 0}
+    gradeColor: {r: 0.69803923, g: 0.20392157, b: 0.7372549, a: 1}
+  - resourceID: 40100005
+    prefab: {fileID: 6445644217478880480, guid: 78125989fa4edb347a789cdab120afa5,
+      type: 3}
+    offset: {x: -0.61, y: -1.191, z: 0}
+    scale: {x: 0.2, y: 0.2, z: 1}
     rotation: {x: 0, y: 0, z: 0}
     gradeColor: {r: 0.83137256, g: 0.74509805, b: 0.18431373, a: 1}
   - resourceID: 40100006
-    prefab: {fileID: 256062602370194100, guid: b5f3759319b73da499ffb66e6ba6668c, type: 3}
-    offset: {x: 0, y: -0.5, z: 0}
-    scale: {x: 0.64, y: 0.64, z: 1}
+    prefab: {fileID: 6445644217478880480, guid: 644735592a713314cb699a90e456030d,
+      type: 3}
+    offset: {x: -2.312, y: -2.314, z: 0}
+    scale: {x: 0.17, y: 0.17, z: 0.17}
     rotation: {x: 0, y: 0, z: 0}
     gradeColor: {r: 0.69803923, g: 0.20392157, b: 0.7372549, a: 1}
