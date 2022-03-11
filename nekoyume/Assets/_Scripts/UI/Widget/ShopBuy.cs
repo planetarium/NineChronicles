@@ -8,6 +8,7 @@ using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -15,6 +16,7 @@ using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
 {
@@ -85,7 +87,8 @@ namespace Nekoyume.UI
 
             var task = Task.Run(async () =>
             {
-                await ReactiveShopState.UpdateBuyDigests();
+                var list = new List<ItemSubType>() { ItemSubType.Weapon, };
+                await ReactiveShopState.BuyDigests(list);
                 return true;
             });
 
@@ -97,6 +100,34 @@ namespace Nekoyume.UI
                 Find<DataLoadingScreen>().Close();
                 HelpTooltip.HelpMe(100018, true);
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+            }
+
+            var task2 = Task.Run(async () =>
+            {
+                var list = new List<ItemSubType>()
+                {
+                    ItemSubType.Armor,
+                    ItemSubType.Belt,
+                    ItemSubType.Necklace,
+                    ItemSubType.Ring,
+                    ItemSubType.Food,
+                    ItemSubType.FullCostume,
+                    ItemSubType.HairCostume,
+                    ItemSubType.EarCostume,
+                    ItemSubType.EyeCostume,
+                    ItemSubType.TailCostume,
+                    ItemSubType.Title,
+                    ItemSubType.Hourglass,
+                    ItemSubType.ApStone,
+                };
+                await ReactiveShopState.BuyDigests(list);
+                return true;
+            });
+
+            var result2 = await task2;
+            if (result2)
+            {
+                view.IsDoneLoadItem = true;
             }
         }
 
@@ -128,7 +159,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var sumPrice = new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0 ,0);
+            var sumPrice =
+                new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
             foreach (var model in models)
             {
                 sumPrice += model.OrderDigest.Price;
