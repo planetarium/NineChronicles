@@ -8,7 +8,6 @@ namespace Nekoyume.UI
 {
     public class NoticePopup : PopupWidget
     {
-        [SerializeField] private Blur blur;
         [SerializeField] private Button detailButton;
         [SerializeField] private Button closeButton;
         private const string LastNoticeDayKeyFormat = "NOTICE_POPUP_LAST_DAY_{0}";
@@ -64,30 +63,12 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
-
-            blur.button.onClick.AddListener(() => Close(true));
         }
 
         public override void Show(bool ignoreStartAnimation = false)
         {
             if(!CanShowNoticePopup) return;
             base.Show(ignoreStartAnimation);
-
-            if (blur)
-            {
-                blur.Show();
-            }
-            // HelpTooltip.HelpMe(100014, true);
-        }
-        
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            if (blur && blur.isActiveAndEnabled)
-            {
-                blur.Close();
-            }
-
-            base.Close(ignoreCloseAnimation);
         }
 
         private static void GoToNoticePage()

@@ -82,7 +82,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  blur: {fileID: 4364962393925945222}
   detailButton: {fileID: 8915038191723940672}
   closeButton: {fileID: 9158407257095490729}
 --- !u!1 &288844463192487935
@@ -228,7 +227,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 4efd123c39d164b58b80766f85847df1, type: 3}
-  m_Type: 1
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -985,18 +984,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 087d608eb50946b409525e83801de9d2, type: 3}
---- !u!114 &4364962393925945222 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2630355418658099446, guid: 087d608eb50946b409525e83801de9d2,
-    type: 3}
-  m_PrefabInstance: {fileID: 1734889137708128112}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0398d8905be44004b803f2412d77ef52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &1949091494416164654 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 224898616830980190, guid: 087d608eb50946b409525e83801de9d2,
