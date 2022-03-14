@@ -32,6 +32,17 @@ namespace Nekoyume.UI
             SetAcquisitionPlaceButtons(item);
         }
 
+        public override void Show(RectTransform target,
+            InventoryItem item,
+            string submitText,
+            bool interactable,
+            System.Action onSubmit,
+            System.Action onClose = null,
+            System.Action onBlocked = null)
+        {
+            Show(target, item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked);
+        }
+
         private static List<StageSheet.Row> GetStageByOrder(
             IOrderedEnumerable<StageSheet.Row> rows,
             int id)
@@ -191,9 +202,8 @@ namespace Nekoyume.UI
                             {
                                 Debug.LogError("staking");
                             },
-                            L10nManager.Localize("Staking"),
+                            L10nManager.Localize("UI_PLACE_STAKING"),
                             itemBase));
-
                     }
 
                     break;

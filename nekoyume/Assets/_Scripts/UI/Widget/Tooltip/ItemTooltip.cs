@@ -89,7 +89,7 @@ namespace Nekoyume.UI
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             acquisitionPlaceButtons.ForEach(button => button.gameObject.SetActive(false));
-            detail.Set(item, 0, !Util.IsUsableItem(item.Id));
+            detail.Set(item, 0, !Util.IsUsableItem(item));
 
             submitButton.gameObject.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
