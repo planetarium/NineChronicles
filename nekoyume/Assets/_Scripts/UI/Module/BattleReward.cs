@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.UI.Model;
@@ -12,6 +13,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class BattleReward : MonoBehaviour
     {
         public int index;
@@ -87,6 +90,14 @@ namespace Nekoyume.UI.Module
                 for (var i = 0; i < rewardItems.Count; i++)
                 {
                     items[i].SetData(rewardItems[i]);
+                    var rt = items[i].RectTransform;
+                    var itemBase = rewardItems[i].ItemBase.Value;
+                    items[i].touchHandler.OnClick.Subscribe(_ =>
+                    {
+                        AudioController.PlayClick();
+                        var tooltip = ItemTooltip.Find(itemBase.ItemType);
+                        tooltip.Show(rt, itemBase, string.Empty, false, null);
+                    }).AddTo(gameObject);
                     items[i].gameObject.SetActive(true);
                 }
             }

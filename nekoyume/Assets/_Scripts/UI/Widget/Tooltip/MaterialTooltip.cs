@@ -21,7 +21,7 @@ namespace Nekoyume.UI
     {
         public override void Show(
             RectTransform target,
-            InventoryItem item,
+            ItemBase item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
@@ -29,7 +29,7 @@ namespace Nekoyume.UI
             System.Action onBlocked = null)
         {
             base.Show(target, item, submitText, interactable, onSubmit, onClose, onBlocked);
-            SetAcquisitionPlaceButtons(item.ItemBase);
+            SetAcquisitionPlaceButtons(item);
         }
 
         private static List<StageSheet.Row> GetStageByOrder(
@@ -227,8 +227,6 @@ namespace Nekoyume.UI
                 acquisitionPlaceButtons[i].gameObject.SetActive(true);
                 acquisitionPlaceButtons[i].Set(acquisitionPlaceList[i]);
             }
-
-            Debug.LogError($"subtype : {itemBase.ItemSubType}");
         }
 
         private void CloseOtherWidgets()
