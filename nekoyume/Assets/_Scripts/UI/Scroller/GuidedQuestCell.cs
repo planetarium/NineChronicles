@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
@@ -33,7 +36,7 @@ namespace Nekoyume.UI.Scroller
 
         // NOTE: 가이드 퀘스트 보상 아이콘의 연출 스펙에 따라서 별도로 XxxItemView를 만들어서 사용합니다.
         [SerializeField]
-        private List<VanillaItemView> rewards = null;
+        private List<StageRewardItemView> rewards = null;
 
         [SerializeField]
         private Button bodyButton = null;
@@ -210,6 +213,14 @@ namespace Nekoyume.UI.Scroller
                     Assert.NotNull(row);
 
                     reward.SetData(row);
+                    reward.touchHandler.OnClick.Subscribe(_ =>
+                    {
+                        AudioController.PlayClick();
+                        var material = new Nekoyume.Model.Item.Material(reward.Data as MaterialItemSheet.Row);
+                        var item = new InventoryItem(material, 0, true, false, true);
+                        ItemTooltip.Find(item.ItemBase.ItemType)
+                            .Show(reward.RectTransform, item, string.Empty, false, null);
+                    }).AddTo(reward);
 
                     if (ignoreAnimation)
                     {

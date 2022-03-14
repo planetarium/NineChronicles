@@ -1,6 +1,8 @@
 using System.Globalization;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using TMPro;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -22,6 +24,14 @@ namespace Nekoyume.UI.Module
         {
             RequiredCount = requiredCount;
             base.SetData(model);
+            touchHandler.OnClick.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                var rt = GetComponent<RectTransform>();
+                var tooltip = ItemTooltip.Find(model.ItemBase.Value.ItemType);
+                var item = new InventoryItem(model.ItemBase.Value, 0, true, false, true);
+                tooltip.Show(rt, item, string.Empty, false, null);
+            }).AddTo(gameObject);
         }
 
         protected override void SetCount(int count)
