@@ -14,6 +14,7 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using static Nekoyume.UI.Widget;
 using Event = Nekoyume.Game.Event;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
 {
@@ -35,6 +36,25 @@ namespace Nekoyume.UI
             base.Show(target, item, submitText, interactable, onSubmit, onClose, onBlocked, itemCount);
             acquisitionGroup.SetActive(false);
             SetAcquisitionPlaceButtons(item);
+        }
+
+        public override void Show(RectTransform target,
+            ShopItem item,
+            System.Action onRegister,
+            System.Action onSellCancellation,
+            System.Action onClose)
+        {
+            base.Show(target, item, onRegister, onSellCancellation, onClose);
+            acquisitionGroup.SetActive(false);
+        }
+
+        public override void Show(RectTransform target,
+            ShopItem item,
+            System.Action onBuy,
+            System.Action onClose)
+        {
+            base.Show(target, item, onBuy, onClose);
+            acquisitionGroup.SetActive(false);
         }
 
         public override void Show(RectTransform target,
