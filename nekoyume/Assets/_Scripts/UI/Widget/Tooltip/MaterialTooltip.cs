@@ -159,26 +159,43 @@ namespace Nekoyume.UI
                     break;
                 case ItemSubType.Hourglass:
                 case ItemSubType.ApStone:
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
-                        AcquisitionPlaceButton.PlaceType.Quest, () =>
-                        {
-                            Debug.LogError("quest");
-                            Close();
-                            Find<AvatarInfoPopup>().Close();
-                            Find<QuestPopup>().Show();
-                        },
-                        L10nManager.Localize("UI_QUEST"),
-                        itemBase));
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
-                        AcquisitionPlaceButton.PlaceType.Shop, () =>
-                        {
-                            CloseOtherWidgets();
-                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                            var shopBuy = Find<ShopBuy>();
-                            shopBuy.Show();
-                        },
-                        L10nManager.Localize("UI_MAIN_MENU_SHOP"),
-                        itemBase));
+                    var isTradable = itemBase is ITradableItem;
+
+                    if (isTradable)
+                    {
+                        acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
+                            AcquisitionPlaceButton.PlaceType.Shop, () =>
+                            {
+                                CloseOtherWidgets();
+                                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                                var shopBuy = Find<ShopBuy>();
+                                shopBuy.Show();
+                            },
+                            L10nManager.Localize("UI_MAIN_MENU_SHOP"),
+                            itemBase));
+                    }
+                    else
+                    {
+                        acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
+                            AcquisitionPlaceButton.PlaceType.Quest, () =>
+                            {
+                                Debug.LogError("quest");
+                                Close();
+                                Find<AvatarInfoPopup>().Close();
+                                Find<QuestPopup>().Show();
+                            },
+                            L10nManager.Localize("UI_QUEST"),
+                            itemBase));
+                        acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
+                            AcquisitionPlaceButton.PlaceType.Staking, () =>
+                            {
+                                Debug.LogError("staking");
+                            },
+                            L10nManager.Localize("Staking"),
+                            itemBase));
+
+                    }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
