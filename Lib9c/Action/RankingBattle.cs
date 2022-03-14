@@ -28,7 +28,7 @@ namespace Nekoyume.Action
         public Address weeklyArenaAddress;
         public List<Guid> costumeIds;
         public List<Guid> equipmentIds;
-        public BattleLog Result { get; private set; }
+
         public AvatarState EnemyAvatarState;
         public ArenaInfo ArenaInfo;
         public ArenaInfo EnemyArenaInfo;
@@ -222,8 +222,6 @@ namespace Nekoyume.Action
                 simulator.Log.Count
             );
             sw.Restart();
-
-            Result = simulator.Log;
 
             foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
             {
