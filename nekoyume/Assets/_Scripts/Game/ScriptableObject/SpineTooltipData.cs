@@ -11,8 +11,8 @@ namespace Nekoyume.Game.ScriptableObject
         [Tooltip("Spine object prefab to display.")] [SerializeField]
         private GameObject prefab;
 
-        [Tooltip("Offset of spine object. Will be added on default position.")] [SerializeField]
-        private Vector3 offset = new Vector3(0f, 0f, 0f);
+        [Tooltip("Position of spine object.")] [SerializeField]
+        private Vector3 position = new Vector3(6000f, 5999.5f, 2.15f);
 
         [Tooltip("Scale of spine object.")] [SerializeField]
         private Vector3 scale = new Vector3(1f, 1f, 1f);
@@ -27,7 +27,7 @@ namespace Nekoyume.Game.ScriptableObject
 
         public GameObject Prefab => prefab;
 
-        public Vector3 Offset => offset;
+        public Vector3 Position => position;
 
         public Vector3 Scale => scale;
 

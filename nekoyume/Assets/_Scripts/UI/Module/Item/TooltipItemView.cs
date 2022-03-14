@@ -18,8 +18,6 @@ namespace Nekoyume.UI.Module
 
         private GameObject _costumeSpineObject;
 
-        private readonly Vector3 DefaultSpineObjectPosition = new Vector3(6000f, 5999.5f, 2.15f);
-
         public void Set(ItemBase itemBase, int count, bool levelLimit)
         {
             baseItemView.Container.SetActive(true);
@@ -82,8 +80,7 @@ namespace Nekoyume.UI.Module
                     }
 
                     _costumeSpineObject = Instantiate(tooltipData.Prefab);
-                    _costumeSpineObject.transform.position =
-                        DefaultSpineObjectPosition + tooltipData.Offset;
+                    _costumeSpineObject.transform.position = tooltipData.Position;
                     _costumeSpineObject.transform.localScale = tooltipData.Scale;
                     _costumeSpineObject.transform.rotation = Quaternion.Euler(tooltipData.Rotation);
                     var particle = gradeEffect.main;
