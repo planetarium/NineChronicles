@@ -30,14 +30,11 @@ namespace Nekoyume.UI
                 var tutorialControllerIsPlaying = Game.Game.instance.Stage.TutorialController.IsPlaying;
                 if (tutorialControllerIsPlaying) return false;
 
-                var now = DateTime.UtcNow;
-                var begin = DateTime.Parse(NoticeBeginTime);
-                var end = DateTime.Parse(NoticeEndTime);
-                var isInTime = now >= begin && now <= end;
-                if (!isInTime) return false;
-                
+                if (!Util.IsInTime(NoticeBeginTime, NoticeEndTime, false)) return false;
+
                 var lastNoticeDayKey = string.Format(LastNoticeDayKeyFormat, NoticeName);
                 var lastNoticeDay = DateTime.Parse(PlayerPrefs.GetString(lastNoticeDayKey, "2022/03/01 00:00:00"));
+                var now = DateTime.UtcNow;
                 var isNewDay = now.Year != lastNoticeDay.Year || now.Month != lastNoticeDay.Month || now.Day != lastNoticeDay.Day;
                 if (isNewDay)
                 {
