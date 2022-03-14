@@ -2,15 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Grpc.Core;
+using Ionic.Zlib;
 using Lib9c.Renderer;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
@@ -145,8 +146,24 @@ namespace Nekoyume.BlockChain
 
         public async Task<IValue> GetStateAsync(Address address)
         {
+            // Check state & cached because force update state after rpc disconnected.
+            if (Game.Game.instance.CachedAddresses.TryGetValue(address, out bool cached) && cached &&
+                Game.Game.instance.CachedStates.TryGetValue(address, out IValue value) && !(value is Null))
+            {
+                await Task.CompletedTask;
+                return value;
+            }
             byte[] raw = await _service.GetState(address.ToByteArray(), BlockTipHash.ToByteArray());
-            return _codec.Decode(raw);
+            IValue result = _codec.Decode(raw);
+            if (Game.Game.instance.CachedAddresses.ContainsKey(address))
+            {
+                Game.Game.instance.CachedAddresses[address] = true;
+            }
+            if (Game.Game.instance.CachedStates.ContainsKey(address))
+            {
+                Game.Game.instance.CachedStates.AddOrUpdate(address, result);
+            }
+            return result;
         }
 
         public FungibleAssetValue GetBalance(Address address, Currency currency)
@@ -166,6 +183,13 @@ namespace Nekoyume.BlockChain
 
         public async Task<FungibleAssetValue> GetBalanceAsync(Address address, Currency currency)
         {
+            if (Game.Game.instance.CachedBalance.TryGetValue(address, out FungibleAssetValue value) &&
+                !value.Equals(default) && Game.Game.instance.CachedAddresses.TryGetValue(address, out bool cached) &&
+                cached)
+            {
+                await Task.CompletedTask;
+                return value;
+            }
             // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
             byte[] raw = await _service.GetBalance(
                 address.ToByteArray(),
@@ -173,9 +197,15 @@ namespace Nekoyume.BlockChain
                 BlockTipHash.ToByteArray()
             );
             var serialized = (Bencodex.Types.List) _codec.Decode(raw);
-            return FungibleAssetValue.FromRawValue(
+            var balance = FungibleAssetValue.FromRawValue(
                 new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
+            if (address.Equals(Address))
+            {
+                Game.Game.instance.CachedBalance[Address] = balance;
+            }
+
+            return balance;
         }
 
         public async Task<Dictionary<Address, AvatarState>> GetAvatarStates(IEnumerable<Address> addressList)
@@ -232,6 +262,7 @@ namespace Nekoyume.BlockChain
             OnPreloadEnded
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended"))
                 .AddTo(_disposables);
+            Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
         }
 
         private async void OnDestroy()
@@ -386,14 +417,32 @@ namespace Nekoyume.BlockChain
 
         public void OnRender(byte[] evaluation)
         {
-            var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(evaluation).ToActionEvaluation();
-            ActionRenderer.ActionRenderSubject.OnNext(ev);
+            using (var cp = new MemoryStream(evaluation))
+            using (var decompressed = new MemoryStream())
+            using (var df = new DeflateStream(cp, CompressionMode.Decompress))
+            {
+                df.CopyTo(decompressed);
+                decompressed.Seek(0, SeekOrigin.Begin);
+                var dec = decompressed.ToArray();
+                var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
+                    .ToActionEvaluation();
+                ActionRenderer.ActionRenderSubject.OnNext(ev);
+            }
         }
 
         public void OnUnrender(byte[] evaluation)
         {
-            var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(evaluation).ToActionEvaluation();
-            ActionRenderer.ActionUnrenderSubject.OnNext(ev);
+            using (var cp = new MemoryStream(evaluation))
+            using (var decompressed = new MemoryStream())
+            using (var df = new DeflateStream(cp, CompressionMode.Decompress))
+            {
+                df.CopyTo(decompressed);
+                decompressed.Seek(0, SeekOrigin.Begin);
+                var dec = decompressed.ToArray();
+                var ev = MessagePackSerializer.Deserialize<NCActionEvaluation>(dec)
+                    .ToActionEvaluation();
+                ActionRenderer.ActionUnrenderSubject.OnNext(ev);
+            }
         }
 
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
@@ -548,6 +597,12 @@ namespace Nekoyume.BlockChain
 
         public void UpdateSubscribeAddresses()
         {
+            // Avoid NRE in development mode
+            if (PrivateKey is null)
+            {
+                return;
+            }
+
             var addresses = new List<Address> { Address };
 
             var currentAvatarState = States.Instance.CurrentAvatarState;
@@ -558,6 +613,16 @@ namespace Nekoyume.BlockChain
             }
 
             Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
+
+            foreach (var address in addresses)
+            {
+                Game.Game.instance.CachedAddresses[address] = false;
+                if (!Game.Game.instance.CachedStates.ContainsKey(address))
+                {
+                    Game.Game.instance.CachedStates.Add(address, new Null());
+                }
+            }
+
             _service.SetAddressesToSubscribe(Address.ToByteArray(), addresses.Select(addr => addr.ToByteArray()));
         }
 
