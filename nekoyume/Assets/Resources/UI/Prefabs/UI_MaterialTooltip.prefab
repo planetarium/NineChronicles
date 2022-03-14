@@ -289,8 +289,20 @@ PrefabInstance:
     - target: {fileID: 718113295606866891, guid: 208eab8c17f4afb41a89eedbfe42f722,
         type: 3}
       propertyPath: m_text
-      value: '-'
+      value: "\uD68D\uB4DD\uACBD\uB85C"
       objectReference: {fileID: 0}
+    - target: {fileID: 718113295606866891, guid: 208eab8c17f4afb41a89eedbfe42f722,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
+        type: 2}
+    - target: {fileID: 718113295606866891, guid: 208eab8c17f4afb41a89eedbfe42f722,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 7349983812062843314, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
+        type: 2}
     - target: {fileID: 746859167471078090, guid: 208eab8c17f4afb41a89eedbfe42f722,
         type: 3}
       propertyPath: m_IsActive
