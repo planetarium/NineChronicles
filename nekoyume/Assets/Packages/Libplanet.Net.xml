@@ -1,0 +1,1792 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Libplanet.Net</name>
+    </assembly>
+    <members>
+        <member name="T:Libplanet.Net.ActionExecutionState">
+            <summary>
+            Indicates a progress of executing block actions.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ActionExecutionState.TotalBlockCount">
+            <summary>
+            Total number of blocks to execute in the current batch.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ActionExecutionState.ExecutedBlockCount">
+            <summary>
+            The number of currently executed blocks.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ActionExecutionState.ExecutedBlockHash">
+            <summary>
+            The hash digest of the block just executed.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ActionExecutionState.CurrentPhase">
+            <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Net.AppProtocolVersion">
+            <summary>
+            A <em>claim</em> of a version.
+            <para>Every peer in network shows others their <see cref="T:Libplanet.Net.AppProtocolVersion"/> information.
+            As every peer can change its software by itself, this <see cref="T:Libplanet.Net.AppProtocolVersion"/>
+            is theoretically arbitrary, hence a &#x201c;claim.&#x201d; (i.e., no authority).</para>
+            <para>In order to verify who claimed a version, every <see cref="T:Libplanet.Net.AppProtocolVersion"/>
+            has its <see cref="P:Libplanet.Net.AppProtocolVersion.Signature"/> which is made by its <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.
+            <see cref="M:Libplanet.Net.AppProtocolVersion.Verify(Libplanet.Crypto.PublicKey)"/> method purposes to determine whether an information
+            is claimed by its corresponding <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/> in fact.</para>
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.AppProtocolVersion.Version">
+            <summary>
+            The version number.  This does not have to be increased by only 1, but can be more
+            than that.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.AppProtocolVersion.Extra">
+            <summary>
+            Optional extra data about the version.  This can be used for any purpose
+            by apps, such as a URL to download the software.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.AppProtocolVersion.Signer">
+            <summary>
+            A signer who claims presence of a version.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.AppProtocolVersion.#ctor(System.Int32,Bencodex.Types.IValue,System.Collections.Immutable.ImmutableArray{System.Byte},Libplanet.Address)">
+            <summary>
+            Initializes an <see cref="T:Libplanet.Net.AppProtocolVersion"/> value with field values.
+            </summary>
+            <param name="version">Sets the <see cref="F:Libplanet.Net.AppProtocolVersion.Version"/>.</param>
+            <param name="extra">Sets the <see cref="F:Libplanet.Net.AppProtocolVersion.Extra"/>.</param>
+            <param name="signature">Sets the <see cref="P:Libplanet.Net.AppProtocolVersion.Signature"/>.</param>
+            <param name="signer">Gets the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</param>
+        </member>
+        <member name="P:Libplanet.Net.AppProtocolVersion.Signature">
+            <summary>
+            A signature which verifies <seealso cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s claim of a version.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.AppProtocolVersion.Token">
+            <summary>
+            A token string which serializes an <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
+            <para>As this is designed to be easy to copy and paste, the format consists of only
+            printable characters in the ASCII character set.</para>
+            <para>A token can be deserialized into an <see cref="T:Libplanet.Net.AppProtocolVersion"/> through
+            <see cref="M:Libplanet.Net.AppProtocolVersion.FromToken(System.String)"/> method.</para>
+            </summary>
+            <seealso cref="M:Libplanet.Net.AppProtocolVersion.FromToken(System.String)"/>
+        </member>
+        <member name="M:Libplanet.Net.AppProtocolVersion.Sign(Libplanet.Crypto.PrivateKey,System.Int32,Bencodex.Types.IValue)">
+            <summary>
+            Claim a <paramref name="version"/> with <paramref name="extra"/> data and sign it
+            using the given private key.
+            </summary>
+            <param name="signer">A private key to sign the claim.</param>
+            <param name="version">A version to claim.</param>
+            <param name="extra">Extra data to claim.</param>
+            <returns>A signed version claim.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="signer"/> is
+            <c>null</c>.</exception>
+        </member>
+        <member name="M:Libplanet.Net.AppProtocolVersion.FromToken(System.String)">
+            <summary>
+            Deserializes a <see cref="P:Libplanet.Net.AppProtocolVersion.Token"/> into an <see cref="T:Libplanet.Net.AppProtocolVersion"/> object.
+            </summary>
+            <param name="token">A <see cref="P:Libplanet.Net.AppProtocolVersion.Token"/> string.</param>
+            <returns>A deserialized <see cref="T:Libplanet.Net.AppProtocolVersion"/> object.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c> is passed to
+            <paramref name="token"/>.</exception>
+            <exception cref="T:System.FormatException">Thrown when the given <paramref name="token"/>'s
+            format is invalid.  The detailed reason is in the message.</exception>
+            <seealso cref="P:Libplanet.Net.AppProtocolVersion.Token"/>
+        </member>
+        <member name="M:Libplanet.Net.AppProtocolVersion.Verify(Libplanet.Crypto.PublicKey)">
+            <summary>
+            Verifies whether the claim is certainly signed by the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.
+            </summary>
+            <param name="publicKey">A public key of the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</param>
+            <returns><c>true</c> if and only if the given <paramref name="publicKey"/> is
+            <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s and the <see cref="P:Libplanet.Net.AppProtocolVersion.Signature"/> is certainly signed by
+            the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.AppProtocolVersion.Equals(Libplanet.Net.AppProtocolVersion)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.AppProtocolVersion.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.AppProtocolVersion.GetHashCode">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.AppProtocolVersion.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.AppProtocolVersion.GetMessage(System.Int32,Bencodex.Types.IValue)">
+            <summary>
+            Gets a deterministic message to sign.
+            </summary>
+            <returns>A deterministic message to sign.</returns>
+        </member>
+        <member name="T:Libplanet.Net.BlockCandidateTable`1">
+            <summary>
+            A class which table data structure that stores <see cref="T:Libplanet.Blocks.Block`1"/>s
+            received from <see cref="T:Libplanet.Net.Peer"/>.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="M:Libplanet.Net.BlockCandidateTable`1.Add(Libplanet.Blocks.BlockHeader,System.Collections.Generic.IEnumerable{Libplanet.Blocks.Block{`0}})">
+            <summary>
+            Adds a <see cref="T:Libplanet.Blocks.Block`1"/>s to the table.
+            </summary>
+            <param name="blockHeader">This is the header of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
+            tip at the time of downloading the blocks.</param>
+            <param name="blocks">List of downloaded <see cref="T:Libplanet.Blocks.Block`1"/>.</param>
+        </member>
+        <member name="M:Libplanet.Net.BlockCandidateTable`1.GetCurrentRoundCandidate(Libplanet.Blocks.BlockHeader)">
+            <summary>
+            Get the <see cref="T:Libplanet.Blocks.Block`1"/>s which are in the table.
+            </summary>
+            <param name="thisRoundTip">Canonical <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s
+            tip of this round.</param>
+            <returns><see cref="T:Libplanet.Blocks.Block`1"/>s by <paramref name="thisRoundTip"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.BlockCompletion`2.Complete(System.Collections.Generic.IReadOnlyList{`0},Libplanet.Net.BlockCompletion{`0,`1}.BlockFetcher,System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Downloads blocks from <paramref name="peers"/> in parallel,
+            using the given <paramref name="blockFetcher"/> function.
+            </summary>
+            <param name="peers">A list of peers to download blocks.</param>
+            <param name="blockFetcher">A function to take demands and a peer, and then
+            download corresponding blocks.</param>
+            <param name="singleSessionTimeout">A maximum time to wait each single call of
+            <paramref name="blockFetcher"/>.  If a call is timed out unsatisfied demands
+            are automatically retried to fetch from other peers.</param>
+            <param name="cancellationToken">A cancellation token to observe while waiting
+            for the task to complete.</param>
+            <returns>An async enumerable that yields pairs of a fetched block and its source
+            peer.  It terminates when all demands are satisfied.</returns>
+        </member>
+        <member name="M:Libplanet.Net.BlockCompletion`2.Complete(System.Collections.Generic.IReadOnlyList{`0},Libplanet.Net.BlockCompletion{`0,`1}.BlockFetcher,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Downloads blocks from <paramref name="peers"/> in parallel,
+            using the given <paramref name="blockFetcher"/> function.
+            </summary>
+            <param name="peers">A list of peers to download blocks.</param>
+            <param name="blockFetcher">A function to take demands and a peer, and then
+            download corresponding blocks.</param>
+            <param name="millisecondsSingleSessionTimeout">A maximum time in milliseconds to wait
+            each single call of <paramref name="blockFetcher"/>.  If a call is timed out unsatisfied
+            demands are automatically retried to fetch from other peers.  10 seconds by default.
+            </param>
+            <param name="cancellationToken">A cancellation token to observe while waiting
+            for the task to complete.</param>
+            <returns>An async enumerable that yields pairs of a fetched block and its source
+            peer.  It terminates when all demands are satisfied.</returns>
+        </member>
+        <member name="T:Libplanet.Net.BlockDemand">
+            <summary>
+            Struct represents <see cref="T:Libplanet.Net.Swarm`1"/>'s block demand status.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.BlockDemand.Header">
+            <summary>
+            The <see cref="T:Libplanet.Blocks.BlockHeader"/> of the block to request.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.BlockDemand.Peer">
+            <summary>
+            The <see cref="T:Libplanet.Net.BoundPeer"/> to request block hash from.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.BlockDemand.Timestamp">
+            <summary>
+            The <see cref="T:System.DateTimeOffset"/> when
+            the corresponding block information was received.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.BlockDownloadState">
+            <summary>
+            Indicates a progress of downloading blocks.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockDownloadState.TotalBlockCount">
+            <summary>
+            Total number of blocks to receive in the current batch.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockDownloadState.ReceivedBlockCount">
+            <summary>
+            The number of currently received blocks.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockDownloadState.ReceivedBlockHash">
+            <summary>
+            The hash digest of the block just received.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockDownloadState.CurrentPhase">
+            <inheritdoc />
+        </member>
+        <member name="P:Libplanet.Net.BlockDownloadState.SourcePeer">
+            <summary>
+            The peer which sent the block.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.BlockHashDownloadState">
+            <summary>
+            Indicates a progress of downloading block hashes.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockHashDownloadState.EstimatedTotalBlockHashCount">
+            <summary>
+            The estimated number of block hashes to receive in the current batch.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockHashDownloadState.ReceivedBlockHashCount">
+            <summary>
+            The number of currently received block hashes.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockHashDownloadState.SourcePeer">
+            <summary>
+            The peer which sent the block hashes.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockHashDownloadState.CurrentPhase">
+            <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Net.BlockVerificationState">
+            <summary>
+            Indicates a progress of verifying blocks.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockVerificationState.TotalBlockCount">
+            <summary>
+            Total number of blocks to verify in the current batch.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockVerificationState.VerifiedBlockCount">
+            <summary>
+            The number of blocks that completed verification.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockVerificationState.VerifiedBlockHash">
+            <summary>
+            The hash digest of the block just verified.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BlockVerificationState.CurrentPhase">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.BoundPeer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.BoundPeer"/> class.
+            </summary>
+            <param name="publicKey">A <see cref="T:Libplanet.Crypto.PublicKey"/> of the
+            <see cref="T:Libplanet.Net.Peer"/>.</param>
+            <param name="endPoint">A <see cref="T:System.Net.DnsEndPoint"/> consisting of the
+            host and port of the <see cref="T:Libplanet.Net.Peer"/>.</param>
+        </member>
+        <member name="P:Libplanet.Net.BoundPeer.EndPoint">
+            <summary>
+            The corresponding <see cref="T:System.Net.DnsEndPoint"/> of this peer.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.BoundPeer.ParsePeer(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.BoundPeer"/> class from
+            comma-separated string.</summary>
+            <param name="peerInfo">A comma-separated string have format {pubkey},{host},{port}.
+            </param>
+            <returns>A <see cref="T:Libplanet.Net.BoundPeer"/> from given data.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when the given peerInfo is invalid.
+            </exception>
+        </member>
+        <member name="M:Libplanet.Net.BoundPeer.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.BoundPeer.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Net.DifferentAppProtocolVersionEncountered">
+            <summary>
+            A delegate called back when a <see cref="T:Libplanet.Net.Swarm`1"/> encounters
+            a peer with different <see cref="T:Libplanet.Net.AppProtocolVersion"/> in the network.
+            </summary>
+            <param name="peer">An encountered peer with a different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
+            </param>
+            <param name="peerVersion">An encountered different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
+            <param name="localVersion">The currently running application's
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
+            <returns>Whether to recognize the encountered <paramref name="peer"/> as a valid
+            participant of the network or not.  The <paramref name="peer"/> is ignored if
+            it returns <c>false</c>.</returns>
+        </member>
+        <member name="T:Libplanet.Net.DifferentAppProtocolVersionException">
+            <summary>
+            The exception that is thrown when the version of the
+            <see cref="T:Libplanet.Net.Messages.Message"/> that <see cref="T:Libplanet.Net.Swarm`1"/> received
+            is different.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.DifferentAppProtocolVersionException.#ctor(System.String,System.Byte[],Libplanet.Net.AppProtocolVersion,Libplanet.Net.AppProtocolVersion)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:Libplanet.Net.DifferentAppProtocolVersionException"/> class.
+            </summary>
+            <param name="identity">The <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of the <see cref="T:Libplanet.Net.Messages.Message"/>
+            received.</param>
+            <param name="expectedVersion">The protocol version of the current
+            <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
+            <param name="actualVersion">The protocol version of the <see cref="T:Libplanet.Net.Peer"/> that
+            <see cref="T:Libplanet.Net.Swarm`1"/> is trying to connect to.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.</param>
+        </member>
+        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.Identity">
+            <summary>
+            The identity of the message received.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ExpectedVersion">
+            <summary>
+            The protocol version of the current <see cref="T:Libplanet.Net.Swarm`1"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ActualVersion">
+            <summary>
+            The protocol version of the <see cref="T:Libplanet.Net.Peer"/> that the
+            <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect to.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.InvalidMessageSignatureException">
+            <summary>
+            An exception that is thrown when the signature of an encoded <see cref="T:Libplanet.Net.Messages.Message"/> is
+            invalid.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.InvalidMessageTimestampException">
+            <summary>
+            An exception that is thrown when the timestamp of an encoded <see cref="T:Libplanet.Net.Messages.Message"/> is
+            invalid.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.BlockHashes.StartIndex">
+            <summary>
+            The block index of the first hash in <see cref="P:Libplanet.Net.Messages.BlockHashes.Hashes"/>.
+            It is <c>null</c> iff <see cref="P:Libplanet.Net.Messages.BlockHashes.Hashes"/> are empty.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.BlockHashes.Hashes">
+            <summary>
+            The continuous block hashes, from the lowest index to the highest index.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Messages.DifferentVersion">
+            <summary>
+            A reply to any messages with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
+            Contains the expected and actual <see cref="T:Libplanet.Net.AppProtocolVersion"/>
+            value of the message.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Messages.FindNeighbors">
+            <summary>
+            Message containing request for nearby peers.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Messages.Neighbors"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
+            <summary>
+            Encodes the message to <see typeref="T"/>-typed instance with given
+            <paramref name="privateKey"/>, <paramref name="peer"/> and <paramref name="version"/>.
+            </summary>
+            <param name="message">A message to encode.</param>
+            <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> to sign message.</param>
+            <param name="peer"><see cref="T:Libplanet.Net.Peer"/>-typed representation of the
+            sender's transport layer.
+            <seealso cref="P:Libplanet.Net.Transports.ITransport.AsPeer"/></param>
+            <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> of the message is created.
+            </param>
+            <param name="version"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed version of the
+            transport layer.</param>
+            <returns>A <see typeref="T"/> containing the signed <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})">
+            <summary>
+            Decodes given <see typeref="T"/>-typed <paramref name="encoded"/> into
+            <see cref="T:Libplanet.Net.Messages.Message"/> and checks its validity.
+            <seealso cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)"/>
+            </summary>
+            <param name="encoded">A <see typeref="T"/>-typed instance to parse.</param>
+            <param name="reply">A flag to express whether the target is a reply of other message.
+            </param>
+            <param name="appProtocolVersionValidator">
+            The delegate validates the app protocol version of the message.
+            </param>
+            <returns>A <see cref="T:Libplanet.Net.Messages.Message"/> parsed from <paramref name="encoded"/>.</returns>
+            <exception cref="T:System.ArgumentException">
+            Thrown when empty <paramref name="encoded"/> is given.</exception>
+            <exception cref="T:Libplanet.Net.DifferentAppProtocolVersionException">Thrown when
+            local version does not match with given <paramref name="encoded"/>'s
+            <see cref="T:System.Version"/> by given <paramref name="appProtocolVersionValidator"/>.
+            </exception>
+            <exception cref="T:Libplanet.Net.InvalidMessageTimestampException"> Thrown when the timestamp of
+            <paramref name="encoded"/> is invalid.</exception>
+            <exception cref="T:Libplanet.Net.InvalidMessageSignatureException"> Thrown when the signer of
+            <paramref name="encoded"/> is invalid.</exception>
+        </member>
+        <member name="T:Libplanet.Net.Messages.Message">
+            <summary>
+            Serves as the base class for messages used in <see cref="T:Libplanet.Net.Transports.ITransport"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Messages.Message.MessageType">
+            <summary>
+            <c>Enum</c> represents the type of the <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Ping">
+            <summary>
+            Check message to determine peer is alive.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Pong">
+            <summary>
+            A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.Ping"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetBlockHashes">
+            <summary>
+            Request to query block hashes.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.TxIds">
+            <summary>
+            Inventory to transfer transactions.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetBlocks">
+            <summary>
+            Request to query blocks.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetTxs">
+            <summary>
+            Request to query transactions.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Blocks">
+            <summary>
+            Message containing serialized blocks.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Tx">
+            <summary>
+            Message containing serialized transaction.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.FindNeighbors">
+            <summary>
+            Message containing request for nearby peers.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.Neighbors">
+            <summary>
+            Message containing nearby peers.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.BlockHeaderMessage">
+            <summary>
+            Message containing a single <see cref="T:Libplanet.Blocks.BlockHeader"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.BlockHashes">
+            <summary>
+            Message containing demand block hashes with their index numbers.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetChainStatus">
+            <summary>
+            Request current chain status of the peer.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.ChainStatus">
+            <summary>
+            A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.GetChainStatus"/>.
+            Contains the chain status of the peer at the moment.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.DifferentVersion">
+            <summary>
+            A reply to any messages with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
+            Contains the expected and actual <see cref="T:Libplanet.Net.AppProtocolVersion"/>
+            value of the message.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Version">
+            <summary>
+            Frame containing <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Type">
+            <summary>
+            Frame containing the type of the message.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Peer">
+            <summary>
+            Frame containing the sender <see cref="F:Libplanet.Net.Messages.Message.MessageFrame.Peer"/> of the <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Timestamp">
+            <summary>
+            Frame containing the datetime when the <see cref="T:Libplanet.Net.Messages.Message"/> is created.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Sign">
+            <summary>
+            Frame containing signature of the <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Identity">
+            <summary>
+            <c>byte[]</c>-typed identity of the message.
+            If message B is a reply to message A,
+            B's identity must be set to A's identity.
+            </summary>
+            <remarks>
+            The handling of the identity of a <see cref="T:Libplanet.Net.Messages.Message"/> is implementation specific to
+            <see cref="T:Libplanet.Net.Transports.ITransport"/>.
+            </remarks>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Version">
+            <summary>
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed version of the
+            <see cref="P:Libplanet.Net.Messages.Message.Remote"/>'s transport layer.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Remote">
+            <summary>
+            The sender <see cref="T:Libplanet.Net.Peer"/> of the message.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Timestamp">
+            <summary>
+            The timestamp of the message is created.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Type">
+            <summary>
+            The type of the message.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.DataFrames">
+            <summary>
+            The body of the message.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Messages.Neighbors">
+            <summary>
+            Message containing nearby peers. A reply to <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Messages.FindNeighbors"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.#ctor(System.Nullable{System.TimeSpan})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Net.Messages.NetMQMessageCodec"/> instance.
+            </summary>
+            <param name="messageLifespan">Lifespan to use for messages when decoding.</param>
+        </member>
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Decode(NetMQ.NetMQMessage,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Net.Messages.Ping">
+            <summary>
+            Check message to determine peer is alive.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Messages.Pong"/>
+        </member>
+        <member name="T:Libplanet.Net.Messages.Pong">
+            <summary>
+            A reply to <see cref="T:Libplanet.Net.Messages.Ping"/>.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Messages.Ping"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.#ctor(System.Nullable{System.TimeSpan})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Net.Messages.TcpMessageCodec"/> instance.
+            </summary>
+            <param name="messageLifespan">Lifespan to use for messages when decoding.</param>
+        </member>
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Decode(System.Byte[],System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Net.Peer">
+            <summary>
+            A representation of peer node.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Swarm`1"/>
+        </member>
+        <member name="P:Libplanet.Net.Peer.PublicKey">
+            <summary>
+            The corresponding <see cref="T:Libplanet.Crypto.PublicKey"/> of
+            this peer.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Peer.Address">
+            <summary>The peer's address which is derived from
+            its <see cref="P:Libplanet.Net.Peer.PublicKey"/>.
+            </summary>
+            <seealso cref="P:Libplanet.Net.Peer.PublicKey"/>
+        </member>
+        <member name="M:Libplanet.Net.Peer.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Peer.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Net.PeerChainState">
+            <summary>
+            The blockchain state of <see cref="T:Libplanet.Net.BoundPeer"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerChainState.Peer">
+            <summary>
+            The peer with chain.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerChainState.TipIndex">
+            <summary>
+            The blockchain tip of the <see cref="P:Libplanet.Net.PeerChainState.Peer"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerChainState.TotalDifficulty">
+            <summary>
+            The total difficulty of the blockchain of the <see cref="P:Libplanet.Net.PeerChainState.Peer"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.PeerChainState.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Net.PeerState">
+            <summary>
+            Represents a <see cref="P:Libplanet.Net.PeerState.Peer"/>'s state in the routing table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerState.Peer">
+            <summary>
+            <see cref="T:Libplanet.Net.BoundPeer"/> of the state.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerState.LastUpdated">
+            <summary>
+            Last time messages were exchanged.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerState.LastChecked">
+            <summary>
+            Last time the peer was verified.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerState.Latency">
+            <summary>
+            Delay of verification in milliseconds.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.PreloadState.TotalPhase">
+            <summary>
+            The number of total phases.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PreloadState.CurrentPhase">
+            <summary>
+            The current phase.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Protocols.IProtocol">
+            <summary>
+            An interface of protocol to discover peers from the distributed network.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Conducts peer discovery for given <paramref name="bootstrapPeers"/>.
+            </summary>
+            <param name="bootstrapPeers">A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Net.Peer"/>s
+            to bootstrap.</param>
+            <param name="pingSeedTimeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
+            message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
+            If <c>null</c> is given, the task never halts by itself
+            even no any response was given from the the target seed.</param>
+            <param name="findNeighborsTimeout">A timeout of waiting for the reply of
+            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
+            If <c>null</c> is given, task never halts by itself
+            even the target seed gives no any response.</param>
+            <param name="depth">Recursive operation depth to search peers from network.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IProtocol.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Tries to add given <paramref name="peers"/> to routing table
+            by sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
+            </summary>
+            <param name="peers">The peers to add.</param>
+            <param name="timeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
+            message sent to <paramref name="peers"/>.
+            If <c>null</c> is given, task never halts by itself
+            even the target peer gives no any response.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Checks whether <see cref="T:Libplanet.Net.Peer"/>s in <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> is online by
+            sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
+            </summary>
+            <param name="maxAge">Maximum age of peer to validate.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IProtocol.RebuildConnectionAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Reconstructs network connection between peers on network.
+            </summary>
+            <param name="depth">Recursive operation depth to search peers from network.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IProtocol.CheckReplacementCacheAsync(System.Threading.CancellationToken)">
+            <summary>
+            Checks the <see cref="T:Libplanet.Net.Protocols.KBucket"/> in the <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> and if
+            there is an empty <see cref="T:Libplanet.Net.Protocols.KBucket"/>, fill it with <see cref="T:Libplanet.Net.Peer"/>s
+            in the <see cref="P:Libplanet.Net.Protocols.KBucket.ReplacementCache"/>.
+            </summary>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="T:Libplanet.Net.Protocols.Kademlia">
+            <summary>
+            Commonly used constants and static functions for Kademlia distributed hash table.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Protocols.Kademlia.BucketSize">
+            <summary>
+            The size of a single bucket.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Protocols.Kademlia.TableSize">
+            <summary>
+            The number of buckets in the table.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Protocols.Kademlia.FindConcurrency">
+            <summary>
+            The number of concurrency in peer discovery.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Protocols.Kademlia.MaxDepth">
+            <summary>
+            Depth of the peer discovery operation.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.Kademlia.CalculateDistance(Libplanet.Address,Libplanet.Address)">
+            <summary>
+            Calculates the xor distance between two <see cref="T:Libplanet.Address"/>es.
+            </summary>
+            <param name="left">The first element to calculate the distance.</param>
+            <param name="right">The second element to calculate the distance.</param>
+            <returns>The distance between two <see cref="T:Libplanet.Address"/>es.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.Kademlia.CommonPrefixLength(Libplanet.Address,Libplanet.Address)">
+            <summary>
+            Calculates the length of the common prefix between two <see cref="T:Libplanet.Address"/>es
+            by finding the index of the first non-zero bit of the xor between the two.
+            </summary>
+            <param name="left">The first element to calculate the common prefix length.</param>
+            <param name="right">The second element to calculate the common prefix length.</param>
+            <returns>The length of the common prefix between <paramref name="left"/> and
+            <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.Kademlia.SortByDistance(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address)">
+            <summary>
+            Sorts the element of the sequence from in ascending order of
+            the distance with <paramref name="target"/>.
+            </summary>
+            <param name="peers">A sequence of values to order.</param>
+            <param name="target">
+            <see cref="T:Libplanet.Address"/> to calculate distance of element.</param>
+            <returns>>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> whose elements are sorted
+            according to the distance with <paramref name="target"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Net.Protocols.KademliaProtocol">
+            <summary>
+            A Kademlia based peer discovery protocol.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Net.Transports.ITransport,Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Net.Protocols.KademliaProtocol"/> instance.
+            </summary>
+            <param name="table">
+            The <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> where <see cref="T:Libplanet.Net.Peer"/>s are stored.</param>
+            <param name="transport"><see cref="T:Libplanet.Net.Transports.ITransport"/> to process messages.</param>
+            <param name="address">The <see cref="T:Libplanet.Address"/> of the <see cref="T:Libplanet.Net.Peer"/>
+            to be the reference point.</param>
+            <param name="findConcurrency">The number of concurrency in peer discovery.</param>
+            <param name="requestTimeout">
+            A timeout of waiting for the reply of messages.
+            If it's omitted or <c>null</c> is given, will automatically be set to 5 seconds.
+            </param>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.CheckAllPeersAsync(System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Refreshes all peers in routing table.
+            </summary>
+            <param name="timeout">A timeout of waiting for the reply of messages.
+            If <c>null</c> is given, the task never halts by itself
+            even no any response was given from the the target peer.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.RebuildConnectionAsync(System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.CheckReplacementCacheAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindSpecificPeerAsync(Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Use <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to to find a <see cref="T:Libplanet.Net.BoundPeer"/> with
+            <see cref="T:Libplanet.Address"/> of <paramref name="target"/>.
+            </summary>
+            <param name="target">The <see cref="T:Libplanet.Address"/> to find.</param>
+            <param name="depth">Target depth of recursive operation.</param>
+            <param name="timeout"><see cref="T:System.TimeSpan"/> for waiting reply of
+            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>A <see cref="T:Libplanet.Net.BoundPeer"/> with <paramref name="target"/> as its
+            <see cref="T:Libplanet.Address"/> if found.  Otherwise, <c>null</c>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ValidateAsync(Libplanet.Net.BoundPeer,System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Validate peer by send <see cref="T:Libplanet.Net.Messages.Ping"/> to <paramref name="peer"/>. If target peer
+            does not responds, remove it from the table.
+            </summary>
+            <param name="peer">A <see cref="T:Libplanet.Net.BoundPeer"/> to validate.</param>
+            <param name="timeout">Timeout for waiting reply of <see cref="T:Libplanet.Net.Messages.Ping"/>.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.TimeoutException">
+            Thrown when validation fails in given <paramref name="timeout"/>.
+            </exception>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to <paramref name="viaPeer"/>
+            to find <see cref="T:Libplanet.Net.Peer"/>s near <paramref name="target"/>.
+            </summary>
+            <param name="history">The <see cref="T:Libplanet.Net.Peer"/> that searched.</param>
+            <param name="dialHistory">The <see cref="T:Libplanet.Net.Peer"/> that ping was sent.</param>
+            <param name="target">The <see cref="T:Libplanet.Address"/> to find.</param>
+            <param name="viaPeer">The target <see cref="T:Libplanet.Net.Peer"/> to send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
+            message. If null, selects 3 <see cref="T:Libplanet.Net.Peer"/>s from <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> of
+            self.</param>
+            <param name="depth">Target depth of recursive operation.</param>
+            <param name="timeout"><see cref="T:System.TimeSpan"/> for waiting reply of
+            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ProcessFoundAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Process <see cref="T:Libplanet.Net.Peer"/>s that is replied by sending <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
+            request.
+            </summary>
+            <param name="history"><see cref="T:Libplanet.Net.Peer"/>s that already searched.</param>
+            <param name="dialHistory"><see cref="T:Libplanet.Net.Peer"/>s that ping sent.</param>
+            <param name="found"><see cref="T:Libplanet.Net.Peer"/>s that found.</param>
+            <param name="target">The target <see cref="T:Libplanet.Address"/> to search.</param>
+            <param name="depth">Target depth of recursive operation. If -1 is given,
+            it runs until the closest peer is found.</param>
+            <param name="timeout"><see cref="T:System.TimeSpan"/> for next depth's
+            <see cref="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/> operation.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.TimeoutException">Thrown when all peers that found are
+            not online.</exception>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.KBucket.Head">
+            <summary>
+            The <see cref="T:Libplanet.Net.PeerState"/> used most recently. If the bucket is empty,
+            this is <c>null</c>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.KBucket.Tail">
+            <summary>
+            The <see cref="T:Libplanet.Net.PeerState"/> used longest time ago. If the bucket is empty,
+            this is <c>null</c>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucket.Contains(Libplanet.Net.BoundPeer)">
+            <summary>
+            Checks whether the bucket contains given <paramref name="peer"/>.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to check.</param>
+            <returns><c>true</c> if the bucket contains <paramref name="peer"/>,
+            <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucket.Clear">
+            <summary>
+            Empties the bucket.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucket.RemovePeer(Libplanet.Net.BoundPeer)">
+            <summary>
+            Removes given <paramref name="peer"/> from the bucket.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to remove.</param>
+            <returns>
+            <c>true</c> if <paramref name="peer"/> was removed, <c>false</c> otherwise.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucket.GetRandomPeer(System.Nullable{Libplanet.Address})">
+            <summary>
+            Selects a random <see cref="T:Libplanet.Net.BoundPeer"/> in the bucket excluding
+            <paramref name="except"/>.
+            </summary>
+            <param name="except">The <see cref="T:Libplanet.Net.BoundPeer"/> to exclude when selecting.</param>
+            <returns>
+            A randomly selected <see cref="T:Libplanet.Net.BoundPeer"/> in the bucket excluding
+            <paramref name="except"/>. If no <see cref="T:Libplanet.Net.BoundPeer"/> can be selected,
+            <c>null</c> is returned.
+            </returns>
+        </member>
+        <member name="T:Libplanet.Net.Protocols.RoutingTable">
+            <summary>
+            Kademlia distributed hash table.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.#ctor(Libplanet.Address,System.Int32,System.Int32)">
+            <summary>
+            Creates a Kademlia distributed hash table instance.
+            </summary>
+            <param name="address"><see cref="T:Libplanet.Address"/> of this peer.</param>
+            <param name="tableSize">The number of buckets in the table.</param>
+            <param name="bucketSize">The size of a single bucket.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown when <paramref name="tableSize"/> or <paramref name="bucketSize"/> is
+            less then or equal to 0.</exception>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.TableSize">
+            <summary>
+            The number of buckets in the table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.BucketSize">
+            <summary>
+            The size of a single bucket.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.Count">
+            <summary>
+            The number of peers in the table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.Peers">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of peers in the table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.PeerStates">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <see cref="T:Libplanet.Net.PeerState"/> of peers in the table.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.AddPeer(Libplanet.Net.BoundPeer)">
+            <summary>
+            Adds the <paramref name="peer"/> to the table.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to add.</param>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="peer"/>'s
+            <see cref="T:Libplanet.Address"/> is equal to the <see cref="T:Libplanet.Address"/> of self.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.Contains(Libplanet.Net.BoundPeer)">
+            <summary>
+            Determines whether the <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> contains the specified key.
+            </summary>
+            <param name="peer">Key to locate in the <see cref="T:Libplanet.Net.Protocols.RoutingTable"/>.</param>
+            <returns><see langword="true"/> if the <see cref="T:Libplanet.Net.Protocols.RoutingTable" /> contains
+            an element with the specified key; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.GetPeer(Libplanet.Address)">
+            <summary>
+            Finds a <seealso cref="T:Libplanet.Net.BoundPeer"/> whose <see cref="T:Libplanet.Address"/> matches with
+            the given <paramref name="addr"/> if it exits.
+            </summary>
+            <param name="addr">The <see cref="T:Libplanet.Address"/> to search.</param>
+            <returns>A <see cref="T:Libplanet.Net.BoundPeer"/> whose <see cref="T:Libplanet.Address"/> matches
+            the given <paramref name="addr"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.Clear">
+            <summary>
+            Removes all peers in the table. This method does not affect static peers.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.Neighbors(Libplanet.Net.BoundPeer,System.Int32,System.Boolean)">
+            <summary>
+            Returns <paramref name="k"/> nearest peers to given parameter peer from routing table.
+            Return value is already sorted with respect to target.
+            </summary>
+            <param name="target"><see cref="T:Libplanet.Net.BoundPeer"/> to look up.</param>
+            <param name="k">Number of peers to return.</param>
+            <param name="includeTarget">A boolean value indicates to include a peer with
+            <see cref="T:Libplanet.Address"/> of <paramref name="target"/> in return value or not.</param>
+            <returns>An enumerable of <see cref="T:Libplanet.Net.BoundPeer"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.Neighbors(Libplanet.Address,System.Int32,System.Boolean)">
+            <summary>
+            Returns at most 2 * <paramref name="k"/> (2 * <paramref name="k"/> + 1 if
+            <paramref name="includeTarget"/> is <c>true</c>) nearest peers to given parameter peer
+            from routing table. Return value is sorted with respect to target.
+            <seealso cref="M:Libplanet.Net.Protocols.Kademlia.SortByDistance(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address)"/>
+            </summary>
+            <param name="target"><see cref="T:Libplanet.Address"/> to look up.</param>
+            <param name="k">Number of peers to return.</param>
+            <param name="includeTarget">A boolean value indicates to include a peer with
+            <see cref="T:Libplanet.Address"/> of <paramref name="target"/> in return value or not.</param>
+            <returns>An enumerable of <see cref="T:Libplanet.Net.BoundPeer"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.Check(Libplanet.Net.BoundPeer,System.DateTimeOffset,System.DateTimeOffset)">
+            <summary>
+            Marks <paramref name="peer"/> checked and refreshes last checked time of the peer.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.Peer"/> to check.</param>
+            <param name="start"><see cref="T:System.DateTimeOffset"/> at the beginning of the check.</param>
+            <param name="end"><see cref="T:System.DateTimeOffset"/> at the end of the check.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when <paramref name="peer"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="T:Libplanet.Net.StateDownloadState">
+            <summary>
+            Indicates a progress of downloading states.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.StateDownloadState.TotalIterationCount">
+            <summary>
+            Total number of messages to receive in the current batch.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.StateDownloadState.ReceivedIterationCount">
+            <summary>
+            The number of received messages until now.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.StateDownloadState.CurrentPhase">
+            <inheritdoc />
+        </member>
+        <member name="P:Libplanet.Net.Swarm`1.BlockDemandTable">
+            <summary>
+            Information of <see cref="T:Libplanet.Net.Swarm`1"/>'s demand for new blocks.
+            It is empty when the <see cref="T:Libplanet.Net.Swarm`1"/> does not have any block to demand.
+            <seealso cref="T:Libplanet.Net.BlockDemandTable`1"/>
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Swarm`1.BlockCandidateTable">
+            <summary>
+            This is a table of waiting <see cref="T:Libplanet.Blocks.Block`1"/>s
+            to enter the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
+            <seealso cref="T:Libplanet.Net.BlockCandidateTable`1"/>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.PullBlocksAsync(System.TimeSpan,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Fill blocks from the <see cref="T:Libplanet.Net.BoundPeer"/>s in the
+            <see cref="P:Libplanet.Net.Swarm`1.RoutingTable"/>.
+            </summary>
+            <param name="timeout">
+            The timeout value for the request to get the tip of the block.
+            </param>
+            <param name="maximumPollPeers">The maximum targets to send request to.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Collections.Generic.IEnumerable{Libplanet.Crypto.PublicKey},Libplanet.Net.SwarmOptions)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Net.Swarm`1"/>.  This constructor in only itself does not start
+            any communication with the network.
+            </summary>
+            <param name="blockChain">A blockchain to publicize on the network.</param>
+            <param name="privateKey">A private key to sign messages.  The public part of
+            this key become a part of its end address for being pointed by peers.</param>
+            <param name="appProtocolVersion">An app protocol to comply.</param>
+            <param name="workers">The number of background workers (i.e., threads).</param>
+            <param name="host">A hostname to be a part of a public endpoint, that peers use when
+            they connect to this node.  Note that this is not a hostname to listen to;
+            <see cref="T:Libplanet.Net.Swarm`1"/> always listens to 0.0.0.0 &amp; ::/0.</param>
+            <param name="listenPort">A port number to listen to.</param>
+            <param name="iceServers">
+            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
+            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
+            <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
+            with one different from <paramref name="appProtocolVersion"/>, and their version is
+            signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
+            If this callback returns <c>false</c> an encountered peer is ignored.  If this callback
+            is omitted all peers with different <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/>s are ignored.
+            </param>
+            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
+            to trust <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/>s they signed.  To trust any party, pass
+            <c>null</c>, which is default.</param>
+            <param name="options">Options for <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
+        </member>
+        <member name="P:Libplanet.Net.Swarm`1.LastMessageTimestamp">
+            <summary>
+            The last time when any message was arrived.
+            It can be <c>null</c> if no message has been arrived yet.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Swarm`1.BlockChain">
+            <summary>
+            The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance this <see cref="T:Libplanet.Net.Swarm`1"/> instance
+            synchronizes with.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.WaitForRunningAsync">
+            <summary>
+            Waits until this <see cref="T:Libplanet.Net.Swarm`1"/> instance gets started to run.
+            </summary>
+            <seealso cref="M:Libplanet.Net.Transports.ITransport.WaitForRunningAsync"/>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.ITransport.Running"/>
+            property becomes <c>true</c>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.Int32,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
+            </summary>
+            <param name="millisecondsDialTimeout">
+            When the <see cref="T:Libplanet.Net.Swarm`1"/> tries to dial each peer in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>,
+            the dial-up is cancelled after this timeout, and it tries another peer.
+            If <c>null</c> is given it never gives up dial-ups.
+            </param>
+            <param name="millisecondsBroadcastBlockInterval">Time interval between each broadcast
+            of chain tip.</param>
+            <param name="millisecondsBroadcastTxInterval">Time interval between each broadcast
+            of staged transactions.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.
+            </param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
+            already <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
+            <remarks>If the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/> has no blocks at all or there are long behind
+            blocks to caught in the network this method could lead to unexpected behaviors, because
+            this tries to render <em>all</em> actions in the behind blocks so that there are
+            a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
+            period of time.  This can lead a game startup slow.  If you want to omit rendering of
+            these actions in the behind blocks use <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)"/> method too.</remarks>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
+            </summary>
+            <param name="dialTimeout">
+            When the <see cref="T:Libplanet.Net.Swarm`1"/> tries to dial each peer in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>,
+            the dial-up is cancelled after this timeout, and it tries another peer.
+            If <c>null</c> is given it never gives up dial-ups.
+            </param>
+            <param name="broadcastBlockInterval">Time interval between each broadcast of
+            chain tip.</param>
+            <param name="broadcastTxInterval">Time interval between each broadcast of staged
+            transactions.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.
+            </param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
+            already <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
+            <remarks>If the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/> has no blocks at all or there are long behind
+            blocks to caught in the network this method could lead to unexpected behaviors, because
+            this tries to render <em>all</em> actions in the behind blocks so that there are
+            a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
+            period of time.  This can lead a game startup slow.  If you want to omit rendering of
+            these actions in the behind blocks use <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)"/> method too.</remarks>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Join to the peer-to-peer network using seed peers.
+            </summary>
+            <param name="seedPeers">List of seed peers.</param>
+            <param name="pingSeedTimeout">Timeout for connecting to seed peers.</param>
+            <param name="findNeighborsTimeout">Timeout for requesting neighbors.</param>
+            <param name="depth">Depth to find neighbors of current <see cref="T:Libplanet.Net.Peer"/>
+            from seed peers.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
+            not <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.BroadcastBlock(Libplanet.Blocks.Block{`0})">
+            <summary>
+            Broadcasts the given block to peers.
+            <para>The message is immediately broadcasted, and it is done if the same block has
+            already been broadcasted before.</para>
+            </summary>
+            <param name="block">The block to broadcast to peers.</param>
+            <remarks>It does not have to be called manually, because <see cref="T:Libplanet.Net.Swarm`1"/> in
+            itself watches <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/> for <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> changes and
+            immediately broadcasts updates if anything changes.</remarks>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.GetPeerChainStateAsync(System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Gets the <see cref="T:Libplanet.Net.PeerChainState"/> of the connected <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.
+            </summary>
+            <param name="dialTimeout">
+            When the <see cref="T:Libplanet.Net.Swarm`1"/> tries to dial each peer in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>,
+            the dial-up is cancelled after this timeout, and it tries another peer.
+            If <c>null</c> is given it never gives up dial-ups.
+            </param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.
+            </param>
+            <returns><see cref="T:Libplanet.Net.PeerChainState"/> of the connected <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
+            </summary>
+            <param name="dialTimeout">
+            When the <see cref="T:Libplanet.Net.Swarm`1"/> tries to dial each peer in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>,
+            the dial-up is cancelled after this timeout, and it tries another peer.
+            If <c>null</c> is given it never gives up dial-ups.
+            </param>
+            <param name="progress">
+            An instance that receives progress updates for block downloads.
+            </param>
+            <param name="render">
+            The value indicates whether to render blocks and actions while preloading.</param>
+            <param name="tipDeltaThreshold">The threshold of the difference between the topmost tip
+            among peers and the local tip.  If the local tip is still behind the topmost tip among
+            peers by more than this threshold after a preloading is once done, the preloading
+            is repeated.  25 by default.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.
+            </param>
+            <returns>
+            A task without value.
+            You only can <c>await</c> until the method is completed.
+            </returns>
+            <remarks>This does not render downloaded <see cref="T:Libplanet.Action.IAction"/>s, but fills states only.
+            </remarks>
+            <exception cref="T:System.AggregateException">Thrown when the given the block downloading is
+            failed.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.FindSpecificPeerAsync(Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Use <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to to find a <see cref="T:Libplanet.Net.BoundPeer"/> with
+            <see cref="P:Libplanet.Net.Swarm`1.Address"/> of <paramref name="target"/>.
+            </summary>
+            <param name="target">The <see cref="P:Libplanet.Net.Swarm`1.Address"/> to find.</param>
+            <param name="depth">Target depth of recursive operation. If -1 is given,
+            will recursive until the closest <see cref="T:Libplanet.Net.BoundPeer"/> to the
+            <paramref name="target"/> is found.</param>
+            <param name="timeout">
+            <see cref="T:System.TimeSpan"/> for waiting reply of <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.
+            If <c>null</c> is given, <see cref="T:System.TimeoutException"/> will not be thrown.
+            </param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>
+            A <see cref="T:Libplanet.Net.BoundPeer"/> with <see cref="P:Libplanet.Net.Swarm`1.Address"/> of <paramref name="target"/>.
+            Returns <c>null</c> if the peer with address does not exist.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.CheckAllPeersAsync(System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Validates all <see cref="T:Libplanet.Net.Peer"/>s in the routing table by sending a simple message.
+            </summary>
+            <param name="timeout">Timeout for this operation. If it is set to <c>null</c>,
+            wait infinitely until the requested operation is finished.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Adds <paramref name="peers"/> to routing table by sending a simple message.
+            </summary>
+            <param name="peers">A list of peers to add.</param>
+            <param name="timeout">Timeout for this operation. If it is set to <c>null</c>,
+            wait infinitely until the requested operation is finished.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.GetPeersWithExcerpts(System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Libplanet.Blocks.IBlockExcerpt"/>es from randomly selected <see cref="T:Libplanet.Net.BoundPeer"/>s
+            from <see cref="P:Libplanet.Net.Swarm`1.Peers"/> with each <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> tied to
+            its originating <see cref="T:Libplanet.Net.BoundPeer"/>.
+            </summary>
+            <param name="dialTimeout">Timeout for each dialing operation to
+            a <see cref="T:Libplanet.Net.BoundPeer"/> in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.  Not having a timeout limit
+            is equivalent to setting this value to <c>null</c>.</param>
+            <param name="maxPeersToDial">Maximum number of <see cref="T:Libplanet.Net.Peer"/>s to dial.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task with a <see cref="T:System.Collections.Generic.List`1"/> of tuples
+            of <see cref="T:Libplanet.Net.BoundPeer"/> and <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> ordered by
+            the <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.CanonicalChainComparer"/> given by
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/> in descending order.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.DialExistingPeers(System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Gets <see cref="T:Libplanet.Net.Messages.ChainStatus"/>es from randomly selected <see cref="T:Libplanet.Net.BoundPeer"/>s
+            from <see cref="P:Libplanet.Net.Swarm`1.Peers"/> with each <see cref="T:Libplanet.Net.Messages.ChainStatus"/> tied to
+            its originating <see cref="T:Libplanet.Net.BoundPeer"/>.
+            </summary>
+            <param name="dialTimeout">Timeout for each dialing operation to
+            a <see cref="T:Libplanet.Net.BoundPeer"/> in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.  Not having a timeout limit
+            is equivalent to setting this value to <c>null</c>.</param>
+            <param name="maxPeersToDial">Maximum number of <see cref="T:Libplanet.Net.Peer"/>s to dial.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task with an <see cref="T:System.Array"/> of tuples
+            of <see cref="T:Libplanet.Net.BoundPeer"/> and <see cref="T:Libplanet.Net.Messages.ChainStatus"/> where
+            <see cref="T:Libplanet.Net.Messages.ChainStatus"/> can be <c>null</c> if dialing fails for
+            a selected <see cref="T:Libplanet.Net.BoundPeer"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.IsBlockNeeded(Libplanet.Blocks.IBlockExcerpt)">
+            <summary>
+            Checks if the corresponding <see cref="T:Libplanet.Blocks.Block`1"/> to a given
+            <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> is needed for <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
+            </summary>
+            <param name="target">The <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> to compare to the current
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> of <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.</param>
+            <returns><c>true</c> if the corresponding <see cref="T:Libplanet.Blocks.Block`1"/> to
+            <paramref name="target"/> is needed, otherwise, <c>false</c>.</returns>
+        </member>
+        <member name="T:Libplanet.Net.SwarmOptions.TransportType">
+            <summary>
+            <c>Enum</c> represents the type of the <see cref="T:Libplanet.Net.Transports.ITransport"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.SwarmOptions.TransportType.NetMQTransport">
+            <summary>
+            NetMQ based transport.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.SwarmOptions.TransportType.TcpTransport">
+            <summary>
+            TCP based transport.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.MaxTimeout">
+            <summary>
+            The maximum timeout used in <see cref="T:Libplanet.Net.Swarm`1"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BlockHashRecvTimeout">
+            <summary>
+            The base timeout used to receive the block hashes from other peers.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BlockRecvTimeout">
+            <summary>
+            The base timeout used to receive <see cref="T:Libplanet.Blocks.Block`1"/> from other peers.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.TxRecvTimeout">
+            <summary>
+            The base timeout used to receive <see cref="T:Libplanet.Tx.Transaction`1"/> from other peers.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BlockDownloadTimeout">
+            <summary>
+            The timeout used to block download in preloading.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BlockDemandLifespan">
+            <summary>
+            The lifespan of block demand.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.MessageLifespan">
+            <summary>
+            The lifespan of <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.RefreshPeriod">
+            <summary>
+            The frequency of <see cref="M:Libplanet.Net.Protocols.IProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)" />.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.RefreshLifespan">
+            <summary>
+            The lifespan of <see cref="T:Libplanet.Net.Peer"/> in routing table.
+            <seealso cref="M:Libplanet.Net.Protocols.IProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)" />
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.StaticPeers">
+            <summary>
+            The list of <see cref="T:Libplanet.Net.Peer"/>s to keep in routing table permanently.
+            The <see cref="T:Libplanet.Net.Peer"/>s in the list will be maintained periodically within
+            <see cref="P:Libplanet.Net.SwarmOptions.StaticPeersMaintainPeriod"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.StaticPeersMaintainPeriod">
+            <summary>
+            The period of <c>Task</c> maintains static peer.
+            </summary>
+            <seealso cref="P:Libplanet.Net.SwarmOptions.StaticPeers"/>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BranchpointThreshold">
+            <summary>
+            The threshold for detecting branchpoint when block synchronization.
+            If the branch point is outside threshold from the <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip" />,
+            using an approximated value.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.MinimumBroadcastTarget">
+            <summary>
+            The minimum number to select from routing table when broadcast messages.
+            It is 10 by default.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.TableSize">
+            <summary>
+            The number of buckets of the Kademlia based routing table.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Protocols.RoutingTable"/>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BucketSize">
+            <summary>
+            The size of each bucket of the Kademlia based routing table.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Protocols.RoutingTable"/>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.PollInterval">
+            <summary>
+            The interval between block polling.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.MaximumPollPeers">
+            <summary>
+            The maximum number of peers to poll blocks.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.TipLifespan">
+            <summary>
+            The lifespan of the <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.  When the tip has not been updated
+            for the configured lifespan, <see cref="T:Libplanet.Net.Swarm`1"/> pulls new blocks from neighbor
+            peers.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.Type">
+            <summary>
+            The type of <see cref="T:Libplanet.Net.Transports.ITransport"/> used in <see cref="T:Libplanet.Net.Swarm`1"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Transports.BoundPeerExtensions">
+            <summary>
+            This extension class activates transport-oriented methods on <see cref="T:Libplanet.Net.BoundPeer"/>.
+            </summary>
+            <seealso cref="T:Libplanet.Net.BoundPeer"/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.QueryAppProtocolVersionNetMQ(Libplanet.Net.BoundPeer,System.Nullable{System.TimeSpan})">
+            <summary>
+            Queries <see cref="T:Libplanet.Net.AppProtocolVersion"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>
+            specialized for NetMQ based transport.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to query
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
+            <param name="timeout">Timeout value for request.</param>
+            <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.QueryAppProtocolVersionTcp(Libplanet.Net.BoundPeer,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Queries <see cref="T:Libplanet.Net.AppProtocolVersion"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>
+            specialized for TCP based transport.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to query
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
+            <param name="timeout">Timeout value for request.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
+        </member>
+        <member name="T:Libplanet.Net.Transports.ITransport">
+            <summary>
+            An interface to handle peer-to-peer networking, including <see cref="T:Libplanet.Net.Messages.Message"/> exchanging
+            and <see cref="T:Libplanet.Net.Peer"/> managing.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.ProcessMessageHandler">
+            <summary>
+            The list of tasks invoked when a message that is not
+            a reply is received. To handle reply, please use <see cref=
+            "M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.AsPeer">
+            <summary>
+            <see cref="T:Libplanet.Net.Peer"/> representation of <see cref="T:Libplanet.Net.Transports.ITransport"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.LastMessageTimestamp">
+            <summary>
+            The <see cref="T:System.DateTimeOffset"/> of the last message was received.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.Running">
+            <summary>
+            Whether this <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is running.
+            </summary>
+            <value>Gets the value indicates whether the instance is running.</value>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Initiates and runs transport layer.
+            </summary>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Stops running transport layer.
+            </summary>
+            <param name="waitFor">The <see cref="T:System.TimeSpan"/> of delay
+            before actual stopping.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.WaitForRunningAsync">
+            <summary>
+            Waits until this <see cref="T:Libplanet.Net.Transports.ITransport"/> instance gets started to run.
+            </summary>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.ITransport.Running"/>
+            property becomes <c>true</c>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <summary>
+            Sends a <see cref="T:Libplanet.Net.Messages.Message"/> to a given <see cref="T:Libplanet.Net.BoundPeer"/>.
+            </summary>
+            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Sends a <see cref="T:Libplanet.Net.Messages.Message"/> to a given <see cref="T:Libplanet.Net.BoundPeer"/>
+            and waits for its single reply.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to send message to.</param>
+            <param name="message">The <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="timeout">A timeout of waiting for the reply of the message.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>The replies of the <paramref name="message"/>
+            sent by <paramref name="peer"/>.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Sends a <see cref="T:Libplanet.Net.Messages.Message"/> to a given <see cref="T:Libplanet.Net.BoundPeer"/>
+            and waits for its multiple replies.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to send message to.</param>
+            <param name="message">The <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="timeout">A timeout of waiting for the reply of the message.</param>
+            <param name="expectedResponses">The number of expected replies for the message.</param>
+            <param name="returnWhenTimeout">Determines the behavior when failed to receive
+            <paramref name="expectedResponses"/> messages and timeout occurred.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>The replies of the <paramref name="message"/>
+            sent by <paramref name="peer"/>.</returns>
+            <exception cref="T:System.ObjectDisposedException">Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance
+            is already disposed.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.BroadcastMessage(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Net.Messages.Message)">
+            <summary>
+            Broadcasts a <see cref="T:Libplanet.Net.Messages.Message"/> to peers selected from the routing table.
+            </summary>
+            <param name="peers">The <see cref="T:Libplanet.Net.BoundPeer"/>s to broadcast the
+            <paramref name="message"/>.</param>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to broadcast.</param>
+            <exception cref="T:System.ObjectDisposedException">Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance
+            is already disposed.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.ReplyMessageAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <summary>
+            Sends a <see cref="T:Libplanet.Net.Messages.Message"/> as a reply.
+            </summary>
+            <remarks>
+            The <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of given <paramref name="message"/> must
+            match the <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of the request <see cref="T:Libplanet.Net.Messages.Message"/>
+            corresponding to <paramref name="message"/>.
+            </remarks>
+            <param name="message">The <see cref="T:Libplanet.Net.Messages.Message"/> to send as a reply.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.ObjectDisposedException">
+            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
+        </member>
+        <member name="T:Libplanet.Net.Transports.NetMQTransport">
+            <summary>
+            Implementation of <see cref="T:Libplanet.Net.Transports.ITransport"/> interface using NetMQ.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Transports.NetMQTransport._differentAppProtocolVersionEncountered">
+            <summary>
+            The <see cref="T:System.EventHandler"/> triggered when the different version of
+            <see cref="T:Libplanet.Net.Peer"/> is discovered.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan})">
+            <summary>
+            Creates <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance.
+            </summary>
+            <param name="privateKey"><see cref="T:Libplanet.Crypto.PrivateKey"/> of the transport layer.</param>
+            <param name="appProtocolVersion"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed
+            version of the transport layer.</param>
+            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
+            to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
+            <c>null</c>.</param>
+            <param name="workers">The number of background workers (i.e., threads).</param>
+            <param name="host">A hostname to be a part of a public endpoint, that peers use when
+            they connect to this node.  Note that this is not a hostname to listen to;
+            <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> always listens to 0.0.0.0 &amp; ::/0.</param>
+            <param name="listenPort">A port number to listen to.</param>
+            <param name="iceServers">
+            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
+            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
+            <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
+            with one different from <paramref name="appProtocolVersion"/>, and their version is
+            signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
+            If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
+            is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
+            </param>
+            <param name="messageLifespan">
+            The lifespan of a message.
+            Messages generated before this value from the current time are ignored.
+            If <c>null</c> is given, messages will not be ignored by its timestamp.</param>
+            <param name="dealerSocketLifetime">
+            The lifespan of a <see cref="T:NetMQ.Sockets.DealerSocket"/> used for broadcasting messages.</param>
+            <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
+            <paramref name="iceServers"/> are <c>null</c>.</exception>
+        </member>
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.ProcessMessageHandler">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.AsPeer">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.LastMessageTimestamp">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.Running">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.WaitForRunningAsync">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.BroadcastMessage(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Net.Messages.Message)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.ReplyMessageAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.TcpTransport.ProcessMessageHandler">
+            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.ProcessMessageHandler"/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.TcpTransport.AsPeer">
+            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.AsPeer"/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.TcpTransport.LastMessageTimestamp">
+            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.Running"/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.TcpTransport.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc cref="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)"/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.TcpTransport.WaitForRunningAsync">
+            <inheritdoc cref="M:Libplanet.Net.Transports.ITransport.WaitForRunningAsync"/>
+        </member>
+    </members>
+</doc>
