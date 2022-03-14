@@ -139,8 +139,8 @@ namespace Nekoyume.UI.Module
                 row.StarImages.ForEach(x => x.SetActive(false));
             }
 
-            var isUsable = Util.IsUsableItem(itemBase.Id);
-            var level = Util.GetItemRequirementLevel(itemBase.Id);
+            var isUsable = Util.IsUsableItem(itemBase);
+            var level = Util.GetItemRequirementLevel(itemBase);
             descriptionArea.levelLimitText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", level);
             descriptionArea.levelLimitText.color = isUsable ?
                 Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);

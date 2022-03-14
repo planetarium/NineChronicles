@@ -89,7 +89,7 @@ namespace Nekoyume.UI
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             acquisitionPlaceButtons.ForEach(button => button.gameObject.SetActive(false));
-            detail.Set(item.ItemBase, item.Count.Value, !Util.IsUsableItem(item.ItemBase.Id));
+            detail.Set(item.ItemBase, item.Count.Value, !Util.IsUsableItem(item.ItemBase));
 
             submitButton.gameObject.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
@@ -124,7 +124,7 @@ namespace Nekoyume.UI
                     Close();
                 });
             detail.Set(item.ItemBase, item.OrderDigest.ItemCount,
-                !Util.IsUsableItem(item.OrderDigest.ItemId));
+                !Util.IsUsableItem(item.ItemBase));
             _onClose = onClose;
 
             scrollbar.value = 1f;
@@ -150,7 +150,7 @@ namespace Nekoyume.UI
                 });
 
             detail.Set(item.ItemBase, item.OrderDigest.ItemCount,
-                !Util.IsUsableItem(item.OrderDigest.ItemId));
+                !Util.IsUsableItem(item.ItemBase));
             _onClose = onClose;
 
             scrollbar.value = 1f;
@@ -169,7 +169,7 @@ namespace Nekoyume.UI
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
-            detail.Set(item.ItemBase, 1, !Util.IsUsableItem(item.ItemBase.Id));
+            detail.Set(item.ItemBase, 1, !Util.IsUsableItem(item.ItemBase));
 
             submitButton.gameObject.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
