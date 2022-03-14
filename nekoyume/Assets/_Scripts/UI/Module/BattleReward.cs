@@ -96,8 +96,7 @@ namespace Nekoyume.UI.Module
                     {
                         AudioController.PlayClick();
                         var tooltip = ItemTooltip.Find(itemBase.ItemType);
-                        var item = new InventoryItem(itemBase, 0, true, false, true);
-                        tooltip.Show(rt, item, string.Empty, false, null);
+                        tooltip.Show(rt, itemBase, string.Empty, false, null);
                     }).AddTo(gameObject);
                     items[i].gameObject.SetActive(true);
                 }

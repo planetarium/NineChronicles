@@ -217,9 +217,8 @@ namespace Nekoyume.UI.Scroller
                     {
                         AudioController.PlayClick();
                         var material = new Nekoyume.Model.Item.Material(reward.Data as MaterialItemSheet.Row);
-                        var item = new InventoryItem(material, 0, true, false, true);
-                        ItemTooltip.Find(item.ItemBase.ItemType)
-                            .Show(reward.RectTransform, item, string.Empty, false, null);
+                        ItemTooltip.Find(material.ItemType)
+                            .Show(reward.RectTransform, material, string.Empty, false, null);
                     }).AddTo(reward);
 
                     if (ignoreAnimation)

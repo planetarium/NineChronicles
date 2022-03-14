@@ -29,8 +29,7 @@ namespace Nekoyume.UI.Module
                 AudioController.PlayClick();
                 var rt = GetComponent<RectTransform>();
                 var tooltip = ItemTooltip.Find(model.ItemBase.Value.ItemType);
-                var item = new InventoryItem(model.ItemBase.Value, 0, true, false, true);
-                tooltip.Show(rt, item, string.Empty, false, null);
+                tooltip.Show(rt, model.ItemBase.Value, string.Empty, false, null);
             }).AddTo(gameObject);
         }
 

@@ -79,6 +79,32 @@ namespace Nekoyume.UI
         }
 
         public virtual void Show(RectTransform target,
+            ItemBase item,
+            string submitText,
+            bool interactable,
+            System.Action onSubmit,
+            System.Action onClose = null,
+            System.Action onBlocked = null)
+        {
+            buy.gameObject.SetActive(false);
+            sell.gameObject.SetActive(false);
+            acquisitionPlaceButtons.ForEach(button => button.gameObject.SetActive(false));
+            detail.Set(item, 0, !Util.IsUsableItem(item.Id));
+
+            submitButton.gameObject.SetActive(onSubmit != null);
+            submitButton.Interactable = interactable;
+            submitButton.Text = submitText;
+            _onSubmit = onSubmit;
+            _onClose = onClose;
+            _onBlocked = onBlocked;
+
+            scrollbar.value = 1f;
+            UpdatePosition(target);
+            base.Show();
+            StartCoroutine(CoUpdate(submitButton.gameObject));
+        }
+
+        public virtual void Show(RectTransform target,
             InventoryItem item,
             string submitText,
             bool interactable,
