@@ -2920,6 +2920,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4100081935161556727, guid: 30ca55af9c4c11f45a533b51c5d72258,
+        type: 3}
+      propertyPath: resetScrollOnEnable
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4145868064589585212, guid: 30ca55af9c4c11f45a533b51c5d72258,
         type: 3}
       propertyPath: m_AnchorMax.y
