@@ -202,7 +202,9 @@ namespace Nekoyume.UI
             }
 
             if (acquisitionPlaceList.All(model =>
-                    model.Type != AcquisitionPlaceButton.PlaceType.Quest))
+                    model.Type != AcquisitionPlaceButton.PlaceType.Quest &&
+                    model.ItemBase.ItemSubType != ItemSubType.Hourglass &&
+                    model.ItemBase.ItemSubType != ItemSubType.ApStone))
             {
                 // Acquisition place is quest...
                 if (States.Instance.CurrentAvatarState.questList.Any(quest =>
