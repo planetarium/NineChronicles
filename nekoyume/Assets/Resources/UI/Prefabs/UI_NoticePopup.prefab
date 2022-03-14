@@ -82,8 +82,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
+  contentImage: {fileID: 7751381609379836820}
   detailButton: {fileID: 8915038191723940672}
   closeButton: {fileID: 9158407257095490729}
+  noticeList:
+  - name: ItemLevelRequirement
+    contentImage: {fileID: 21300000, guid: b589945f0075e4edd97b91455a20dc3a, type: 3}
+    beginTime: 2022/03/01 00:00:00
+    endTime: 2022/03/31 23:59:59
+    pageUrlFormat: https://www.notion.so/planetarium/1bc6de399b3b4ace95fca3a3020b4d79
 --- !u!1 &288844463192487935
 GameObject:
   m_ObjectHideFlags: 0
@@ -799,7 +806,7 @@ GameObject:
   - component: {fileID: 7580693047089196046}
   - component: {fileID: 7751381609379836820}
   m_Layer: 5
-  m_Name: image
+  m_Name: ContentImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
