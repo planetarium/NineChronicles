@@ -21,10 +21,17 @@ namespace Nekoyume.UI
             public string pageUrlFormat;
         }
 
-        [SerializeField] private Image contentImage;
-        [SerializeField] private Button detailButton;
-        [SerializeField] private Button closeButton;
-        [SerializeField] private NoticeInfo[] noticeList =
+        [SerializeField] 
+        private Image contentImage;
+        
+        [SerializeField] 
+        private Button detailButton;
+        
+        [SerializeField] 
+        private Button closeButton;
+        
+        [SerializeField] 
+        private NoticeInfo[] noticeList =
         {
             new NoticeInfo
             {
