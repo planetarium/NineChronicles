@@ -19,6 +19,9 @@ namespace Nekoyume.UI
 {
     public class MaterialTooltip : ItemTooltip
     {
+        [SerializeField]
+        protected GameObject acquisitionGroup;
+
         public override void Show(
             RectTransform target,
             ItemBase item,
@@ -30,6 +33,7 @@ namespace Nekoyume.UI
             int itemCount = 0)
         {
             base.Show(target, item, submitText, interactable, onSubmit, onClose, onBlocked, itemCount);
+            acquisitionGroup.SetActive(false);
             SetAcquisitionPlaceButtons(item);
         }
 
@@ -80,11 +84,9 @@ namespace Nekoyume.UI
                     result.Add(secondRow);
                 }
 
-                Debug.LogError("select in cleared stage");
                 return result;
             }
 
-            Debug.LogError("select in not cleared stage");
             return rows.Where(r =>
             {
                 if (States.Instance.CurrentAvatarState.worldInformation
@@ -124,7 +126,6 @@ namespace Nekoyume.UI
                                     AcquisitionPlaceButton.PlaceType.Stage,
                                     () =>
                                     {
-                                        Debug.LogError("stage");
                                         CloseOtherWidgets();
                                         Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
@@ -181,7 +182,6 @@ namespace Nekoyume.UI
                         acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
                             AcquisitionPlaceButton.PlaceType.Quest, () =>
                             {
-                                Debug.LogError("quest");
                                 Close();
                                 Find<AvatarInfoPopup>().Close();
                                 Find<QuestPopup>().Show();
@@ -191,7 +191,6 @@ namespace Nekoyume.UI
                         acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
                             AcquisitionPlaceButton.PlaceType.Staking, () =>
                             {
-                                Debug.LogError("staking");
                             },
                             L10nManager.Localize("UI_PLACE_STAKING"),
                             itemBase));
@@ -214,7 +213,6 @@ namespace Nekoyume.UI
                     acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
                         AcquisitionPlaceButton.PlaceType.Quest, () =>
                         {
-                            Debug.LogError("quest");
                             Close();
                             Find<AvatarInfoPopup>().Close();
                             Find<QuestPopup>().Show();
@@ -225,10 +223,14 @@ namespace Nekoyume.UI
             }
 
             var placeCount = acquisitionPlaceList.Count;
-            for (int i = 0; i < placeCount && i < 4; i++)
+            if (placeCount > 0)
             {
-                acquisitionPlaceButtons[i].gameObject.SetActive(true);
-                acquisitionPlaceButtons[i].Set(acquisitionPlaceList[i]);
+                acquisitionGroup.SetActive(true);
+                for (int i = 0; i < placeCount && i < 4; i++)
+                {
+                    acquisitionPlaceButtons[i].gameObject.SetActive(true);
+                    acquisitionPlaceButtons[i].Set(acquisitionPlaceList[i]);
+                }
             }
         }
 
