@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Libplanet.Assets;
 using mixpanel;
@@ -8,6 +9,7 @@ using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -15,6 +17,7 @@ using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
 {
@@ -28,6 +31,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private BuyView view;
+
+        private readonly CancellationTokenSource _cancellationTokenSource =
+            new CancellationTokenSource();
 
         private Shop SharedModel { get; set; }
 
@@ -83,14 +89,15 @@ namespace Nekoyume.UI
             Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
-            var task = Task.Run(async () =>
+            var initWeaponTask = Task.Run(async () =>
             {
-                await ReactiveShopState.UpdateBuyDigests();
+                var list = new List<ItemSubType>() { ItemSubType.Weapon, };
+                await ReactiveShopState.SetBuyDigests(list);
                 return true;
             });
 
-            var result = await task;
-            if (result)
+            var initWeaponResult = await initWeaponTask;
+            if (initWeaponResult)
             {
                 base.Show(ignoreShowAnimation);
                 view.Show(ReactiveShopState.BuyDigest, ShowItemTooltip);
@@ -98,6 +105,41 @@ namespace Nekoyume.UI
                 HelpTooltip.HelpMe(100018, true);
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             }
+
+            var initOthersTask = Task.Run(async () =>
+            {
+                var list = new List<ItemSubType>()
+                {
+                    ItemSubType.Armor,
+                    ItemSubType.Belt,
+                    ItemSubType.Necklace,
+                    ItemSubType.Ring,
+                    ItemSubType.Food,
+                    ItemSubType.FullCostume,
+                    ItemSubType.HairCostume,
+                    ItemSubType.EarCostume,
+                    ItemSubType.EyeCostume,
+                    ItemSubType.TailCostume,
+                    ItemSubType.Title,
+                    ItemSubType.Hourglass,
+                    ItemSubType.ApStone,
+                };
+                await ReactiveShopState.SetBuyDigests(list);
+                return true;
+            }, _cancellationTokenSource.Token);
+
+            if (initOthersTask.IsCanceled)
+            {
+                return;
+            }
+
+            var initOthersResult = await initOthersTask;
+            if (!initOthersResult)
+            {
+                return;
+            }
+
+            view.IsDoneLoadItem = true;
         }
 
         public void Open()
@@ -110,6 +152,7 @@ namespace Nekoyume.UI
         {
             Find<ItemCountAndPricePopup>().Close();
             Game.Event.OnRoomEnter.Invoke(true);
+            _cancellationTokenSource.Cancel();
             base.Close(true);
         }
 
@@ -128,7 +171,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var sumPrice = new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0 ,0);
+            var sumPrice =
+                new FungibleAssetValue(States.Instance.GoldBalanceState.Gold.Currency, 0, 0);
             foreach (var model in models)
             {
                 sumPrice += model.OrderDigest.Price;

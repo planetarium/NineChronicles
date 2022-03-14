@@ -2,8 +2,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Assets;
@@ -59,6 +61,9 @@ namespace Nekoyume.State
         private static ConcurrentDictionary<Guid, ItemBase> CachedShopItems { get; } =
             new ConcurrentDictionary<Guid, ItemBase>();
 
+        private static readonly Dictionary<ItemSubType, List<OrderDigest>> _buyDigest =
+            new Dictionary<ItemSubType, List<OrderDigest>>();
+
         public static OrderDigest GetSellDigest(Guid tradableId,
             long requiredBlockIndex,
             FungibleAssetValue price,
@@ -85,16 +90,42 @@ namespace Nekoyume.State
             return true;
         }
 
-        public static async Task UpdateBuyDigests()
+        public static async Task SetBuyDigests(List<ItemSubType> list)
         {
-            var digests = await GetBuyOrderDigests();
-            var result = await UpdateCachedShopItems(digests);
-            if (result)
+            await UniTask.Run(async () =>
             {
-                var agentAddress = States.Instance.AgentState.address;
-                BuyDigest.Value = digests
-                    .Where(digest => !digest.SellerAgentAddress.Equals(agentAddress)).ToList();
+                foreach (var itemSubType in list)
+                {
+                    var digests = await GetBuyOrderDigests(itemSubType);
+                    var result = await UpdateCachedShopItems(digests);
+                    if (result)
+                    {
+                        AddBuyDigest(digests, itemSubType);
+                    }
+                }
+                return true;
+            });
+        }
+
+        private static void AddBuyDigest(IEnumerable<OrderDigest> digests, ItemSubType itemSubType)
+        {
+            var agentAddress = States.Instance.AgentState.address;
+            var d = digests
+                .Where(digest => !digest.SellerAgentAddress.Equals(agentAddress)).ToList();
+            if (!_buyDigest.ContainsKey(itemSubType))
+            {
+                _buyDigest.Add(itemSubType, new List<OrderDigest>());
             }
+
+            _buyDigest[itemSubType] = d;
+
+            var r = new List<OrderDigest>();
+            foreach (var pair in _buyDigest)
+            {
+                r.AddRange(pair.Value);
+            }
+
+            BuyDigest.Value = r;
         }
 
         public static async Task UpdateSellDigests()
@@ -127,6 +158,43 @@ namespace Nekoyume.State
             }
         }
 
+        private static async Task<List<OrderDigest>> GetBuyOrderDigests(ItemSubType itemSubType)
+        {
+            var orderDigests = new Dictionary<Address, List<OrderDigest>>();
+            var addressList = new List<Address>();
+
+            if (ShardedSubTypes.Contains(itemSubType))
+            {
+                addressList.AddRange(ShardedShopState.AddressKeys.Select(addressKey =>
+                    ShardedShopStateV2.DeriveAddress(itemSubType, addressKey)));
+            }
+            else
+            {
+                var address = ShardedShopStateV2.DeriveAddress(itemSubType, string.Empty);
+                addressList.Add(address);
+            }
+
+            var values = await Game.Game.instance.Agent.GetStateBulk(addressList);
+            var shopStates = new List<ShardedShopStateV2>();
+            foreach (var kv in values)
+            {
+                if (kv.Value is Dictionary shopDict)
+                {
+                    shopStates.Add(new ShardedShopStateV2(shopDict));
+                }
+            }
+
+            AddOrderDigest(shopStates, orderDigests);
+
+            var digests = new List<OrderDigest>();
+            foreach (var items in orderDigests.Values)
+            {
+                digests.AddRange(items);
+            }
+
+            return digests;
+        }
+
         private static async Task<List<OrderDigest>> GetBuyOrderDigests()
         {
             var orderDigests = new Dictionary<Address, List<OrderDigest>>();
@@ -146,8 +214,7 @@ namespace Nekoyume.State
                 }
             }
 
-            Dictionary<Address, IValue> values =
-                await Game.Game.instance.Agent.GetStateBulk(addressList);
+            var values = await Game.Game.instance.Agent.GetStateBulk(addressList);
             var shopStates = new List<ShardedShopStateV2>();
             foreach (var kv in values)
             {
