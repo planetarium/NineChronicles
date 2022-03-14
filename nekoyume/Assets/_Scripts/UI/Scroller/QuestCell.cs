@@ -178,6 +178,12 @@ namespace Nekoyume.UI.Scroller
                     rewardView.SetData(countableItem);
                     rewardView.iconImage.rectTransform.sizeDelta *= 0.7f;
                     rewardView.gameObject.SetActive(true);
+                    rewardView.touchHandler.OnClick.Subscribe(_ =>
+                    {
+                        AudioController.PlayClick();
+                        var tooltip = ItemTooltip.Find(item.ItemType);
+                        tooltip.Show(rewardView.RectTransform, item, string.Empty, false, null);
+                    }).AddTo(gameObject);
                 }
                 else
                 {
