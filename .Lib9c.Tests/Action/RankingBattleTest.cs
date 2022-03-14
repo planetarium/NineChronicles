@@ -202,8 +202,6 @@ namespace Lib9c.Tests.Action
                 equipmentIds = new List<Guid>(),
             };
 
-            Assert.Null(action.Result);
-
             var nextState = action.Execute(new ActionContext
             {
                 PreviousStates = previousState,
@@ -214,15 +212,13 @@ namespace Lib9c.Tests.Action
 
             var nextAvatar1State = nextState.GetAvatarStateV2(_avatar1Address);
             var nextWeeklyState = nextState.GetWeeklyArenaState(0);
+            var nextArenaInfo = nextWeeklyState[_avatar1Address];
 
             Assert.Contains(nextAvatar1State.inventory.Materials, i => itemIds.Contains(i.Id));
-            Assert.NotNull(action.Result);
             Assert.NotNull(action.ArenaInfo);
             Assert.NotNull(action.EnemyArenaInfo);
             Assert.NotNull(action.EnemyAvatarState);
-            Assert.Contains(typeof(GetReward), action.Result.Select(e => e.GetType()));
-            Assert.Equal(BattleLog.Result.Win, action.Result.result);
-            Assert.True(nextWeeklyState[_avatar1Address].Score > prevScore);
+            Assert.True(nextArenaInfo.Score > prevScore);
 
             // Check simulation result equal.
             var simulator = new RankingSimulator(
@@ -237,12 +233,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.CostumeStatSheet);
             simulator.Simulate();
 
-            BattleLog log = simulator.Log;
-            BattleLog result = action.Result;
-            Assert.Equal(result.score, log.score);
-            Assert.Equal(result.Count, log.Count);
-            Assert.Equal(result.result, log.result);
-
+            Assert.Equal(nextArenaInfo.Score, simulator.Log.score);
             Assert.Equal(previousAvatar1State.SerializeV2(), nextAvatar1State.SerializeV2());
             Assert.Equal(previousAvatar1State.worldInformation.Serialize(), nextAvatar1State.worldInformation.Serialize());
         }
@@ -531,8 +522,6 @@ namespace Lib9c.Tests.Action
                 costumeIds = new List<Guid>(),
                 equipmentIds = equipments,
             };
-
-            Assert.Null(action.Result);
 
             Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
             {
