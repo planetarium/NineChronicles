@@ -81,7 +81,7 @@ namespace Nekoyume.BlockChain
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.AgentState.avatarAddresses[index];
-            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
             {
                 await UpdateAvatarState(avatarState, index);
             }
@@ -91,7 +91,7 @@ namespace Nekoyume.BlockChain
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
             {
                 await UpdateCurrentAvatarStateAsync(avatarState);
             }
@@ -111,11 +111,18 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGameConfigState(state);
         }
 
-        private static UniTask UpdateAgentStateAsync(AgentState state) =>
-            States.Instance.SetAgentStateAsync(state);
+        private static UniTask UpdateAgentStateAsync(AgentState state)
+        {
+            UpdateCache(state);
+            return States.Instance.SetAgentStateAsync(state);
+        }
 
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
         {
+            if (Game.Game.instance.Agent.Address.Equals(goldBalanceState.address))
+            {
+                Game.Game.instance.CachedBalance[goldBalanceState.address] = goldBalanceState.Gold;
+            }
             States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
@@ -150,7 +157,22 @@ namespace Nekoyume.BlockChain
                 }
             }
 
+            UpdateCache(avatarState);
             await UpdateAvatarState(avatarState, States.Instance.CurrentAvatarKey);
+        }
+
+        internal static void UpdateCombinationSlotState(int slotIndex, CombinationSlotState state)
+        {
+            States.Instance.UpdateCombinationSlotState(slotIndex, state);
+            UpdateCache(state);
+        }
+
+        private static void UpdateCache(Model.State.State state)
+        {
+            if (Game.Game.instance.CachedStates.ContainsKey(state.address))
+            {
+                Game.Game.instance.CachedStates[state.address] = state.Serialize();
+            }
         }
     }
 }
