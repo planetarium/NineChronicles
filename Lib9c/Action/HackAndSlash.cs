@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.Extensions;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -38,13 +39,12 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = avatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
-
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            costumes =  ((List) plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
-            equipments = ((List) plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
-            foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
+            costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
+            equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
+            foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
             playCount = plainValue["playCount"].ToInteger();
@@ -69,22 +69,43 @@ namespace Nekoyume.Action
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
-
-            var sw = new Stopwatch();
-            sw.Start();
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
 
-            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out AvatarState avatarState))
+            var sw = new Stopwatch();
+            sw.Start();
+            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out AvatarState avatarState, out _))
             {
-                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException(
+                    $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
+            Log.Verbose("{AddressesHex}HAS Get AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
-            var worldSheet = states.GetSheet<WorldSheet>();
+            sw.Restart();
+            var sheets = states.GetSheets(
+                containQuestSheet: true,
+                containStageSimulatorSheets: true,
+                sheetTypes: new[]
+                {
+                    typeof(WorldSheet),
+                    typeof(StageSheet),
+                    typeof(QuestRewardSheet),
+                    typeof(QuestItemRewardSheet),
+                    typeof(EquipmentItemRecipeSheet),
+                    typeof(CostumeStatSheet),
+                    typeof(WorldUnlockSheet),
+                    typeof(MaterialItemSheet),
+                    typeof(ItemRequirementSheet),
+                    typeof(EquipmentItemRecipeSheet),
+                    typeof(EquipmentItemSubRecipeSheetV2),
+                    typeof(EquipmentItemOptionSheet),
+                });
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
+
+            var worldSheet = sheets.GetSheet<WorldSheet>();
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), worldId);
@@ -98,12 +119,16 @@ namespace Nekoyume.Action
                     $"{worldRow.StageBegin}-{worldRow.StageEnd}");
             }
 
-            var stageSheet = states.GetSheet<StageSheet>();
-            if (!stageSheet.TryGetValue(stageId, out var stageRow))
+            sw.Restart();
+            if (!sheets.GetSheet<StageSheet>().TryGetValue(stageId, out var stageRow))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(StageSheet), stageId);
             }
 
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Get StageSheet: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
             var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
@@ -136,18 +161,15 @@ namespace Nekoyume.Action
                 throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
             }
 
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Validate World: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
             var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
             var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
             var costumeIds = avatarState.ValidateCostume(costumes);
-
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Validate: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
-
-            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-            sw.Stop();
-            Log.Verbose("{AddressesHex}HAS get CostumeStatSheet: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
+            Log.Verbose("{AddressesHex}HAS Validate Items: {Elapsed}", addressesHex, sw.Elapsed);
 
             if (playCount <= 0)
             {
@@ -169,41 +191,45 @@ namespace Nekoyume.Action
             avatarState.ValidateItemRequirement(
                 costumeIds.Concat(foodIds).ToList(),
                 equipmentList,
-                states.GetSheet<ItemRequirementSheet>(),
-                states.GetSheet<EquipmentItemRecipeSheet>(),
-                states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
-                states.GetSheet<EquipmentItemOptionSheet>(),
+                sheets.GetSheet<ItemRequirementSheet>(),
+                sheets.GetSheet<EquipmentItemRecipeSheet>(),
+                sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                sheets.GetSheet<EquipmentItemOptionSheet>(),
                 addressesHex);
 
             avatarState.actionPoint -= totalCostActionPoint;
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
+
             sw.Restart();
+            var questSheet = sheets.GetQuestSheet();
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS GetQuestSheet: {Elapsed}", addressesHex, sw.Elapsed);
 
             // Update QuestList only when QuestSheet.Count is greater than QuestList.Count
             var questList = avatarState.questList;
-            var questSheet = states.GetQuestSheet();
             if (questList.Count() < questSheet.Count)
             {
+                sw.Restart();
                 questList.UpdateList(
                     questSheet,
-                    states.GetSheet<QuestRewardSheet>(),
-                    states.GetSheet<QuestItemRewardSheet>(),
-                    states.GetSheet<EquipmentItemRecipeSheet>());
+                    sheets.GetSheet<QuestRewardSheet>(),
+                    sheets.GetSheet<QuestItemRewardSheet>(),
+                    sheets.GetSheet<EquipmentItemRecipeSheet>());
+
+                sw.Stop();
+                Log.Verbose("{AddressesHex}HAS Update QuestList: {Elapsed}", addressesHex, sw.Elapsed);
             }
 
-            sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Update QuestList: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
-
             var simulator = new StageSimulator(
                 ctx.Random,
                 avatarState,
                 foods,
                 worldId,
                 stageId,
-                states.GetStageSimulatorSheets(),
-                costumeStatSheet,
+                sheets.GetStageSimulatorSheets(),
+                sheets.GetSheet<CostumeStatSheet>(),
                 StageSimulator.ConstructorVersionV100080,
                 playCount);
 
@@ -213,7 +239,7 @@ namespace Nekoyume.Action
             sw.Restart();
             simulator.Simulate(playCount);
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Simulator.SimulateV2(): {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
             Log.Verbose(
                 "{AddressesHex}Execute HackAndSlash({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
@@ -227,41 +253,38 @@ namespace Nekoyume.Action
                 simulator.Log.waveCount
             );
 
-            sw.Restart();
             if (simulator.Log.IsClear)
             {
-                var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
+                sw.Restart();
                 simulator.Player.worldInformation.ClearStage(
                     worldId,
                     stageId,
                     ctx.BlockIndex,
                     worldSheet,
-                    worldUnlockSheet
+                    sheets.GetSheet<WorldUnlockSheet>()
                 );
+                sw.Stop();
+                Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
             }
 
-            sw.Stop();
-            Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
-
             avatarState.Update(simulator);
-
-            var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
-
+            avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.mailBox.CleanUp();
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
             states = states
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize());
-
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
+            Log.Verbose("{AddressesHex}HAS Set States: {Elapsed}", addressesHex, sw.Elapsed);
 
-            TimeSpan totalElapsed = DateTimeOffset.UtcNow - started;
+            var totalElapsed = DateTimeOffset.UtcNow - started;
             Log.Verbose("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, totalElapsed);
             return states;
         }

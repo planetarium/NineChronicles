@@ -65,6 +65,20 @@ namespace Nekoyume.Action
             return false;
         }
 
+        public static Dictionary<Address, IValue> GetStatesAsDict(this IAccountStateDelta states, params Address[] addresses)
+        {
+            var result = new Dictionary<Address, IValue>();
+            var values = states.GetStates(addresses);
+            for (var i = 0; i < addresses.Length; i++)
+            {
+                var address = addresses[i];
+                var value = values[i];
+                result[address] = value ?? Null.Value;
+            }
+
+            return result;
+        }
+
         public static AgentState GetAgentState(this IAccountStateDelta states, Address address)
         {
             var serializedAgent = states.GetState(address);
@@ -76,7 +90,7 @@ namespace Nekoyume.Action
 
             try
             {
-                return new AgentState((Bencodex.Types.Dictionary) serializedAgent);
+                return new AgentState((Bencodex.Types.Dictionary)serializedAgent);
             }
             catch (InvalidCastException e)
             {
@@ -139,7 +153,7 @@ namespace Nekoyume.Action
 
             try
             {
-                return new AvatarState((Bencodex.Types.Dictionary) serializedAvatar);
+                return new AvatarState((Bencodex.Types.Dictionary)serializedAvatar);
             }
             catch (InvalidCastException e)
             {
@@ -156,30 +170,36 @@ namespace Nekoyume.Action
 
         public static AvatarState GetAvatarStateV2(this IAccountStateDelta states, Address address)
         {
-            if (!(states.GetState(address) is Dictionary serializedAvatar))
+            var addresses = new List<Address>
             {
-                Log.Warning("No avatar state ({AvatarAddress})", address.ToHex());
-                return null;
-            }
-
+                address,
+            };
             string[] keys =
             {
                 LegacyInventoryKey,
                 LegacyWorldInformationKey,
                 LegacyQuestListKey,
             };
-
-            foreach (var key in keys)
+            addresses.AddRange(keys.Select(key => address.Derive(key)));
+            var serializedValues = states.GetStates(addresses);
+            if (!(serializedValues[0] is Dictionary serializedAvatar))
             {
-                var keyAddress = address.Derive(key);
-                var serialized = states.GetState(keyAddress);
-                if (serialized is null)
+                Log.Warning("No avatar state ({AvatarAddress})", address.ToHex());
+                return null;
+            }
+
+            for (var i = 0; i < keys.Length; i++)
+            {
+                var key = keys[i];
+                var serializedValue = serializedValues[i + 1];
+                if (serializedValue is null)
                 {
                     throw new FailedLoadStateException($"failed to load {key}.");
                 }
 
-                serializedAvatar = serializedAvatar.SetItem(key, serialized);
+                serializedAvatar = serializedAvatar.SetItem(key, serializedValue);
             }
+
             try
             {
                 return new AvatarState(serializedAvatar);
@@ -213,7 +233,7 @@ namespace Nekoyume.Action
 
             try
             {
-                var serializedAvatar = (Dictionary) value;
+                var serializedAvatar = (Dictionary)value;
                 if (serializedAvatar["agentAddress"].ToAddress() != agentAddress)
                 {
                     return false;
@@ -236,10 +256,12 @@ namespace Nekoyume.Action
             this IAccountStateDelta states,
             Address agentAddress,
             Address avatarAddress,
-            out AvatarState avatarState
+            out AvatarState avatarState,
+            out bool migrationRequired
         )
         {
             avatarState = null;
+            migrationRequired = false;
             if (states.GetState(avatarAddress) is Dictionary serializedAvatar)
             {
                 try
@@ -257,6 +279,7 @@ namespace Nekoyume.Action
                     // BackWardCompatible.
                     if (e is KeyNotFoundException || e is FailedLoadStateException)
                     {
+                        migrationRequired = true;
                         return states.TryGetAvatarState(agentAddress, avatarAddress, out avatarState);
                     }
 
@@ -281,6 +304,7 @@ namespace Nekoyume.Action
             {
                 return false;
             }
+
             if (!agentState.avatarAddresses.ContainsValue(avatarAddress))
             {
                 throw new AgentStateNotContainsAvatarAddressException(
@@ -305,6 +329,7 @@ namespace Nekoyume.Action
             {
                 return false;
             }
+
             if (!agentState.avatarAddresses.ContainsValue(avatarAddress))
             {
                 throw new AgentStateNotContainsAvatarAddressException(
@@ -320,6 +345,7 @@ namespace Nekoyume.Action
                 // BackWardCompatible.
                 avatarState = states.GetAvatarState(avatarAddress);
             }
+
             return !(avatarState is null);
         }
 
@@ -374,7 +400,7 @@ namespace Nekoyume.Action
 
             try
             {
-                return new CombinationSlotState((Dictionary) value);
+                return new CombinationSlotState((Dictionary)value);
             }
             catch (Exception e)
             {
@@ -394,7 +420,7 @@ namespace Nekoyume.Action
 
             try
             {
-                return new GameConfigState((Dictionary) value);
+                return new GameConfigState((Dictionary)value);
             }
             catch (Exception e)
             {
@@ -414,7 +440,7 @@ namespace Nekoyume.Action
 
             try
             {
-                return new RedeemCodeState((Dictionary) value);
+                return new RedeemCodeState((Dictionary)value);
             }
             catch (Exception e)
             {
@@ -459,8 +485,7 @@ namespace Nekoyume.Action
                 }
 
                 var cacheKey = address.ToHex() + ByteUtil.Hex(hash);
-
-                if (SheetsCache.TryGetValue(cacheKey, out ISheet cached))
+                if (SheetsCache.TryGetValue(cacheKey, out var cached))
                 {
                     return (T)cached;
                 }
@@ -475,6 +500,130 @@ namespace Nekoyume.Action
                 Log.Error(e, "Unexpected error occurred during GetSheet<{TypeName}>()", typeof(T).FullName);
                 throw;
             }
+        }
+
+        public static Dictionary<Type, (Address address, ISheet sheet)> GetSheets(
+            this IAccountStateDelta states,
+            bool containAvatarSheets = false,
+            bool containItemSheet = false,
+            bool containQuestSheet = false,
+            bool containStageSimulatorSheets = false,
+            bool containRankingSimulatorSheets = false,
+            IEnumerable<Type> sheetTypes = null)
+        {
+            var sheetTypeList = sheetTypes?.ToList() ?? new List<Type>();
+            if (containAvatarSheets)
+            {
+                // AvatarSheets need QuestSheet
+                containQuestSheet = true;
+                sheetTypeList.Add(typeof(WorldSheet));
+                sheetTypeList.Add(typeof(QuestRewardSheet));
+                sheetTypeList.Add(typeof(QuestItemRewardSheet));
+                sheetTypeList.Add(typeof(EquipmentItemRecipeSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSubRecipeSheet));
+            }
+
+            if (containItemSheet)
+            {
+                sheetTypeList.Add(typeof(ConsumableItemSheet));
+                sheetTypeList.Add(typeof(CostumeItemSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSheet));
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+            }
+
+            if (containQuestSheet)
+            {
+                sheetTypeList.Add(typeof(WorldQuestSheet));
+                sheetTypeList.Add(typeof(CollectQuestSheet));
+                sheetTypeList.Add(typeof(CombinationQuestSheet));
+                sheetTypeList.Add(typeof(TradeQuestSheet));
+                sheetTypeList.Add(typeof(MonsterQuestSheet));
+                sheetTypeList.Add(typeof(ItemEnhancementQuestSheet));
+                sheetTypeList.Add(typeof(GeneralQuestSheet));
+                sheetTypeList.Add(typeof(ItemGradeQuestSheet));
+                sheetTypeList.Add(typeof(ItemTypeCollectQuestSheet));
+                sheetTypeList.Add(typeof(GoldQuestSheet));
+                sheetTypeList.Add(typeof(CombinationEquipmentQuestSheet));
+            }
+
+            if (containStageSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(BuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(StageSheet));
+                sheetTypeList.Add(typeof(StageWaveSheet));
+                sheetTypeList.Add(typeof(EnemySkillSheet));
+            }
+
+            if (containRankingSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(BuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
+            }
+
+            return states.GetSheets(sheetTypeList.Distinct().ToArray());
+        }
+
+        public static Dictionary<Type, (Address address, ISheet sheet)> GetSheets(
+            this IAccountStateDelta states,
+            params Type[] sheetTypes)
+        {
+            Dictionary<Type, (Address address, ISheet sheet)> result = sheetTypes.ToDictionary(
+                sheetType => sheetType,
+                sheetType => (Addresses.GetSheetAddress(sheetType.Name), (ISheet)null));
+#pragma warning disable LAA1002
+            var addresses = result
+                .Select(tuple => tuple.Value.address)
+                .ToArray();
+#pragma warning restore LAA1002
+            var csvValues = states.GetStates(addresses);
+            for (var i = 0; i < sheetTypes.Length; i++)
+            {
+                var sheetType = sheetTypes[i];
+                var address = addresses[i];
+                var csvValue = csvValues[i];
+                if (csvValue is null)
+                {
+                    throw new FailedLoadStateException(address, sheetType);
+                }
+
+                var csv = csvValue.ToDotnetString();
+                byte[] hash;
+                using (var sha256 = SHA256.Create())
+                {
+                    hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(csv));
+                }
+
+                var cacheKey = address.ToHex() + ByteUtil.Hex(hash);
+                if (SheetsCache.TryGetValue(cacheKey, out var cached))
+                {
+                    result[sheetType] = (address, cached);
+                    continue;
+                }
+
+                var sheetConstructorInfo = sheetType.GetConstructor(Type.EmptyTypes);
+                if (!(sheetConstructorInfo?.Invoke(Array.Empty<object>()) is ISheet sheet))
+                {
+                    throw new FailedLoadSheetException(sheetType);
+                }
+
+                sheet.Set(csv);
+                SheetsCache.AddOrUpdate(cacheKey, sheet);
+                result[sheetType] = (address, sheet);
+            }
+
+            return result;
         }
 
         public static string GetSheetCsv<T>(this IAccountStateDelta states) where T : ISheet, new()
@@ -554,6 +703,7 @@ namespace Nekoyume.Action
             questSheet.Set(GetSheet<CombinationEquipmentQuestSheet>(states));
             return questSheet;
         }
+
         public static AvatarSheets GetAvatarSheets(this IAccountStateDelta states)
         {
             return new AvatarSheets(
@@ -573,7 +723,8 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException(nameof(RankingState0));
             }
-            return new RankingState((Dictionary) value);
+
+            return new RankingState((Dictionary)value);
         }
 
         public static RankingState1 GetRankingState1(this IAccountStateDelta states)
@@ -583,7 +734,8 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException(nameof(RankingState1));
             }
-            return new RankingState1((Dictionary) value);
+
+            return new RankingState1((Dictionary)value);
         }
 
         public static RankingState0 GetRankingState0(this IAccountStateDelta states)
@@ -593,7 +745,8 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException(nameof(RankingState0));
             }
-            return new RankingState0((Dictionary) value);
+
+            return new RankingState0((Dictionary)value);
         }
 
         public static ShopState GetShopState(this IAccountStateDelta states)
@@ -603,7 +756,8 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException(nameof(ShopState));
             }
-            return new ShopState((Dictionary) value);
+
+            return new ShopState((Dictionary)value);
         }
     }
 }

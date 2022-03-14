@@ -93,7 +93,7 @@ namespace Nekoyume.Action
                     $"{addressesHex} Aborted as the price is less than zero: {price}.");
             }
 
-            if (!states.TryGetAvatarStateV2(context.Signer, sellerAvatarAddress, out var avatarState))
+            if (!states.TryGetAvatarStateV2(context.Signer, sellerAvatarAddress, out var avatarState, out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex} Aborted as the avatar state of the signer was failed to load.");
