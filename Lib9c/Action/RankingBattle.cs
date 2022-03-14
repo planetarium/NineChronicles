@@ -28,7 +28,7 @@ namespace Nekoyume.Action
         public Address weeklyArenaAddress;
         public List<Guid> costumeIds;
         public List<Guid> equipmentIds;
-        public BattleLog Result { get; private set; }
+
         public AvatarState EnemyAvatarState;
         public ArenaInfo ArenaInfo;
         public ArenaInfo EnemyArenaInfo;
@@ -73,7 +73,7 @@ namespace Nekoyume.Action
                 throw new InvalidAddressException($"{addressesHex}Aborted as the signer tried to battle for themselves.");
             }
 
-            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out var avatarState))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out var avatarState, out bool migrationRequired))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
@@ -125,13 +125,18 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Get Enemy AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var weeklyArenaState = states.GetWeeklyArenaState(weeklyArenaAddress);
+            if (!states.TryGetState(weeklyArenaAddress, out Dictionary rawWeeklyArenaState))
+            {
+                return states;
+            }
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Get WeeklyArenaState ({Address}): {Elapsed}", addressesHex, weeklyArenaAddress, sw.Elapsed);
             sw.Restart();
 
-            if (weeklyArenaState.Ended)
+            bool arenaEnded = rawWeeklyArenaState["ended"].ToBoolean();
+            Dictionary weeklyArenaMap = (Dictionary) rawWeeklyArenaState["map"];
+            if (arenaEnded)
             {
                 throw new WeeklyArenaStateAlreadyEndedException();
             }
@@ -142,16 +147,19 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Get CostumeStatSheet: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            if (!weeklyArenaState.ContainsKey(avatarAddress))
+            IKey arenaKey = (IKey) avatarAddress.Serialize();
+            if (!weeklyArenaMap.ContainsKey(arenaKey))
             {
                 var characterSheet = states.GetSheet<CharacterSheet>();
-                weeklyArenaState.SetV2(avatarState, characterSheet, costumeStatSheet);
+                var newInfo = new ArenaInfo(avatarState, characterSheet, costumeStatSheet, false);
+                weeklyArenaMap =
+                    (Dictionary) weeklyArenaMap.Add(arenaKey, newInfo.Serialize());
                 sw.Stop();
                 Log.Verbose("{AddressesHex}RankingBattle Set AvatarInfo: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
             }
 
-            var arenaInfo = weeklyArenaState[avatarAddress];
+            var arenaInfo = new ArenaInfo((Dictionary) weeklyArenaMap[arenaKey]);
 
             if (arenaInfo.DailyChallengeCount <= 0)
             {
@@ -164,25 +172,26 @@ namespace Nekoyume.Action
                 arenaInfo.Activate();
             }
 
-            if (!weeklyArenaState.ContainsKey(enemyAddress))
+            IKey enemyKey = (IKey) enemyAddress.Serialize();
+            if (!weeklyArenaMap.ContainsKey(enemyKey))
             {
                 throw new WeeklyArenaStateNotContainsAvatarAddressException(addressesHex, enemyAddress);
             }
 
-            var enemyArenaInfo = weeklyArenaState[enemyAddress];
+            var enemyArenaInfo = new ArenaInfo((Dictionary) weeklyArenaMap[enemyKey]);
             if (!enemyArenaInfo.Active)
             {
                 enemyArenaInfo.Activate();
             }
 
-            Log.Verbose("{WeeklyArenaStateAddress}", weeklyArenaState.address.ToHex());
+            Log.Verbose("{WeeklyArenaStateAddress}", weeklyArenaAddress.ToHex());
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Validate ArenaInfo: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            ArenaInfo = new ArenaInfo((Dictionary)weeklyArenaState[avatarAddress].Serialize());
-            EnemyArenaInfo = new ArenaInfo((Dictionary)weeklyArenaState[enemyAddress].Serialize());
+            ArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[arenaKey]);
+            EnemyArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[enemyKey]);
             var simulator = new RankingSimulator(
                 ctx.Random,
                 avatarState,
@@ -214,8 +223,6 @@ namespace Nekoyume.Action
             );
             sw.Restart();
 
-            Result = simulator.Log;
-
             foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
             {
                 Log.Verbose(
@@ -226,7 +233,33 @@ namespace Nekoyume.Action
                 avatarState.inventory.AddItem(itemBase);
             }
 
-            states = states.SetState(weeklyArenaAddress, weeklyArenaState.Serialize());
+            var arenaMapDict = new Dictionary<IKey, IValue>();
+            foreach (var kv in weeklyArenaMap)
+            {
+                var key = kv.Key;
+                var value = kv.Value;
+                if (key.Equals(arenaKey))
+                {
+                    value = arenaInfo.Serialize();
+                }
+
+                if (key.Equals(enemyKey))
+                {
+                    value = enemyArenaInfo.Serialize();
+                }
+
+                arenaMapDict[key] = value;
+            }
+
+            var weeklyArenaDict = new Dictionary<IKey, IValue>();
+            foreach (var kv in rawWeeklyArenaState)
+            {
+                weeklyArenaDict[kv.Key] = kv.Key.Equals((Text)"map")
+                    ? new Dictionary(arenaMapDict)
+                    : kv.Value;
+            }
+
+            states = states.SetState(weeklyArenaAddress, new Dictionary(weeklyArenaDict));
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Serialize WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
@@ -234,9 +267,14 @@ namespace Nekoyume.Action
 
             states = states
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2());
+                .SetState(questListAddress, avatarState.questList.Serialize());
+
+            if (migrationRequired)
+            {
+                states = states
+                    .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                    .SetState(avatarAddress, avatarState.SerializeV2());
+            }
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Serialize AvatarState: {Elapsed}", addressesHex, sw.Elapsed);

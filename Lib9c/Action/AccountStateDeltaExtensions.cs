@@ -241,10 +241,12 @@ namespace Nekoyume.Action
             this IAccountStateDelta states,
             Address agentAddress,
             Address avatarAddress,
-            out AvatarState avatarState
+            out AvatarState avatarState,
+            out bool migrationRequired
         )
         {
             avatarState = null;
+            migrationRequired = false;
             if (states.GetState(avatarAddress) is Dictionary serializedAvatar)
             {
                 try
@@ -262,6 +264,7 @@ namespace Nekoyume.Action
                     // BackWardCompatible.
                     if (e is KeyNotFoundException || e is FailedLoadStateException)
                     {
+                        migrationRequired = true;
                         return states.TryGetAvatarState(agentAddress, avatarAddress, out avatarState);
                     }
 
