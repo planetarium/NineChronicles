@@ -43,6 +43,9 @@ namespace Nekoyume
         private Image itemImage;
 
         [SerializeField]
+        private Image spineItemImage;
+
+        [SerializeField]
         private Image enhancementImage;
 
         [SerializeField]
@@ -107,6 +110,7 @@ namespace Nekoyume
         public UIHsvModifier GradeHsv => gradeHsv;
         public GameObject EnoughObject => enoughObject;
         public Image ItemImage => itemImage;
+        public Image SpineItemImage => spineItemImage;
         public Image EnhancementImage => enhancementImage;
         public TextMeshProUGUI EnhancementText => enhancementText;
         public TextMeshProUGUI CountText => countText;
