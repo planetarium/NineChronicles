@@ -172,8 +172,13 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private static bool CanGoToAcquisitionPlace(PlaceType type)
+        private bool CanGoToAcquisitionPlace(PlaceType type)
         {
+            if (disableObject.activeSelf)
+            {
+                return false;
+            }
+
             return type switch
             {
                 PlaceType.Stage => !Game.Game.instance.Stage.IsInStage,

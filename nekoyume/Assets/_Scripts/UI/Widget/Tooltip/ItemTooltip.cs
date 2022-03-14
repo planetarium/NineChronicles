@@ -84,12 +84,13 @@ namespace Nekoyume.UI
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
-            System.Action onBlocked = null)
+            System.Action onBlocked = null,
+            int itemCount = 0)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             acquisitionPlaceButtons.ForEach(button => button.gameObject.SetActive(false));
-            detail.Set(item, 0, !Util.IsUsableItem(item));
+            detail.Set(item, itemCount, !Util.IsUsableItem(item));
 
             submitButton.gameObject.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;

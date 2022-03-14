@@ -26,9 +26,10 @@ namespace Nekoyume.UI
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
-            System.Action onBlocked = null)
+            System.Action onBlocked = null,
+            int itemCount = 0)
         {
-            base.Show(target, item, submitText, interactable, onSubmit, onClose, onBlocked);
+            base.Show(target, item, submitText, interactable, onSubmit, onClose, onBlocked, itemCount);
             SetAcquisitionPlaceButtons(item);
         }
 
@@ -40,7 +41,7 @@ namespace Nekoyume.UI
             System.Action onClose = null,
             System.Action onBlocked = null)
         {
-            Show(target, item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked);
+            Show(target, item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked, item.Count.Value);
         }
 
         private static List<StageSheet.Row> GetStageByOrder(
@@ -70,9 +71,10 @@ namespace Nekoyume.UI
                 }
 
                 var secondRow = rowList
-                    .OrderByDescending(sheet => sheet.Key)
-                    .ThenByDescending(r =>
-                        r.Rewards.Find(reward => reward.ItemId == id).Ratio).FirstOrDefault();
+                    .OrderByDescending(r =>
+                        r.Rewards.Find(reward => reward.ItemId == id).Ratio)
+                    .ThenByDescending(sheet => sheet.Key)
+                    .FirstOrDefault();
                 if (secondRow != null)
                 {
                     result.Add(secondRow);
@@ -113,19 +115,6 @@ namespace Nekoyume.UI
                     // Acquisition place is stage...
                     if (stages.Any())
                     {
-                        var worldSheet = Game.Game.instance.TableSheets.WorldSheet;
-                        if (worldSheet.TryGetByStageId(stages[0].Id, out var row))
-                        {
-                            Debug.LogError(
-                                $"stageRow.Id : {stages[0].Id}, world name : {L10nManager.LocalizeWorldName(row.Id)}");
-                        }
-
-                        if (worldSheet.TryGetByStageId(stages[1].Id, out row))
-                        {
-                            Debug.LogError(
-                                $"stageRow.Id : {stages[1].Id}, world name : {L10nManager.LocalizeWorldName(row.Id)}");
-                        }
-
                         acquisitionPlaceList.AddRange(stages.Select(stage =>
                         {
                             if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stage.Id,
@@ -138,10 +127,12 @@ namespace Nekoyume.UI
                                         Debug.LogError("stage");
                                         CloseOtherWidgets();
                                         Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+
                                         var worldMap = Find<WorldMap>();
                                         worldMap.Show(States.Instance.CurrentAvatarState.worldInformation);
                                         worldMap.Show(row.Id, stage.Id, false);
                                         worldMap.SharedViewModel.WorldInformation.TryGetWorld(row.Id, out var worldModel);
+
                                         Find<BattlePreparation>().Show(StageType.HackAndSlash,
                                             worldMap.SharedViewModel.SelectedWorldId.Value,
                                             worldMap.SharedViewModel.SelectedStageId.Value,
