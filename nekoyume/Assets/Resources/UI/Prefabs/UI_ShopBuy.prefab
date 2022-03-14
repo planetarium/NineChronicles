@@ -13335,7 +13335,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -24409,6 +24409,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5104233459717076493, guid: f09a8d5c683794b80a4bbb012183ffaa,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_LOADING_SHOPLIST
       objectReference: {fileID: 0}
     - target: {fileID: 7434739862903142643, guid: f09a8d5c683794b80a4bbb012183ffaa,
         type: 3}
