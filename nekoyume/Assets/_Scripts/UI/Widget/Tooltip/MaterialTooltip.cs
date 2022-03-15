@@ -149,7 +149,7 @@ namespace Nekoyume.UI
                             if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stage.Id,
                                     out var row))
                             {
-                                return MakeAcquisitionPlaceModel(
+                                return MakeAcquisitionPlaceModelByType(
                                     AcquisitionPlaceButton.PlaceType.Stage, itemBase, row.Id,
                                     stage);
                             }
@@ -161,7 +161,7 @@ namespace Nekoyume.UI
                     break;
                 case ItemSubType.FoodMaterial:
                     acquisitionPlaceList.Add(
-                        MakeAcquisitionPlaceModel(AcquisitionPlaceButton.PlaceType.Arena,
+                        MakeAcquisitionPlaceModelByType(AcquisitionPlaceButton.PlaceType.Arena,
                             itemBase));
 
                     break;
@@ -170,7 +170,7 @@ namespace Nekoyume.UI
                     var isTradable = itemBase is ITradableItem;
                     if (isTradable)
                     {
-                        acquisitionPlaceList.Add(MakeAcquisitionPlaceModel(AcquisitionPlaceButton.PlaceType.Shop, itemBase));
+                        acquisitionPlaceList.Add(MakeAcquisitionPlaceModelByType(AcquisitionPlaceButton.PlaceType.Shop, itemBase));
                     }
                     else
                     {
@@ -201,7 +201,7 @@ namespace Nekoyume.UI
                 if (Game.Game.instance.TableSheets.WeeklyArenaRewardSheet.Any(pair =>
                         pair.Value.Reward.ItemId == itemBase.Id))
                 {
-                    acquisitionPlaceList.Add(MakeAcquisitionPlaceModel(AcquisitionPlaceButton.PlaceType.Arena, itemBase));
+                    acquisitionPlaceList.Add(MakeAcquisitionPlaceModelByType(AcquisitionPlaceButton.PlaceType.Arena, itemBase));
                 }
             }
 
@@ -215,7 +215,7 @@ namespace Nekoyume.UI
                         !quest.Complete && quest.Reward.ItemMap.ContainsKey(itemBase.Id)))
                 {
                     acquisitionPlaceList.Add(
-                        MakeAcquisitionPlaceModel(AcquisitionPlaceButton.PlaceType.Quest,
+                        MakeAcquisitionPlaceModelByType(AcquisitionPlaceButton.PlaceType.Quest,
                             itemBase));
                 }
             }
@@ -255,7 +255,7 @@ namespace Nekoyume.UI
             Close(true);
         }
 
-        private AcquisitionPlaceButton.Model MakeAcquisitionPlaceModel(
+        private AcquisitionPlaceButton.Model MakeAcquisitionPlaceModelByType(
             AcquisitionPlaceButton.PlaceType type,
             ItemBase itemBase,
             int worldId = 0,
