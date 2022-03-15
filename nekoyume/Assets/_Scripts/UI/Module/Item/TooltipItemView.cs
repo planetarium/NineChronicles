@@ -79,8 +79,8 @@ namespace Nekoyume.UI.Module
                         Destroy(_costumeSpineObject);
                     }
 
-                    _costumeSpineObject = Instantiate(tooltipData.Prefab);
-                    _costumeSpineObject.transform.position = tooltipData.Position;
+                    _costumeSpineObject = Instantiate(tooltipData.Prefab, baseItemView.SpineItemImage.transform);
+                    _costumeSpineObject.transform.localPosition = tooltipData.Position;
                     _costumeSpineObject.transform.localScale = tooltipData.Scale;
                     _costumeSpineObject.transform.rotation = Quaternion.Euler(tooltipData.Rotation);
                     var particle = gradeEffect.main;
