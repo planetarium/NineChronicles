@@ -7,12 +7,10 @@ using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Blocks;
 using Nekoyume.Game.Controller;
-using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 

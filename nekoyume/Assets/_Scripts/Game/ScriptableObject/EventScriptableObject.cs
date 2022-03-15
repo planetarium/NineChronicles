@@ -10,6 +10,7 @@ namespace Nekoyume
     {
         public EventInfo DefaultEvent;
         public List<EventInfo> Events;
+        public List<ArenaSeasonInfo> ArenaSeasons;
     }
 
     [Serializable]
@@ -29,5 +30,17 @@ namespace Nekoyume
         public Vector2 StageIconOffset;
         [Tooltip("Main lobby bgm. Reference only name of audio clip. Audio is managed by AudioController")]
         public AudioClip mainBGM;
+    }
+
+    [Serializable]
+    public class ArenaSeasonInfo
+    {
+        public int Index;
+        public long StartBlockIndex;
+        public long EndBlockIndex;
+        public string SeasonUrl;
+        public Texture SeasonBanner;
+        public Sprite RewardIcon;
+        public int RewradNcg;
     }
 }

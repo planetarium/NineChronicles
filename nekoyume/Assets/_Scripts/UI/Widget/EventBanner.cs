@@ -1,5 +1,4 @@
-using Nekoyume.State;
-using UniRx;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,69 +7,43 @@ namespace Nekoyume.UI.Module
     public class EventBanner : Widget
     {
         [SerializeField]
-        private Button ArenaEventButton;
-
-        // [SerializeField]
-        // private Button bigCatYearEventButton;
+        private RectTransform content = null;
 
         [SerializeField]
-        private Button playToEarnGoldEventButton;
+        private RectTransform indexContent = null;
 
         [SerializeField]
-        private Button playToEarnInviteEventButton;
+        private GameObject Banner;
 
-        private const string ArenaEventPageURLFormat = "https://ninechronicles.medium.com/nine-chronicles-arena-season-2-224k-ncg-reward-pool-begins-march-4th-88c947d507d6";
+        [SerializeField]
+        private GameObject IndexOn;
 
-        private const string bigCatYearEventPageURLFormat = "https://onboarding.nine-chronicles.com/";
+        [SerializeField]
+        private GameObject IndexOff;
 
-        private const string GoldEventPageURLFormat = "https://onboarding.nine-chronicles.com/earn?nc_address={0}";
-
-        private const string InvitePageURLFormat = "https://onboarding.nine-chronicles.com/invite?nc_address={0}";
+        [SerializeField]
+        private PageView pageView;
 
         private void Awake()
         {
-            ArenaEventButton.onClick.AsObservable()
-                .Subscribe(_ => GoToArenaEventPage())
-                .AddTo(gameObject);
+            if (EventManager.TryGetArenaSeasonInfo(Game.Game.instance.Agent.BlockIndex, out var info))
+            {
+                var banner = Instantiate(Banner, content);
+                banner.GetComponent<EventBannerItem>().Set(info.SeasonBanner, info.SeasonUrl);
+            }
 
-            // bigCatYearEventButton.onClick.AsObservable()
-            //     .Subscribe(_ => GoTobigCatYearEventPage())
-            //     .AddTo(gameObject);
+            for (var i = 0; i < content.childCount; i++)
+            {
+                Instantiate(i == 0 ? IndexOn : IndexOff, indexContent);
+            }
 
-            playToEarnGoldEventButton.onClick.AsObservable()
-                .Subscribe(_ => GoToGoldEventPage())
-                .AddTo(gameObject);
+            var indexImages = new List<Image>();
+            for (var i = 0; i < indexContent.childCount; i++)
+            {
+                indexImages.Add(indexContent.GetChild(i).GetComponent<Image>());
+            }
 
-            playToEarnInviteEventButton.onClick.AsObservable()
-                .Subscribe(_ => GoToInviteEventPage())
-                .AddTo(gameObject);
-        }
-
-        private void GoToArenaEventPage()
-        {
-            var address = States.Instance.AgentState.address;
-            var url = string.Format(ArenaEventPageURLFormat, address);
-            Application.OpenURL(url);
-        }
-
-        private void GoTobigCatYearEventPage()
-        {
-            Application.OpenURL(bigCatYearEventPageURLFormat);
-        }
-
-
-        private void GoToGoldEventPage()
-        {
-            var address = States.Instance.AgentState.address;
-            var url = string.Format(GoldEventPageURLFormat, address);
-            Application.OpenURL(url);
-        }
-
-        private void GoToInviteEventPage()
-        {
-            var address = States.Instance.AgentState.address;
-            var url = string.Format(InvitePageURLFormat, address);
-            Application.OpenURL(url);
+            pageView.Set(content, indexImages);
         }
     }
 }
