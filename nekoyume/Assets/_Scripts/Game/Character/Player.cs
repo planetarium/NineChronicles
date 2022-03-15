@@ -576,18 +576,7 @@ namespace Nekoyume.Game.Character
         private bool TryGetCostumeRow(int costumeId, out CostumeItemSheet.Row row)
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
-            if (!sheet.TryGetValue(costumeId, out row, false))
-            {
-                return false;
-            }
-
-            var costume = Costumes.FirstOrDefault(costume => costume.Id == costumeId);
-            if (costume != null)
-            {
-                costume.Unequip();
-            }
-
-            return true;
+            return sheet.TryGetValue(costumeId, out row, false);
         }
 
         #endregion

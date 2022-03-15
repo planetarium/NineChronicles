@@ -55,6 +55,7 @@ namespace Nekoyume.UI
 
         [SerializeField] private List<OptionView> optionViews = null;
         [SerializeField] private List<OptionView> skillViews = null;
+        [SerializeField] private TextMeshProUGUI levelText = null;
 
         [SerializeField] private RequiredItemRecipeView requiredItemRecipeView = null;
 
@@ -230,6 +231,25 @@ namespace Nekoyume.UI
                         .Aggregate((a, b) => a * b);
 
                     SetOptions(options);
+
+                    var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+                    var resultItemRow = equipmentRow.GetResultEquipmentItemRow();
+
+                    if (!sheet.TryGetValue(resultItemRow.Id, out var row))
+                    {
+                        levelText.enabled = false;
+                    }
+                    else
+                    {
+                        levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", row.Level);
+                        var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= row.Level;
+                        levelText.color = hasEnoughLevel ?
+                            Palette.GetColor(EnumType.ColorType.ButtonEnabled) :
+                            Palette.GetColor(EnumType.ColorType.TextDenial);
+
+                        levelText.enabled = true;
+                    }
+
                     requiredItemRecipeView.SetData(
                         baseMaterialInfo,
                         subRecipe.Materials,
@@ -255,6 +275,24 @@ namespace Nekoyume.UI
                 costAP = consumableRow.RequiredActionPoint;
                 recipeId = consumableRow.Id;
 
+                var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+                var resultItemRow = consumableRow.GetResultConsumableItemRow();
+
+                if (!sheet.TryGetValue(resultItemRow.Id, out var row))
+                {
+                    levelText.enabled = false;
+                }
+                else
+                {
+                    levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", row.Level);
+                    var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= row.Level;
+                    levelText.color = hasEnoughLevel ?
+                        Palette.GetColor(EnumType.ColorType.ButtonEnabled) :
+                        Palette.GetColor(EnumType.ColorType.TextDenial);
+
+                    levelText.enabled = true;
+                }
+
                 var materials = consumableRow.Materials
                     .Select(x => CreateMaterial(x.Id, x.Count));
                 materialList.AddRange(materials);
@@ -262,7 +300,7 @@ namespace Nekoyume.UI
 
             blockIndexText.text = blockIndex.ToString();
             greatSuccessRateText.text = greatSuccessRate == 0m ?
-                "-" : greatSuccessRate.ToString("P1");
+                "-" : greatSuccessRate.ToString("0.0%");
 
             var recipeInfo = new RecipeInfo
             {
@@ -307,7 +345,7 @@ namespace Nekoyume.UI
                     var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
 
                     optionView.OptionText.text = option.OptionRowToString();
-                    optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("P0");
+                    optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
                 }
@@ -317,7 +355,7 @@ namespace Nekoyume.UI
                     var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
                         skillRow.GetLocalizedName() : string.Empty;
                     skillView.OptionText.text = description;
-                    skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("P0");
+                    skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
                 }

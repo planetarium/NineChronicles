@@ -10,6 +10,7 @@ using Nekoyume.Model.BattleStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -362,7 +363,7 @@ namespace Nekoyume.UI
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
             var stageInfo = Find<UI.StageInformation>();
-            stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
+            stageInfo.Show(SharedViewModel, worldRow, StageType.Mimisbrunnr);
             var status = Find<Status>();
             status.Close(true);
             Find<EventBanner>().Close(true);
@@ -423,6 +424,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            Find<NoticePopup>().Close(true);
             StopSpeeches();
             guidedQuest.Hide(true);
             Find<Status>().Close(true);

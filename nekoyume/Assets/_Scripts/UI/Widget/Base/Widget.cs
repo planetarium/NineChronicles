@@ -90,6 +90,12 @@ namespace Nekoyume.UI
                     selectable.interactable = stateType == AnimationStateType.Shown;
                 }
             }).AddTo(gameObject);
+
+            var blur = transform.GetComponentInChildren<Blur>();
+            if (blur)
+            {
+                blur.OnClick = () => Close();
+            }
         }
 
         protected virtual void Update()

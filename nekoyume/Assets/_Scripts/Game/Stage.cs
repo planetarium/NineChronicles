@@ -1214,7 +1214,7 @@ namespace Nekoyume.Game
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuMimisbrunnr)
             {
-                menuNames.Add(nameof(MimisbrunnrPreparation));
+                menuNames.Add("Mimisbrunnr");
             }
 
             var celebratesPopup = Widget.Find<CelebratesPopup>();

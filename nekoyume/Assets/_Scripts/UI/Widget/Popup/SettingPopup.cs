@@ -17,16 +17,22 @@ namespace Nekoyume.UI
 {
     public class SettingPopup : PopupWidget
     {
+        public TextMeshProUGUI addressTitleText;
         public TMP_InputField addressContentInputField;
         public Button addressCopyButton;
+        public TextMeshProUGUI privateKeyTitleText;
         public TMP_InputField privateKeyContentInputField;
         public Button privateKeyCopyButton;
         public Button closeButton;
+        public TextMeshProUGUI warningText;
         public TextMeshProUGUI volumeMasterText;
         public Slider volumeMasterSlider;
         public Toggle volumeMasterToggle;
         public List<TextMeshProUGUI> muteTexts;
-        public Blur blur;
+        public TextMeshProUGUI resetKeyStoreText;
+        public TextMeshProUGUI resetStoreText;
+        public TextMeshProUGUI confirmText;
+        public TextMeshProUGUI redeemCodeText;
         public RedeemCode redeemCode;
         public Dropdown resolutionDropdown;
         public Toggle windowedToggle;
@@ -39,8 +45,17 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
+            addressTitleText.text = L10nManager.Localize("UI_YOUR_ADDRESS");
+            privateKeyTitleText.text = L10nManager.Localize("UI_YOUR_PRIVATE_KEY");
+            warningText.text = L10nManager.Localize("UI_ACCOUNT_WARNING");
+
             volumeMasterSlider.onValueChanged.AddListener(SetVolumeMaster);
             volumeMasterToggle.onValueChanged.AddListener(SetVolumeMasterMute);
+
+            resetStoreText.text = L10nManager.Localize("UI_CONFIRM_RESET_STORE_TITLE");
+            resetKeyStoreText.text = L10nManager.Localize("UI_CONFIRM_RESET_KEYSTORE_TITLE");
+            confirmText.text = L10nManager.Localize("UI_CLOSE");
+            redeemCodeText.text = L10nManager.Localize("UI_REDEEM_CODE");
 
             addressCopyButton.OnClickAsObservable().Subscribe(_ => CopyAddressToClipboard())
                 .AddTo(addressCopyButton);
@@ -64,17 +79,8 @@ namespace Nekoyume.UI
                         NotificationCell.NotificationType.Notification))
                 .AddTo(privateKeyCopyButton);
 
-            redeemCode.OnRequested.AddListener(() =>
-            {
-                Close(true);
-            });
-
-            closeButton.onClick.AddListener(() =>
-            {
-                ApplyCurrentSettings();
-                AudioController.PlayClick();
-            });
-            blur.button.onClick.AddListener(ApplyCurrentSettings);
+            redeemCode.OnRequested.AddListener(() => Close(true));
+            closeButton.onClick.AddListener(() => Close());
             redeemCode.Close();
 
             InitResolution();
@@ -83,15 +89,22 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             SubmitWidget = () => Close(true);
-            CloseWidget = ApplyCurrentSettings;
+            CloseWidget = () => Close(true);
             base.OnEnable();
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            Settings.Instance.ApplyCurrentSettings();
+            AudioController.PlayClick();
+        }
 
         private void InitResolution()
         {
             var settings = Nekoyume.Settings.Instance;
-            var options = settings.Resolutions.Select(resolution => $"{resolution.Width} x {resolution.Height}").ToList();
+            var options = settings.Resolutions
+                .Select(resolution => $"{resolution.Width} x {resolution.Height}").ToList();
             resolutionDropdown.onValueChanged.AddListener(SetResolution);
             resolutionDropdown.AddOptions(options);
             resolutionDropdown.value = settings.resolutionIndex;
@@ -99,6 +112,7 @@ namespace Nekoyume.UI
 
             windowedToggle.onValueChanged.AddListener(SetWindowed);
         }
+
         #endregion
 
         public override void Show(bool ignoreStartAnimation = false)
@@ -118,7 +132,8 @@ namespace Nekoyume.UI
                 else
                 {
                     addressContentInputField.text = Game.Game.instance.Agent.Address.ToString();
-                    privateKeyContentInputField.text = ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
+                    privateKeyContentInputField.text =
+                        ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
                 }
             }
 
@@ -136,18 +151,7 @@ namespace Nekoyume.UI
             windowedToggle.isOn = settings.isWindowed;
 
             base.Show(true);
-
-            if (blur)
-            {
-                blur.Show();
-            }
             HelpTooltip.HelpMe(100014, true);
-        }
-
-        public void ApplyCurrentSettings()
-        {
-            Nekoyume.Settings.Instance.ApplyCurrentSettings();
-            Close(true);
         }
 
         public void RevertSettings()
@@ -162,11 +166,6 @@ namespace Nekoyume.UI
             var settings = Nekoyume.Settings.Instance;
             SetVolumeMaster(settings.volumeMaster);
             SetVolumeMasterMute(settings.isVolumeMasterMuted);
-        }
-
-        public void UpdateResolution()
-        {
-
         }
 
         public void UpdatePrivateKey(string privateKeyHex)
@@ -209,8 +208,9 @@ namespace Nekoyume.UI
 
         private void UpdateVolumeMasterText()
         {
-            var volumeString = Mathf.Approximately(AudioListener.volume, 0.0f) ?
-                L10nManager.Localize("UI_MUTE_AUDIO") : $"{Mathf.CeilToInt(AudioListener.volume * 100.0f)}%";
+            var volumeString = Mathf.Approximately(AudioListener.volume, 0.0f)
+                ? L10nManager.Localize("UI_MUTE_AUDIO")
+                : $"{Mathf.CeilToInt(AudioListener.volume * 100.0f)}%";
             volumeMasterText.text = $"{L10nManager.Localize("UI_MASTER_VOLUME")} : {volumeString}";
         }
 
@@ -253,16 +253,6 @@ namespace Nekoyume.UI
         public void RedeemCode()
         {
             redeemCode.Show();
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            if (blur && blur.isActiveAndEnabled)
-            {
-                blur.Close();
-            }
-
-            base.Close(ignoreCloseAnimation);
         }
     }
 }

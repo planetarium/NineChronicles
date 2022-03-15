@@ -247,9 +247,9 @@ namespace Nekoyume.UI
                 }
 
                 var (_, prePower, preChance) = itemOptionInfoPre.SkillOptions[i];
-                var (skillName, power, chance) = skillOptions[i];
+                var (skillRow, power, chance) = skillOptions[i];
                 optionView.UpdateAsTotalAndPlusSkill(
-                    skillName,
+                    skillRow.GetLocalizedName(),
                     power,
                     chance,
                     power - prePower,

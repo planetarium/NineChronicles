@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Assets;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
@@ -385,6 +386,41 @@ namespace Nekoyume.State
         #endregion
 
         #region Avatar
+
+        public static void SetItemEquip(
+            Address avatarAddress,
+            ItemBase item,
+            bool equip,
+            bool resetState = true)
+        {
+            if (!(item is INonFungibleItem nonFungibleItem))
+            {
+                return;
+            }
+
+            var modifier = new AvatarInventoryItemEquippedModifier(nonFungibleItem.NonFungibleId, equip);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
+
+            if (!TryGetLoadedAvatarState(
+                    avatarAddress,
+                    out var outAvatarState,
+                    out _,
+                    out var isCurrentAvatarState)
+               )
+            {
+                return;
+            }
+
+            outAvatarState = modifier.Modify(outAvatarState);
+
+            if (!resetState ||
+                !isCurrentAvatarState)
+            {
+                return;
+            }
+
+            ReactiveAvatarState.UpdateInventory(outAvatarState.inventory);
+        }
 
         /// <summary>
         /// Change the equipment's mounting status.

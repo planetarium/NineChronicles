@@ -35,7 +35,7 @@ namespace Nekoyume.UI
             upgradeButton.onClick.AddListener(() =>
             {
                 Close(true);
-                Find<UpgradeEquipment>().Show();
+                Find<Enhancement>().Show();
                 AudioController.PlayClick();
             });
 

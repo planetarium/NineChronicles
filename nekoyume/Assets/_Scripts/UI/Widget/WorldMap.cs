@@ -6,6 +6,7 @@ using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using mixpanel;
+using Nekoyume.EnumType;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -180,7 +181,7 @@ namespace Nekoyume.UI
             SelectedStageId = stageId;
 
             var stageInfo = Find<StageInformation>();
-            stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Quest);
+            stageInfo.Show(SharedViewModel, worldRow, StageType.HackAndSlash);
         }
 
         public void UpdateNotificationInfo()

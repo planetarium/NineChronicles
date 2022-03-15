@@ -143,7 +143,7 @@ namespace Nekoyume.Game
             else
             {
                 yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
-                
+
                 languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
             }
 #else
@@ -294,7 +294,7 @@ namespace Nekoyume.Game
             if (Widget.Find<LoadingScreen>().IsActive())
             {
                 Widget.Find<LoadingScreen>().Close();
-                widget = Widget.Find<QuestPreparation>();
+                widget = Widget.Find<BattlePreparation>();
                 if (widget.IsActive())
                 {
                     widget.Close(true);
@@ -323,11 +323,6 @@ namespace Nekoyume.Game
             else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
             {
                 Widget.Find<ArenaBattleLoadingScreen>().Close();
-                needToBackToMain = true;
-            }
-            else if (Widget.Find<MimisbrunnrPreparation>().IsActive())
-            {
-                Widget.Find<MimisbrunnrPreparation>().Close(true);
                 needToBackToMain = true;
             }
 
@@ -360,7 +355,7 @@ namespace Nekoyume.Game
             if (Widget.Find<LoadingScreen>().IsActive())
             {
                 Widget.Find<LoadingScreen>().Close();
-                widget = Widget.Find<QuestPreparation>();
+                widget = Widget.Find<BattlePreparation>();
                 if (widget.IsActive())
                 {
                     widget.Close(true);
@@ -389,11 +384,6 @@ namespace Nekoyume.Game
             else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
             {
                 Widget.Find<ArenaBattleLoadingScreen>().Close();
-                needToBackToMain = true;
-            }
-            else if (Widget.Find<MimisbrunnrPreparation>().IsActive())
-            {
-                Widget.Find<MimisbrunnrPreparation>().Close(true);
                 needToBackToMain = true;
             }
 
