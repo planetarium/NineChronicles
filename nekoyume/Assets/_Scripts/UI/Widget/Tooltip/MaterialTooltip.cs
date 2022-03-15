@@ -33,7 +33,14 @@ namespace Nekoyume.UI
             System.Action onBlocked = null,
             int itemCount = 0)
         {
-            base.Show(target, item, submitText, interactable, onSubmit, onClose, onBlocked, itemCount);
+            base.Show(target,
+                item,
+                submitText,
+                interactable,
+                onSubmit,
+                onClose,
+                onBlocked,
+                itemCount);
             acquisitionGroup.SetActive(false);
             SetAcquisitionPlaceButtons(item);
         }
@@ -65,7 +72,8 @@ namespace Nekoyume.UI
             System.Action onClose = null,
             System.Action onBlocked = null)
         {
-            Show(target, item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked, item.Count.Value);
+            Show(target, item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked,
+                item.Count.Value);
         }
 
         private static List<StageSheet.Row> GetStageByOrder(
@@ -132,7 +140,6 @@ namespace Nekoyume.UI
                     var stageRowList = Game.Game.instance.TableSheets.StageSheet
                         .GetStagesContainsReward(itemBase.Id)
                         .OrderByDescending(s => s.Key);
-
                     var stages = GetStageByOrder(stageRowList, itemBase.Id);
                     // Acquisition place is stage...
                     if (stages.Any())
@@ -142,26 +149,8 @@ namespace Nekoyume.UI
                             if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stage.Id,
                                     out var row))
                             {
-                                return new AcquisitionPlaceButton.Model(
-                                    AcquisitionPlaceButton.PlaceType.Stage,
-                                    () =>
-                                    {
-                                        CloseOtherWidgets();
-                                        Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
-
-                                        var worldMap = Find<WorldMap>();
-                                        worldMap.Show(States.Instance.CurrentAvatarState.worldInformation);
-                                        worldMap.Show(row.Id, stage.Id, false);
-                                        worldMap.SharedViewModel.WorldInformation.TryGetWorld(row.Id, out var worldModel);
-
-                                        Find<BattlePreparation>().Show(StageType.HackAndSlash,
-                                            worldMap.SharedViewModel.SelectedWorldId.Value,
-                                            worldMap.SharedViewModel.SelectedStageId.Value,
-                                            $"{L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}")} {worldMap.SharedViewModel.SelectedStageId.Value}",
-                                            true);
-                                    },
-                                    $"{L10nManager.LocalizeWorldName(row.Id)} {stage.Id % 10_000_000}",
-                                    itemBase,
+                                return MakeAcquisitionPlaceModel(
+                                    AcquisitionPlaceButton.PlaceType.Stage, itemBase, row.Id,
                                     stage);
                             }
 
@@ -171,31 +160,17 @@ namespace Nekoyume.UI
 
                     break;
                 case ItemSubType.FoodMaterial:
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
-                        AcquisitionPlaceButton.PlaceType.Arena, () =>
-                        {
-                            CloseOtherWidgets();
-                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-                            Find<RankingBoard>().Show();
-                        },
-                        L10nManager.Localize("UI_MAIN_MENU_RANKING"), itemBase));
+                    acquisitionPlaceList.Add(
+                        MakeAcquisitionPlaceModel(AcquisitionPlaceButton.PlaceType.Arena,
+                            itemBase));
+
                     break;
                 case ItemSubType.Hourglass:
                 case ItemSubType.ApStone:
                     var isTradable = itemBase is ITradableItem;
-
                     if (isTradable)
                     {
-                        acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
-                            AcquisitionPlaceButton.PlaceType.Shop, () =>
-                            {
-                                CloseOtherWidgets();
-                                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
-                                var shopBuy = Find<ShopBuy>();
-                                shopBuy.Show();
-                            },
-                            L10nManager.Localize("UI_MAIN_MENU_SHOP"),
-                            itemBase));
+                        acquisitionPlaceList.Add(MakeAcquisitionPlaceModel(AcquisitionPlaceButton.PlaceType.Shop, itemBase));
                     }
                     else
                     {
@@ -209,9 +184,7 @@ namespace Nekoyume.UI
                             L10nManager.Localize("UI_QUEST"),
                             itemBase));
                         acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
-                            AcquisitionPlaceButton.PlaceType.Staking, () =>
-                            {
-                            },
+                            AcquisitionPlaceButton.PlaceType.Staking, () => { },
                             L10nManager.Localize("UI_PLACE_STAKING"),
                             itemBase));
                     }
@@ -221,20 +194,14 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (acquisitionPlaceList.All(model => model.Type != AcquisitionPlaceButton.PlaceType.Arena) ||
+            if (acquisitionPlaceList.All(model =>
+                    model.Type != AcquisitionPlaceButton.PlaceType.Arena) ||
                 acquisitionPlaceList.Count == 0)
             {
                 if (Game.Game.instance.TableSheets.WeeklyArenaRewardSheet.Any(pair =>
-                      pair.Value.Reward.ItemId == itemBase.Id))
+                        pair.Value.Reward.ItemId == itemBase.Id))
                 {
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
-                        AcquisitionPlaceButton.PlaceType.Arena, () =>
-                        {
-                            CloseOtherWidgets();
-                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-                            Find<RankingBoard>().Show();
-                        },
-                        L10nManager.Localize("UI_MAIN_MENU_RANKING"), itemBase));
+                    acquisitionPlaceList.Add(MakeAcquisitionPlaceModel(AcquisitionPlaceButton.PlaceType.Arena, itemBase));
                 }
             }
 
@@ -247,15 +214,9 @@ namespace Nekoyume.UI
                 if (States.Instance.CurrentAvatarState.questList.Any(quest =>
                         !quest.Complete && quest.Reward.ItemMap.ContainsKey(itemBase.Id)))
                 {
-                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
-                        AcquisitionPlaceButton.PlaceType.Quest, () =>
-                        {
-                            Close();
-                            Find<AvatarInfoPopup>().Close();
-                            Find<QuestPopup>().Show();
-                        },
-                        L10nManager.Localize("UI_QUEST"),
-                        itemBase));
+                    acquisitionPlaceList.Add(
+                        MakeAcquisitionPlaceModel(AcquisitionPlaceButton.PlaceType.Quest,
+                            itemBase));
                 }
             }
 
@@ -286,11 +247,79 @@ namespace Nekoyume.UI
             {
                 widget.Close(true);
             }
+
             Find<ShopBuy>().Close(true, true);
             Find<ShopSell>().Close(true, true);
             Find<EventBanner>().Close(true);
             Find<Status>().Close(true);
             Close(true);
+        }
+
+        private AcquisitionPlaceButton.Model MakeAcquisitionPlaceModel(
+            AcquisitionPlaceButton.PlaceType type,
+            ItemBase itemBase,
+            int worldId = 0,
+            StageSheet.Row stageRow = null)
+        {
+            return type switch
+            {
+                AcquisitionPlaceButton.PlaceType.Stage => new AcquisitionPlaceButton.Model(
+                    AcquisitionPlaceButton.PlaceType.Stage,
+                    () =>
+                    {
+                        CloseOtherWidgets();
+                        Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+
+                        var worldMap = Find<WorldMap>();
+                        worldMap.Show(States.Instance.CurrentAvatarState.worldInformation);
+                        worldMap.Show(worldId, stageRow.Id, false);
+                        worldMap.SharedViewModel.WorldInformation.TryGetWorld(worldId,
+                            out var worldModel);
+
+                        Find<BattlePreparation>().Show(StageType.HackAndSlash,
+                            worldMap.SharedViewModel.SelectedWorldId.Value,
+                            worldMap.SharedViewModel.SelectedStageId.Value,
+                            $"{L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}")} {worldMap.SharedViewModel.SelectedStageId.Value}",
+                            true);
+                    },
+                    $"{L10nManager.LocalizeWorldName(worldId)} {stageRow.Id % 10_000_000}",
+                    itemBase,
+                    stageRow),
+                AcquisitionPlaceButton.PlaceType.Shop => new AcquisitionPlaceButton.Model(
+                    AcquisitionPlaceButton.PlaceType.Shop, () =>
+                    {
+                        CloseOtherWidgets();
+                        Find<HeaderMenuStatic>()
+                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
+                        var shopBuy = Find<ShopBuy>();
+                        shopBuy.Show();
+                    },
+                    L10nManager.Localize("UI_MAIN_MENU_SHOP"),
+                    itemBase),
+                AcquisitionPlaceButton.PlaceType.Arena => new AcquisitionPlaceButton.Model(
+                    AcquisitionPlaceButton.PlaceType.Arena, () =>
+                    {
+                        CloseOtherWidgets();
+                        Find<HeaderMenuStatic>()
+                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+                        Find<RankingBoard>().Show();
+                    },
+                    L10nManager.Localize("UI_MAIN_MENU_RANKING"), itemBase),
+                AcquisitionPlaceButton.PlaceType.Quest => new AcquisitionPlaceButton.Model(
+                    AcquisitionPlaceButton.PlaceType.Quest, () =>
+                    {
+                        Close();
+                        Find<AvatarInfoPopup>().Close();
+                        Find<QuestPopup>().Show();
+                    },
+                    L10nManager.Localize("UI_QUEST"),
+                    itemBase),
+                AcquisitionPlaceButton.PlaceType.Staking => new AcquisitionPlaceButton.Model(
+                    AcquisitionPlaceButton.PlaceType.Staking, () => { },
+                    L10nManager.Localize("UI_PLACE_STAKING"),
+                    itemBase),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
         }
     }
 }
