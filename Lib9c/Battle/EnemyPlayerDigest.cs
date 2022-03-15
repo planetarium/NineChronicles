@@ -29,8 +29,8 @@ namespace Nekoyume.Battle
             LensIndex = enemyAvatarState.lens;
             EarIndex = enemyAvatarState.ear;
             TailIndex = enemyAvatarState.tail;
-            Costumes = enemyAvatarState.inventory.Costumes.ToList();
-            Equipments = enemyAvatarState.inventory.Equipments.ToList();
+            Costumes = enemyAvatarState.inventory.Costumes.Where(c => c.equipped).ToList();
+            Equipments = enemyAvatarState.inventory.Equipments.Where(e => e.equipped).ToList();
         }
 
         public EnemyPlayerDigest(List serialized)

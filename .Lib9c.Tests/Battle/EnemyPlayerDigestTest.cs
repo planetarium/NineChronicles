@@ -15,15 +15,16 @@ namespace Lib9c.Tests
     public class EnemyPlayerDigestTest
     {
         private readonly AvatarState _avatarState;
+        private readonly TableSheets _tableSheets;
 
         public EnemyPlayerDigestTest()
         {
-            var tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             var avatarState = new AvatarState(
                 new PrivateKey().ToAddress(),
                 new PrivateKey().ToAddress(),
                 1234,
-                tableSheets.GetAvatarSheets(),
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
                 new PrivateKey().ToAddress(),
                 "test"
@@ -33,15 +34,25 @@ namespace Lib9c.Tests
             avatarState.ear = 4;
             avatarState.tail = 5;
 
-            var costumeRow = tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
-            var costume = (Costume)ItemFactory.CreateItem(tableSheets.ItemSheet[costumeRow.CostumeId], new TestRandom());
+            var costumeRow = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
+            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeRow.CostumeId], new TestRandom());
             costume.equipped = true;
             avatarState.inventory.AddItem(costume);
 
-            var weaponRow = tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Weapon);
-            var weapon = (Weapon)ItemFactory.CreateItem(tableSheets.ItemSheet[weaponRow.Id], new TestRandom());
+            var costume2Row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.DEF);
+            var costume2 = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[costume2Row.CostumeId], new TestRandom());
+            avatarState.inventory.AddItem(costume2);
+
+            var weaponRow = _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Weapon);
+            var weapon = (Weapon)ItemFactory.CreateItem(_tableSheets.ItemSheet[weaponRow.Id], new TestRandom());
             weapon.equipped = true;
             avatarState.inventory.AddItem(weapon);
+
+            var armorRow =
+                _tableSheets.EquipmentItemSheet.Values.First(
+                    r => r.ItemSubType == ItemSubType.Armor);
+            var armor = (Armor)ItemFactory.CreateItem(_tableSheets.ItemSheet[armorRow.Id], new TestRandom());
+            avatarState.inventory.AddItem(armor);
             _avatarState = avatarState;
         }
 
@@ -59,6 +70,15 @@ namespace Lib9c.Tests
             Assert.Equal(5, digest.TailIndex);
             Assert.Single(digest.Equipments);
             Assert.Single(digest.Costumes);
+
+            var enemyPlayer = new EnemyPlayer(
+                digest,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet);
+
+            Assert.Single(enemyPlayer.Equipments);
+            Assert.Single(enemyPlayer.Costumes);
         }
 
         [Fact]
