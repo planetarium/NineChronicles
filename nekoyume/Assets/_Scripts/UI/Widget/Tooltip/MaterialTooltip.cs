@@ -94,7 +94,6 @@ namespace Nekoyume.UI
 
             if (rowList.Any())
             {
-                rowList = rowList.OrderByDescending(sheet => sheet.Key).ToList();
                 var row = rowList.FirstOrDefault();
                 if (row != null)
                 {
@@ -105,7 +104,6 @@ namespace Nekoyume.UI
                 var secondRow = rowList
                     .OrderByDescending(r =>
                         r.Rewards.Find(reward => reward.ItemId == id).Ratio)
-                    .ThenByDescending(sheet => sheet.Key)
                     .FirstOrDefault();
                 if (secondRow != null)
                 {
@@ -115,16 +113,7 @@ namespace Nekoyume.UI
                 return result;
             }
 
-            return rows.Where(r =>
-            {
-                if (States.Instance.CurrentAvatarState.worldInformation
-                    .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
-                {
-                    return r.Id > world.StageClearedId;
-                }
-
-                return false;
-            }).OrderBy(sheet => sheet.Key).Take(2).ToList();
+            return rows.Take(2).ToList();
         }
 
         private void SetAcquisitionPlaceButtons(ItemBase itemBase)
