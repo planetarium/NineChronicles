@@ -21,16 +21,16 @@ namespace Nekoyume.UI
             public string pageUrlFormat;
         }
 
-        [SerializeField] 
+        [SerializeField]
         private Image contentImage;
-        
-        [SerializeField] 
+
+        [SerializeField]
         private Button detailButton;
-        
-        [SerializeField] 
+
+        [SerializeField]
         private Button closeButton;
-        
-        [SerializeField] 
+
+        [SerializeField]
         private NoticeInfo[] noticeList =
         {
             new NoticeInfo
@@ -43,7 +43,6 @@ namespace Nekoyume.UI
             }
         };
 
-        private NoticeInfo[] NoticeList => noticeList.Where(CanShowNoticePopup).ToArray();
         private const string LastNoticeDayKeyFormat = "NOTICE_POPUP_LAST_DAY_{0}";
 
         private static bool CanShowNoticePopup(NoticeInfo notice)
@@ -94,7 +93,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreStartAnimation = false)
         {
-            var firstNotice = NoticeList.FirstOrDefault();
+            var firstNotice = noticeList.FirstOrDefault();
             if (!CanShowNoticePopup(firstNotice))
             {
                 return;
@@ -106,7 +105,7 @@ namespace Nekoyume.UI
 
         private void GoToNoticePage()
         {
-            Application.OpenURL(NoticeList.FirstOrDefault()?.pageUrlFormat);
+            Application.OpenURL(noticeList.FirstOrDefault()?.pageUrlFormat);
         }
     }
 }
