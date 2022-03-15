@@ -23,6 +23,9 @@ namespace Nekoyume.UI
         [SerializeField]
         protected GameObject acquisitionGroup;
 
+        private const string StakingDescriptionUrl =
+            "https://ninechronicles.medium.com/monster-collection-muspelheim-the-realm-of-fire-part-2-b5c36e089b81";
+
         public override void Show(
             RectTransform target,
             ItemBase item,
@@ -160,6 +163,9 @@ namespace Nekoyume.UI
                     if (isTradable)
                     {
                         acquisitionPlaceList.Add(MakeAcquisitionPlaceModelByType(AcquisitionPlaceButton.PlaceType.Shop, itemBase));
+                        acquisitionPlaceList.Add(
+                            MakeAcquisitionPlaceModelByType(
+                                AcquisitionPlaceButton.PlaceType.Staking, itemBase));
                     }
                     else
                     {
@@ -171,10 +177,6 @@ namespace Nekoyume.UI
                                 Find<QuestPopup>().Show();
                             },
                             L10nManager.Localize("UI_QUEST"),
-                            itemBase));
-                        acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
-                            AcquisitionPlaceButton.PlaceType.Staking, () => { },
-                            L10nManager.Localize("UI_PLACE_STAKING"),
                             itemBase));
                     }
 
@@ -304,7 +306,10 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_QUEST"),
                     itemBase),
                 AcquisitionPlaceButton.PlaceType.Staking => new AcquisitionPlaceButton.Model(
-                    AcquisitionPlaceButton.PlaceType.Staking, () => { },
+                    AcquisitionPlaceButton.PlaceType.Staking, () =>
+                    {
+                        Application.OpenURL(StakingDescriptionUrl);
+                    },
                     L10nManager.Localize("UI_PLACE_STAKING"),
                     itemBase),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
