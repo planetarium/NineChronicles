@@ -6,8 +6,8 @@
     public class ItemRequirementSheetTest
     {
         private const string _csv =
-            @"item_id,level
-10100000,1";
+            @"item_id,level,mimis_level
+10100000,1,1";
 
         [Theory]
         [InlineData(_csv)]

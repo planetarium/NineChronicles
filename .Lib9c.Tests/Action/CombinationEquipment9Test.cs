@@ -11,7 +11,6 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Extensions;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
@@ -21,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class CombinationEquipmentTest
+    public class CombinationEquipment9Test
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
@@ -29,7 +28,7 @@ namespace Lib9c.Tests.Action
         private readonly IRandom _random;
         private readonly IAccountStateDelta _initialState;
 
-        public CombinationEquipmentTest(ITestOutputHelper outputHelper)
+        public CombinationEquipment9Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -111,7 +110,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment9
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -161,7 +160,7 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid(),
                 default);
             Assert.Equal(0, equipment.optionCountFromCombination);
-            CombinationEquipment.AddAndUnlockOption(
+            CombinationEquipment9.AddAndUnlockOption(
                 agentState,
                 equipment,
                 _random,
@@ -170,78 +169,6 @@ namespace Lib9c.Tests.Action
                 _tableSheets.SkillSheet
             );
             Assert.True(equipment.optionCountFromCombination > 0);
-        }
-
-        [Theory]
-        [InlineData(1, 375, true)]
-        [InlineData(1, 374, false)]
-        [InlineData(2, 3, true)]
-        [InlineData(2, 2, false)]
-        [InlineData(3, 6, true)]
-        [InlineData(3, 5, false)]
-        public void MadeWithMimisbrunnrRecipe(int recipeId, int? subRecipeId, bool isMadeWithMimisbrunnrRecipe)
-        {
-            var currency = new Currency("NCG", 2, minter: null);
-            var row = _tableSheets.EquipmentItemRecipeSheet[recipeId];
-            var requiredStage = row.UnlockStage;
-            var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
-            var material = ItemFactory.CreateItem(materialRow, _random);
-
-            var avatarState = _initialState.GetAvatarState(_avatarAddress);
-
-            avatarState.worldInformation = new WorldInformation(
-                0,
-                _tableSheets.WorldSheet,
-                requiredStage);
-
-            avatarState.inventory.AddItem(material, row.MaterialCount);
-
-            if (subRecipeId.HasValue)
-            {
-                var subRow = _tableSheets.EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
-
-                foreach (var materialInfo in subRow.Materials)
-                {
-                    material = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet[materialInfo.Id], _random);
-                    avatarState.inventory.AddItem(material, materialInfo.Count);
-                }
-            }
-
-            var previousState = _initialState
-                .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
-                .SetState(
-                    _avatarAddress.Derive(LegacyWorldInformationKey),
-                    avatarState.worldInformation.Serialize())
-                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
-                .SetState(_avatarAddress, avatarState.SerializeV2());
-
-            previousState = previousState.MintAsset(_agentAddress, 10_000 * currency);
-
-            var action = new CombinationEquipment
-            {
-                avatarAddress = _avatarAddress,
-                slotIndex = 0,
-                recipeId = recipeId,
-                subRecipeId = subRecipeId,
-            };
-
-            var nextState = action.Execute(new ActionContext
-            {
-                PreviousStates = previousState,
-                Signer = _agentAddress,
-                BlockIndex = 1,
-                Random = _random,
-            });
-
-            var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
-            Assert.NotNull(slotState.Result);
-            Assert.NotNull(slotState.Result.itemUsable);
-            Assert.Equal(isMadeWithMimisbrunnrRecipe, ((Equipment)slotState.Result.itemUsable).MadeWithMimisbrunnrRecipe);
-            Assert.Equal(isMadeWithMimisbrunnrRecipe, ((Equipment)slotState.Result.itemUsable).IsMadeWithMimisbrunnrRecipe(
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheetV2,
-                _tableSheets.EquipmentItemOptionSheet
-            ));
         }
 
         private void Execute(bool backward, int recipeId, int? subRecipeId, int mintNCG)
@@ -301,7 +228,7 @@ namespace Lib9c.Tests.Action
             var previousNCG = previousState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(mintNCG * currency, previousNCG);
 
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment9
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,

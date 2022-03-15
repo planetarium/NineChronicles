@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash11")]
+    [ActionType("hack_and_slash12")]
     public class HackAndSlash : GameAction
     {
         public List<Guid> costumes;
@@ -97,6 +97,10 @@ namespace Nekoyume.Action
                     typeof(CostumeStatSheet),
                     typeof(WorldUnlockSheet),
                     typeof(MaterialItemSheet),
+                    typeof(ItemRequirementSheet),
+                    typeof(EquipmentItemRecipeSheet),
+                    typeof(EquipmentItemSubRecipeSheetV2),
+                    typeof(EquipmentItemOptionSheet),
                 });
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
@@ -161,9 +165,9 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Validate World: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            avatarState.ValidateConsumable(foods, context.BlockIndex);
-            avatarState.ValidateCostume(costumes);
+            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
+            var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
+            var costumeIds = avatarState.ValidateCostume(costumes);
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Validate Items: {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -182,11 +186,18 @@ namespace Nekoyume.Action
                 );
             }
 
-            avatarState.actionPoint -= totalCostActionPoint;
-
-            sw.Restart();
             var items = equipments.Concat(costumes);
             avatarState.EquipItems(items);
+            avatarState.ValidateItemRequirement(
+                costumeIds.Concat(foodIds).ToList(),
+                equipmentList,
+                sheets.GetSheet<ItemRequirementSheet>(),
+                sheets.GetSheet<EquipmentItemRecipeSheet>(),
+                sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                sheets.GetSheet<EquipmentItemOptionSheet>(),
+                addressesHex);
+
+            avatarState.actionPoint -= totalCostActionPoint;
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 

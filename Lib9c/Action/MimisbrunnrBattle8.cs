@@ -16,9 +16,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100096ObsoleteIndex)]
-    [ActionType("mimisbrunnr_battle7")]
-    public class MimisbrunnrBattle7 : GameAction
+    [ActionType("mimisbrunnr_battle8")]
+    public class MimisbrunnrBattle8 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -27,7 +26,6 @@ namespace Nekoyume.Action
         public int stageId;
         public int playCount = 1;
         public Address avatarAddress;
-        public Address rankingMapAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -39,7 +37,6 @@ namespace Nekoyume.Action
                 ["stageId"] = stageId.Serialize(),
                 ["playCount"] = playCount.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
-                ["rankingMapAddress"] = rankingMapAddress.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -51,7 +48,6 @@ namespace Nekoyume.Action
             stageId = plainValue["stageId"].ToInteger();
             playCount = plainValue["playCount"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-            rankingMapAddress = plainValue["rankingMapAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -63,7 +59,6 @@ namespace Nekoyume.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
-                states = states.SetState(rankingMapAddress, MarkChanged);
                 states = states.SetState(avatarAddress, MarkChanged);
                 states = states
                     .SetState(inventoryAddress, MarkChanged)
@@ -87,11 +82,6 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
-
-            if (avatarState.RankingMapAddress != rankingMapAddress)
-            {
-                throw new InvalidAddressException($"{addressesHex}Invalid ranking map address");
-            }
 
             var worldSheet = states.GetSheet<WorldSheet>();
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
@@ -272,27 +262,6 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
-
-            sw.Restart();
-            if (simulator.Log.IsClear && states.TryGetState(rankingMapAddress, out Dictionary d))
-            {
-                var ranking = new RankingMapState(d);
-                ranking.Update(avatarState);
-
-                sw.Stop();
-                Log.Verbose("{AddressesHex}Mimisbrunnr Update RankingState: {Elapsed}", addressesHex, sw.Elapsed);
-                sw.Restart();
-
-                var serialized = ranking.Serialize();
-
-                sw.Stop();
-                Log.Verbose("{AddressesHex}Mimisbrunnr Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
-                sw.Restart();
-                states = states.SetState(rankingMapAddress, serialized);
-            }
-
-            sw.Stop();
-            Log.Verbose("{AddressesHex}Mimisbrunnr Set RankingState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var ended = DateTimeOffset.UtcNow;
