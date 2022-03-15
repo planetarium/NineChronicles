@@ -103,7 +103,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Buy exec started", addressesHex);
 
-            if (!states.TryGetAvatarStateV2(ctx.Signer, buyerAvatarAddress, out var buyerAvatarState))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, buyerAvatarAddress, out var buyerAvatarState, out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the buyer was failed to load.");
@@ -178,7 +178,7 @@ namespace Nekoyume.Action
                     sellerAvatarAddress);
 
 
-                if (!states.TryGetAvatarStateV2(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState))
+                if (!states.TryGetAvatarStateV2(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState, out _))
                 {
                     errors.Add((orderId, ErrorCodeFailedLoadingState));
                     continue;

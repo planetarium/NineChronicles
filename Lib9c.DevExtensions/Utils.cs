@@ -158,7 +158,7 @@ namespace Lib9c.DevExtensions
                 dir = Path
                     .GetFullPath($"..{Path.DirectorySeparatorChar}")
                     .Replace(
-                        $"Lib9c.DevExtensions.Tests{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}",
+                        $".Lib9c.DevExtensions.Tests{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}",
                         $"Lib9c{Path.DirectorySeparatorChar}TableCSV{Path.DirectorySeparatorChar}");
             }
             var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
