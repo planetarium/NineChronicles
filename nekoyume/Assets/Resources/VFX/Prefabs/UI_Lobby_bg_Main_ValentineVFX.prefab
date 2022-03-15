@@ -527,6 +527,7 @@ GameObject:
   - component: {fileID: 6591319355579261103}
   - component: {fileID: 6490126064801196115}
   - component: {fileID: 2696585990247821715}
+  - component: {fileID: 6987095151981244277}
   m_Layer: 5
   m_Name: UI_Lobby_bg_Main_ValentineVFX
   m_TagString: Untagged
@@ -711,6 +712,18 @@ MonoBehaviour:
             m_StringArgument: PlayClick
             m_BoolArgument: 0
           m_CallState: 2
+        - m_Target: {fileID: 6591319355579261103}
+          m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+          m_MethodName: set_enabled
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &2696585990247821715
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -747,6 +760,51 @@ MonoBehaviour:
         - m_Target: {fileID: 7279353735613615300}
           m_TargetAssemblyTypeName: Nekoyume.UI.SpeechBubble, Nekoyume
           m_MethodName: ShowText
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - When: NormalEnter
+    Invoke:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 6591319355579261103}
+          m_TargetAssemblyTypeName: UnityEngine.Behaviour, UnityEngine
+          m_MethodName: set_enabled
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 1
+          m_CallState: 2
+--- !u!114 &6987095151981244277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5159959622891250532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c52784a3d7754789b868596bd54d7927, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _eventSettings:
+  - When: 3
+    Invoke:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 7279353735613615302}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: SetActive
           m_Mode: 6
           m_Arguments:
             m_ObjectArgument: {fileID: 0}

@@ -230,7 +230,8 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            _coLazyClose = StartCoroutine(CoLazyClose());
+            Game.Game.instance.Stage.SelectedPlayer.gameObject.SetActive(false);
+            Close();
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
@@ -355,7 +356,8 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            _coLazyClose = StartCoroutine(CoLazyClose());
+            Game.Game.instance.Stage.SelectedPlayer.gameObject.SetActive(false);
+            Close();
             AudioController.PlayClick();
 
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
@@ -424,20 +426,9 @@ namespace Nekoyume.UI
         {
             Find<NoticePopup>().Close(true);
             StopSpeeches();
-
             guidedQuest.Hide(true);
             Find<Status>().Close(true);
             Find<EventBanner>().Close(true);
-            base.Close(ignoreCloseAnimation);
-        }
-
-        private IEnumerator CoLazyClose(float duration = 1f, bool ignoreCloseAnimation = false)
-        {
-            StopSpeeches();
-            Find<Status>().Close(true);
-            Find<EventBanner>().Close(true);
-            Game.Game.instance.Stage.SelectedPlayer.gameObject.SetActive(false);
-            yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);
         }
 

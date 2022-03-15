@@ -280,12 +280,6 @@ namespace Nekoyume.State
                     await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
                 });
             }
-
-            if (Game.Game.instance.Agent is RPCAgent agent)
-            {
-                agent.UpdateSubscribeAddresses();
-            }
-
             return CurrentAvatarState;
         }
 
