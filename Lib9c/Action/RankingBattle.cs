@@ -8,6 +8,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -28,8 +29,7 @@ namespace Nekoyume.Action
         public Address weeklyArenaAddress;
         public List<Guid> costumeIds;
         public List<Guid> equipmentIds;
-
-        public AvatarState EnemyAvatarState;
+        public EnemyPlayerDigest EnemyPlayerDigest;
         public ArenaInfo ArenaInfo;
         public ArenaInfo EnemyArenaInfo;
 
@@ -192,12 +192,15 @@ namespace Nekoyume.Action
 
             ArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[arenaKey]);
             EnemyArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[enemyKey]);
+            var rankingSheets = states.GetRankingSimulatorSheets();
+            var player = new Player(avatarState, rankingSheets);
+            var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
             var simulator = new RankingSimulator(
                 ctx.Random,
-                avatarState,
-                enemyAvatarState,
+                player,
+                enemyPlayerDigest,
                 new List<Guid>(),
-                states.GetRankingSimulatorSheets(),
+                rankingSheets,
                 StageId,
                 arenaInfo,
                 enemyArenaInfo,
@@ -282,7 +285,7 @@ namespace Nekoyume.Action
 
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
-            EnemyAvatarState = enemyAvatarState;
+            EnemyPlayerDigest = enemyPlayerDigest;
             return states;
         }
 

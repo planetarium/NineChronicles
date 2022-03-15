@@ -217,14 +217,18 @@ namespace Lib9c.Tests.Action
             Assert.Contains(nextAvatar1State.inventory.Materials, i => itemIds.Contains(i.Id));
             Assert.NotNull(action.ArenaInfo);
             Assert.NotNull(action.EnemyArenaInfo);
-            Assert.NotNull(action.EnemyAvatarState);
             Assert.True(nextArenaInfo.Score > prevScore);
 
             // Check simulation result equal.
+            var player = new Player(
+                previousAvatar1State,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet);
             var simulator = new RankingSimulator(
                 new TestRandom(),
-                previousAvatar1State,
-                action.EnemyAvatarState,
+                player,
+                action.EnemyPlayerDigest,
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
                 RankingBattle.StageId,
