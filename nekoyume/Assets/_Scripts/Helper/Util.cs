@@ -175,5 +175,20 @@ namespace Nekoyume.Helper
             var key = $"{StoredSlotIndex}{agentAddress}";
             PlayerPrefs.SetInt(key, slotIndex);
         }
+        
+        public static bool IsInTime(string begin, string end, bool everyYear = true)
+        {
+            var now = DateTime.UtcNow;
+            if (everyYear)
+            {
+                begin = $"{now.Year}/{begin}";
+                end = $"{now.Year}/{end}";
+            }
+            var bDt = DateTime.ParseExact(begin, "yyyy/MM/dd HH:mm:ss", null);
+            var eDt = DateTime.ParseExact(end, "yyyy/MM/dd HH:mm:ss", null);
+            var bDiff = (now - bDt).TotalSeconds;
+            var eDiff = (eDt - now).TotalSeconds;
+            return bDiff > 0 && eDiff > 0;
+        }
     }
 }
