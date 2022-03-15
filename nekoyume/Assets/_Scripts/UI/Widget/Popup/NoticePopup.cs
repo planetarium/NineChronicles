@@ -45,19 +45,24 @@ namespace Nekoyume.UI
 
         private NoticeInfo[] NoticeList => noticeList.Where(CanShowNoticePopup).ToArray();
         private const string LastNoticeDayKeyFormat = "NOTICE_POPUP_LAST_DAY_{0}";
-        
+
         private static bool CanShowNoticePopup(NoticeInfo notice)
         {
+            if (notice == null)
+            {
+                return false;
+            }
+
             var worldInfo = Game.Game.instance.States.CurrentAvatarState.worldInformation;
             if (worldInfo is null) return false;
             var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
             if (TutorialController.GetCheckPoint(clearedStageId) != 0) return false;
-            
+
             var tutorialControllerIsPlaying = Game.Game.instance.Stage.TutorialController.IsPlaying;
             if (tutorialControllerIsPlaying) return false;
-            
+
             if (!Util.IsInTime(notice.beginTime, notice.endTime, false)) return false;
-            
+
             var lastNoticeDayKey = string.Format(LastNoticeDayKeyFormat, notice.name);
             var lastNoticeDay = DateTime.Parse(PlayerPrefs.GetString(lastNoticeDayKey, "2022/03/01 00:00:00"));
             var now = DateTime.UtcNow;
@@ -79,7 +84,7 @@ namespace Nekoyume.UI
                 GoToNoticePage();
                 AudioController.PlayClick();
             });
-            
+
             closeButton.onClick.AddListener(() =>
             {
                 Close();
@@ -89,15 +94,19 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreStartAnimation = false)
         {
-            if(!CanShowNoticePopup(NoticeList[0])) return;
-            
-            contentImage.sprite = NoticeList[0].contentImage;
+            var firstNotice = NoticeList.FirstOrDefault();
+            if (!CanShowNoticePopup(firstNotice))
+            {
+                return;
+            }
+
+            contentImage.sprite = firstNotice.contentImage;
             base.Show(ignoreStartAnimation);
         }
 
         private void GoToNoticePage()
         {
-            Application.OpenURL(NoticeList[0].pageUrlFormat);
+            Application.OpenURL(NoticeList.FirstOrDefault()?.pageUrlFormat);
         }
     }
 }
