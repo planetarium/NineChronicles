@@ -54,6 +54,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(DuplicateOrderIdException))]
         [InlineData(typeof(OrderIdDoesNotExistException))]
         [InlineData(typeof(ActionObsoletedException))]
+        [InlineData(typeof(FailedLoadSheetException))]
         public void Exception_Serializable(Type excType)
         {
             if (Activator.CreateInstance(excType, "for testing") is Exception exc)

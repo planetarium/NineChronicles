@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_equipment9")]
+    [ActionType("combination_equipment10")]
     public class CombinationEquipment : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
@@ -267,7 +267,8 @@ namespace Nekoyume.Action
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
                 equipmentRow,
                 context.Random.GenerateRandomGuid(),
-                endBlockIndex);
+                endBlockIndex,
+                madeWithMimisbrunnrRecipe: recipeRow.IsMimisBrunnrSubRecipe(subRecipeId));
 
             if (!(subRecipeRow is null))
             {

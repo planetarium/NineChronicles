@@ -16,6 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100096ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle7")]
     public class MimisbrunnrBattle7 : GameAction
     {
@@ -78,7 +79,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Mimisbrunnr exec started", addressesHex);
 
-            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out AvatarState avatarState))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
