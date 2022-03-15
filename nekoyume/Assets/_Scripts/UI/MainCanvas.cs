@@ -236,6 +236,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
+            secondWidgets.Add(Widget.Create<NoticePopup>());
+            yield return null;
 
             // loading
             secondWidgets.Add(Widget.Create<StageLoadingEffect>());

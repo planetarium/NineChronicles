@@ -158,7 +158,7 @@ namespace Nekoyume.UI
             return data;
         }
 
-        private static int GetCheckPoint(int clearedStageId)
+        public static int GetCheckPoint(int clearedStageId)
         {
             if(PlayerPrefs.HasKey(CheckPoint))
             {

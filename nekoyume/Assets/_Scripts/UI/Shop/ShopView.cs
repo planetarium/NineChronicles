@@ -42,9 +42,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject shopPrefab;
 
-        private readonly Dictionary<ItemSubTypeFilter, List<ShopItem>> _items =
+        protected readonly Dictionary<ItemSubTypeFilter, List<ShopItem>> _items =
             new Dictionary<ItemSubTypeFilter, List<ShopItem>>();
-
         private readonly List<ShopItem> _selectedModels = new List<ShopItem>();
         private readonly List<ShopItemView> _itemViews = new List<ShopItemView>();
         private readonly ReactiveProperty<int> _page = new ReactiveProperty<int>();
@@ -95,7 +94,6 @@ namespace Nekoyume.UI.Module
             {
                 _items.Add(filter, new List<ShopItem>());
             }
-
             InitInteractiveUI();
             SubscribeToSearchConditions();
 
@@ -225,6 +223,12 @@ namespace Nekoyume.UI.Module
 
             var filter = ItemSubTypeFilterExtension.GetItemSubTypeFilter(sheet, digest.ItemId);
             var model = CreateItem(itemBase, digest, sheet);
+
+            if (!_items.ContainsKey(filter))
+            {
+                _items.Add(filter, new List<ShopItem>());
+            }
+
             _items[filter].Add(model);
             _items[ItemSubTypeFilter.All].Add(model);
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -57,6 +58,9 @@ namespace Nekoyume
 
         [SerializeField]
         private Transform inputPlaceholder = null;
+
+        [SerializeField]
+        private GameObject loading;
 
         private readonly List<ItemSubTypeFilter> _toggleTypes = new List<ItemSubTypeFilter>()
         {
@@ -127,10 +131,15 @@ namespace Nekoyume
             new ReactiveProperty<BuyMode>(BuyMode.Single);
 
         private Action<List<ShopItem>> _onBuyMultiple;
+
+        private Animator _sortAnimator;
+        private Animator _sortOrderAnimator;
+        private Animator _levelLimitAnimator;
         private Animator _resetAnimator;
         private TextMeshProUGUI _sortText;
 
         public bool IsFocused => inputField.isFocused;
+        public bool IsDoneLoadItem { get; set; }
 
         public void ClearSelectedItems()
         {
@@ -150,7 +159,11 @@ namespace Nekoyume
 
         protected override void OnAwake()
         {
+            _sortAnimator = sortButton.GetComponent<Animator>();
+            _sortOrderAnimator = sortOrderButton.GetComponent<Animator>();
+            _levelLimitAnimator = levelLimitToggle.GetComponent<Animator>();
             _resetAnimator = resetButton.GetComponent<Animator>();
+
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
             var tableSheets = Game.Game.instance.TableSheets;
             _itemIds.AddRange(tableSheets.EquipmentItemSheet.Values.Select(x => x.Id));
@@ -379,6 +392,11 @@ namespace Nekoyume
             var models = items[_selectedSubTypeFilter.Value];
             models = models.Where(x => !x.Expired.Value).ToList();
 
+            if (IsLoading(models))
+            {
+                return new List<ShopItem>();
+            }
+
             if (_selectedItemIds.Value.Any()) // _selectedItemIds
             {
                 models = models.Where(x =>
@@ -407,6 +425,36 @@ namespace Nekoyume
                         .ToList(),
                 _ => throw new ArgumentOutOfRangeException()
             };
+        }
+
+        private bool IsLoading(ICollection models)
+        {
+            if (IsDoneLoadItem)
+            {
+                loading.SetActive(false);
+                inputField.interactable = true;
+                levelLimitToggle.interactable = true;
+                _sortAnimator.Play(_hashNormal);
+                _sortOrderAnimator.Play(_hashNormal);
+                _levelLimitAnimator.Play(_hashNormal);
+            }
+            else
+            {
+                loading.SetActive(models.Count == 0);
+                inputField.interactable = models.Count > 0;
+                levelLimitToggle.interactable = models.Count > 0;
+                var hash = models.Count > 0 ? _hashNormal : _hashDisabled;
+                _sortAnimator.Play(hash);
+                _sortOrderAnimator.Play(hash);
+                _levelLimitAnimator.Play(hash);
+
+                if (models.Count == 0)
+                {
+                    levelLimitToggle.isOn = false;
+                }
+            }
+
+            return loading.activeSelf;
         }
 
         protected override void UpdateView()
