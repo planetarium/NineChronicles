@@ -221,6 +221,23 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
 
+            if (acquisitionPlaceList.All(model => model.Type != AcquisitionPlaceButton.PlaceType.Arena) ||
+                acquisitionPlaceList.Count == 0)
+            {
+                if (Game.Game.instance.TableSheets.WeeklyArenaRewardSheet.Any(pair =>
+                      pair.Value.Reward.ItemId == itemBase.Id))
+                {
+                    acquisitionPlaceList.Add(new AcquisitionPlaceButton.Model(
+                        AcquisitionPlaceButton.PlaceType.Arena, () =>
+                        {
+                            CloseOtherWidgets();
+                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+                            Find<RankingBoard>().Show();
+                        },
+                        L10nManager.Localize("UI_MAIN_MENU_RANKING"), itemBase));
+                }
+            }
+
             if (acquisitionPlaceList.All(model =>
                     model.Type != AcquisitionPlaceButton.PlaceType.Quest &&
                     model.ItemBase.ItemSubType != ItemSubType.Hourglass &&
