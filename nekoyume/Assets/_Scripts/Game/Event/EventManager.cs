@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Nekoyume.Helper;
 using UnityEngine;
 using EventType = Nekoyume.EnumType.EventType;
 
@@ -14,7 +15,7 @@ namespace Nekoyume
 
         private static EventInfo GetEventInfo()
         {
-            return SO.Events.FirstOrDefault(x => IsInTime(x.BeginDateTime, x.EndDateTime)) ??
+            return SO.Events.FirstOrDefault(x => Util.IsInTime(x.BeginDateTime, x.EndDateTime)) ??
                    SO.DefaultEvent;
         }
 
@@ -23,18 +24,6 @@ namespace Nekoyume
             info = SO.ArenaSeasons.FirstOrDefault(x =>
                 x.StartBlockIndex <= blockIndex && blockIndex <= x.EndBlockIndex);
             return info != null;
-        }
-
-        private static bool IsInTime(string begin, string end)
-        {
-            var n = DateTime.UtcNow;
-            var b = $"{n.Year}/{begin}";
-            var e = $"{n.Year}/{end}";
-            var bDt = DateTime.ParseExact(b, "yyyy/MM/dd HH:mm:ss", null);
-            var eDt = DateTime.ParseExact(e, "yyyy/MM/dd HH:mm:ss", null);
-            var bDiff = (n - bDt).TotalSeconds;
-            var eDiff = (eDt - n).TotalSeconds;
-            return bDiff > 0 && eDiff > 0;
         }
 
         public static void UpdateEventContainer(Transform parent)
