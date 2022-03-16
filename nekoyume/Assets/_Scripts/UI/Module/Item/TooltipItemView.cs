@@ -1,5 +1,7 @@
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -17,6 +19,16 @@ namespace Nekoyume.UI.Module
         private ParticleSystem gradeEffect;
 
         private GameObject _costumeSpineObject;
+
+        private Dictionary<int, GameObject> _skeletonPool;
+
+        private void OnDisable()
+        {
+            if (_costumeSpineObject)
+            {
+                _costumeSpineObject.SetActive(false);
+            }
+        }
 
         public void Set(ItemBase itemBase, int count, bool levelLimit)
         {
@@ -76,15 +88,20 @@ namespace Nekoyume.UI.Module
                 {
                     if (_costumeSpineObject)
                     {
-                        Destroy(_costumeSpineObject);
+                        _costumeSpineObject.SetActive(false);
                     }
 
-                    _costumeSpineObject = Instantiate(tooltipData.Prefab);
-                    _costumeSpineObject.transform.position = tooltipData.Position;
+                    if (_skeletonPool is null)
+                    {
+                        CreateSkeletonPool();
+                    }
+                    _costumeSpineObject = _skeletonPool[tooltipData.ResourceID];
+                    _costumeSpineObject.transform.localPosition = tooltipData.Position;
                     _costumeSpineObject.transform.localScale = tooltipData.Scale;
                     _costumeSpineObject.transform.rotation = Quaternion.Euler(tooltipData.Rotation);
                     var particle = gradeEffect.main;
                     particle.startColor = tooltipData.GradeColor;
+                    _costumeSpineObject.SetActive(true);
 
                     baseItemView.ItemImage.gameObject.SetActive(false);
                     baseItemView.SpineItemImage.gameObject.SetActive(true);
@@ -104,11 +121,21 @@ namespace Nekoyume.UI.Module
             baseItemView.LevelLimitObject.SetActive(levelLimit);
         }
 
-        private void OnDisable()
+        private void CreateSkeletonPool()
         {
-            if (_costumeSpineObject)
+            _skeletonPool = new Dictionary<int, GameObject>();
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+
+            foreach (var data in tooltipDataScriptableObject.Datas)
             {
-                Destroy(_costumeSpineObject);
+                if (!inventory.HasItem(data.ResourceID))
+                {
+                    continue;
+                }
+
+                var go = Instantiate(data.Prefab, baseItemView.SpineItemImage.transform);
+                _skeletonPool.Add(data.ResourceID, go);
+                go.SetActive(false);
             }
         }
     }

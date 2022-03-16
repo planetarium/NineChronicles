@@ -12,6 +12,8 @@ namespace Nekoyume
         [SerializeField]
         private List<SpineTooltipData> datas;
 
+        public List<SpineTooltipData> Datas => datas;
+
         public SpineTooltipData GetSpineTooltipData(int id)
         {
             SpineTooltipData data = null;
