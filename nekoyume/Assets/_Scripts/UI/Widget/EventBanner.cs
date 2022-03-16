@@ -22,7 +22,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button playToEarnInviteEventButton;
 
-        private const string ItemLevelNoticePageURLFormat = "https://www.notion.so/planetarium/1bc6de399b3b4ace95fca3a3020b4d79";
+        private const string ItemLevelNoticePageURLFormat = "https://ninechronicles.medium.com/item-level-requirements-3f5936733007";
         
         private const string ArenaEventPageURLFormat = "https://ninechronicles.medium.com/nine-chronicles-arena-season-2-224k-ncg-reward-pool-begins-march-4th-88c947d507d6";
 
