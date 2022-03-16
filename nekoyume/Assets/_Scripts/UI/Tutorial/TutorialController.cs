@@ -28,6 +28,19 @@ namespace Nekoyume.UI
 
         public bool IsPlaying => _tutorial.IsActive();
 
+        public bool IsCompleted
+        {
+            get
+            {
+                var worldInfo = Game.Game.instance.States.CurrentAvatarState.worldInformation;
+                if (worldInfo is null) return false;
+                var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
+                if (GetCheckPoint(clearedStageId) != 0) return false;
+
+                return !IsPlaying;
+            }
+        }
+
         public TutorialController(IEnumerable<Widget> widgets)
         {
             foreach (var widget in widgets)
@@ -158,7 +171,7 @@ namespace Nekoyume.UI
             return data;
         }
 
-        public static int GetCheckPoint(int clearedStageId)
+        private static int GetCheckPoint(int clearedStageId)
         {
             if(PlayerPrefs.HasKey(CheckPoint))
             {

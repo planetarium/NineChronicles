@@ -47,29 +47,17 @@ namespace Nekoyume.UI
 
         private static bool CanShowNoticePopup(NoticeInfo notice)
         {
-            if (notice == null)
-            {
-                return false;
-            }
-
-            var worldInfo = Game.Game.instance.States.CurrentAvatarState.worldInformation;
-            if (worldInfo is null) return false;
-            var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
-            if (TutorialController.GetCheckPoint(clearedStageId) != 0) return false;
-
-            var tutorialControllerIsPlaying = Game.Game.instance.Stage.TutorialController.IsPlaying;
-            if (tutorialControllerIsPlaying) return false;
-
+            if (notice == null) return false;
+            
+            if (!Game.Game.instance.Stage.TutorialController.IsCompleted) return false;
+            
             if (!Util.IsInTime(notice.beginTime, notice.endTime, false)) return false;
 
             var lastNoticeDayKey = string.Format(LastNoticeDayKeyFormat, notice.name);
             var lastNoticeDay = DateTime.Parse(PlayerPrefs.GetString(lastNoticeDayKey, "2022/03/01 00:00:00"));
             var now = DateTime.UtcNow;
             var isNewDay = now.Year != lastNoticeDay.Year || now.Month != lastNoticeDay.Month || now.Day != lastNoticeDay.Day;
-            if (isNewDay)
-            {
-                PlayerPrefs.SetString(lastNoticeDayKey, now.ToString(CultureInfo.InvariantCulture));
-            }
+            if (isNewDay) PlayerPrefs.SetString(lastNoticeDayKey, now.ToString(CultureInfo.InvariantCulture));
 
             return isNewDay;
         }
