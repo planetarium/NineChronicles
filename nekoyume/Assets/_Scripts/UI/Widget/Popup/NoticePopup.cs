@@ -29,6 +29,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button closeButton;
+        
+        [SerializeField]
+        private Blur blur;
 
         [SerializeField]
         private NoticeInfo[] noticeList =
@@ -77,6 +80,11 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
+
+            blur.button.onClick.AddListener(() =>
+            {
+                Close();
+            });
         }
 
         public override void Show(bool ignoreStartAnimation = false)
@@ -89,6 +97,20 @@ namespace Nekoyume.UI
 
             contentImage.sprite = firstNotice.contentImage;
             base.Show(ignoreStartAnimation);
+            if (blur)
+            {
+                blur.Show();
+            }
+        }
+        
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            if (blur && blur.isActiveAndEnabled)
+            {
+                blur.Close();
+            }
+
+            base.Close(ignoreCloseAnimation);
         }
 
         private void GoToNoticePage()
