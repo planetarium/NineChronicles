@@ -41,6 +41,6 @@ namespace Nekoyume
         public string SeasonUrl;
         public Texture SeasonBanner;
         public Sprite RewardIcon;
-        public int RewradNcg;
+        public int RewardNcg;
     }
 }

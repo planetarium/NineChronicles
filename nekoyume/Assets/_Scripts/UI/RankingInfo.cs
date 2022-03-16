@@ -87,9 +87,9 @@ namespace Nekoyume.UI
             rewardObject.SetActive(isActive);
             if (isActive)
             {
-                rewardText.text = info.RewradNcg % 1000 == 0
-                    ? $"{info.RewradNcg / 1000}k"
-                    : $"{info.RewradNcg}";
+                rewardText.text = info.RewardNcg % 1000 == 0
+                    ? $"{info.RewardNcg / 1000}k"
+                    : $"{info.RewardNcg}";
                 var start = info.StartBlockIndex % 1000 == 0
                     ? $"{info.StartBlockIndex / 1000}k"
                     : $"{info.StartBlockIndex}";
