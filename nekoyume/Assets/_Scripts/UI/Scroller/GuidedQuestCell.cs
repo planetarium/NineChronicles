@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -51,6 +53,7 @@ namespace Nekoyume.UI.Scroller
         private bool _inProgress = false;
 
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         public Nekoyume.Model.Quest.Quest Quest { get; private set; }
 
@@ -58,15 +61,13 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            bodyButton.OnClickAsObservable()
-                .Subscribe(_ =>
+            ObservableExtensions.Subscribe(bodyButton.OnClickAsObservable(), _ =>
                 {
                     AudioController.PlayClick();
                     onClick.OnNext(this);
                 })
                 .AddTo(gameObject);
-            L10nManager.OnLanguageChange
-                .Subscribe(_ => SetContent(Quest))
+            ObservableExtensions.Subscribe(L10nManager.OnLanguageChange, _ => SetContent(Quest))
                 .AddTo(gameObject);
         }
 
@@ -201,6 +202,7 @@ namespace Nekoyume.UI.Scroller
             IReadOnlyDictionary<int, int> rewardMap,
             bool ignoreAnimation = false)
         {
+            _disposables.DisposeAllAndClear();
             var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             var delay = .3f;
             for (var i = 0; i < rewards.Count; i++)
@@ -213,13 +215,13 @@ namespace Nekoyume.UI.Scroller
                     Assert.NotNull(row);
 
                     reward.SetData(row);
-                    reward.touchHandler.OnClick.Subscribe(_ =>
+                    ObservableExtensions.Subscribe(reward.touchHandler.OnClick, _ =>
                     {
                         AudioController.PlayClick();
                         var material = new Nekoyume.Model.Item.Material(reward.Data as MaterialItemSheet.Row);
                         ItemTooltip.Find(material.ItemType)
                             .Show(reward.RectTransform, material, string.Empty, false, null);
-                    }).AddTo(reward);
+                    }).AddTo(_disposables);
 
                     if (ignoreAnimation)
                     {

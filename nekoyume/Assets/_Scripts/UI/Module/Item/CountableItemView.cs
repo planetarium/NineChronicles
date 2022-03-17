@@ -27,8 +27,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            base.SetData(model);
             _disposablesForSetData.DisposeAllAndClear();
+            base.SetData(model);
             Model.Count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             Model.CountEnabled.SubscribeTo(countText).AddTo(_disposablesForSetData);
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -46,6 +47,8 @@ namespace Nekoyume.UI.Scroller
         private QuestModel _quest = null;
 
         public event System.Action onClickSubmitButton = null;
+
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         #region Mono
 
@@ -162,6 +165,7 @@ namespace Nekoyume.UI.Scroller
                 receiveButton.Interactable = false;
             }
 
+            _disposables.DisposeAllAndClear();
             var itemMap = _quest.Reward.ItemMap;
             for (var i = 0; i < rewardViews.Length; i++)
             {
@@ -183,7 +187,7 @@ namespace Nekoyume.UI.Scroller
                         AudioController.PlayClick();
                         var tooltip = ItemTooltip.Find(item.ItemType);
                         tooltip.Show(rewardView.RectTransform, item, string.Empty, false, null);
-                    }).AddTo(gameObject);
+                    }).AddTo(_disposables);
                 }
                 else
                 {

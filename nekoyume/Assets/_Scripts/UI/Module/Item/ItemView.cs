@@ -42,6 +42,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected OptionTagDataScriptableObject optionTagData = null;
 
+        public List<IDisposable> DisposablesAtSetData => _disposablesAtSetData;
+
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
         public RectTransform RectTransform { get; private set; }
