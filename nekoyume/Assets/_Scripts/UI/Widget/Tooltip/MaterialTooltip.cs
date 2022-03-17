@@ -118,7 +118,7 @@ namespace Nekoyume.UI
                 return result;
             }
 
-            return rows.OrderBy(sheet => sheet.Key).Take(2).ToList(); // 오더바이는 있어야됨. 안그럼 스테이지 정렬 안됨
+            return rows.Skip(rows.Count() - 2).Take(2).ToList(); // 오더바이는 있어야됨. 안그럼 스테이지 정렬 안됨
         }
 
         private void SetAcquisitionPlaceButtons(ItemBase itemBase)
