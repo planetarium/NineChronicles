@@ -39,7 +39,7 @@ namespace Nekoyume.UI
                 contentImage = null,
                 beginTime = "2022/03/01 00:00:00",
                 endTime = "2022/03/31 23:59:59",
-                pageUrlFormat = "https://www.notion.so/planetarium/1bc6de399b3b4ace95fca3a3020b4d79"
+                pageUrlFormat = "https://ninechronicles.medium.com/item-level-requirements-3f5936733007"
             }
         };
 
