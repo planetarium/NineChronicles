@@ -97,6 +97,7 @@ namespace Nekoyume.UI
 
             if (rowList.Any())
             {
+                rowList = rowList.OrderByDescending(sheet => sheet.Key).ToList();
                 var row = rowList.FirstOrDefault();
                 if (row != null)
                 {
@@ -107,6 +108,7 @@ namespace Nekoyume.UI
                 var secondRow = rowList
                     .OrderByDescending(r =>
                         r.Rewards.Find(reward => reward.ItemId == id).Ratio)
+                    .ThenByDescending(sheet => sheet.Key)
                     .FirstOrDefault();
                 if (secondRow != null)
                 {
@@ -116,7 +118,24 @@ namespace Nekoyume.UI
                 return result;
             }
 
-            return rows.Take(2).ToList();
+            rowList = rows.ToList();
+            result = new List<StageSheet.Row>();
+
+            var rowCount = rowList.Count;
+            for (int i = rowCount - 1; i >= 0; i--)
+            {
+                if (result.Count >= 2)
+                {
+                    break;
+                }
+
+                if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(rowList[i].Id, out var _))
+                {
+                    result.Add(rowList[i]);
+                }
+            }
+
+            return result;
         }
 
         private void SetAcquisitionPlaceButtons(ItemBase itemBase)
