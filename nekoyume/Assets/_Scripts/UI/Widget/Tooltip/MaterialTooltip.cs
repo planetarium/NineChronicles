@@ -118,7 +118,24 @@ namespace Nekoyume.UI
                 return result;
             }
 
-            return rows.Skip(rows.Count() - 2).Take(2).ToList(); // 오더바이는 있어야됨. 안그럼 스테이지 정렬 안됨
+            rowList = rows.ToList();
+            result = new List<StageSheet.Row>();
+
+            var rowCount = rowList.Count;
+            for (int i = rowCount - 1; i >= 0; i--)
+            {
+                if (result.Count >= 2)
+                {
+                    break;
+                }
+
+                if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(rowList[i].Id, out var _))
+                {
+                    result.Add(rowList[i]);
+                }
+            }
+
+            return result;
         }
 
         private void SetAcquisitionPlaceButtons(ItemBase itemBase)
