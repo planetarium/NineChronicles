@@ -67,17 +67,6 @@ namespace Nekoyume.UI
             base.Initialize();
             submitButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
 
-            foreach (var view in rewardsAreaItemViews)
-            {
-                view.touchHandler.OnClick.Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    var material = new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row);
-                    ItemTooltip.Find(material.ItemType)
-                        .Show(view.RectTransform, material, string.Empty, false, null);
-                }).AddTo(view);
-            }
-
             foreach (var stage in world.Pages.SelectMany(page => page.Stages))
             {
                 stage.onClick.Subscribe(worldMapStage =>
@@ -96,6 +85,14 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
+        private static void ShowTooltip(StageRewardItemView view)
+        {
+            AudioController.PlayClick();
+            var material = new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row);
+            ItemTooltip.Find(material.ItemType)
+                .Show(view.RectTransform, material, string.Empty, false, null);
+        }
+
         private void OnClickClose()
         {
             if (_stageType == StageType.Mimisbrunnr)
@@ -109,7 +106,8 @@ namespace Nekoyume.UI
         public void Show(WorldMap.ViewModel viewModel, WorldSheet.Row worldRow, StageType stageType)
         {
             _sharedViewModel = viewModel;
-            UpdateStageInformation(_sharedViewModel.SelectedStageId.Value, States.Instance.CurrentAvatarState.level);
+            UpdateStageInformation(_sharedViewModel.SelectedStageId.Value,
+                States.Instance.CurrentAvatarState.level);
             _sharedViewModel.WorldInformation.TryGetWorld(worldRow.Id, out var worldModel);
             _sharedViewModel.SelectedStageId
                 .Subscribe(stageId => UpdateStageInformation(
@@ -175,7 +173,8 @@ namespace Nekoyume.UI
                 else
                 {
                     // NOTE: Consider expanding the world.
-                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
+                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId,
+                            out var worldRow))
                     {
                         worldInfo.UpdateWorld(worldRow);
                         if (worldInfo.TryGetWorldByStageId(stageId, out var world2))
@@ -225,8 +224,7 @@ namespace Nekoyume.UI
                 if (i < rewardItemCount)
                 {
                     itemView.Show();
-                    itemView.SetData(rewardItemRows[i]);
-
+                    itemView.SetData(rewardItemRows[i], () => ShowTooltip(itemView));
                     continue;
                 }
 
@@ -274,7 +272,9 @@ namespace Nekoyume.UI
         public static string GetStageIdString(int stageId, bool isTitle = false)
         {
             var enter = isTitle ? string.Empty : "\n";
-            return stageId > 10000000 ? $"<sprite name=icon_Element_1>{enter}{stageId % 10000000}" : stageId.ToString();
+            return stageId > 10000000
+                ? $"<sprite name=icon_Element_1>{enter}{stageId % 10000000}"
+                : stageId.ToString();
         }
     }
 }

@@ -9,6 +9,7 @@ using UnityEngine;
 namespace Nekoyume.UI.Module
 {
     using UniRx;
+
     public class RequiredItemView : SimpleCountableItemView
     {
         [SerializeField]
@@ -19,31 +20,29 @@ namespace Nekoyume.UI.Module
 
         private const string CountTextFormatEnough = "{0}/{1}";
         private const string CountTextFormatNotEnough = "<#ff5a5a>{0}</color>/{1}";
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         public int RequiredCount { get; set; } = 1;
 
         public void SetData(CountableItem model, int requiredCount)
         {
             RequiredCount = requiredCount;
-            base.SetData(model);
-            _disposables.DisposeAllAndClear();
-            touchHandler.OnClick.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                var rt = GetComponent<RectTransform>();
-                var tooltip = ItemTooltip.Find(model.ItemBase.Value.ItemType);
-                tooltip.Show(rt, model.ItemBase.Value, string.Empty, false, null);
-            }).AddTo(_disposables);
+            SetData(model, () => ShowTooltip(model));
+        }
+
+        private void ShowTooltip(Item model)
+        {
+            AudioController.PlayClick();
+            var rt = GetComponent<RectTransform>();
+            var tooltip = ItemTooltip.Find(model.ItemBase.Value.ItemType);
+            tooltip.Show(rt, model.ItemBase.Value, string.Empty, false, null);
         }
 
         protected override void SetCount(int count)
         {
             bool isEnough = count >= RequiredCount;
 
-            countText.text = string.Format(isEnough ?
-                CountTextFormatEnough :
-                CountTextFormatNotEnough,
+            countText.text = string.Format(
+                isEnough ? CountTextFormatEnough : CountTextFormatNotEnough,
                 Model.Count.Value, RequiredCount);
 
             countText.gameObject.SetActive(true);

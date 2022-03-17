@@ -211,15 +211,7 @@ namespace Nekoyume.UI.Scroller
                     var pair = rewardMap.ElementAt(i);
                     var row = sheet.OrderedList.FirstOrDefault(itemRow => itemRow.Id == pair.Key);
                     Assert.NotNull(row);
-
-                    reward.SetData(row);
-                    reward.touchHandler.OnClick.Subscribe(_ =>
-                    {
-                        AudioController.PlayClick();
-                        var material = new Nekoyume.Model.Item.Material(reward.Data as MaterialItemSheet.Row);
-                        ItemTooltip.Find(material.ItemType)
-                            .Show(reward.RectTransform, material, string.Empty, false, null);
-                    }).AddTo(_disposables);
+                    reward.SetData(row, () => ShowTooltip(reward));
 
                     if (ignoreAnimation)
                     {
@@ -236,6 +228,14 @@ namespace Nekoyume.UI.Scroller
                     reward.Hide();
                 }
             }
+        }
+
+        private static void ShowTooltip(StageRewardItemView reward)
+        {
+            AudioController.PlayClick();
+            var material = new Nekoyume.Model.Item.Material(reward.Data as MaterialItemSheet.Row);
+            ItemTooltip.Find(material.ItemType)
+                .Show(reward.RectTransform, material, string.Empty, false, null);
         }
 
         private void ClearRewards()
