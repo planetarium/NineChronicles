@@ -9,7 +9,7 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model;
-using Nekoyume.Model.BattleStatus;
+using Nekoyume.Extensions;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -80,8 +80,18 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
 
+            sw.Restart();
+            var sheets = states.GetSheets(
+                containRankingSimulatorSheets:true,
+                sheetTypes: new[]
+                {
+                    typeof(CostumeStatSheet),
+                });
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
             var items = equipmentIds.Concat(costumeIds);
 
             avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
@@ -141,7 +151,7 @@ namespace Nekoyume.Action
                 throw new WeeklyArenaStateAlreadyEndedException();
             }
 
-            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
+            var costumeStatSheet = sheets.GetSheet<CostumeStatSheet>();
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Get CostumeStatSheet: {Elapsed}", addressesHex, sw.Elapsed);
@@ -150,7 +160,7 @@ namespace Nekoyume.Action
             IKey arenaKey = (IKey) avatarAddress.Serialize();
             if (!weeklyArenaMap.ContainsKey(arenaKey))
             {
-                var characterSheet = states.GetSheet<CharacterSheet>();
+                var characterSheet = sheets.GetSheet<CharacterSheet>();
                 var newInfo = new ArenaInfo(avatarState, characterSheet, costumeStatSheet, false);
                 weeklyArenaMap =
                     (Dictionary) weeklyArenaMap.Add(arenaKey, newInfo.Serialize());
@@ -192,7 +202,7 @@ namespace Nekoyume.Action
 
             ArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[arenaKey]);
             EnemyArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[enemyKey]);
-            var rankingSheets = states.GetRankingSimulatorSheets();
+            var rankingSheets = sheets.GetRankingSimulatorSheets();
             var player = new Player(avatarState, rankingSheets);
             var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
             var simulator = new RankingSimulator(
