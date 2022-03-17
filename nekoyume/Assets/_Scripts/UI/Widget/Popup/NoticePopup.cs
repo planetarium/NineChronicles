@@ -40,8 +40,8 @@ namespace Nekoyume.UI
             {
                 name = "ItemLevelRequirement",
                 contentImage = null,
-                beginTime = "2022-03-17 15:00:00",
-                endTime = "2022-04-18 14:59:59",
+                beginTime = "2022/03/17 15:00:00",
+                endTime = "2022/04/18 14:59:59",
                 pageUrlFormat = "https://ninechronicles.medium.com/item-level-requirements-3f5936733007"
             }
         };
