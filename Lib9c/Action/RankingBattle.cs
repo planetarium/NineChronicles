@@ -86,6 +86,7 @@ namespace Nekoyume.Action
                 containRankingSimulatorSheets:true,
                 sheetTypes: new[]
                 {
+                    typeof(CharacterSheet),
                     typeof(CostumeStatSheet),
                 });
             sw.Stop();
