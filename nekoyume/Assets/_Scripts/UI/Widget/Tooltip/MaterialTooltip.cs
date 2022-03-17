@@ -114,13 +114,9 @@ namespace Nekoyume.UI
                 {
                     result.Add(secondRow);
                 }
-
-                return result;
             }
 
             rowList = rows.ToList();
-            result = new List<StageSheet.Row>();
-
             var rowCount = rowList.Count;
             for (int i = rowCount - 1; i >= 0; i--)
             {
@@ -129,9 +125,12 @@ namespace Nekoyume.UI
                     break;
                 }
 
-                if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(rowList[i].Id, out var _))
+                if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(rowList[i].Id, out _))
                 {
-                    result.Add(rowList[i]);
+                    if (!result.Contains(rowList[i]))
+                    {
+                        result.Add(rowList[i]);
+                    }
                 }
             }
 
