@@ -4,12 +4,11 @@ using System.Globalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using TMPro;
-using UniRx;
 using UnityEngine;
-using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
     public class RequiredItemView : SimpleCountableItemView
     {
         [SerializeField]
@@ -29,7 +28,7 @@ namespace Nekoyume.UI.Module
             RequiredCount = requiredCount;
             base.SetData(model);
             _disposables.DisposeAllAndClear();
-            ObservableExtensions.Subscribe(touchHandler.OnClick, _ =>
+            touchHandler.OnClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 var rt = GetComponent<RectTransform>();

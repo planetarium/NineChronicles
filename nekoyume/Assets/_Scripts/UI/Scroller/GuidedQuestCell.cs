@@ -2,23 +2,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     /// <summary>
     /// 새로운 퀘스트가 추가하거나 이미 설정된 퀘스트를 완료할 때의 연출을 책임집니다.
     /// 이때 연출은 QuestResult를 다루는 것까지 포함합니다.
@@ -215,7 +213,7 @@ namespace Nekoyume.UI.Scroller
                     Assert.NotNull(row);
 
                     reward.SetData(row);
-                    ObservableExtensions.Subscribe(reward.touchHandler.OnClick, _ =>
+                    reward.touchHandler.OnClick.Subscribe(_ =>
                     {
                         AudioController.PlayClick();
                         var material = new Nekoyume.Model.Item.Material(reward.Data as MaterialItemSheet.Row);
