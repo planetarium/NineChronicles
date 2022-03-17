@@ -97,6 +97,7 @@ namespace Nekoyume.UI
 
             if (rowList.Any())
             {
+                rowList = rowList.OrderByDescending(sheet => sheet.Key).ToList();
                 var row = rowList.FirstOrDefault();
                 if (row != null)
                 {
@@ -107,6 +108,7 @@ namespace Nekoyume.UI
                 var secondRow = rowList
                     .OrderByDescending(r =>
                         r.Rewards.Find(reward => reward.ItemId == id).Ratio)
+                    .ThenByDescending(sheet => sheet.Key)
                     .FirstOrDefault();
                 if (secondRow != null)
                 {
@@ -116,7 +118,7 @@ namespace Nekoyume.UI
                 return result;
             }
 
-            return rows.Take(2).ToList();
+            return rows.OrderBy(sheet => sheet.Key).Take(2).ToList(); // 오더바이는 있어야됨. 안그럼 스테이지 정렬 안됨
         }
 
         private void SetAcquisitionPlaceButtons(ItemBase itemBase)
