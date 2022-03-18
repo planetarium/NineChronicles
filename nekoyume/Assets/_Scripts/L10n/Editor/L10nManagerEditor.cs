@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using TMPro;
 using TMPro.EditorUtilities;
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -17,6 +19,7 @@ namespace Nekoyume.L10n.Editor
         private const string OldCsvFilesRootPath = "Localization";
         private static readonly string characterFilesPath =
             Path.Combine(Application.dataPath, "Font/CharacterFiles");
+        private static readonly object EditorCoroutineObject = new object();
 
         [MenuItem("Tools/L10n/Migrate Old Csv Files")]
         public static void MigrateOldCsvFiles()
@@ -149,17 +152,23 @@ namespace Nekoyume.L10n.Editor
             }
         }
         
-        // [MenuItem("Tools/L10n/Generate Font Asset Files")]
+        [MenuItem("Tools/L10n/Generate Font Asset Files at Once")]
         public static void GenerateFontAssetFiles()
         {
             GenerateUnicodeHexRangeFiles();
+
+            EditorCoroutineUtility.StartCoroutine(CoGenerateFontAssetFile(), EditorCoroutineObject);
+        }
+
+        private static IEnumerator CoGenerateFontAssetFile()
+        {
             var charactersPath = Path.Combine(Application.dataPath, "Font/CharacterFiles");
             var window = EditorWindow.GetWindow<TMPro_FontAssetCreatorWindow>();
             
             var languageTypes = Enum.GetValues(typeof(LanguageType)).OfType<LanguageType>();
-            var languageType = languageTypes.First();
-            // foreach (var languageType in languageTypes)
+            foreach (var languageType in languageTypes)
             {
+                Debug.Log($"-------------Generate Start : {languageType}-------------");
                 var settings = DefaultSettings[(int) languageType];
                 var characterPath = Path.Combine(charactersPath,
                     $"{languageType.ToString()}-unicode-hex-range-{1:00}.txt");
@@ -170,85 +179,15 @@ namespace Nekoyume.L10n.Editor
 
                 var generator = new FontAssetGenerator(window);
                 generator.GenerateAtlas(settings);
+                yield return new EditorWaitForSeconds(5.0f);
                 generator.SaveFontAssetToSDF(fontAssetFullPath);
+
+                yield return new EditorWaitForSeconds(3.0f);
+                Debug.Log($"-------------Generate End : {languageType}-------------");
             }
         }
-
-        public static void GenerateFontAssetFile(LanguageType languageType)
-        {
-            // GenerateUnicodeHexRangeFile
-            PrepareCharacterFilesDirectory();
-
-            var defaultCharacters = Enumerable.Range(32, 127 - 32)
-                .Union(new List<int>
-                {
-                    // NOTE: 이빠진 곳에 넣을 네모입니다.
-                    '\x25A1'
-                })
-                .Select(Convert.ToChar)
-                .ToList();
-
-            var dict = L10nManager.GetDictionary(languageType);
-            var unicodeHexes = dict.Values
-                .SelectMany(value => value.ToCharArray())
-                .Union(defaultCharacters)
-                .Distinct()
-                .Select(character =>
-                    Convert.ToInt32(
-                        Encoding.Unicode.GetString(BitConverter.GetBytes(character))[0]))
-                .OrderBy(characterNumber => characterNumber)
-                .Select(characterNumber => characterNumber.ToString("X4"))
-                .ToList();
-            var unicodeHexesCount = unicodeHexes.Count;
-            Debug.LogWarning($"{languageType} unicodeHexes count: {unicodeHexesCount}");
-            var maxCharacterCountForEachFile = GetMaxCharacterCountForEachSDF(languageType);
-            var fileIndex = 0;
-            while (true)
-            {
-                var characterCountForEachFile =
-                    unicodeHexesCount - maxCharacterCountForEachFile * fileIndex;
-                if (characterCountForEachFile <= 0)
-                {
-                    break;
-                }
-
-                characterCountForEachFile = Math.Min(
-                    characterCountForEachFile,
-                    maxCharacterCountForEachFile);
-                var filePath = Path.Combine(
-                    characterFilesPath,
-                    $"{languageType.ToString()}-unicode-hex-range-{fileIndex + 1:00}.txt");
-                var joined = string.Join(
-                    ",",
-                    unicodeHexes.GetRange(fileIndex, characterCountForEachFile));
-                File.WriteAllText(filePath, joined);
-
-                fileIndex++;
-            }
-            // GenerateFontAssetFile
-            var charactersPath = Path.Combine(Application.dataPath, "Font/CharacterFiles");
-            var window = EditorWindow.GetWindow<TMPro_FontAssetCreatorWindow>();
-            
-            var settings = DefaultSettings[(int) languageType];
-            var characterPath = Path.Combine(charactersPath,
-                $"{languageType.ToString()}-unicode-hex-range-{1:00}.txt");
-            var unicodeHex = File.ReadAllLines(characterPath)[0];
-            settings.characterSequence = unicodeHex;
-            var fontAssetFullPath = Path.GetFullPath(AssetDatabase.GUIDToAssetPath(settings.referencedFontAssetGUID))
-                .Replace("\\", "/");
-
-            var generator = new FontAssetGenerator(window);
-            generator.GenerateAtlas(settings);
-            generator.SaveFontAssetToSDF(fontAssetFullPath);
-        }
         
-        [MenuItem("Tools/L10n/Generate Font Asset File - English")]
-        public static void GenerateFontAssetFileToEnglish()
-        {
-            GenerateFontAssetFile(LanguageType.English);
-        }
-        
-        public static readonly FontAssetCreationSettings[] DefaultSettings = new FontAssetCreationSettings[]
+        private static readonly FontAssetCreationSettings[] DefaultSettings =
         {
             new FontAssetCreationSettings  // English
             {
@@ -282,7 +221,7 @@ namespace Nekoyume.L10n.Editor
             },
             new FontAssetCreationSettings  // PortugueseBrazil
             {
-                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/PoorStory-Latin.otf"),
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/PoorStory-Latin.ttf"),
                 pointSizeSamplingMode = 1,    // 0: Auto, 1: Custom
                 pointSize = 80,
                 padding = 9,
@@ -297,7 +236,7 @@ namespace Nekoyume.L10n.Editor
             },
             new FontAssetCreationSettings  // Polish
             {
-                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/PoorStory-Latin.otf"),
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/PoorStory-Latin.ttf"),
                 pointSizeSamplingMode = 1,  // 0: Auto, 1: Custom
                 pointSize = 80,
                 padding = 9,
@@ -305,14 +244,14 @@ namespace Nekoyume.L10n.Editor
                 atlasWidth = 1024,
                 atlasHeight = 1024,
                 characterSetSelectionMode = 6,  // 6: Unicode Range (Hex)
-                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/PortugueseBrazil SDF.asset"),
+                referencedFontAssetGUID = AssetDatabase.AssetPathToGUID("Assets/Resources/Font/SDF/Polish SDF.asset"),
                 characterSequence = "",
                 renderMode = (int) GlyphRenderMode.SDFAA,
                 includeFontFeatures = true
             },
             new FontAssetCreationSettings  // Japanese
             {
-                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/NotoSansCJKjp-Regular.otf"),
+                sourceFontFileGUID = AssetDatabase.AssetPathToGUID("Assets/Font/TTF/NotoSansCJKsc-Regular.otf"),
                 pointSizeSamplingMode = 1,  // 0: Auto, 1: Custom
                 pointSize = 80,
                 padding = 7,
