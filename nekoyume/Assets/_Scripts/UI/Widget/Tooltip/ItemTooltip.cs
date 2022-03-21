@@ -78,7 +78,8 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public virtual void Show(ItemBase item,
+        public virtual void Show(
+            ItemBase item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
@@ -104,7 +105,8 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
-        public virtual void Show(RectTransform target,
+        public virtual void Show(
+            RectTransform target,
             InventoryItem item,
             string submitText,
             bool interactable,
@@ -130,11 +132,12 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
-        public virtual void Show(RectTransform target,
+        public virtual void Show(
             ShopItem item,
             System.Action onRegister,
             System.Action onSellCancellation,
-            System.Action onClose)
+            System.Action onClose,
+            RectTransform target = null)
         {
             submitButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
@@ -159,10 +162,11 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(sell.gameObject));
         }
 
-        public virtual void Show(RectTransform target,
+        public virtual void Show(
             ShopItem item,
             System.Action onBuy,
-            System.Action onClose)
+            System.Action onClose,
+            RectTransform target = null)
         {
             submitButton.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -185,7 +189,8 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(buy.gameObject));
         }
 
-        public virtual void Show(EnhancementInventoryItem item,
+        public virtual void Show(
+            EnhancementInventoryItem item,
             string submitText,
             bool interactable,
             System.Action onSubmit,

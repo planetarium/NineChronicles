@@ -40,22 +40,21 @@ namespace Nekoyume.UI
             SetAcquisitionPlaceButtons(item);
         }
 
-        public override void Show(RectTransform target,
-            ShopItem item,
+        public override void Show(ShopItem item,
             System.Action onRegister,
             System.Action onSellCancellation,
-            System.Action onClose)
+            System.Action onClose,
+            RectTransform target = null)
         {
-            base.Show(target, item, onRegister, onSellCancellation, onClose);
+            base.Show(item, onRegister, onSellCancellation, onClose, target);
             acquisitionGroup.SetActive(false);
         }
 
-        public override void Show(RectTransform target,
-            ShopItem item,
+        public override void Show(ShopItem item,
             System.Action onBuy,
-            System.Action onClose)
+            System.Action onClose, RectTransform target)
         {
-            base.Show(target, item, onBuy, onClose);
+            base.Show(item, onBuy, onClose, target);
             acquisitionGroup.SetActive(false);
         }
 
@@ -67,7 +66,7 @@ namespace Nekoyume.UI
             System.Action onClose = null,
             System.Action onBlocked = null)
         {
-            Show(item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked, item.Count.Value, target);
+            base.Show(item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked, item.Count.Value, null);
         }
 
         private static List<StageSheet.Row> GetStageByOrder(

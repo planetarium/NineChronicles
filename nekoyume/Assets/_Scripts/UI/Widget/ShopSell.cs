@@ -118,10 +118,10 @@ namespace Nekoyume.UI
         private void ShowSellTooltip(ShopItem model, RectTransform target)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            tooltip.Show(target, model,
+            tooltip.Show(model,
                 () => ShowUpdateSellPopup(model),
                 () => ShowRetrievePopup(model),
-                view.ClearSelectedItem);
+                view.ClearSelectedItem, target);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
