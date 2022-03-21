@@ -4,20 +4,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TMPro;
 using TMPro.EditorUtilities;
 using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.TextCore.LowLevel;
 
 namespace Nekoyume.L10n.Editor
 {
     public static class L10nManagerEditor
     {
         private const string OldCsvFilesRootPath = "Localization";
-        private static readonly string characterFilesPath =
+        private static readonly string CharacterFilesPath =
             Path.Combine(Application.dataPath, "Font/CharacterFiles");
         private const string GenerationSettingsPath = "L10nSettings/FontAssetGenerationSettings";
         private static readonly object EditorCoroutineObject = new object();
@@ -90,7 +88,7 @@ namespace Nekoyume.L10n.Editor
                         .Take(counts[i]);
                     var joined = string.Join(",", targetLines).Trim(',');
                     var filePath = Path.Combine(
-                        characterFilesPath,
+                        CharacterFilesPath,
                         $"simplified-chinese-8105-unicode-range-{i + 1:00}-{counts[i]:0000}.txt");
                     File.WriteAllText(filePath, joined);
 
@@ -145,7 +143,7 @@ namespace Nekoyume.L10n.Editor
                         characterCountForEachFile,
                         maxCharacterCountForEachFile);
                     var filePath = Path.Combine(
-                        characterFilesPath,
+                        CharacterFilesPath,
                         $"{languageType.ToString()}-unicode-hex-range-{fileIndex + 1:00}.txt");
                     var joined = string.Join(
                         ",",
@@ -196,9 +194,9 @@ namespace Nekoyume.L10n.Editor
 
         private static void PrepareCharacterFilesDirectory()
         {
-            if (!Directory.Exists(characterFilesPath))
+            if (!Directory.Exists(CharacterFilesPath))
             {
-                Directory.CreateDirectory(characterFilesPath);
+                Directory.CreateDirectory(CharacterFilesPath);
             }
         }
 

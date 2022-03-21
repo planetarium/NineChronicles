@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using TMPro;
 using TMPro.EditorUtilities;
 using UnityEditor;
@@ -605,7 +604,6 @@ namespace Nekoyume.L10n.Editor
 
         public void GenerateAtlas(FontAssetGenerationSetting settings)
         {
-            isGenerateAtlasDone = false;
             SetValue(sourceFontFile, settings.sourceFontFile);
             SetValue(pointSizeSamplingMode, settings.pointSizeSamplingMode);
             SetValue(pointSize, settings.pointSize);
@@ -1049,7 +1047,6 @@ namespace Nekoyume.L10n.Editor
                             m_GlyphRenderingGenerationTime = m_StopWatch.Elapsed.TotalMilliseconds;
                             m_IsGlyphRenderingDone = true;
                             m_StopWatch.Reset();
-                            isGenerateAtlasDone = true;
                         }
                     });
                 }
@@ -1057,8 +1054,6 @@ namespace Nekoyume.L10n.Editor
                 SaveCreationSettingsToEditorPrefs(SaveFontCreationSettings());
             }
         }
-
-        private bool isGenerateAtlasDone = false;
         
         public void SaveFontAssetToSDF(string filePath)
         {
