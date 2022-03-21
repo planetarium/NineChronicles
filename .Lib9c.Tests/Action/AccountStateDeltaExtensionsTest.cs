@@ -1,11 +1,18 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
+    using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Tests.Extensions;
     using Libplanet;
+    using Libplanet.Action;
+    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
     using static SerializeKeys;
 
@@ -168,6 +175,58 @@ namespace Lib9c.Tests.Action
             }
 
             Assert.True(states.TryGetAgentAvatarStatesV2(_agentAddress, _avatarAddress, out _, out _));
+        }
+
+        [Fact]
+        public void GetStatesAsDict()
+        {
+            IAccountStateDelta states = new State();
+            var dict = new Dictionary<Address, IValue>
+            {
+                { new PrivateKey().ToAddress(), Null.Value },
+                { new PrivateKey().ToAddress(), new Bencodex.Types.Boolean(false) },
+                { new PrivateKey().ToAddress(), new Bencodex.Types.Boolean(true) },
+                { new PrivateKey().ToAddress(), new Integer(int.MinValue) },
+                { new PrivateKey().ToAddress(), new Integer(0) },
+                { new PrivateKey().ToAddress(), new Integer(int.MaxValue) },
+            };
+            foreach (var (address, value) in dict)
+            {
+                states = states.SetState(address, value);
+            }
+
+            var stateDict = states.GetStatesAsDict(dict.Keys.ToArray());
+            foreach (var (address, value) in dict)
+            {
+                Assert.True(stateDict.ContainsKey(address));
+                var innerValue = stateDict[address];
+                Assert.Equal(value, innerValue);
+            }
+        }
+
+        [Fact]
+        public void GetSheets()
+        {
+            IAccountStateDelta states = new State();
+            SheetsExtensionsTest.InitSheets(
+                states,
+                out _,
+                out var sheetsAddressAndValues,
+                out var sheetTypes,
+                out var stateSheets);
+            foreach (var sheetType in sheetTypes)
+            {
+                Assert.True(stateSheets.ContainsKey(sheetType));
+                var (address, sheet) = stateSheets[sheetType];
+                var expectedAddress = Addresses.TableSheet.Derive(sheetType.Name);
+                Assert.Equal(address, expectedAddress);
+
+                var constructor = sheetType.GetConstructor(Type.EmptyTypes);
+                Assert.NotNull(constructor);
+                var expectedSheet = (ISheet)constructor.Invoke(Array.Empty<object>());
+                expectedSheet.Set(sheetsAddressAndValues[address].ToDotnetString());
+                Assert.Equal(sheet, expectedSheet);
+            }
         }
     }
 }

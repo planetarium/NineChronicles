@@ -66,11 +66,11 @@ namespace Nekoyume.Model
         public int tailIndex;
         public CharacterLevelSheet characterLevelSheet;
 
-        private List<Costume> _costumes;
-        private List<Equipment> _equipments;
+        protected List<Costume> costumes;
+        protected List<Equipment> equipments;
 
-        public IReadOnlyList<Costume> Costumes => _costumes;
-        public IReadOnlyList<Equipment> Equipments => _equipments;
+        public IReadOnlyList<Costume> Costumes => costumes;
+        public IReadOnlyList<Equipment> Equipments => equipments;
 
         public Player(AvatarState avatarState, Simulator simulator)
             : base(
@@ -157,6 +157,12 @@ namespace Nekoyume.Model
             PostConstruction(characterLevelSheet, equipmentItemSetEffectSheet);
         }
 
+        public Player(AvatarState avatarState, SimulatorSheets simulatorSheets) : this(avatarState,
+            simulatorSheets.CharacterSheet, simulatorSheets.CharacterLevelSheet,
+            simulatorSheets.EquipmentItemSetEffectSheet)
+        {
+        }
+
         protected Player(Player value) : base(value)
         {
             Exp = (ExpData) value.Exp.Clone();
@@ -175,8 +181,8 @@ namespace Nekoyume.Model
             tailIndex = value.tailIndex;
             characterLevelSheet = value.characterLevelSheet;
 
-            _costumes = value._costumes;
-            _equipments = value._equipments;
+            costumes = value.costumes;
+            equipments = value.equipments;
         }
 
         public override bool IsHit(CharacterBase caster)
@@ -223,15 +229,20 @@ namespace Nekoyume.Model
 
         private void Equip(IReadOnlyList<Inventory.Item> items, EquipmentItemSetEffectSheet sheet)
         {
-            _costumes = items.Select(i => i.item)
+            costumes = items.Select(i => i.item)
                 .OfType<Costume>()
                 .Where(e => e.equipped)
                 .ToList();
-            _equipments = items.Select(i => i.item)
+            equipments = items.Select(i => i.item)
                 .OfType<Equipment>()
                 .Where(e => e.equipped)
                 .ToList();
-            foreach (var equipment in _equipments)
+            SetEquipmentStat(sheet);
+        }
+
+        protected void SetEquipmentStat(EquipmentItemSetEffectSheet sheet)
+        {
+            foreach (var equipment in equipments)
             {
                 switch (equipment.ItemSubType)
                 {
@@ -256,14 +267,14 @@ namespace Nekoyume.Model
                 }
             }
 
-            Stats.SetEquipments(_equipments, sheet);
+            Stats.SetEquipments(equipments, sheet);
 
-            foreach (var skill in _equipments.SelectMany(equipment => equipment.Skills))
+            foreach (var skill in equipments.SelectMany(equipment => equipment.Skills))
             {
                 Skills.Add(skill);
             }
 
-            foreach (var buffSkill in _equipments.SelectMany(equipment => equipment.BuffSkills))
+            foreach (var buffSkill in equipments.SelectMany(equipment => equipment.BuffSkills))
             {
                 Skills.Add(buffSkill);
             }
@@ -440,7 +451,7 @@ namespace Nekoyume.Model
         public void SetCostumeStat(CostumeStatSheet costumeStatSheet)
         {
             var statModifiers = new List<StatModifier>();
-            foreach (var itemId in _costumes.Select(costume => costume.Id))
+            foreach (var itemId in costumes.Select(costume => costume.Id))
             {
                 statModifiers.AddRange(
                     costumeStatSheet.OrderedList

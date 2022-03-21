@@ -22,7 +22,7 @@ namespace Nekoyume.Model
         public readonly Guid Id = Guid.NewGuid();
 
         [NonSerialized]
-        public readonly Simulator Simulator;
+        public Simulator Simulator;
 
         public ElementalType atkElementType;
         public float attackRange;

@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.Serialization;
+using Libplanet;
 
 namespace Nekoyume.Action
 {
@@ -7,6 +8,11 @@ namespace Nekoyume.Action
     public class FailedLoadStateException : Exception
     {
         public FailedLoadStateException(string message) : base(message)
+        {
+        }
+        
+        public FailedLoadStateException(Address address, Type stateType) :
+            base($"address: {address.ToHex()}, state type: {stateType.FullName}")
         {
         }
 
