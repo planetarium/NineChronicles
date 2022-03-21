@@ -603,12 +603,10 @@ namespace Nekoyume.L10n.Editor
             UnityEngine.Object.DestroyImmediate(obj);
         }
 
-        public void GenerateAtlas(FontAssetCreationSettings settings)
+        public void GenerateAtlas(FontAssetGenerationSetting settings)
         {
             isGenerateAtlasDone = false;
-            var m_sourceFontFile =
-                AssetDatabase.LoadAssetAtPath<Font>(AssetDatabase.GUIDToAssetPath(settings.sourceFontFileGUID));
-            SetValue(sourceFontFile, m_sourceFontFile);
+            SetValue(sourceFontFile, settings.sourceFontFile);
             SetValue(pointSizeSamplingMode, settings.pointSizeSamplingMode);
             SetValue(pointSize, settings.pointSize);
             SetValue(padding, settings.padding);
@@ -616,9 +614,7 @@ namespace Nekoyume.L10n.Editor
             SetValue(atlasWidth, settings.atlasWidth);
             SetValue(atlasHeight, settings.atlasHeight);
             SetValue(characterSetSelectionMode, settings.characterSetSelectionMode);
-            var m_ReferencedFontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(
-                    AssetDatabase.GUIDToAssetPath(settings.referencedFontAssetGUID));
-            SetValue(referencedFontAsset, m_ReferencedFontAsset);
+            SetValue(referencedFontAsset, settings.referencedFontAsset);
             SetValue(characterSequence, settings.characterSequence);
             SetValue(glyphRenderMode, settings.renderMode);
             SetValue(includeFontFeatures, settings.includeFontFeatures);
