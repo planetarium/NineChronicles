@@ -20,6 +20,10 @@ namespace Nekoyume.L10n.Editor
         private static readonly string characterFilesPath =
             Path.Combine(Application.dataPath, "Font/CharacterFiles");
         private static readonly object EditorCoroutineObject = new object();
+        
+        // Depending on the computer environment, the corresponding time may change
+        private const float WaitTimeForGenerateAtlas = 5f;
+        private const float WaitTimeForGenerateSaveSDF = 1f;
 
         [MenuItem("Tools/L10n/Migrate Old Csv Files")]
         public static void MigrateOldCsvFiles()
@@ -179,10 +183,9 @@ namespace Nekoyume.L10n.Editor
 
                 var generator = new FontAssetGenerator(window);
                 generator.GenerateAtlas(settings);
-                yield return new EditorWaitForSeconds(5.0f);
+                yield return new EditorWaitForSeconds(WaitTimeForGenerateAtlas);
                 generator.SaveFontAssetToSDF(fontAssetFullPath);
-
-                yield return new EditorWaitForSeconds(3.0f);
+                yield return new EditorWaitForSeconds(WaitTimeForGenerateSaveSDF);
                 Debug.Log($"-------------Generate End : {languageType}-------------");
             }
         }
