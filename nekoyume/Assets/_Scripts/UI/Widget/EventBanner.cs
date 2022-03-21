@@ -8,7 +8,10 @@ namespace Nekoyume.UI.Module
     public class EventBanner : Widget
     {
         [SerializeField]
-        private Button ArenaEventButton;
+        private Button itemLevelNoticeButton;
+        
+        // [SerializeField]
+        // private Button ArenaEventButton;
 
         // [SerializeField]
         // private Button bigCatYearEventButton;
@@ -19,6 +22,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button playToEarnInviteEventButton;
 
+        private const string ItemLevelNoticePageURLFormat = "https://ninechronicles.medium.com/item-level-requirements-3f5936733007";
+        
         private const string ArenaEventPageURLFormat = "https://ninechronicles.medium.com/nine-chronicles-arena-season-2-224k-ncg-reward-pool-begins-march-4th-88c947d507d6";
 
         private const string bigCatYearEventPageURLFormat = "https://onboarding.nine-chronicles.com/";
@@ -29,9 +34,13 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            ArenaEventButton.onClick.AsObservable()
-                .Subscribe(_ => GoToArenaEventPage())
+            itemLevelNoticeButton.OnClickAsObservable()
+                .Subscribe(_ => GoToItemLevelNoticePage())
                 .AddTo(gameObject);
+            
+            // ArenaEventButton.onClick.AsObservable()
+            //     .Subscribe(_ => GoToArenaEventPage())
+            //     .AddTo(gameObject);
 
             // bigCatYearEventButton.onClick.AsObservable()
             //     .Subscribe(_ => GoTobigCatYearEventPage())
@@ -46,6 +55,11 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
+        private void GoToItemLevelNoticePage()
+        {
+            Application.OpenURL(ItemLevelNoticePageURLFormat);
+        }
+        
         private void GoToArenaEventPage()
         {
             var address = States.Instance.AgentState.address;
