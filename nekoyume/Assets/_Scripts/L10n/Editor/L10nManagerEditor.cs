@@ -1,8 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using TMPro.EditorUtilities;
+using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -12,8 +15,14 @@ namespace Nekoyume.L10n.Editor
     public static class L10nManagerEditor
     {
         private const string OldCsvFilesRootPath = "Localization";
-        private static readonly string characterFilesPath =
+        private static readonly string CharacterFilesPath =
             Path.Combine(Application.dataPath, "Font/CharacterFiles");
+        private const string GenerationSettingsPath = "L10nSettings/FontAssetGenerationSettings";
+        private static readonly object EditorCoroutineObject = new object();
+        
+        // Depending on the computer environment, the corresponding time may change
+        private const float WaitTimeForGenerateAtlas = 5f;
+        private const float WaitTimeForGenerateSaveSDF = 1f;
 
         [MenuItem("Tools/L10n/Migrate Old Csv Files")]
         public static void MigrateOldCsvFiles()
@@ -79,7 +88,7 @@ namespace Nekoyume.L10n.Editor
                         .Take(counts[i]);
                     var joined = string.Join(",", targetLines).Trim(',');
                     var filePath = Path.Combine(
-                        characterFilesPath,
+                        CharacterFilesPath,
                         $"simplified-chinese-8105-unicode-range-{i + 1:00}-{counts[i]:0000}.txt");
                     File.WriteAllText(filePath, joined);
 
@@ -134,7 +143,7 @@ namespace Nekoyume.L10n.Editor
                         characterCountForEachFile,
                         maxCharacterCountForEachFile);
                     var filePath = Path.Combine(
-                        characterFilesPath,
+                        CharacterFilesPath,
                         $"{languageType.ToString()}-unicode-hex-range-{fileIndex + 1:00}.txt");
                     var joined = string.Join(
                         ",",
@@ -145,12 +154,49 @@ namespace Nekoyume.L10n.Editor
                 }
             }
         }
+        
+        [MenuItem("Tools/L10n/Generate Font Asset Files at Once")]
+        public static void GenerateFontAssetFiles()
+        {
+            GenerateUnicodeHexRangeFiles();
+
+            EditorCoroutineUtility.StartCoroutine(CoGenerateFontAssetFile(), EditorCoroutineObject);
+        }
+
+        private static IEnumerator CoGenerateFontAssetFile()
+        {
+            var charactersPath = Path.Combine(Application.dataPath, "Font/CharacterFiles");
+            var window = EditorWindow.GetWindow<TMPro_FontAssetCreatorWindow>();
+            
+            var languageTypes = Enum.GetValues(typeof(LanguageType)).OfType<LanguageType>();
+            var settingsList = Resources.Load<FontAssetGenerationSettings>(GenerationSettingsPath).settings;
+            foreach (var languageType in languageTypes)
+            {
+                Debug.Log($"-------------Generate Start : {languageType}-------------");
+                var settings = settingsList[(int)languageType];
+
+                var characterPath = Path.Combine(charactersPath,
+                    $"{languageType.ToString()}-unicode-hex-range-{1:00}.txt");
+                var unicodeHexes = File.ReadAllLines(characterPath);
+                settings.characterSequence = unicodeHexes[0];
+                
+                var fontAssetFullPath = Path.GetFullPath(AssetDatabase.GetAssetPath(settings.referencedFontAsset))
+                    .Replace("\\", "/");
+
+                var generator = new FontAssetGenerator(window);
+                generator.GenerateAtlas(settings);
+                yield return new EditorWaitForSeconds(WaitTimeForGenerateAtlas);
+                generator.SaveFontAssetToSDF(fontAssetFullPath);
+                yield return new EditorWaitForSeconds(WaitTimeForGenerateSaveSDF);
+                Debug.Log($"-------------Generate End : {languageType}-------------");
+            }
+        }
 
         private static void PrepareCharacterFilesDirectory()
         {
-            if (!Directory.Exists(characterFilesPath))
+            if (!Directory.Exists(CharacterFilesPath))
             {
-                Directory.CreateDirectory(characterFilesPath);
+                Directory.CreateDirectory(CharacterFilesPath);
             }
         }
 
