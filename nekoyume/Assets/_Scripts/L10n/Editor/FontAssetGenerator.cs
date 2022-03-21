@@ -1064,20 +1064,14 @@ namespace Nekoyume.L10n.Editor
 
         private bool isGenerateAtlasDone = false;
         
-        public async void SaveFontAssetToSDF(string filePath)
+        public void SaveFontAssetToSDF(string filePath)
         {
-            var task = Task.Run(() =>
-            {
-                while (!isGenerateAtlasDone) ;
-            });
-            
             if (filePath.Length == 0)
             {
                 Debug.LogError("SaveFontAssetToSDF: File Path is empty.");
                 return;
             }
             
-            await task;
             if (!(((GlyphRasterModes) m_GlyphRenderMode & GlyphRasterModes.RASTER_MODE_BITMAP) ==
                   GlyphRasterModes.RASTER_MODE_BITMAP))
             {
