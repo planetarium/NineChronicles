@@ -85,7 +85,8 @@ namespace Nekoyume.UI
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            int itemCount = 0, RectTransform target = null)
+            int itemCount = 0,
+            RectTransform target = null)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -106,13 +107,13 @@ namespace Nekoyume.UI
         }
 
         public virtual void Show(
-            RectTransform target,
             InventoryItem item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
-            System.Action onBlocked = null)
+            System.Action onBlocked = null,
+            RectTransform target = null)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
