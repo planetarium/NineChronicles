@@ -235,7 +235,7 @@ namespace Nekoyume.UI.Scroller
             AudioController.PlayClick();
             var material = new Nekoyume.Model.Item.Material(reward.Data as MaterialItemSheet.Row);
             ItemTooltip.Find(material.ItemType)
-                .Show(reward.RectTransform, material, string.Empty, false, null);
+                .Show(material, string.Empty, false, null, target:reward.RectTransform);
         }
 
         private void ClearRewards()

@@ -26,24 +26,16 @@ namespace Nekoyume.UI
         private const string StakingDescriptionUrl =
             "https://ninechronicles.medium.com/monster-collection-muspelheim-the-realm-of-fire-part-2-b5c36e089b81";
 
-        public override void Show(
-            RectTransform target,
-            ItemBase item,
+        public override void Show(ItemBase item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            int itemCount = 0)
+            int itemCount = 0,
+            RectTransform target = null)
         {
-            base.Show(target,
-                item,
-                submitText,
-                interactable,
-                onSubmit,
-                onClose,
-                onBlocked,
-                itemCount);
+            base.Show(item, submitText, interactable, onSubmit, onClose, onBlocked, itemCount, target);
             acquisitionGroup.SetActive(false);
             SetAcquisitionPlaceButtons(item);
         }
@@ -75,8 +67,7 @@ namespace Nekoyume.UI
             System.Action onClose = null,
             System.Action onBlocked = null)
         {
-            Show(target, item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked,
-                item.Count.Value);
+            Show(item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked, item.Count.Value, target);
         }
 
         private static List<StageSheet.Row> GetStageByOrder(

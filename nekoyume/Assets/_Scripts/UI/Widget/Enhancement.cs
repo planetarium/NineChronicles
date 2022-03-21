@@ -137,13 +137,14 @@ namespace Nekoyume.UI
         private void ShowItemTooltip(EnhancementInventoryItem model, RectTransform target)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            tooltip.Show(target, model, enhancementInventory.GetSubmitText(),
+            tooltip.Show(model, enhancementInventory.GetSubmitText(),
                 !model.Disabled.Value,
                 () => enhancementInventory.SelectItem(),
                 () => enhancementInventory.ClearSelectedItem(),
                 () => NotificationSystem.Push(MailType.System,
                     L10nManager.Localize("NOTIFICATION_MISMATCH_MATERIAL"),
-                    NotificationCell.NotificationType.Alert));
+                    NotificationCell.NotificationType.Alert),
+                target);
         }
 
         private void Action()

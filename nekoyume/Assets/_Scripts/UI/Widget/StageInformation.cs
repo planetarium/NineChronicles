@@ -90,7 +90,7 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
             var material = new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row);
             ItemTooltip.Find(material.ItemType)
-                .Show(view.RectTransform, material, string.Empty, false, null);
+                .Show(material, string.Empty, false, null, target: view.RectTransform);
         }
 
         private void OnClickClose()

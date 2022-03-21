@@ -78,14 +78,13 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public virtual void Show(RectTransform target,
-            ItemBase item,
+        public virtual void Show(ItemBase item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            int itemCount = 0)
+            int itemCount = 0, RectTransform target = null)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -186,13 +185,13 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(buy.gameObject));
         }
 
-        public virtual void Show(RectTransform target,
-            EnhancementInventoryItem item,
+        public virtual void Show(EnhancementInventoryItem item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
-            System.Action onBlocked = null)
+            System.Action onBlocked = null,
+            RectTransform target = null)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -227,10 +226,18 @@ namespace Nekoyume.UI
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
             panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(
-                (RectTransform)verticalLayoutGroup.transform);
-            panel.MoveToRelatedPosition(target, TargetPivotPresetType, OffsetFromTarget);
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)verticalLayoutGroup.transform);
             panel.MoveInsideOfParent(MarginFromParent);
+            if (target)
+            {
+                panel.MoveToRelatedPosition(target, TargetPivotPresetType, OffsetFromTarget);
+            }
+            else
+            {
+                panel.SetAnchor(AnchorPresetType.MiddleCenter);
+                panel.anchoredPosition =
+                    new Vector2(-(panel.sizeDelta.x / 2), panel.sizeDelta.y / 2);
+            }
 
             if (!(target is null) && panel.position.x - target.position.x < 0)
             {
