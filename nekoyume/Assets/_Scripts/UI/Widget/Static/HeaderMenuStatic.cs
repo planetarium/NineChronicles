@@ -213,6 +213,11 @@ namespace Nekoyume.UI.Module
             Show(ignoreShowAnimation);
         }
 
+        protected override void Update()
+        {
+
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
             foreach (var toggleInfo in toggles)
