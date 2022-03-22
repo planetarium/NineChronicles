@@ -1,3 +1,4 @@
+using System;
 using Nekoyume.EnumType;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,12 +12,6 @@ namespace Nekoyume.UI.Module
     {
         [SerializeField]
         private RectTransform maskTransform = null;
-
-        [SerializeField]
-        private RectTransform content = null;
-
-        [SerializeField]
-        private List<Image> indexImages = null;
 
         [SerializeField]
         private Sprite indexEnabledImage = null;
@@ -33,6 +28,10 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private float movePageInterval;
 
+        private RectTransform _content;
+
+        private readonly List<Image> _indexImages = new List<Image>();
+
         private Vector2 _panelPosition;
 
         private float _xBorderMin;
@@ -45,17 +44,26 @@ namespace Nekoyume.UI.Module
 
         private Vector2 _initialPosition;
 
-        private void Awake()
+        public void Set(RectTransform content, IEnumerable<Image> indexImages)
         {
-            _initialPosition = content.GetAnchoredPositionOfPivot(PivotPresetType.TopLeft);
+            _content = content;
+            _indexImages.Clear();
+            _indexImages.AddRange(indexImages);
+            _initialPosition = _content.GetAnchoredPositionOfPivot(PivotPresetType.TopLeft);
+            UpdateView();
         }
 
         private void OnEnable()
         {
-            content.anchoredPosition = _initialPosition;
-            _panelPosition = content.localPosition;
+            UpdateView();
+        }
+
+        private void UpdateView()
+        {
+            _content.anchoredPosition = _initialPosition;
+            _panelPosition = _content.localPosition;
             _xBorderMax = _panelPosition.x;
-            _xBorderMin = _xBorderMax - maskTransform.rect.width * (content.childCount - 1);
+            _xBorderMin = _xBorderMax - maskTransform.rect.width * (_content.childCount - 1);
             SetPageIndex(0);
             StartCoroutine(CoMovePage());
         }
@@ -64,7 +72,7 @@ namespace Nekoyume.UI.Module
         {
             var delta = eventData.pressPosition.x - eventData.position.x;
             var x = Mathf.Clamp(_panelPosition.x - delta, _xBorderMin, _xBorderMax);
-            content.localPosition = new Vector3(x, content.localPosition.y, content.localPosition.z);
+            _content.localPosition = new Vector3(x, _content.localPosition.y, _content.localPosition.z);
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -88,7 +96,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 var x = Mathf.Clamp(newX, _xBorderMin, _xBorderMax);
-                targetPosition = new Vector3(x, content.localPosition.y, content.localPosition.z);
+                targetPosition = new Vector3(x, _content.localPosition.y, _content.localPosition.z);
                 var pageDiff = Mathf.RoundToInt((_panelPosition.x - x) / contentWidth);
                 SetPageIndex(_currentIndex + pageDiff);
             }
@@ -97,7 +105,7 @@ namespace Nekoyume.UI.Module
             {
                 StopCoroutine(_animationCoroutine);
             }
-            _animationCoroutine = StartCoroutine(CoSmoothMovePage(content.localPosition, targetPosition));
+            _animationCoroutine = StartCoroutine(CoSmoothMovePage(_content.localPosition, targetPosition));
         }
 
         private IEnumerator CoSmoothMovePage(Vector3 startPos, Vector3 endPos)
@@ -110,13 +118,13 @@ namespace Nekoyume.UI.Module
                 var step = Mathf.SmoothStep(0f, 1f, t);
                 var position = Vector3.Lerp(startPos, endPos, step);
 
-                content.localPosition = position;
+                _content.localPosition = position;
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
-            content.localPosition = endPos;
-            _panelPosition = content.localPosition;
+            _content.localPosition = endPos;
+            _panelPosition = _content.localPosition;
             _animationCoroutine = null;
         }
 
@@ -124,10 +132,10 @@ namespace Nekoyume.UI.Module
         {
             _currentIndex = index;
 
-            for (int i = 0; i < indexImages.Count; ++i)
+            for (int i = 0; i < _indexImages.Count; ++i)
             {
                 var enabled = i == index;
-                indexImages[i].sprite = enabled ? indexEnabledImage : indexDisabledImage;
+                _indexImages[i].sprite = enabled ? indexEnabledImage : indexDisabledImage;
             }
         }
 
@@ -141,15 +149,15 @@ namespace Nekoyume.UI.Module
 
                 if (_animationCoroutine == null)
                 {
-                    var idx = _currentIndex + 1 < indexImages.Count ?
+                    var idx = _currentIndex + 1 < _indexImages.Count ?
                         _currentIndex + 1 : 0;
                     var x = _xBorderMax - (idx * contentWidth);
-                    var targetPosition = new Vector3(x, content.localPosition.y, content.localPosition.z);
+                    var targetPosition = new Vector3(x, _content.localPosition.y, _content.localPosition.z);
 
-                    StartCoroutine(CoSmoothMovePage(content.localPosition, targetPosition));
+                    StartCoroutine(CoSmoothMovePage(_content.localPosition, targetPosition));
                     SetPageIndex(idx);
                 }
             }
-        }    
+        }
     }
 }
