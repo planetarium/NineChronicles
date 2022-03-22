@@ -95,6 +95,8 @@ namespace Nekoyume.UI.Module
 
         public bool ChargingAP => actionPoint.NowCharging;
 
+        public override bool CanHandleInputEvent => false;
+
         public override void Initialize()
         {
             base.Initialize();
