@@ -184,11 +184,10 @@ namespace Nekoyume.Helper
                 begin = $"{now.Year}/{begin}";
                 end = $"{now.Year}/{end}";
             }
+
             var bDt = DateTime.ParseExact(begin, "yyyy/MM/dd HH:mm:ss", null);
             var eDt = DateTime.ParseExact(end, "yyyy/MM/dd HH:mm:ss", null);
-            var bDiff = (now - bDt).TotalSeconds;
-            var eDiff = (eDt - now).TotalSeconds;
-            return bDiff > 0 && eDiff > 0;
+            return now.IsInTime(bDt, eDt);
         }
     }
 }
