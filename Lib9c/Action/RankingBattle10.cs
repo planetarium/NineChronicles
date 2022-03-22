@@ -18,8 +18,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle11")]
-    public class RankingBattle : GameAction
+    [ActionType("ranking_battle10")]
+    public class RankingBattle10 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
