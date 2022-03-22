@@ -46,7 +46,7 @@ namespace Nekoyume.UI
             }
         };
 
-        private const string LastNoticeDayKeyFormat = "NOTICE_POPUP_LAST_DAY_{0}";
+        private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
 
         private static bool CanShowNoticePopup(NoticeInfo notice)
         {
