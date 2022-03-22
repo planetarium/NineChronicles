@@ -213,6 +213,7 @@ namespace Nekoyume.UI.Module
             Show(ignoreShowAnimation);
         }
 
+        // base.Update() works `CheckInput()`, but this widget unnecessary `CheckInput()`.
         protected override void Update()
         {
 
