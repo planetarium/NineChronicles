@@ -29,13 +29,15 @@ namespace Nekoyume.Game.Character
         public Inventory Inventory;
         public TouchHandler touchHandler;
 
-        public List<Costume> Costumes =>
-            Inventory?.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped).ToList() ??
-            new List<Costume>();
+        public List<Costume> Costumes => Inventory?.Items.Count > 0
+            ? Inventory?.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped)
+                .ToList()
+            : Model.Costumes.Where(c => c.equipped).ToList();
 
-        public List<Equipment> Equipments =>
-            Inventory?.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList() ??
-            new List<Equipment>();
+        public List<Equipment> Equipments => Inventory?.Items.Count > 0
+            ? Inventory?.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped)
+                .ToList()
+            : Model.Equipments.Where(e => e.equipped).ToList();
 
         protected override float RunSpeedDefault => CharacterModel.RunSpeed;
 
