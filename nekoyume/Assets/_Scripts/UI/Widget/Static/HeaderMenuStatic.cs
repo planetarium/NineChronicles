@@ -95,6 +95,8 @@ namespace Nekoyume.UI.Module
 
         public bool ChargingAP => actionPoint.NowCharging;
 
+        public override bool CanHandleInputEvent => false;
+
         public override void Initialize()
         {
             base.Initialize();
@@ -211,12 +213,6 @@ namespace Nekoyume.UI.Module
         {
             UpdateAssets(assetVisibleState);
             Show(ignoreShowAnimation);
-        }
-
-        // base.Update() works `CheckInput()`, but this widget unnecessary `CheckInput()`.
-        protected override void Update()
-        {
-
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
