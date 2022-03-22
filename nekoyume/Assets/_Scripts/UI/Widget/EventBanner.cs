@@ -32,7 +32,22 @@ namespace Nekoyume.UI.Module
                 banner.GetComponent<EventBannerItem>().Set(info.SeasonBanner, info.SeasonUrl);
             }
 
-            for (var i = 0; i < content.childCount; i++)
+            var childCount = content.childCount;
+            for (var i = 0; i < childCount; i++)
+            {
+                var eventBannerItem = content.GetChild(i).GetComponent<EventBannerItem>();
+                if (eventBannerItem is null)
+                {
+                    continue;
+                }
+
+                if (eventBannerItem.DestroyIfNecessary())
+                {
+                    childCount--;
+                }
+            }
+
+            for (var i = 0; i < childCount; i++)
             {
                 Instantiate(i == 0 ? IndexOn : IndexOff, indexContent);
             }
