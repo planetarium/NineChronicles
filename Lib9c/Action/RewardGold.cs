@@ -99,6 +99,13 @@ namespace Nekoyume.Action
 
         public IAccountStateDelta WeeklyArenaRankingBoard2(IActionContext ctx, IAccountStateDelta states)
         {
+            states = PrepareNextArena(ctx, states);
+            states = ResetChallengeCount(ctx, states);
+            return states;
+        }
+
+        public IAccountStateDelta PrepareNextArena(IActionContext ctx, IAccountStateDelta states)
+        {
             var gameConfigState = states.GetGameConfigState();
             var index = Math.Max((int) ctx.BlockIndex / gameConfigState.WeeklyArenaInterval, 0);
             var weeklyAddress = WeeklyArenaState.DeriveAddress(index);
@@ -110,24 +117,35 @@ namespace Nekoyume.Action
                 nextWeekly = new WeeklyArenaState(nextIndex);
                 states = states.SetState(nextWeekly.address, nextWeekly.Serialize());
             }
-            var resetIndex = rawWeekly["resetIndex"].ToLong();
 
             // Beginning block of a new weekly arena.
             if (ctx.BlockIndex % gameConfigState.WeeklyArenaInterval == 0 && index > 0)
             {
                 var prevWeeklyAddress = WeeklyArenaState.DeriveAddress(index - 1);
-                var rawPrevWeekly = (Dictionary)states.GetState(prevWeeklyAddress);
+                var rawPrevWeekly = (Dictionary) states.GetState(prevWeeklyAddress);
                 if (!rawPrevWeekly["ended"].ToBoolean())
                 {
                     rawPrevWeekly = rawPrevWeekly.SetItem("ended", true.Serialize());
                     var weekly = new WeeklyArenaState(rawWeekly);
                     var prevWeekly = new WeeklyArenaState(rawPrevWeekly);
                     weekly.Update(prevWeekly, ctx.BlockIndex);
+
                     states = states.SetState(prevWeeklyAddress, rawPrevWeekly);
                     states = states.SetState(weeklyAddress, weekly.Serialize());
                 }
             }
-            else if (ctx.BlockIndex - resetIndex >= gameConfigState.DailyArenaInterval)
+            return states;
+        }
+
+        public IAccountStateDelta ResetChallengeCount(IActionContext ctx, IAccountStateDelta states)
+        {
+            var gameConfigState = states.GetGameConfigState();
+            var index = Math.Max((int) ctx.BlockIndex / gameConfigState.WeeklyArenaInterval, 0);
+            var weeklyAddress = WeeklyArenaState.DeriveAddress(index);
+            var rawWeekly = (Dictionary) states.GetState(weeklyAddress);
+            var resetIndex = rawWeekly["resetIndex"].ToLong();
+
+            if (ctx.BlockIndex - resetIndex >= gameConfigState.DailyArenaInterval)
             {
                 var weekly = new WeeklyArenaState(rawWeekly);
                 weekly.ResetCount(ctx.BlockIndex);
