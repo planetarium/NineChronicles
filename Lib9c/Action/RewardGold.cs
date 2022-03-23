@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Battle;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
@@ -128,7 +130,71 @@ namespace Nekoyume.Action
                     rawPrevWeekly = rawPrevWeekly.SetItem("ended", true.Serialize());
                     var weekly = new WeeklyArenaState(rawWeekly);
                     var prevWeekly = new WeeklyArenaState(rawPrevWeekly);
-                    weekly.Update(prevWeekly, ctx.BlockIndex);
+                    var listAddress = weekly.address.Derive("address_list");
+                    // Set ArenaInfo, address list for new RankingBattle.
+                    var addressList = states.TryGetState(listAddress, out List rawList)
+                        ? rawList.ToList(StateExtensions.ToAddress)
+                        : new List<Address>();
+                    if (ctx.BlockIndex >= RankingBattle.UpdateTargetBlockIndex)
+                    {
+                        weekly.ResetIndex = ctx.BlockIndex;
+
+                        // Copy Map to address list.
+                        if (ctx.BlockIndex == RankingBattle.UpdateTargetBlockIndex)
+                        {
+                            foreach (var kv in prevWeekly.Map)
+                            {
+                                var address = kv.Key;
+                                var lazyInfo = kv.Value;
+                                var info = new ArenaInfo(lazyInfo.State);
+                                states = states.SetState(
+                                    weeklyAddress.Derive(address.ToByteArray()), info.Serialize());
+                                if (!addressList.Contains(address))
+                                {
+                                    addressList.Add(address);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Copy addresses from prev weekly address list.
+                            var prevListAddress = prevWeekly.address.Derive("address_list");
+
+                            if (states.TryGetState(prevListAddress, out List prevRawList))
+                            {
+                                var prevList = prevRawList.ToList(StateExtensions.ToAddress);
+                                foreach (var address in prevList.Where(address => !addressList.Contains(address)))
+                                {
+                                    addressList.Add(address);
+                                }
+                            }
+
+                            // Copy ArenaInfo from prev ArenaInfo.
+                            foreach (var address in addressList)
+                            {
+                                if (states.TryGetState(
+                                        prevWeekly.address.Derive(address.ToByteArray()),
+                                        out Dictionary rawInfo))
+                                {
+                                    var prevInfo = new ArenaInfo(rawInfo);
+                                    var info = new ArenaInfo(prevInfo);
+                                    states = states.SetState(
+                                        weeklyAddress.Derive(address.ToByteArray()),
+                                        info.Serialize());
+                                }
+                            }
+                        }
+
+                        // Set address list.
+                        states = states.SetState(listAddress,
+                            addressList.Aggregate(List.Empty,
+                                (current, address) => current.Add(address.Serialize())));
+                    }
+                    // Run legacy Update.
+                    else
+                    {
+                        weekly.Update(prevWeekly, ctx.BlockIndex);
+                    }
 
                     states = states.SetState(prevWeeklyAddress, rawPrevWeekly);
                     states = states.SetState(weeklyAddress, weekly.Serialize());

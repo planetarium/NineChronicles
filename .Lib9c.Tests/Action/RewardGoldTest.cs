@@ -1,7 +1,9 @@
 namespace Lib9c.Tests.Action
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -126,6 +128,96 @@ namespace Lib9c.Tests.Action
                 Assert.Contains(_avatarState.address, currentWeeklyState);
                 Assert.Equal(updateNext, nextWeeklyState.ContainsKey(_avatarState.address));
             }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void PrepareNextArena(bool afterUpdate)
+        {
+            var weeklyIndex = RankingBattle.UpdateTargetIndex - 1;
+            if (afterUpdate)
+            {
+                weeklyIndex++;
+            }
+
+            var weekly = new WeeklyArenaState(weeklyIndex);
+            var avatarAddress = _avatarState.address;
+            if (!afterUpdate)
+            {
+                weekly.Set(_avatarState, _tableSheets.CharacterSheet);
+                weekly[avatarAddress].Update(weekly[avatarAddress], BattleLog.Result.Lose);
+
+                Assert.Equal(4, weekly[avatarAddress].DailyChallengeCount);
+            }
+
+            var gameConfigState = new GameConfigState();
+            gameConfigState.Set(_tableSheets.GameConfigSheet);
+            var nextWeekly = new WeeklyArenaState(weeklyIndex + 1);
+            var state = _baseState
+                .SetState(weekly.address, weekly.Serialize())
+                .SetState(nextWeekly.address, nextWeekly.Serialize())
+                .SetState(gameConfigState.address, gameConfigState.Serialize());
+
+            var blockIndex = RankingBattle.UpdateTargetBlockIndex;
+
+            if (afterUpdate)
+            {
+                var prevInfo = new ArenaInfo(_avatarState, _tableSheets.CharacterSheet, true);
+                prevInfo.Update(prevInfo, BattleLog.Result.Lose);
+
+                Assert.Equal(4, prevInfo.DailyChallengeCount);
+
+                state = state
+                    .SetState(
+                        weekly.address.Derive(avatarAddress.ToByteArray()),
+                        prevInfo.Serialize())
+                    .SetState(
+                        weekly.address.Derive("address_list"),
+                        List.Empty.Add(avatarAddress.Serialize()));
+
+                blockIndex += gameConfigState.WeeklyArenaInterval;
+            }
+
+            Assert.False(weekly.Ended);
+
+            var action = new RewardGold();
+
+            var ctx = new ActionContext()
+            {
+                BlockIndex = blockIndex,
+                PreviousStates = _baseState,
+                Miner = default,
+            };
+
+            var nextState = action.PrepareNextArena(ctx, state);
+            var currentWeeklyState = nextState.GetWeeklyArenaState(weeklyIndex);
+            var nextWeeklyState = nextState.GetWeeklyArenaState(weeklyIndex + 1);
+
+            Assert.True(currentWeeklyState.Ended);
+            Assert.Empty(nextWeeklyState.Map);
+            Assert.True(
+                nextState.TryGetState(
+                    nextWeekly.address.Derive(avatarAddress.ToByteArray()),
+                    out Dictionary rawInfo
+                )
+            );
+
+            var info = new ArenaInfo(rawInfo);
+
+            Assert.Equal(GameConfig.ArenaChallengeCountMax, info.DailyChallengeCount);
+            Assert.Equal(1000, info.Score);
+            Assert.True(
+                nextState.TryGetState(
+                    nextWeekly.address.Derive("address_list"),
+                    out List rawList
+                )
+            );
+
+            List<Address> addressList = rawList.ToList(StateExtensions.ToAddress);
+
+            Assert.Single(addressList);
+            Assert.Equal(avatarAddress, addressList.First());
         }
 
         [Fact]
