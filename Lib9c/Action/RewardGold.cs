@@ -214,7 +214,31 @@ namespace Nekoyume.Action
             if (ctx.BlockIndex - resetIndex >= gameConfigState.DailyArenaInterval)
             {
                 var weekly = new WeeklyArenaState(rawWeekly);
-                weekly.ResetCount(ctx.BlockIndex);
+                if (resetIndex >= RankingBattle.UpdateTargetBlockIndex)
+                {
+                    // Reset count each ArenaInfo.
+                    weekly.ResetIndex = ctx.BlockIndex;
+                    var listAddress = weeklyAddress.Derive("address_list");
+                    if (states.TryGetState(listAddress, out List rawList))
+                    {
+                        var addressList = rawList.ToList(StateExtensions.ToAddress);
+                        foreach (var address in addressList)
+                        {
+                            var infoAddress = weeklyAddress.Derive(address.ToByteArray());
+                            if (states.TryGetState(infoAddress, out Dictionary rawInfo))
+                            {
+                                var info = new ArenaInfo(rawInfo);
+                                info.ResetCount();
+                                states = states.SetState(infoAddress, info.Serialize());
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // Run legacy ResetCount.
+                    weekly.ResetCount(ctx.BlockIndex);
+                }
                 states = states.SetState(weeklyAddress, weekly.Serialize());
             }
             return states;
