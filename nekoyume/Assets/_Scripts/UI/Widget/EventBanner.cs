@@ -32,6 +32,26 @@ namespace Nekoyume.UI.Module
                 banner.GetComponent<EventBannerItem>().Set(info.SeasonBanner, info.SeasonUrl);
             }
 
+            var destroyList = new List<GameObject>();
+            for (var i = 0; i < content.childCount; i++)
+            {
+                var eventBannerItem = content.GetChild(i).GetComponent<EventBannerItem>();
+                if (eventBannerItem is null)
+                {
+                    continue;
+                }
+
+                if (!eventBannerItem.IsInTime())
+                {
+                    destroyList.Add(content.GetChild(i).gameObject);
+                }
+            }
+
+            foreach (var item in destroyList)
+            {
+                DestroyImmediate(item);
+            }
+
             for (var i = 0; i < content.childCount; i++)
             {
                 Instantiate(i == 0 ? IndexOn : IndexOff, indexContent);
