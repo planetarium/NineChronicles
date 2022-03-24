@@ -420,6 +420,11 @@ PrefabInstance:
       propertyPath: url
       value: https://ninechronicles.medium.com/item-level-requirements-3f5936733007
       objectReference: {fileID: 0}
+    - target: {fileID: 1460102931437610913, guid: 2831ed4426194424ca9f1ac772bbd698,
+        type: 3}
+      propertyPath: beginDateTime
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 6027921240644394760, guid: 2831ed4426194424ca9f1ac772bbd698,
         type: 3}
       propertyPath: m_Name
@@ -698,7 +703,7 @@ PrefabInstance:
     - target: {fileID: 1460102931437610913, guid: 2831ed4426194424ca9f1ac772bbd698,
         type: 3}
       propertyPath: url
-      value: 
+      value: https://ninechronicles-banner.com/01
       objectReference: {fileID: 0}
     - target: {fileID: 1460102931437610913, guid: 2831ed4426194424ca9f1ac772bbd698,
         type: 3}

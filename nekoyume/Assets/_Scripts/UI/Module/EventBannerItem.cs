@@ -45,16 +45,12 @@ namespace Nekoyume.UI.Module
             this.url = url;
         }
 
-        public bool DestroyIfNecessary()
+        public bool IsInTime()
         {
-            if (!useDateTime ||
-                DateTime.UtcNow.IsInTime(beginDateTime, endDateTime))
-            {
-                return false;
-            }
+            if (!useDateTime)
+                return true;
 
-            Destroy(gameObject);
-            return true;
+            return DateTime.UtcNow.IsInTime(beginDateTime, endDateTime);
         }
     }
 }

@@ -32,8 +32,8 @@ namespace Nekoyume.UI.Module
                 banner.GetComponent<EventBannerItem>().Set(info.SeasonBanner, info.SeasonUrl);
             }
 
-            var childCount = content.childCount;
-            for (var i = 0; i < childCount; i++)
+            var destroyList = new List<GameObject>();
+            for (var i = 0; i < content.childCount; i++)
             {
                 var eventBannerItem = content.GetChild(i).GetComponent<EventBannerItem>();
                 if (eventBannerItem is null)
@@ -41,13 +41,18 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                if (eventBannerItem.DestroyIfNecessary())
+                if (!eventBannerItem.IsInTime())
                 {
-                    childCount--;
+                    destroyList.Add(content.GetChild(i).gameObject);
                 }
             }
 
-            for (var i = 0; i < childCount; i++)
+            foreach (var item in destroyList)
+            {
+                DestroyImmediate(item);
+            }
+
+            for (var i = 0; i < content.childCount; i++)
             {
                 Instantiate(i == 0 ? IndexOn : IndexOff, indexContent);
             }
