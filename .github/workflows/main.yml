@@ -68,3 +68,13 @@ jobs:
         fi
       env:
         WEB_FLOW_KEY_URL: https://github.com/web-flow.gpg
+    - name: Update other repos referring lib9c as submodules
+      if: startsWith(github.ref_name, 'v')
+      uses: planetarium/submodule-updater@main
+      with:
+        token: ${{ secrets.SUBMODULE_UPDATER_GH_TOKEN }}
+        committer: >
+          Submodule Updater <engineering+submodule-updater@planetariumhq.com>
+        targets: |
+          planetarium/NineChronicles:rc-${{ github.ref_name }}
+          planetarium/NineChronicles.Headless:rc-${{ github.ref_name }}
