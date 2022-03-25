@@ -286,6 +286,14 @@ namespace Nekoyume.Action
                 return states;
             }
             // Run Backward compatible
+            return BackwardCompatibleExecute(rawWeeklyArenaState, sheets, avatarState, costumeStatSheet, sw, addressesHex, enemyAvatarState, ctx, states, inventoryAddress, questListAddress, migrationRequired, worldInformationAddress, started);
+        }
+
+        private IAccountStateDelta BackwardCompatibleExecute(Dictionary rawWeeklyArenaState, Dictionary<Type, (Address address, ISheet sheet)> sheets,
+            AvatarState avatarState, CostumeStatSheet costumeStatSheet, Stopwatch sw, string addressesHex,
+            AvatarState enemyAvatarState, IActionContext ctx, IAccountStateDelta states, Address inventoryAddress,
+            Address questListAddress, bool migrationRequired, Address worldInformationAddress, DateTimeOffset started)
+        {
             Dictionary weeklyArenaMap = (Dictionary) rawWeeklyArenaState["map"];
 
             IKey arenaKey = (IKey) avatarAddress.Serialize();
@@ -300,17 +308,17 @@ namespace Nekoyume.Action
                 sw.Restart();
             }
 
-            var arenaInfo2 = new ArenaInfo((Dictionary) weeklyArenaMap[arenaKey]);
+            var arenaInfo = new ArenaInfo((Dictionary) weeklyArenaMap[arenaKey]);
 
-            if (arenaInfo2.DailyChallengeCount <= 0)
+            if (arenaInfo.DailyChallengeCount <= 0)
             {
                 throw new NotEnoughWeeklyArenaChallengeCountException(
                     addressesHex + NotEnoughWeeklyArenaChallengeCountException.BaseMessage);
             }
 
-            if (!arenaInfo2.Active)
+            if (!arenaInfo.Active)
             {
-                arenaInfo2.Activate();
+                arenaInfo.Activate();
             }
 
             IKey enemyKey = (IKey) enemyAddress.Serialize();
@@ -331,30 +339,30 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Validate ArenaInfo: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            ArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[arenaKey]);
-            EnemyArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[enemyKey]);
-            var rankingSheets2 = sheets.GetRankingSimulatorSheets();
-            var player2 = new Player(avatarState, rankingSheets2);
-            var enemyPlayerDigest2 = new EnemyPlayerDigest(enemyAvatarState);
-            var simulator2 = new RankingSimulator(
+            ArenaInfo = new ArenaInfo((Dictionary) weeklyArenaMap[arenaKey]);
+            EnemyArenaInfo = new ArenaInfo((Dictionary) weeklyArenaMap[enemyKey]);
+            var rankingSheets = sheets.GetRankingSimulatorSheets();
+            var player = new Player(avatarState, rankingSheets);
+            var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
+            var simulator = new RankingSimulator(
                 ctx.Random,
-                player2,
-                enemyPlayerDigest2,
+                player,
+                enemyPlayerDigest,
                 new List<Guid>(),
-                rankingSheets2,
+                rankingSheets,
                 StageId,
-                arenaInfo2,
+                arenaInfo,
                 enemyArenaInfo,
                 costumeStatSheet);
 
-            simulator2.Simulate();
+            simulator.Simulate();
 
             sw.Stop();
             Log.Verbose(
                 "{AddressesHex}RankingBattle Simulate() with equipment:({Equipment}), costume:({Costume}): {Elapsed}",
                 addressesHex,
-                string.Join(",", simulator2.Player.Equipments.Select(r => r.ItemId)),
-                string.Join(",", simulator2.Player.Costumes.Select(r => r.ItemId)),
+                string.Join(",", simulator.Player.Equipments.Select(r => r.ItemId)),
+                string.Join(",", simulator.Player.Costumes.Select(r => r.ItemId)),
                 sw.Elapsed
             );
 
@@ -362,12 +370,12 @@ namespace Nekoyume.Action
                 "{AddressesHex}Execute RankingBattle({AvatarAddress}); result: {Result} event count: {EventCount}",
                 addressesHex,
                 avatarAddress,
-                simulator2.Log.result,
-                simulator2.Log.Count
+                simulator.Log.result,
+                simulator.Log.Count
             );
             sw.Restart();
 
-            foreach (var itemBase in simulator2.Reward.OrderBy(i => i.Id))
+            foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
             {
                 Log.Verbose(
                     "{AddressesHex}RankingBattle Add Reward Item({ItemBaseId}): {Elapsed}",
@@ -384,7 +392,7 @@ namespace Nekoyume.Action
                 var value = kv.Value;
                 if (key.Equals(arenaKey))
                 {
-                    value = arenaInfo2.Serialize();
+                    value = arenaInfo.Serialize();
                 }
 
                 if (key.Equals(enemyKey))
@@ -398,7 +406,7 @@ namespace Nekoyume.Action
             var weeklyArenaDict = new Dictionary<IKey, IValue>();
             foreach (var kv in rawWeeklyArenaState)
             {
-                weeklyArenaDict[kv.Key] = kv.Key.Equals((Text)"map")
+                weeklyArenaDict[kv.Key] = kv.Key.Equals((Text) "map")
                     ? new Dictionary(arenaMapDict)
                     : kv.Value;
             }
@@ -424,9 +432,9 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Serialize AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var ended2 = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended2 - started);
-            EnemyPlayerDigest = enemyPlayerDigest2;
+            var ended = DateTimeOffset.UtcNow;
+            Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            EnemyPlayerDigest = enemyPlayerDigest;
             return states;
         }
 
