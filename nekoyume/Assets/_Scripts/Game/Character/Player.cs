@@ -268,7 +268,7 @@ namespace Nekoyume.Game.Character
                     UpdateEyeById(costume.Id);
                     break;
                 case ItemSubType.FullCostume:
-                    ChangeSpineObject(costume.SpineResourcePath);
+                    ChangeSpineObject(costume.SpineResourcePath, true);
                     break;
                 case ItemSubType.HairCostume:
                     UpdateHairById(costume.Id);
@@ -345,7 +345,7 @@ namespace Nekoyume.Game.Character
 
             var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
             var spineResourcePath = armor?.SpineResourcePath ?? $"Character/Player/{armorId}";
-            ChangeSpineObject(spineResourcePath);
+            ChangeSpineObject(spineResourcePath, IsFullCostumeEquipped);
         }
 
         public void EquipWeapon(Weapon weapon)
@@ -365,7 +365,7 @@ namespace Nekoyume.Game.Character
         public void Equip(int armorId, int weaponId)
         {
             var spineResourcePath = $"Character/Player/{armorId}";
-            ChangeSpineObject(spineResourcePath);
+            ChangeSpineObject(spineResourcePath, IsFullCostumeEquipped);
             var sprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
             SpineController.UpdateWeapon(weaponId, sprite);
         }
@@ -571,8 +571,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var sprite = Resources.Load<Sprite>(row.SpineResourcePath);
-            SpineController.UpdateTail(sprite);
+            SpineController.UpdateTail(tailCostumeId);
         }
 
         private bool TryGetCostumeRow(int costumeId, out CostumeItemSheet.Row row)
@@ -594,7 +593,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        private void ChangeSpineObject(string spineResourcePath, bool updateHitPoint = true)
+        private void ChangeSpineObject(string spineResourcePath, bool isFullCostume)
         {
             if (!(Animator.Target is null))
             {
@@ -615,20 +614,24 @@ namespace Nekoyume.Game.Character
 
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<PlayerSpineController>();
+            if (!isFullCostume)
+            {
+                SpineController.AttachTail();
+            }
             Animator.ResetTarget(go);
+        }
+
+        public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint = true)
+        {
+            var spineResourcePath = isFullCostume ?
+                $"Character/FullCostume/{id}" : $"Character/Player/{id}";
+
+            ChangeSpineObject(spineResourcePath, isFullCostume);
 
             if (updateHitPoint)
             {
                 UpdateHitPoint();
             }
-        }
-
-        public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint)
-        {
-            var spineResourcePath = isFullCostume ?
-                $"Character/FullCostume/{id}" : $"Character/Player/{id}";
-
-            ChangeSpineObject(spineResourcePath, updateHitPoint);
         }
 
         public IEnumerator CoGetExp(long exp)

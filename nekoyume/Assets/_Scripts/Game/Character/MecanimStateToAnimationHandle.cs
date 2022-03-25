@@ -47,8 +47,14 @@ namespace Nekoyume.Game.Character
 
             try
             {
-                _trackEntry = _controller.PlayAnimationForState(animationClip, layer);
+                var (body, tail) = _controller.PlayAnimationForState(animationClip, layer);
+                _trackEntry = body;
                 _trackEntry.TimeScale = timeScale;
+                if (tail != null)
+                {
+                    tail.TimeScale = timeScale;
+                }
+
                 _normalizedTime = 0f;
             }
             catch (KeyNotFoundException)

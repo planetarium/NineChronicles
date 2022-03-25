@@ -54,6 +54,7 @@ namespace Nekoyume.Game.Character
         };
 
         private const string TailSlot = "tail";
+        private const string DefaultTailId = "40500001";
 
         /// <summary>
         /// 헤어 스타일은 리소스에서 부터 결정되는 것이라서 리소스 자체에 정보를 포함하는 것이 좋다고 생각합니다.
@@ -72,7 +73,6 @@ namespace Nekoyume.Game.Character
         private SlotAndAttachment _eyeOpen;
         private SlotAndAttachment _eyeHalf;
         private readonly List<SlotAndAttachment> _hairs = new List<SlotAndAttachment>();
-        private SlotAndAttachment _tail;
 
         private int _weaponSlotIndex;
         private RegionAttachment _weaponAttachmentDefault;
@@ -113,7 +113,6 @@ namespace Nekoyume.Game.Character
             TryGetSlotAndAttachment(EarRightSlot, out _earRight);
             TryGetSlotAndAttachment(EyeHalfSlot, out _eyeHalf);
             TryGetSlotAndAttachment(EyeOpenSlot, out _eyeOpen);
-            TryGetSlotAndAttachment(TailSlot, out _tail);
         }
 
         private bool TryGetSlotAndAttachment(
@@ -141,36 +140,6 @@ namespace Nekoyume.Game.Character
         }
 
         #region Equipments & Costomize
-
-        public void UpdateWeapon(int weaponId, Sprite sprite, GameObject weaponVFXPrefab = null)
-        {
-            if (sprite is null)
-            {
-                _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, _weaponAttachmentDefault);
-            }
-            else
-            {
-                var newWeapon = MakeAttachment(sprite);
-                _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, newWeapon);
-            }
-
-            Destroy(_cachedWeaponVFX);
-
-            if (!(weaponVFXPrefab is null))
-            {
-                var parent = new GameObject(weaponId.ToString());
-                var boneFollower = parent.AddComponent<BoneFollower>();
-                parent.transform.SetParent(transform);
-                Instantiate(weaponVFXPrefab, parent.transform);
-                var weaponSlot = SkeletonAnimation.Skeleton.FindSlot(WeaponSlot);
-                var boneName = weaponSlot.Bone.Data.Name;
-                boneFollower.SkeletonRenderer = SkeletonAnimation;
-                boneFollower.SetBone(boneName);
-                _cachedWeaponVFX = parent;
-            }
-
-            UpdateInternal();
-        }
 
         public void UpdateEar(Sprite spriteLeft, Sprite spriteRight)
         {
@@ -219,15 +188,71 @@ namespace Nekoyume.Game.Character
             UpdateInternal();
         }
 
-        public void UpdateTail(Sprite sprite)
+        public void UpdateTail(int tailCostumeId)
         {
-            if (_tail is null)
+            var skinName = $"tail/{tailCostumeId}";
+            var skin = TailAnimation.skeleton.Data.FindSkin(skinName);
+            if (skin is null)
+            {
+                skinName = $"tail/{DefaultTailId}";
+            }
+
+            TailAnimation.skeleton.SetSkin(skinName);
+            TailAnimation.skeleton.SetToSetupPose();
+            TailAnimation.Update(0);
+            RemoveTail();
+        }
+
+        // Now Parts separation work in progress, It will be deleted when job is done
+        private void RemoveTail()
+        {
+            if (SkeletonAnimation.skeleton.FindSlot(TailSlot) == null)
             {
                 return;
             }
 
-            SetSprite(_tail, sprite);
+            SkeletonAnimation.skeleton.SetAttachment(TailSlot, null);
+        }
+
+        public void UpdateWeapon(int weaponId, Sprite sprite, GameObject weaponVFXPrefab = null)
+        {
+            if (sprite is null)
+            {
+                _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, _weaponAttachmentDefault);
+            }
+            else
+            {
+                var newWeapon = MakeAttachment(sprite);
+                _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, newWeapon);
+            }
+
+            Destroy(_cachedWeaponVFX);
+
+            if (!(weaponVFXPrefab is null))
+            {
+                var parent = new GameObject(weaponId.ToString());
+                var boneFollower = parent.AddComponent<BoneFollower>();
+                parent.transform.SetParent(transform);
+                Instantiate(weaponVFXPrefab, parent.transform);
+                var weaponSlot = SkeletonAnimation.Skeleton.FindSlot(WeaponSlot);
+                var boneName = weaponSlot.Bone.Data.Name;
+                boneFollower.SkeletonRenderer = SkeletonAnimation;
+                boneFollower.SetBone(boneName);
+                _cachedWeaponVFX = parent;
+            }
+
             UpdateInternal();
+        }
+
+        public void AttachTail()
+        {
+            var parent = new GameObject("Tail");
+            parent.transform.SetParent(transform);
+            var boneFollower = parent.AddComponent<BoneFollower>();
+            boneFollower.SkeletonRenderer = SkeletonAnimation;
+            boneFollower.SetBone("root");
+            var tailPrefab = Resources.Load<GameObject>("Character/Tail/Tail");
+            TailAnimation = Instantiate(tailPrefab, parent.transform).GetComponent<SkeletonAnimation>();
         }
 
         private void SetSprite(SlotAndAttachment slot, Sprite sprite)
