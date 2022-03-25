@@ -135,7 +135,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void PrepareNextArena(bool afterUpdate)
         {
-            var weeklyIndex = RankingBattle.UpdateTargetIndex - 1;
+            var weeklyIndex = RankingBattle.UpdateTargetWeeklyArenaIndex - 1;
             if (afterUpdate)
             {
                 weeklyIndex++;
@@ -223,7 +223,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ResetChallengeCount()
         {
-            var legacyWeeklyIndex = RankingBattle.UpdateTargetIndex - 1;
+            var legacyWeeklyIndex = RankingBattle.UpdateTargetWeeklyArenaIndex - 1;
             var legacyWeekly = new WeeklyArenaState(legacyWeeklyIndex);
             legacyWeekly.Set(_avatarState, _tableSheets.CharacterSheet);
             legacyWeekly[_avatarState.address].Update(legacyWeekly[_avatarState.address], BattleLog.Result.Lose);

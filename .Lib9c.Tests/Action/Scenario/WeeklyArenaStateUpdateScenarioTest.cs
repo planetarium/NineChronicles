@@ -109,13 +109,13 @@ namespace Lib9c.Tests.Action.Scenario
             };
             agent3State.avatarAddresses.Add(0, _avatar3Address);
 
-            var prevWeeklyArenaState = new WeeklyArenaState(RankingBattle.UpdateTargetIndex - 2);
-            var weeklyArenaState = new WeeklyArenaState(RankingBattle.UpdateTargetIndex - 1);
+            var prevWeeklyArenaState = new WeeklyArenaState(RankingBattle.UpdateTargetWeeklyArenaIndex - 2);
+            var weeklyArenaState = new WeeklyArenaState(RankingBattle.UpdateTargetWeeklyArenaIndex - 1);
             weeklyArenaState.SetV2(avatarState, tableSheets.CharacterSheet, tableSheets.CostumeStatSheet);
             weeklyArenaState[_avatar1Address].Activate();
             weeklyArenaState.SetV2(avatar2State, tableSheets.CharacterSheet, tableSheets.CostumeStatSheet);
             weeklyArenaState[_avatar2Address].Activate();
-            _weeklyArenaAddress = WeeklyArenaState.DeriveAddress(RankingBattle.UpdateTargetIndex);
+            _weeklyArenaAddress = WeeklyArenaState.DeriveAddress(RankingBattle.UpdateTargetWeeklyArenaIndex);
 
             var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
 
@@ -129,7 +129,7 @@ namespace Lib9c.Tests.Action.Scenario
                 .SetState(Addresses.GameConfig, new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize())
                 .SetState(prevWeeklyArenaState.address, prevWeeklyArenaState.Serialize())
                 .SetState(weeklyArenaState.address, weeklyArenaState.Serialize())
-                .SetState(_weeklyArenaAddress, new WeeklyArenaState(RankingBattle.UpdateTargetIndex).Serialize())
+                .SetState(_weeklyArenaAddress, new WeeklyArenaState(RankingBattle.UpdateTargetWeeklyArenaIndex).Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(Addresses.GoldDistribution, GoldDistributionTest.Fixture.Select(v => v.Serialize()).Serialize())
                 .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);

@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
 
     public class RankingBattleTest
     {
-        private const int ArenaIndex = RankingBattle.UpdateTargetIndex - 1;
+        private const int ArenaIndex = RankingBattle.UpdateTargetWeeklyArenaIndex - 1;
         private readonly TableSheets _tableSheets;
         private readonly Address _agent1Address;
         private readonly Address _avatar1Address;
@@ -145,7 +145,7 @@ namespace Lib9c.Tests.Action
 
             Address worldInformationAddress = _avatar1Address.Derive(LegacyWorldInformationKey);
             var weeklyArenaAddress =
-                WeeklyArenaState.DeriveAddress(RankingBattle.UpdateTargetIndex);
+                WeeklyArenaState.DeriveAddress(RankingBattle.UpdateTargetWeeklyArenaIndex);
             previousState = previousState
                 .SetState(
                     _avatar1Address.Derive(LegacyInventoryKey),
@@ -169,7 +169,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatar2Address, enemyAvatarState.SerializeV2())
                 .SetState(
                     weeklyArenaAddress,
-                    new WeeklyArenaState(RankingBattle.UpdateTargetIndex).Serialize());
+                    new WeeklyArenaState(RankingBattle.UpdateTargetWeeklyArenaIndex).Serialize());
 
             var action = new RankingBattle
             {
