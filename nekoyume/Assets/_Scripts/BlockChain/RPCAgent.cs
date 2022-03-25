@@ -36,6 +36,7 @@ using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyum
 
 namespace Nekoyume.BlockChain
 {
+    using System.Threading;
     using UniRx;
 
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
@@ -248,18 +249,23 @@ namespace Nekoyume.BlockChain
         private void Awake()
         {
             OnDisconnected
+                .ObserveOnMainThread()
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Disconnected"))
                 .AddTo(_disposables);
             OnRetryStarted
+                .ObserveOnMainThread()
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Started"))
                 .AddTo(_disposables);
             OnRetryEnded
+                .ObserveOnMainThread()
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Retry Connect Ended"))
                 .AddTo(_disposables);
             OnPreloadStarted
+                .ObserveOnMainThread()
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Started"))
                 .AddTo(_disposables);
             OnPreloadEnded
+                .ObserveOnMainThread()
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended"))
                 .AddTo(_disposables);
             Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
@@ -493,12 +499,17 @@ namespace Nekoyume.BlockChain
                 try
                 {
                     Debug.Log($"Trying to join hub...");
-                    await Join();
+                    await Join(true);
                     Debug.Log($"Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
                     OnRetryEnded.OnNext(this);
                     return;
+                }
+                catch (TimeoutException toe)
+                {
+                    Debug.LogWarning($"TimeoutException occurred. Retrying... {retryCount}\n{toe}");
+                    retryCount--;
                 }
                 catch (RpcException re)
                 {
@@ -521,9 +532,17 @@ namespace Nekoyume.BlockChain
             OnDisconnected.OnNext(this);
         }
 
-        private async Task Join()
+        private async Task Join(bool isRetry = false)
         {
-            await _hub.JoinAsync(Address.ToHex());
+            if (isRetry)
+            {
+                var joinTask = _hub.JoinAsync(Address.ToHex()).AsUniTask();
+                await joinTask.Timeout(TimeSpan.FromSeconds(10));
+            }
+            else
+            {
+                await _hub.JoinAsync(Address.ToHex());
+            }
             await _service.AddClient(Address.ToByteArray());
         }
 
