@@ -122,11 +122,13 @@ namespace Nekoyume.UI.Module
 
         private void EnableSettingByPlaceType(PlaceType type, Model model)
         {
+            var successToGetUnlockedWorld = States.Instance.CurrentAvatarState.worldInformation
+                .TryGetUnlockedWorldByStageClearedBlockIndex(out var world);
+
             switch (type)
             {
                 case PlaceType.Stage:
-                    if (States.Instance.CurrentAvatarState.worldInformation
-                        .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+                    if (successToGetUnlockedWorld)
                     {
                         if (model.StageRow.Id > world.StageClearedId + 1)
                         {
@@ -137,29 +139,47 @@ namespace Nekoyume.UI.Module
                             enableObject.SetActive(true);
                         }
                     }
-
-                    break;
-                case PlaceType.Shop:
-                    if (States.Instance.CurrentAvatarState.level <
-                        GameConfig.RequireClearedStageLevel.UIMainMenuShop)
+                    else
                     {
                         disableObject.SetActive(true);
                     }
+
+                    break;
+                case PlaceType.Shop:
+                    if (successToGetUnlockedWorld)
+                    {
+                        if (world.StageClearedId <
+                            GameConfig.RequireClearedStageLevel.UIMainMenuShop)
+                        {
+                            disableObject.SetActive(true);
+                        }
+                        else
+                        {
+                            enableObject.SetActive(true);
+                        }
+                    }
                     else
                     {
-                        enableObject.SetActive(true);
+                        disableObject.SetActive(true);
                     }
 
                     break;
                 case PlaceType.Arena:
-                    if (States.Instance.CurrentAvatarState.level <
-                        GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
+                    if (successToGetUnlockedWorld)
                     {
-                        disableObject.SetActive(true);
+                        if (world.StageClearedId <
+                            GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
+                        {
+                            disableObject.SetActive(true);
+                        }
+                        else
+                        {
+                            enableObject.SetActive(true);
+                        }
                     }
                     else
                     {
-                        enableObject.SetActive(true);
+                        disableObject.SetActive(true);
                     }
 
                     break;
