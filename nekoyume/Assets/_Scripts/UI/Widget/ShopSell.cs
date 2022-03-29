@@ -108,7 +108,9 @@ namespace Nekoyume.UI
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            tooltip.Show(model, L10nManager.Localize("UI_SELL"),
+            tooltip.Show(
+                model,
+                L10nManager.Localize("UI_SELL"),
                 model.ItemBase is ITradableItem,
                 () => ShowSell(model),
                 inventory.ClearSelectedItem,

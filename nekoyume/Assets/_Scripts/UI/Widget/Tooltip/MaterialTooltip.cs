@@ -36,7 +36,15 @@ namespace Nekoyume.UI
             int itemCount = 0,
             RectTransform target = null)
         {
-            base.Show(item, submitText, interactable, onSubmit, onClose, onBlocked, itemCount, target);
+            base.Show(
+                item,
+                submitText,
+                interactable,
+                onSubmit,
+                onClose,
+                onBlocked,
+                itemCount,
+                target);
             acquisitionGroup.SetActive(false);
             SetAcquisitionPlaceButtons(item);
         }
@@ -71,7 +79,15 @@ namespace Nekoyume.UI
             System.Action onBlocked = null,
             RectTransform target = null)
         {
-            base.Show(item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked, item.Count.Value, target);
+            base.Show(
+                item.ItemBase,
+                submitText,
+                interactable,
+                onSubmit,
+                onClose,
+                onBlocked,
+                item.Count.Value,
+                target);
         }
 
         private static List<StageSheet.Row> GetStageByOrder(
