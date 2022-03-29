@@ -18,6 +18,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private ParticleSystem gradeEffect;
 
+        [SerializeField]
+        private Color levelLimitedItemColor;
+
         private GameObject _costumeSpineObject;
 
         private Dictionary<int, GameObject> _skeletonPool;
@@ -119,6 +122,7 @@ namespace Nekoyume.UI.Module
             baseItemView.CountText.text = count.ToString();
 
             baseItemView.LevelLimitObject.SetActive(levelLimit);
+            baseItemView.ItemImage.color = levelLimit ? levelLimitedItemColor : Color.white;
         }
 
         private void CreateSkeletonPool()
