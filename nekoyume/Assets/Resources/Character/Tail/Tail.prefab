@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8dd699666f370104596980e69cca6c94, type: 2}
+  - {fileID: 2100000, guid: 0480599ad65d5f24ca11570c299d73dd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -78,9 +78,9 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -385277771
+  m_SortingLayer: 3
+  m_SortingOrder: -1
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &893873077799556390
 MonoBehaviour:
@@ -94,8 +94,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 0e7e71d81bc4fa447848cdd902824943, type: 2}
-  initialSkinName: tail/40500001
+  skeletonDataAsset: {fileID: 11400000, guid: b2e195822eba8464aaaf48aa58038f8a, type: 2}
+  initialSkinName: tail/40500002
   initialFlipX: 0
   initialFlipY: 0
   updateWhenInvisible: 3
