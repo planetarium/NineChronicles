@@ -78,14 +78,15 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public virtual void Show(RectTransform target,
+        public virtual void Show(
             ItemBase item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            int itemCount = 0)
+            int itemCount = 0,
+            RectTransform target = null)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -105,13 +106,14 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
-        public virtual void Show(RectTransform target,
+        public virtual void Show(
             InventoryItem item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
-            System.Action onBlocked = null)
+            System.Action onBlocked = null,
+            RectTransform target = null)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -131,11 +133,12 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
-        public virtual void Show(RectTransform target,
+        public virtual void Show(
             ShopItem item,
             System.Action onRegister,
             System.Action onSellCancellation,
-            System.Action onClose)
+            System.Action onClose,
+            RectTransform target = null)
         {
             submitButton.gameObject.SetActive(false);
             buy.gameObject.SetActive(false);
@@ -160,10 +163,11 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(sell.gameObject));
         }
 
-        public virtual void Show(RectTransform target,
+        public virtual void Show(
             ShopItem item,
             System.Action onBuy,
-            System.Action onClose)
+            System.Action onClose,
+            RectTransform target = null)
         {
             submitButton.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -186,13 +190,14 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(buy.gameObject));
         }
 
-        public virtual void Show(RectTransform target,
+        public virtual void Show(
             EnhancementInventoryItem item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
-            System.Action onBlocked = null)
+            System.Action onBlocked = null,
+            RectTransform target = null)
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
@@ -227,10 +232,18 @@ namespace Nekoyume.UI
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
             panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(
-                (RectTransform)verticalLayoutGroup.transform);
-            panel.MoveToRelatedPosition(target, TargetPivotPresetType, OffsetFromTarget);
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)verticalLayoutGroup.transform);
             panel.MoveInsideOfParent(MarginFromParent);
+            if (target)
+            {
+                panel.MoveToRelatedPosition(target, TargetPivotPresetType, OffsetFromTarget);
+            }
+            else
+            {
+                panel.SetAnchor(AnchorPresetType.MiddleCenter);
+                panel.anchoredPosition =
+                    new Vector2(-(panel.sizeDelta.x / 2), panel.sizeDelta.y / 2);
+            }
 
             if (!(target is null) && panel.position.x - target.position.x < 0)
             {

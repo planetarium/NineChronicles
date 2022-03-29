@@ -170,7 +170,7 @@ namespace Nekoyume.UI
         {
             var item = new InventoryItem(slot.Item, 1, true, false, true);
             var tooltip = ItemTooltip.Find(item.ItemBase.ItemType);
-            tooltip.Show(slot.RectTransform, item, string.Empty, false, null);
+            tooltip.Show(item, string.Empty, false, null, target:slot.RectTransform);
         }
     }
 }

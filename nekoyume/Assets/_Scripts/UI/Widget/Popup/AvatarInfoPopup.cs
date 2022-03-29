@@ -410,8 +410,14 @@ namespace Nekoyume.UI
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             var (submitText, interactable, submit, blocked) = GetToolTipParams(model);
-            tooltip.Show(target, model, submitText, interactable,
-                submit, () => inventory.ClearSelectedItem(), blocked);
+            tooltip.Show(
+                model,
+                submitText,
+                interactable,
+                submit,
+                () => inventory.ClearSelectedItem(),
+                blocked,
+                target);
         }
 
         private (string, bool, System.Action, System.Action) GetToolTipParams(InventoryItem model)

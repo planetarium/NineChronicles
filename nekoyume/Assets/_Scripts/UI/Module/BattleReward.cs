@@ -101,7 +101,7 @@ namespace Nekoyume.UI.Module
             {
                 AudioController.PlayClick();
                 var tooltip = ItemTooltip.Find(itemBase.ItemType);
-                tooltip.Show(rt, itemBase, string.Empty, false, null);
+                tooltip.Show(itemBase, string.Empty, false, null, target:rt);
             }
         }
 

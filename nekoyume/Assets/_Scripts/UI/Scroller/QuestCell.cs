@@ -186,7 +186,11 @@ namespace Nekoyume.UI.Scroller
                     {
                         AudioController.PlayClick();
                         var tooltip = ItemTooltip.Find(item.ItemType);
-                        tooltip.Show(rewardView.RectTransform, item, string.Empty, false, null);
+                        tooltip.Show(item,
+                            string.Empty,
+                            false,
+                            null,
+                            target: rewardView.RectTransform);
                     }).AddTo(_disposables);
                 }
                 else

@@ -27,56 +27,67 @@ namespace Nekoyume.UI
             "https://ninechronicles.medium.com/monster-collection-muspelheim-the-realm-of-fire-part-2-b5c36e089b81";
 
         public override void Show(
-            RectTransform target,
             ItemBase item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
             System.Action onBlocked = null,
-            int itemCount = 0)
+            int itemCount = 0,
+            RectTransform target = null)
         {
-            base.Show(target,
+            base.Show(
                 item,
                 submitText,
                 interactable,
                 onSubmit,
                 onClose,
                 onBlocked,
-                itemCount);
+                itemCount,
+                target);
             acquisitionGroup.SetActive(false);
             SetAcquisitionPlaceButtons(item);
         }
 
-        public override void Show(RectTransform target,
-            ShopItem item,
+        public override void Show(
+        ShopItem item,
             System.Action onRegister,
             System.Action onSellCancellation,
-            System.Action onClose)
+            System.Action onClose,
+            RectTransform target = null)
         {
-            base.Show(target, item, onRegister, onSellCancellation, onClose);
+            base.Show(item, onRegister, onSellCancellation, onClose, target);
             acquisitionGroup.SetActive(false);
         }
 
-        public override void Show(RectTransform target,
+        public override void Show(
             ShopItem item,
             System.Action onBuy,
-            System.Action onClose)
+            System.Action onClose,
+            RectTransform target)
         {
-            base.Show(target, item, onBuy, onClose);
+            base.Show(item, onBuy, onClose, target);
             acquisitionGroup.SetActive(false);
         }
 
-        public override void Show(RectTransform target,
+        public override void Show(
             InventoryItem item,
             string submitText,
             bool interactable,
             System.Action onSubmit,
             System.Action onClose = null,
-            System.Action onBlocked = null)
+            System.Action onBlocked = null,
+            RectTransform target = null)
         {
-            Show(target, item.ItemBase, submitText, interactable, onSubmit, onClose, onBlocked,
-                item.Count.Value);
+            base.Show(
+                item.ItemBase,
+                submitText,
+                interactable,
+                onSubmit,
+                onClose,
+                onBlocked,
+                item.Count.Value,
+                target);
         }
 
         private static List<StageSheet.Row> GetStageByOrder(
