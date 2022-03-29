@@ -54,7 +54,6 @@ namespace Nekoyume.Game.Character
         };
 
         private const string TailSlot = "tail";
-        private const string DefaultTailId = "40500001";
 
         /// <summary>
         /// 헤어 스타일은 리소스에서 부터 결정되는 것이라서 리소스 자체에 정보를 포함하는 것이 좋다고 생각합니다.
@@ -190,11 +189,16 @@ namespace Nekoyume.Game.Character
 
         public void UpdateTail(int tailCostumeId)
         {
-            var skinName = $"tail/{tailCostumeId}";
+            // todo : For revomon collaboration event. When the event is over it will be removed
+            var prefix = Player.RevomonTailIds.ContainsValue(tailCostumeId)
+                ? "tail_revomon"
+                : "tail";
+
+            var skinName = $"{prefix}/{tailCostumeId}";
             var skin = TailAnimation.skeleton.Data.FindSkin(skinName);
             if (skin is null)
             {
-                skinName = $"tail/{DefaultTailId}";
+                skinName = $"tail/40500001";
             }
 
             TailAnimation.skeleton.SetSkin(skinName);
@@ -250,7 +254,7 @@ namespace Nekoyume.Game.Character
             parent.transform.SetParent(transform);
             var boneFollower = parent.AddComponent<BoneFollower>();
             boneFollower.SkeletonRenderer = SkeletonAnimation;
-            boneFollower.SetBone("root");
+            boneFollower.SetBone("Center");
             var tailPrefab = Resources.Load<GameObject>("Character/Tail/Tail");
             TailAnimation = Instantiate(tailPrefab, parent.transform).GetComponent<SkeletonAnimation>();
         }
@@ -297,6 +301,7 @@ namespace Nekoyume.Game.Character
             skeleton.SetSkin(_clonedSkin);
             skeleton.SetSlotsToSetupPose();
             SkeletonAnimation.Update(0);
+            RemoveTail();
         }
 
         #endregion

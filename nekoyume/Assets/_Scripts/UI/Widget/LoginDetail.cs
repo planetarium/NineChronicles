@@ -10,10 +10,13 @@ using TMPro;
 using UnityEngine.UI;
 using Nekoyume.Model.State;
 using System.Collections;
+using System.Linq;
 using mixpanel;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.TableData;
 
 namespace Nekoyume.UI
 {
@@ -38,6 +41,8 @@ namespace Nekoyume.UI
         public Button acolyteButton;
         public Button backButton;
 
+        private CostumeItemSheet _costumeItemSheet;
+
         private int _selectedIndex;
         private bool _isCreateMode;
 
@@ -48,8 +53,6 @@ namespace Nekoyume.UI
 
         private const int HairCount = 7;
         private const int LensCount = 6;
-        private const int EarCount = 10;
-        private const int TailCount = 10;
 
         protected override void Awake()
         {
@@ -58,6 +61,7 @@ namespace Nekoyume.UI
             jobDescriptionText.text = L10nManager.Localize("UI_WARRIOR_DESCRIPTION");
 
             Game.Event.OnLoginDetail.AddListener(Init);
+            _costumeItemSheet = Game.Game.instance.TableSheets.CostumeItemSheet;
 
             CloseWidget = BackClick;
             SubmitWidget = CreateClick;
@@ -149,7 +153,8 @@ namespace Nekoyume.UI
 
             if (_isCreateMode)
             {
-                player = new Player(1, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet);
+                player = new Player(1, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet,
+                    tableSheets.EquipmentItemSetEffectSheet);
             }
             else
             {
@@ -248,12 +253,14 @@ namespace Nekoyume.UI
         public void ChangeEar(int offset)
         {
             var ear = _ear + offset;
+            var earCostumes = _costumeItemSheet.OrderedList;
+            var count = earCostumes.Count(x => x.ItemSubType == ItemSubType.EarCostume);
 
             if (ear < 0)
             {
-                ear = EarCount + offset;
+                ear = count + offset;
             }
-            else if (ear >= EarCount)
+            else if (ear >= count)
             {
                 ear = 0;
             }
@@ -265,7 +272,9 @@ namespace Nekoyume.UI
 
             _ear = ear;
 
-            paletteEarText.text = $"{L10nManager.Localize("UI_EAR")} {_ear + 1}";
+            paletteEarText.text = Game.Character.Player.RevomonEarIds.ContainsKey(_ear)
+                ? $"{L10nManager.Localize("UI_EAR_REVOMON")} {_ear - 9}"
+                : $"{L10nManager.Localize("UI_EAR")} {_ear + 1}";
 
             var player = Game.Game.instance.Stage.SelectedPlayer;
             if (player is null)
@@ -341,12 +350,14 @@ namespace Nekoyume.UI
         public void ChangeTail(int offset)
         {
             var tail = _tail + offset;
+            var tailCostumes = _costumeItemSheet.OrderedList;
+            var count = tailCostumes.Count(x => x.ItemSubType == ItemSubType.TailCostume);
 
             if (tail < 0)
             {
-                tail = TailCount + offset;
+                tail = count + offset;
             }
-            else if (tail >= TailCount)
+            else if (tail >= count)
             {
                 tail = 0;
             }
@@ -358,7 +369,9 @@ namespace Nekoyume.UI
 
             _tail = tail;
 
-            paletteTailText.text = $"{L10nManager.Localize("UI_TAIL")} {_tail + 1}";
+            paletteTailText.text = Game.Character.Player.RevomonTailIds.ContainsKey(_tail)
+                ? $"{L10nManager.Localize("UI_TAIL_REVOMON")} {_tail - 9}"
+                : $"{L10nManager.Localize("UI_TAIL")} {_tail + 1}";
 
             var player = Game.Game.instance.Stage.SelectedPlayer;
             if (player is null)

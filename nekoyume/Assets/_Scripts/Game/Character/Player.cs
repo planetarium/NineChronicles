@@ -29,6 +29,20 @@ namespace Nekoyume.Game.Character
         public Inventory Inventory;
         public TouchHandler touchHandler;
 
+        // todo : For revomon collaboration event. When the event is over it will be removed
+        public static Dictionary<int, int> RevomonTailIds { get; } = new Dictionary<int, int>()
+        {
+            { 10, 40510001 },
+            { 11, 40510002 }
+        };
+
+        // todo : For revomon collaboration event. When the event is over it will be removed
+        public static Dictionary<int, int> RevomonEarIds { get; } = new Dictionary<int, int>()
+        {
+            { 10, 40310001 },
+            { 11, 40310002 }
+        };
+
         public List<Costume> Costumes => Inventory?.Items.Count > 0
             ? Inventory?.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped)
                 .ToList()
@@ -46,7 +60,7 @@ namespace Nekoyume.Game.Character
 
         public PlayerSpineController SpineController { get; private set; }
 
-        public Model.Player Model => (Model.Player) CharacterModel;
+        public Model.Player Model => (Model.Player)CharacterModel;
 
         public bool AttackEnd => AttackEndCalled;
 
@@ -208,7 +222,8 @@ namespace Nekoyume.Game.Character
             if (HudContainer != null)
             {
                 HudContainer.gameObject.SetActive(true);
-                var clone  = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName(false));
+                var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
+                    costume.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, HudContainer.transform);
                 _cachedCharacterTitle.name = costume.Id.ToString();
                 _cachedCharacterTitle.transform.SetAsFirstSibling();
@@ -300,9 +315,9 @@ namespace Nekoyume.Game.Character
                 case ItemSubType.FullCostume:
                     if (!ignoreEquipmentsAndCustomize)
                     {
-                        var armor = (Armor) Equipments.FirstOrDefault(equipment =>
+                        var armor = (Armor)Equipments.FirstOrDefault(equipment =>
                             equipment.ItemSubType == ItemSubType.Armor);
-                        var weapon = (Weapon) Equipments.FirstOrDefault(equipment =>
+                        var weapon = (Weapon)Equipments.FirstOrDefault(equipment =>
                             equipment.ItemSubType == ItemSubType.Weapon);
                         EquipEquipmentsAndUpdateCustomize(armor, weapon);
                     }
@@ -420,7 +435,10 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            UpdateEarById(firstEarRow.Id + customizeIndex);
+            var id = RevomonEarIds.ContainsKey(customizeIndex)
+                ? RevomonEarIds[customizeIndex]
+                : firstEarRow.Id + customizeIndex;
+            UpdateEarById(id);
         }
 
         private void UpdateEarById(int earCostumeId)
@@ -468,13 +486,9 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEyeById(int eyeCostumeId)
         {
-            if (!TryGetCostumeRow(eyeCostumeId, out var row))
-            {
-                return;
-            }
-
-            var halfSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_half");
-            var openSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_open");
+            var prefix = "Character/PlayerSpineTexture/EyeCostume";
+            var halfSprite = Resources.Load<Sprite>($"{prefix}/{eyeCostumeId}_half");
+            var openSprite = Resources.Load<Sprite>($"{prefix}/{eyeCostumeId}_open");
             SpineController.UpdateEye(halfSprite, openSprite);
         }
 
@@ -561,15 +575,18 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            UpdateTailById(firstTailRow.Id + customizeIndex);
+            var id = RevomonTailIds.ContainsKey(customizeIndex)
+                ? RevomonTailIds[customizeIndex]
+                : firstTailRow.Id + customizeIndex;
+            UpdateTailById(id);
         }
 
         private void UpdateTailById(int tailCostumeId)
         {
-            if (!TryGetCostumeRow(tailCostumeId, out var row))
-            {
-                return;
-            }
+            // if (!TryGetCostumeRow(tailCostumeId, out var row))
+            // {
+            //     return;
+            // }
 
             SpineController.UpdateTail(tailCostumeId);
         }
@@ -618,13 +635,14 @@ namespace Nekoyume.Game.Character
             {
                 SpineController.AttachTail();
             }
+
             Animator.ResetTarget(go);
         }
 
         public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint = true)
         {
-            var spineResourcePath = isFullCostume ?
-                $"Character/FullCostume/{id}" : $"Character/Player/{id}";
+            var spineResourcePath =
+                isFullCostume ? $"Character/FullCostume/{id}" : $"Character/Player/{id}";
 
             ChangeSpineObject(spineResourcePath, isFullCostume);
 
@@ -671,20 +689,20 @@ namespace Nekoyume.Game.Character
             bool isLastHit,
             bool isConsiderElementalType)
         {
-            ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
+            ShowSpeech("PLAYER_SKILL", (int)skill.ElementalType, (int)skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
         }
 
         protected override IEnumerator CoAnimationCast(Model.BattleStatus.Skill.SkillInfo info)
         {
-            ShowSpeech("PLAYER_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
+            ShowSpeech("PLAYER_SKILL", (int)info.ElementalType, (int)info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
 
         public int GetArmorId()
         {
-            var armor = (Armor) Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            var armor = (Armor)Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
         }
 
