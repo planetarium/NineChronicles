@@ -2,6 +2,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using System.Collections.Generic;
+using Coffee.UIEffects;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -20,6 +21,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Color levelLimitedItemColor;
+
+        [SerializeField]
+        private UIShiny uiShiny;
 
         private GameObject _costumeSpineObject;
 
@@ -123,6 +127,7 @@ namespace Nekoyume.UI.Module
 
             baseItemView.LevelLimitObject.SetActive(levelLimit);
             baseItemView.ItemImage.color = levelLimit ? levelLimitedItemColor : Color.white;
+            uiShiny.Play();
         }
 
         private void CreateSkeletonPool()
