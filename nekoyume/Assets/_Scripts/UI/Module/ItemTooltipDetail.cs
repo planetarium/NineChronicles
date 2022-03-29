@@ -29,6 +29,7 @@ namespace Nekoyume.UI.Module
             public TextMeshProUGUI elementalTypeText;
             public GameObject countObject;
             public TextMeshProUGUI countText;
+            public GameObject lockObject;
         }
 
         [Serializable]
@@ -145,6 +146,7 @@ namespace Nekoyume.UI.Module
             descriptionArea.levelLimitText.color = isUsable ?
                 Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
             descriptionArea.levelLimitGameObject.SetActive(level > 0);
+            iconArea.lockObject.SetActive(!isUsable && level > 0);
 
             switch (itemBase)
             {
