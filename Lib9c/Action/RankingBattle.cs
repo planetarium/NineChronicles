@@ -25,9 +25,9 @@ namespace Nekoyume.Action
         public static readonly BigInteger EntranceFee = 100;
         // BlockIndex for ArenaInfo separate from WeeklyArenaState.Map.
         // https://github.com/planetarium/lib9c/issues/883
-        public const long UpdateTargetBlockIndex = 3_752_000L;
+        public const long UpdateTargetBlockIndex = 3_808_000L;
         // WeeklyArenaIndex for ArenaInfo separate from WeeklyArenaState.Map.
-        public const int UpdateTargetWeeklyArenaIndex = 67;
+        public const int UpdateTargetWeeklyArenaIndex = 68;
 
         public Address avatarAddress;
         public Address enemyAddress;
