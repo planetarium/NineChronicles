@@ -36,7 +36,15 @@ namespace Nekoyume.UI
         [SerializeField]
         protected List<AcquisitionPlaceButton> acquisitionPlaceButtons;
 
+        [SerializeField]
+        protected Button descriptionButton;
+
+        [SerializeField]
+        protected AcquisitionPlaceDescription acquisitionPlaceDescription;
+
         protected readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+
+        protected RectTransform _descriptionButtonRectTransform;
 
         protected System.Action _onSubmit;
         protected System.Action _onClose;
@@ -67,6 +75,15 @@ namespace Nekoyume.UI
                 _onSubmit?.Invoke();
                 Close();
             };
+
+            if (descriptionButton != null)
+            {
+                _descriptionButtonRectTransform = descriptionButton.GetComponent<RectTransform>();
+                descriptionButton.onClick.AddListener(() =>
+                {
+                    acquisitionPlaceDescription.Show(panel, _descriptionButtonRectTransform);
+                });
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
