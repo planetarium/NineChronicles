@@ -29,20 +29,6 @@ namespace Nekoyume.Game.Character
         public Inventory Inventory;
         public TouchHandler touchHandler;
 
-        // todo : For revomon collaboration event. When the event is over it will be removed
-        public static Dictionary<int, int> RevomonTailIds { get; } = new Dictionary<int, int>()
-        {
-            { 10, 40510001 },
-            { 11, 40510002 }
-        };
-
-        // todo : For revomon collaboration event. When the event is over it will be removed
-        public static Dictionary<int, int> RevomonEarIds { get; } = new Dictionary<int, int>()
-        {
-            { 10, 40310001 },
-            { 11, 40310002 }
-        };
-
         public List<Costume> Costumes => Inventory?.Items.Count > 0
             ? Inventory?.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped)
                 .ToList()
@@ -440,13 +426,9 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEarById(int earCostumeId)
         {
-            if (!TryGetCostumeRow(earCostumeId, out var row))
-            {
-                return;
-            }
-
-            var leftSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_left");
-            var rightSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_right");
+            const string prefix = "Character/PlayerSpineTexture/EarCostume";
+            var leftSprite = Resources.Load<Sprite>($"{prefix}/{earCostumeId}_left");
+            var rightSprite = Resources.Load<Sprite>($"{prefix}/{earCostumeId}_right");
             SpineController.UpdateEar(leftSprite, rightSprite);
         }
 
