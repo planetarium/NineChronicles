@@ -419,7 +419,7 @@ namespace Nekoyume.Game.Character
         /// <summary>
         /// 기존에 커스텀 가능한 귀 디자인들은 EarCostume 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
         /// </summary>
-        /// <param name="customizeIndex">0~9</param>
+        /// <param name="customizeIndex">origin : 0 ~ 9,999 / partnership 10,000 ~ 19,999 </param>
         public void UpdateEarByCustomizeIndex(int customizeIndex)
         {
             if (IsFullCostumeEquipped || !SpineController)
@@ -435,10 +435,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var id = RevomonEarIds.ContainsKey(customizeIndex)
-                ? RevomonEarIds[customizeIndex]
-                : firstEarRow.Id + customizeIndex;
-            UpdateEarById(id);
+            UpdateEarById(firstEarRow.Id + customizeIndex);
         }
 
         private void UpdateEarById(int earCostumeId)
@@ -575,10 +572,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var id = RevomonTailIds.ContainsKey(customizeIndex)
-                ? RevomonTailIds[customizeIndex]
-                : firstTailRow.Id + customizeIndex;
-            UpdateTailById(id);
+            UpdateTailById(firstTailRow.Id + customizeIndex);
         }
 
         private void UpdateTailById(int tailCostumeId)
