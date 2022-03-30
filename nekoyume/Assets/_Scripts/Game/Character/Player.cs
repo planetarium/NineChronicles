@@ -583,11 +583,6 @@ namespace Nekoyume.Game.Character
 
         private void UpdateTailById(int tailCostumeId)
         {
-            // if (!TryGetCostumeRow(tailCostumeId, out var row))
-            // {
-            //     return;
-            // }
-
             SpineController.UpdateTail(tailCostumeId);
         }
 
