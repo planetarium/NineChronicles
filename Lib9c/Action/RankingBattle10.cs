@@ -18,16 +18,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle11")]
-    public class RankingBattle : GameAction
+    [ActionType("ranking_battle10")]
+    public class RankingBattle10 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
-        // BlockIndex for ArenaInfo separate from WeeklyArenaState.Map.
-        // https://github.com/planetarium/lib9c/issues/883
-        public const long UpdateTargetBlockIndex = 3_752_000L;
-        // WeeklyArenaIndex for ArenaInfo separate from WeeklyArenaState.Map.
-        public const int UpdateTargetWeeklyArenaIndex = 67;
 
         public Address avatarAddress;
         public Address enemyAddress;
@@ -141,7 +136,6 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Get Enemy AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var costumeStatSheet = sheets.GetSheet<CostumeStatSheet>();
             if (!states.TryGetState(weeklyArenaAddress, out Dictionary rawWeeklyArenaState))
             {
                 return states;
@@ -152,152 +146,17 @@ namespace Nekoyume.Action
             sw.Restart();
 
             bool arenaEnded = rawWeeklyArenaState["ended"].ToBoolean();
+            Dictionary weeklyArenaMap = (Dictionary) rawWeeklyArenaState["map"];
             if (arenaEnded)
             {
                 throw new WeeklyArenaStateAlreadyEndedException();
             }
 
-            if (context.BlockIndex >= UpdateTargetBlockIndex)
-            {
-                // Run updated model
-                var arenaInfoAddress = weeklyArenaAddress.Derive(avatarAddress.ToByteArray());
-                ArenaInfo arenaInfo;
-                var characterSheet = sheets.GetSheet<CharacterSheet>();
-                var addressListAddress = weeklyArenaAddress.Derive("address_list");
-                bool listCheck = false;
-                if (!states.TryGetState(arenaInfoAddress, out Dictionary rawArenaInfo))
-                {
-                    arenaInfo = new ArenaInfo(avatarState, characterSheet, costumeStatSheet, true);
-                    listCheck = true;
-                    rawArenaInfo = (Dictionary) arenaInfo.Serialize();
-                }
-                else
-                {
-                    arenaInfo = new ArenaInfo(rawArenaInfo);
-                }
+            var costumeStatSheet = sheets.GetSheet<CostumeStatSheet>();
 
-                var enemyInfoAddress = weeklyArenaAddress.Derive(enemyAddress.ToByteArray());
-                ArenaInfo enemyInfo;
-                if (!states.TryGetState(enemyInfoAddress, out Dictionary rawEnemyInfo))
-                {
-                    enemyInfo = new ArenaInfo(enemyAvatarState, characterSheet, costumeStatSheet,
-                        true);
-                    listCheck = true;
-                    rawEnemyInfo = (Dictionary) enemyInfo.Serialize();
-                }
-                else
-                {
-                    enemyInfo = new ArenaInfo(rawEnemyInfo);
-                }
-
-                if (arenaInfo.DailyChallengeCount <= 0)
-                {
-                    throw new NotEnoughWeeklyArenaChallengeCountException(
-                        addressesHex + NotEnoughWeeklyArenaChallengeCountException.BaseMessage);
-                }
-
-                ArenaInfo = new ArenaInfo(rawArenaInfo);
-                EnemyArenaInfo = new ArenaInfo(rawEnemyInfo);
-                var rankingSheets = sheets.GetRankingSimulatorSheets();
-                var player = new Player(avatarState, rankingSheets);
-                var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
-                var simulator = new RankingSimulator(
-                    ctx.Random,
-                    player,
-                    enemyPlayerDigest,
-                    new List<Guid>(),
-                    rankingSheets,
-                    StageId,
-                    arenaInfo,
-                    enemyInfo,
-                    costumeStatSheet);
-
-                simulator.Simulate();
-
-                sw.Stop();
-                Log.Verbose(
-                "{AddressesHex}RankingBattle Simulate() with equipment:({Equipment}), costume:({Costume}): {Elapsed}",
-                addressesHex,
-                string.Join(",", simulator.Player.Equipments.Select(r => r.ItemId)),
-                string.Join(",", simulator.Player.Costumes.Select(r => r.ItemId)),
-                sw.Elapsed
-                );
-
-                Log.Verbose(
-                    "{AddressesHex}Execute RankingBattle({AvatarAddress}); result: {Result} event count: {EventCount}",
-                    addressesHex,
-                    avatarAddress,
-                    simulator.Log.result,
-                    simulator.Log.Count
-                );
-                sw.Restart();
-
-                foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
-                {
-                    Log.Verbose(
-                        "{AddressesHex}RankingBattle Add Reward Item({ItemBaseId}): {Elapsed}",
-                        addressesHex,
-                        itemBase.Id,
-                        sw.Elapsed);
-                    avatarState.inventory.AddItem(itemBase);
-                }
-
-                sw.Stop();
-                Log.Verbose("{AddressesHex}RankingBattle Serialize WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
-                sw.Restart();
-
-                states = states
-                    .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                    .SetState(arenaInfoAddress, arenaInfo.Serialize())
-                    .SetState(enemyInfoAddress, enemyInfo.Serialize())
-                    .SetState(questListAddress, avatarState.questList.Serialize());
-
-                if (migrationRequired)
-                {
-                    states = states
-                        .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                        .SetState(avatarAddress, avatarState.SerializeV2());
-                }
-
-                if (listCheck)
-                {
-                    var addressList = states.TryGetState(addressListAddress, out List rawAddressList)
-                        ? rawAddressList.ToList(StateExtensions.ToAddress)
-                        : new List<Address>();
-
-                    if (!addressList.Contains(avatarAddress))
-                    {
-                        addressList.Add(avatarAddress);
-                    }
-
-                    if (!addressList.Contains(enemyAddress))
-                    {
-                        addressList.Add(enemyAddress);
-                    }
-
-                    states = states.SetState(addressListAddress,
-                        addressList.Aggregate(List.Empty,
-                            (current, address) => current.Add(address.Serialize())));
-                }
-                sw.Stop();
-                Log.Verbose("{AddressesHex}RankingBattle Serialize AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
-                sw.Restart();
-
-                var ended = DateTimeOffset.UtcNow;
-                Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
-                EnemyPlayerDigest = enemyPlayerDigest;
-                return states;
-            }
-            // Run Backward compatible
-            return BackwardCompatibleExecute(rawWeeklyArenaState, sheets, avatarState, costumeStatSheet, sw, addressesHex, enemyAvatarState, ctx, states, inventoryAddress, questListAddress, migrationRequired, worldInformationAddress, started);
-        }
-
-        private IAccountStateDelta BackwardCompatibleExecute(Dictionary rawWeeklyArenaState, Dictionary<Type, (Address address, ISheet sheet)> sheets,
-            AvatarState avatarState, CostumeStatSheet costumeStatSheet, Stopwatch sw, string addressesHex,
-            AvatarState enemyAvatarState, IActionContext ctx, IAccountStateDelta states, Address inventoryAddress,
-            Address questListAddress, bool migrationRequired, Address worldInformationAddress, DateTimeOffset started)
-        {
-            Dictionary weeklyArenaMap = (Dictionary) rawWeeklyArenaState["map"];
+            sw.Stop();
+            Log.Verbose("{AddressesHex}RankingBattle Get CostumeStatSheet: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
 
             IKey arenaKey = (IKey) avatarAddress.Serialize();
             if (!weeklyArenaMap.ContainsKey(arenaKey))
@@ -342,8 +201,8 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Validate ArenaInfo: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            ArenaInfo = new ArenaInfo((Dictionary) weeklyArenaMap[arenaKey]);
-            EnemyArenaInfo = new ArenaInfo((Dictionary) weeklyArenaMap[enemyKey]);
+            ArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[arenaKey]);
+            EnemyArenaInfo = new ArenaInfo((Dictionary)weeklyArenaMap[enemyKey]);
             var rankingSheets = sheets.GetRankingSimulatorSheets();
             var player = new Player(avatarState, rankingSheets);
             var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
@@ -409,7 +268,7 @@ namespace Nekoyume.Action
             var weeklyArenaDict = new Dictionary<IKey, IValue>();
             foreach (var kv in rawWeeklyArenaState)
             {
-                weeklyArenaDict[kv.Key] = kv.Key.Equals((Text) "map")
+                weeklyArenaDict[kv.Key] = kv.Key.Equals((Text)"map")
                     ? new Dictionary(arenaMapDict)
                     : kv.Value;
             }

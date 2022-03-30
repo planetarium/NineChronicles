@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Battle;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
@@ -99,6 +101,13 @@ namespace Nekoyume.Action
 
         public IAccountStateDelta WeeklyArenaRankingBoard2(IActionContext ctx, IAccountStateDelta states)
         {
+            states = PrepareNextArena(ctx, states);
+            states = ResetChallengeCount(ctx, states);
+            return states;
+        }
+
+        public IAccountStateDelta PrepareNextArena(IActionContext ctx, IAccountStateDelta states)
+        {
             var gameConfigState = states.GetGameConfigState();
             var index = Math.Max((int) ctx.BlockIndex / gameConfigState.WeeklyArenaInterval, 0);
             var weeklyAddress = WeeklyArenaState.DeriveAddress(index);
@@ -110,27 +119,126 @@ namespace Nekoyume.Action
                 nextWeekly = new WeeklyArenaState(nextIndex);
                 states = states.SetState(nextWeekly.address, nextWeekly.Serialize());
             }
-            var resetIndex = rawWeekly["resetIndex"].ToLong();
 
             // Beginning block of a new weekly arena.
             if (ctx.BlockIndex % gameConfigState.WeeklyArenaInterval == 0 && index > 0)
             {
                 var prevWeeklyAddress = WeeklyArenaState.DeriveAddress(index - 1);
-                var rawPrevWeekly = (Dictionary)states.GetState(prevWeeklyAddress);
+                var rawPrevWeekly = (Dictionary) states.GetState(prevWeeklyAddress);
                 if (!rawPrevWeekly["ended"].ToBoolean())
                 {
                     rawPrevWeekly = rawPrevWeekly.SetItem("ended", true.Serialize());
                     var weekly = new WeeklyArenaState(rawWeekly);
                     var prevWeekly = new WeeklyArenaState(rawPrevWeekly);
-                    weekly.Update(prevWeekly, ctx.BlockIndex);
+                    var listAddress = weekly.address.Derive("address_list");
+                    // Set ArenaInfo, address list for new RankingBattle.
+                    var addressList = states.TryGetState(listAddress, out List rawList)
+                        ? rawList.ToList(StateExtensions.ToAddress)
+                        : new List<Address>();
+                    if (ctx.BlockIndex >= RankingBattle.UpdateTargetBlockIndex)
+                    {
+                        weekly.ResetIndex = ctx.BlockIndex;
+
+                        // Copy Map to address list.
+                        if (ctx.BlockIndex == RankingBattle.UpdateTargetBlockIndex)
+                        {
+                            foreach (var kv in prevWeekly.Map)
+                            {
+                                var address = kv.Key;
+                                var lazyInfo = kv.Value;
+                                var info = new ArenaInfo(lazyInfo.State);
+                                states = states.SetState(
+                                    weeklyAddress.Derive(address.ToByteArray()), info.Serialize());
+                                if (!addressList.Contains(address))
+                                {
+                                    addressList.Add(address);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // Copy addresses from prev weekly address list.
+                            var prevListAddress = prevWeekly.address.Derive("address_list");
+
+                            if (states.TryGetState(prevListAddress, out List prevRawList))
+                            {
+                                var prevList = prevRawList.ToList(StateExtensions.ToAddress);
+                                foreach (var address in prevList.Where(address => !addressList.Contains(address)))
+                                {
+                                    addressList.Add(address);
+                                }
+                            }
+
+                            // Copy ArenaInfo from prev ArenaInfo.
+                            foreach (var address in addressList)
+                            {
+                                if (states.TryGetState(
+                                        prevWeekly.address.Derive(address.ToByteArray()),
+                                        out Dictionary rawInfo))
+                                {
+                                    var prevInfo = new ArenaInfo(rawInfo);
+                                    var info = new ArenaInfo(prevInfo);
+                                    states = states.SetState(
+                                        weeklyAddress.Derive(address.ToByteArray()),
+                                        info.Serialize());
+                                }
+                            }
+                        }
+
+                        // Set address list.
+                        states = states.SetState(listAddress,
+                            addressList.Aggregate(List.Empty,
+                                (current, address) => current.Add(address.Serialize())));
+                    }
+                    // Run legacy Update.
+                    else
+                    {
+                        weekly.Update(prevWeekly, ctx.BlockIndex);
+                    }
+
                     states = states.SetState(prevWeeklyAddress, rawPrevWeekly);
                     states = states.SetState(weeklyAddress, weekly.Serialize());
                 }
             }
-            else if (ctx.BlockIndex - resetIndex >= gameConfigState.DailyArenaInterval)
+            return states;
+        }
+
+        public IAccountStateDelta ResetChallengeCount(IActionContext ctx, IAccountStateDelta states)
+        {
+            var gameConfigState = states.GetGameConfigState();
+            var index = Math.Max((int) ctx.BlockIndex / gameConfigState.WeeklyArenaInterval, 0);
+            var weeklyAddress = WeeklyArenaState.DeriveAddress(index);
+            var rawWeekly = (Dictionary) states.GetState(weeklyAddress);
+            var resetIndex = rawWeekly["resetIndex"].ToLong();
+
+            if (ctx.BlockIndex - resetIndex >= gameConfigState.DailyArenaInterval)
             {
                 var weekly = new WeeklyArenaState(rawWeekly);
-                weekly.ResetCount(ctx.BlockIndex);
+                if (resetIndex >= RankingBattle.UpdateTargetBlockIndex)
+                {
+                    // Reset count each ArenaInfo.
+                    weekly.ResetIndex = ctx.BlockIndex;
+                    var listAddress = weeklyAddress.Derive("address_list");
+                    if (states.TryGetState(listAddress, out List rawList))
+                    {
+                        var addressList = rawList.ToList(StateExtensions.ToAddress);
+                        foreach (var address in addressList)
+                        {
+                            var infoAddress = weeklyAddress.Derive(address.ToByteArray());
+                            if (states.TryGetState(infoAddress, out Dictionary rawInfo))
+                            {
+                                var info = new ArenaInfo(rawInfo);
+                                info.ResetCount();
+                                states = states.SetState(infoAddress, info.Serialize());
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // Run legacy ResetCount.
+                    weekly.ResetCount(ctx.BlockIndex);
+                }
                 states = states.SetState(weeklyAddress, weekly.Serialize());
             }
             return states;

@@ -33,6 +33,8 @@ namespace Nekoyume.Model.State
 
         private readonly Dictionary<Address, LazyArenaInfo> _map;
 
+        public IReadOnlyDictionary<Address, LazyArenaInfo> Map => _map;
+
         public List<ArenaInfo> OrderedArenaInfos { get; private set; }
 
         public WeeklyArenaState(int index) : base(DeriveAddress(index))
