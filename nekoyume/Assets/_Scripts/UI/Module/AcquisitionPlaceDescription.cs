@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Nekoyume.EnumType;
 using Unity.Mathematics;
 using UnityEngine;
@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Module
             {
                 leftDeco.gameObject.SetActive(true);
                 rightDeco.gameObject.SetActive(false);
-                contentsRectTransform.MoveToRelatedPosition(helpButtonTransform, PivotPresetType.BottomRight, new float2(250f, 0f));
+                contentsRectTransform.MoveToRelatedPosition(helpButtonTransform, PivotPresetType.BottomRight, new float2(200f, 0f));
                 var contentAnchoredPosition = contentsRectTransform.anchoredPosition;
                 contentAnchoredPosition.y = 0;
                 contentsRectTransform.anchoredPosition = contentAnchoredPosition;
@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Module
             {
                 leftDeco.gameObject.SetActive(false);
                 rightDeco.gameObject.SetActive(true);
-                contentsRectTransform.MoveToRelatedPosition(helpButtonTransform, PivotPresetType.BottomLeft, new float2(-250f, 0f));
+                contentsRectTransform.MoveToRelatedPosition(helpButtonTransform, PivotPresetType.BottomLeft, new float2(-200f, 0f));
                 var contentAnchoredPosition = contentsRectTransform.anchoredPosition;
                 contentAnchoredPosition.y = 0;
                 contentsRectTransform.anchoredPosition = contentAnchoredPosition;
