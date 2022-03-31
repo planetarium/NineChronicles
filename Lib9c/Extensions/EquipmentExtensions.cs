@@ -52,25 +52,10 @@ namespace Nekoyume.Extensions
             }
 
             var itemOptionInfo = new ItemOptionInfo(equipment);
-
-            // Check old mimisbrunnr
-            // Old mimisbrunnr: Combined by the CombinationEquipment action before release the NineChronicles with this
-            // PR: https://github.com/planetarium/NineChronicles/pull/542
-            // And this PR is not only one which should consider.
-            switch (equipment.Id)
+            if (!optionRows.Any())
             {
-                case 10111000 when itemOptionInfo.SkillOptions.Any(e =>
-                    e.skillRow.Id == 110001 ||
-                    e.skillRow.Id == 110005):
-                case 10211000 when itemOptionInfo.StatOptions.Any(e => e.type == StatType.SPD):
-                case 10321000 when itemOptionInfo.StatOptions.Any(e =>
-                    e.type == StatType.ATK ||
-                    e.type == StatType.CRI):
-                case 10411000 when itemOptionInfo.StatOptions.Any(e => e.type == StatType.ATK):
-                case 10511000 when itemOptionInfo.StatOptions.Any(e => e.type == StatType.DEF):
-                    return true;
+                return IsMadeWithSpecificMimisbrunnrRecipe(equipment, itemOptionInfo, false);
             }
-            // ~Check old mimisbrunnr
 
             (StatType type, int value, int count) uniqueStatOption;
             try
@@ -80,14 +65,12 @@ namespace Nekoyume.Extensions
             }
             catch
             {
-                return false;
+                return IsMadeWithSpecificMimisbrunnrRecipe(equipment, itemOptionInfo, true);
             }
 
             if (optionRows.Length < uniqueStatOption.count)
             {
-                // NOTE: Unfortunately we cannot throw any exception here. Sheet data has changed for a long times and will be.
-                // And here return false but `equipment` could be `mimisbrunner`.
-                return false;
+                return IsMadeWithSpecificMimisbrunnrRecipe(equipment, itemOptionInfo, true);
             }
 
             switch (uniqueStatOption.count)
@@ -98,6 +81,163 @@ namespace Nekoyume.Extensions
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Unfortunately we cannot throw any exception here. Sheet data has changed for a long times and will be.
+        /// And here return false but `equipment` could be made with mimisbrunner recipe.
+        /// old: Old mimisbrunnr: Combined by the CombinationEquipment action before release the NineChronicles with this
+        /// PR: https://github.com/planetarium/NineChronicles/pull/542
+        /// And this PR is not only one which should consider.
+        /// </summary>
+        private static bool IsMadeWithSpecificMimisbrunnrRecipe(
+            Equipment equipment,
+            ItemOptionInfo itemOptionInfo,
+            bool maybeOld)
+        {
+            switch (equipment.Id)
+            {
+                case 10111000 when itemOptionInfo.SkillOptions.Any(e =>
+                    e.skillRow.Id == 110001 ||
+                    e.skillRow.Id == 110005):
+                case 10211000 when itemOptionInfo.StatOptions.Any(e => e.type == StatType.SPD):
+                case 10321000 when itemOptionInfo.StatOptions.Any(e =>
+                    e.type == StatType.ATK ||
+                    e.type == StatType.CRI):
+                case 10411000 when itemOptionInfo.StatOptions.Any(e => e.type == StatType.ATK):
+                // current.
+                case 10510000 when itemOptionInfo.StatOptions.Any(e => e.type == StatType.HIT):
+                    return true;
+                case 10511000:
+                    // old.
+                    if (maybeOld && itemOptionInfo.StatOptions.Any(e => e.type == StatType.DEF))
+                    {
+                        return true;
+                    }
+
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.ATK))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.ATK)
+                            .Sum(e => e.value);
+                        return value >= 179; // 179: stat_min of `EquipmentItemOptionSheet(id: 1152)`
+                    }
+
+                    return false;
+                case 10513000:
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.HP))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.HP)
+                            .Sum(e => e.value);
+                        return value >= 2657; // 2657: stat_min of `EquipmentItemOptionSheet(id: 1174)`
+                    }
+
+                    return false;
+                case 10514000:
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.SPD))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.SPD)
+                            .Sum(e => e.value);
+                        return value >= 1503; // 1503: stat_min of `EquipmentItemOptionSheet(id: 1185)`
+                    }
+
+                    return false;
+                case 10520000:
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.HIT))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.HIT)
+                            .Sum(e => e.value);
+                        return value >= 348; // 348: stat_min of `EquipmentItemOptionSheet(id: 1691)`
+                    }
+
+                    return false;
+                case 10521000:
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.ATK))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.ATK)
+                            .Sum(e => e.value);
+                        return value >= 97; // 97: stat_min of `EquipmentItemOptionSheet(id: 1196)`
+                    }
+
+                    return false;
+                case 10523000:
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.HP))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.HP)
+                            .Sum(e => e.value);
+                        return value >= 7373; // 7373: stat_min of `EquipmentItemOptionSheet(id: 1218)`
+                    }
+
+                    return false;
+                case 10524000:
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.SPD))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.SPD)
+                            .Sum(e => e.value);
+                        return value >= 2662; // 2662: stat_min of `EquipmentItemOptionSheet(id: 1229)`
+                    }
+
+                    return false;
+                case 10530000:
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.HIT))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.HIT)
+                            .Sum(e => e.value);
+                        return value >= 955; // 955: stat_min of `EquipmentItemOptionSheet(id: 1702)`
+                    }
+
+                    return false;
+                case 10531000:
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.ATK))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.ATK)
+                            .Sum(e => e.value);
+                        return value >= 260; // 260: stat_min of `EquipmentItemOptionSheet(id: 1240)`
+                    }
+
+                    return false;
+                case 10533000:
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.HP))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.HP)
+                            .Sum(e => e.value);
+                        return value >= 15132; // 15132: stat_min of `EquipmentItemOptionSheet(id: 1262)`
+                    }
+
+                    return false;
+                case 10534000:
+                    // current.
+                    if (itemOptionInfo.StatOptions.Any(e => e.type == StatType.SPD))
+                    {
+                        var value = itemOptionInfo.StatOptions
+                            .Where(e => e.type == StatType.SPD)
+                            .Sum(e => e.value);
+                        return value >= 3801; // 3801: stat_min of `EquipmentItemOptionSheet(id: 1273)`
+                    }
+
+                    return false;
+                default:
+                    return false;
+            }
         }
     }
 }
