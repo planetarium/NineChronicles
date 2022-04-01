@@ -22,6 +22,8 @@ namespace Nekoyume.UI.Module
 
         private static Camera _mainCamera;
 
+        private static readonly float2 DescriptionOffset = new float2(200f, 0f);
+
         private void Awake()
         {
             _mainCamera = Camera.main;
@@ -37,7 +39,7 @@ namespace Nekoyume.UI.Module
             {
                 leftDeco.gameObject.SetActive(true);
                 rightDeco.gameObject.SetActive(false);
-                contentsRectTransform.MoveToRelatedPosition(helpButtonTransform, PivotPresetType.BottomRight, new float2(200f, 0f));
+                contentsRectTransform.MoveToRelatedPosition(helpButtonTransform, PivotPresetType.BottomRight, DescriptionOffset);
                 var contentAnchoredPosition = contentsRectTransform.anchoredPosition;
                 contentAnchoredPosition.y = 0;
                 contentsRectTransform.anchoredPosition = contentAnchoredPosition;
@@ -49,7 +51,7 @@ namespace Nekoyume.UI.Module
             {
                 leftDeco.gameObject.SetActive(false);
                 rightDeco.gameObject.SetActive(true);
-                contentsRectTransform.MoveToRelatedPosition(helpButtonTransform, PivotPresetType.BottomLeft, new float2(-200f, 0f));
+                contentsRectTransform.MoveToRelatedPosition(helpButtonTransform, PivotPresetType.BottomLeft, -DescriptionOffset);
                 var contentAnchoredPosition = contentsRectTransform.anchoredPosition;
                 contentAnchoredPosition.y = 0;
                 contentsRectTransform.anchoredPosition = contentAnchoredPosition;
