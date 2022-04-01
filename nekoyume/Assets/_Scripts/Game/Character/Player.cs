@@ -581,7 +581,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        private void ChangeSpineObject(string spineResourcePath, bool isFullCostume)
+        private void ChangeSpineObject(string spineResourcePath, bool isFullCostume, bool updateHitPoint = true)
         {
             if (!(Animator.Target is null))
             {
@@ -608,6 +608,11 @@ namespace Nekoyume.Game.Character
             }
 
             Animator.ResetTarget(go);
+
+            if (updateHitPoint)
+            {
+                UpdateHitPoint();
+            }
         }
 
         public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint = true)
@@ -615,12 +620,7 @@ namespace Nekoyume.Game.Character
             var spineResourcePath =
                 isFullCostume ? $"Character/FullCostume/{id}" : $"Character/Player/{id}";
 
-            ChangeSpineObject(spineResourcePath, isFullCostume);
-
-            if (updateHitPoint)
-            {
-                UpdateHitPoint();
-            }
+            ChangeSpineObject(spineResourcePath, isFullCostume, updateHitPoint);
         }
 
         public IEnumerator CoGetExp(long exp)
