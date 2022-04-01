@@ -1,12 +1,14 @@
 on:
   push: []
   pull_request: []
+  issue_comment: []
 name: Build-misc
 
 jobs:
   build_9c:
     name: build_lib9c
     runs-on: ubuntu-20.04
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     steps:
     - uses: actions/checkout@master
       with:
@@ -31,18 +33,88 @@ jobs:
     - uses: unsplash/comment-on-pr@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: failure() && github.event_name == 'pull_request'
       with:
         msg: >
           @${{ github.actor }} The versions of bundled Libplanet assemblies and
-          Libplanet submodule vendored by Lib9c:
+          Libplanet submodule vendored by Lib9c apparently do not match:
 
           - Libplanet submdoule: ${{ steps.clv.outputs.submodule_version }}
 
           ${{ join(fromJSON(steps.clv.outputs.unmatches), fromJSON('"\n"')) }}
-      if: failure() && github.event_name == 'pull_request'
+
+
+          Leave a comment in this pull_request with the following command to
+          let the bot upgrade bundled Libplanet assemblies:
+
+          > /update-libplanet-dlls
+      # The action for command /update-libplanet-dlls is implemented below.
+
+  update-libplanet-dlls:
+    runs-on: ubuntu-20.04
+    name: Update bundled Libplanet assemblies
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      github.event.sender.type == 'User' &&
+      contains(github.event.comment.body, '/update-libplanet-dlls')
+    steps:
+    - uses: dkershner6/reaction-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commentId: ${{ github.event.comment.id }}
+        reaction: eyes
+    - id: pr-metadata
+      run: |
+        set -evxou pipefail
+        curl -o "/tmp/pr-$PR_ID.json" "$PR_API_URL"
+        jq -r '"::set-output name=repo::" + .head.repo.full_name' \
+          "/tmp/pr-$PR_ID.json"
+        jq -r '"::set-output name=ref::" + .head.ref' \
+          "/tmp/pr-$PR_ID.json"
+      env:
+        PR_ID: ${{ github.event.issue.id }}
+        PR_API_URL: ${{ github.event.issue.pull_request.url }}
+    - uses: actions/checkout@v3
+      with:
+        repository: ${{ steps.pr-metadata.outputs.repo }}
+        ref: ${{ steps.pr-metadata.outputs.ref }}
+        submodules: recursive
+        lfs: true
+    - run: . scripts/update-libplanet-dlls.ps1
+      shell: pwsh
+    - run: sudo apt-get install -y exiftool
+    - run: |
+        set -evxou pipefail
+        version="$(.github/bin/check-libplanet-version.sh | head -n1)"
+        git config user.name "$(curl $GIT_AUTHOR_API_URL | jq -r .name)"
+        git config user.email "$GIT_AUTHOR_EMAIL"
+        git commit \
+          -m "Upgrade Libplanet assemblies to $version" \
+          nekoyume/Assets/Packages/Libplanet*.{dll,xml}
+        git push
+      env:
+        GIT_AUTHOR_API_URL: ${{ github.event.sender.url }}
+        GIT_AUTHOR_EMAIL: >-
+          ${{ github.event.sender.id }}+${{
+          github.event.sender.login }}@users.noreply.github.com
+    - if: failure()
+      uses: dkershner6/reaction-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commentId: ${{ github.event.comment.id }}
+        reaction: confused
+    - if: success()
+      uses: dkershner6/reaction-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commentId: ${{ github.event.comment.id }}
+        reaction: rocket
+
   build_installer:
     runs-on: windows-latest
     name: build installer
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v2.3.4
       - run: dotnet publish tools/Updater/Updater/Updater.csproj -r win-x64 --self-contained
