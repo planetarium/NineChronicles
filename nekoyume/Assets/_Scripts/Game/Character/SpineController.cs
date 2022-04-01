@@ -29,6 +29,8 @@ namespace Nekoyume.Game.Character
 
         private Spine.Animation TargetAnimation { get; set; }
 
+        protected SkeletonAnimation TailAnimation { get; set; }
+
         private bool _applyPMA;
         private Shader _shader;
         private Material _material;
@@ -120,7 +122,7 @@ namespace Nekoyume.Game.Character
         }
 
         /// <summary>Plays an  animation based on the hash of the state name.</summary>
-        public TrackEntry PlayAnimationForState(int shortNameHash, int layerIndex)
+        public (TrackEntry, TrackEntry) PlayAnimationForState(int shortNameHash, int layerIndex)
         {
             var foundAnimation = GetAnimationForState(shortNameHash);
             if (foundAnimation is null)
@@ -129,7 +131,7 @@ namespace Nekoyume.Game.Character
             return PlayNewAnimation(foundAnimation, layerIndex);
         }
 
-        public TrackEntry PlayAnimationForState(string stateName, int layerIndex)
+        public (TrackEntry, TrackEntry) PlayAnimationForState(string stateName, int layerIndex)
         {
             var foundAnimation = GetAnimationForState(stateName);
             if (foundAnimation is null)
@@ -183,11 +185,19 @@ namespace Nekoyume.Game.Character
             return foundState?.animation;
         }
         /// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
-        private TrackEntry PlayNewAnimation(Spine.Animation target, int layerIndex)
+        private (TrackEntry, TrackEntry) PlayNewAnimation(Spine.Animation target, int layerIndex)
         {
             TargetAnimation = target;
             var isLoop = IsLoopAnimation(TargetAnimation.Name);
-            return SkeletonAnimation.AnimationState.SetAnimation(layerIndex, target, isLoop);
+
+            var body = SkeletonAnimation.AnimationState.SetAnimation(layerIndex, target, isLoop);
+            TrackEntry tail = null;
+            if (TailAnimation != null && TailAnimation.AnimationState != null)
+            {
+                tail = TailAnimation.AnimationState.SetAnimation(layerIndex, target.Name, isLoop);
+            }
+
+            return (body, tail);
         }
     }
 }
