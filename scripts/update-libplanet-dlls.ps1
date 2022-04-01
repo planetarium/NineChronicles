@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 $9cRoot = git rev-parse --show-toplevel
 $LibplanetRoot = Join-Path -Path $9cRoot -ChildPath "nekoyume/Assets/_Scripts/Lib9c/lib9c/.Libplanet"
 $LibplanetRocksDBStorePath = Join-Path -Path $LibplanetRoot -ChildPath "Libplanet.RocksDBStore/"
