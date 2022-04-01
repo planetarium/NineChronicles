@@ -91,7 +91,12 @@ namespace Nekoyume.UI
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             acquisitionPlaceButtons.ForEach(button => button.gameObject.SetActive(false));
-            detail.Set(item, itemCount, !Util.IsUsableItem(item));
+            detail.Set(
+                item,
+                itemCount,
+                !Util.IsUsableItem(item) &&
+                (item.ItemType == ItemType.Equipment ||
+                 item.ItemType == ItemType.Costume));
 
             submitButton.gameObject.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
@@ -118,7 +123,12 @@ namespace Nekoyume.UI
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
             acquisitionPlaceButtons.ForEach(button => button.gameObject.SetActive(false));
-            detail.Set(item.ItemBase, item.Count.Value, !Util.IsUsableItem(item.ItemBase));
+            detail.Set(
+                item.ItemBase,
+                item.Count.Value,
+                !Util.IsUsableItem(item.ItemBase) &&
+                (item.ItemBase.ItemType == ItemType.Equipment ||
+                 item.ItemBase.ItemType == ItemType.Costume));
 
             submitButton.gameObject.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;
@@ -153,8 +163,12 @@ namespace Nekoyume.UI
                     onRegister?.Invoke();
                     Close();
                 });
-            detail.Set(item.ItemBase, item.OrderDigest.ItemCount,
-                !Util.IsUsableItem(item.ItemBase));
+            detail.Set(
+                item.ItemBase,
+                item.OrderDigest.ItemCount,
+                !Util.IsUsableItem(item.ItemBase) &&
+                (item.ItemBase.ItemType == ItemType.Equipment ||
+                 item.ItemBase.ItemType == ItemType.Costume));
             _onClose = onClose;
 
             scrollbar.value = 1f;
@@ -180,8 +194,12 @@ namespace Nekoyume.UI
                     Close();
                 });
 
-            detail.Set(item.ItemBase, item.OrderDigest.ItemCount,
-                !Util.IsUsableItem(item.ItemBase));
+            detail.Set(
+                item.ItemBase,
+                item.OrderDigest.ItemCount,
+                !Util.IsUsableItem(item.ItemBase) &&
+                (item.ItemBase.ItemType == ItemType.Equipment ||
+                 item.ItemBase.ItemType == ItemType.Costume));
             _onClose = onClose;
 
             scrollbar.value = 1f;
@@ -201,7 +219,12 @@ namespace Nekoyume.UI
         {
             buy.gameObject.SetActive(false);
             sell.gameObject.SetActive(false);
-            detail.Set(item.ItemBase, 1, !Util.IsUsableItem(item.ItemBase));
+            detail.Set(
+                item.ItemBase,
+                1,
+                !Util.IsUsableItem(item.ItemBase) &&
+                (item.ItemBase.ItemType == ItemType.Equipment ||
+                 item.ItemBase.ItemType == ItemType.Costume));
 
             submitButton.gameObject.SetActive(onSubmit != null);
             submitButton.Interactable = interactable;

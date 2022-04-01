@@ -36,6 +36,7 @@ MonoBehaviour:
     type: 2}
   baseItemView: {fileID: 4273853261690284373}
   gradeEffect: {fileID: 2300089484462354080}
+  levelLimitedItemColor: {r: 0.7058824, g: 0.7058824, b: 0.7058824, a: 1}
 --- !u!114 &9050997685442688774
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,7 +235,12 @@ PrefabInstance:
     - target: {fileID: 2980554413673885499, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4111993396509750152, guid: fd7a738610a297e41bd57e2eebf6fe64,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6734565281713029821, guid: fd7a738610a297e41bd57e2eebf6fe64,
         type: 3}
