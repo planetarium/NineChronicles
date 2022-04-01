@@ -1,6 +1,4 @@
-#!/bin/bash
-set -e
-
+#!/usr/bin/env bash
 dotnet tool install --global JetBrains.ReSharper.GlobalTools
 
 scripts=$(git --no-pager diff --staged --name-only --diff-filter=ACM -- '*.cs')
