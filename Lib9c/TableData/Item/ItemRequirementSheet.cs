@@ -15,12 +15,11 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-#if UNITY_EDITOR
                 ItemId = ParseInt(fields[0]);
+#if UNITY_EDITOR
                 Level = GameConfig.IsEditor ? 1 : ParseInt(fields[1]);
                 MimisLevel = GameConfig.IsEditor ? 1 : ParseInt(fields[2]);
 #else
-                ItemId = ParseInt(fields[0]);
                 Level = ParseInt(fields[1]);
                 MimisLevel = ParseInt(fields[2]);
 #endif
