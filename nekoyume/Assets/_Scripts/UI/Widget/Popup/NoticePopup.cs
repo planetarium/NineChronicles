@@ -46,7 +46,7 @@ namespace Nekoyume.UI
             }
         };
 
-        private const string LastNoticeDayKeyFormat = "NOTICE_POPUP_LAST_DAY_{0}";
+        private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
 
         private static bool CanShowNoticePopup(NoticeInfo notice)
         {
@@ -57,10 +57,13 @@ namespace Nekoyume.UI
             if (!Util.IsInTime(notice.beginTime, notice.endTime, false)) return false;
 
             var lastNoticeDayKey = string.Format(LastNoticeDayKeyFormat, notice.name);
-            var lastNoticeDay = DateTime.Parse(PlayerPrefs.GetString(lastNoticeDayKey, "2022/03/01 00:00:00"));
+            var lastNoticeDay = DateTime.ParseExact(
+                PlayerPrefs.GetString(lastNoticeDayKey, "2022/03/01 00:00:00"),
+                "yyyy/MM/dd HH:mm:ss",
+                null);
             var now = DateTime.UtcNow;
             var isNewDay = now.Year != lastNoticeDay.Year || now.Month != lastNoticeDay.Month || now.Day != lastNoticeDay.Day;
-            if (isNewDay) PlayerPrefs.SetString(lastNoticeDayKey, now.ToString(CultureInfo.InvariantCulture));
+            if (isNewDay) PlayerPrefs.SetString(lastNoticeDayKey, now.ToString("yyyy/MM/dd HH:mm:ss"));
 
             return isNewDay;
         }

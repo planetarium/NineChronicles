@@ -29,13 +29,15 @@ namespace Nekoyume.Game.Character
         public Inventory Inventory;
         public TouchHandler touchHandler;
 
-        public List<Costume> Costumes =>
-            Inventory?.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped).ToList() ??
-            new List<Costume>();
+        public List<Costume> Costumes => Inventory?.Items.Count > 0
+            ? Inventory?.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped)
+                .ToList()
+            : Model.Costumes.Where(c => c.equipped).ToList();
 
-        public List<Equipment> Equipments =>
-            Inventory?.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList() ??
-            new List<Equipment>();
+        public List<Equipment> Equipments => Inventory?.Items.Count > 0
+            ? Inventory?.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped)
+                .ToList()
+            : Model.Equipments.Where(e => e.equipped).ToList();
 
         protected override float RunSpeedDefault => CharacterModel.RunSpeed;
 
@@ -44,7 +46,7 @@ namespace Nekoyume.Game.Character
 
         public PlayerSpineController SpineController { get; private set; }
 
-        public Model.Player Model => (Model.Player) CharacterModel;
+        public Model.Player Model => (Model.Player)CharacterModel;
 
         public bool AttackEnd => AttackEndCalled;
 
@@ -206,7 +208,8 @@ namespace Nekoyume.Game.Character
             if (HudContainer != null)
             {
                 HudContainer.gameObject.SetActive(true);
-                var clone  = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName(false));
+                var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
+                    costume.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, HudContainer.transform);
                 _cachedCharacterTitle.name = costume.Id.ToString();
                 _cachedCharacterTitle.transform.SetAsFirstSibling();
@@ -266,7 +269,7 @@ namespace Nekoyume.Game.Character
                     UpdateEyeById(costume.Id);
                     break;
                 case ItemSubType.FullCostume:
-                    ChangeSpineObject(costume.SpineResourcePath);
+                    ChangeSpineObject(costume.SpineResourcePath, true);
                     break;
                 case ItemSubType.HairCostume:
                     UpdateHairById(costume.Id);
@@ -298,9 +301,9 @@ namespace Nekoyume.Game.Character
                 case ItemSubType.FullCostume:
                     if (!ignoreEquipmentsAndCustomize)
                     {
-                        var armor = (Armor) Equipments.FirstOrDefault(equipment =>
+                        var armor = (Armor)Equipments.FirstOrDefault(equipment =>
                             equipment.ItemSubType == ItemSubType.Armor);
-                        var weapon = (Weapon) Equipments.FirstOrDefault(equipment =>
+                        var weapon = (Weapon)Equipments.FirstOrDefault(equipment =>
                             equipment.ItemSubType == ItemSubType.Weapon);
                         EquipEquipmentsAndUpdateCustomize(armor, weapon);
                     }
@@ -343,7 +346,7 @@ namespace Nekoyume.Game.Character
 
             var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
             var spineResourcePath = armor?.SpineResourcePath ?? $"Character/Player/{armorId}";
-            ChangeSpineObject(spineResourcePath);
+            ChangeSpineObject(spineResourcePath, IsFullCostumeEquipped);
         }
 
         public void EquipWeapon(Weapon weapon)
@@ -363,7 +366,7 @@ namespace Nekoyume.Game.Character
         public void Equip(int armorId, int weaponId)
         {
             var spineResourcePath = $"Character/Player/{armorId}";
-            ChangeSpineObject(spineResourcePath);
+            ChangeSpineObject(spineResourcePath, IsFullCostumeEquipped);
             var sprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
             SpineController.UpdateWeapon(weaponId, sprite);
         }
@@ -402,7 +405,7 @@ namespace Nekoyume.Game.Character
         /// <summary>
         /// 기존에 커스텀 가능한 귀 디자인들은 EarCostume 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
         /// </summary>
-        /// <param name="customizeIndex">0~9</param>
+        /// <param name="customizeIndex">origin : 0 ~ 9,999 / partnership 10,000 ~ 19,999 </param>
         public void UpdateEarByCustomizeIndex(int customizeIndex)
         {
             if (IsFullCostumeEquipped || !SpineController)
@@ -423,13 +426,9 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEarById(int earCostumeId)
         {
-            if (!TryGetCostumeRow(earCostumeId, out var row))
-            {
-                return;
-            }
-
-            var leftSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_left");
-            var rightSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_right");
+            const string prefix = "Character/PlayerSpineTexture/EarCostume";
+            var leftSprite = Resources.Load<Sprite>($"{prefix}/{earCostumeId}_left");
+            var rightSprite = Resources.Load<Sprite>($"{prefix}/{earCostumeId}_right");
             SpineController.UpdateEar(leftSprite, rightSprite);
         }
 
@@ -466,13 +465,9 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEyeById(int eyeCostumeId)
         {
-            if (!TryGetCostumeRow(eyeCostumeId, out var row))
-            {
-                return;
-            }
-
-            var halfSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_half");
-            var openSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_open");
+            var prefix = "Character/PlayerSpineTexture/EyeCostume";
+            var halfSprite = Resources.Load<Sprite>($"{prefix}/{eyeCostumeId}_half");
+            var openSprite = Resources.Load<Sprite>($"{prefix}/{eyeCostumeId}_open");
             SpineController.UpdateEye(halfSprite, openSprite);
         }
 
@@ -564,13 +559,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateTailById(int tailCostumeId)
         {
-            if (!TryGetCostumeRow(tailCostumeId, out var row))
-            {
-                return;
-            }
-
-            var sprite = Resources.Load<Sprite>(row.SpineResourcePath);
-            SpineController.UpdateTail(sprite);
+            SpineController.UpdateTail(tailCostumeId);
         }
 
         private bool TryGetCostumeRow(int costumeId, out CostumeItemSheet.Row row)
@@ -592,7 +581,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        private void ChangeSpineObject(string spineResourcePath, bool updateHitPoint = true)
+        private void ChangeSpineObject(string spineResourcePath, bool isFullCostume)
         {
             if (!(Animator.Target is null))
             {
@@ -613,20 +602,25 @@ namespace Nekoyume.Game.Character
 
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<PlayerSpineController>();
+            if (!isFullCostume)
+            {
+                SpineController.AttachTail();
+            }
+
             Animator.ResetTarget(go);
+        }
+
+        public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint = true)
+        {
+            var spineResourcePath =
+                isFullCostume ? $"Character/FullCostume/{id}" : $"Character/Player/{id}";
+
+            ChangeSpineObject(spineResourcePath, isFullCostume);
 
             if (updateHitPoint)
             {
                 UpdateHitPoint();
             }
-        }
-
-        public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint)
-        {
-            var spineResourcePath = isFullCostume ?
-                $"Character/FullCostume/{id}" : $"Character/Player/{id}";
-
-            ChangeSpineObject(spineResourcePath, updateHitPoint);
         }
 
         public IEnumerator CoGetExp(long exp)
@@ -666,20 +660,20 @@ namespace Nekoyume.Game.Character
             bool isLastHit,
             bool isConsiderElementalType)
         {
-            ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
+            ShowSpeech("PLAYER_SKILL", (int)skill.ElementalType, (int)skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
         }
 
         protected override IEnumerator CoAnimationCast(Model.BattleStatus.Skill.SkillInfo info)
         {
-            ShowSpeech("PLAYER_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
+            ShowSpeech("PLAYER_SKILL", (int)info.ElementalType, (int)info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
 
         public int GetArmorId()
         {
-            var armor = (Armor) Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            var armor = (Armor)Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
         }
 

@@ -810,13 +810,13 @@
             Depth of the peer discovery operation.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Protocols.Kademlia.CalculateDistance(Libplanet.Address,Libplanet.Address)">
+        <member name="M:Libplanet.Net.Protocols.Kademlia.CalculateDifference(Libplanet.Address,Libplanet.Address)">
             <summary>
-            Calculates the xor distance between two <see cref="T:Libplanet.Address"/>es.
+            Calculates the difference between two <see cref="T:Libplanet.Address"/>es.
             </summary>
-            <param name="left">The first element to calculate the distance.</param>
-            <param name="right">The second element to calculate the distance.</param>
-            <returns>The distance between two <see cref="T:Libplanet.Address"/>es.</returns>
+            <param name="left">The first <see cref="T:Libplanet.Address"/>.</param>
+            <param name="right">The second <see cref="T:Libplanet.Address"/>.</param>
+            <returns>The difference between the two <see cref="T:Libplanet.Address"/>es given.</returns>
         </member>
         <member name="M:Libplanet.Net.Protocols.Kademlia.CommonPrefixLength(Libplanet.Address,Libplanet.Address)">
             <summary>
@@ -828,14 +828,23 @@
             <returns>The length of the common prefix between <paramref name="left"/> and
             <paramref name="right"/>.</returns>
         </member>
+        <member name="M:Libplanet.Net.Protocols.Kademlia.CalculateDistance(Libplanet.Address,Libplanet.Address)">
+            <summary>
+            Calculates the distance between two <see cref="T:Libplanet.Address"/>es.
+            </summary>
+            <param name="left">The first <see cref="T:Libplanet.Address"/>.</param>
+            <param name="right">The second <see cref="T:Libplanet.Address"/>.</param>
+            <returns>The distance between the two <see cref="T:Libplanet.Address"/>es given.</returns>
+        </member>
         <member name="M:Libplanet.Net.Protocols.Kademlia.SortByDistance(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address)">
             <summary>
-            Sorts the element of the sequence from in ascending order of
-            the distance with <paramref name="target"/>.
+            Sorts a list of <see cref="T:Libplanet.Net.BoundPeer"/>s with respect to
+            the distance from <paramref name="target"/> in ascending order.
             </summary>
-            <param name="peers">A sequence of values to order.</param>
-            <param name="target">
-            <see cref="T:Libplanet.Address"/> to calculate distance of element.</param>
+            <param name="peers">The <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Net.BoundPeer"/>s
+            to sort.</param>
+            <param name="target">The <see cref="T:Libplanet.Address"/> to calculate the distance of
+            each element in <paramref name="peers"/>.</param>
             <returns>>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> whose elements are sorted
             according to the distance with <paramref name="target"/>.</returns>
         </member>
