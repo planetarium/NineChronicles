@@ -41,6 +41,7 @@ namespace Nekoyume.BlockChain
 
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
+        private const int RpcConnectionRetryCount = 10;
         private const float TxProcessInterval = 1.0f;
         private readonly ConcurrentQueue<NCAction> _queuedActions = new ConcurrentQueue<NCAction>();
 
@@ -483,10 +484,15 @@ namespace Nekoyume.BlockChain
         private async void RetryRpc()
         {
             OnRetryStarted.OnNext(this);
-            var retryCount = 10;
+            var retryCount = RpcConnectionRetryCount;
             while (retryCount > 0)
             {
-                Debug.Log($"Retry rpc connection. (count: {retryCount})");
+                var message =
+                    L10nManager.Localize("UI_RETRYING_RPC_CONNECTION_FORMAT",
+                    retryCount,
+                    RpcConnectionRetryCount);
+                Debug.Log(message);
+                Widget.Find<DimmedLoadingScreen>()?.Show(message, true);
                 await Task.Delay(5000);
                 try
                 {
