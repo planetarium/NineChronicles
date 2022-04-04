@@ -273,7 +273,6 @@ namespace Nekoyume.UI
             LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
             panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
             LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)verticalLayoutGroup.transform);
-            panel.MoveInsideOfParent(MarginFromParent);
             if (target)
             {
                 panel.MoveToRelatedPosition(target, TargetPivotPresetType, OffsetFromTarget);
@@ -284,6 +283,7 @@ namespace Nekoyume.UI
                 panel.anchoredPosition =
                     new Vector2(-(panel.sizeDelta.x / 2), panel.sizeDelta.y / 2);
             }
+            panel.MoveInsideOfParent(MarginFromParent);
 
             if (!(target is null) && panel.position.x - target.position.x < 0)
             {
