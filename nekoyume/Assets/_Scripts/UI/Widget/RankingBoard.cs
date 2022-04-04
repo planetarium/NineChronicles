@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Blocks;
+using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
+using StateExtensions = Nekoyume.Model.State.StateExtensions;
 
 namespace Nekoyume.UI
 {
@@ -42,6 +46,8 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposablesFromShow = new List<IDisposable>();
 
+        private ArenaInfoList _arenaInfoList;
+
         protected override void Awake()
         {
             base.Awake();
@@ -70,6 +76,7 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             };
             SubmitWidget = null;
+            _arenaInfoList = new ArenaInfoList();
         }
 
         public void Show(WeeklyArenaState weeklyArenaState = null) => ShowAsync(weeklyArenaState);
@@ -278,16 +285,53 @@ namespace Nekoyume.UI
 
         private async Task UpdateWeeklyCache(WeeklyArenaState state)
         {
-            var infos = state.GetArenaInfos(1, 3);
+            if (Game.Game.instance.Agent.BlockIndex >= RankingBattle.UpdateTargetBlockIndex)
+            {
+                // For backward compatibility, create list based on previous week.
+                if (Game.Game.instance.Agent.BlockIndex <= RankingBattle.UpdateTargetBlockIndex +
+                    States.Instance.GameConfigState.WeeklyArenaInterval && !_arenaInfoList.Locked)
+                {
+                    var prevWeekAddress = ArenaHelper.GetPrevWeekAddress();
+                    var rawWeekly = await Game.Game.instance.Agent.GetStateAsync(prevWeekAddress);
+                    var prevWeekly = new WeeklyArenaState(rawWeekly);
+                    var copiedState = new WeeklyArenaState(state.address);
+                    copiedState.Update(prevWeekly, state.ResetIndex);
+                    _arenaInfoList.Update(copiedState, true);
+                }
+                var rawList =
+                    await Game.Game.instance.Agent.GetStateAsync(
+                        state.address.Derive("address_list"));
+                if (rawList is List list)
+                {
+                    List<Address> avatarAddressList = list.ToList(StateExtensions.ToAddress);
+                    Dictionary<Address, IValue> result = await Game.Game.instance.Agent.GetStateBulk(avatarAddressList);
+                    var infoList = new List<ArenaInfo>();
+                    foreach (var iValue in result.Values)
+                    {
+                        if (iValue is Dictionary dictionary)
+                        {
+                            var info = new ArenaInfo(dictionary);
+                            infoList.Add(info);
+                        }
+                    }
+                    _arenaInfoList.Update(infoList);
+                }
+            }
+            else
+            {
+                // TODO delete this flag after RankingBattle.UpdateTargetBlockIndex.
+                _arenaInfoList.Update(state, false);
+            }
+            var infos = _arenaInfoList.GetArenaInfos(1, 3);
             if (States.Instance.CurrentAvatarState != null)
             {
                 var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
-                var infos2 = state.GetArenaInfos(currentAvatarAddress, 90, 10);
+                var infos2 = _arenaInfoList.GetArenaInfos(currentAvatarAddress, 90, 10);
                 // Player does not play prev & this week arena.
-                if (!infos2.Any() && state.OrderedArenaInfos.Any())
+                if (!infos2.Any() && _arenaInfoList.OrderedArenaInfos.Any())
                 {
-                    var address = state.OrderedArenaInfos.Last().AvatarAddress;
-                    infos2 = state.GetArenaInfos(address, 90, 0);
+                    var address = _arenaInfoList.OrderedArenaInfos.Last().AvatarAddress;
+                    infos2 = _arenaInfoList.GetArenaInfos(address, 90, 0);
                 }
 
                 infos.AddRange(infos2);
