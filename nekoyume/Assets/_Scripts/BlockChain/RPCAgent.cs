@@ -88,6 +88,8 @@ namespace Nekoyume.BlockChain
 
         public readonly Subject<RPCAgent> OnPreloadEnded = new Subject<RPCAgent>();
 
+        public readonly Subject<(RPCAgent, int retryCount)> OnRetryAttempt = new Subject<(RPCAgent, int)>();
+
         public int AppProtocolVersion { get; private set; }
 
         public BlockHash BlockTipHash { get; private set; }
@@ -268,6 +270,18 @@ namespace Nekoyume.BlockChain
             OnPreloadEnded
                 .ObserveOnMainThread()
                 .Subscribe(_ => Analyzer.Instance.Track("Unity/RPC Preload Ended"))
+                .AddTo(_disposables);
+            OnRetryAttempt
+                .ObserveOnMainThread()
+                .Subscribe(tuple =>
+                {
+                    Debug.Log($"Retry rpc connection. (count: {tuple.retryCount})");
+                    var message =
+                        L10nManager.Localize("UI_RETRYING_RPC_CONNECTION_FORMAT",
+                        RpcConnectionRetryCount - tuple.retryCount + 1,
+                        RpcConnectionRetryCount);
+                    Widget.Find<DimmedLoadingScreen>()?.Show(message, true);
+                })
                 .AddTo(_disposables);
             Game.Event.OnUpdateAddresses.AddListener(UpdateSubscribeAddresses);
         }
@@ -487,12 +501,7 @@ namespace Nekoyume.BlockChain
             var retryCount = RpcConnectionRetryCount;
             while (retryCount > 0)
             {
-                var message =
-                    L10nManager.Localize("UI_RETRYING_RPC_CONNECTION_FORMAT",
-                    retryCount,
-                    RpcConnectionRetryCount);
-                Debug.Log(message);
-                Widget.Find<DimmedLoadingScreen>()?.Show(message, true);
+                OnRetryAttempt.OnNext((this, retryCount));
                 await Task.Delay(5000);
                 try
                 {
