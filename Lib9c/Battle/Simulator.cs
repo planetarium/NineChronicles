@@ -37,6 +37,15 @@ namespace Nekoyume.Battle
             AvatarState avatarState,
             List<Guid> foods,
             SimulatorSheets simulatorSheets
+        ) : this(random, new Player(avatarState, simulatorSheets), foods, simulatorSheets)
+        {
+        }
+
+        protected Simulator(
+            IRandom random,
+            Player player,
+            List<Guid> foods,
+            SimulatorSheets simulatorSheets
         )
         {
             Random = random;
@@ -48,7 +57,8 @@ namespace Nekoyume.Battle
             CharacterLevelSheet = simulatorSheets.CharacterLevelSheet;
             EquipmentItemSetEffectSheet = simulatorSheets.EquipmentItemSetEffectSheet;
             Log = new BattleLog();
-            Player = new Player(avatarState, this);
+            player.Simulator = this;
+            Player = player;
             Player.Use(foods);
             Player.Stats.EqualizeCurrentHPWithHP();
         }

@@ -1,13 +1,15 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model
 {
     [Serializable]
-    public class EnemyPlayer: Player
+    public class EnemyPlayer : Player
     {
         public readonly string NameWithHash;
         public EnemyPlayer(AvatarState avatarState, Simulator simulator) : base(avatarState, simulator)
@@ -27,6 +29,36 @@ namespace Nekoyume.Model
             equipmentItemSetEffectSheet
         )
         {
+            NameWithHash = avatarState.NameWithHash;
+        }
+
+        public EnemyPlayer(EnemyPlayerDigest enemyPlayerDigest,
+            CharacterSheet characterSheet,
+            CharacterLevelSheet levelSheet,
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
+        ) : base(
+            enemyPlayerDigest.Level,
+            characterSheet,
+            levelSheet,
+            equipmentItemSetEffectSheet)
+        {
+            NameWithHash = enemyPlayerDigest.NameWithHash;
+            weapon = null;
+            armor = null;
+            belt = null;
+            necklace = null;
+            ring = null;
+            monsterMap = new CollectionMap();
+            eventMap = new CollectionMap();
+            hairIndex = enemyPlayerDigest.HairIndex;
+            lensIndex = enemyPlayerDigest.LensIndex;
+            earIndex = enemyPlayerDigest.EarIndex;
+            tailIndex = enemyPlayerDigest.TailIndex;
+            equipments = enemyPlayerDigest.Equipments as List<Equipment>;
+            costumes = enemyPlayerDigest.Costumes as List<Costume>;
+            characterLevelSheet = levelSheet;
+            AttackCountMax = AttackCountHelper.GetCountMax(Level);
+            SetEquipmentStat(equipmentItemSetEffectSheet);
         }
 
         public EnemyPlayer(
@@ -41,6 +73,12 @@ namespace Nekoyume.Model
             equipmentItemSetEffectSheet
         )
         {
+        }
+
+        public EnemyPlayer(AvatarState avatarState, SimulatorSheets simulatorSheets) : base(
+            avatarState, simulatorSheets)
+        {
+            NameWithHash = avatarState.NameWithHash;
         }
 
         private EnemyPlayer(EnemyPlayer value) : base(value)
