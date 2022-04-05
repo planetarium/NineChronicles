@@ -600,7 +600,8 @@
             <summary>
             Creates a <see cref="T:Libplanet.Net.Messages.NetMQMessageCodec"/> instance.
             </summary>
-            <param name="messageLifespan">Lifespan to use for messages when decoding.</param>
+            <param name="messageTimestampBuffer">A <see cref="T:System.TimeSpan"/> to use as a buffer
+            when decoding <see cref="T:Libplanet.Net.Messages.Message"/>s.</param>
         </member>
         <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
             <inheritdoc/>
@@ -624,7 +625,8 @@
             <summary>
             Creates a <see cref="T:Libplanet.Net.Messages.TcpMessageCodec"/> instance.
             </summary>
-            <param name="messageLifespan">Lifespan to use for messages when decoding.</param>
+            <param name="messageTimestampBuffer">A <see cref="T:System.TimeSpan"/> to use as a buffer
+            when decoding <see cref="T:Libplanet.Net.Messages.Message"/>s.</param>
         </member>
         <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
             <inheritdoc/>
@@ -1450,9 +1452,10 @@
             The lifespan of block demand.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.SwarmOptions.MessageLifespan">
+        <member name="P:Libplanet.Net.SwarmOptions.MessageTimestampBuffer">
             <summary>
-            The lifespan of <see cref="T:Libplanet.Net.Messages.Message"/>.
+            The amount of difference in <see cref="T:System.TimeSpan"/> allowed from current local time for
+            a received <see cref="T:Libplanet.Net.Messages.Message"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Net.SwarmOptions.RefreshPeriod">
@@ -1565,7 +1568,7 @@
             <summary>
             The list of tasks invoked when a message that is not
             a reply is received. To handle reply, please use <see cref=
-            "M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/>.
+            "M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Net.Transports.ITransport.AsPeer">
@@ -1615,20 +1618,7 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.ITransport.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
-            <summary>
-            Sends a <see cref="T:Libplanet.Net.Messages.Message"/> to a given <see cref="T:Libplanet.Net.BoundPeer"/>.
-            </summary>
-            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
-            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>An awaitable task without value.</returns>
-            <exception cref="T:System.ObjectDisposedException">
-            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
-        </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
             Sends a <see cref="T:Libplanet.Net.Messages.Message"/> to a given <see cref="T:Libplanet.Net.BoundPeer"/>
             and waits for its single reply.
@@ -1644,7 +1634,7 @@
             <exception cref="T:System.ObjectDisposedException">
             Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
         </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Sends a <see cref="T:Libplanet.Net.Messages.Message"/> to a given <see cref="T:Libplanet.Net.BoundPeer"/>
             and waits for its multiple replies.
@@ -1701,7 +1691,7 @@
             <see cref="T:Libplanet.Net.Peer"/> is discovered.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
             <summary>
             Creates <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance.
             </summary>
@@ -1725,12 +1715,11 @@
             If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
             is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
             </param>
-            <param name="messageLifespan">
-            The lifespan of a message.
-            Messages generated before this value from the current time are ignored.
-            If <c>null</c> is given, messages will not be ignored by its timestamp.</param>
-            <param name="dealerSocketLifetime">
-            The lifespan of a <see cref="T:NetMQ.Sockets.DealerSocket"/> used for broadcasting messages.</param>
+            <param name="messageTimestampBuffer">The amount in <see cref="T:System.TimeSpan"/>
+            that is allowed for the timestamp of a <see cref="T:Libplanet.Net.Messages.Message"/> to differ from
+            the current time of a local node.  Every <see cref="T:Libplanet.Net.Messages.Message"/> with its timestamp
+            differing greater than <paramref name="messageTimestampBuffer"/> will be ignored.
+            If <c>null</c>, any timestamp is accepted.</param>
             <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
             <paramref name="iceServers"/> are <c>null</c>.</exception>
         </member>
@@ -1758,13 +1747,10 @@
         <member name="M:Libplanet.Net.Transports.NetMQTransport.WaitForRunningAsync">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.BroadcastMessage(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Net.Messages.Message)">
@@ -1787,6 +1773,12 @@
         </member>
         <member name="M:Libplanet.Net.Transports.TcpTransport.WaitForRunningAsync">
             <inheritdoc cref="M:Libplanet.Net.Transports.ITransport.WaitForRunningAsync"/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.TcpTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.TcpTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
+            <inheritdoc/>
         </member>
     </members>
 </doc>

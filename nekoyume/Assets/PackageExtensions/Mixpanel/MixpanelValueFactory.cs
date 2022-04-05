@@ -7,33 +7,34 @@ namespace PackageExtensions.Mixpanel
     {
         private const string _clientHostKey = "client-host";
         private const string _clientHashKey = "client-hash";
-        
-        private bool _initialized;
-        private string _clientHost;
-        private string _clientHash;
+        private const string _rpcServerHostKey = "rpc-server-host";
 
-        private void Initialize()
+        private readonly string _clientHost;
+        private readonly string _clientHash;
+        private readonly string _rpcServerHost;
+
+        public MixpanelValueFactory(string rpcServerHost = null)
         {
-            if (_initialized)
-            {
-                return;
-            }
-
             _clientHost = Resources.Load<TextAsset>("MixpanelClientHost")?.text ?? "no-host";
             _clientHash = Resources.Load<TextAsset>("MixpanelClientHash")?.text ?? "no-hash";
-            _initialized = true;
-            Debug.Log($"[{nameof(MixpanelValueFactory)}] Initialized. {_clientHost} {_clientHash}");
+            _rpcServerHost = rpcServerHost;
+
+            Debug.Log(
+                $"[{nameof(MixpanelValueFactory)}] Initialized. {_clientHost} {_clientHash} {_rpcServerHost ?? ""}");
         }
 
         public Value GetValue(params (string key, string value)[] properties)
         {
-            Initialize();
-
             var result = new Value
             {
                 [_clientHostKey] = _clientHost,
                 [_clientHashKey] = _clientHash,
             };
+
+            if (_rpcServerHost is { })
+            {
+                result[_rpcServerHostKey] = _rpcServerHost;
+            }
 
             foreach (var (key, value) in properties)
             {
@@ -47,6 +48,12 @@ namespace PackageExtensions.Mixpanel
         {
             value[_clientHostKey] = _clientHost;
             value[_clientHashKey] = _clientHash;
+
+            if (_rpcServerHost is { })
+            {
+                value[_rpcServerHostKey] = _rpcServerHost;
+            }
+
             return value;
         }
     }

@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dd7c057b5c947af977ae42bff92537a, type: 3}
+  m_Name: FontAssetGenerationSettings
+  m_EditorClassIdentifier: 
+  settings:
+  - language: 0
+    sourceFontFile: {fileID: 12800000, guid: 1da5c5563106ea94ba1e2114308b9c16, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 80
+    padding: 9
+    packingMode: 0
+    atlasWidth: 1024
+    atlasHeight: 1024
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 1
+    sourceFontFile: {fileID: 12800000, guid: 1da5c5563106ea94ba1e2114308b9c16, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 80
+    padding: 9
+    packingMode: 0
+    atlasWidth: 4096
+    atlasHeight: 4096
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 2
+    sourceFontFile: {fileID: 12800000, guid: f496f0d578f7449b0b5d3d7eb1f05ca6, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 80
+    padding: 9
+    packingMode: 0
+    atlasWidth: 1024
+    atlasHeight: 1024
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: e9a2d396958eae64ab9fb60125127ed2,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 3
+    sourceFontFile: {fileID: 12800000, guid: f496f0d578f7449b0b5d3d7eb1f05ca6, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 80
+    padding: 9
+    packingMode: 0
+    atlasWidth: 1024
+    atlasHeight: 1024
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: 3f68e0bceeae246cd9d0c19d10d925b7,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 4
+    sourceFontFile: {fileID: 12800000, guid: 97c53f8c492e64fec870c60106d4d62b, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 80
+    padding: 7
+    packingMode: 0
+    atlasWidth: 4096
+    atlasHeight: 4096
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: 8afd336e1a8814407892bb84b94f6805,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 5
+    sourceFontFile: {fileID: 12800000, guid: 97c53f8c492e64fec870c60106d4d62b, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 80
+    padding: 7
+    packingMode: 0
+    atlasWidth: 4096
+    atlasHeight: 4096
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: c8fb8e2a40267408e887a3a22f5204d2,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1
+  - language: 6
+    sourceFontFile: {fileID: 12800000, guid: 42b660e0ae1a94d95bee4b1a5b504b03, type: 3}
+    pointSizeSamplingMode: 1
+    pointSize: 80
+    padding: 7
+    packingMode: 0
+    atlasWidth: 1024
+    atlasHeight: 1024
+    characterSetSelectionMode: 6
+    referencedFontAsset: {fileID: 11400000, guid: 0a19bbb2b89824ab2ab62ee5ea4fcee6,
+      type: 2}
+    characterSequence: 
+    renderMode: 4165
+    includeFontFeatures: 1

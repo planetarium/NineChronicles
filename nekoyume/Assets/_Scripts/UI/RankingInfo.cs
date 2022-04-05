@@ -30,6 +30,21 @@ namespace Nekoyume.UI
         [SerializeField]
         private Slider remainTimeSlider = null;
 
+        [SerializeField]
+        private GameObject rewardObject;
+
+        [SerializeField]
+        private TextMeshProUGUI rewardText;
+
+        [SerializeField]
+        private TextMeshProUGUI blockCountText;
+
+        [SerializeField]
+        private GameObject seasonEnable;
+
+        [SerializeField]
+        private GameObject seasonDisable;
+
         private long _resetIndex;
 
         private readonly List<IDisposable> _disposablesFromOnEnable = new List<IDisposable>();
@@ -54,6 +69,7 @@ namespace Nekoyume.UI
 
             var weeklyArenaState = States.Instance.WeeklyArenaState;
             SetWeeklyArenaState(weeklyArenaState);
+            SetBlockIndex(Game.Game.instance.Agent.BlockIndex);
         }
 
         private void OnDisable()
@@ -64,6 +80,24 @@ namespace Nekoyume.UI
         private void SetBlockIndex(long blockIndex)
         {
             remainTimeSlider.value = blockIndex - _resetIndex;
+
+            var isActive = EventManager.TryGetArenaSeasonInfo(blockIndex, out var info);
+            seasonEnable.SetActive(isActive);
+            seasonDisable.SetActive(!isActive);
+            rewardObject.SetActive(isActive);
+            if (isActive)
+            {
+                rewardText.text = info.RewardNcg % 1000 == 0
+                    ? $"{info.RewardNcg / 1000}k"
+                    : $"{info.RewardNcg}";
+                var start = info.StartBlockIndex % 1000 == 0
+                    ? $"{info.StartBlockIndex / 1000}k"
+                    : $"{info.StartBlockIndex}";
+                var end = info.EndBlockIndex % 1000 == 0
+                    ? $"{info.EndBlockIndex / 1000}k"
+                    : $"{info.EndBlockIndex}";
+                blockCountText.text = $"{start}-{end}";
+            }
         }
 
         private void SetWeeklyArenaState(WeeklyArenaState weeklyArenaState)
@@ -107,7 +141,7 @@ namespace Nekoyume.UI
             remainTime.text = string.Format(
                 L10nManager.Localize("UI_ABOUT"),
                 time,
-                (int) value, gameConfigState.DailyArenaInterval);
+                (int)value, gameConfigState.DailyArenaInterval);
         }
     }
 }

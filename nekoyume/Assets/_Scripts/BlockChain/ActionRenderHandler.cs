@@ -13,6 +13,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Item;
+using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.Model.State;
@@ -1008,19 +1009,21 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
-                var ead = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyAvatarState)];
+                var epd = (List)eval.Extra[nameof(Action.RankingBattle.EnemyPlayerDigest)];
                 var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
                 var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
-                var enemyAvatarState = new AvatarState(ead);
+                var enemyPlayerDigest = new EnemyPlayerDigest(epd);
                 var arenaInfo = new ArenaInfo(aid);
                 var enemyInfo = new ArenaInfo(eid);
+                var rankingSimulatorSheets = Game.Game.instance.TableSheets.GetRankingSimulatorSheets();
+                var player = new Player(States.Instance.CurrentAvatarState, rankingSimulatorSheets);
 
                 var simulator = new RankingSimulator(
                     new LocalRandom(eval.RandomSeed),
-                    States.Instance.CurrentAvatarState,
-                    enemyAvatarState,
+                    player,
+                    enemyPlayerDigest,
                     new List<Guid>(),
-                    Game.Game.instance.TableSheets.GetRankingSimulatorSheets(),
+                    rankingSimulatorSheets,
                     Action.RankingBattle.StageId,
                     arenaInfo,
                     enemyInfo,

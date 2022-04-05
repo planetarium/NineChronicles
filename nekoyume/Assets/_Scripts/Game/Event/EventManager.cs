@@ -9,6 +9,7 @@ namespace Nekoyume
     public static class EventManager
     {
         private static EventScriptableObject _so;
+
         private static EventScriptableObject SO =>
             _so ? _so : (_so = Resources.Load<EventScriptableObject>("ScriptableObject/EventData"));
 
@@ -16,6 +17,13 @@ namespace Nekoyume
         {
             return SO.Events.FirstOrDefault(x => Util.IsInTime(x.BeginDateTime, x.EndDateTime)) ??
                    SO.DefaultEvent;
+        }
+
+        public static bool TryGetArenaSeasonInfo(long blockIndex, out ArenaSeasonInfo info)
+        {
+            info = SO.ArenaSeasons.FirstOrDefault(x =>
+                x.StartBlockIndex <= blockIndex && blockIndex <= x.EndBlockIndex);
+            return info != null;
         }
 
         public static void UpdateEventContainer(Transform parent)

@@ -176,7 +176,9 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
-            Analyzer = new Analyzer().Initialize(Agent.Address.ToString());
+            Analyzer = _options.RpcClient
+                ? new Analyzer(Agent.Address.ToString(), _options.RpcServerHost)
+                : new Analyzer(Agent.Address.ToString());
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);

@@ -44,6 +44,9 @@ Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: CreateDesktopIcon
 Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: RegisterStartup
 
+[UninstallDelete]
+Type: filesandordirs; Name: "{userappdata}\{#MyAppName}";
+
 [Code]
 var
   UUID: String;

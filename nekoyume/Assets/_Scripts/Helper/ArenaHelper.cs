@@ -53,6 +53,7 @@ namespace Nekoyume
         {
             var gameConfigState = States.Instance.GameConfigState;
             var index = Math.Max((int) thisWeekBlockIndex / gameConfigState.WeeklyArenaInterval, 0);
+            index--;
             return WeeklyArenaState.DeriveAddress(index);
         }
 
