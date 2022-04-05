@@ -79,7 +79,7 @@ namespace Nekoyume.UI
             System.Action onBlocked = null,
             RectTransform target = null)
         {
-            base.Show(
+            Show(
                 item.ItemBase,
                 submitText,
                 interactable,
