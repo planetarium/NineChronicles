@@ -26,6 +26,39 @@ namespace Nekoyume.Battle
         public readonly WeeklyArenaRewardSheet WeeklyArenaRewardSheet;
         public override IEnumerable<ItemBase> Reward => _reward;
 
+
+        public RankingSimulator(
+            IRandom random,
+            Player player,
+            EnemyPlayerDigest enemyPlayerDigest,
+            List<Guid> foods,
+            RankingSimulatorSheets rankingSimulatorSheets,
+            int stageId,
+            ArenaInfo arenaInfo,
+            ArenaInfo enemyInfo,
+            CostumeStatSheet costumeStatSheet
+        ) : base(
+            random,
+            player,
+            foods,
+            rankingSimulatorSheets
+        )
+        {
+            _enemyPlayer = new EnemyPlayer(enemyPlayerDigest, CharacterSheet, CharacterLevelSheet, EquipmentItemSetEffectSheet)
+            {
+                Simulator = this
+            };
+            _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
+            _stageId = stageId;
+            _arenaInfo = arenaInfo;
+            _enemyInfo = enemyInfo;
+            WeeklyArenaRewardSheet = rankingSimulatorSheets.WeeklyArenaRewardSheet;
+            if (!(costumeStatSheet is null))
+            {
+                Player.SetCostumeStat(costumeStatSheet);
+                _enemyPlayer.SetCostumeStat(costumeStatSheet);
+            }
+        }
         public RankingSimulator(
             IRandom random,
             AvatarState avatarState,
@@ -35,20 +68,19 @@ namespace Nekoyume.Battle
             int stageId,
             ArenaInfo arenaInfo,
             ArenaInfo enemyInfo
-        ) : base(
+        ) : this(
             random,
-            avatarState,
+            new Player(avatarState, rankingSimulatorSheets),
+            new EnemyPlayerDigest(enemyAvatarState),
             foods,
-            rankingSimulatorSheets
+            rankingSimulatorSheets,
+            stageId,
+            arenaInfo,
+            enemyInfo,
+            null
         )
         {
-            _enemyPlayer = new EnemyPlayer(enemyAvatarState, this);
-            _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
-            _stageId = stageId;
-            _arenaInfo = arenaInfo;
-            _enemyInfo = enemyInfo;
             _avatarState = avatarState;
-            WeeklyArenaRewardSheet = rankingSimulatorSheets.WeeklyArenaRewardSheet;
         }
 
         public RankingSimulator(

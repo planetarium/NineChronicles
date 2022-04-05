@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Action
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
@@ -23,6 +24,7 @@ namespace Lib9c.Tests.Action
 
     public class RankingBattleTest
     {
+        private const int ArenaIndex = RankingBattle.UpdateTargetWeeklyArenaIndex - 1;
         private readonly TableSheets _tableSheets;
         private readonly Address _agent1Address;
         private readonly Address _avatar1Address;
@@ -60,7 +62,7 @@ namespace Lib9c.Tests.Action
             var agent2Address = agent2State.address;
             _avatar2Address = avatar2State.address;
 
-            var weeklyArenaState = new WeeklyArenaState(0);
+            var weeklyArenaState = new WeeklyArenaState(ArenaIndex);
             weeklyArenaState.SetV2(avatar1State, _tableSheets.CharacterSheet, _tableSheets.CostumeStatSheet);
             weeklyArenaState[_avatar1Address].Activate();
             weeklyArenaState.SetV2(avatar2State, _tableSheets.CharacterSheet, _tableSheets.CostumeStatSheet);
@@ -72,6 +74,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatar1Address, avatar1State.Serialize())
                 .SetState(agent2Address, agent2State.Serialize())
                 .SetState(_avatar2Address, avatar2State.Serialize())
+                .SetState(Addresses.GameConfig, new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize())
                 .SetState(_weeklyArenaAddress, weeklyArenaState.Serialize());
 
             Log.Logger = new LoggerConfiguration()
@@ -109,6 +112,123 @@ namespace Lib9c.Tests.Action
             return (agentState, avatarState);
         }
 
+        [Fact]
+        public void Execute()
+        {
+            var previousWeeklyState = _initialState.GetWeeklyArenaState(ArenaIndex);
+            var previousAvatar1State = _initialState.GetAvatarState(_avatar1Address);
+            previousAvatar1State.level = 10;
+            var prevScore = previousWeeklyState[_avatar1Address].Score;
+
+            var previousState = _initialState.SetState(
+                _avatar1Address,
+                previousAvatar1State.Serialize());
+
+            var itemIds = _tableSheets.WeeklyArenaRewardSheet.Values
+                .Select(r => r.Reward.ItemId)
+                .ToList();
+
+            Assert.All(itemIds, id => Assert.False(previousAvatar1State.inventory.HasItem(id)));
+
+            var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
+            var costume = (Costume)ItemFactory.CreateItem(
+                _tableSheets.ItemSheet[row.CostumeId], new TestRandom());
+            costume.equipped = true;
+            previousAvatar1State.inventory.AddItem(costume);
+
+            var row2 = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.DEF);
+            var enemyCostume = (Costume)ItemFactory.CreateItem(
+                _tableSheets.ItemSheet[row2.CostumeId], new TestRandom());
+            enemyCostume.equipped = true;
+            var enemyAvatarState = _initialState.GetAvatarState(_avatar2Address);
+            enemyAvatarState.inventory.AddItem(enemyCostume);
+
+            Address worldInformationAddress = _avatar1Address.Derive(LegacyWorldInformationKey);
+            var weeklyArenaAddress =
+                WeeklyArenaState.DeriveAddress(RankingBattle.UpdateTargetWeeklyArenaIndex);
+            previousState = previousState
+                .SetState(
+                    _avatar1Address.Derive(LegacyInventoryKey),
+                    previousAvatar1State.inventory.Serialize())
+                .SetState(
+                    worldInformationAddress,
+                    previousAvatar1State.worldInformation.Serialize())
+                .SetState(
+                    _avatar1Address.Derive(LegacyQuestListKey),
+                    previousAvatar1State.questList.Serialize())
+                .SetState(_avatar1Address, previousAvatar1State.SerializeV2())
+                .SetState(
+                    _avatar2Address.Derive(LegacyInventoryKey),
+                    enemyAvatarState.inventory.Serialize())
+                .SetState(
+                    _avatar2Address.Derive(LegacyWorldInformationKey),
+                    enemyAvatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatar2Address.Derive(LegacyQuestListKey),
+                    enemyAvatarState.questList.Serialize())
+                .SetState(_avatar2Address, enemyAvatarState.SerializeV2())
+                .SetState(
+                    weeklyArenaAddress,
+                    new WeeklyArenaState(RankingBattle.UpdateTargetWeeklyArenaIndex).Serialize());
+
+            var action = new RankingBattle
+            {
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = weeklyArenaAddress,
+                costumeIds = new List<Guid> { costume.ItemId },
+                equipmentIds = new List<Guid>(),
+            };
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = previousState,
+                Signer = _agent1Address,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = RankingBattle.UpdateTargetBlockIndex,
+            });
+
+            Assert.True(nextState.TryGetState(weeklyArenaAddress.Derive(_avatar1Address.ToByteArray()), out Dictionary rawArenaInfo));
+            Assert.True(nextState.TryGetState(weeklyArenaAddress.Derive(_avatar2Address.ToByteArray()), out Dictionary rawEnemyInfo));
+            Assert.True(nextState.TryGetState(weeklyArenaAddress.Derive("address_list"), out List rawAddressList));
+            var nextWeekly = nextState.GetWeeklyArenaState(weeklyArenaAddress);
+            Assert.Empty(nextWeekly.Map);
+
+            var nextAvatar1State = nextState.GetAvatarStateV2(_avatar1Address);
+            var nextArenaInfo = new ArenaInfo(rawArenaInfo);
+            var addressList = rawAddressList.ToList(StateExtensions.ToAddress);
+
+            Assert.Contains(_avatar1Address, addressList);
+            Assert.Contains(_avatar2Address, addressList);
+            Assert.Contains(nextAvatar1State.inventory.Materials, i => itemIds.Contains(i.Id));
+            Assert.NotNull(action.ArenaInfo);
+            Assert.NotNull(action.EnemyArenaInfo);
+            Assert.True(nextArenaInfo.Score > prevScore);
+
+            // Check simulation result equal.
+            var player = new Player(
+                previousAvatar1State,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet);
+            var simulator = new RankingSimulator(
+                new TestRandom(),
+                player,
+                action.EnemyPlayerDigest,
+                new List<Guid>(),
+                _tableSheets.GetRankingSimulatorSheets(),
+                RankingBattle.StageId,
+                action.ArenaInfo,
+                action.EnemyArenaInfo,
+                _tableSheets.CostumeStatSheet);
+            simulator.Simulate();
+
+            Assert.Equal(nextArenaInfo.Score, simulator.Log.score);
+            Assert.Equal(previousAvatar1State.SerializeV2(), nextAvatar1State.SerializeV2());
+            Assert.Equal(previousAvatar1State.worldInformation.Serialize(), nextAvatar1State.worldInformation.Serialize());
+        }
+
         [Theory]
         [InlineData(true, true, true)]
         [InlineData(true, true, false)]
@@ -118,9 +238,9 @@ namespace Lib9c.Tests.Action
         [InlineData(false, true, false)]
         [InlineData(false, false, true)]
         [InlineData(false, false, false)]
-        public void Execute(bool isNew, bool avatarBackward, bool enemyBackward)
+        public void Execute_Backward_Compatible(bool isNew, bool avatarBackward, bool enemyBackward)
         {
-            var previousWeeklyState = _initialState.GetWeeklyArenaState(0);
+            var previousWeeklyState = _initialState.GetWeeklyArenaState(ArenaIndex);
             var previousAvatar1State = _initialState.GetAvatarState(_avatar1Address);
             previousAvatar1State.level = 10;
             var prevScore = previousWeeklyState[_avatar1Address].Score;
@@ -208,23 +328,28 @@ namespace Lib9c.Tests.Action
                 Signer = _agent1Address,
                 Random = new TestRandom(),
                 Rehearsal = false,
+                BlockIndex = RankingBattle.UpdateTargetBlockIndex - 1,
             });
 
             var nextAvatar1State = nextState.GetAvatarStateV2(_avatar1Address);
-            var nextWeeklyState = nextState.GetWeeklyArenaState(0);
+            var nextWeeklyState = nextState.GetWeeklyArenaState(ArenaIndex);
             var nextArenaInfo = nextWeeklyState[_avatar1Address];
 
             Assert.Contains(nextAvatar1State.inventory.Materials, i => itemIds.Contains(i.Id));
             Assert.NotNull(action.ArenaInfo);
             Assert.NotNull(action.EnemyArenaInfo);
-            Assert.NotNull(action.EnemyAvatarState);
             Assert.True(nextArenaInfo.Score > prevScore);
 
             // Check simulation result equal.
+            var player = new Player(
+                previousAvatar1State,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet);
             var simulator = new RankingSimulator(
                 new TestRandom(),
-                previousAvatar1State,
-                action.EnemyAvatarState,
+                player,
+                action.EnemyPlayerDigest,
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
                 RankingBattle.StageId,
