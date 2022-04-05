@@ -116,8 +116,18 @@ namespace Nekoyume.UI.Module
 
             if (row is null)
             {
-                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row),
-                    model.ItemBase.Value.Id, null);
+                if (model.ItemBase.Value.ItemSubType == ItemSubType.TailCostume ||
+                    model.ItemBase.Value.ItemSubType == ItemSubType.EarCostume)
+                {
+                    row = Game.Game.instance.TableSheets.ItemSheet.Values.FirstOrDefault(x =>
+                        x.ItemSubType == model.ItemBase.Value.ItemSubType);
+                }
+
+                if (row is null)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row),
+                        model.ItemBase.Value.Id, null);
+                }
             }
 
             base.SetData(row, onClick);

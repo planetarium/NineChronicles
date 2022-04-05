@@ -7956,6 +7956,8 @@
             </summary>
             <param name="bytes">Serialized <see cref="T:Libplanet.Store.BlockDigest"/>.</param>
             <returns>Deserialized <see cref="T:Libplanet.Store.BlockDigest"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the passed <paramref name="bytes"/>
+            is <see langword="null"/>.</exception>
             <exception cref="T:Bencodex.DecodingException">Thrown when decoded value is not
             <see cref="T:Bencodex.Types.Dictionary"/> type.</exception>
         </member>

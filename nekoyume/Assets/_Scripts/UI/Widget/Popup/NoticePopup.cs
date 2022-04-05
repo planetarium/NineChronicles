@@ -37,39 +37,30 @@ namespace Nekoyume.UI
             {
                 name = "ItemLevelRequirement",
                 contentImage = null,
-                beginTime = "2022/03/01 00:00:00",
-                endTime = "2022/03/31 23:59:59",
+                beginTime = "2022/03/17 15:00:00",
+                endTime = "2022/04/18 14:59:59",
                 pageUrlFormat = "https://ninechronicles.medium.com/item-level-requirements-3f5936733007"
             }
         };
 
-        private const string LastNoticeDayKeyFormat = "NOTICE_POPUP_LAST_DAY_{0}";
+        private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
 
         private static bool CanShowNoticePopup(NoticeInfo notice)
         {
-            if (notice == null)
-            {
-                return false;
-            }
-
-            var worldInfo = Game.Game.instance.States.CurrentAvatarState.worldInformation;
-            if (worldInfo is null) return false;
-            var clearedStageId = worldInfo.TryGetLastClearedStageId(out var id) ? id : 1;
-            if (TutorialController.GetCheckPoint(clearedStageId) != 0) return false;
-
-            var tutorialControllerIsPlaying = Game.Game.instance.Stage.TutorialController.IsPlaying;
-            if (tutorialControllerIsPlaying) return false;
-
+            if (notice == null) return false;
+            
+            if (!Game.Game.instance.Stage.TutorialController.IsCompleted) return false;
+            
             if (!Util.IsInTime(notice.beginTime, notice.endTime, false)) return false;
 
             var lastNoticeDayKey = string.Format(LastNoticeDayKeyFormat, notice.name);
-            var lastNoticeDay = DateTime.Parse(PlayerPrefs.GetString(lastNoticeDayKey, "2022/03/01 00:00:00"));
+            var lastNoticeDay = DateTime.ParseExact(
+                PlayerPrefs.GetString(lastNoticeDayKey, "2022/03/01 00:00:00"),
+                "yyyy/MM/dd HH:mm:ss",
+                null);
             var now = DateTime.UtcNow;
             var isNewDay = now.Year != lastNoticeDay.Year || now.Month != lastNoticeDay.Month || now.Day != lastNoticeDay.Day;
-            if (isNewDay)
-            {
-                PlayerPrefs.SetString(lastNoticeDayKey, now.ToString(CultureInfo.InvariantCulture));
-            }
+            if (isNewDay) PlayerPrefs.SetString(lastNoticeDayKey, now.ToString("yyyy/MM/dd HH:mm:ss"));
 
             return isNewDay;
         }

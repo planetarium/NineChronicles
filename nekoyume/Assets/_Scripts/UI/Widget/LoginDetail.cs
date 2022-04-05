@@ -10,10 +10,13 @@ using TMPro;
 using UnityEngine.UI;
 using Nekoyume.Model.State;
 using System.Collections;
-using mixpanel;
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.TableData;
 
 namespace Nekoyume.UI
 {
@@ -38,18 +41,29 @@ namespace Nekoyume.UI
         public Button acolyteButton;
         public Button backButton;
 
+        private CostumeItemSheet _costumeItemSheet;
+
+        private readonly Dictionary<ItemSubType, List<int>> _costumes =
+            new Dictionary<ItemSubType, List<int>>()
+            {
+                {ItemSubType.HairCostume, new List<int>()},
+                {ItemSubType.EyeCostume, new List<int>()},
+                {ItemSubType.EarCostume, new List<int>()},
+                {ItemSubType.TailCostume, new List<int>()},
+            };
+
+        private readonly Dictionary<ItemSubType, int> _index = new Dictionary<ItemSubType, int>()
+        {
+            { ItemSubType.HairCostume, 0 },
+            { ItemSubType.EyeCostume, 0 },
+            { ItemSubType.EarCostume, 0 },
+            { ItemSubType.TailCostume, 0 },
+        };
+
         private int _selectedIndex;
         private bool _isCreateMode;
 
-        private int _hair;
-        private int _lens;
-        private int _ear;
-        private int _tail;
-
-        private const int HairCount = 7;
-        private const int LensCount = 6;
-        private const int EarCount = 10;
-        private const int TailCount = 10;
+        private const int PartnershipIndex = 10000;
 
         protected override void Awake()
         {
@@ -58,6 +72,11 @@ namespace Nekoyume.UI
             jobDescriptionText.text = L10nManager.Localize("UI_WARRIOR_DESCRIPTION");
 
             Game.Event.OnLoginDetail.AddListener(Init);
+            _costumeItemSheet = Game.Game.instance.TableSheets.CostumeItemSheet;
+            foreach (var costume in _costumes)
+            {
+                costume.Value.AddRange(GetCostumes(_costumeItemSheet.OrderedList, costume.Key));
+            }
 
             CloseWidget = BackClick;
             SubmitWidget = CreateClick;
@@ -66,6 +85,30 @@ namespace Nekoyume.UI
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ => BackClick())
                 .AddTo(gameObject);
+        }
+
+        private IEnumerable<int> GetCostumes(IEnumerable<CostumeItemSheet.Row> rows, ItemSubType itemSubType)
+        {
+            var items = rows.Where(x => x.ItemSubType == itemSubType);
+            var startIndex = items.First().Id;
+            var partnership = new List<int>();
+            var origin = new List<int>();
+            var result = new List<int>();
+            foreach (var item in items)
+            {
+                var id = item.Id - startIndex;
+                if (id < PartnershipIndex)
+                {
+                    origin.Add(id);
+                }
+                else
+                {
+                    partnership.Add(id);
+                }
+            }
+            result.AddRange(partnership);
+            result.AddRange(origin);
+            return result;
         }
 
         public void CreateClick()
@@ -94,8 +137,11 @@ namespace Nekoyume.UI
             Find<GrayLoadingScreen>().Show();
 
             Game.Game.instance.ActionManager
-                .CreateAvatar(_selectedIndex, nickName, _hair,
-                    _lens, _ear, _tail)
+                .CreateAvatar(_selectedIndex, nickName,
+                    _costumes[ItemSubType.HairCostume][_index[ItemSubType.HairCostume]],
+                    _costumes[ItemSubType.EyeCostume][_index[ItemSubType.EyeCostume]],
+                    _costumes[ItemSubType.EarCostume][_index[ItemSubType.EarCostume]],
+                    _costumes[ItemSubType.TailCostume][_index[ItemSubType.TailCostume]])
                 .Subscribe(onNext: async eval =>
                     {
                         var avatarState = await States.Instance.SelectAvatarAsync(_selectedIndex);
@@ -149,7 +195,8 @@ namespace Nekoyume.UI
 
             if (_isCreateMode)
             {
-                player = new Player(1, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet);
+                player = new Player(1, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet,
+                    tableSheets.EquipmentItemSetEffectSheet);
             }
             else
             {
@@ -235,138 +282,121 @@ namespace Nekoyume.UI
             acolyteButton.gameObject.SetActive(_isCreateMode);
             if (_isCreateMode)
             {
-                _hair = _lens = _ear = _tail = 0;
-                paletteHairText.text = $"{L10nManager.Localize("UI_HAIR")} {_hair + 1}";
-                paletteLensText.text = $"{L10nManager.Localize("UI_LENS")} {_lens + 1}";
-                paletteEarText.text = $"{L10nManager.Localize("UI_EAR")} {_ear + 1}";
-                paletteTailText.text = $"{L10nManager.Localize("UI_TAIL")} {_tail + 1}";
+                _index[ItemSubType.HairCostume] = 0;
+                _index[ItemSubType.EyeCostume] = 0;
+                _index[ItemSubType.EarCostume] = 0;
+                _index[ItemSubType.TailCostume] = 0;
+
+                var hairIndex = _costumes[ItemSubType.HairCostume][_index[ItemSubType.HairCostume]];
+                var eyeIndex = _costumes[ItemSubType.EyeCostume][_index[ItemSubType.EyeCostume]];
+                var earIndex = _costumes[ItemSubType.EarCostume][_index[ItemSubType.EarCostume]];
+                var tailIndex = _costumes[ItemSubType.TailCostume][_index[ItemSubType.TailCostume]];
+                paletteHairText.text = GetPaletteText(ItemSubType.HairCostume, hairIndex);
+                paletteLensText.text = GetPaletteText(ItemSubType.EyeCostume, eyeIndex);
+                paletteEarText.text = GetPaletteText(ItemSubType.EarCostume, earIndex);
+                paletteTailText.text = GetPaletteText(ItemSubType.TailCostume, tailIndex);
+
+                var player = Game.Game.instance.Stage.SelectedPlayer;
+                if (player is null)
+                {
+                    throw new NullReferenceException(nameof(player));
+                }
+
+                player.UpdateEarByCustomizeIndex(earIndex);
+                player.UpdateTailByCustomizeIndex(tailIndex);
             }
 
             base.Show(ignoreShowAnimation);
         }
 
-        public void ChangeEar(int offset)
-        {
-            var ear = _ear + offset;
-
-            if (ear < 0)
-            {
-                ear = EarCount + offset;
-            }
-            else if (ear >= EarCount)
-            {
-                ear = 0;
-            }
-
-            if (ear == _ear)
-            {
-                return;
-            }
-
-            _ear = ear;
-
-            paletteEarText.text = $"{L10nManager.Localize("UI_EAR")} {_ear + 1}";
-
-            var player = Game.Game.instance.Stage.SelectedPlayer;
-            if (player is null)
-            {
-                throw new NullReferenceException(nameof(player));
-            }
-
-            player.UpdateEarByCustomizeIndex(_ear);
-        }
-
         public void ChangeLens(int offset)
         {
-            var lens = _lens + offset;
-
-            if (lens < 0)
-            {
-                lens = LensCount + offset;
-            }
-            else if (lens >= LensCount)
-            {
-                lens = 0;
-            }
-
-            if (lens == _lens)
-            {
-                return;
-            }
-
-            _lens = lens;
-
-            paletteLensText.text = $"{L10nManager.Localize("UI_LENS")} {_lens + 1}";
-
-            var player = Game.Game.instance.Stage.SelectedPlayer;
-            if (player is null)
-            {
-                throw new NullReferenceException(nameof(player));
-            }
-
-            player.UpdateEyeByCustomizeIndex(_lens);
+            UpdateCostume(ItemSubType.EyeCostume, offset);
         }
-
         public void ChangeHair(int offset)
         {
-            var hair = _hair + offset;
+            UpdateCostume(ItemSubType.HairCostume, offset);
+        }
 
-            if (hair < 0)
-            {
-                hair = HairCount + offset;
-            }
-            else if (hair >= HairCount)
-            {
-                hair = 0;
-            }
-
-            if (hair == _hair)
-            {
-                return;
-            }
-
-            _hair = hair;
-
-            paletteHairText.text = $"{L10nManager.Localize("UI_HAIR")} {_hair + 1}";
-
-            var player = Game.Game.instance.Stage.SelectedPlayer;
-            if (player is null)
-            {
-                throw new NullReferenceException(nameof(player));
-            }
-
-            player.UpdateHairByCustomizeIndex(_hair);
+        public void ChangeEar(int offset)
+        {
+            UpdateCostume(ItemSubType.EarCostume, offset);
         }
 
         public void ChangeTail(int offset)
         {
-            var tail = _tail + offset;
+            UpdateCostume(ItemSubType.TailCostume, offset);
+        }
 
-            if (tail < 0)
-            {
-                tail = TailCount + offset;
-            }
-            else if (tail >= TailCount)
-            {
-                tail = 0;
-            }
-
-            if (tail == _tail)
-            {
-                return;
-            }
-
-            _tail = tail;
-
-            paletteTailText.text = $"{L10nManager.Localize("UI_TAIL")} {_tail + 1}";
-
+        private void UpdateCostume(ItemSubType itemSubType, int offset)
+        {
             var player = Game.Game.instance.Stage.SelectedPlayer;
             if (player is null)
             {
                 throw new NullReferenceException(nameof(player));
             }
 
-            player.UpdateTailByCustomizeIndex(_tail);
+            var currentIndex = _index[itemSubType] + offset;
+            var count = _costumes[itemSubType].Count;
+
+            if (currentIndex < 0)
+            {
+                currentIndex = count + offset;
+            }
+            else if (currentIndex >= count)
+            {
+                currentIndex = 0;
+            }
+
+            if (currentIndex == _index[itemSubType])
+            {
+                return;
+            }
+
+            _index[itemSubType] = currentIndex;
+            var index = _costumes[itemSubType][_index[itemSubType]];
+            switch (itemSubType)
+            {
+                case ItemSubType.HairCostume:
+                    paletteHairText.text = GetPaletteText(ItemSubType.HairCostume, index);
+                    player.UpdateHairByCustomizeIndex(index);
+                    break;
+                case ItemSubType.EyeCostume:
+                    paletteLensText.text = GetPaletteText(ItemSubType.EyeCostume, index);
+                    player.UpdateEyeByCustomizeIndex(index);
+                    break;
+                case ItemSubType.EarCostume:
+                    paletteEarText.text = GetPaletteText(ItemSubType.EarCostume, index);
+                    player.UpdateEarByCustomizeIndex(index);
+                    break;
+                case ItemSubType.TailCostume:
+                    paletteTailText.text = GetPaletteText(ItemSubType.TailCostume, index);
+                    player.UpdateTailByCustomizeIndex(index);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(itemSubType), itemSubType, null);
+            }
+        }
+
+        private string GetPaletteText(ItemSubType itemSubType, int index)
+        {
+            switch (itemSubType)
+            {
+                case ItemSubType.HairCostume:
+                    return $"{L10nManager.Localize("UI_HAIR")} {index + 1}";
+                case ItemSubType.EyeCostume:
+                    return $"{L10nManager.Localize("UI_LENS")} {index + 1}";
+                case ItemSubType.EarCostume:
+                    return index < PartnershipIndex
+                        ? $"{L10nManager.Localize("UI_EAR")} {index + 1}"
+                        : $"{L10nManager.Localize("UI_EAR_REVOMON")} {index - PartnershipIndex + 1}";
+                case ItemSubType.TailCostume:
+                    return index < PartnershipIndex
+                        ? $"{L10nManager.Localize("UI_TAIL")} {index + 1}"
+                        : $"{L10nManager.Localize("UI_TAIL_REVOMON")} {index - PartnershipIndex + 1}";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(itemSubType), itemSubType, null);
+            }
         }
 
         private void BackClick()
