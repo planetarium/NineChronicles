@@ -41,7 +41,7 @@ namespace Nekoyume.Model.Item
             => new TradableMaterial(row);
 
         public static ItemUsable CreateItemUsable(ItemSheet.Row itemRow, Guid id,
-            long requiredBlockIndex, int level = 0)
+            long requiredBlockIndex, int level = 0, bool madeWithMimisbrunnrRecipe = false)
         {
             Equipment equipment = null;
 
@@ -52,19 +52,19 @@ namespace Nekoyume.Model.Item
                     return new Consumable((ConsumableItemSheet.Row) itemRow, id, requiredBlockIndex);
                 // Equipment
                 case ItemSubType.Weapon:
-                    equipment = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
                 case ItemSubType.Armor:
-                    equipment = new Armor((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Armor((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
                 case ItemSubType.Belt:
-                    equipment = new Belt((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Belt((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
                 case ItemSubType.Necklace:
-                    equipment = new Necklace((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Necklace((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
                 case ItemSubType.Ring:
-                    equipment = new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(
@@ -81,7 +81,7 @@ namespace Nekoyume.Model.Item
 
         public static ItemUsable CreateItemUsableV2(ItemSheet.Row itemRow, Guid id,
             long requiredBlockIndex, int level,
-            IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
+            IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess, bool madeWithMimisbrunnrRecipe = false)
         {
             Equipment equipment = null;
 
@@ -92,19 +92,19 @@ namespace Nekoyume.Model.Item
                     return new Consumable((ConsumableItemSheet.Row) itemRow, id, requiredBlockIndex);
                 // Equipment
                 case ItemSubType.Weapon:
-                    equipment = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
                 case ItemSubType.Armor:
-                    equipment = new Armor((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Armor((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
                 case ItemSubType.Belt:
-                    equipment = new Belt((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Belt((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
                 case ItemSubType.Necklace:
-                    equipment = new Necklace((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Necklace((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
                 case ItemSubType.Ring:
-                    equipment = new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex, madeWithMimisbrunnrRecipe);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(

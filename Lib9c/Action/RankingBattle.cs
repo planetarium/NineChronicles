@@ -25,9 +25,9 @@ namespace Nekoyume.Action
         public static readonly BigInteger EntranceFee = 100;
         // BlockIndex for ArenaInfo separate from WeeklyArenaState.Map.
         // https://github.com/planetarium/lib9c/issues/883
-        public const long UpdateTargetBlockIndex = 3_808_000L;
+        public const long UpdateTargetBlockIndex = 448_000L;
         // WeeklyArenaIndex for ArenaInfo separate from WeeklyArenaState.Map.
-        public const int UpdateTargetWeeklyArenaIndex = 68;
+        public const int UpdateTargetWeeklyArenaIndex = 8;
 
         public Address avatarAddress;
         public Address enemyAddress;
@@ -96,18 +96,25 @@ namespace Nekoyume.Action
                 });
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
-            var items = equipmentIds.Concat(costumeIds);
 
-            avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
-            avatarState.ValidateCostume(costumeIds);
+            var equipments = avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
+            var costumeItemIds = avatarState.ValidateCostume(costumeIds);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Validate Equipments: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
+            var items = equipmentIds.Concat(costumeIds);
             avatarState.EquipItems(items);
+            avatarState.ValidateItemRequirement(
+                costumeItemIds.ToList(),
+                equipments,
+                states.GetSheet<ItemRequirementSheet>(),
+                states.GetSheet<EquipmentItemRecipeSheet>(),
+                states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                states.GetSheet<EquipmentItemOptionSheet>(),
+                addressesHex);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Equip Equipments: {Elapsed}", addressesHex, sw.Elapsed);

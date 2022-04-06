@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class MimisbrunnrBattleTest
+    public class MimisbrunnrBattle8Test
     {
         private readonly TableSheets _tableSheets;
 
@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
 
         private readonly IAccountStateDelta _initialState;
 
-        public MimisbrunnrBattleTest()
+        public MimisbrunnrBattle8Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -106,23 +106,48 @@ namespace Lib9c.Tests.Action
                 throw new SheetRowNotFoundException("MimisbrunnrSheet", stageId);
             }
 
-            var elementalType = _tableSheets.MimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrRow)
-                ? mimisbrunnrRow.ElementalTypes.First()
-                : ElementalType.Normal;
-            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level, elementalType);
-            foreach (var equipment in equipments)
+            var equipmentRow =
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10151001);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(equipment);
+
+            var armorEquipmentRow = _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10251001);
+            var armorEquipment = ItemFactory.CreateItemUsable(armorEquipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(armorEquipment);
+
+            var beltEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10351000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(beltEquipment);
+
+            var necklaceEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10451000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(necklaceEquipment);
+
+            var equipments = new List<Guid>
             {
-                previousAvatarState.inventory.AddItem(equipment);
+                equipment.ItemId,
+                armorEquipment.ItemId,
+                beltEquipment.ItemId,
+                necklaceEquipment.ItemId,
+            };
+
+            foreach (var equipmentId in previousAvatarState.inventory.Equipments)
+            {
+                if (previousAvatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable itemUsable))
+                {
+                    var elementalType = ((Equipment)itemUsable).ElementalType;
+                    Assert.True(mimisbrunnrSheetRow.ElementalTypes.Exists(x => x == elementalType));
+                }
             }
 
-            var result = new CombinationConsumable5.ResultModel
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,
                 actionPoint = 0,
                 recipeId = 1,
                 materials = new Dictionary<Material, int>(),
-                itemUsable = equipments.First(),
+                itemUsable = equipment,
             };
             for (var i = 0; i < 100; i++)
             {
@@ -144,10 +169,10 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, previousAvatarState.SerializeV2());
             }
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
-                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                equipments = equipments,
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
@@ -155,7 +180,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            var nextState = action.Execute(new ActionContext
+            var nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
@@ -181,6 +206,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 100
             );
+
             previousAvatarState.worldInformation.ClearStage(
                 2,
                 100,
@@ -216,10 +242,10 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid> { costume.ItemId },
-                equipments = new List<Guid> { equipment.ItemId },
+                equipments = new List<Guid>() { equipment.ItemId },
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
@@ -229,7 +255,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidStageException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = previousState,
                     Signer = _agentAddress,
@@ -242,7 +268,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -255,7 +281,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<FailedLoadStateException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = new State(),
                     Signer = _agentAddress,
@@ -266,7 +292,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFound()
         {
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -279,7 +305,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowNotFoundException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = _initialState,
                     Signer = _agentAddress,
@@ -290,7 +316,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowColumn()
         {
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -303,7 +329,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<SheetRowColumnException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = _initialState,
                     Signer = _agentAddress,
@@ -329,7 +355,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 _tableSheets.WorldUnlockSheet);
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -344,7 +370,7 @@ namespace Lib9c.Tests.Action
             state = state.SetState(_avatarAddress, previousAvatarState.Serialize());
             Assert.Throws<NotEnoughActionPointException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = state,
                     Signer = _agentAddress,
@@ -398,7 +424,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var result = new CombinationConsumable5.ResultModel
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,
@@ -415,10 +441,10 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
-                equipments = new List<Guid> { equipment.ItemId },
+                equipments = new List<Guid>() { equipment.ItemId },
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
@@ -428,7 +454,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Throws<InvalidWorldException>(() =>
             {
-                action.Execute(new ActionContext
+                action.Execute(new ActionContext()
                 {
                     PreviousStates = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
                 });
@@ -454,7 +480,7 @@ namespace Lib9c.Tests.Action
             avatarState.worldInformation = new WorldInformation(0, worldSheet, alreadyClearedStageId);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -498,10 +524,10 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
-                equipments = new List<Guid> { equipment.ItemId },
+                equipments = new List<Guid>() { equipment.ItemId },
                 foods = new List<Guid>(),
                 worldId = GameConfig.MimisbrunnrWorldId,
                 stageId = GameConfig.MimisbrunnrStartStageId,
@@ -516,96 +542,6 @@ namespace Lib9c.Tests.Action
                 Rehearsal = false,
                 Random = new TestRandom(),
             });
-        }
-
-        [Theory]
-        [InlineData(15)]
-        [InlineData(30)]
-        [InlineData(50)]
-        [InlineData(75)]
-        [InlineData(100)]
-        [InlineData(120)]
-        [InlineData(150)]
-        [InlineData(200)]
-        public void ExecuteThrowHighLevelItemRequirementException(int avatarLevel)
-        {
-            var state = _initialState;
-            var avatarState = state.GetAvatarState(_avatarAddress);
-            avatarState.actionPoint = 99999999;
-            avatarState.level = avatarLevel;
-
-            avatarState.worldInformation = new WorldInformation(
-                0,
-                _tableSheets.WorldSheet,
-                100
-            );
-
-            avatarState.worldInformation.ClearStage(
-                2,
-                100,
-                0,
-                _tableSheets.WorldSheet,
-                _tableSheets.WorldUnlockSheet);
-
-            state = state.SetState(
-                avatarState.address.Derive(LegacyWorldInformationKey),
-                avatarState.worldInformation.Serialize());
-
-            foreach (var requirementRow in _tableSheets.ItemRequirementSheet)
-            {
-                if (avatarState.level >= requirementRow.Level)
-                {
-                    continue;
-                }
-
-                var costumes = new List<Guid>();
-                var equipments = new List<Guid>();
-                var random = new TestRandom(DateTimeOffset.Now.Millisecond);
-                if (_tableSheets.EquipmentItemSheet.TryGetValue(requirementRow.ItemId, out var row))
-                {
-                    var equipment = ItemFactory.CreateItem(row, random);
-                    avatarState.inventory.AddItem(equipment);
-
-                    if (equipment.ElementalType != ElementalType.Fire)
-                    {
-                        continue;
-                    }
-                }
-                else if (_tableSheets.CostumeItemSheet.TryGetValue(requirementRow.ItemId, out var row2))
-                {
-                    var costume = ItemFactory.CreateItem(row2, random);
-                    avatarState.inventory.AddItem(costume);
-                    costumes.Add(((INonFungibleItem)costume).NonFungibleId);
-                }
-
-                if (!equipments.Any())
-                {
-                    continue;
-                }
-
-                state = state.SetState(avatarState.address, avatarState.SerializeV2())
-                    .SetState(
-                        avatarState.address.Derive(LegacyInventoryKey),
-                        avatarState.inventory.Serialize());
-
-                var action = new MimisbrunnrBattle
-                {
-                    costumes = costumes,
-                    equipments = equipments,
-                    foods = new List<Guid>(),
-                    worldId = GameConfig.MimisbrunnrWorldId,
-                    stageId = GameConfig.MimisbrunnrStartStageId,
-                    playCount = 1,
-                    avatarAddress = avatarState.address,
-                };
-
-                Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
-                {
-                    PreviousStates = state,
-                    Signer = avatarState.agentAddress,
-                    Random = random,
-                }));
-            }
         }
 
         [Theory]
@@ -637,10 +573,11 @@ namespace Lib9c.Tests.Action
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.actionPoint = 999999;
             previousAvatarState.level = 400;
+            var clearedStageId = stageId;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
-                stageId);
+                clearedStageId);
 
             var costumes = new List<Guid>();
             var random = new TestRandom();
@@ -655,14 +592,28 @@ namespace Lib9c.Tests.Action
             previousAvatarState.inventory.AddItem(costume);
             costumes.Add(costume.ItemId);
 
-            var elementalType = _tableSheets.MimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrRow)
-                ? mimisbrunnrRow.ElementalTypes.First()
-                : ElementalType.Normal;
-            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level, elementalType);
-            foreach (var equipment in equipments)
-            {
-                previousAvatarState.inventory.AddItem(equipment);
-            }
+            List<Guid> equipments = new List<Guid>();
+
+            var equipmentRow =
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10151001);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(equipment);
+
+            var armorEquipmentRow = _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10251001);
+            var armorEquipment = ItemFactory.CreateItemUsable(armorEquipmentRow, Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(armorEquipment);
+
+            var beltEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10351000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(beltEquipment);
+
+            var necklaceEquipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.Last(x => x.Id == 10451000), Guid.NewGuid(), 0);
+            previousAvatarState.inventory.AddItem(necklaceEquipment);
+            equipments.Add(equipment.ItemId);
+            equipments.Add(armorEquipment.ItemId);
+            equipments.Add(beltEquipment.ItemId);
+            equipments.Add(necklaceEquipment.ItemId);
 
             var result = new CombinationConsumable5.ResultModel
             {
@@ -671,7 +622,7 @@ namespace Lib9c.Tests.Action
                 actionPoint = 0,
                 recipeId = 1,
                 materials = new Dictionary<Material, int>(),
-                itemUsable = equipments.First(),
+                itemUsable = armorEquipment,
             };
             for (var i = 0; i < 100; i++)
             {
@@ -693,10 +644,10 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
             }
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = costumes,
-                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                equipments = equipments,
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
@@ -717,13 +668,12 @@ namespace Lib9c.Tests.Action
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
-            var rewardItem = nextAvatarState.inventory.Items
-                .Where(x =>
-                    x.item.ItemSubType != ItemSubType.FoodMaterial &&
-                    x.item is IFungibleItem &&
-                    x.item.Id != 400000 && x.item.Id != 500000)
-                .ToList();
-            Assert.Equal(stageRow.Rewards.Count, rewardItem.Count);
+            var rewardItem = nextAvatarState.inventory.Items.Where(
+                x => x.item.ItemSubType != ItemSubType.FoodMaterial &&
+                     x.item is IFungibleItem ownedFungibleItem &&
+                     x.item.Id != 400000 && x.item.Id != 500000);
+
+            Assert.Equal(stageRow.Rewards.Count(), rewardItem.Count());
 
             var min = stageRow.Rewards.OrderBy(x => x.Min).First().Min;
             var max = stageRow.Rewards.OrderBy(x => x.Max).First().Max;
@@ -736,7 +686,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle8()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -747,7 +697,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            var updatedAddresses = new List<Address>
+            var updatedAddresses = new List<Address>()
             {
                 _agentAddress,
                 _avatarAddress,
@@ -758,7 +708,7 @@ namespace Lib9c.Tests.Action
 
             var state = new State();
 
-            var nextState = action.Execute(new ActionContext
+            var nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = state,
                 Signer = _agentAddress,

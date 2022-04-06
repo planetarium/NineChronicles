@@ -128,6 +128,20 @@ namespace Nekoyume.BlockChain.Policy
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 
         /// <summary>
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for 9c-permanent-test deployment.
+        /// </summary>
+        public IBlockPolicy<NCAction> GetPermanentPolicy() =>
+            GetPolicy(
+                minimumDifficulty: DifficultyStability,
+                hashAlgorithmTypePolicy: HashAlgorithmTypePolicy.Mainnet,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Mainnet,
+                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Mainnet,
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Permanent,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Permanent);
+
+        /// <summary>
         /// Creates an <see cref="IBlockPolicy{T}"/> instance identical to the one deployed
         /// except with lower minimum difficulty for faster testing and benchmarking.
         /// </summary>

@@ -38,6 +38,11 @@ namespace Nekoyume.TableData
                     SubRecipeIds.Add(ParseInt(fields[i]));
                 }
             }
+
+            public bool IsMimisBrunnrSubRecipe(int? subRecipeId)
+            {
+                return subRecipeId.HasValue && SubRecipeIds[2] == subRecipeId.Value;
+            }
         }
 
         public EquipmentItemRecipeSheet() : base(nameof(EquipmentItemRecipeSheet))
