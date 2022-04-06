@@ -622,11 +622,7 @@ namespace Nekoyume.BlockChain
                     NotificationCell.NotificationType.Information);
 
                 UpdateCurrentAvatarStateAsync(eval);
-                var shopSell = Widget.Find<ShopSell>();
-                if (shopSell.isActiveAndEnabled)
-                {
-                    shopSell.Refresh();
-                }
+                ReactiveShopState.UpdateSellDigests();
             }
         }
 
@@ -657,11 +653,7 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
 
             UpdateCurrentAvatarStateAsync(eval);
-            var shopSell = Widget.Find<ShopSell>();
-            if (shopSell.isActiveAndEnabled)
-            {
-                shopSell.Refresh();
-            }
+            ReactiveShopState.UpdateSellDigests();
         }
 
         private async void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
@@ -687,11 +679,7 @@ namespace Nekoyume.BlockChain
             }
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
-            var shopSell = Widget.Find<ShopSell>();
-            if (shopSell.isActiveAndEnabled)
-            {
-                shopSell.Refresh();
-            }
+            ReactiveShopState.UpdateSellDigests();
         }
 
         private async void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
@@ -880,9 +868,9 @@ namespace Nekoyume.BlockChain
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
-                    if (Widget.Find<QuestPreparation>().IsActive())
+                    if (Widget.Find<BattlePreparation>().IsActive())
                     {
-                        Widget.Find<QuestPreparation>().GoToStage(log);
+                        Widget.Find<BattlePreparation>().GoToStage(log);
                     }
                     else if (Widget.Find<Menu>().IsActive())
                     {
@@ -960,9 +948,9 @@ namespace Nekoyume.BlockChain
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
-                    if (Widget.Find<MimisbrunnrPreparation>().IsActive())
+                    if (Widget.Find<BattlePreparation>().IsActive())
                     {
-                        Widget.Find<MimisbrunnrPreparation>().GoToStage(log);
+                        Widget.Find<BattlePreparation>().GoToStage(log);
                     }
                     else if (Widget.Find<Menu>().IsActive())
                     {

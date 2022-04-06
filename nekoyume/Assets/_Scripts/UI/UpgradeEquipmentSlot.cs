@@ -16,6 +16,8 @@ namespace Nekoyume.UI
 
         public Button RemoveButton => removeButton;
 
+        public bool IsExist { get; private set; }
+
         public void AddMaterial(ItemBase itemBase)
         {
             stageEffectContainer.SetActive(true);
@@ -23,6 +25,7 @@ namespace Nekoyume.UI
             plusContainer.SetActive(false);
             itemContainer.SetActive(true);
             itemImage.overrideSprite = itemBase.GetIconSprite();
+            IsExist = true;
         }
 
         public void RemoveMaterial()
@@ -31,6 +34,7 @@ namespace Nekoyume.UI
             emptyEffectContainer.SetActive(true);
             plusContainer.SetActive(true);
             itemContainer.SetActive(false);
+            IsExist = false;
         }
     }
 }

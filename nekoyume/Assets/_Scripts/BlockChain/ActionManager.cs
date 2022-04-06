@@ -14,8 +14,12 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.ActionExtensions;
 using Nekoyume.Game;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using RedeemCode = Nekoyume.Action.RedeemCode;
@@ -663,7 +667,6 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<ChargeActionPoint>> ChargeActionPoint(Material material)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-
             LocalLayerModifier.RemoveItem(avatarAddress, material.ItemId);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
 
@@ -674,6 +677,17 @@ namespace Nekoyume.BlockChain
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
+
+            var address = States.Instance.CurrentAvatarState.address;
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(address);
+            }
+
+            GameConfigStateSubject.ActionPointState.Add(address, true);
+
+            NotificationSystem.Push(MailType.System, L10nManager.Localize("UI_CHARGE_AP"),
+                NotificationCell.NotificationType.Information);
 
             return _agent.ActionRenderer.EveryRender<ChargeActionPoint>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))

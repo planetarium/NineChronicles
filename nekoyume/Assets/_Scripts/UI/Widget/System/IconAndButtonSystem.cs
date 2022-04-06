@@ -41,9 +41,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private IconAndButton[] uiBySystemType;
 
-        [SerializeField]
-        private Blur blur;
-
         private TextButton _confirmButton = null;
 
         private TextButton _cancelButton = null;
@@ -82,10 +79,6 @@ namespace Nekoyume.UI
             {
                 ui.rootGameObject.SetActive(false);
             }
-            if (blur)
-            {
-                blur.Close();
-            }
             base.Close(ignoreCloseAnimation);
         }
 
@@ -105,10 +98,6 @@ namespace Nekoyume.UI
 
             Set(title, content, labelYes, "", localize, type);
             Show();
-            if (blur)
-            {
-                blur.Show();
-            }
         }
 
         public void ShowWithTwoButton(
@@ -128,10 +117,6 @@ namespace Nekoyume.UI
 
             Set(title, content, labelYes, labelNo, localize, type);
             Show();
-            if (blur)
-            {
-                blur.Show();
-            }
         }
 
         public void ShowByBlockDownloadFail(long index)

@@ -84,7 +84,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 786428863335832951}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b217564f74ec1c84ab95adbbc4573a70, type: 3}
   m_Name: 
@@ -125,8 +125,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
-  onObject: {fileID: 0}
   offObject: {fileID: 0}
+  onObject: {fileID: 0}
+  onClickToggle:
+    m_PersistentCalls:
+      m_Calls: []
+  allowSwitchOffWhenIsOn: 0
   items:
   - {fileID: 0}
   - {fileID: 0}
@@ -136,6 +140,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   duration: 1
+  allOffOnAwake: 0
 --- !u!114 &8948960296696933651
 MonoBehaviour:
   m_ObjectHideFlags: 0
