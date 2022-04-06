@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Lib9c.Model.Order;
-using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using TMPro;
@@ -19,7 +18,7 @@ namespace Nekoyume.UI
         [SerializeField] private Slider remainTimeSlider = null;
         [SerializeField] private GameObject expiredText;
 
-        private readonly List<IDisposable> _disposablesFromOnEnable = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private long _expiredTime;
 
@@ -34,12 +33,12 @@ namespace Nekoyume.UI
         private void OnEnable()
         {
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(SetBlockIndex)
-                .AddTo(_disposablesFromOnEnable);
+                .AddTo(_disposables);
         }
 
         private void OnDisable()
         {
-            _disposablesFromOnEnable.DisposeAllAndClear();
+            _disposables.DisposeAllAndClear();
         }
 
         private void SetBlockIndex(long blockIndex)

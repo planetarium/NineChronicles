@@ -22,9 +22,6 @@ namespace Nekoyume.UI
         public TextButton buttonNo;
         public GameObject titleBorder;
         public ConfirmDelegate CloseCallback { get; set; }
-        public Blur blur;
-
-        private float blurSize;
 
         protected override void Awake()
         {
@@ -36,32 +33,22 @@ namespace Nekoyume.UI
             SubmitWidget = Yes;
         }
 
-        public override void Show(bool ignoreStartAnimation = false)
-        {
-            base.Show(ignoreStartAnimation);
-
-            if (blur)
-            {
-                blur.Show(size: blurSize);
-            }
-        }
-
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true, float blurSize = 1)
+            bool localize = true)
         {
             if (gameObject.activeSelf)
             {
                 Close(true);
-                Show(title, content, labelYes, labelNo, localize, blurSize);
+                Show(title, content, labelYes, labelNo, localize);
                 return;
             }
 
-            Set(title, content, labelYes, labelNo, localize, blurSize);
+            Set(title, content, labelYes, labelNo, localize);
             Show();
         }
 
         public void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true, float blurSize = 1)
+            bool localize = true)
         {
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
@@ -82,38 +69,22 @@ namespace Nekoyume.UI
 
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
-            this.blurSize = blurSize;
         }
 
         public void Yes()
         {
-            if (blur)
-            {
-                blur.Close();
-            }
-
             base.Close();
             CloseCallback?.Invoke(ConfirmResult.Yes);
         }
 
         public void No()
         {
-            if (blur)
-            {
-                blur.Close();
-            }
-
             base.Close();
             CloseCallback?.Invoke(ConfirmResult.No);
         }
 
         public void NoWithoutCallback()
         {
-            if (blur)
-            {
-                blur.Close();
-            }
-
             base.Close();
         }
     }

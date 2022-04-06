@@ -285,7 +285,6 @@ namespace Nekoyume.UI.Module
 
             _toggleNotifications[ToggleType.Mail].Value =
                 mailBox.Any(i => i.New && i.requiredBlockIndex <= blockIndex);
-            ;
         }
 
         private void SubscribeAvatarMailBox(MailBox mailBox)

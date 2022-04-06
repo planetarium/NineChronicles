@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,15 +19,20 @@ namespace Nekoyume.UI
         private static readonly Subject<Unit> _onBlurAdded = new Subject<Unit>();
         private static readonly Subject<Unit> _onBlurRemoved = new Subject<Unit>();
 
-        public Image image;
-        public Button button;
-        public System.Action onClick;
+        [SerializeField]
+        private TouchHandler touchHandler;
 
+        public Image image;
         private Material _glassOriginal;
         private Material _glass;
         private float _originalBlurSize;
+        private const float _time = 0.33f;
 
         private readonly List<IDisposable> _disposablesAtEnable = new List<IDisposable>();
+
+        private Coroutine _coroutine;
+
+        public System.Action OnClick { get; set; }
 
         #region override
 
@@ -42,9 +49,11 @@ namespace Nekoyume.UI
             _originalBlurSize = _glassOriginal.GetFloat(SizePropertyID);
             _glass = image.material = new Material(_glassOriginal);
 
-            button.OnClickAsObservable()
-                .Subscribe(_ => onClick?.Invoke())
-                .AddTo(gameObject);
+            touchHandler.OnClick.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                OnClick?.Invoke();
+            }).AddTo(this);
         }
 
         private void OnEnable()
@@ -62,6 +71,8 @@ namespace Nekoyume.UI
                     image.enabled = true;
                 }
             }).AddTo(_disposablesAtEnable);
+
+            StartBlur(_originalBlurSize, _time);
         }
 
         private void OnDisable()
@@ -86,30 +97,19 @@ namespace Nekoyume.UI
             _glass.SetFloat(SizePropertyID, _originalBlurSize);
         }
 
-        public virtual void Show(float time = 0.33f)
-        {
-            gameObject.SetActive(true);
-            StartBlur(_originalBlurSize, time);
-        }
-
-        public virtual void Show(float size, float time = 0.33f)
-        {
-            gameObject.SetActive(true);
-            StartBlur(size, time);
-        }
-
-        public void Close()
-        {
-            gameObject.SetActive(false);
-        }
-
         #endregion
 
-        public virtual void StartBlur(float size, float time)
+        private void StartBlur(float size, float time)
         {
             if (!gameObject.activeSelf)
                 return;
-            StartCoroutine(CoBlur(size, time));
+
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+            }
+
+            _coroutine = StartCoroutine(CoBlur(size, time));
         }
 
         private IEnumerator CoBlur(float size, float time)

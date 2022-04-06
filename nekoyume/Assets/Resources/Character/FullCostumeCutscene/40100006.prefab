@@ -138,8 +138,8 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
-  _animationName: Cutscene
-  loop: 0
+  _animationName: Idle
+  loop: 1
   timeScale: 1
 --- !u!210 &5458679053040464929
 SortingGroup:

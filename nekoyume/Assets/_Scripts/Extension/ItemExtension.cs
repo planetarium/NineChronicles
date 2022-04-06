@@ -46,13 +46,13 @@ namespace Nekoyume
         public static string GetCPText(this ItemUsable itemUsable)
         {
             var cp = CPHelper.GetCP(itemUsable);
-            return $"<size=80%>CP</size> {cp}";
+            return $"CP {cp}";
         }
 
         public static string GetCPText(this Costume costume, CostumeStatSheet sheet)
         {
             var cp = CPHelper.GetCP(costume, sheet);
-            return $"<size=80%>CP</size> {cp}";
+            return $"CP {cp}";
         }
 
         public static bool TryGetOptionInfo(this ItemUsable itemUsable, out ItemOptionInfo itemOptionInfo) =>

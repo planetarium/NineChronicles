@@ -24,7 +24,6 @@ namespace Nekoyume.UI
         public TextButton cancelButton;
 
         public InputBoxDelegate CloseCallback { get; set; }
-        public Blur blur;
 
         public string text;
 
@@ -60,7 +59,6 @@ namespace Nekoyume.UI
             }
 
             base.Show();
-            blur?.Show();
             inputField.Select();
 
             Observable.NextFrame().Subscribe(_ =>
@@ -84,12 +82,6 @@ namespace Nekoyume.UI
             CloseCallback?.Invoke(ConfirmResult.No);
             Close();
             AudioController.PlayClick();
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            blur?.Close();
-            base.Close(ignoreCloseAnimation);
         }
     }
 }

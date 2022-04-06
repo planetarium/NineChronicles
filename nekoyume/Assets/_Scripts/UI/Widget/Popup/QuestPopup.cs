@@ -35,9 +35,6 @@ namespace Nekoyume.UI
         private QuestScroll scroll = null;
 
         [SerializeField]
-        private Blur blur = null;
-
-        [SerializeField]
         private Button closeButton = null;
 
         private ReactiveProperty<QuestList> _questList = new ReactiveProperty<QuestList>();
@@ -69,23 +66,7 @@ namespace Nekoyume.UI
             ChangeState(0);
             DoneScrollAnimation();
             base.Show(ignoreShowAnimation);
-
-            if (blur)
-            {
-                blur.Show();
-            }
-
             HelpTooltip.HelpMe(100011, true);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            if (blur && blur.isActiveAndEnabled)
-            {
-                blur.Close();
-            }
-
-            base.Close(ignoreCloseAnimation);
         }
 
         #endregion

@@ -1,19 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     /// <summary>
     /// 새로운 퀘스트가 추가하거나 이미 설정된 퀘스트를 완료할 때의 연출을 책임집니다.
     /// 이때 연출은 QuestResult를 다루는 것까지 포함합니다.
@@ -33,7 +36,7 @@ namespace Nekoyume.UI.Scroller
 
         // NOTE: 가이드 퀘스트 보상 아이콘의 연출 스펙에 따라서 별도로 XxxItemView를 만들어서 사용합니다.
         [SerializeField]
-        private List<VanillaItemView> rewards = null;
+        private List<StageRewardItemView> rewards = null;
 
         [SerializeField]
         private Button bodyButton = null;
@@ -48,6 +51,7 @@ namespace Nekoyume.UI.Scroller
         private bool _inProgress = false;
 
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         public Nekoyume.Model.Quest.Quest Quest { get; private set; }
 
@@ -55,15 +59,13 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            bodyButton.OnClickAsObservable()
-                .Subscribe(_ =>
+            ObservableExtensions.Subscribe(bodyButton.OnClickAsObservable(), _ =>
                 {
                     AudioController.PlayClick();
                     onClick.OnNext(this);
                 })
                 .AddTo(gameObject);
-            L10nManager.OnLanguageChange
-                .Subscribe(_ => SetContent(Quest))
+            ObservableExtensions.Subscribe(L10nManager.OnLanguageChange, _ => SetContent(Quest))
                 .AddTo(gameObject);
         }
 
@@ -198,6 +200,7 @@ namespace Nekoyume.UI.Scroller
             IReadOnlyDictionary<int, int> rewardMap,
             bool ignoreAnimation = false)
         {
+            _disposables.DisposeAllAndClear();
             var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             var delay = .3f;
             for (var i = 0; i < rewards.Count; i++)
@@ -208,8 +211,7 @@ namespace Nekoyume.UI.Scroller
                     var pair = rewardMap.ElementAt(i);
                     var row = sheet.OrderedList.FirstOrDefault(itemRow => itemRow.Id == pair.Key);
                     Assert.NotNull(row);
-
-                    reward.SetData(row);
+                    reward.SetData(row, () => ShowTooltip(reward));
 
                     if (ignoreAnimation)
                     {
@@ -226,6 +228,14 @@ namespace Nekoyume.UI.Scroller
                     reward.Hide();
                 }
             }
+        }
+
+        private static void ShowTooltip(StageRewardItemView reward)
+        {
+            AudioController.PlayClick();
+            var material = new Nekoyume.Model.Item.Material(reward.Data as MaterialItemSheet.Row);
+            ItemTooltip.Find(material.ItemType)
+                .Show(material, string.Empty, false, null, target:reward.RectTransform);
         }
 
         private void ClearRewards()

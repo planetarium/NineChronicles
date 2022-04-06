@@ -66,9 +66,6 @@ namespace Nekoyume.UI
         private TextMeshProUGUI menuText = null;
 
         [SerializeField]
-        private Blur blur = null;
-
-        [SerializeField]
         private GraphicAlphaTweener graphicAlphaTweener = null;
 
         [SerializeField]
@@ -84,12 +81,6 @@ namespace Nekoyume.UI
         private PraiseVFX _praiseVFX;
 
         #region override
-
-        protected override void Awake()
-        {
-            base.Awake();
-            blur.onClick = () => Close();
-        }
 
         public override void Initialize()
         {
@@ -122,7 +113,7 @@ namespace Nekoyume.UI
                 case nameof(Shop):
                     menuText.text = L10nManager.Localize("UI_MAIN_MENU_SHOP");
                     break;
-                case nameof(MimisbrunnrPreparation):
+                case "Mimisbrunnr":
                     menuText.text = L10nManager.Localize("UI_MAIN_MENU_MIMISBRUNNR");
                     break;
             }
@@ -264,7 +255,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            blur.button.interactable = false;
             graphicAlphaTweener.Play();
             StopEffects();
 
@@ -436,7 +426,6 @@ namespace Nekoyume.UI
 
         private IEnumerator CoContinueTimer(float timer)
         {
-            blur.button.interactable = true;
             var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
             continueText.alpha = 1f;
 
