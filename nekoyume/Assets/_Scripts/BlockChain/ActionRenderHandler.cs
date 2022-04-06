@@ -824,63 +824,80 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                if (ActionManager.ExistLastBattleActionId)
                 {
-                    return;
-                }
+                    if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                    {
+                        return;
+                    }
 
-                _disposableForBattleEnd?.Dispose();
-                _disposableForBattleEnd =
-                    Game.Game.instance.Stage.onEnterToStageEnd
-                        .First()
-                        .Subscribe(_ =>
-                        {
-                            var task = UniTask.Run(() =>
+                    _disposableForBattleEnd?.Dispose();
+                    _disposableForBattleEnd =
+                        Game.Game.instance.Stage.onEnterToStageEnd
+                            .First()
+                            .Subscribe(_ =>
                             {
-                                UpdateCurrentAvatarStateAsync(eval);
-                                UpdateWeeklyArenaState(eval);
-                                var avatarState = States.Instance.CurrentAvatarState;
-                                RenderQuest(eval.Action.avatarAddress,
-                                    avatarState.questList.completedQuestIds);
-                                _disposableForBattleEnd = null;
-                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                                var task = UniTask.Run(() =>
+                                {
+                                    UpdateCurrentAvatarStateAsync(eval);
+                                    UpdateWeeklyArenaState(eval);
+                                    var avatarState = States.Instance.CurrentAvatarState;
+                                    RenderQuest(eval.Action.avatarAddress,
+                                        avatarState.questList.completedQuestIds);
+                                    _disposableForBattleEnd = null;
+                                    Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                                });
+                                task.ToObservable()
+                                    .First()
+                                    // ReSharper disable once ConvertClosureToMethodGroup
+                                    .DoOnError(e => Debug.LogException(e));
                             });
-                            task.ToObservable()
-                                .First()
-                                // ReSharper disable once ConvertClosureToMethodGroup
-                                .DoOnError(e => Debug.LogException(e));
-                        });
 
-                var simulator = new StageSimulator(
-                    new LocalRandom(eval.RandomSeed),
-                    States.Instance.CurrentAvatarState,
-                    eval.Action.foods,
-                    eval.Action.worldId,
-                    eval.Action.stageId,
-                    Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
-                    Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080,
-                    eval.Action.playCount
-                );
-                simulator.Simulate(eval.Action.playCount);
-                var log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
+                    var simulator = new StageSimulator(
+                        new LocalRandom(eval.RandomSeed),
+                        States.Instance.CurrentAvatarState,
+                        eval.Action.foods,
+                        eval.Action.worldId,
+                        eval.Action.stageId,
+                        Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
+                        Game.Game.instance.TableSheets.CostumeStatSheet,
+                        StageSimulator.ConstructorVersionV100080,
+                        eval.Action.playCount
+                    );
+                    simulator.Simulate(eval.Action.playCount);
+                    var log = simulator.Log;
+                    Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
 
-                if (Widget.Find<LoadingScreen>().IsActive())
-                {
-                    if (Widget.Find<BattlePreparation>().IsActive())
+                    if (Widget.Find<LoadingScreen>().IsActive())
                     {
-                        Widget.Find<BattlePreparation>().GoToStage(log);
+                        if (Widget.Find<BattlePreparation>().IsActive())
+                        {
+                            Widget.Find<BattlePreparation>().GoToStage(log);
+                        }
+                        else if (Widget.Find<Menu>().IsActive())
+                        {
+                            Widget.Find<Menu>().GoToStage(log);
+                        }
                     }
-                    else if (Widget.Find<Menu>().IsActive())
+                    else if (Widget.Find<StageLoadingEffect>().IsActive() &&
+                             Widget.Find<BattleResultPopup>().IsActive())
                     {
-                        Widget.Find<Menu>().GoToStage(log);
+                        Widget.Find<BattleResultPopup>().NextStage(log);
                     }
                 }
-                else if (Widget.Find<StageLoadingEffect>().IsActive() &&
-                         Widget.Find<BattleResultPopup>().IsActive())
+                else
                 {
-                    Widget.Find<BattleResultPopup>().NextStage(log);
+                    var task = UniTask.Run(() =>
+                    {
+                        UpdateCurrentAvatarStateAsync(eval);
+                        UpdateWeeklyArenaState(eval);
+                        var avatarState = States.Instance.CurrentAvatarState;
+                        RenderQuest(eval.Action.avatarAddress,
+                            avatarState.questList.completedQuestIds);
+                    });
+                    task.ToObservable()
+                        .First()
+                        .DoOnError(Debug.LogException);
                 }
             }
             else
@@ -905,62 +922,79 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                if (ActionManager.ExistLastBattleActionId)
                 {
-                    return;
-                }
+                    if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                    {
+                        return;
+                    }
 
-                _disposableForBattleEnd?.Dispose();
-                _disposableForBattleEnd =
-                    Game.Game.instance.Stage.onEnterToStageEnd
-                        .First()
-                        .Subscribe(_ =>
-                        {
-                            var task = UniTask.Run(() =>
+                    _disposableForBattleEnd?.Dispose();
+                    _disposableForBattleEnd =
+                        Game.Game.instance.Stage.onEnterToStageEnd
+                            .First()
+                            .Subscribe(_ =>
                             {
-                                UpdateCurrentAvatarStateAsync(eval);
-                                UpdateWeeklyArenaState(eval);
-                                var avatarState = States.Instance.CurrentAvatarState;
-                                RenderQuest(eval.Action.avatarAddress,
-                                    avatarState.questList.completedQuestIds);
-                                _disposableForBattleEnd = null;
-                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                                var task = UniTask.Run(() =>
+                                {
+                                    UpdateCurrentAvatarStateAsync(eval);
+                                    UpdateWeeklyArenaState(eval);
+                                    var avatarState = States.Instance.CurrentAvatarState;
+                                    RenderQuest(eval.Action.avatarAddress,
+                                        avatarState.questList.completedQuestIds);
+                                    _disposableForBattleEnd = null;
+                                    Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                                });
+                                task.ToObservable()
+                                    .First()
+                                    // ReSharper disable once ConvertClosureToMethodGroup
+                                    .DoOnError(e => Debug.LogException(e));
                             });
-                            task.ToObservable()
-                                .First()
-                                // ReSharper disable once ConvertClosureToMethodGroup
-                                .DoOnError(e => Debug.LogException(e));
-                        });
-                var simulator = new StageSimulator(
-                    new LocalRandom(eval.RandomSeed),
-                    States.Instance.CurrentAvatarState,
-                    eval.Action.foods,
-                    eval.Action.worldId,
-                    eval.Action.stageId,
-                    Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
-                    Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080,
-                    eval.Action.playCount
-                );
-                simulator.Simulate(eval.Action.playCount);
-                BattleLog log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
+                    var simulator = new StageSimulator(
+                        new LocalRandom(eval.RandomSeed),
+                        States.Instance.CurrentAvatarState,
+                        eval.Action.foods,
+                        eval.Action.worldId,
+                        eval.Action.stageId,
+                        Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
+                        Game.Game.instance.TableSheets.CostumeStatSheet,
+                        StageSimulator.ConstructorVersionV100080,
+                        eval.Action.playCount
+                    );
+                    simulator.Simulate(eval.Action.playCount);
+                    BattleLog log = simulator.Log;
+                    Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
 
-                if (Widget.Find<LoadingScreen>().IsActive())
-                {
-                    if (Widget.Find<BattlePreparation>().IsActive())
+                    if (Widget.Find<LoadingScreen>().IsActive())
                     {
-                        Widget.Find<BattlePreparation>().GoToStage(log);
+                        if (Widget.Find<BattlePreparation>().IsActive())
+                        {
+                            Widget.Find<BattlePreparation>().GoToStage(log);
+                        }
+                        else if (Widget.Find<Menu>().IsActive())
+                        {
+                            Widget.Find<Menu>().GoToStage(log);
+                        }
                     }
-                    else if (Widget.Find<Menu>().IsActive())
+                    else if (Widget.Find<StageLoadingEffect>().IsActive() &&
+                             Widget.Find<BattleResultPopup>().IsActive())
                     {
-                        Widget.Find<Menu>().GoToStage(log);
+                        Widget.Find<BattleResultPopup>().NextMimisbrunnrStage(log);
                     }
                 }
-                else if (Widget.Find<StageLoadingEffect>().IsActive() &&
-                         Widget.Find<BattleResultPopup>().IsActive())
+                else
                 {
-                    Widget.Find<BattleResultPopup>().NextMimisbrunnrStage(log);
+                    var task = UniTask.Run(() =>
+                    {
+                        UpdateCurrentAvatarStateAsync(eval);
+                        UpdateWeeklyArenaState(eval);
+                        var avatarState = States.Instance.CurrentAvatarState;
+                        RenderQuest(eval.Action.avatarAddress,
+                            avatarState.questList.completedQuestIds);
+                    });
+                    task.ToObservable()
+                        .First()
+                        .DoOnError(Debug.LogException);
                 }
             }
             else
@@ -985,56 +1019,75 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                if (ActionManager.ExistLastBattleActionId)
                 {
-                    return;
-                }
+                    if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                    {
+                        return;
+                    }
 
-                _disposableForBattleEnd?.Dispose();
-                _disposableForBattleEnd =
-                    Game.Game.instance.Stage.onEnterToStageEnd
-                        .First()
-                        .Subscribe(_ =>
-                        {
-                            var task = UniTask.Run(() =>
+                    _disposableForBattleEnd?.Dispose();
+                    _disposableForBattleEnd =
+                        Game.Game.instance.Stage.onEnterToStageEnd
+                            .First()
+                            .Subscribe(_ =>
                             {
-                                UpdateAgentStateAsync(eval);
-                                UpdateCurrentAvatarStateAsync(eval);
-                                UpdateWeeklyArenaState(eval);
-                                _disposableForBattleEnd = null;
-                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                                var task = UniTask.Run(() =>
+                                {
+                                    UpdateAgentStateAsync(eval);
+                                    UpdateCurrentAvatarStateAsync(eval);
+                                    UpdateWeeklyArenaState(eval);
+                                    _disposableForBattleEnd = null;
+                                    Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                                });
+                                task.ToObservable()
+                                    .First()
+                                    // ReSharper disable once ConvertClosureToMethodGroup
+                                    .DoOnError(e => Debug.LogException(e));
                             });
-                            task.ToObservable()
-                                .First()
-                                // ReSharper disable once ConvertClosureToMethodGroup
-                                .DoOnError(e => Debug.LogException(e));
-                        });
-                var epd = (List)eval.Extra[nameof(Action.RankingBattle.EnemyPlayerDigest)];
-                var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
-                var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
-                var enemyPlayerDigest = new EnemyPlayerDigest(epd);
-                var arenaInfo = new ArenaInfo(aid);
-                var enemyInfo = new ArenaInfo(eid);
-                var rankingSimulatorSheets = Game.Game.instance.TableSheets.GetRankingSimulatorSheets();
-                var player = new Player(States.Instance.CurrentAvatarState, rankingSimulatorSheets);
+                    var epd = (List) eval.Extra[nameof(Action.RankingBattle.EnemyPlayerDigest)];
+                    var eid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
+                    var aid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
+                    var enemyPlayerDigest = new EnemyPlayerDigest(epd);
+                    var arenaInfo = new ArenaInfo(aid);
+                    var enemyInfo = new ArenaInfo(eid);
+                    var rankingSimulatorSheets =
+                        Game.Game.instance.TableSheets.GetRankingSimulatorSheets();
+                    var player = new Player(States.Instance.CurrentAvatarState,
+                        rankingSimulatorSheets);
 
-                var simulator = new RankingSimulator(
-                    new LocalRandom(eval.RandomSeed),
-                    player,
-                    enemyPlayerDigest,
-                    new List<Guid>(),
-                    rankingSimulatorSheets,
-                    Action.RankingBattle.StageId,
-                    arenaInfo,
-                    enemyInfo,
-                    Game.Game.instance.TableSheets.CostumeStatSheet
-                );
-                simulator.Simulate();
-                var log = simulator.Log;
+                    var simulator = new RankingSimulator(
+                        new LocalRandom(eval.RandomSeed),
+                        player,
+                        enemyPlayerDigest,
+                        new List<Guid>(),
+                        rankingSimulatorSheets,
+                        Action.RankingBattle.StageId,
+                        arenaInfo,
+                        enemyInfo,
+                        Game.Game.instance.TableSheets.CostumeStatSheet
+                    );
+                    simulator.Simulate();
+                    var log = simulator.Log;
 
-                if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+                    if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+                    {
+                        Widget.Find<RankingBoard>().GoToStage(log);
+                    }
+                }
+                else
                 {
-                    Widget.Find<RankingBoard>().GoToStage(log);
+                    var task = UniTask.Run(() =>
+                    {
+                        UpdateCurrentAvatarStateAsync(eval);
+                        UpdateWeeklyArenaState(eval);
+                        var avatarState = States.Instance.CurrentAvatarState;
+                        RenderQuest(eval.Action.avatarAddress,
+                            avatarState.questList.completedQuestIds);
+                    });
+                    task.ToObservable()
+                        .First()
+                        .DoOnError(Debug.LogException);
                 }
             }
             else
