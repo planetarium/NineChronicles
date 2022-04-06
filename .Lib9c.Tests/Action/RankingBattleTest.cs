@@ -569,6 +569,81 @@ namespace Lib9c.Tests.Action
             });
         }
 
+        [Theory]
+        [InlineData(15)]
+        [InlineData(30)]
+        [InlineData(50)]
+        [InlineData(75)]
+        [InlineData(100)]
+        [InlineData(120)]
+        [InlineData(150)]
+        [InlineData(200)]
+        public void Execute_Throw_NotEnoughAvatarLevelException(int avatarLevel)
+        {
+            var state = _initialState;
+            var avatarState = state.GetAvatarState(_avatar1Address);
+            avatarState.level = avatarLevel;
+            var enemyAddress = _avatar2Address;
+
+            var previousWeeklyArenaState = state.GetWeeklyArenaState(_weeklyArenaAddress);
+
+            state = state.SetState(
+                _weeklyArenaAddress,
+                previousWeeklyArenaState.Serialize());
+
+            var itemIds = new[] { GameConfig.DefaultAvatarWeaponId, 40100000 };
+            foreach (var itemId in itemIds)
+            {
+                foreach (var requirementRow in _tableSheets.ItemRequirementSheet.OrderedList
+                    .Where(e => e.ItemId >= itemId && e.Level > avatarState.level)
+                    .Take(3))
+                {
+                    var costumes = new List<Guid>();
+                    var equipments = new List<Guid>();
+                    var random = new TestRandom(DateTimeOffset.Now.Millisecond);
+                    if (_tableSheets.EquipmentItemSheet.TryGetValue(requirementRow.ItemId, out var row))
+                    {
+                        var equipment = ItemFactory.CreateItem(row, random);
+                        avatarState.inventory.AddItem(equipment);
+                        equipments.Add(((INonFungibleItem)equipment).NonFungibleId);
+                    }
+                    else if (_tableSheets.CostumeItemSheet.TryGetValue(requirementRow.ItemId, out var row2))
+                    {
+                        var costume = ItemFactory.CreateItem(row2, random);
+                        avatarState.inventory.AddItem(costume);
+                        costumes.Add(((INonFungibleItem)costume).NonFungibleId);
+                    }
+
+                    state = state.SetState(avatarState.address, avatarState.SerializeV2())
+                        .SetState(
+                            avatarState.address.Derive(LegacyInventoryKey),
+                            avatarState.inventory.Serialize())
+                        .SetState(
+                            avatarState.address.Derive(LegacyWorldInformationKey),
+                            avatarState.worldInformation.Serialize())
+                        .SetState(
+                            avatarState.address.Derive(LegacyQuestListKey),
+                            avatarState.questList.Serialize());
+
+                    var action = new RankingBattle
+                    {
+                        avatarAddress = avatarState.address,
+                        enemyAddress = enemyAddress,
+                        weeklyArenaAddress = _weeklyArenaAddress,
+                        costumeIds = costumes,
+                        equipmentIds = equipments,
+                    };
+
+                    Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
+                    {
+                        PreviousStates = state,
+                        Signer = _agent1Address,
+                        Random = random,
+                    }));
+                }
+            }
+        }
+
         [Fact]
         public void Rehearsal()
         {
