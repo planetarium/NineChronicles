@@ -201,7 +201,7 @@ namespace Nekoyume
                     }
                 });
 
-            Game.Game.instance.Agent.BlockIndexSubject.Subscribe(_ => UpdateView())
+            Game.Game.instance.Agent.BlockIndexSubject.Subscribe(_ => UpdateView(false))
                 .AddTo(gameObject);
         }
 
@@ -457,7 +457,7 @@ namespace Nekoyume
             return loading.activeSelf;
         }
 
-        protected override void UpdateView()
+        protected override void UpdateView(bool resetPage = true)
         {
             var expiredItems = _selectedItems.Where(x => x.Expired.Value).ToList();
             foreach (var item in expiredItems)
@@ -475,7 +475,7 @@ namespace Nekoyume
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            base.UpdateView();
+            base.UpdateView(resetPage);
         }
 
         private void OnSearch()

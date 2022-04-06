@@ -65,14 +65,19 @@ namespace Nekoyume.UI.Module
         protected abstract IEnumerable<ShopItem> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItem>> items);
 
-        protected virtual void UpdateView()
+        protected virtual void UpdateView(bool resetPage = true)
         {
             _selectedModels.Clear();
             _selectedModels.AddRange(GetSortedModels(_items));
             _pageCount = _selectedModels.Any()
                 ? (_selectedModels.Count() / (_column * _row)) + 1
                 : 1;
-            _page.SetValueAndForceNotify(0);
+
+            if (resetPage)
+            {
+                _page.SetValueAndForceNotify(0);
+            }
+
             UpdateExpired(Game.Game.instance.Agent.BlockIndex);
         }
 
