@@ -316,26 +316,6 @@ namespace Nekoyume.UI
                     }
                     _arenaInfoList.Update(infoList);
                 }
-                // TODO delete this flag when back-merge to mainnet.
-                else
-                {
-                    var avatarAddresses = new List<Address>()
-                    {
-                        new Address("d0190D103ecC827F6145C9aa79d9BB8CCBEeE875"),
-                        new Address("E712cf3dBe673b759DdA060132ebeFABfbd3C384"),
-                        new Address("ef7C7674f438291A25DF248272BA296263aE84BB"),
-                        new Address("B7E81f2c5beD58E3DDfA72c9042c1Ef7620c5165"),
-                        new Address("C32c1eA5F51eB61e101d4e5A4A18E146B14416F0"),
-                        new Address("CD9966b3dF9e31F8C82f85f3B0e5cCa0BCF60787"),
-                        new Address("36A95e4b241bEcBAD28e944efFDf72dE7FEb4654"),
-                    };
-                    var avatars = await Game.Game.instance.Agent.GetAvatarStates(avatarAddresses);
-                    var arenaInfos = avatars.Select(kv => kv.Value).Select(avatar =>
-                            new ArenaInfo(avatar, Game.Game.instance.TableSheets.CharacterSheet,
-                                Game.Game.instance.TableSheets.CostumeStatSheet, true))
-                        .ToList();
-                    _arenaInfoList.Update(arenaInfos);
-                }
             }
             else
             {
