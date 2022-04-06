@@ -22,7 +22,7 @@ namespace Nekoyume.UI
             _defaultBlockSyncingMessage = L10nManager.Localize("UI_SYNCING_BLOCKS");
         }
 
-        public void Show(string message = "", bool ignoreShowAnimation = false)
+        public void Show(string message, bool ignoreShowAnimation = false)
         {
             messageText.text = string.IsNullOrWhiteSpace(message) ? _defaultBlockSyncingMessage : message;
             base.Show(ignoreShowAnimation);
