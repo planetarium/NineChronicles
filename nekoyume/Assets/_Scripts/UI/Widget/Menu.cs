@@ -12,6 +12,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -378,7 +379,7 @@ namespace Nekoyume.UI
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
             var stageInfo = Find<UI.StageInformation>();
-            stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
+            stageInfo.Show(SharedViewModel, worldRow, StageType.Mimisbrunnr);
             var status = Find<Status>();
             status.Close(true);
             Find<EventBanner>().Close(true);

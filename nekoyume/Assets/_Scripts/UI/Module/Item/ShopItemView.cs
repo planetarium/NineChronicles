@@ -1,105 +1,87 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI.Module
 {
-    using System.Threading;
-    using System.Threading.Tasks;
     using UniRx;
 
-    public class ShopItemView : CountableItemView<ShopItem>
+    [RequireComponent(typeof(BaseItemView))]
+    public class ShopItemView : MonoBehaviour
     {
-        public GameObject priceGroup;
-        public TextMeshProUGUI priceText;
-        [SerializeField] private GameObject expired;
+        [SerializeField]
+        private BaseItemView baseItemView;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private long _expiredBlockIndex;
-        private CancellationTokenSource _cancellationTokenSource = null;
 
-        public override void SetData(ShopItem model)
+        public void Set(ShopItem model, Action<ShopItem> onClick)
         {
-            if (model is null)
+            if (model == null)
             {
-                Clear();
+                baseItemView.Container.SetActive(false);
                 return;
             }
 
-            base.SetData(model);
-            SetBg(1f);
-            SetLevel(model.ItemBase.Value.Grade, model.Level.Value);
-            priceGroup.SetActive(true);
-            priceText.text = model.Price.Value.GetQuantityString();
-            Model.View = this;
-
-            if (expired)
-            {
-                _expiredBlockIndex = model.ExpiredBlockIndex.Value;
-                SetExpired(Game.Game.instance.Agent.BlockIndex);
-                Game.Game.instance.Agent.BlockIndexSubject
-                    .Subscribe(SetExpired)
-                    .AddTo(_disposables);
-            }
-
-            _cancellationTokenSource = new CancellationTokenSource();
-        }
-
-        public override void Clear()
-        {
-            if (Model != null)
-            {
-                Model.Selected.Value = false;
-            }
-
-            base.Clear();
-
-            SetBg(0f);
-            SetLevel(0, 0);
-            priceGroup.SetActive(false);
-            if (expired != null)
-            {
-                expired.SetActive(false);
-            }
             _disposables.DisposeAllAndClear();
-            _cancellationTokenSource?.Cancel();
-        }
+            baseItemView.Container.SetActive(true);
+            baseItemView.EmptyObject.SetActive(false);
+            baseItemView.EnoughObject.SetActive(false);
+            baseItemView.MinusObject.SetActive(false);
+            baseItemView.SelectBaseItemObject.SetActive(false);
+            baseItemView.SelectMaterialItemObject.SetActive(false);
+            baseItemView.LockObject.SetActive(false);
+            baseItemView.NotificationObject.SetActive(false);
+            baseItemView.FocusObject.SetActive(false);
+            baseItemView.TradableObject.SetActive(false);
+            baseItemView.ElementalDisableObject.SetActive(false);
+            baseItemView.EquippedObject.SetActive(false);
 
-        private void SetBg(float alpha)
-        {
-            var a = alpha;
-            var color = backgroundImage.color;
-            color.a = a;
-            backgroundImage.color = color;
-        }
+            baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(model.ItemBase);
 
-        private void SetLevel(int grade, int level)
-        {
-            if (level > 0)
+            var data = baseItemView.GetItemViewData(model.ItemBase);
+            baseItemView.GradeImage.overrideSprite = data.GradeBackground;
+            baseItemView.GradeHsv.range = data.GradeHsvRange;
+            baseItemView.GradeHsv.hue = data.GradeHsvHue;
+            baseItemView.GradeHsv.saturation = data.GradeHsvSaturation;
+            baseItemView.GradeHsv.value = data.GradeHsvValue;
+
+            if (model.ItemBase is Equipment equipment && equipment.level > 0)
             {
-                enhancementText.text = $"+{level}";
-                enhancementText.enabled = true;
+                baseItemView.EnhancementText.gameObject.SetActive(true);
+                baseItemView.EnhancementText.text = $"+{equipment.level}";
+                if (equipment.level >= Util.VisibleEnhancementEffectLevel)
+                {
+                    baseItemView.EnhancementImage.material = data.EnhancementMaterial;
+                    baseItemView.EnhancementImage.gameObject.SetActive(true);
+                }
+                else
+                {
+                    baseItemView.EnhancementImage.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                baseItemView.EnhancementText.gameObject.SetActive(false);
+                baseItemView.EnhancementImage.gameObject.SetActive(false);
             }
 
-            if (level >= Util.VisibleEnhancementEffectLevel)
-            {
-                var data = itemViewData.GetItemViewData(grade);
-                enhancementImage.GetComponent<Image>().material = data.EnhancementMaterial;
-                enhancementImage.SetActive(true);
-            }
-        }
+            baseItemView.LevelLimitObject.SetActive(model.LevelLimited);
 
-        private void SetExpired(long blockIndex)
-        {
-            if (expired)
-            {
-                expired.SetActive(_expiredBlockIndex - blockIndex <= 0);
-            }
+            baseItemView.OptionTag.Set(model.ItemBase);
+
+            baseItemView.CountText.gameObject.SetActive(model.ItemBase.ItemType == ItemType.Material);
+            baseItemView.CountText.text = model.OrderDigest.ItemCount.ToString();
+            baseItemView.PriceText.text = model.OrderDigest.Price.GetQuantityString();
+
+            model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
+            model.Expired.Subscribe(b => baseItemView.ExpiredObject.SetActive(b)).AddTo(_disposables);
+            model.View = GetComponent<RectTransform>();
+
+            baseItemView.TouchHandler.OnClick.Select(_ => model)
+                .Subscribe(onClick).AddTo(_disposables);
         }
     }
 }

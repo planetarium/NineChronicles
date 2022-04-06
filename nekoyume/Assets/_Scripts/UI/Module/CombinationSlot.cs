@@ -356,7 +356,7 @@ namespace Nekoyume.UI.Module
                     }
 
                     Widget.Find<Craft>()?.gameObject.SetActive(false);
-                    Widget.Find<UpgradeEquipment>()?.gameObject.SetActive(false);
+                    Widget.Find<Enhancement>()?.gameObject.SetActive(false);
                     Widget.Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
                     Widget.Find<CombinationMain>().Show();
                     Widget.Find<CombinationSlotsPopup>().Close();

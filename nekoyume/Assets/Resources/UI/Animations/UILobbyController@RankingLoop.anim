@@ -51,7 +51,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_01
+    path: MenuObject/RankingBtn/Tower/R_Group/R_01
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -88,7 +88,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_02
+    path: MenuObject/RankingBtn/Tower/R_Group/R_02
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -125,7 +125,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_03
+    path: MenuObject/RankingBtn/Tower/R_Group/R_03
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -162,7 +162,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_04
+    path: MenuObject/RankingBtn/Tower/R_Group/R_04
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -199,7 +199,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_05
+    path: MenuObject/RankingBtn/Tower/R_Group/R_05
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -236,7 +236,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_06
+    path: MenuObject/RankingBtn/Tower/R_Group/R_06
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -273,7 +273,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_07
+    path: MenuObject/RankingBtn/Tower/R_Group/R_07
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -310,7 +310,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_08
+    path: MenuObject/RankingBtn/Tower/R_Group/R_08
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -347,7 +347,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_09
+    path: MenuObject/RankingBtn/Tower/R_Group/R_09
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -384,7 +384,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_10
+    path: MenuObject/RankingBtn/Tower/R_Group/R_10
     classID: 224
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -396,70 +396,70 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 1479408211
+      path: 3076012952
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3240405993
+      path: 777087522
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3055786879
+      path: 1498831540
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 675745500
+      path: 3341995799
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 1598045770
+      path: 2956328833
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3326701552
+      path: 691842619
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2974703462
+      path: 1580965549
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 569459447
+      path: 3464790844
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 1458991713
+      path: 3112416170
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 909245316
+      path: 3645127247
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
@@ -521,7 +521,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_01
+    path: MenuObject/RankingBtn/Tower/R_Group/R_01
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -558,7 +558,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_02
+    path: MenuObject/RankingBtn/Tower/R_Group/R_02
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -595,7 +595,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_03
+    path: MenuObject/RankingBtn/Tower/R_Group/R_03
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -632,7 +632,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_04
+    path: MenuObject/RankingBtn/Tower/R_Group/R_04
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -669,7 +669,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_05
+    path: MenuObject/RankingBtn/Tower/R_Group/R_05
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -706,7 +706,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_06
+    path: MenuObject/RankingBtn/Tower/R_Group/R_06
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -743,7 +743,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_07
+    path: MenuObject/RankingBtn/Tower/R_Group/R_07
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -780,7 +780,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_08
+    path: MenuObject/RankingBtn/Tower/R_Group/R_08
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -817,7 +817,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_09
+    path: MenuObject/RankingBtn/Tower/R_Group/R_09
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -854,7 +854,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/RankingBtn/UnlockObjects/R_Group/R_10
+    path: MenuObject/RankingBtn/Tower/R_Group/R_10
     classID: 224
     script: {fileID: 0}
   m_EulerEditorCurves: []

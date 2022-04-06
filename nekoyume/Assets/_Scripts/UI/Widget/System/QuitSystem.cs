@@ -11,9 +11,6 @@ namespace Nekoyume.UI
     public class QuitSystem : SystemWidget
     {
         [SerializeField]
-        private Blur blur = null;
-
-        [SerializeField]
         private EventSubject characterSelectEventSubject = null;
 
         [SerializeField]
@@ -57,7 +54,6 @@ namespace Nekoyume.UI
         public void Show(float blurRadius = 2, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            blur.Show(blurRadius);
             AudioController.PlayPopup();
         }
 

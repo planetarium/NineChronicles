@@ -10,6 +10,7 @@ namespace Nekoyume.UI.Module
         public GameObject offObject;
         public GameObject onObject;
         public UnityEngine.Events.UnityEvent onClickToggle;
+        public bool allowSwitchOffWhenIsOn = true;
 
         protected Toggle()
         {
@@ -44,6 +45,11 @@ namespace Nekoyume.UI.Module
 
         public override void OnPointerClick(UnityEngine.EventSystems.PointerEventData eventData)
         {
+            if (!allowSwitchOffWhenIsOn && isOn)
+            {
+                return;
+            }
+
             base.OnPointerClick(eventData);
             onClickToggle?.Invoke();
         }

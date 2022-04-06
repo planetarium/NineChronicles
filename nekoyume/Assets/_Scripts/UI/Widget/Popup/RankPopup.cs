@@ -79,9 +79,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<Button> maintenancingToggles = null;
 
-        [SerializeField]
-        private Blur blur = null;
-
         public const int RankingBoardDisplayCount = 100;
 
         private readonly Dictionary<RankCategory, Toggle> _toggleMap = new Dictionary<RankCategory, Toggle>();
@@ -171,21 +168,6 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             var firstCategory = categoryToggles.FirstOrDefault(x => x.Category != RankCategory.Maintenance);
             UpdateCategory(firstCategory.Category, true);
-
-            if (blur)
-            {
-                blur.Show();
-            }
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            if (blur && blur.isActiveAndEnabled)
-            {
-                blur.Close();
-            }
-
-            base.Close(ignoreCloseAnimation);
         }
 
         private void UpdateCategory(RankCategory category, bool toggleOn = false)

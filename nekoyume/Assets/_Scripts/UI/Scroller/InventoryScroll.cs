@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine.UI.Extensions;
 using Nekoyume.UI.Model;
 using UniRx;
@@ -13,10 +13,9 @@ namespace Nekoyume.UI.Scroller
     {
         public class ContextModel : GridScrollDefaultContext
         {
-            public readonly Subject<InventoryCell> OnClick = new Subject<InventoryCell>();
-            public readonly Subject<InventoryCell> OnDoubleClick = new Subject<InventoryCell>();
-
-            public InventoryCell FirstCell;
+            public InventoryItem FirstItem;
+            public readonly Subject<InventoryItem> OnClick = new Subject<InventoryItem>();
+            public readonly Subject<InventoryItem> OnDoubleClick = new Subject<InventoryItem>();
 
             public override void Dispose()
             {
@@ -33,13 +32,12 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private InventoryCell cellTemplate = null;
 
-        public IObservable<InventoryCell> OnClick => Context.OnClick;
+        public IObservable<InventoryItem> OnClick => Context.OnClick;
+        public IObservable<InventoryItem> OnDoubleClick => Context.OnDoubleClick;
 
-        public IObservable<InventoryCell> OnDoubleClick => Context.OnDoubleClick;
-
-        public bool TryGetFirstCell(out InventoryCell cell)
+        public bool TryGetFirstItem(out InventoryItem cell)
         {
-            cell = Context.FirstCell;
+            cell = Context.FirstItem;
 
             return cell != null;
         }
