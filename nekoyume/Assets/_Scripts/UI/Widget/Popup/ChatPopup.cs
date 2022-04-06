@@ -7,7 +7,6 @@ namespace Nekoyume.UI
     {
         [SerializeField] private Button confirm;
         [SerializeField] private Button cancel;
-        [SerializeField] private Button close;
 
         public override void Initialize()
         {
@@ -23,10 +22,6 @@ namespace Nekoyume.UI
                 Close(true);
             });
 
-            close.onClick.AddListener(() =>
-            {
-                Close(true);
-            });
             base.Initialize();
         }
 

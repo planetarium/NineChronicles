@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Nekoyume.Helper;
 using UnityEngine;
 using EventType = Nekoyume.EnumType.EventType;
 
@@ -8,25 +9,21 @@ namespace Nekoyume
     public static class EventManager
     {
         private static EventScriptableObject _so;
+
         private static EventScriptableObject SO =>
             _so ? _so : (_so = Resources.Load<EventScriptableObject>("ScriptableObject/EventData"));
 
         private static EventInfo GetEventInfo()
         {
-            return SO.Events.FirstOrDefault(x => IsInTime(x.BeginDateTime, x.EndDateTime)) ??
+            return SO.Events.FirstOrDefault(x => Util.IsInTime(x.BeginDateTime, x.EndDateTime)) ??
                    SO.DefaultEvent;
         }
 
-        private static bool IsInTime(string begin, string end)
+        public static bool TryGetArenaSeasonInfo(long blockIndex, out ArenaSeasonInfo info)
         {
-            var n = DateTime.UtcNow;
-            var b = $"{n.Year}/{begin}";
-            var e = $"{n.Year}/{end}";
-            var bDt = DateTime.ParseExact(b, "yyyy/MM/dd HH:mm:ss", null);
-            var eDt = DateTime.ParseExact(e, "yyyy/MM/dd HH:mm:ss", null);
-            var bDiff = (n - bDt).TotalSeconds;
-            var eDiff = (eDt - n).TotalSeconds;
-            return bDiff > 0 && eDiff > 0;
+            info = SO.ArenaSeasons.FirstOrDefault(x =>
+                x.StartBlockIndex <= blockIndex && blockIndex <= x.EndBlockIndex);
+            return info != null;
         }
 
         public static void UpdateEventContainer(Transform parent)

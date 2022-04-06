@@ -143,7 +143,7 @@ namespace Nekoyume.Game
             else
             {
                 yield return L10nManager.Initialize(languageType.Value).ToYieldInstruction();
-                
+
                 languageType.Subscribe(value => L10nManager.SetLanguage(value)).AddTo(gameObject);
             }
 #else
@@ -176,7 +176,9 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
-            Analyzer = new Analyzer().Initialize(Agent.Address.ToString());
+            Analyzer = _options.RpcClient
+                ? new Analyzer(Agent.Address.ToString(), _options.RpcServerHost)
+                : new Analyzer(Agent.Address.ToString());
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
@@ -294,7 +296,7 @@ namespace Nekoyume.Game
             if (Widget.Find<LoadingScreen>().IsActive())
             {
                 Widget.Find<LoadingScreen>().Close();
-                widget = Widget.Find<QuestPreparation>();
+                widget = Widget.Find<BattlePreparation>();
                 if (widget.IsActive())
                 {
                     widget.Close(true);
@@ -323,11 +325,6 @@ namespace Nekoyume.Game
             else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
             {
                 Widget.Find<ArenaBattleLoadingScreen>().Close();
-                needToBackToMain = true;
-            }
-            else if (Widget.Find<MimisbrunnrPreparation>().IsActive())
-            {
-                Widget.Find<MimisbrunnrPreparation>().Close(true);
                 needToBackToMain = true;
             }
 
@@ -360,7 +357,7 @@ namespace Nekoyume.Game
             if (Widget.Find<LoadingScreen>().IsActive())
             {
                 Widget.Find<LoadingScreen>().Close();
-                widget = Widget.Find<QuestPreparation>();
+                widget = Widget.Find<BattlePreparation>();
                 if (widget.IsActive())
                 {
                     widget.Close(true);
@@ -389,11 +386,6 @@ namespace Nekoyume.Game
             else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
             {
                 Widget.Find<ArenaBattleLoadingScreen>().Close();
-                needToBackToMain = true;
-            }
-            else if (Widget.Find<MimisbrunnrPreparation>().IsActive())
-            {
-                Widget.Find<MimisbrunnrPreparation>().Close(true);
                 needToBackToMain = true;
             }
 

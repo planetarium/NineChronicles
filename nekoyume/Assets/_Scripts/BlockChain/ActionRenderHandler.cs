@@ -13,6 +13,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Item;
+using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.Model.State;
@@ -621,11 +622,7 @@ namespace Nekoyume.BlockChain
                     NotificationCell.NotificationType.Information);
 
                 UpdateCurrentAvatarStateAsync(eval);
-                var shopSell = Widget.Find<ShopSell>();
-                if (shopSell.isActiveAndEnabled)
-                {
-                    shopSell.Refresh();
-                }
+                ReactiveShopState.UpdateSellDigests();
             }
         }
 
@@ -656,11 +653,7 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
 
             UpdateCurrentAvatarStateAsync(eval);
-            var shopSell = Widget.Find<ShopSell>();
-            if (shopSell.isActiveAndEnabled)
-            {
-                shopSell.Refresh();
-            }
+            ReactiveShopState.UpdateSellDigests();
         }
 
         private async void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
@@ -686,11 +679,7 @@ namespace Nekoyume.BlockChain
             }
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
-            var shopSell = Widget.Find<ShopSell>();
-            if (shopSell.isActiveAndEnabled)
-            {
-                shopSell.Refresh();
-            }
+            ReactiveShopState.UpdateSellDigests();
         }
 
         private async void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
@@ -879,9 +868,9 @@ namespace Nekoyume.BlockChain
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
-                    if (Widget.Find<QuestPreparation>().IsActive())
+                    if (Widget.Find<BattlePreparation>().IsActive())
                     {
-                        Widget.Find<QuestPreparation>().GoToStage(log);
+                        Widget.Find<BattlePreparation>().GoToStage(log);
                     }
                     else if (Widget.Find<Menu>().IsActive())
                     {
@@ -959,9 +948,9 @@ namespace Nekoyume.BlockChain
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
-                    if (Widget.Find<MimisbrunnrPreparation>().IsActive())
+                    if (Widget.Find<BattlePreparation>().IsActive())
                     {
-                        Widget.Find<MimisbrunnrPreparation>().GoToStage(log);
+                        Widget.Find<BattlePreparation>().GoToStage(log);
                     }
                     else if (Widget.Find<Menu>().IsActive())
                     {
@@ -1020,19 +1009,21 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
-                var ead = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyAvatarState)];
+                var epd = (List)eval.Extra[nameof(Action.RankingBattle.EnemyPlayerDigest)];
                 var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
                 var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
-                var enemyAvatarState = new AvatarState(ead);
+                var enemyPlayerDigest = new EnemyPlayerDigest(epd);
                 var arenaInfo = new ArenaInfo(aid);
                 var enemyInfo = new ArenaInfo(eid);
+                var rankingSimulatorSheets = Game.Game.instance.TableSheets.GetRankingSimulatorSheets();
+                var player = new Player(States.Instance.CurrentAvatarState, rankingSimulatorSheets);
 
                 var simulator = new RankingSimulator(
                     new LocalRandom(eval.RandomSeed),
-                    States.Instance.CurrentAvatarState,
-                    enemyAvatarState,
+                    player,
+                    enemyPlayerDigest,
                     new List<Guid>(),
-                    Game.Game.instance.TableSheets.GetRankingSimulatorSheets(),
+                    rankingSimulatorSheets,
                     Action.RankingBattle.StageId,
                     arenaInfo,
                     enemyInfo,

@@ -35,7 +35,11 @@ namespace Nekoyume.Game.Character
                 throw new NotFoundComponentException<SkeletonAnimation>();
             }
 
-            Skeleton.timeScale = TimeScale;
+            var skeletons = value.GetComponentsInChildren<SkeletonAnimation>();
+            foreach (var skeleton in skeletons)
+            {
+                skeleton.timeScale = TimeScale;
+            }
 
             if (Skeleton.AnimationState is null)
             {

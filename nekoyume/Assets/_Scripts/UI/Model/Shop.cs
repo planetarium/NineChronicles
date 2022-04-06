@@ -10,7 +10,6 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<ItemCountAndPricePopup> ItemCountAndPricePopup =
             new ReactiveProperty<ItemCountAndPricePopup>(new ItemCountAndPricePopup());
 
-
         public readonly ReactiveProperty<ItemCountableAndPricePopup> ItemCountableAndPricePopup =
             new ReactiveProperty<ItemCountableAndPricePopup>(new ItemCountableAndPricePopup());
 

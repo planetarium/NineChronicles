@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
+using Nekoyume.Extensions;
+using Nekoyume.Game.Character;
+using Nekoyume.Game.Factory;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -174,6 +178,128 @@ namespace Nekoyume.Helper
             var agentAddress = Game.Game.instance.Agent.Address;
             var key = $"{StoredSlotIndex}{agentAddress}";
             PlayerPrefs.SetInt(key, slotIndex);
+        }
+
+        public static bool IsUsableItem(ItemBase itemBase)
+        {
+            var sheets = Game.Game.instance.TableSheets;
+            var requirementSheet = sheets.ItemRequirementSheet;
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentAvatarState is null || itemBase is null)
+            {
+                return false;
+            }
+
+            switch (itemBase.ItemType)
+            {
+                case ItemType.Equipment:
+                    var equipment = (Equipment)itemBase;
+                    if (!requirementSheet.TryGetValue(itemBase.Id, out var equipmentRow))
+                    {
+                        Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
+                        return false;
+                    }
+
+                    var recipeSheet = sheets.EquipmentItemRecipeSheet;
+                    var subRecipeSheet = sheets.EquipmentItemSubRecipeSheetV2;
+                    var itemOptionSheet = sheets.EquipmentItemOptionSheet;
+                    var isMadeWithMimisbrunnrRecipe = equipment.IsMadeWithMimisbrunnrRecipe(
+                        recipeSheet,
+                        subRecipeSheet,
+                        itemOptionSheet
+                    );
+
+                    var requirementLevel = isMadeWithMimisbrunnrRecipe ? equipmentRow.MimisLevel : equipmentRow.Level;
+                    return currentAvatarState.level >= requirementLevel;
+
+                default:
+                    if (!requirementSheet.TryGetValue(itemBase.Id, out var row))
+                    {
+                        // Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
+                        return false;
+                    }
+
+                    return currentAvatarState.level >= row.Level;
+            }
+        }
+
+        public static int GetItemRequirementLevel(ItemBase itemBase)
+        {
+            var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentAvatarState is null)
+            {
+                return 0;
+            }
+
+            switch (itemBase.ItemType)
+            {
+                case ItemType.Equipment:
+                    var sheets = Game.Game.instance.TableSheets;
+                    var equipment = (Equipment)itemBase;
+                    var requirementSheet = sheets.ItemRequirementSheet;
+                    if (!requirementSheet.TryGetValue(itemBase.Id, out var equipmentRow))
+                    {
+                        Debug.LogError($"[ItemRequirementSheet] item id does not exist {itemBase.Id}");
+                        return 0;
+                    }
+
+                    var recipeSheet = sheets.EquipmentItemRecipeSheet;
+                    var subRecipeSheet = sheets.EquipmentItemSubRecipeSheetV2;
+                    var itemOptionSheet = sheets.EquipmentItemOptionSheet;
+                    var isMadeWithMimisbrunnrRecipe = equipment.IsMadeWithMimisbrunnrRecipe(
+                        recipeSheet,
+                        subRecipeSheet,
+                        itemOptionSheet
+                    );
+
+                    var requirementLevel = isMadeWithMimisbrunnrRecipe ? equipmentRow.MimisLevel : equipmentRow.Level;
+                    return requirementLevel;
+                default:
+                    return sheet.TryGetValue(itemBase.Id, out var value) ? value.Level : 0;
+            }
+        }
+
+        public static Player CreatePlayer(AvatarState avatarState, Vector3 position)
+        {
+            var player = PlayerFactory.Create(avatarState).GetComponent<Player>();
+            var t = player.transform;
+            t.localScale = Vector3.one;
+            t.position = position;
+            player.gameObject.SetActive(true);
+            return player;
+        }
+
+        public static int GetGridItemCount(float cellSize, float spacing, float size)
+        {
+            var s = size;
+            var count = 0;
+            while (s > cellSize)
+            {
+                s -= cellSize;
+                s -= spacing;
+                count++;
+                if (s < 0)
+                {
+                    return count;
+                }
+            }
+
+            return count;
+        }
+        
+        public static bool IsInTime(string begin, string end, bool everyYear = true)
+        {
+            var now = DateTime.UtcNow;
+            if (everyYear)
+            {
+                begin = $"{now.Year}/{begin}";
+                end = $"{now.Year}/{end}";
+            }
+
+            var bDt = DateTime.ParseExact(begin, "yyyy/MM/dd HH:mm:ss", null);
+            var eDt = DateTime.ParseExact(end, "yyyy/MM/dd HH:mm:ss", null);
+            return now.IsInTime(bDt, eDt);
         }
     }
 }

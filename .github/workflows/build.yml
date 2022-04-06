@@ -1,7 +1,7 @@
 on:
   push:
     branches: []
-    tags: ['*']
+    tags: ["*"]
 
 name: Build
 
@@ -39,7 +39,7 @@ jobs:
         with:
           path: ${{ matrix.projectPath }}/Library
           key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v4
-      
+
       - name: inject mixpanel client data
         run: |
           chmod +x .github/bin/inject-mixpanel-client-data.sh
@@ -71,7 +71,7 @@ jobs:
           - Windows
           - macOS
     needs: build-unity
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet'}}
     steps:
       - uses: actions/checkout@v2
 
@@ -88,7 +88,7 @@ jobs:
 
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.201'
+          dotnet-version: "3.1.201"
 
       - name: Pack
         run: |
@@ -100,11 +100,11 @@ jobs:
           dotnet tool install \
             --global \
             Libplanet.Tools
-          
+
           # macOS 내장 date는 ISO 8601 서식 옵션이 따로 없음
           timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
           pip3 install wheel
-          
+
           .github/bin/pack.sh \
           /tmp/package \
           "${{ matrix.targetPlatform }}" \
@@ -120,10 +120,10 @@ jobs:
         id: build_artifact
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          description: 'Build artifact'
+          description: "Build artifact"
           environment: build-artifact
 
-      - run: mv /tmp/package ./package  # s3-upload-action이 상대 경로만 지원
+      - run: mv /tmp/package ./package # s3-upload-action이 상대 경로만 지원
         if: success()
         shell: bash
 
@@ -141,5 +141,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target_url: ${{ steps.S3.outputs.object_locations[0] }}
-          state: 'success'
+          state: "success"
           deployment_id: ${{ steps.build_artifact.outputs.deployment_id }}

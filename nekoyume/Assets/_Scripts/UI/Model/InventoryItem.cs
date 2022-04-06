@@ -1,29 +1,35 @@
-using Nekoyume.Model.Item;
-using Nekoyume.UI.Module;
+﻿using Nekoyume.Model.Item;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class InventoryItem : CountableItem
+    public class InventoryItem : IItemViewModel
     {
-        public readonly ReactiveProperty<bool> EffectEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> GlowEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> EquippedEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<bool> IsTradable = new ReactiveProperty<bool>(false);
+        public ItemBase ItemBase { get; }
 
-        public InventoryItemView View;
+        public readonly ReactiveProperty<int> Count;
+        public readonly ReactiveProperty<bool> LevelLimited;
+        public readonly ReactiveProperty<bool> Equipped;
+        public readonly ReactiveProperty<bool> Tradable;
+        public readonly ReactiveProperty<bool> ElementalTypeDisabled;
+        public readonly ReactiveProperty<bool> Selected;
+        public readonly ReactiveProperty<bool> Focused;
+        public readonly ReactiveProperty<bool> HasNotification;
 
-        public InventoryItem(ItemBase item, int count) : base(item, count)
+        public RectTransform View { get; set; }
+
+        public InventoryItem(ItemBase itemBase, int count, bool equipped, bool limited, bool tradable)
         {
-        }
-
-        public override void Dispose()
-        {
-            EffectEnabled.Dispose();
-            GlowEnabled.Dispose();
-            EquippedEnabled.Dispose();
-            base.Dispose();
+            ItemBase = itemBase;
+            Count = new ReactiveProperty<int>(count);
+            Equipped = new ReactiveProperty<bool>(equipped);
+            LevelLimited = new ReactiveProperty<bool>(limited);
+            Tradable = new ReactiveProperty<bool>(tradable);
+            ElementalTypeDisabled = new ReactiveProperty<bool>(false);
+            Selected = new ReactiveProperty<bool>(false);
+            Focused = new ReactiveProperty<bool>(false);
+            HasNotification = new ReactiveProperty<bool>(false);
         }
     }
 }

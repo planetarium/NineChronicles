@@ -47,7 +47,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 9c67e02a967534297bd452ad80ca3261, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
-    totalSpriteSurfaceArea: 821073
+    totalSpriteSurfaceArea: 872194
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -114,6 +114,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9f75d744293854a12a5c5c347fa4a366, type: 3}
   - {fileID: 21300000, guid: 82ae1a54b2a0d4051807eaff117e5c4a, type: 3}
   - {fileID: 21300000, guid: 27f5c7643ad9ea2489ca76e7550f3cb0, type: 3}
+  - {fileID: 21300000, guid: 9a3f0a848a4064a41b6cb2b0bf4c11f9, type: 3}
   - {fileID: 21300000, guid: 80b9daa468e2f480b85e9fd95b10464f, type: 3}
   - {fileID: 21300000, guid: 23d16fa48a0c1421ebe1ed94052dbff5, type: 3}
   - {fileID: 21300000, guid: 9aef99b4fc6a30e458f9ca5fcfb82fa7, type: 3}
@@ -215,6 +216,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: eae315ebbb3f0b34db0e5cbf2ae66102, type: 3}
   - {fileID: 21300000, guid: b202830c8a3394ca89b0ebb5931d1969, type: 3}
   - {fileID: 21300000, guid: cb638a1c9a3d04d888d6f5ba2f046f4b, type: 3}
+  - {fileID: 21300000, guid: 4efd123c39d164b58b80766f85847df1, type: 3}
   - {fileID: 21300000, guid: 0f16b14c39a634b3685af8884ae4d70c, type: 3}
   - {fileID: 21300000, guid: 3d764b4c137f54c70b9e32487429e526, type: 3}
   - {fileID: 21300000, guid: 531ef08c7428b47cb931c74bd74b4c74, type: 3}
@@ -258,6 +260,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 147893be357c14da0ac9a5a3078f56c1, type: 3}
   - {fileID: 21300000, guid: b00134ceb6ddd49d9b26b011d12ffb4b, type: 3}
   - {fileID: 21300000, guid: 03fb94ce603b3fa4d83f90720bcf8959, type: 3}
+  - {fileID: 21300000, guid: d8af57eec015042759964f4e4b579c85, type: 3}
   - {fileID: 21300000, guid: 64d3712fd3c144545b6a9ec5674a529b, type: 3}
   - {fileID: 21300000, guid: 67e0f04f723ea49a3b212635bc58c2df, type: 3}
   - {fileID: 21300000, guid: b141dd5feb72502429c863c370d8690a, type: 3}
@@ -338,6 +341,7 @@ SpriteAtlas:
   - UI_Popup_bg_02
   - Item_bg_Grade_03
   - UI_bar_quest
+  - UI_bg_frame_16_deco
   - Ani_Workshop_07
   - button_Orange_04
   - UI_bar_02_yellow
@@ -439,6 +443,7 @@ SpriteAtlas:
   - UI_icon_item_star_02
   - icon_Inventory_02_black
   - UI_Popup_icon_09
+  - UI_bg_frame_16
   - icon_Rank
   - UI_icon_Mainmenu_07
   - Ani_Workshop_08
@@ -482,6 +487,7 @@ SpriteAtlas:
   - UI_icon_Popup_02
   - button_Round_Press
   - button_page_02
+  - UI_Popup_icon_10
   - Item_Recipebg_01
   - button_menu_bg
   - icon_notice_02_black

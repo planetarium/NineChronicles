@@ -119,10 +119,12 @@ namespace Nekoyume.BlockChain
 
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
         {
-            if (Game.Game.instance.Agent.Address.Equals(goldBalanceState.address))
+            if (goldBalanceState is { } &&
+                Game.Game.instance.Agent.Address.Equals(goldBalanceState.address))
             {
                 Game.Game.instance.CachedBalance[goldBalanceState.address] = goldBalanceState.Gold;
             }
+
             States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
@@ -169,6 +171,11 @@ namespace Nekoyume.BlockChain
 
         private static void UpdateCache(Model.State.State state)
         {
+            if (state is null)
+            {
+                return;
+            }
+
             if (Game.Game.instance.CachedStates.ContainsKey(state.address))
             {
                 Game.Game.instance.CachedStates[state.address] = state.Serialize();

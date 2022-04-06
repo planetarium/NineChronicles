@@ -14,6 +14,7 @@ namespace Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("offObject"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("onObject"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("onClickToggle"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("allowSwitchOffWhenIsOn"));
             serializedObject.ApplyModifiedProperties();
 
             if (GUI.changed)

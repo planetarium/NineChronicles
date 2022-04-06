@@ -228,15 +228,15 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<StageInformation>());
             yield return null;
-            secondWidgets.Add(Widget.Create<QuestPreparation>());
+            secondWidgets.Add(Widget.Create<BattlePreparation>());
             yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
             secondWidgets.Add(Widget.Create<RankingBoard>());
             yield return null;
-            secondWidgets.Add(Widget.Create<MimisbrunnrPreparation>());
-            yield return null;
             secondWidgets.Add(Widget.Create<EventBanner>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<NoticePopup>());
             yield return null;
 
             // loading
@@ -250,7 +250,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Craft>());
             yield return null;
-            secondWidgets.Add(Widget.Create<UpgradeEquipment>());
+            secondWidgets.Add(Widget.Create<Enhancement>());
             yield return null;
 
             // header menu
@@ -320,7 +320,13 @@ namespace Nekoyume.UI
             yield return null;
 
             // tooltip
-            secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
+            secondWidgets.Add(Widget.Create<EquipmentTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ConsumableTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<MaterialTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CostumeTooltip>());
             yield return null;
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
             yield return null;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Bencodex.Types;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -10,6 +11,8 @@ using Nekoyume.Model.BattleStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
+using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -160,7 +163,7 @@ namespace Nekoyume.UI
             CombinationClickInternal(() => Find<Craft>().Show(recipeId));
         }
 
-        private void UpdateButtons()
+        private async void UpdateButtons()
         {
             btnQuest.Update();
             btnCombination.Update();
@@ -185,7 +188,21 @@ namespace Nekoyume.UI
             var currentAddress = States.Instance.CurrentAvatarState?.address;
             if (currentAddress != null)
             {
-                var arenaInfo = States.Instance.WeeklyArenaState.GetArenaInfo(currentAddress.Value);
+                ArenaInfo arenaInfo = null;
+                var avatarAddress = currentAddress.Value;
+                if (Game.Game.instance.Agent.BlockIndex >= RankingBattle.UpdateTargetBlockIndex)
+                {
+                    var infoAddress = States.Instance.WeeklyArenaState.address.Derive(avatarAddress.ToByteArray());
+                    var rawInfo = await Game.Game.instance.Agent.GetStateAsync(infoAddress);
+                    if (rawInfo is Dictionary dictionary)
+                    {
+                        arenaInfo = new ArenaInfo(dictionary);
+                    }
+                }
+                else
+                {
+                    arenaInfo = States.Instance.WeeklyArenaState.GetArenaInfo(currentAddress.Value);
+                }
                 rankingExclamationMark.gameObject.SetActive(
                     btnRanking.IsUnlocked &&
                     (arenaInfo == null || arenaInfo.DailyChallengeCount > 0));
@@ -362,7 +379,7 @@ namespace Nekoyume.UI
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
             var stageInfo = Find<UI.StageInformation>();
-            stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
+            stageInfo.Show(SharedViewModel, worldRow, StageType.Mimisbrunnr);
             var status = Find<Status>();
             status.Close(true);
             Find<EventBanner>().Close(true);
@@ -423,6 +440,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            Find<NoticePopup>().Close(true);
             StopSpeeches();
             guidedQuest.Hide(true);
             Find<Status>().Close(true);

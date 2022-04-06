@@ -1,40 +1,31 @@
-using System;
-using Lib9c.Model.Order;
-using Libplanet.Assets;
+﻿using Lib9c.Model.Order;
 using Nekoyume.Model.Item;
-using Nekoyume.UI.Module;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class ShopItem : CountableItem
+    public class ShopItem : IItemViewModel
     {
-        public readonly ReactiveProperty<FungibleAssetValue> Price = new ReactiveProperty<FungibleAssetValue>();
-        public readonly ReactiveProperty<Guid> OrderId = new ReactiveProperty<Guid>();
-        public readonly ReactiveProperty<Guid> TradableId = new ReactiveProperty<Guid>();
-        public readonly ReactiveProperty<long> ExpiredBlockIndex = new ReactiveProperty<long>();
-        public readonly ReactiveProperty<int> Level = new ReactiveProperty<int>();
+        public ItemBase ItemBase { get; }
+        public OrderDigest OrderDigest { get; }
+        public int Grade { get; }
+        public bool LevelLimited { get; }
 
-        public ShopItemView View;
+        public readonly ReactiveProperty<bool> Selected;
+        public readonly ReactiveProperty<bool> Expired;
 
-        public ShopItem(OrderDigest orderDigest, ItemBase item) : base(item, orderDigest.ItemCount)
+        public RectTransform View { get; set; }
+
+        public ShopItem(ItemBase itemBase, OrderDigest orderDigest,
+            int grade, bool limited)
         {
-            GradeEnabled.Value = true;
-            Price.Value = orderDigest.Price;
-            OrderId.Value = orderDigest.OrderId;
-            TradableId.Value = orderDigest.TradableId;
-            ExpiredBlockIndex.Value = orderDigest.ExpiredBlockIndex;
-            Level.Value = orderDigest.Level;
-        }
-
-        public override void Dispose()
-        {
-            Price.Dispose();
-            OrderId.Dispose();
-            TradableId.Dispose();
-            ExpiredBlockIndex.Dispose();
-            Level.Dispose();
-            base.Dispose();
+            ItemBase = itemBase;
+            OrderDigest = orderDigest;
+            Grade = grade;
+            LevelLimited = limited;
+            Selected = new ReactiveProperty<bool>(false);
+            Expired = new ReactiveProperty<bool>(false);
         }
     }
 }
