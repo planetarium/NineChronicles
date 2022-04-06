@@ -192,6 +192,8 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
+                    _lastBattleActionId = action.Id;
+
                     try
                     {
                         HandleException(action.Id, e);
@@ -252,6 +254,8 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
+                    _lastBattleActionId = action.Id;
+
                     try
                     {
                         HandleException(action.Id, e);
@@ -537,6 +541,8 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
+                    _lastBattleActionId = action.Id;
+
                     try
                     {
                         HandleException(action.Id, e);
