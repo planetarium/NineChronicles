@@ -137,11 +137,6 @@ namespace Nekoyume.UI.Module
 
             foreach (var data in tooltipDataScriptableObject.Datas)
             {
-                if (!inventory.HasItem(data.ResourceID))
-                {
-                    continue;
-                }
-
                 var go = Instantiate(data.Prefab, baseItemView.SpineItemImage.transform);
                 _skeletonPool.Add(data.ResourceID, go);
                 go.SetActive(false);
