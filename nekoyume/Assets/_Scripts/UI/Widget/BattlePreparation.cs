@@ -99,6 +99,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject hasBg;
 
+        [SerializeField]
+        private GameObject blockStartingTextObject;
+
         private Stage _stage;
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
@@ -228,6 +231,7 @@ namespace Nekoyume.UI
             UpdateTitle();
             UpdateStat(currentAvatarState);
             UpdateSlot(currentAvatarState, true);
+            UpdateStartButton(currentAvatarState);
 
             closeButtonText.text = closeButtonName;
             startButton.gameObject.SetActive(true);
@@ -237,7 +241,11 @@ namespace Nekoyume.UI
             equipmentSlots.gameObject.SetActive(true);
             ShowHelpTooltip(stageType);
             ReactiveAvatarState.ActionPoint.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
-            ReactiveAvatarState.Inventory.Subscribe(_ => UpdateSlot(Game.Game.instance.States.CurrentAvatarState)).AddTo(_disposables);
+            ReactiveAvatarState.Inventory.Subscribe(_ =>
+            {
+                UpdateSlot(Game.Game.instance.States.CurrentAvatarState);
+                UpdateStartButton(Game.Game.instance.States.CurrentAvatarState);
+            }).AddTo(_disposables);
             base.Show(ignoreShowAnimation);
         }
 
@@ -835,6 +843,38 @@ namespace Nekoyume.UI
         private bool IsExistElementalType(ElementalType elementalType)
         {
             return GetElementalTypes().Exists(x => x == elementalType);
+        }
+
+        private void UpdateStartButton(AvatarState avatarState)
+        {
+            _player.Set(avatarState);
+            bool isValidated = false;
+            var tableSheets = Game.Game.instance.TableSheets;
+            try
+            {
+                var equipmentList = _player.Equipments;
+                var costumeIds = _player.Costumes.Select(costume => costume.Id);
+                var foodIds = consumableSlots
+                    .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                    .Select(slot => (Consumable) slot.Item).Select(food => food.Id);
+                States.Instance.CurrentAvatarState.ValidateItemRequirement(
+                    costumeIds.Concat(foodIds).ToList(),
+                    equipmentList,
+                    tableSheets.ItemRequirementSheet,
+                    tableSheets.EquipmentItemRecipeSheet,
+                    tableSheets.EquipmentItemSubRecipeSheetV2,
+                    tableSheets.EquipmentItemOptionSheet,
+                    States.Instance.CurrentAvatarState.address.ToHex());
+                isValidated = true;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            startButton.gameObject.SetActive(isValidated);
+            boostPopupButton.gameObject.SetActive(isValidated);
+            blockStartingTextObject.SetActive(!isValidated);
         }
 
         public List<ElementalType> GetElementalTypes()
