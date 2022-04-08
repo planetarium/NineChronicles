@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.State;
+using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -282,7 +283,10 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                slot.SetDim(!elementalTypes.Exists(x => x.Equals(slot.Item.ElementalType)));
+                slot.SetDim(
+                    !elementalTypes.Exists(x => x.Equals(slot.Item.ElementalType)) ||
+                    Util.GetItemRequirementLevel(slot.Item) >
+                    States.Instance.CurrentAvatarState.level);
             }
         }
 
