@@ -173,13 +173,17 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 375, true)]
-        [InlineData(1, 374, false)]
-        [InlineData(2, 3, true)]
-        [InlineData(2, 2, false)]
-        [InlineData(3, 6, true)]
-        [InlineData(3, 5, false)]
-        public void MadeWithMimisbrunnrRecipe(int recipeId, int? subRecipeId, bool isMadeWithMimisbrunnrRecipe)
+        [InlineData(1, false, 375, false)]
+        [InlineData(1, false, 374, false)]
+        [InlineData(2, true, 3, true)]
+        [InlineData(2, true, 2, false)]
+        [InlineData(3, false, 6, false)]
+        [InlineData(3, false, 5, false)]
+        public void MadeWithMimisbrunnrRecipe(
+            int recipeId,
+            bool isElementalTypeFire,
+            int? subRecipeId,
+            bool isMadeWithMimisbrunnrRecipe)
         {
             var currency = new Currency("NCG", 2, minter: null);
             var row = _tableSheets.EquipmentItemRecipeSheet[recipeId];
@@ -236,12 +240,19 @@ namespace Lib9c.Tests.Action
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
             Assert.NotNull(slotState.Result);
             Assert.NotNull(slotState.Result.itemUsable);
-            Assert.Equal(isMadeWithMimisbrunnrRecipe, ((Equipment)slotState.Result.itemUsable).MadeWithMimisbrunnrRecipe);
-            Assert.Equal(isMadeWithMimisbrunnrRecipe, ((Equipment)slotState.Result.itemUsable).IsMadeWithMimisbrunnrRecipe(
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheetV2,
-                _tableSheets.EquipmentItemOptionSheet
-            ));
+            var isMadeWithMimisbrunnrRecipe_considerElementalType =
+                isElementalTypeFire &&
+                ((Equipment)slotState.Result.itemUsable).MadeWithMimisbrunnrRecipe;
+            Assert.Equal(
+                isMadeWithMimisbrunnrRecipe,
+                isMadeWithMimisbrunnrRecipe_considerElementalType);
+            Assert.Equal(
+                isMadeWithMimisbrunnrRecipe,
+                ((Equipment)slotState.Result.itemUsable).IsMadeWithMimisbrunnrRecipe(
+                    _tableSheets.EquipmentItemRecipeSheet,
+                    _tableSheets.EquipmentItemSubRecipeSheetV2,
+                    _tableSheets.EquipmentItemOptionSheet
+                ));
         }
 
         private void Execute(bool backward, int recipeId, int? subRecipeId, int mintNCG)
