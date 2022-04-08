@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -10,6 +11,7 @@ using UnityEngine.UI;
 namespace Nekoyume.UI.Module
 {
     using System;
+
     public class AcquisitionPlaceButton : MonoBehaviour
     {
         public enum PlaceType
@@ -23,7 +25,8 @@ namespace Nekoyume.UI.Module
 
         public class Model
         {
-            public Model(PlaceType type, Action onClick, string guideText, ItemBase itemBase, StageSheet.Row stageRow = null)
+            public Model(PlaceType type, Action onClick, string guideText, ItemBase itemBase,
+                StageSheet.Row stageRow = null)
             {
                 Type = type;
                 OnClick = onClick;
@@ -84,15 +87,15 @@ namespace Nekoyume.UI.Module
             {
                 case PlaceType.Stage:
                     if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(model.StageRow.Id,
-                            out var worldRow))
+                        out var worldRow))
                     {
                         if (_iconDictionary.TryGetValue(
-                                string.Format(
-                                    IconNameFormat,
-                                    worldRow.Id < 10000
-                                        ? (100 + worldRow.Id).ToString()
-                                        : MimisbrunnrIconIndex),
-                                out var icon))
+                            string.Format(
+                                IconNameFormat,
+                                worldRow.Id < 10000
+                                    ? (100 + worldRow.Id).ToString()
+                                    : MimisbrunnrIconIndex),
+                            out var icon))
                         {
                             iconImage.sprite = icon;
                         }
@@ -104,8 +107,8 @@ namespace Nekoyume.UI.Module
                 case PlaceType.Quest:
                 case PlaceType.Staking:
                     if (_iconDictionary.TryGetValue(
-                            string.Format(IconNameFormat, $"00{(int) model.Type}"),
-                            out var sprite))
+                        string.Format(IconNameFormat, $"00{(int)model.Type}"),
+                        out var sprite))
                     {
                         iconImage.sprite = sprite;
                     }
@@ -122,12 +125,11 @@ namespace Nekoyume.UI.Module
 
         private void EnableSettingByPlaceType(PlaceType type, Model model)
         {
-            var successToGetUnlockedWorld = States.Instance.CurrentAvatarState.worldInformation
-                .TryGetUnlockedWorldByStageClearedBlockIndex(out var world);
-
             switch (type)
             {
                 case PlaceType.Stage:
+                    var successToGetUnlockedWorld = States.Instance.CurrentAvatarState.worldInformation
+                        .TryGetWorldByStageId(model.StageRow.Id, out var world);
                     if (successToGetUnlockedWorld)
                     {
                         if (model.StageRow.Id > world.StageClearedId + 1)
@@ -146,10 +148,10 @@ namespace Nekoyume.UI.Module
 
                     break;
                 case PlaceType.Shop:
-                    if (successToGetUnlockedWorld)
+                {
+                    if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var stageId))
                     {
-                        if (world.StageClearedId <
-                            GameConfig.RequireClearedStageLevel.UIMainMenuShop)
+                        if (stageId < GameConfig.RequireClearedStageLevel.UIMainMenuShop)
                         {
                             disableObject.SetActive(true);
                         }
@@ -164,10 +166,13 @@ namespace Nekoyume.UI.Module
                     }
 
                     break;
+                }
+
                 case PlaceType.Arena:
-                    if (successToGetUnlockedWorld)
+                {
+                    if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var stageId))
                     {
-                        if (world.StageClearedId <
+                        if (stageId <
                             GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
                         {
                             disableObject.SetActive(true);
@@ -183,6 +188,7 @@ namespace Nekoyume.UI.Module
                     }
 
                     break;
+                }
                 case PlaceType.Quest:
                 case PlaceType.Staking:
                     enableObject.SetActive(true);
@@ -204,7 +210,8 @@ namespace Nekoyume.UI.Module
                 PlaceType.Stage => !Game.Game.instance.Stage.IsInStage,
                 PlaceType.Shop => !Game.Game.instance.Stage.IsInStage,
                 PlaceType.Arena => !Game.Game.instance.Stage.IsInStage,
-                PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() && !Widget.Find<RankingBattleResultPopup>().IsActive(),
+                PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() &&
+                                   !Widget.Find<RankingBattleResultPopup>().IsActive(),
                 PlaceType.Staking => true,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
