@@ -357,7 +357,7 @@ namespace Nekoyume.UI
 
         private void Equip(InventoryItem inventoryItem)
         {
-            if (inventoryItem.LevelLimited.Value)
+            if (inventoryItem.LevelLimited.Value && !inventoryItem.Equipped.Value)
             {
                 return;
             }
@@ -528,7 +528,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        interactable = !model.LevelLimited.Value;
+                        interactable = !model.LevelLimited.Value || model.LevelLimited.Value && model.Equipped.Value;
                     }
                     submit = () => Equip(model);
                     blocked = () => NotificationSystem.Push(MailType.System,
