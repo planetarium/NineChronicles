@@ -86,7 +86,7 @@ namespace Nekoyume.Extensions
                     return true;
             }
 
-            return false;
+            return IsMadeWithSpecificMimisbrunnrRecipe(equipment, itemOptionInfo, true);
         }
 
         /// <summary>
@@ -128,6 +128,13 @@ namespace Nekoyume.Extensions
                             .Where(e => e.type == StatType.ATK)
                             .Sum(e => e.value);
                         return value >= 179; // 179: stat_min of `EquipmentItemOptionSheet(id: 1152)`
+                    }
+
+                    // old or current.
+                    if (itemOptionInfo.SkillOptions.Any(e => e.skillRow.Id == 110005))
+                    {
+                        var tuple = itemOptionInfo.SkillOptions.First(e => e.skillRow.Id == 110005);
+                        return tuple.power >= 5080; // 5080: skill_damage_min of `EquipmentItemOptionSheet(id: 1155)`
                     }
 
                     return false;
