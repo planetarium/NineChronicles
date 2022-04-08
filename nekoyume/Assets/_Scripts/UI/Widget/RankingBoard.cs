@@ -9,6 +9,7 @@ using Libplanet;
 using Libplanet.Blocks;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -122,6 +123,12 @@ namespace Nekoyume.UI
 
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Battle);
             UpdateArena();
+            Game.Event.OnUpdatePlayerEquip.Subscribe(player =>
+                {
+                    arenaRankScroll.UpdateConditionalStateOfChallengeButtons
+                        .OnNext(Util.CanBattle(player, Array.Empty<int>()));
+                })
+                .AddTo(_disposablesFromShow);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -185,6 +192,10 @@ namespace Nekoyume.UI
                         rank = tuple.rank,
                         arenaInfo = tuple.arenaInfo,
                     }).ToList(), true);
+                arenaRankScroll.UpdateConditionalStateOfChallengeButtons
+                    .OnNext(
+                        Util.CanBattle(Game.Game.instance.Stage.SelectedPlayer,
+                        Array.Empty<int>()));
                 // NOTE: If you want to test many arena cells, use below instead of above.
                 // arenaRankScroll.Show(Enumerable
                 //     .Range(1, 1000)
@@ -216,18 +227,23 @@ namespace Nekoyume.UI
                     false);
             }
 
-            currentAvatarCellView.Show((
-                currentAvatarRank,
-                currentAvatarArenaInfo,
-                currentAvatarArenaInfo));
-
+            var currentAvatarCanBattle =
+                Util.CanBattle(Game.Game.instance.Stage.SelectedPlayer,
+                    Array.Empty<int>());
             arenaRankScroll.Show(_weeklyCachedInfo
                 .Select(tuple => new ArenaRankCell.ViewModel
                 {
                     rank = tuple.rank,
                     arenaInfo = tuple.arenaInfo,
                     currentAvatarArenaInfo = currentAvatarArenaInfo,
+                    currentAvatarCanBattle = currentAvatarCanBattle
                 }).ToList(), true);
+
+            currentAvatarCellView.Show((
+                currentAvatarRank,
+                currentAvatarArenaInfo,
+                currentAvatarArenaInfo,
+                false));
         }
 
         private static void OnClickAvatarInfo(RectTransform rectTransform, Address address)
