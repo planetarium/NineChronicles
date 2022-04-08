@@ -883,7 +883,7 @@ namespace Nekoyume.Model.State
                     : requirementRow.Level;
                 if (level < requirementLevel)
                 {
-                    throw new NotEnoughAvatarLevelException(equipment.Id, isMadeWithMimisbrunnrRecipe, requirementRow.Level, level);
+                    throw new NotEnoughAvatarLevelException(equipment.Id, isMadeWithMimisbrunnrRecipe, requirementLevel, level);
                 }
             }
         }
