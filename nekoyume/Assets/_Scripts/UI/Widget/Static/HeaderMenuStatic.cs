@@ -263,8 +263,11 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SetActiveAssets(bool isNcgActive, bool isActionPointActive,
-            bool isDailyBonusActive, bool isHourglassActive)
+        private void SetActiveAssets(
+            bool isNcgActive,
+            bool isActionPointActive,
+            bool isDailyBonusActive,
+            bool isHourglassActive)
         {
             ncg.SetActive(isNcgActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
