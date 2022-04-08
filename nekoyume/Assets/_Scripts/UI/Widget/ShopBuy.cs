@@ -32,8 +32,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private BuyView view;
 
-        private readonly CancellationTokenSource _cancellationTokenSource =
-            new CancellationTokenSource();
+        private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         private Shop SharedModel { get; set; }
 
@@ -106,6 +105,7 @@ namespace Nekoyume.UI
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             }
 
+            _cancellationTokenSource = new CancellationTokenSource();
             var initOthersTask = Task.Run(async () =>
             {
                 var list = new List<ItemSubType>()
