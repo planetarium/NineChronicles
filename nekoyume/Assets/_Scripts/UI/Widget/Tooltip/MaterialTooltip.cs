@@ -265,7 +265,6 @@ namespace Nekoyume.UI
             var deletableWidgets = FindWidgets().Where(widget =>
                 !(widget is SystemWidget) &&
                 !(widget is MessageCatTooltip) &&
-                !(widget is Menu) &&
                 !(widget is HeaderMenuStatic) &&
                 !(widget is MaterialTooltip) &&
                 !(widget is ShopBuy) &&
@@ -276,6 +275,7 @@ namespace Nekoyume.UI
                 widget.Close(true);
             }
 
+            Find<Menu>().Close(true);
             Find<ShopBuy>().Close(true, true);
             Find<ShopSell>().Close(true, true);
             Find<EventBanner>().Close(true);
@@ -301,7 +301,7 @@ namespace Nekoyume.UI
                             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
                             var worldMap = Find<WorldMap>();
-                            worldMap.Show(States.Instance.CurrentAvatarState.worldInformation);
+                            worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
                             worldMap.Show(worldId, stageRow.Id, false);
                             worldMap.SharedViewModel.WorldInformation.TryGetWorld(worldId, out var worldModel);
 

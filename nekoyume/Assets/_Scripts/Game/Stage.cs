@@ -1,4 +1,4 @@
-#define TEST_LOG
+//#define TEST_LOG
 
 using System;
 using System.Collections;
