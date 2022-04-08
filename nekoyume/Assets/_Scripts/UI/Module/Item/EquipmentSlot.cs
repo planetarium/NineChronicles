@@ -315,8 +315,11 @@ namespace Nekoyume.UI.Module
 
         public void SetDim(bool isDim)
         {
-            isDim |= Util.GetItemRequirementLevel(Item) >
-                     States.Instance.CurrentAvatarState.level;
+            if (Item is {ItemType: ItemType.Equipment})
+            {
+                isDim |= Util.GetItemRequirementLevel(Item) >
+                         States.Instance.CurrentAvatarState.level;
+            }
 
             gradeImage.color = isDim ? DimmedColor : OriginColor;
             enhancementText.color = isDim ? DimmedColor : OriginColor;
