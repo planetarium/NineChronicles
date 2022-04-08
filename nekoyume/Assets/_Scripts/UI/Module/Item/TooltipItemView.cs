@@ -102,16 +102,20 @@ namespace Nekoyume.UI.Module
                     {
                         CreateSkeletonPool();
                     }
-                    _costumeSpineObject = _skeletonPool[tooltipData.ResourceID];
-                    _costumeSpineObject.transform.localPosition = tooltipData.Position;
-                    _costumeSpineObject.transform.localScale = tooltipData.Scale;
-                    _costumeSpineObject.transform.rotation = Quaternion.Euler(tooltipData.Rotation);
-                    var particle = gradeEffect.main;
-                    particle.startColor = tooltipData.GradeColor;
-                    _costumeSpineObject.SetActive(true);
 
-                    baseItemView.ItemImage.gameObject.SetActive(false);
-                    baseItemView.SpineItemImage.gameObject.SetActive(true);
+                    if (_skeletonPool.TryGetValue(tooltipData.ResourceID, out var skeleton))
+                    {
+                        _costumeSpineObject = skeleton;
+                        _costumeSpineObject.transform.localPosition = tooltipData.Position;
+                        _costumeSpineObject.transform.localScale = tooltipData.Scale;
+                        _costumeSpineObject.transform.rotation = Quaternion.Euler(tooltipData.Rotation);
+                        var particle = gradeEffect.main;
+                        particle.startColor = tooltipData.GradeColor;
+                        _costumeSpineObject.SetActive(true);
+
+                        baseItemView.ItemImage.gameObject.SetActive(false);
+                        baseItemView.SpineItemImage.gameObject.SetActive(true);
+                    }
                 }
             }
             else
@@ -133,19 +137,13 @@ namespace Nekoyume.UI.Module
         private void CreateSkeletonPool()
         {
             _skeletonPool = new Dictionary<int, GameObject>();
-            var inventory = States.Instance.CurrentAvatarState.inventory;
 
             foreach (var data in tooltipDataScriptableObject.Datas)
             {
-                if (!inventory.HasItem(data.ResourceID))
-                {
-                    continue;
-                }
-
                 var go = Instantiate(data.Prefab, baseItemView.SpineItemImage.transform);
                 _skeletonPool.Add(data.ResourceID, go);
                 go.SetActive(false);
             }
         }
     }
-}
+}   
