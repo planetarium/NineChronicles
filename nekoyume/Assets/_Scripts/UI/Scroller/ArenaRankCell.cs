@@ -1,8 +1,9 @@
 using System;
-using System.Collections.Generic;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -71,7 +72,6 @@ namespace Nekoyume.UI.Scroller
         private RectTransform _rectTransformCache;
         private bool _isCurrentUser;
         private ViewModel _viewModel;
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private readonly Subject<ArenaRankCell> _onClickAvatarInfo = new Subject<ArenaRankCell>();
         private readonly Subject<ArenaRankCell> _onClickChallenge = new Subject<ArenaRankCell>();
 
@@ -125,6 +125,14 @@ namespace Nekoyume.UI.Scroller
                 })
                 .AddTo(gameObject);
 
+            challengeButton.OnClickDisabledSubject
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                {
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_EQUIP_FAILED"),
+                        NotificationCell.NotificationType.Alert);
+                }).AddTo(gameObject);
+
             Game.Event.OnUpdatePlayerEquip
                 .Where(_ => _isCurrentUser)
                 .Subscribe(player =>
@@ -138,11 +146,6 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
         }
 
-        private void OnDisable()
-        {
-            _disposables.DisposeAllAndClear();
-        }
-
         public void Show((
             int rank,
             ArenaInfo arenaInfo,
@@ -154,7 +157,7 @@ namespace Nekoyume.UI.Scroller
                 rank = itemData.rank,
                 arenaInfo = itemData.arenaInfo,
                 currentAvatarArenaInfo = itemData.currentAvatarArenaInfo,
-                currentAvatarCanBattle = itemData.currentAvatarCanBattle
+                currentAvatarCanBattle = itemData.currentAvatarCanBattle,
             });
         }
 
@@ -162,7 +165,7 @@ namespace Nekoyume.UI.Scroller
         {
             Context?.UpdateConditionalStateOfChallengeButtons
                 .Subscribe(UpdateChallengeButton)
-                .AddTo(_disposables);
+                .AddTo(gameObject);
         }
 
         public void ShowMyDefaultInfo()
@@ -260,6 +263,11 @@ namespace Nekoyume.UI.Scroller
 
         private void UpdateChallengeButton(bool canBattle)
         {
+            if (_viewModel != null)
+            {
+                _viewModel.currentAvatarCanBattle = canBattle;
+            }
+
             if (_viewModel?.currentAvatarArenaInfo is null)
             {
                 challengeButton.SetConditionalState(canBattle);

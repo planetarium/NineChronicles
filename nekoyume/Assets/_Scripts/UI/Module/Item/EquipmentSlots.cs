@@ -283,10 +283,7 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                slot.SetDim(
-                    !elementalTypes.Exists(x => x.Equals(slot.Item.ElementalType)) ||
-                    Util.GetItemRequirementLevel(slot.Item) >
-                    States.Instance.CurrentAvatarState.level);
+                slot.SetDim(!elementalTypes.Exists(x => x.Equals(slot.Item.ElementalType)));
             }
         }
 
