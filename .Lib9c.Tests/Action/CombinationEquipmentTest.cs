@@ -179,6 +179,9 @@ namespace Lib9c.Tests.Action
         [InlineData(2, true, 2, false)]
         [InlineData(3, false, 6, false)]
         [InlineData(3, false, 5, false)]
+        [InlineData(134, true, 313, false)]
+        [InlineData(134, true, 314, false)]
+        [InlineData(134, true, 315, true)]
         public void MadeWithMimisbrunnrRecipe(
             int recipeId,
             bool isElementalTypeFire,
