@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,10 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.State;
+using Nekoyume.UI.Module;
 using UnityEngine;
+using Inventory = Nekoyume.Model.Item.Inventory;
 
 namespace Nekoyume.Helper
 {
@@ -260,6 +264,37 @@ namespace Nekoyume.Helper
             }
         }
 
+        public static bool CanBattle(Player player, IEnumerable<int> foodIds)
+        {
+            if (player == null)
+            {
+                return false;
+            }
+
+            bool isValidated = false;
+            var tableSheets = Game.Game.instance.TableSheets;
+            try
+            {
+                var equipmentList = player.Equipments;
+                var costumeIds = player.Costumes.Select(costume => costume.Id);
+                States.Instance.CurrentAvatarState.ValidateItemRequirement(
+                    costumeIds.Concat(foodIds).ToList(),
+                    equipmentList,
+                    tableSheets.ItemRequirementSheet,
+                    tableSheets.EquipmentItemRecipeSheet,
+                    tableSheets.EquipmentItemSubRecipeSheetV2,
+                    tableSheets.EquipmentItemOptionSheet,
+                    States.Instance.CurrentAvatarState.address.ToHex());
+                isValidated = true;
+            }
+            catch
+            {
+                // ignored
+            }
+
+            return isValidated;
+        }
+
         public static Player CreatePlayer(AvatarState avatarState, Vector3 position)
         {
             var player = PlayerFactory.Create(avatarState).GetComponent<Player>();
@@ -287,7 +322,7 @@ namespace Nekoyume.Helper
 
             return count;
         }
-        
+
         public static bool IsInTime(string begin, string end, bool everyYear = true)
         {
             var now = DateTime.UtcNow;

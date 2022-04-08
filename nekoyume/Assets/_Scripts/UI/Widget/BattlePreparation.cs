@@ -848,33 +848,13 @@ namespace Nekoyume.UI
         private void UpdateStartButton(AvatarState avatarState)
         {
             _player.Set(avatarState);
-            bool isValidated = false;
-            var tableSheets = Game.Game.instance.TableSheets;
-            try
-            {
-                var equipmentList = _player.Equipments;
-                var costumeIds = _player.Costumes.Select(costume => costume.Id);
-                var foodIds = consumableSlots
-                    .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                    .Select(slot => (Consumable) slot.Item).Select(food => food.Id);
-                States.Instance.CurrentAvatarState.ValidateItemRequirement(
-                    costumeIds.Concat(foodIds).ToList(),
-                    equipmentList,
-                    tableSheets.ItemRequirementSheet,
-                    tableSheets.EquipmentItemRecipeSheet,
-                    tableSheets.EquipmentItemSubRecipeSheetV2,
-                    tableSheets.EquipmentItemOptionSheet,
-                    States.Instance.CurrentAvatarState.address.ToHex());
-                isValidated = true;
-            }
-            catch
-            {
-                // ignored
-            }
-
-            startButton.gameObject.SetActive(isValidated);
-            boostPopupButton.gameObject.SetActive(isValidated);
-            blockStartingTextObject.SetActive(!isValidated);
+            var foodIds = consumableSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Consumable) slot.Item).Select(food => food.Id);
+            var canBattle = Util.CanBattle(_player, foodIds);
+            startButton.gameObject.SetActive(canBattle);
+            boostPopupButton.gameObject.SetActive(canBattle);
+            blockStartingTextObject.SetActive(!canBattle);
         }
 
         public List<ElementalType> GetElementalTypes()
