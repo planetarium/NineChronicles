@@ -218,14 +218,16 @@ namespace Nekoyume.Action
             MaterialItemSheet materialItemSheet)
         {
             var rewardItems = new List<ItemBase>();
+            var maxCount = random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1);
             for (var i = 0; i < playCount; i++)
             {
                 var selector = StageSimulator.SetItemSelector(stageRow, random);
-                var rewards = Simulator.SetRewardV2(selector, playCount, random,
+                var rewards = Simulator.SetRewardV2(selector, maxCount, random,
                     materialItemSheet);
                 rewardItems.AddRange(rewards);
             }
 
+            rewardItems = rewardItems.OrderBy(x => x.Id).ToList();
             return rewardItems;
         }
 
