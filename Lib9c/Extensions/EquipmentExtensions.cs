@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Helper;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -15,6 +16,11 @@ namespace Nekoyume.Extensions
             EquipmentItemSubRecipeSheetV2 subRecipeSheet,
             EquipmentItemOptionSheet itemOptionSheet)
         {
+            if (equipment.ElementalType != ElementalType.Fire)
+            {
+                return false;
+            }
+
             if (equipment.MadeWithMimisbrunnrRecipe)
             {
                 return true;
