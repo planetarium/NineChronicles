@@ -134,6 +134,11 @@ namespace Nekoyume.UI
 
         private async void ShowAsync(bool ignoreShowAnimation = false)
         {
+            base.Show(ignoreShowAnimation);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+            UpdateSpeechBubble();
+            inventory.SetShop(ShowItemTooltip);
+
             var task = Task.Run(async () =>
             {
                 await ReactiveShopState.UpdateSellDigests();
@@ -143,11 +148,7 @@ namespace Nekoyume.UI
             var result = await task;
             if (result)
             {
-                base.Show(ignoreShowAnimation);
-                UpdateSpeechBubble();
-                inventory.SetShop(ShowItemTooltip);
                 view.Show(ReactiveShopState.SellDigest, ShowSellTooltip);
-                AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             }
         }
 
