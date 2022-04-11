@@ -47,11 +47,12 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
 
   release:
-    if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Check if a new tag refers a merge commit
+      if: github.ref_type == 'tag'
       run: |
         set -evx
         curl -o /tmp/web-flow.gpg "$WEB_FLOW_KEY_URL"
@@ -69,12 +70,25 @@ jobs:
       env:
         WEB_FLOW_KEY_URL: https://github.com/web-flow.gpg
     - name: Update other repos referring lib9c as submodules
-      if: startsWith(github.ref_name, 'v')
       uses: planetarium/submodule-updater@main
       with:
         token: ${{ secrets.SUBMODULE_UPDATER_GH_TOKEN }}
         committer: >
           Submodule Updater <engineering+submodule-updater@planetariumhq.com>
         targets: |
-          planetarium/NineChronicles:rc-${{ github.ref_name }}
-          planetarium/NineChronicles.Headless:rc-${{ github.ref_name }}
+          ${{ github.repository_owner }}/NineChronicles:rc-${{ github.ref_name }}?
+          ${{ github.repository_owner }}/NineChronicles.Headless:rc-${{ github.ref_name }}?
+
+  update-submodule:
+    if: github.ref_type == 'branch' && startsWith(github.ref_name, 'rc-v')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Update other repos referring lib9c as submodules
+      uses: planetarium/submodule-updater@main
+      with:
+        token: ${{ secrets.SUBMODULE_UPDATER_GH_TOKEN }}
+        committer: >
+          Submodule Updater <engineering+submodule-updater@planetariumhq.com>
+        targets: |
+          ${{ github.repository_owner }}/NineChronicles:${{ github.ref_name }}?
+          ${{ github.repository_owner }}/NineChronicles.Headless:${{ github.ref_name }}?

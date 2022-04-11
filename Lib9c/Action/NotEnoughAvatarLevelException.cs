@@ -15,6 +15,11 @@ namespace Nekoyume.Action
         {
         }
 
+        public NotEnoughAvatarLevelException(int itemId, bool isMadeWithMimisbrunnrRecipe, int require, int current)
+            : this($"Aborted as the signer is not enough the minimum avatar level required: {nameof(itemId)}({itemId}), {nameof(isMadeWithMimisbrunnrRecipe)}({isMadeWithMimisbrunnrRecipe}), {current} < {require}.")
+        {
+        }
+
         public NotEnoughAvatarLevelException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
