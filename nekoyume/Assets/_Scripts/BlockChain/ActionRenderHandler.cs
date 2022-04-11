@@ -897,7 +897,8 @@ namespace Nekoyume.BlockChain
                     });
                     task.ToObservable()
                         .First()
-                        .DoOnError(Debug.LogException);
+                        // ReSharper disable once ConvertClosureToMethodGroup
+                        .DoOnError(e => Debug.LogException(e));
                 }
             }
             else
@@ -994,7 +995,8 @@ namespace Nekoyume.BlockChain
                     });
                     task.ToObservable()
                         .First()
-                        .DoOnError(Debug.LogException);
+                        // ReSharper disable once ConvertClosureToMethodGroup
+                        .DoOnError(e => Debug.LogException(e));
                 }
             }
             else
@@ -1087,7 +1089,8 @@ namespace Nekoyume.BlockChain
                     });
                     task.ToObservable()
                         .First()
-                        .DoOnError(Debug.LogException);
+                        // ReSharper disable once ConvertClosureToMethodGroup
+                        .DoOnError(e => Debug.LogException(e));
                 }
             }
             else
