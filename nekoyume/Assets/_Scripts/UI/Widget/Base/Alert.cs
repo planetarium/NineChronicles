@@ -13,25 +13,12 @@ namespace Nekoyume.UI
         public TextMeshProUGUI labelOK;
         public GameObject titleBorder;
         public AlertDelegate CloseCallback { get; set; }
-        public Blur blur;
-
-        private float blurSize;
 
         protected override void Awake()
         {
             base.Awake();
 
             SubmitWidget = () => Close();
-        }
-
-        public override void Show(bool ignoreStartAnimation = false)
-        {
-            base.Show(ignoreStartAnimation);
-
-            if (blur)
-            {
-                blur.Show(size: blurSize);
-            }
         }
 
         public virtual void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
@@ -66,12 +53,10 @@ namespace Nekoyume.UI
 
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
-            this.blurSize = blurSize;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            blur?.Close();
             CloseCallback?.Invoke();
             Game.Controller.AudioController.PlayClick();
             base.Close(ignoreCloseAnimation);

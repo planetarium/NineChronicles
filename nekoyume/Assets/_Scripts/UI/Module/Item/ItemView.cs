@@ -42,6 +42,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected OptionTagDataScriptableObject optionTagData = null;
 
+        public List<IDisposable> DisposablesAtSetData => _disposablesAtSetData;
+
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
         public RectTransform RectTransform { get; private set; }
@@ -99,7 +101,7 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public virtual void SetData(TViewModel model)
+        public virtual void SetData(TViewModel model, System.Action onClick = null)
         {
             if (model is null)
             {
@@ -128,7 +130,7 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            base.SetData(row);
+            base.SetData(row, onClick);
 
             var viewData = base.itemViewData.GetItemViewData(row.Grade);
             enhancementImage.GetComponent<Image>().material = viewData.EnhancementMaterial;
@@ -174,7 +176,7 @@ namespace Nekoyume.UI.Module
                     model.ItemBase.Value.Id, null);
             }
 
-            base.SetData(row);
+            base.SetData(row, null);
 
             var viewData = itemViewData.GetItemViewData(row.Grade);
             _disposablesAtSetData.DisposeAllAndClear();
@@ -210,7 +212,7 @@ namespace Nekoyume.UI.Module
                     model.ItemBase.Value.Id, null);
             }
 
-            base.SetData(row);
+            base.SetData(row, null);
 
             var viewData = base.itemViewData.GetItemViewData(row.Grade);
             enhancementImage.GetComponent<Image>().material = viewData.EnhancementMaterial;

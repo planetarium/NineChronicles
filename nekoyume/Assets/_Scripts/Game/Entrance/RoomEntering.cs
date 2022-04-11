@@ -29,7 +29,6 @@ namespace Nekoyume.Game.Entrance
             stage.stageId = 0;
 
             yield return new WaitForEndOfFrame();
-            stage.SelectedPlayer = null;
             if (!(stage.AvatarState is null))
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarStateAsync(stage.AvatarState);

@@ -89,11 +89,11 @@ namespace Nekoyume.UI
             });
 
             equipmentSubRecipeView.CombinationActionSubject
-                .Subscribe(CombinationEquipmentAction)
+                .Subscribe(OnClickEquipmentAction)
                 .AddTo(gameObject);
 
             consumableSubRecipeView.CombinationActionSubject
-                .Subscribe(CombinationConsumableAction)
+                .Subscribe(OnClickConsumableAction)
                 .AddTo(gameObject);
         }
 
@@ -254,6 +254,44 @@ namespace Nekoyume.UI
 
             var stageId = row.UnlockStage;
             SharedModel.NotifiedRow.Value = clearedStage >= stageId ? row : null;
+        }
+
+        private void OnClickEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
+        {
+            var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            if (!recipeSheet.TryGetValue(recipeInfo.RecipeId, out var recipeRow))
+            {
+                return;
+            }
+
+            var resultItemRow = recipeRow.GetResultEquipmentItemRow();
+            if (!requirementSheet.TryGetValue(resultItemRow.Id, out var requirementRow))
+            {
+                CombinationEquipmentAction(recipeInfo);
+                return;
+            }
+
+            CombinationEquipmentAction(recipeInfo);
+        }
+
+        private void OnClickConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
+        {
+            var requirementSheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
+            var recipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
+            if (!recipeSheet.TryGetValue(recipeInfo.RecipeId, out var recipeRow))
+            {
+                return;
+            }
+
+            var resultItemRow = recipeRow.GetResultConsumableItemRow();
+            if (!requirementSheet.TryGetValue(resultItemRow.Id, out var requirementRow))
+            {
+                CombinationConsumableAction(recipeInfo);
+                return;
+            }
+            
+            CombinationConsumableAction(recipeInfo);
         }
 
         private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)

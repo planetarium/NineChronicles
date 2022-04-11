@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using Coffee.UIEffects;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
+using Nekoyume.State;
 
 namespace Nekoyume.UI.Module
 {
@@ -45,6 +46,9 @@ namespace Nekoyume.UI.Module
         private ItemSubType itemSubType = ItemSubType.Armor;
 
         [SerializeField]
+        private ItemType itemType = ItemType.Equipment;
+
+        [SerializeField]
         private int itemSubTypeIndex = 1;
 
         [SerializeField]
@@ -75,6 +79,7 @@ namespace Nekoyume.UI.Module
 
         public RectTransform RectTransform { get; private set; }
         public ItemSubType ItemSubType => itemSubType;
+        public ItemType ItemType => itemType;
         public int ItemSubTypeIndex => itemSubTypeIndex;
         public ItemBase Item { get; private set; }
         public bool ShowUnlockTooltip { get; set; }
@@ -310,6 +315,12 @@ namespace Nekoyume.UI.Module
 
         public void SetDim(bool isDim)
         {
+            if (Item is {ItemType: ItemType.Equipment})
+            {
+                isDim |= Util.GetItemRequirementLevel(Item) >
+                         States.Instance.CurrentAvatarState.level;
+            }
+
             gradeImage.color = isDim ? DimmedColor : OriginColor;
             enhancementText.color = isDim ? DimmedColor : OriginColor;
             itemImage.color = isDim ? DimmedColor : OriginColor;

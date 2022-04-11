@@ -1,36 +1,20 @@
-using Nekoyume.UI.Module;
-using UniRx;
+﻿using Nekoyume.UI.Module;
 using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class InventoryCell : GridCell<
-        Model.InventoryItem,
-        InventoryScroll.ContextModel>
+    public class InventoryCell : GridCell<Model.InventoryItem, InventoryScroll.ContextModel>
     {
         [SerializeField]
-        private InventoryItemView view = null;
+        private InventoryItemView view;
 
-        public InventoryItemView View => view;
-
-        private void Awake()
+        public override void UpdateContent(Model.InventoryItem viewModel)
         {
-            view.OnClick
-                .Subscribe(item => Context.OnClick.OnNext(this))
-                .AddTo(gameObject);
-
-            view.OnDoubleClick
-                .Subscribe(item => Context.OnDoubleClick.OnNext(this))
-                .AddTo(gameObject);
-        }
-
-        public override void UpdateContent(Model.InventoryItem itemData)
-        {
-            view.SetData(itemData);
+            view.Set(viewModel, Context);
 
             if (Index == 0)
             {
-                Context.FirstCell = this;
+                Context.FirstItem = viewModel;
             }
         }
     }
