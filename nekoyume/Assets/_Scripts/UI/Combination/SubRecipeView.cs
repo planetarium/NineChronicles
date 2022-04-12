@@ -70,6 +70,7 @@ namespace Nekoyume.UI
         private RecipeInfo _selectedRecipeInfo;
 
         private const string StatTextFormat = "{0} {1}";
+        private const int MimisbrunnrRecipeIndex = 2;
 
         private void Awake()
         {
@@ -241,8 +242,9 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", row.Level);
-                        var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= row.Level;
+                        var level = index == MimisbrunnrRecipeIndex ? row.MimisLevel : row.Level;
+                        levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", level);
+                        var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= level;
                         levelText.color = hasEnoughLevel ?
                             Palette.GetColor(EnumType.ColorType.ButtonEnabled) :
                             Palette.GetColor(EnumType.ColorType.TextDenial);

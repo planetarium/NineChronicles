@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.State;
+using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module

@@ -95,6 +95,27 @@ namespace Nekoyume.UI
         public void Show(WorldInformation worldInformation)
         {
             HasNotification = false;
+            SetWorldInformation(worldInformation);
+
+            var status = Find<Status>();
+            status.Close(true);
+            Show(true);
+            HelpTooltip.HelpMe(100002, true);
+        }
+
+        public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
+        {
+            ShowWorld(worldId, stageId, showWorld, callByShow);
+            Show(true);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(true);
+        }
+
+        public void SetWorldInformation(WorldInformation worldInformation)
+        {
             SharedViewModel.WorldInformation = worldInformation;
             if (worldInformation is null)
             {
@@ -108,9 +129,9 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var worldId = worldButton.Id;
+                var buttonWorldId = worldButton.Id;
                 var worldIsUnlocked =
-                    worldInformation.TryGetWorld(worldId, out var worldModel) &&
+                    worldInformation.TryGetWorld(buttonWorldId, out var worldModel) &&
                     worldModel.IsUnlocked;
 
                 UpdateNotificationInfo();
@@ -132,22 +153,6 @@ namespace Nekoyume.UI
             {
                 throw new Exception("worldInformation.TryGetFirstWorld() failed!");
             }
-
-            var status = Find<Status>();
-            status.Close(true);
-            Show(true);
-            HelpTooltip.HelpMe(100002, true);
-        }
-
-        public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
-        {
-            ShowWorld(worldId, stageId, showWorld, callByShow);
-            Show(true);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(true);
         }
 
         private void ShowWorld(int worldId)
