@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100096ObsoleteIndex)]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100170ObsoleteIndex)]
     [ActionType("hack_and_slash10")]
     public class HackAndSlash10 : GameAction
     {

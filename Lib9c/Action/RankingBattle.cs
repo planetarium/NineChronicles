@@ -107,14 +107,17 @@ namespace Nekoyume.Action
 
             var items = equipmentIds.Concat(costumeIds);
             avatarState.EquipItems(items);
-            avatarState.ValidateItemRequirement(
-                costumeItemIds.ToList(),
-                equipments,
-                states.GetSheet<ItemRequirementSheet>(),
-                states.GetSheet<EquipmentItemRecipeSheet>(),
-                states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
-                states.GetSheet<EquipmentItemOptionSheet>(),
-                addressesHex);
+            if (context.BlockIndex > 3806324)
+            {
+                avatarState.ValidateItemRequirement(
+                    costumeItemIds.ToList(),
+                    equipments,
+                    states.GetSheet<ItemRequirementSheet>(),
+                    states.GetSheet<EquipmentItemRecipeSheet>(),
+                    states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                    states.GetSheet<EquipmentItemOptionSheet>(),
+                    addressesHex);
+            }
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Equip Equipments: {Elapsed}", addressesHex, sw.Elapsed);
