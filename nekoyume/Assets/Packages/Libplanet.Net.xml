@@ -315,17 +315,17 @@
         </member>
         <member name="T:Libplanet.Net.DifferentAppProtocolVersionEncountered">
             <summary>
-            A delegate called back when a <see cref="T:Libplanet.Net.Swarm`1"/> encounters
-            a peer with different <see cref="T:Libplanet.Net.AppProtocolVersion"/> in the network.
+            A delegate to call back when a <see cref="T:Libplanet.Net.Swarm`1"/> encounters
+            a peer with a different <see cref="T:Libplanet.Net.AppProtocolVersion"/> signed by
+            a trusted signer in the network.
             </summary>
-            <param name="peer">An encountered peer with a different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
+            <param name="peer">The encountered <see cref="T:Libplanet.Net.BoundPeer"/> with
+            a different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
             </param>
-            <param name="peerVersion">An encountered different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
+            <param name="peerVersion">The encountered different <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
+            </param>
             <param name="localVersion">The currently running application's
             <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
-            <returns>Whether to recognize the encountered <paramref name="peer"/> as a valid
-            participant of the network or not.  The <paramref name="peer"/> is ignored if
-            it returns <c>false</c>.</returns>
         </member>
         <member name="T:Libplanet.Net.DifferentAppProtocolVersionException">
             <summary>
@@ -334,33 +334,42 @@
             is different.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.DifferentAppProtocolVersionException.#ctor(System.String,System.Byte[],Libplanet.Net.AppProtocolVersion,Libplanet.Net.AppProtocolVersion)">
+        <member name="M:Libplanet.Net.DifferentAppProtocolVersionException.#ctor(System.String,Libplanet.Net.Peer,System.Byte[],Libplanet.Net.AppProtocolVersion,Libplanet.Net.AppProtocolVersion,System.Boolean)">
             <summary>
             Initializes a new instance of the
             <see cref="T:Libplanet.Net.DifferentAppProtocolVersionException"/> class.
             </summary>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.</param>
+            <param name="peer">The <see cref="P:Libplanet.Net.Messages.Message.Remote"/> of the <see cref="T:Libplanet.Net.Messages.Message"/>
+            received.</param>
             <param name="identity">The <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of the <see cref="T:Libplanet.Net.Messages.Message"/>
             received.</param>
-            <param name="expectedVersion">The protocol version of the current
-            <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
-            <param name="actualVersion">The protocol version of the <see cref="T:Libplanet.Net.Peer"/> that
-            <see cref="T:Libplanet.Net.Swarm`1"/> is trying to connect to.</param>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.</param>
+            <param name="expectedAppProtocolVersion">The protocol version of
+            the local <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
+            <param name="actualAppProtocolVersion">The protocol version of the <see cref="P:Libplanet.Net.DifferentAppProtocolVersionException.Peer"/>
+            that the local <see cref="T:Libplanet.Net.Swarm`1"/> is trying to connect to.</param>
+            <param name="trusted">Whether <paramref name="actualAppProtocolVersion"/>
+            is signed by a trusted signer.</param>
         </member>
         <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.Identity">
             <summary>
             The identity of the message received.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ExpectedVersion">
+        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ExpectedApv">
             <summary>
             The protocol version of the current <see cref="T:Libplanet.Net.Swarm`1"/>.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ActualVersion">
+        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ActualApv">
             <summary>
-            The protocol version of the <see cref="T:Libplanet.Net.Peer"/> that the
+            The protocol version of the <see cref="P:Libplanet.Net.DifferentAppProtocolVersionException.Peer"/> that the
             <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect to.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.Trusted">
+            <summary>
+            Whether <see cref="P:Libplanet.Net.DifferentAppProtocolVersionException.ActualApv"/> is signed by a trusted signer.
             </summary>
         </member>
         <member name="T:Libplanet.Net.InvalidMessageSignatureException">
@@ -399,10 +408,10 @@
             </summary>
             <seealso cref="T:Libplanet.Net.Messages.Neighbors"/>
         </member>
-        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
+        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset)">
             <summary>
             Encodes the message to <see typeref="T"/>-typed instance with given
-            <paramref name="privateKey"/>, <paramref name="peer"/> and <paramref name="version"/>.
+            <paramref name="privateKey"/> and <paramref name="peer"/>.
             </summary>
             <param name="message">A message to encode.</param>
             <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> to sign message.</param>
@@ -411,29 +420,24 @@
             <seealso cref="P:Libplanet.Net.Transports.ITransport.AsPeer"/></param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> of the message is created.
             </param>
-            <param name="version"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed version of the
-            transport layer.</param>
             <returns>A <see typeref="T"/> containing the signed <see cref="T:Libplanet.Net.Messages.Message"/>.
             </returns>
         </member>
-        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})">
+        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean)">
             <summary>
             Decodes given <see typeref="T"/>-typed <paramref name="encoded"/> into
             <see cref="T:Libplanet.Net.Messages.Message"/> and checks its validity.
-            <seealso cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)"/>
+            <seealso cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset)"/>
             </summary>
             <param name="encoded">A <see typeref="T"/>-typed instance to parse.</param>
             <param name="reply">A flag to express whether the target is a reply of other message.
-            </param>
-            <param name="appProtocolVersionValidator">
-            The delegate validates the app protocol version of the message.
             </param>
             <returns>A <see cref="T:Libplanet.Net.Messages.Message"/> parsed from <paramref name="encoded"/>.</returns>
             <exception cref="T:System.ArgumentException">
             Thrown when empty <paramref name="encoded"/> is given.</exception>
             <exception cref="T:Libplanet.Net.DifferentAppProtocolVersionException">Thrown when
             local version does not match with given <paramref name="encoded"/>'s
-            <see cref="T:System.Version"/> by given <paramref name="appProtocolVersionValidator"/>.
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
             </exception>
             <exception cref="T:Libplanet.Net.InvalidMessageTimestampException"> Thrown when the timestamp of
             <paramref name="encoded"/> is invalid.</exception>
@@ -590,23 +594,145 @@
             The body of the message.
             </summary>
         </member>
+        <member name="T:Libplanet.Net.Messages.MessageValidator">
+            <summary>
+            A helper class for an <see cref="T:Libplanet.Net.Messages.IMessageCodec`1"/> to validate
+            a decoded <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.MessageValidator.Apv">
+            <summary>
+            <para>
+            The local <see cref="T:Libplanet.Net.AppProtocolVersion"/> used for
+            <see cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset)"/> and <see cref="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean)"/> methods.
+            </para>
+            <para>
+            In particular, this is used in the following cases:
+            <list type="bullet">
+                <item><description>
+                    When encoding, this value is attached to the encoded output.
+                </description></item>
+                <item><description>
+                    When decoding, the encoded message's <see cref="T:Libplanet.Net.AppProtocolVersion"/> must
+                    match this value.
+                </description></item>
+            </list>
+            </para>
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.MessageValidator.TrustedApvSigners">
+            <summary>
+            <para>
+            An <see cref="T:System.Collections.Immutable.IImmutableSet`1"/> of <see cref="T:Libplanet.Address"/>es to trust as a signer
+            when a different <see cref="T:Libplanet.Net.AppProtocolVersion"/> is encountered.
+            </para>
+            <para>
+            Whether to trust an unknown <see cref="T:Libplanet.Net.AppProtocolVersion"/>, i.e.
+            an <see cref="T:Libplanet.Net.AppProtocolVersion"/> that is different
+            from <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/>, depends on this value:
+            <list type="bullet">
+                <item><description>
+                    If <c>null</c>, the <see cref="T:Libplanet.Net.AppProtocolVersion"/> in question is trusted
+                    regardless of its signer.
+                </description></item>
+                <item><description>
+                    If not <c>null</c>, an <see cref="T:Libplanet.Net.AppProtocolVersion"/> is trusted if it is
+                    signed by one of the signers in the set.  In particular, if the set is empty,
+                    no <see cref="T:Libplanet.Net.AppProtocolVersion"/> is trusted.
+                </description></item>
+            </list>
+            </para>
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.MessageValidator.DifferentApvEncountered">
+            <summary>
+            A callback method that gets invoked when a an <see cref="T:Libplanet.Net.AppProtocolVersion"/>
+            by a <em>trusted</em> signer that is different from <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/> is encountered.
+            </summary>
+            <remarks>
+            If <c>null</c>, no action is taken.
+            </remarks>
+        </member>
+        <member name="P:Libplanet.Net.Messages.MessageValidator.MessageTimestampBuffer">
+            <summary>
+            <para>
+            The <see cref="T:System.TimeSpan"/> to use as a buffer when decoding <see cref="T:Libplanet.Net.Messages.Message"/>s.
+            </para>
+            <para>
+            Whether a decoded <see cref="T:Libplanet.Net.Messages.Message"/> is valid or not depends on this value:
+            <list type="bullet">
+                <item><description>
+                    If <c>null</c>, there is no restriction on <see cref="P:Libplanet.Net.Messages.Message.Timestamp"/>
+                    for received <see cref="T:Libplanet.Net.Messages.Message"/>s.
+                </description></item>
+                <item><description>
+                    If not <c>null</c>, the absolute difference between the timestamp of
+                    a received <see cref="T:Libplanet.Net.Messages.Message"/> and current time should be less than
+                    this value.
+                </description></item>
+            </list>
+            </para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageValidator.ValidateAppProtocolVersion(Libplanet.Net.Peer,System.Byte[],Libplanet.Net.AppProtocolVersion)">
+            <summary>
+            Validates an <see cref="T:Libplanet.Net.AppProtocolVersion"/> against <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/>.
+            Any <see cref="T:Libplanet.Net.AppProtocolVersion"/> that is different from <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/> is
+            considered invalid and an <see cref="T:Libplanet.Net.DifferentAppProtocolVersionException"/> will be
+            thrown.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.Peer"/> that has sent the <see cref="T:Libplanet.Net.Messages.Message"/>
+            with <paramref name="peerAppProtocolVersion"/>.</param>
+            <param name="identity">The <see cref="P:Libplanet.Net.Messages.Message.Identity"/> attached to the
+            <see cref="T:Libplanet.Net.Messages.Message"/> with <paramref name="peerAppProtocolVersion"/>.</param>
+            <param name="peerAppProtocolVersion">The <see cref="T:Libplanet.Net.AppProtocolVersion"/> to validate.
+            </param>
+            <exception cref="T:Libplanet.Net.DifferentAppProtocolVersionException">Thrown when
+            <paramref name="peerAppProtocolVersion"/> is different from <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/>.
+            </exception>
+            <remarks>
+            If <paramref name="peerAppProtocolVersion"/> is not valid but is signed by
+            a trusted signer, then <see cref="P:Libplanet.Net.Messages.MessageValidator.DifferentApvEncountered"/> is called.
+            </remarks>
+            <seealso cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/>
+            <seealso cref="P:Libplanet.Net.Messages.MessageValidator.TrustedApvSigners"/>
+            <seealso cref="P:Libplanet.Net.Messages.MessageValidator.DifferentApvEncountered"/>
+        </member>
+        <member name="M:Libplanet.Net.Messages.MessageValidator.ValidateTimestamp(Libplanet.Net.Peer,System.DateTimeOffset,System.DateTimeOffset)">
+            <summary>
+            Validates a <see cref="T:System.DateTimeOffset"/> timestamp against current timestamp.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.Peer"/> that has sent the <see cref="T:Libplanet.Net.Messages.Message"/>
+            with <paramref name="messageTimestamp"/>.</param>
+            <param name="currentTimestamp">Current timestamp.</param>
+            <param name="messageTimestamp">The <see cref="P:Libplanet.Net.Messages.Message.Timestamp"/> of
+            the <see cref="T:Libplanet.Net.Messages.Message"/> in question.</param>
+            <seealso cref="P:Libplanet.Net.Messages.MessageValidator.MessageTimestampBuffer"/>.
+        </member>
         <member name="T:Libplanet.Net.Messages.Neighbors">
             <summary>
             Message containing nearby peers. A reply to <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.
             </summary>
             <seealso cref="T:Libplanet.Net.Messages.FindNeighbors"/>
         </member>
-        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.#ctor(System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.#ctor(Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Messages.NetMQMessageCodec"/> instance.
             </summary>
+            <param name="appProtocolVersion">The <see cref="T:Libplanet.Net.AppProtocolVersion"/> to use
+            when encoding and decoding.</param>
+            <param name="trustedAppProtocolVersionSigners">The set of signers to trust when
+            decoding a message.</param>
+            <param name="differentAppProtocolVersionEncountered">A callback method that gets
+            invoked when an <see cref="T:Libplanet.Net.AppProtocolVersion"/> by a <em>trusted</em> signer that is
+            different from <paramref name="appProtocolVersion"/> is encountered.</param>
             <param name="messageTimestampBuffer">A <see cref="T:System.TimeSpan"/> to use as a buffer
             when decoding <see cref="T:Libplanet.Net.Messages.Message"/>s.</param>
         </member>
-        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Decode(NetMQ.NetMQMessage,System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})">
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Decode(NetMQ.NetMQMessage,System.Boolean)">
             <inheritdoc/>
         </member>
         <member name="T:Libplanet.Net.Messages.Ping">
@@ -621,17 +747,24 @@
             </summary>
             <seealso cref="T:Libplanet.Net.Messages.Ping"/>
         </member>
-        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.#ctor(System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.#ctor(Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Messages.TcpMessageCodec"/> instance.
             </summary>
+            <param name="appProtocolVersion">The <see cref="T:Libplanet.Net.AppProtocolVersion"/> to use
+            when encoding and decoding.</param>
+            <param name="trustedAppProtocolVersionSigners">The set of signers to trust when
+            decoding a message.</param>
+            <param name="differentAppProtocolVersionEncountered">A callback method that gets
+            invoked when an <see cref="T:Libplanet.Net.AppProtocolVersion"/> by a <em>trusted</em> signer that is
+            different from <paramref name="appProtocolVersion"/> is encountered.</param>
             <param name="messageTimestampBuffer">A <see cref="T:System.TimeSpan"/> to use as a buffer
             when decoding <see cref="T:Libplanet.Net.Messages.Message"/>s.</param>
         </member>
-        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Decode(System.Byte[],System.Boolean,System.Action{System.Byte[],Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion})">
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Decode(System.Byte[],System.Boolean)">
             <inheritdoc/>
         </member>
         <member name="T:Libplanet.Net.Peer">
@@ -1005,6 +1138,172 @@
             <paramref name="except"/>. If no <see cref="T:Libplanet.Net.BoundPeer"/> can be selected,
             <c>null</c> is returned.
             </returns>
+        </member>
+        <member name="T:Libplanet.Net.Protocols.KBucketDictionary">
+            <summary>
+            <para>
+            An internal dictionary with a size limit used for <see cref="T:Libplanet.Net.Protocols.KBucket"/>s.
+            </para>
+            <para>
+            Purposely designed with the following features:
+            <list type="bullet">
+                <item><description>
+                    Fixed maximum size.
+                </description></item>
+                <item><description>
+                    Exception free.
+                </description></item>
+                <item><description>
+                    Enforced concurrency.
+                </description></item>
+            </list>
+            </para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.#ctor(System.Int32,System.Boolean,Serilog.ILogger)">
+            <summary>
+            Creates an instance with a size limit given by <paramref name="size"/>.
+            </summary>
+            <param name="size">The maximum number of elements the dictionary can hold.</param>
+            <param name="replace">Whether to replace the oldest <see cref="T:Libplanet.Net.PeerState"/>,
+            i.e. <see cref="P:Libplanet.Net.Protocols.KBucketDictionary.Tail"/>, if the dictionary is already full.</param>
+            <param name="logger">The <see cref="T:Serilog.ILogger"/> to write log messages to.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when <paramref name="size"/>
+            is not positive..</exception>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.KBucketDictionary.Head">
+            <summary>
+            The <see cref="T:Libplanet.Net.PeerState"/> updated most recently. <c>null</c> if the dictionary
+            is empty.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.KBucketDictionary.Tail">
+            <summary>
+            The <see cref="T:Libplanet.Net.PeerState"/> updated least recently. <c>null</c> if the dictionary
+            is empty.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Get(Libplanet.Net.BoundPeer)">
+            <summary>
+            Retrieves the <see cref="T:Libplanet.Net.BoundPeer"/> associated with <paramref name="peer"/>'s
+            <see cref="T:Libplanet.Address"/>.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to check.</param>
+            <returns>The <see cref="T:Libplanet.Net.BoundPeer"/> with its address equal to
+            that of the <paramref name="peer"/>'s. <c>null</c> if not found.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Get(Libplanet.Address)">
+            <summary>
+            Retrievees the <see cref="T:Libplanet.Net.BoundPeer"/> associated with <paramref name="address"/>.
+            </summary>
+            <param name="address">The <see cref="T:Libplanet.Address"/> to check.</param>
+            <returns>The <see cref="T:Libplanet.Net.BoundPeer"/> with its address equal to
+            that of <paramref name="address"/>. <c>null</c> if not found.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Contains(Libplanet.Net.BoundPeer)">
+            <summary>
+            Checks if the dictionary contains <paramref name="peer"/>'s <see cref="T:Libplanet.Address"/>
+            as a key.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to check.</param>
+            <returns><c>true</c> if the <paramref name="peer"/>'s <see cref="T:Libplanet.Address"/> exists,
+            <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Contains(Libplanet.Address)">
+            <summary>
+            Checks if the dictionary contains <paramref name="address"/> as a key.
+            </summary>
+            <param name="address">The <see cref="T:Libplanet.Address"/> to check.</param>
+            <returns><c>true</c> if <paramref name="address"/> exists,
+            <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.AddOrUpdate(Libplanet.Net.BoundPeer)">
+            <summary>
+            Adds or updates the dictionary with <paramref name="peer"/>.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to add or update.</param>
+            <returns><c>true</c> if <paramref name="peer"/> was either added or updated,
+            <c>false</c> otherwise.</returns>
+            <seealso cref="M:Libplanet.Net.Protocols.KBucketDictionary.AddOrUpdate(Libplanet.Net.BoundPeer,Libplanet.Net.PeerState)"/>.
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.AddOrUpdate(Libplanet.Net.BoundPeer,Libplanet.Net.PeerState)">
+            <summary>
+            Adds or updates the dictionary with a key/value pair.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to add or update.</param>
+            <param name="peerState">The <see cref="T:Libplanet.Net.PeerState"/> to use as a value.</param>
+            <returns><c>true</c> if <paramref name="peer"/> was either added or updated,
+            <c>false</c> otherwise.</returns>
+            <seealso cref="M:Libplanet.Net.Protocols.KBucketDictionary.AddOrUpdate(Libplanet.Address,Libplanet.Net.PeerState)"/>.
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.AddOrUpdate(Libplanet.Address,Libplanet.Net.PeerState)">
+            <summary>
+            <para>
+            Adds or updates the dictionary with a key/value pair.
+            </para>
+            <para>
+            Internal logic is as follows:
+            <list type="bullet">
+                <item><description>
+                    If <paramref name="address"/> is found, update its value
+                    with <paramref name="peerState"/>.
+                </description></item>
+                <item><description>
+                    Else, if the dictionary is not full, i.e. has not reached its limit in size,
+                    add <paramref name="address"/> and <paramref name="peerState"/> as
+                    a key/value pair.
+                </description></item>
+                <item><description>
+                    Else, if the dictionary is full and replace option is set to <c>true</c>,
+                    replace the oldest <see cref="T:Libplanet.Net.PeerState"/>, i.e. <see cref="P:Libplanet.Net.Protocols.KBucketDictionary.Tail"/>,
+                    with <paramref name="peerState"/>.
+                </description></item>
+                <item><description>
+                    Else, ignore.
+                </description></item>
+            </list>
+            </para>
+            </summary>
+            <param name="address">The <see cref="T:Libplanet.Address"/> to use as a key.</param>
+            <param name="peerState">The <see cref="T:Libplanet.Net.PeerState"/> to use as a value.</param>
+            <returns><c>true</c> if the key/value pair was either added or updated,
+            <c>false</c> otherwise.</returns>
+            <remarks>
+            This returns <c>false</c> only if all following conditions are met:
+            <list type="bullet">
+                <item><description>
+                    The dictionary does not contain <paramref name="address"/> as a key.
+                </description></item>
+                <item><description>
+                    The dictionary is already full.
+                </description></item>
+                <item><description>
+                    The replacement option is set to <c>false</c> for
+                    this <see cref="T:Libplanet.Net.Protocols.KBucketDictionary"/> instance.
+                </description></item>
+            </list>
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Remove(Libplanet.Net.BoundPeer)">
+            <summary>
+            Removes <paramref name="peer"/> from the dictionary.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to remove.</param>
+            <returns><c>true</c> if <paramref name="peer"/> was successfully removed,
+            <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Remove(Libplanet.Address)">
+            <summary>
+            Removes <paramref name="address"/> from the dictionary.
+            </summary>
+            <param name="address">The <see cref="T:Libplanet.Address"/> to remove.</param>
+            <returns><c>true</c> if <paramref name="address"/> was successfully removed,
+            <c>false</c> otherwise.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KBucketDictionary.Clear">
+            <summary>
+            Empties the dictionary.
+            </summary>
         </member>
         <member name="T:Libplanet.Net.Protocols.RoutingTable">
             <summary>
@@ -1692,12 +1991,6 @@
         <member name="T:Libplanet.Net.Transports.NetMQTransport">
             <summary>
             Implementation of <see cref="T:Libplanet.Net.Transports.ITransport"/> interface using NetMQ.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.Transports.NetMQTransport._differentAppProtocolVersionEncountered">
-            <summary>
-            The <see cref="T:System.EventHandler"/> triggered when the different version of
-            <see cref="T:Libplanet.Net.Peer"/> is discovered.
             </summary>
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
