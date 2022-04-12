@@ -189,6 +189,11 @@ namespace Nekoyume.Game.Character
 
         public void UpdateTail(int tailCostumeId)
         {
+            if (!TailAnimation)
+            {
+                return;
+            }
+
             var prefix = tailCostumeId > 40510000 ? "tail_revomon" : "tail";
             var skinName = $"{prefix}/{tailCostumeId}";
             var skin = TailAnimation.skeleton.Data.FindSkin(skinName);
