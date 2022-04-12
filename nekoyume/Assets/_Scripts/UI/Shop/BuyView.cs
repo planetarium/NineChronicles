@@ -249,7 +249,6 @@ namespace Nekoyume
                         }
 
                         _selectedSubTypeFilter.Value = subToggleType;
-                        UpdateView();
                     });
                     item.onClickToggle.AddListener(AudioController.PlayClick);
                 }
@@ -457,7 +456,7 @@ namespace Nekoyume
             return loading.activeSelf;
         }
 
-        protected override void UpdateView(bool resetPage = true)
+        protected override void UpdateView(bool resetPage = true, int page = 0)
         {
             var expiredItems = _selectedItems.Where(x => x.Expired.Value).ToList();
             foreach (var item in expiredItems)
@@ -475,7 +474,8 @@ namespace Nekoyume
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            base.UpdateView(resetPage);
+
+            base.UpdateView(resetPage, page);
         }
 
         private void OnSearch()
