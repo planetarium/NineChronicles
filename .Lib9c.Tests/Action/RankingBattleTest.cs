@@ -639,6 +639,7 @@ namespace Lib9c.Tests.Action
                         PreviousStates = state,
                         Signer = _agent1Address,
                         Random = random,
+                        BlockIndex = 3806324 + 1, // Ranking Battle Action throws NotEnoughAvatarLevelException when BlockIndex is higher than 3806324.
                     }));
                 }
             }
