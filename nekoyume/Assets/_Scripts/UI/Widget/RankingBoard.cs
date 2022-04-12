@@ -110,7 +110,10 @@ namespace Nekoyume.UI
             }
             else
             {
-                await UpdateWeeklyCache(weeklyArenaState);
+                await UniTask.Run(async () =>
+                {
+                    await UpdateWeeklyCache(weeklyArenaState);
+                });
             }
 
             base.Show(true);
