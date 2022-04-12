@@ -186,16 +186,17 @@ namespace Nekoyume.UI
             {
                 currentAvatarCellView.ShowMyDefaultInfo();
 
+                var canBattle = Util.CanBattle(Game.Game.instance.Stage.SelectedPlayer,
+                    Array.Empty<int>());
                 arenaRankScroll.Show(_weeklyCachedInfo
                     .Select(tuple => new ArenaRankCell.ViewModel
                     {
                         rank = tuple.rank,
                         arenaInfo = tuple.arenaInfo,
+                        currentAvatarCanBattle = canBattle,
                     }).ToList(), true);
                 arenaRankScroll.UpdateConditionalStateOfChallengeButtons
-                    .OnNext(
-                        Util.CanBattle(Game.Game.instance.Stage.SelectedPlayer,
-                        Array.Empty<int>()));
+                    .OnNext(canBattle);
                 // NOTE: If you want to test many arena cells, use below instead of above.
                 // arenaRankScroll.Show(Enumerable
                 //     .Range(1, 1000)
