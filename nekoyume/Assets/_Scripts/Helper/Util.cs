@@ -287,9 +287,10 @@ namespace Nekoyume.Helper
                     States.Instance.CurrentAvatarState.address.ToHex());
                 isValidated = true;
             }
-            catch
+            catch (Exception e)
             {
-                // ignored
+                Debug.LogError(
+                    $"Check the player is equipped with the valid equipment.\nException: {e}");
             }
 
             return isValidated;
