@@ -170,7 +170,7 @@ namespace Nekoyume.UI
             UpdateBoard();
         }
 
-        private void UpdateBoard()
+        private async void UpdateBoard()
         {
             var weeklyArenaState = States.Instance.WeeklyArenaState;
             if (weeklyArenaState is null)
@@ -181,8 +181,9 @@ namespace Nekoyume.UI
             }
 
             var currentAvatarAddress = States.Instance.CurrentAvatarState?.address;
-            if (!currentAvatarAddress.HasValue ||
-                !weeklyArenaState.ContainsKey(currentAvatarAddress.Value))
+            if (!currentAvatarAddress.HasValue || await Game.Game.instance.Agent.GetStateAsync(
+                    weeklyArenaState.address.Derive(currentAvatarAddress.Value.ToByteArray())
+                ) is null)
             {
                 currentAvatarCellView.ShowMyDefaultInfo();
 
