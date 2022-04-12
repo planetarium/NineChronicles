@@ -321,7 +321,16 @@ namespace Nekoyume.UI
                 if (rawList is List list)
                 {
                     List<Address> avatarAddressList = list.ToList(StateExtensions.ToAddress);
-                    Dictionary<Address, IValue> result = await Game.Game.instance.Agent.GetStateBulk(avatarAddressList);
+                    List<Address> arenaInfoAddressList = new List<Address>();
+                    foreach (var avatarAddress in avatarAddressList)
+                    {
+                        var arenaInfoAddress = state.address.Derive(avatarAddress.ToByteArray());
+                        if (!arenaInfoAddressList.Contains(arenaInfoAddress))
+                        {
+                            arenaInfoAddressList.Add(arenaInfoAddress);
+                        }
+                    }
+                    Dictionary<Address, IValue> result = await Game.Game.instance.Agent.GetStateBulk(arenaInfoAddressList);
                     var infoList = new List<ArenaInfo>();
                     foreach (var iValue in result.Values)
                     {
