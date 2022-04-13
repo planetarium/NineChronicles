@@ -141,7 +141,6 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the game config state was failed to load.");
             }
 
-            // apply
             var apStonePlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
             var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
             var playCount = apStonePlayCount + apPlayCount;
@@ -152,6 +151,9 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted due to insufficient action point: {ap} < required cost : {stageRow.CostAP})"
                 );
             }
+
+            // burn ap
+            avatarState.actionPoint = 0;
 
             var stageWaveSheet = sheets.GetSheet<StageWaveSheet>();
             avatarState.UpdateMonsterMap(stageWaveSheet, stageId);
