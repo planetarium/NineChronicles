@@ -565,23 +565,12 @@ namespace Nekoyume.Game.Character
         private bool TryGetCostumeRow(int costumeId, out CostumeItemSheet.Row row)
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
-            if (!sheet.TryGetValue(costumeId, out row, false))
-            {
-                return false;
-            }
-
-            var costume = Costumes.FirstOrDefault(costume => costume.Id == costumeId);
-            if (costume != null)
-            {
-                costume.Unequip();
-            }
-
-            return true;
+            return sheet.TryGetValue(costumeId, out row, false);
         }
 
         #endregion
 
-        private void ChangeSpineObject(string spineResourcePath, bool isFullCostume)
+        private void ChangeSpineObject(string spineResourcePath, bool isFullCostume, bool updateHitPoint = true)
         {
             if (!(Animator.Target is null))
             {
@@ -608,6 +597,11 @@ namespace Nekoyume.Game.Character
             }
 
             Animator.ResetTarget(go);
+
+            if (updateHitPoint)
+            {
+                UpdateHitPoint();
+            }
         }
 
         public void ChangeSpineResource(string id, bool isFullCostume, bool updateHitPoint = true)
@@ -615,12 +609,7 @@ namespace Nekoyume.Game.Character
             var spineResourcePath =
                 isFullCostume ? $"Character/FullCostume/{id}" : $"Character/Player/{id}";
 
-            ChangeSpineObject(spineResourcePath, isFullCostume);
-
-            if (updateHitPoint)
-            {
-                UpdateHitPoint();
-            }
+            ChangeSpineObject(spineResourcePath, isFullCostume, updateHitPoint);
         }
 
         public IEnumerator CoGetExp(long exp)

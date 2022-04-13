@@ -272,7 +272,7 @@ GameObject:
   - component: {fileID: 1907241546825162742}
   - component: {fileID: 1908930734778985666}
   - component: {fileID: 271298203660940672}
-  - component: {fileID: 5726236439566329779}
+  - component: {fileID: 9219961974441577683}
   m_Layer: 5
   m_Name: Modal
   m_TagString: Untagged
@@ -339,7 +339,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &5726236439566329779
+--- !u!114 &9219961974441577683
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -445,7 +445,7 @@ MonoBehaviour:
   tutorialActions: 
   indicator: {fileID: 1151106588322355539}
   toolTip: {fileID: 7129180649417677606}
-  toolTipChangeButton: {fileID: 5726236439566329779}
+  toolTipChangeButton: {fileID: 9219961974441577683}
 --- !u!1 &2606014638416464067
 GameObject:
   m_ObjectHideFlags: 0

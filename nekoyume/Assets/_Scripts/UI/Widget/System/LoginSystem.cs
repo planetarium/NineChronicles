@@ -65,7 +65,6 @@ namespace Nekoyume.UI
         private string _privateKeyString;
         private PrivateKey _privateKey;
         private States _prevState;
-        public Blur blur;
 
         protected override void Awake()
         {
@@ -360,10 +359,6 @@ namespace Nekoyume.UI
                         break;
                 }
                 base.Show();
-                if (blur)
-                {
-                    blur.Show();
-                }
             }
         }
 
@@ -572,12 +567,6 @@ namespace Nekoyume.UI
                 accountAddressText.text = address.ToString();
                 accountAddressText.gameObject.SetActive(true);
             }
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            blur?.Close();
-            base.Close(ignoreCloseAnimation);
         }
     }
 }

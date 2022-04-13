@@ -24,9 +24,6 @@ namespace Nekoyume.UI
         private static readonly Vector3 NPCPositionInLobbyCamera = new Vector3(5000f, 4999.13f, 0f);
 
         [SerializeField]
-        private Button blurButton = null;
-
-        [SerializeField]
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
@@ -62,10 +59,6 @@ namespace Nekoyume.UI
 
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
-
-            blurButton.OnClickAsObservable()
-                .Subscribe(_ => Close())
-                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -78,6 +71,7 @@ namespace Nekoyume.UI
         {
             TerminatePlayer();
         }
+
         #endregion
 
         public void Show(AvatarState avatarState, bool ignoreShowAnimation = false)
@@ -136,12 +130,14 @@ namespace Nekoyume.UI
             if (!(title is null))
             {
                 Destroy(_cachedCharacterTitle);
-                var clone = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName(false));
+                var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
+                    title.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 
             cpText.text = CPHelper
-                .GetCPV2(avatarState, game.TableSheets.CharacterSheet, game.TableSheets.CostumeStatSheet)
+                .GetCPV2(avatarState, game.TableSheets.CharacterSheet,
+                    game.TableSheets.CostumeStatSheet)
                 .ToString();
 
             costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, null);
@@ -157,28 +153,24 @@ namespace Nekoyume.UI
                 .Where(item => !(item is null))
                 .ToList();
 
-            var stats = _tempStats.SetAll(
-                _tempStats.Level,
-                equipments,
-                null,
-                Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet
-            );
+            var costumes = costumeSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => slot.Item as Costume)
+                .Where(item => !(item is null))
+                .ToList();
 
+            var equipEffectSheet = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
+            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var stats = _tempStats.SetAll(_tempStats.Level, equipments, costumes, null,
+                equipEffectSheet, costumeSheet);
             avatarStats.SetData(stats);
         }
 
         private static void ShowTooltip(EquipmentSlot slot)
         {
-            var tooltip = Find<ItemInformationTooltip>();
-            if (slot is null ||
-                slot.RectTransform == tooltip.Target)
-            {
-                tooltip.Close();
-
-                return;
-            }
-
-            tooltip.Show(slot.RectTransform, new InventoryItem(slot.Item, 1));
+            var item = new InventoryItem(slot.Item, 1, true, false, true);
+            var tooltip = ItemTooltip.Find(item.ItemBase.ItemType);
+            tooltip.Show(item, string.Empty, false, null, target:slot.RectTransform);
         }
     }
 }

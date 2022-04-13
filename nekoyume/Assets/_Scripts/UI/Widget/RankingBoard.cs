@@ -9,6 +9,7 @@ using Libplanet;
 using Libplanet.Blocks;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -109,7 +110,10 @@ namespace Nekoyume.UI
             }
             else
             {
-                await UpdateWeeklyCache(weeklyArenaState);
+                await UniTask.Run(async () =>
+                {
+                    await UpdateWeeklyCache(weeklyArenaState);
+                });
             }
 
             base.Show(true);
@@ -122,6 +126,12 @@ namespace Nekoyume.UI
 
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Battle);
             UpdateArena();
+            Game.Event.OnUpdatePlayerEquip.Subscribe(player =>
+                {
+                    arenaRankScroll.UpdateConditionalStateOfChallengeButtons
+                        .OnNext(Util.CanBattle(player, Array.Empty<int>()));
+                })
+                .AddTo(_disposablesFromShow);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -163,7 +173,7 @@ namespace Nekoyume.UI
             UpdateBoard();
         }
 
-        private void UpdateBoard()
+        private async void UpdateBoard()
         {
             var weeklyArenaState = States.Instance.WeeklyArenaState;
             if (weeklyArenaState is null)
@@ -174,17 +184,23 @@ namespace Nekoyume.UI
             }
 
             var currentAvatarAddress = States.Instance.CurrentAvatarState?.address;
-            if (!currentAvatarAddress.HasValue ||
-                !weeklyArenaState.ContainsKey(currentAvatarAddress.Value))
+            if (!currentAvatarAddress.HasValue || await Game.Game.instance.Agent.GetStateAsync(
+                    weeklyArenaState.address.Derive(currentAvatarAddress.Value.ToByteArray())
+                ) is null)
             {
                 currentAvatarCellView.ShowMyDefaultInfo();
 
+                var canBattle = Util.CanBattle(Game.Game.instance.Stage.SelectedPlayer,
+                    Array.Empty<int>());
                 arenaRankScroll.Show(_weeklyCachedInfo
                     .Select(tuple => new ArenaRankCell.ViewModel
                     {
                         rank = tuple.rank,
                         arenaInfo = tuple.arenaInfo,
+                        currentAvatarCanBattle = canBattle,
                     }).ToList(), true);
+                arenaRankScroll.UpdateConditionalStateOfChallengeButtons
+                    .OnNext(canBattle);
                 // NOTE: If you want to test many arena cells, use below instead of above.
                 // arenaRankScroll.Show(Enumerable
                 //     .Range(1, 1000)
@@ -216,18 +232,23 @@ namespace Nekoyume.UI
                     false);
             }
 
-            currentAvatarCellView.Show((
-                currentAvatarRank,
-                currentAvatarArenaInfo,
-                currentAvatarArenaInfo));
-
+            var currentAvatarCanBattle =
+                Util.CanBattle(Game.Game.instance.Stage.SelectedPlayer,
+                    Array.Empty<int>());
             arenaRankScroll.Show(_weeklyCachedInfo
                 .Select(tuple => new ArenaRankCell.ViewModel
                 {
                     rank = tuple.rank,
                     arenaInfo = tuple.arenaInfo,
                     currentAvatarArenaInfo = currentAvatarArenaInfo,
+                    currentAvatarCanBattle = currentAvatarCanBattle
                 }).ToList(), true);
+
+            currentAvatarCellView.Show((
+                currentAvatarRank,
+                currentAvatarArenaInfo,
+                currentAvatarArenaInfo,
+                false));
         }
 
         private static void OnClickAvatarInfo(RectTransform rectTransform, Address address)
@@ -304,7 +325,16 @@ namespace Nekoyume.UI
                 if (rawList is List list)
                 {
                     List<Address> avatarAddressList = list.ToList(StateExtensions.ToAddress);
-                    Dictionary<Address, IValue> result = await Game.Game.instance.Agent.GetStateBulk(avatarAddressList);
+                    List<Address> arenaInfoAddressList = new List<Address>();
+                    foreach (var avatarAddress in avatarAddressList)
+                    {
+                        var arenaInfoAddress = state.address.Derive(avatarAddress.ToByteArray());
+                        if (!arenaInfoAddressList.Contains(arenaInfoAddress))
+                        {
+                            arenaInfoAddressList.Add(arenaInfoAddress);
+                        }
+                    }
+                    Dictionary<Address, IValue> result = await Game.Game.instance.Agent.GetStateBulk(arenaInfoAddressList);
                     var infoList = new List<ArenaInfo>();
                     foreach (var iValue in result.Values)
                     {

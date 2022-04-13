@@ -263,8 +263,11 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SetActiveAssets(bool isNcgActive, bool isActionPointActive,
-            bool isDailyBonusActive, bool isHourglassActive)
+        private void SetActiveAssets(
+            bool isNcgActive,
+            bool isActionPointActive,
+            bool isDailyBonusActive,
+            bool isHourglassActive)
         {
             ncg.SetActive(isNcgActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
@@ -285,7 +288,6 @@ namespace Nekoyume.UI.Module
 
             _toggleNotifications[ToggleType.Mail].Value =
                 mailBox.Any(i => i.New && i.requiredBlockIndex <= blockIndex);
-            ;
         }
 
         private void SubscribeAvatarMailBox(MailBox mailBox)

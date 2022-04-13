@@ -62,6 +62,8 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        public static GameObject currentSelectedGameObject { get; private set; }
+
         public void OnPointerClick(PointerEventData eventData)
         {
             switch (eventData.button)
@@ -70,6 +72,7 @@ namespace Nekoyume.Game.Character
                     switch (eventData.clickCount)
                     {
                         case 1:
+                            currentSelectedGameObject = gameObject;
                             _onClick.OnNext(eventData);
                             break;
                         case 2:

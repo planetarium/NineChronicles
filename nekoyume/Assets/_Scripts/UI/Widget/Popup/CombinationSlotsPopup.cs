@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -16,22 +14,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<CombinationSlot> slots;
 
-        [SerializeField]
-        private Blur blur;
-
-        [SerializeField]
-        private Button closeButton;
-
         private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
-
-        protected override void Awake()
-        {
-            closeButton.onClick.AddListener(() =>
-            {
-                Close();
-                AudioController.PlayClick();
-            });
-        }
 
         protected override void OnEnable()
         {
@@ -52,11 +35,6 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
             HelpTooltip.HelpMe(100008, true);
-
-            if (blur)
-            {
-                blur.Show();
-            }
         }
 
         public void SetCaching(int slotIndex,
@@ -85,16 +63,6 @@ namespace Nekoyume.UI
 
             slotIndex = -1;
             return false;
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            if (blur && blur.isActiveAndEnabled)
-            {
-                blur.Close();
-            }
-
-            base.Close(ignoreCloseAnimation);
         }
 
         private void SubscribeBlockIndex(long blockIndex)

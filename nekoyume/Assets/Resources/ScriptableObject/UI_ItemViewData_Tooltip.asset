@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 227f5d522014a9544804e5001249e82b, type: 3}
+  m_Name: UI_ItemViewData_Tooltip
+  m_EditorClassIdentifier: 
+  fallbackGrade: 0
+  datas:
+  - grade: 0
+    gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0
+    enhancementMaterial: {fileID: 2100000, guid: d0ba5015ebc174e1980d7df502f1ebb6,
+      type: 2}
+    itemGradeParticleColor: {r: 0.4631738, g: 0.11196155, b: 0.6415094, a: 1}
+  - grade: 1
+    gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0
+    enhancementMaterial: {fileID: 2100000, guid: fffce470be0364f8fac6ed42147cdb68,
+      type: 2}
+    itemGradeParticleColor: {r: 0.8773585, g: 0.72486323, b: 0.5835262, a: 1}
+  - grade: 2
+    gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
+    gradeHsvRange: 1
+    gradeHsvHue: 0.271
+    gradeHsvSaturation: 0.188
+    gradeHsvValue: 0.021
+    enhancementMaterial: {fileID: 2100000, guid: e71700ec08bb942f484e04f6fb84b27b,
+      type: 2}
+    itemGradeParticleColor: {r: 0.4927607, g: 0.8113208, b: 0.28702387, a: 1}
+  - grade: 3
+    gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
+    gradeHsvRange: 1
+    gradeHsvHue: -0.442
+    gradeHsvSaturation: 0.391
+    gradeHsvValue: 0.032
+    enhancementMaterial: {fileID: 2100000, guid: d44a5a5c027c940f0b81b37678e9d7ef,
+      type: 2}
+    itemGradeParticleColor: {r: 0.30286577, g: 0.5769554, b: 0.7735849, a: 1}
+  - grade: 4
+    gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
+    gradeHsvRange: 1
+    gradeHsvHue: 0.054
+    gradeHsvSaturation: 0.386
+    gradeHsvValue: 0.033
+    enhancementMaterial: {fileID: 2100000, guid: 1d28cb217008f4359a1ca2bbf22f64aa,
+      type: 2}
+    itemGradeParticleColor: {r: 0.990566, g: 0.88652545, b: 0.21026169, a: 1}
+  - grade: 5
+    gradeBackground: {fileID: 21300000, guid: 75771868d573a48abada0e83b410a9b0, type: 3}
+    gradeHsvRange: 1
+    gradeHsvHue: -0.198
+    gradeHsvSaturation: 0.385
+    gradeHsvValue: 0.032
+    enhancementMaterial: {fileID: 2100000, guid: d0ba5015ebc174e1980d7df502f1ebb6,
+      type: 2}
+    itemGradeParticleColor: {r: 0.69718415, g: 0.20478818, b: 0.735849, a: 1}

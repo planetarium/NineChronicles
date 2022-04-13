@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 using TMPro;
 
 namespace Nekoyume.UI.Module
@@ -19,7 +20,7 @@ namespace Nekoyume.UI.Module
 
         #region override
 
-        public override void SetData(T model)
+        public override void SetData(T model, System.Action onClick = null)
         {
             if (ReferenceEquals(model, null))
             {
@@ -27,11 +28,15 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            base.SetData(model);
             _disposablesForSetData.DisposeAllAndClear();
+            base.SetData(model, onClick);
             Model.Count.Subscribe(SetCount).AddTo(_disposablesForSetData);
             Model.CountEnabled.SubscribeTo(countText).AddTo(_disposablesForSetData);
 
+            if (touchHandler != null && onClick != null)
+            {
+                touchHandler.OnClick.Subscribe(_ => onClick?.Invoke()).AddTo(_disposablesForSetData);
+            }
             UpdateView();
         }
 
@@ -42,15 +47,17 @@ namespace Nekoyume.UI.Module
 
             UpdateView();
         }
+
         #endregion
 
         protected virtual void SetCount(int count)
         {
-            if(ignoreOne && count == 1)
+            if (ignoreOne && count == 1)
             {
                 countText.text = string.Empty;
                 return;
             }
+
             countText.text = string.Format(CountTextFormat, count);
         }
 

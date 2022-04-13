@@ -66,20 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
-  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
-  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
-  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
-  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
-  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
-  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
-  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
-  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
-  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
-  - {fileID: 2100000, guid: 2c70975790f5a7247bada9947db248d3, type: 2}
-  - {fileID: 2100000, guid: e3cff2d77513ffd4eb16f71ec809e519, type: 2}
-  - {fileID: 2100000, guid: e5ae9f981ce6f4c4a81d8f006a8b2a4e, type: 2}
-  - {fileID: 2100000, guid: 2c70975790f5a7247bada9947db248d3, type: 2}
+  - {fileID: 2100000, guid: 3bc133fc946f9ed4d90a40cf40c67ebe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -135,8 +122,8 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
-  _animationName: Cutscene
-  loop: 0
+  _animationName: Idle
+  loop: 1
   timeScale: 1
 --- !u!210 &5458679053040464929
 SortingGroup:

@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public virtual void SetData(ItemSheet.Row itemRow)
+        public virtual void SetData(ItemSheet.Row itemRow, System.Action onClick = null)
         {
             if (itemRow is null)
             {

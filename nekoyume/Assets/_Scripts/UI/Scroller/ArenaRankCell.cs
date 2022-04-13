@@ -2,6 +2,8 @@ using System;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -22,6 +24,7 @@ namespace Nekoyume.UI.Scroller
             public int rank;
             public ArenaInfo arenaInfo;
             public ArenaInfo currentAvatarArenaInfo;
+            public bool currentAvatarCanBattle;
         }
 
         [SerializeField]
@@ -68,6 +71,7 @@ namespace Nekoyume.UI.Scroller
 
         private RectTransform _rectTransformCache;
         private bool _isCurrentUser;
+        private ViewModel _viewModel;
         private readonly Subject<ArenaRankCell> _onClickAvatarInfo = new Subject<ArenaRankCell>();
         private readonly Subject<ArenaRankCell> _onClickChallenge = new Subject<ArenaRankCell>();
 
@@ -88,13 +92,15 @@ namespace Nekoyume.UI.Scroller
                 {
                     if (avatarState is null)
                     {
-                        var (exist, state) = await States.TryGetAvatarStateAsync(ArenaInfo.AvatarAddress);
+                        var (exist, state) =
+                            await States.TryGetAvatarStateAsync(ArenaInfo.AvatarAddress);
                         avatarState = exist ? state : null;
                         if (avatarState is null)
                         {
                             return;
                         }
                     }
+
                     Widget.Find<FriendInfoPopup>().Show(avatarState);
                 })
                 .AddTo(gameObject);
@@ -119,6 +125,14 @@ namespace Nekoyume.UI.Scroller
                 })
                 .AddTo(gameObject);
 
+            challengeButton.OnClickDisabledSubject
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                {
+                    OneLineSystem.Push(MailType.System, L10nManager.Localize("UI_EQUIP_FAILED"),
+                        NotificationCell.NotificationType.Alert);
+                }).AddTo(gameObject);
+
             Game.Event.OnUpdatePlayerEquip
                 .Where(_ => _isCurrentUser)
                 .Subscribe(player =>
@@ -135,14 +149,23 @@ namespace Nekoyume.UI.Scroller
         public void Show((
             int rank,
             ArenaInfo arenaInfo,
-            ArenaInfo currentAvatarArenaInfo) itemData)
+            ArenaInfo currentAvatarArenaInfo,
+            bool currentAvatarCanBattle) itemData)
         {
             Show(new ViewModel
             {
                 rank = itemData.rank,
                 arenaInfo = itemData.arenaInfo,
-                currentAvatarArenaInfo = itemData.currentAvatarArenaInfo
+                currentAvatarArenaInfo = itemData.currentAvatarArenaInfo,
+                currentAvatarCanBattle = itemData.currentAvatarCanBattle,
             });
+        }
+
+        private void Start()
+        {
+            Context?.UpdateConditionalStateOfChallengeButtons
+                .Subscribe(UpdateChallengeButton)
+                .AddTo(gameObject);
         }
 
         public void ShowMyDefaultInfo()
@@ -163,23 +186,24 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(ViewModel itemData)
         {
-            if (itemData is null)
+            _viewModel = itemData;
+            if (_viewModel is null)
             {
                 Debug.LogError($"Argument is null. {nameof(itemData)}");
                 return;
             }
 
-            ArenaInfo = itemData.arenaInfo ?? throw new ArgumentNullException(nameof(itemData.arenaInfo));
-            var currentAvatarArenaInfo = itemData.currentAvatarArenaInfo;
-            _isCurrentUser = currentAvatarArenaInfo is null ?
-                false : ArenaInfo.AvatarAddress == currentAvatarArenaInfo.AvatarAddress;
+            ArenaInfo = _viewModel.arenaInfo ?? throw new ArgumentNullException(nameof(_viewModel.arenaInfo));
+            var currentAvatarArenaInfo = _viewModel.currentAvatarArenaInfo;
+            _isCurrentUser = currentAvatarArenaInfo is { } &&
+                             ArenaInfo.AvatarAddress == currentAvatarArenaInfo.AvatarAddress;
 
             if (controlBackgroundImage)
             {
                 backgroundImage.enabled = Index % 2 == 1;
             }
 
-            UpdateRank(itemData.rank);
+            UpdateRank(_viewModel.rank);
             nameText.text = ArenaInfo.AvatarName;
             scoreText.text = ArenaInfo.Score.ToString();
             cpText.text = GetCP(ArenaInfo);
@@ -207,15 +231,7 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 characterView.SetByArenaInfo(ArenaInfo);
-
-                if (itemData.currentAvatarArenaInfo is null)
-                {
-                    challengeButton.SetConditionalState(true);
-                }
-                else
-                {
-                    challengeButton.SetConditionalState(itemData.currentAvatarArenaInfo.DailyChallengeCount > 0);
-                }
+                challengeButton.SetConditionalState(_viewModel.currentAvatarCanBattle);
             }
 
             characterView.Show();
@@ -242,6 +258,23 @@ namespace Nekoyume.UI.Scroller
                     rankTextContainer.SetActive(true);
                     rankText.text = rank.ToString();
                     break;
+            }
+        }
+
+        private void UpdateChallengeButton(bool canBattle)
+        {
+            if (_viewModel != null)
+            {
+                _viewModel.currentAvatarCanBattle = canBattle;
+            }
+
+            if (_viewModel?.currentAvatarArenaInfo is null)
+            {
+                challengeButton.SetConditionalState(canBattle);
+            }
+            else
+            {
+                challengeButton.SetConditionalState(_viewModel.currentAvatarArenaInfo.DailyChallengeCount > 0 && canBattle);
             }
         }
 

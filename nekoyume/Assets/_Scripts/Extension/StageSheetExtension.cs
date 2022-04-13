@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume
@@ -32,6 +33,19 @@ namespace Nekoyume
             var result = itemRows.Distinct().ToList();
             GetRewardItemRowsCache.Add(stageRow.Key, result);
             return result;
+        }
+
+        public static List<StageSheet.Row> GetStagesContainsReward(this StageSheet sheet, int itemId)
+        {
+            if (States.Instance.CurrentAvatarState.worldInformation == null)
+            {
+                return null;
+            }
+
+            return sheet
+                .Where(s => s.Value.Rewards.Any(reward => reward.ItemId == itemId))
+                .Select(s => s.Value)
+                .ToList();
         }
     }
 }
