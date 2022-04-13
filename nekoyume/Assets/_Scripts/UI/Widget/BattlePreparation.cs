@@ -99,6 +99,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject hasBg;
 
+        [SerializeField]
+        private GameObject blockStartingTextObject;
+
         private Stage _stage;
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
@@ -228,6 +231,7 @@ namespace Nekoyume.UI
             UpdateTitle();
             UpdateStat(currentAvatarState);
             UpdateSlot(currentAvatarState, true);
+            UpdateStartButton(currentAvatarState);
 
             closeButtonText.text = closeButtonName;
             startButton.gameObject.SetActive(true);
@@ -237,7 +241,11 @@ namespace Nekoyume.UI
             equipmentSlots.gameObject.SetActive(true);
             ShowHelpTooltip(stageType);
             ReactiveAvatarState.ActionPoint.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
-            ReactiveAvatarState.Inventory.Subscribe(_ => UpdateSlot(Game.Game.instance.States.CurrentAvatarState)).AddTo(_disposables);
+            ReactiveAvatarState.Inventory.Subscribe(_ =>
+            {
+                UpdateSlot(Game.Game.instance.States.CurrentAvatarState);
+                UpdateStartButton(Game.Game.instance.States.CurrentAvatarState);
+            }).AddTo(_disposables);
             base.Show(ignoreShowAnimation);
         }
 
@@ -357,7 +365,7 @@ namespace Nekoyume.UI
 
         private void Equip(InventoryItem inventoryItem)
         {
-            if (inventoryItem.LevelLimited.Value)
+            if (inventoryItem.LevelLimited.Value && !inventoryItem.Equipped.Value)
             {
                 return;
             }
@@ -528,7 +536,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        interactable = !model.LevelLimited.Value;
+                        interactable = !model.LevelLimited.Value || model.LevelLimited.Value && model.Equipped.Value;
                     }
                     submit = () => Equip(model);
                     blocked = () => NotificationSystem.Push(MailType.System,
@@ -835,6 +843,18 @@ namespace Nekoyume.UI
         private bool IsExistElementalType(ElementalType elementalType)
         {
             return GetElementalTypes().Exists(x => x == elementalType);
+        }
+
+        private void UpdateStartButton(AvatarState avatarState)
+        {
+            _player.Set(avatarState);
+            var foodIds = consumableSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Consumable) slot.Item).Select(food => food.Id);
+            var canBattle = Util.CanBattle(_player, foodIds);
+            startButton.gameObject.SetActive(canBattle);
+            boostPopupButton.gameObject.SetActive(canBattle);
+            blockStartingTextObject.SetActive(!canBattle);
         }
 
         public List<ElementalType> GetElementalTypes()

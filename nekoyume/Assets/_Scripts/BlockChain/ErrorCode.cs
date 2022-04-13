@@ -147,6 +147,10 @@ namespace Nekoyume.BlockChain
                     code = "28";
                     key = "ERROR_UNABLE_TO_RENDER_WHEN_SYNCING_BLOCKS";
                     break;
+                case NotEnoughAvatarLevelException _:
+                    code = "29";
+                    key = "ERROR_NOT_ENOUGH_AVATAR_LEVEL";
+                    break;
             }
 
             Analyzer.Instance.Track(

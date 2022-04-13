@@ -605,7 +605,7 @@ namespace Nekoyume.BlockChain
             Log.Logger = loggerConfiguration.CreateLogger();
         }
 
-        private bool DifferentAppProtocolVersionEncountered(
+        private void DifferentAppProtocolVersionEncountered(
             Peer peer,
             AppProtocolVersion peerVersion,
             AppProtocolVersion localVersion
@@ -630,9 +630,6 @@ namespace Nekoyume.BlockChain
             {
                 EncounteredHighestVersion = peerVersion;
             }
-
-            // 로컬 앱 버전과 다른 피어는 일단 무시 (버전이 더 높든 낮든). (false 반환하면 만난 피어 무시함.)
-            return false;
         }
 
         private IEnumerator CoLogger()
