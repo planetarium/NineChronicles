@@ -54,8 +54,6 @@ namespace Nekoyume.BlockChain
 
         public static bool IsLastBattleActionId(Guid actionId) => actionId == Instance._lastBattleActionId;
 
-        public static bool ExistLastBattleActionId => Instance._lastBattleActionId.HasValue;
-
         private void HandleException(Guid actionId, Exception e)
         {
             if (e is TimeoutException)
@@ -198,7 +196,10 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
-                    _lastBattleActionId = null;
+                    if (_lastBattleActionId == action.Id)
+                    {
+                        _lastBattleActionId = null;
+                    }
 
                     try
                     {
@@ -260,7 +261,10 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
-                    _lastBattleActionId = null;
+                    if (_lastBattleActionId == action.Id)
+                    {
+                        _lastBattleActionId = null;
+                    }
 
                     try
                     {
@@ -547,7 +551,10 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
-                    _lastBattleActionId = null;
+                    if (_lastBattleActionId == action.Id)
+                    {
+                        _lastBattleActionId = null;
+                    }
 
                     try
                     {
