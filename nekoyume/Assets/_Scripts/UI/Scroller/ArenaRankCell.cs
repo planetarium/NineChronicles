@@ -231,7 +231,7 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 characterView.SetByArenaInfo(ArenaInfo);
-                challengeButton.SetConditionalState(_viewModel.currentAvatarCanBattle);
+                UpdateChallengeButton(_viewModel.currentAvatarCanBattle);
             }
 
             characterView.Show();
