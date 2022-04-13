@@ -122,13 +122,9 @@ namespace Nekoyume.Action
                 );
             }
 
-
             var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
-
-            // check ap
             if (apStoneCount > 0)
             {
-
                 // use apStone
                 var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
                 if (!avatarState.inventory.RemoveFungibleItem(row.ItemId, context.BlockIndex, count: apStoneCount))
