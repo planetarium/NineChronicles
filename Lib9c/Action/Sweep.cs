@@ -7,9 +7,8 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
-using Nekoyume.Model;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
@@ -163,14 +162,14 @@ namespace Nekoyume.Action
             var playCount = apPlayCount + itemPlayCount;
 
             var stageWaveSheet = sheets.GetSheet<StageWaveSheet>();
-            UpdateMonsterMap(avatarState, stageWaveSheet);
+            avatarState.UpdateMonsterMap(stageWaveSheet, stageId);
 
             var rewardItems = GetRewardItems(context.Random, playCount, stageRow, materialItemSheet);
-            UpdateInventory(avatarState, rewardItems);
+            avatarState.UpdateInventory(rewardItems);
 
             var levelSheet = sheets.GetSheet<CharacterLevelSheet>();
-            var (level, exp) = GetLevelAndExp(levelSheet, avatarState, stageId, playCount);
-            UpdateExp(avatarState, level, exp);
+            var (level, exp) = avatarState.GetLevelAndExp(levelSheet, stageId, playCount);
+            avatarState.UpdateExp(level, exp);
 
             return states
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
@@ -179,41 +178,8 @@ namespace Nekoyume.Action
                 .SetState(avatarAddress, avatarState.SerializeV2());
         }
 
-        private void UpdateMonsterMap(AvatarState avatarState, StageWaveSheet stageWaveSheet)
-        {
-            var monsterMap = new CollectionMap();
-            if (stageWaveSheet.TryGetValue(stageId, out var stageWaveRow))
-            {
-                foreach (var monster in stageWaveRow.Waves.SelectMany(wave => wave.Monsters))
-                {
-                    monsterMap.Add(new KeyValuePair<int, int>(monster.CharacterId, monster.Count));
-                }
-            }
-
-            avatarState.questList.UpdateMonsterQuest(monsterMap);
-        }
-
-        private static void UpdateInventory(AvatarState avatarState, List<ItemBase> rewards)
-        {
-            var itemMap = new CollectionMap();
-            foreach (var reward in rewards)
-            {
-                itemMap.Add(avatarState.inventory.AddItem(reward));
-            }
-            avatarState.questList.UpdateCollectQuest(itemMap);
-        }
-
-        private void UpdateExp(AvatarState avatarState, int level, long exp)
-        {
-            var levelUpCount = level - avatarState.level;
-            var eventMap = new CollectionMap
-                { new KeyValuePair<int, int>((int)QuestEventType.Level, levelUpCount) };
-            avatarState.level = level;
-            avatarState.exp = exp;
-            avatarState.questList.UpdateCompletedQuest(eventMap);
-        }
-
-        public static List<ItemBase> GetRewardItems(IRandom random, int playCount,
+        public static List<ItemBase> GetRewardItems(IRandom random,
+            int playCount,
             StageSheet.Row stageRow,
             MaterialItemSheet materialItemSheet)
         {
@@ -229,35 +195,6 @@ namespace Nekoyume.Action
 
             rewardItems = rewardItems.OrderBy(x => x.Id).ToList();
             return rewardItems;
-        }
-
-        public static (int, long) GetLevelAndExp(CharacterLevelSheet characterLevelSheet,
-            AvatarState avatarState, int stageId, int repeatCount)
-        {
-            var remainCount = repeatCount;
-            var currentLevel = avatarState.level;
-            var currentExp = avatarState.exp;
-            while (remainCount > 0)
-            {
-                characterLevelSheet.TryGetValue(currentLevel, out var row, true);
-                var maxExp = row.Exp + row.ExpNeed;
-                var remainExp = maxExp - currentExp;
-                var stageExp = StageRewardExpHelper.GetExp(currentLevel, stageId);
-                var requiredCount = (int)Math.Ceiling(remainExp / (double)stageExp);
-                if (remainCount - requiredCount > 0) // level up
-                {
-                    currentExp += stageExp * requiredCount;
-                    remainCount -= requiredCount;
-                    currentLevel += 1;
-                }
-                else
-                {
-                    currentExp += stageExp * remainCount;
-                    break;
-                }
-            }
-
-            return (currentLevel, currentExp);
         }
     }
 }

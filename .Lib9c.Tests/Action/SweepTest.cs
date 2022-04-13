@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
@@ -145,9 +146,8 @@ namespace Lib9c.Tests.Action
                 var itemPlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = Sweep.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
-                    avatarState,
                     stageId,
                     playCount);
 
@@ -432,9 +432,8 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * useApStoneCount;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = Sweep.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
-                    avatarState,
                     25,
                     playCount);
 
@@ -502,9 +501,8 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * 1;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = Sweep.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
-                    avatarState,
                     25,
                     playCount);
 
@@ -524,11 +522,5 @@ namespace Lib9c.Tests.Action
                 }));
             }
         }
-
-        // [Fact]
-        // public void Execute_()
-        // {
-        //
-        // }
     }
 }
