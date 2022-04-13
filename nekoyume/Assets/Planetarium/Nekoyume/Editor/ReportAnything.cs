@@ -6,8 +6,6 @@ using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
-using Nekoyume.UI.Module;
 using UnityEditor;
 using UnityEngine;
 
@@ -28,7 +26,7 @@ namespace Planetarium.Nekoyume.Editor
             var recipeSheet = tableSheets.EquipmentItemRecipeSheet;
             var subRecipeSheet = tableSheets.EquipmentItemSubRecipeSheetV2;
             var optionSheet = tableSheets.EquipmentItemOptionSheet;
-            var sellEquipments = GetItemBaseArray(ReactiveShopState.SellDigests.Value).ToArray();
+            var sellEquipments = GetItemBaseArray(ReactiveShopState.SellDigest.Value).ToArray();
             var mimisCount = 0;
             foreach (var equipment in sellEquipments)
             {
@@ -40,7 +38,7 @@ namespace Planetarium.Nekoyume.Editor
 
             Debug.Log($"[Report Anything] Made with mimisbrunnr recipe items in sell: {mimisCount}/{sellEquipments.Length}");
 
-            var buyEquipments = GetItemBaseArray(ReactiveShopState.BuyDigests.Value).ToArray();
+            var buyEquipments = GetItemBaseArray(ReactiveShopState.BuyDigest.Value).ToArray();
             mimisCount = 0;
             foreach (var equipment in buyEquipments)
             {
@@ -54,21 +52,12 @@ namespace Planetarium.Nekoyume.Editor
             Debug.Log("[Report Anything] End report");
         }
 
-        public static IEnumerable<Equipment> GetItemBaseArray(IReadOnlyDictionary<ItemSubTypeFilter,
-            Dictionary<ShopSortFilter, Dictionary<int, List<OrderDigest>>>> source) => source?
-                .Where(itemSubTypePair =>
-                    itemSubTypePair.Key == ItemSubTypeFilter.Armor ||
-                    itemSubTypePair.Key == ItemSubTypeFilter.Belt ||
-                    itemSubTypePair.Key == ItemSubTypeFilter.Necklace ||
-                    itemSubTypePair.Key == ItemSubTypeFilter.Ring ||
-                    itemSubTypePair.Key == ItemSubTypeFilter.Weapon)
-                .SelectMany(itemSubTypePair =>
-                    itemSubTypePair.Value.SelectMany(shopSortPair =>
-                        shopSortPair.Value.SelectMany(pagePair =>
-                            pagePair.Value)))
-                .Select(orderDigest => ReactiveShopState.TryGetShopItem(orderDigest, out var itemBase)
-                    ? (Equipment)itemBase
-                    : null)
+        public static IEnumerable<Equipment> GetItemBaseArray(IEnumerable<OrderDigest> source) => source?
+                .Select(orderDigest =>
+                    ReactiveShopState.TryGetShopItem(orderDigest, out var itemBase) &&
+                    itemBase is Equipment equipment
+                        ? equipment
+                        : null)
                 .Where(equipment => equipment is { })
             ?? Array.Empty<Equipment>();
     }
