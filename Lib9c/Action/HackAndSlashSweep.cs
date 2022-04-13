@@ -128,10 +128,6 @@ namespace Nekoyume.Action
             // check ap
             if (apStoneCount > 0)
             {
-                if (apStoneCount > UsableApStoneCount)
-                {
-                    throw new UsageLimitExceedException();
-                }
 
                 // use apStone
                 var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
