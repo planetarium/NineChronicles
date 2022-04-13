@@ -20,7 +20,7 @@ namespace Nekoyume.Action
     [ActionType("sweep")]
     public class Sweep : GameAction
     {
-        public const int usableApStoneCount = 10;
+        public const int UsableApStoneCount = 10;
 
         public Address avatarAddress;
         public int apStoneCount = 0;
@@ -126,7 +126,7 @@ namespace Nekoyume.Action
             // check ap
             if (apStoneCount > 0)
             {
-                if (apStoneCount > usableApStoneCount)
+                if (apStoneCount > UsableApStoneCount)
                 {
                     throw new UsageLimitExceedException();
                 }
