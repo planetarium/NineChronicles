@@ -24,6 +24,7 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using mixpanel;
+using Material = Nekoyume.Model.Item.Material;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -95,6 +96,7 @@ namespace Nekoyume.BlockChain
             HackAndSlash();
             RankingBattle();
             MimisbrunnrBattle();
+            HackAndSlashSweep();
 
             // Craft
             CombinationConsumable();
@@ -295,6 +297,15 @@ namespace Nekoyume.BlockChain
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
+                .AddTo(_disposables);
+        }
+
+        private void HackAndSlashSweep()
+        {
+            _actionRenderer.EveryRender<HackAndSlashSweep>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseHackAndSlashSweep)
                 .AddTo(_disposables);
         }
 
@@ -898,6 +909,55 @@ namespace Nekoyume.BlockChain
                 }
 
                 Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
+            }
+        }
+
+        private void ResponseHackAndSlashSweep(ActionBase.ActionEvaluation<HackAndSlashSweep> eval)
+        {
+            if (eval.Exception is null)
+            {
+                var rand = new LocalRandom(eval.RandomSeed);
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var stageSheet = Game.Game.instance.TableSheets.StageSheet;
+                stageSheet.TryGetValue(eval.Action.stageId, out var stageRow);
+
+
+                Debug.Log("-### ------------------");
+                // Debug.Log($"### 획득한 경험치 : {eval.Action.earnedExp}");
+                //
+                // var items = Action.HackAndSlashSweep.GetRewardItems(rand, eval.Action.playCount, stageRow,
+                //     materialSheet);
+
+                // var bundle = new Dictionary<ItemBase, int>();
+                // foreach (var itemBase in items)
+                // {
+                //     if (bundle.ContainsKey(itemBase))
+                //     {
+                //         bundle[itemBase] += 1;
+                //     }
+                //     else
+                //     {
+                //         bundle.Add(itemBase, 1);
+                //     }
+                // }
+
+                var avatarAddress = eval.Action.avatarAddress;
+
+                if (eval.Action.apStoneCount > 0)
+                {
+                    var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                        r.ItemSubType == ItemSubType.ApStone);
+                    LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
+                }
+
+                // foreach (var pair in bundle)
+                // {
+                //     Debug.Log($"### 획득 아이템 : {pair.Key.GetLocalizedName()} - {pair.Value}개");
+                //     var material = pair.Key as Material;
+                //     LocalLayerModifier.AddItem(avatarAddress, material.ItemId, pair.Value);
+                // }
+                // Debug.Log("-------------------");
+                UpdateCurrentAvatarStateAsync(eval);
             }
         }
 

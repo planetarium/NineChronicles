@@ -308,13 +308,13 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ConfirmPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<BoosterPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<SweepPopup>());
             yield return null;
 
             // tooltip

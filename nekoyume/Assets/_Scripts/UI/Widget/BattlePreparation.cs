@@ -21,7 +21,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Game.Character;
 using Nekoyume.Model.Elemental;
-using Nekoyume.TableData;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using Material = Nekoyume.Model.Item.Material;
@@ -91,7 +90,7 @@ namespace Nekoyume.UI
         private GameObject coverToBlockClick = null;
 
         [SerializeField]
-        private Button boostPopupButton;
+        private Button sweepPopupButton;
 
         [SerializeField]
         private GameObject mimisbrunnrBg;
@@ -122,6 +121,9 @@ namespace Nekoyume.UI
 
         private bool EnoughToPlay =>
             States.Instance.CurrentAvatarState.actionPoint >= _requiredCost;
+
+        private bool IsStageCleared =>
+            States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value);
 
         #region override
 
@@ -169,7 +171,6 @@ namespace Nekoyume.UI
 
             CloseWidget = () => Close(true);
 
-
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
             startButton.OnSubmitSubject.Where(_ => !_stage.IsInStage)
@@ -177,16 +178,16 @@ namespace Nekoyume.UI
                 .Subscribe(_ => OnClickBattle(repeatToggle.isOn))
                 .AddTo(gameObject);
 
-            boostPopupButton.OnClickAsObservable()
-                .Where(_ => EnoughToPlay && !_stage.IsInStage)
-                .Subscribe(_ => ShowBoosterPopup());
+            sweepPopupButton.OnClickAsObservable()
+                .Where(_ => IsStageCleared)
+                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId.Value));
 
-            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
+            sweepPopupButton.OnClickAsObservable().Where(_ => !IsStageCleared)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(
                         MailType.System,
-                        L10nManager.Localize("ERROR_ACTION_POINT"),
+                        L10nManager.Localize("UI_SWEEP_UNLOCK_CONDITION"),
                         NotificationCell.NotificationType.Alert))
                 .AddTo(gameObject);
 
@@ -654,31 +655,6 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        private void ShowBoosterPopup()
-        {
-            if (_stageType == StageType.Mimisbrunnr && !CheckEquipmentElementalType(_stageId.Value))
-            {
-                NotificationSystem.Push(MailType.System,
-                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAILED"),
-                    NotificationCell.NotificationType.UnlockCondition);
-                return;
-            }
-
-            var equipments = _player.Equipments;
-            var costumes = _player.Costumes;
-            var consumables = consumableSlots
-                .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Consumable)slot.Item).ToList();
-
-            _stage.IsExitReserved = false;
-            _stage.IsRepeatStage = false;
-            _stage.foodCount = consumables.Count;
-            ActionRenderHandler.Instance.Pending = true;
-
-            Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables,
-                GetBoostMaxCount(_stageId.Value), _worldId, _stageId.Value);
-        }
-
         private void PostEquipOrUnequip(EquipmentSlot slot)
         {
             UpdateStat(Game.Game.instance.States.CurrentAvatarState);
@@ -799,26 +775,6 @@ namespace Nekoyume.UI
             confirm.CancelCallback = () => confirm.Close();
         }
 
-        private int GetBoostMaxCount(int stageId)
-        {
-            if (!Game.Game.instance.TableSheets.GameConfigSheet.TryGetValue("action_point_max",
-                    out var ap))
-            {
-                return 1;
-            }
-
-            var stage = Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(
-                    i => i.Id == stageId);
-
-            if (stage is null)
-            {
-                return 1;
-            }
-
-            var maxActionPoint = TableExtensions.ParseInt(ap.Value);
-            return maxActionPoint / stage.CostAP;
-        }
-
         private static void ShowHelpTooltip(StageType stageType)
         {
             switch (stageType)
@@ -853,7 +809,7 @@ namespace Nekoyume.UI
                 .Select(slot => (Consumable) slot.Item).Select(food => food.Id);
             var canBattle = Util.CanBattle(_player, foodIds);
             startButton.gameObject.SetActive(canBattle);
-            boostPopupButton.gameObject.SetActive(canBattle);
+            sweepPopupButton.gameObject.SetActive(avatarState.worldInformation.IsStageCleared(_stageId.Value));
             blockStartingTextObject.SetActive(!canBattle);
         }
 
