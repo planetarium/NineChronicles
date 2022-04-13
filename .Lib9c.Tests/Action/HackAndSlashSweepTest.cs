@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class SweepTest
+    public class HackAndSlashSweepTest
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialState;
         private readonly IRandom _random;
 
-        public SweepTest()
+        public HackAndSlashSweepTest()
         {
             _random = new TestRandom();
             _sheets = TableSheetsImporter.ImportSheets();
@@ -153,9 +153,9 @@ namespace Lib9c.Tests.Action
 
                 var random = new TestRandom(_random.Seed);
                 var expectedRewardItems =
-                    Sweep.GetRewardItems(random, playCount, stageRow, _tableSheets.MaterialItemSheet);
+                    HackAndSlashSweep.GetRewardItems(random, playCount, stageRow, _tableSheets.MaterialItemSheet);
 
-                var action = new Sweep
+                var action = new HackAndSlashSweep
                 {
                     avatarAddress = _avatarAddress,
                     apStoneCount = apStoneCount,
@@ -188,7 +188,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_FailedLoadStateException(bool backward)
         {
-            var action = new Sweep
+            var action = new HackAndSlashSweep
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -218,7 +218,7 @@ namespace Lib9c.Tests.Action
         [InlineData(100, 1)]
         public void Execute_SheetRowNotFoundException(int worldId, int stageId)
         {
-            var action = new Sweep
+            var action = new HackAndSlashSweep
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -238,7 +238,7 @@ namespace Lib9c.Tests.Action
         [InlineData(1, 999)]
         public void Execute_SheetRowColumnException(int worldId, int stageId)
         {
-            var action = new Sweep
+            var action = new HackAndSlashSweep
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -257,7 +257,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_InvalidStageException()
         {
-            var action = new Sweep
+            var action = new HackAndSlashSweep
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -311,7 +311,7 @@ namespace Lib9c.Tests.Action
                         avatarState.questList.Serialize());
             }
 
-            var action = new Sweep
+            var action = new HackAndSlashSweep
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -365,7 +365,7 @@ namespace Lib9c.Tests.Action
                         avatarState.questList.Serialize());
             }
 
-            var action = new Sweep
+            var action = new HackAndSlashSweep
             {
                 apStoneCount = apStoneCount,
                 avatarAddress = _avatarAddress,
@@ -437,7 +437,7 @@ namespace Lib9c.Tests.Action
                     25,
                     playCount);
 
-                var action = new Sweep
+                var action = new HackAndSlashSweep
                 {
                     avatarAddress = _avatarAddress,
                     apStoneCount = useApStoneCount,
@@ -506,7 +506,7 @@ namespace Lib9c.Tests.Action
                     25,
                     playCount);
 
-                var action = new Sweep
+                var action = new HackAndSlashSweep
                 {
                     avatarAddress = _avatarAddress,
                     apStoneCount = 0,

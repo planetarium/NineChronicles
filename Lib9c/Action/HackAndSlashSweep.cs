@@ -16,8 +16,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sweep")]
-    public class Sweep : GameAction
+    [ActionType("hack_and_slash_sweep")]
+    public class HackAndSlashSweep : GameAction
     {
         public const int UsableApStoneCount = 10;
 
@@ -59,6 +59,18 @@ namespace Nekoyume.Action
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+
+            if (apStoneCount > UsableApStoneCount)
+            {
+                throw new UsageLimitExceedException($"Exceeded the amount of ap stones that can be used " +
+                                                    $"apStoneCount : {apStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
+            }
+
+            if (worldId == GameConfig.MimisbrunnrWorldId)
+            {
+                throw new InvalidWorldException(
+                    $"{addressesHex} [{worldId}] can't execute HackAndSlashSweep action.");
+            }
 
             if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState, out var migrationRequired))
             {
@@ -110,11 +122,6 @@ namespace Nekoyume.Action
                 );
             }
 
-            if (worldId == GameConfig.MimisbrunnrWorldId)
-            {
-                throw new InvalidWorldException(
-                    $"{addressesHex} [{worldId}] can't execute sweep action.");
-            }
 
             var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
 
@@ -134,16 +141,6 @@ namespace Nekoyume.Action
                         $"{addressesHex}Aborted as the player has no enough material ({row.Id})");
                 }
             }
-            else
-            {
-                if (avatarState.actionPoint < stageRow.CostAP)
-                {
-                    throw new NotEnoughActionPointException(
-                        $"{addressesHex}Aborted due to insufficient action point: " +
-                        $"{avatarState.actionPoint} < required cost : {stageRow.CostAP})"
-                    );
-                }
-            }
 
             var gameConfigState = states.GetGameConfigState();
             if (gameConfigState is null)
@@ -153,9 +150,16 @@ namespace Nekoyume.Action
             }
 
             // apply
-            var itemPlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
+            var apStonePlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
             var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
-            var playCount = apPlayCount + itemPlayCount;
+            var playCount = apStonePlayCount + apPlayCount;
+            if (playCount <= 0)
+            {
+                var ap = avatarState.actionPoint + gameConfigState.ActionPointMax * apStoneCount;
+                throw new NotEnoughActionPointException(
+                    $"{addressesHex}Aborted due to insufficient action point: {ap} < required cost : {stageRow.CostAP})"
+                );
+            }
 
             var stageWaveSheet = sheets.GetSheet<StageWaveSheet>();
             avatarState.UpdateMonsterMap(stageWaveSheet, stageId);
