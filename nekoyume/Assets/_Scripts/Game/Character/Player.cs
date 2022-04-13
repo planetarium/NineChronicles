@@ -107,7 +107,7 @@ namespace Nekoyume.Game.Character
         protected override void OnDisable()
         {
             base.OnDisable();
-            DestroyImmediate(_cachedCharacterTitle);
+            Destroy(_cachedCharacterTitle);
         }
 
         private void OnDestroy()
