@@ -41,7 +41,7 @@ namespace Nekoyume.BlockChain
 
         private readonly IAgent _agent;
 
-        private Guid _lastBattleActionId;
+        private Guid? _lastBattleActionId;
 
         private readonly Dictionary<Guid, (TxId txId, long updatedBlockIndex)> _actionIdToTxIdBridge =
             new Dictionary<Guid, (TxId txId, long updatedBlockIndex)>();
@@ -196,6 +196,11 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
+                    if (_lastBattleActionId == action.Id)
+                    {
+                        _lastBattleActionId = null;
+                    }
+
                     try
                     {
                         HandleException(action.Id, e);
@@ -256,6 +261,11 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
+                    if (_lastBattleActionId == action.Id)
+                    {
+                        _lastBattleActionId = null;
+                    }
+
                     try
                     {
                         HandleException(action.Id, e);
@@ -541,6 +551,11 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
+                    if (_lastBattleActionId == action.Id)
+                    {
+                        _lastBattleActionId = null;
+                    }
+
                     try
                     {
                         HandleException(action.Id, e);

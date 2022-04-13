@@ -1009,14 +1009,16 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
-                var epd = (List)eval.Extra[nameof(Action.RankingBattle.EnemyPlayerDigest)];
-                var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
-                var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
+                var epd = (List) eval.Extra[nameof(Action.RankingBattle.EnemyPlayerDigest)];
+                var eid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
+                var aid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
                 var enemyPlayerDigest = new EnemyPlayerDigest(epd);
                 var arenaInfo = new ArenaInfo(aid);
                 var enemyInfo = new ArenaInfo(eid);
-                var rankingSimulatorSheets = Game.Game.instance.TableSheets.GetRankingSimulatorSheets();
-                var player = new Player(States.Instance.CurrentAvatarState, rankingSimulatorSheets);
+                var rankingSimulatorSheets =
+                    Game.Game.instance.TableSheets.GetRankingSimulatorSheets();
+                var player = new Player(States.Instance.CurrentAvatarState,
+                    rankingSimulatorSheets);
 
                 var simulator = new RankingSimulator(
                     new LocalRandom(eval.RandomSeed),
