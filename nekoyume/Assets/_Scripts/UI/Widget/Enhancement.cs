@@ -182,8 +182,11 @@ namespace Nekoyume.UI
                 L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
                 NotificationCell.NotificationType.Information);
 
-            Game.Game.instance.ActionManager
-                .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
+            Game.Game.instance.ActionManager.Grinding(new List<Equipment>
+            {
+                baseItem,
+                materialItem
+            }).Subscribe();
 
             enhancementInventory.DeselectItem(true);
 

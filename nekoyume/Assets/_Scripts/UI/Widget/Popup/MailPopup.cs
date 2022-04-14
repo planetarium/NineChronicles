@@ -434,6 +434,12 @@ namespace Nekoyume.UI
             Read(mail);
         }
 
+        public void Read(GrindingMail grindingMail)
+        {
+            Debug.Log($"[{nameof(GrindingMail)}] ItemCount: {grindingMail.ItemCount}, Asset: {grindingMail.Asset}");
+            // ignored.
+        }
+
         [Obsolete]
         public void Read(SellCancelMail mail)
         {

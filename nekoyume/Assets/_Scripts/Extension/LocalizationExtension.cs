@@ -169,6 +169,8 @@ namespace Nekoyume
                     return L10nManager.Localize("UI_DAILY_REWARD_MAIL_FORMAT");
                 case MonsterCollectionMail _:
                     return L10nManager.Localize("UI_MONSTER_COLLECTION_MAIL_FORMAT");
+                case GrindingMail grindingMail:
+                    return $"ItemCount: {grindingMail.ItemCount}, Asset: {grindingMail.Asset}";
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");

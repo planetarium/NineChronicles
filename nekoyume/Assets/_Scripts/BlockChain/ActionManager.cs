@@ -706,6 +706,25 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
+        public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(List<Equipment> equipmentList)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            var action = new Grinding
+            {
+                AvatarAddress = avatarAddress,
+                EquipmentIds = equipmentList.Select(i => i.ItemId).ToList()
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<Grinding>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
