@@ -298,8 +298,8 @@ namespace Nekoyume.UI.Module
                 result.AddRange(pair.Value);
             }
 
-            result = result.OrderBy(x => x.ItemBase.ItemSubType).ToList();
             result = result.OrderByDescending(x => bestItems.Exists(y => y.Equals(x)))
+                .ThenBy(x => x.ItemBase.ItemSubType)
                 .ThenByDescending(x => Util.IsUsableItem(x.ItemBase)).ToList();
 
             if (_elementalTypes.Any())
