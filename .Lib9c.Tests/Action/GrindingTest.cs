@@ -95,6 +95,12 @@ namespace Lib9c.Tests.Action
                     equipment.equipped = equipped;
                     _avatarState.inventory.AddItem(equipment, count: 1);
                 }
+                else
+                {
+                    var row = _tableSheets.ConsumableItemSheet.Values.First(r => r.Grade == 1);
+                    var consumable = (Consumable)ItemFactory.CreateItemUsable(row, default, requiredBlockIndex, itemLevel);
+                    _avatarState.inventory.AddItem(consumable, count: 1);
+                }
 
                 state = state
                     .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())

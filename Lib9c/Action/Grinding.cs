@@ -68,7 +68,6 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= CostAp;
 
-            avatarState.ValidateEquipmentsV2(EquipmentIds, ctx.BlockIndex);
             var currency = new Currency("CRYSTAL", 2, minters: null);
             int cost = 0;
             foreach (var equipmentId in EquipmentIds)
@@ -76,6 +75,11 @@ namespace Nekoyume.Action
                 int baseCost = 1000;
                 if(avatarState.inventory.TryGetNonFungibleItem(equipmentId, out Equipment equipment))
                 {
+                    if (equipment.RequiredBlockIndex > context.BlockIndex)
+                    {
+                        throw new RequiredBlockIndexException($"{equipment.ItemSubType} / unlock on {equipment.RequiredBlockIndex}");
+                    }
+
                     if (equipment.equipped)
                     {
                         throw new InvalidEquipmentException($"Can't grind equipped item. {equipmentId}");
@@ -86,6 +90,11 @@ namespace Nekoyume.Action
                         // TODO Different multiplier by sheet data.
                         baseCost *= equipment.level;
                     }
+                }
+                else
+                {
+                    // Invalid Item Type.
+                    throw new ItemDoesNotExistException($"Can't find Equipment. {equipmentId}");
                 }
 
                 if (!avatarState.inventory.RemoveNonFungibleItem(equipmentId))
