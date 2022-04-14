@@ -299,6 +299,7 @@ namespace Nekoyume.UI.Module
             }
 
             result = result.OrderByDescending(x => bestItems.Exists(y => y.Equals(x)))
+                .ThenBy(x => x.ItemBase.ItemSubType)
                 .ThenByDescending(x => Util.IsUsableItem(x.ItemBase)).ToList();
 
             if (_elementalTypes.Any())
