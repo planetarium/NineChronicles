@@ -102,7 +102,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}ItemEnhancement exec started", addressesHex);
 
             if (!states.TryGetAgentAvatarStatesV2(ctx.Signer, avatarAddress, out AgentState agentState,
-                out AvatarState avatarState))
+                out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }

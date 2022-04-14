@@ -34,7 +34,7 @@ namespace Nekoyume.Action
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
-            if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out _, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out _, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
