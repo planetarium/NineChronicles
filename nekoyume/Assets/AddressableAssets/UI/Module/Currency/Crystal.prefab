@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4382485805452441107}
   - component: {fileID: 6082725816313648470}
   - component: {fileID: 6288766286076392999}
-  - component: {fileID: 8515593259343887766}
+  - component: {fileID: 3620733283240845855}
   - component: {fileID: 4378619734762124948}
   m_Layer: 5
   m_Name: Crystal
@@ -35,6 +35,7 @@ RectTransform:
   - {fileID: 4710616533450230331}
   - {fileID: 1163342560329072550}
   - {fileID: 7641595450907530212}
+  - {fileID: 8144332867053215355}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -63,7 +64,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &8515593259343887766
+--- !u!114 &3620733283240845855
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -72,13 +73,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 307372968871572777}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0161234a595d4787ba40ef62f98b092d, type: 3}
+  m_Script: {fileID: 11500000, guid: 75e636c85f4bd2f4db88076714fc997e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 6288766286076392999}
   animateAlpha: 0
-  countText: {fileID: 457178462942036223}
+  text: {fileID: 457178462942036223}
   tooltipArea: {fileID: 3678868936488279901}
+  loadingObject: {fileID: 8144332867053215354}
 --- !u!114 &4378619734762124948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,8 +98,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 8515593259343887766}
-          m_TargetAssemblyTypeName: Nekoyume.UI.Module.Hourglass, Nekoyume
+        - m_Target: {fileID: 3620733283240845855}
+          m_TargetAssemblyTypeName: Nekoyume.UI.Module.Crystal, Nekoyume
           m_MethodName: ShowTooltip
           m_Mode: 1
           m_Arguments:
@@ -112,8 +114,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 8515593259343887766}
-          m_TargetAssemblyTypeName: Nekoyume.UI.Module.Hourglass, Nekoyume
+        - m_Target: {fileID: 3620733283240845855}
+          m_TargetAssemblyTypeName: Nekoyume.UI.Module.Crystal, Nekoyume
           m_MethodName: HideTooltip
           m_Mode: 1
           m_Arguments:
@@ -512,3 +514,139 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1001 &5423164824465084346
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 4382485805452441107}
+    m_Modifications:
+    - target: {fileID: 4198630540298703296, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_Name
+      value: UI_Loading
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703296, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 29
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 135bdcc77404be0418a72c865e557d31, type: 3}
+--- !u!1 &8144332867053215354 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4198630540298703296, guid: 135bdcc77404be0418a72c865e557d31,
+    type: 3}
+  m_PrefabInstance: {fileID: 5423164824465084346}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &8144332867053215355 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4198630540298703297, guid: 135bdcc77404be0418a72c865e557d31,
+    type: 3}
+  m_PrefabInstance: {fileID: 5423164824465084346}
+  m_PrefabAsset: {fileID: 0}
