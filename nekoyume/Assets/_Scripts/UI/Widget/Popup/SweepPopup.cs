@@ -87,7 +87,7 @@ namespace Nekoyume
 
             _worldId = worldId;
             _stageRow = stageRow;
-            stageIdText.text = $"Stage {_stageRow.Id}";
+            stageIdText.text = $"STAGE {_stageRow.Id} {L10nManager.Localize("UI_BATTLE_AUTO_REPEAT")}";
 
             var avatarState = States.Instance.CurrentAvatarState;
             var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
