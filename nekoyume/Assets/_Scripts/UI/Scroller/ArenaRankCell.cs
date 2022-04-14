@@ -92,13 +92,13 @@ namespace Nekoyume.UI.Scroller
             characterView.OnClickCharacterIcon
                 .Subscribe(async avatarState =>
                 {
+                    if (IsLoadingAvatarState)
+                    {
+                        return;
+                    }
+
                     if (avatarState is null)
                     {
-                        if (IsLoadingAvatarState)
-                        {
-                            return;
-                        }
-
                         IsLoadingAvatarState = true;
                         var (exist, state) =
                             await States.TryGetAvatarStateAsync(ArenaInfo.AvatarAddress);
