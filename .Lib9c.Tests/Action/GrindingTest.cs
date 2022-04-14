@@ -1,0 +1,161 @@
+namespace Lib9c.Tests.Action
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Libplanet;
+    using Libplanet.Action;
+    using Libplanet.Assets;
+    using Libplanet.Crypto;
+    using Nekoyume;
+    using Nekoyume.Action;
+    using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
+    using Nekoyume.Model.State;
+    using Nekoyume.TableData;
+    using Xunit;
+    using static SerializeKeys;
+
+    public class GrindingTest
+    {
+        private readonly IRandom _random;
+        private readonly TableSheets _tableSheets;
+        private readonly Address _agentAddress;
+        private readonly Address _avatarAddress;
+        private readonly AgentState _agentState;
+        private readonly AvatarState _avatarState;
+        private readonly Currency _currency;
+        private readonly IAccountStateDelta _initialState;
+
+        public GrindingTest()
+        {
+            _random = new TestRandom();
+            var sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(sheets);
+            _agentAddress = new PrivateKey().ToAddress();
+            _avatarAddress = new PrivateKey().ToAddress();
+            _currency = new Currency("CRYSTAL", 2, minters: null);
+            var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
+
+            _agentState = new AgentState(_agentAddress);
+            _avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                gameConfigState,
+                default
+            );
+
+            _agentState.avatarAddresses.Add(0, _avatarAddress);
+
+            _initialState = new State().SetState(Addresses.GameConfig, gameConfigState.Serialize());
+        }
+
+        [Theory]
+        [InlineData(false, true, 120, false, 1, 0, false, false, 0, 0, typeof(FailedLoadStateException))]
+        [InlineData(true, false, 120, false, 1, 0, false, false, 0, 0, typeof(FailedLoadStateException))]
+        [InlineData(true, true, 0, false, 1, 0, false, false, 0, 0, typeof(NotEnoughActionPointException))]
+        [InlineData(true, true, 120, false, 1, 0, false, false, 0, 0, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, 120, true, 100, 0, false, false, 0, 0, typeof(RequiredBlockIndexException))]
+        [InlineData(true, true, 120, true, 1, 0, true, false, 0, 1000, typeof(InvalidEquipmentException))]
+        [InlineData(true, true, 120, true, 1, 0, false, false, 0, 1000, null)]
+        [InlineData(true, true, 120, true, 1, 2, false, false, 0, 2000, null)]
+        [InlineData(true, true, 120, true, 1, 2, false, true, 0, 2000, null)]
+        [InlineData(true, true, 120, true, 1, 0, false, true, 3, 3000, null)]
+        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 8000, null)]
+        public void Execute(
+            bool agentExist,
+            bool avatarExist,
+            int ap,
+            bool equipmentExist,
+            long requiredBlockIndex,
+            int itemLevel,
+            bool equipped,
+            bool monsterCollect,
+            int monsterCollectLevel,
+            int totalAsset,
+            Type exc
+        )
+        {
+            var state = _initialState;
+            if (agentExist)
+            {
+                state = state.SetState(_agentAddress, _agentState.Serialize());
+            }
+
+            if (avatarExist)
+            {
+                _avatarState.actionPoint = ap;
+
+                if (equipmentExist)
+                {
+                    var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
+                    var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, requiredBlockIndex, itemLevel);
+                    equipment.equipped = equipped;
+                    _avatarState.inventory.AddItem(equipment, count: 1);
+                }
+
+                state = state
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
+                    .SetState(_avatarAddress, _avatarState.SerializeV2());
+
+                Assert.Equal(0 * _currency, state.GetBalance(_avatarAddress, _currency));
+            }
+
+            if (monsterCollect)
+            {
+                var mcAddress = MonsterCollectionState.DeriveAddress(_agentAddress, 0);
+                state = state
+                    .SetState(
+                        mcAddress,
+                        new MonsterCollectionState(mcAddress, monsterCollectLevel, 1).Serialize()
+                    );
+            }
+
+            var action = new Grinding
+            {
+                AvatarAddress = _avatarAddress,
+                EquipmentIds = new List<Guid>
+                {
+                    default,
+                },
+            };
+
+            if (exc is null)
+            {
+                var nextState = action.Execute(new ActionContext
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    BlockIndex = 1,
+                    Random = _random,
+                });
+
+                var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+                FungibleAssetValue asset = totalAsset * _currency;
+
+                Assert.Equal(asset, nextState.GetBalance(_avatarAddress, _currency));
+                Assert.False(nextAvatarState.inventory.HasNonFungibleItem(default));
+                Assert.Equal(115, nextAvatarState.actionPoint);
+
+                var mail = nextAvatarState.mailBox.OfType<GrindingMail>().First(i => i.id.Equals(action.Id));
+
+                Assert.Equal(1, mail.ItemCount);
+                Assert.Equal(asset, mail.Asset);
+            }
+            else
+            {
+                Assert.Throws(exc, () => action.Execute(new ActionContext
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    BlockIndex = 1,
+                    Random = _random,
+                }));
+            }
+        }
+    }
+}
