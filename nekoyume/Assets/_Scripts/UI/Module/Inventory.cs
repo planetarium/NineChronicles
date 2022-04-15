@@ -416,6 +416,12 @@ namespace Nekoyume.UI.Module
             Set();
         }
 
+        public void SetGrinding(Action<InventoryItem, RectTransform> clickItem)
+        {
+            SetAction(clickItem);
+            Set();
+        }
+
         public void ClearSelectedItem()
         {
             _selectedModel?.Selected.SetValueAndForceNotify(false);
