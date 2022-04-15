@@ -416,7 +416,7 @@ namespace Nekoyume.UI
 
             if (States.Instance.CurrentAvatarState.actionPoint < _selectedRecipeInfo.CostAP)
             {
-                errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_AP");
+                errorMessage = L10nManager.Localize("ERROR_ACTION_POINT");
                 return false;
             }
 
