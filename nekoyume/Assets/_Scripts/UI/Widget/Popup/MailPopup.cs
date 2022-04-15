@@ -289,6 +289,7 @@ namespace Nekoyume.UI
 
         public void Read(GrindingMail grindingMail)
         {
+            // TODO: add handling about LocalLayer
             Debug.Log($"[{nameof(GrindingMail)}] ItemCount: {grindingMail.ItemCount}, Asset: {grindingMail.Asset}");
         }
 

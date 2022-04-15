@@ -1254,6 +1254,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            // TODO: add handling about LocalLayer
             var message =
                 $"[{nameof(GrindingMail)}] ItemCount: {mail.ItemCount}, Asset: {mail.Asset}";
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
