@@ -245,6 +245,15 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void Grinding()
+        {
+            _actionRenderer.EveryRender<Grinding>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseGrinding)
+                .AddTo(_disposables);
+        }
+
         private void RapidCombination()
         {
             _actionRenderer.EveryRender<RapidCombination>()
@@ -1228,6 +1237,27 @@ namespace Nekoyume.BlockChain
 
                 LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
             }
+        }
+
+        private void ResponseGrinding(ActionBase.ActionEvaluation<Grinding> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var avatarAddress = eval.Action.AvatarAddress;
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+            var mail = avatarState.mailBox.OfType<GrindingMail>().FirstOrDefault(m => m.id.Equals(eval.Action.Id));
+            if (mail is null)
+            {
+                return;
+            }
+
+            var message =
+                $"[{nameof(GrindingMail)}] ItemCount: {mail.ItemCount}, Asset: {mail.Asset}";
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+            UpdateCurrentAvatarStateAsync(eval);
         }
 
         private static ItemBase GetItem(IAccountStateDelta state, Guid tradableId)
