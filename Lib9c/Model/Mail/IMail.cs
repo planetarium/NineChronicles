@@ -13,5 +13,6 @@ namespace Nekoyume.Model.Mail
         void Read(CancelOrderMail cancelOrderMail);
         void Read(OrderBuyerMail orderBuyerMail);
         void Read(OrderSellerMail orderSellerMail);
+        void Read(GrindingMail grindingMail);
     }
 }

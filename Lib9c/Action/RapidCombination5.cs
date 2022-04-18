@@ -71,7 +71,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
-            
+
             CheckObsolete(BlockPolicySource.V100083ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -80,7 +80,8 @@ namespace Nekoyume.Action
                 context.Signer,
                 avatarAddress,
                 out var agentState,
-                out var avatarState))
+                out var avatarState,
+                out _))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }

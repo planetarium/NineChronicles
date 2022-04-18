@@ -38,7 +38,7 @@ namespace Nekoyume.Action
                     .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 3), MarkChanged);
             }
 
-            if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException($"Aborted as the avatar state of the signer failed to load.");
             }

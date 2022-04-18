@@ -88,7 +88,8 @@ namespace Lib9c.Tests.Action
                 default,
                 avatarAddress,
                 out var agentState,
-                out var nextAvatarState)
+                out var nextAvatarState,
+                out _)
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
