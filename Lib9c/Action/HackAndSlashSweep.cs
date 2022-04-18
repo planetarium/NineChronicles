@@ -111,7 +111,7 @@ namespace Nekoyume.Action
             var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
-                worldInformation.AddAndUnlockNewWorld(worldRow, context.BlockIndex, worldSheet);
+                throw new SheetRowColumnException($"{addressesHex}world is not contains in world information: {worldId}");
             }
 
             if (!world.IsStageCleared && stageId > world.StageClearedId)
