@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Assets;
+using Nekoyume.BlockChain;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -23,35 +25,58 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Text stakingBonusText;
 
-        private readonly List<InventoryItem> _selectedItemsForGrinding = new List<InventoryItem>();
+        private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind =
+            new ReactiveCollection<InventoryItem>();
 
         public void Start()
         {
             grindButton.SetCost(ConditionalCostButton.CostType.ActionPoint, 5);
-            grindButton.SetCondition(() => _selectedItemsForGrinding.Any());
+            grindButton.SetCondition(() => _selectedItemsForGrind.Any());
             grindButton.OnSubmitSubject.Subscribe(_ =>
             {
-                _selectedItemsForGrinding.Select(inventoryItem =>
+                _selectedItemsForGrind.Select(inventoryItem =>
                     ((Equipment) inventoryItem.ItemBase).ItemId);
+            }).AddTo(gameObject);
+
+            _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
+            {
+                item.Value.GrindingCount.SetValueAndForceNotify(_selectedItemsForGrind.Count);
+                item.Value.GrindObjectEnabled.OnNext(true);
+            }).AddTo(gameObject);
+
+            _selectedItemsForGrind.ObserveRemove().Subscribe(item =>
+            {
+                var listSize = _selectedItemsForGrind.Count;
+                for (int i = item.Index; i < listSize; i++)
+                {
+                    _selectedItemsForGrind[i].GrindingCount.SetValueAndForceNotify(i + 1);
+                }
+                item.Value.GrindObjectEnabled.OnNext(false);
             }).AddTo(gameObject);
         }
 
         public void Initialize()
         {
             grindInventory.SetGrinding(ShowItemTooltip);
+            _selectedItemsForGrind.Clear();
         }
 
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
         {
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
-            var isRegister = !_selectedItemsForGrinding.Contains(model);
+            var isRegister = !_selectedItemsForGrind.Contains(model);
+            var isEquipment = model.ItemBase.ItemType == ItemType.Equipment;
+            var interactable = isEquipment && _selectedItemsForGrind.Count < 10 || !isRegister;
+            var onSubmit = isEquipment
+                ? new System.Action(() => RegisterToGrindingList(model, isRegister))
+                : null;
             tooltip.Show(
                 model,
                 isRegister
                     ? L10nManager.Localize("UI_COMBINATION_REGISTER_MATERIAL")
                     : L10nManager.Localize("UI_COMBINATION_UNREGISTER_MATERIAL"),
-                model.ItemBase.ItemType == ItemType.Equipment && _selectedItemsForGrinding.Count < 10,
-                () => RegisterToGrindingList(model, isRegister),
+                interactable,
+                onSubmit,
                 grindInventory.ClearSelectedItem,
                 target: target);
         }
@@ -60,34 +85,22 @@ namespace Nekoyume.UI.Module
         {
             if (isRegister)
             {
-                _selectedItemsForGrinding.Add(item);
-                item.GrindingCount.SetValueAndForceNotify(_selectedItemsForGrinding.Count);
-                item.GrindObjectEnabled.OnNext(true);
+                _selectedItemsForGrind.Add(item);
             }
             else
             {
-                var deleteIndex = _selectedItemsForGrinding.IndexOf(item);
-                if (deleteIndex != -1)
-                {
-                    _selectedItemsForGrinding.RemoveAt(deleteIndex);
-                    var listSize = _selectedItemsForGrinding.Count;
-                    for (int i = deleteIndex; i < listSize; i++)
-                    {
-                        _selectedItemsForGrinding[i].GrindingCount.SetValueAndForceNotify(i + 1);
-                    }
-
-                    item.GrindObjectEnabled.OnNext(false);
-                }
+                _selectedItemsForGrind.Remove(item);
             }
         }
 
-        private void Action()
+        private void Action(List<Equipment> equipments)
         {
-            if (!_selectedItemsForGrinding.Any())
+            if (!_selectedItemsForGrind.Any())
             {
                 return;
             }
 
+            ActionManager.Instance.Grinding(equipments).Subscribe();
         }
     }
 }

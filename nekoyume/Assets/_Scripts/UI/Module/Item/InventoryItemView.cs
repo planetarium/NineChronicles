@@ -83,13 +83,15 @@ namespace Nekoyume.UI.Module
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b)).AddTo(_disposables);
             model.GrindingCount.Subscribe(count =>
             {
-                baseItemView.GrindingCountText.text = count.ToString();
-                baseItemView.GrindingCountObject.SetActive(true);
+                baseItemView.GrindingCountObject.SetActive(count > 0);
+                if (count > 0)
+                {
+                    baseItemView.GrindingCountText.text = count.ToString();
+                }
             }).AddTo(_disposables);
             model.GrindObjectEnabled
                 .Subscribe(b => baseItemView.GrindingCountObject.SetActive(b))
                 .AddTo(_disposables);
-            model.GrindObjectEnabled.OnNext(false);
             model.View = GetComponent<RectTransform>();
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)

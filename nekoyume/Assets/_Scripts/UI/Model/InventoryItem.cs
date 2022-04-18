@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Model
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
             HasNotification = new ReactiveProperty<bool>(false);
-            GrindingCount = new ReactiveProperty<int>();
+            GrindingCount = new ReactiveProperty<int>(0);
             GrindObjectEnabled = new Subject<bool>();
         }
     }
