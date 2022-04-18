@@ -16,9 +16,6 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI text = null;
 
-        [SerializeField]
-        private RectTransform tooltipArea = null;
-
         private IDisposable _disposable;
 
         [SerializeField]
@@ -29,8 +26,8 @@ namespace Nekoyume.UI.Module
         protected override void OnEnable()
         {
             base.OnEnable();
-            _disposable = AgentStateSubject.Gold.Subscribe(SetCrystal);
-            UpdateCrystal();
+            _disposable = ReactiveAvatarState.Crystal.Subscribe(SetCrystal);
+            UpdateCrystalAsync();
         }
 
         protected override void OnDisable()
@@ -39,31 +36,28 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
         }
 
-        private void UpdateCrystal()
+        private async void UpdateCrystalAsync()
         {
-            if (States.Instance is null ||
-                States.Instance.GoldBalanceState is null)
+            var currentAvatarState = States.Instance.CurrentAvatarState;
+            if (currentAvatarState is null ||
+                ReactiveAvatarState.Crystal is null)
             {
                 return;
             }
 
-            SetCrystal(States.Instance.GoldBalanceState.Gold);
+            loadingObject.SetActive(true);
+            var address = currentAvatarState.address;
+            var currency = new Currency("CRYSTAL", 2, minters: null);
+            var task = Game.Game.instance.Agent.GetBalanceAsync(address, currency);
+            await task;
+
+            SetCrystal(task.Result);
+            loadingObject.SetActive(false);
         }
 
-        private void SetCrystal(FungibleAssetValue gold)
+        private void SetCrystal(FungibleAssetValue crystal)
         {
-            text.text = gold.GetQuantityString();
-        }
-
-        public void ShowTooltip()
-        {
-            Widget.Find<VanilaTooltip>()
-                .Show("ITEM_NAME_400000", "UI_HOURGLASS_DESCRIPTION", tooltipArea.position);
-        }
-
-        public void HideTooltip()
-        {
-            Widget.Find<VanilaTooltip>().Close();
+            text.text = crystal.GetQuantityString();
         }
     }
 }
