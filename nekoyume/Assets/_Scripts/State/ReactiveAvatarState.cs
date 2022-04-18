@@ -82,7 +82,7 @@ namespace Nekoyume.State
             _dailyRewardReceivedIndex.SetValueAndForceNotify(state.dailyRewardReceivedIndex);
             _questList.SetValueAndForceNotify(state.questList);
 
-            var currency = new Currency("CRYSTAL", 2, minters: null);
+            var currency = new Currency("CRYSTAL", 18, minters: null);
             var crystal = Game.Game.instance.Agent.GetBalance(state.address, currency);
             _crystal.SetValueAndForceNotify(crystal);
         }

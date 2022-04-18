@@ -47,7 +47,7 @@ namespace Nekoyume.UI.Module
 
             SetProgressCircle(true);
             var address = currentAvatarState.address;
-            var currency = new Currency("CRYSTAL", 2, minters: null);
+            var currency = new Currency("CRYSTAL", 18, minters: null);
             var task = Game.Game.instance.Agent.GetBalanceAsync(address, currency);
             await task;
 
