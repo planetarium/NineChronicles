@@ -38,6 +38,7 @@ namespace Nekoyume.State
 
         private static readonly ReactiveProperty<FungibleAssetValue> _crystal;
         public static readonly IObservable<FungibleAssetValue> Crystal;
+        public static FungibleAssetValue CrystalBalance => _crystal.HasValue ? _crystal.Value : default;
 
         static ReactiveAvatarState()
         {

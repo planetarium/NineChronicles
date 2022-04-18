@@ -7,41 +7,54 @@ namespace Nekoyume.UI
 {
     public static class PaymentManager
     {
-        public static void ShowPaymentConfirmPopup(
-            FungibleAssetValue asset,
+        public static void ConfirmPayment(
+            FungibleAssetValue balance,
             BigInteger cost,
             string usageMessage,
             System.Action onPaymentSucceed)
         {
-            var states = Game.Game.instance.States;
-            var gold = states.GoldBalanceState.Gold;
-            var agentState = states.AgentState;
-
             // gold
-            if (asset.Currency.Equals(gold.Currency))
+            if (balance.Currency.Equals(
+                Game.Game.instance.States.GoldBalanceState.Gold.Currency))
             {
-                if (gold.MajorUnit >= cost)
-                {
-                    var message = L10nManager.Localize(
-                        "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
-                        cost,
-                        "UI_NCG",
-                        usageMessage);
+                var enoughMessage = L10nManager.Localize(
+                    "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
+                    cost,
+                    "UI_NCG",
+                    usageMessage);
+                var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
+                ShowPaymentPopup(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed);
+            }
+            // crystal
+            else if (balance.Currency.Equals(new Currency("CRYSTAL", 18, minters: null)))
+            {
+                var enoughMessage = L10nManager.Localize(
+                    "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
+                    cost,
+                    "UI_CRYSTAL",
+                    usageMessage);
+                var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
+                ShowPaymentPopup(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed);
+            }
+        }
 
-                    var yes = L10nManager.Localize("UI_YES");
-                    var no = L10nManager.Localize("UI_NO");
-                    Widget.Find<TwoButtonSystem>().Show(message, yes, no, onPaymentSucceed);
-                }
-                else
-                {
-                    var message = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
-                    var ok = L10nManager.Localize("UI_OK");
-                    Widget.Find<OneButtonSystem>().Show(message, ok, null);
-                }
+        private static void ShowPaymentPopup(
+            FungibleAssetValue asset,
+            BigInteger cost,
+            string enoughMessage,
+            string insufficientMessage,
+            System.Action onPaymentSucceed)
+        {
+            if (asset.MajorUnit >= cost)
+            {
+                var yes = L10nManager.Localize("UI_YES");
+                var no = L10nManager.Localize("UI_NO");
+                Widget.Find<TwoButtonSystem>().Show(enoughMessage, yes, no, onPaymentSucceed);
             }
             else
             {
-
+                var ok = L10nManager.Localize("UI_OK");
+                Widget.Find<OneButtonSystem>().Show(insufficientMessage, ok, null);
             }
         }
     }
