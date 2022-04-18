@@ -16,6 +16,8 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> Selected;
         public readonly ReactiveProperty<bool> Focused;
         public readonly ReactiveProperty<bool> HasNotification;
+        public readonly ReactiveProperty<int> GrindingCount;
+        public readonly Subject<bool> GrindObjectEnabled;
 
         public RectTransform View { get; set; }
 
@@ -30,6 +32,8 @@ namespace Nekoyume.UI.Model
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
             HasNotification = new ReactiveProperty<bool>(false);
+            GrindingCount = new ReactiveProperty<int>();
+            GrindObjectEnabled = new Subject<bool>();
         }
     }
 }

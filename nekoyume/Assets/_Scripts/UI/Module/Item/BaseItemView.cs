@@ -102,6 +102,12 @@ namespace Nekoyume
         [SerializeField]
         private ParticleSystem itemGradeParticle;
 
+        [SerializeField]
+        private GameObject grindingCountObject;
+
+        [SerializeField]
+        private TMP_Text grindingCountText;
+
         public GameObject Container => container;
         public GameObject EmptyObject => emptyObject;
         public TouchHandler TouchHandler => touchHandler;
@@ -130,6 +136,8 @@ namespace Nekoyume
         public GameObject LockObject => lockObject;
         public GameObject ShadowObject => shadowObject;
         public ParticleSystem ItemGradeParticle => itemGradeParticle;
+        public GameObject GrindingCountObject => grindingCountObject;
+        public TMP_Text GrindingCountText => grindingCountText;
 
         private ItemSheet.Row GetRow(ItemBase itemBase)
         {
