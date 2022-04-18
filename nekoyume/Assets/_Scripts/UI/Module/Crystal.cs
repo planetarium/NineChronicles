@@ -45,19 +45,25 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            loadingObject.SetActive(true);
+            SetProgressCircle(true);
             var address = currentAvatarState.address;
             var currency = new Currency("CRYSTAL", 2, minters: null);
             var task = Game.Game.instance.Agent.GetBalanceAsync(address, currency);
             await task;
 
             SetCrystal(task.Result);
-            loadingObject.SetActive(false);
+            SetProgressCircle(false);
         }
 
         private void SetCrystal(FungibleAssetValue crystal)
         {
             text.text = crystal.GetQuantityString();
+        }
+
+        private void SetProgressCircle(bool isVisible)
+        {
+            loadingObject.SetActive(isVisible);
+            text.enabled = !isVisible;
         }
     }
 }
