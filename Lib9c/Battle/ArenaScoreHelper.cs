@@ -32,37 +32,34 @@ namespace Nekoyume.Battle
         /// value: tuple (win score, lose score)
         /// </summary>
         [Obsolete("Use CachedScore")]
-        private static readonly IReadOnlyDictionary<int, (int, int)> CachedScoreV1 = new Dictionary<int, (int, int)>
-        {
-            {DifferLowerLimit, (WinScoreMax, LoseScoreMin)},
-            {-900, (WinScoreMax, LoseScoreMin)},
-            {-800, (WinScoreMax, LoseScoreMin)},
-            {-700, (WinScoreMax, LoseScoreMin)},
-            {-600, (WinScoreMax, LoseScoreMin)},
-            {-500, (50, LoseScoreMin)},
-            {-400, (40, -6)},
-            {-300, (30, -6)},
-            {-200, (25, -8)},
-            {-100, (20, -8)},
-            {99, (15, -10)},
-            {199, (8, -10)},
-            {299, (4, -20)},
-            {399, (2, -25)},
-            {499, (1, LoseScoreMax)},
-            {599, (WinScoreMin, LoseScoreMax)},
-            {699, (WinScoreMin, LoseScoreMax)},
-            {799, (WinScoreMin, LoseScoreMax)},
-            {899, (WinScoreMin, LoseScoreMax)},
-            {999, (WinScoreMin, LoseScoreMax)},
-            {DifferUpperLimit, (WinScoreMin, LoseScoreMax)},
-        };
-
-        #endregion
+        private static readonly IReadOnlyDictionary<int, (int, int)> CachedScoreV1 =
+            new Dictionary<int, (int, int)>
+            {
+                { DifferLowerLimit, (WinScoreMax, LoseScoreMin) },
+                { -900, (WinScoreMax, LoseScoreMin) },
+                { -800, (WinScoreMax, LoseScoreMin) },
+                { -700, (WinScoreMax, LoseScoreMin) },
+                { -600, (WinScoreMax, LoseScoreMin) },
+                { -500, (50, LoseScoreMin) },
+                { -400, (40, -6) },
+                { -300, (30, -6) },
+                { -200, (25, -8) },
+                { -100, (20, -8) },
+                { 99, (15, -10) },
+                { 199, (8, -10) },
+                { 299, (4, -20) },
+                { 399, (2, -25) },
+                { 499, (1, LoseScoreMax) },
+                { 599, (WinScoreMin, LoseScoreMax) },
+                { 699, (WinScoreMin, LoseScoreMax) },
+                { 799, (WinScoreMin, LoseScoreMax) },
+                { 899, (WinScoreMin, LoseScoreMax) },
+                { 999, (WinScoreMin, LoseScoreMax) },
+                { DifferUpperLimit, (WinScoreMin, LoseScoreMax) },
+            };
 
         /// <summary>
         /// differ: (challenger rate - defender rate)
-        /// winScore
-        /// loseScore
         /// </summary>
         [Obsolete("Use CachedScore")]
         private static readonly IOrderedEnumerable<(int differ, int winScore, int loseScore)> CachedScoreV2 =
@@ -81,14 +78,14 @@ namespace Nekoyume.Battle
                 (500, 2, -30),
             }.OrderBy(tuple => tuple.differ);
 
+        #endregion
+
         /// <summary>
         /// differ: (challenger rate - defender rate)
-        /// winScore
-        /// loseScore
-        /// defenderWinScore
         /// </summary>
+        [Obsolete("Use CachedScore")]
         private static readonly IOrderedEnumerable<(int differ, int winScore, int defenderLoseScore, int loseScore)>
-            CachedScore = new List<(int differ, int winScore, int defenderLoseScore, int loseScore)>
+            CachedScoreV3 = new List<(int differ, int winScore, int defenderLoseScore, int loseScore)>
             {
                 (-500, 60, -2, -5),
                 (-400, 45, -2, -5),
@@ -103,6 +100,19 @@ namespace Nekoyume.Battle
                 (500, 2, 0, -5),
             }.OrderBy(tuple => tuple.differ);
 
+        /// <summary>
+        /// differ: (challenger rate - defender rate)
+        /// </summary>
+        private static readonly IOrderedEnumerable<(int differ, int winScore, int defenderLoseScore, int loseScore)>
+            CachedScore = new List<(int differ, int winScore, int defenderLoseScore, int loseScore)>
+            {
+                (-200, 24, -1, -3),
+                (-100, 22, -1, -2),
+                (0, 20, -1, -1),
+                (100, 18, -1, -1),
+                (200, 16, -1, -1),
+            }.OrderBy(tuple => tuple.differ);
+
         public static (int challengerScore, int defenderScore) GetScore(int challengerRating, int defenderRating, BattleLog.Result result)
         {
             if (challengerRating < 0 ||
@@ -113,7 +123,7 @@ namespace Nekoyume.Battle
             }
 
             var differ = challengerRating - defenderRating;
-            foreach (var (differ2, winScore, defenderLoseScore, loseScore) in CachedScore)
+            foreach (var (differ2, winScore, defenderLoseScore, loseScore) in CachedScoreV3)
             {
                 if (differ >= differ2)
                 {
