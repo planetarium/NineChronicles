@@ -1,4 +1,5 @@
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Model;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
@@ -35,6 +36,9 @@ namespace Nekoyume.State
         private static readonly ReactiveProperty<QuestList> _questList;
         public static readonly IObservable<QuestList> QuestList;
 
+        private static readonly ReactiveProperty<FungibleAssetValue> _crystal;
+        public static readonly IObservable<FungibleAssetValue> Crystal;
+
         static ReactiveAvatarState()
         {
             _address = new ReactiveProperty<Address>();
@@ -57,6 +61,9 @@ namespace Nekoyume.State
 
             _questList = new ReactiveProperty<QuestList>();
             QuestList = _questList.ObserveOnMainThread();
+
+            _crystal = new ReactiveProperty<FungibleAssetValue>();
+            Crystal = _crystal.ObserveOnMainThread();
         }
 
         public static void Initialize(AvatarState state)
@@ -74,6 +81,10 @@ namespace Nekoyume.State
             _actionPoint.SetValueAndForceNotify(state.actionPoint);
             _dailyRewardReceivedIndex.SetValueAndForceNotify(state.dailyRewardReceivedIndex);
             _questList.SetValueAndForceNotify(state.questList);
+
+            var currency = new Currency("CRYSTAL", 18, minters: null);
+            var crystal = Game.Game.instance.Agent.GetBalance(state.address, currency);
+            _crystal.SetValueAndForceNotify(crystal);
         }
 
         public static void UpdateActionPoint(int actionPoint)
@@ -114,6 +125,16 @@ namespace Nekoyume.State
             }
 
             _questList.SetValueAndForceNotify(questList);
+        }
+
+        public static void UpdateCrystal(FungibleAssetValue crystal)
+        {
+            if (crystal.Equals(default))
+            {
+                return;
+            }
+
+            _crystal.SetValueAndForceNotify(crystal);
         }
     }
 }

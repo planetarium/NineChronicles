@@ -30,6 +30,7 @@ using Lib9c.DevExtensions.Action;
 #endif
 namespace Nekoyume.BlockChain
 {
+    using Libplanet.Assets;
     using Nekoyume.UI.Scroller;
     using UniRx;
 
@@ -1259,6 +1260,9 @@ namespace Nekoyume.BlockChain
                 $"[{nameof(GrindingMail)}] ItemCount: {mail.ItemCount}, Asset: {mail.Asset}";
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
+            var currency = new Currency("CRYSTAL", 18, minters: null);
+            var crystal = eval.OutputStates.GetBalance(avatarAddress, currency);
+            ReactiveAvatarState.UpdateCrystal(crystal);
         }
 
         private static ItemBase GetItem(IAccountStateDelta state, Guid tradableId)
