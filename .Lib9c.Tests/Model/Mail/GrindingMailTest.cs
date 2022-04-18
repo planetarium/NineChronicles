@@ -8,7 +8,7 @@ namespace Lib9c.Tests.Model.Mail
 
     public class GrindingMailTest
     {
-        private readonly Currency _currency = new Currency("CRYSTAL", 2, minters: null);
+        private readonly Currency _currency = new Currency("CRYSTAL", 18, minters: null);
 
         [Fact]
         public void Serialize()

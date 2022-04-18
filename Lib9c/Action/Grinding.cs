@@ -68,7 +68,7 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= CostAp;
 
-            var currency = new Currency("CRYSTAL", 2, minters: null);
+            var currency = new Currency("CRYSTAL", 18, minters: null);
             int cost = 0;
             foreach (var equipmentId in EquipmentIds)
             {

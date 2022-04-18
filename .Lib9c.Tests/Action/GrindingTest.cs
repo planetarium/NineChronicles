@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
             _tableSheets = new TableSheets(sheets);
             _agentAddress = new PrivateKey().ToAddress();
             _avatarAddress = new PrivateKey().ToAddress();
-            _currency = new Currency("CRYSTAL", 2, minters: null);
+            _currency = new Currency("CRYSTAL", 18, minters: null);
             var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
 
             _agentState = new AgentState(_agentAddress);
