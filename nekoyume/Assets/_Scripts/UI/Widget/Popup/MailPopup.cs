@@ -287,6 +287,12 @@ namespace Nekoyume.UI
             LocalLayerModifier.RemoveNewMail(avatarAddress, orderSellerMail.id);
         }
 
+        public void Read(GrindingMail grindingMail)
+        {
+            // TODO: add handling about LocalLayer
+            Debug.Log($"[{nameof(GrindingMail)}] ItemCount: {grindingMail.ItemCount}, Asset: {grindingMail.Asset}");
+        }
+
         public async void Read(OrderExpirationMail orderExpirationMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
