@@ -213,7 +213,7 @@ namespace Nekoyume.Model.State
             }
 
             var score =
-                ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result);
+                ArenaScoreHelper.GetScoreV3(Score, enemyInfo.Score, result);
             Score = Math.Max(1000, Score + score.challengerScore);
             enemyInfo.Score = Math.Max(1000, enemyInfo.Score + score.defenderScore);
             return score.challengerScore;
