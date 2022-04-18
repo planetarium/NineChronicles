@@ -17,10 +17,11 @@ namespace Nekoyume.UI
             if (balance.Currency.Equals(
                 Game.Game.instance.States.GoldBalanceState.Gold.Currency))
             {
+                var ncgText = L10nManager.Localize("UI_NCG");
                 var enoughMessage = L10nManager.Localize(
                     "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
                     cost,
-                    "UI_NCG",
+                    ncgText,
                     usageMessage);
                 var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
                 ShowPaymentPopup(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed);
@@ -28,10 +29,11 @@ namespace Nekoyume.UI
             // crystal
             else if (balance.Currency.Equals(new Currency("CRYSTAL", 18, minters: null)))
             {
+                var crystalText = L10nManager.Localize("UI_CRYSTAL");
                 var enoughMessage = L10nManager.Localize(
                     "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
                     cost,
-                    "UI_CRYSTAL",
+                    crystalText,
                     usageMessage);
                 var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
                 ShowPaymentPopup(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed);
