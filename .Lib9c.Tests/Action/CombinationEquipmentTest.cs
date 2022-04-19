@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -85,31 +86,38 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(true, true, false, 3, 0, true, 0, 1, null, true, false, false, null)]
+        // Tutorial recipe.
+        [InlineData(false, false, true, true, false, 3, 0, true, 0, 1, null, true, false, false, null)]
         // Migration AvatarState.
-        [InlineData(true, true, true, 3, 0, true, 0, 1, null, true, false, false, null)]
+        [InlineData(false, false, true, true, true, 3, 0, true, 0, 1, null, true, false, false, null)]
         // SubRecipe
-        [InlineData(true, true, false, 11, 0, true, 0, 2, 1, true, false, false, null)]
+        [InlineData(true, true, true, true, false, 11, 0, true, 0, 2, 1, true, false, false, null)]
         // Mimisbrunnr Equipment.
-        [InlineData(true, true, false, 11, 0, true, 0, 2, 3, true, true, true, null)]
+        [InlineData(true, true, true, true, false, 11, 0, true, 0, 2, 3, true, true, true, null)]
+        // UnlockEquipmentRecipe not executed.
+        [InlineData(false, true, true, true, false, 11, 0, true, 0, 2, 1, true, false, false, typeof(FailedLoadStateException))]
+        // CRYSTAL not paid.
+        [InlineData(true, false, true, true, false, 11, 0, true, 0, 2, 1, true, false, false, typeof(InvalidRecipeIdException))]
         // AgentState not exist.
-        [InlineData(false, true, false, 3, 0, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
+        [InlineData(true, true, false, true, false, 3, 0, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
         // AvatarState not exist.
-        [InlineData(true, false, false, 3, 0, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
-        [InlineData(true, false, true, 3, 0, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
+        [InlineData(true, true, true, false, false, 3, 0, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
+        [InlineData(true, true, true, false, true, 3, 0, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
         // Tutorial not cleared.
-        [InlineData(true, true, false, 1, 0, true, 0, 1, null, true, false, false, typeof(NotEnoughClearedStageLevelException))]
+        [InlineData(true, true, true, true, false, 1, 0, true, 0, 1, null, true, false, false, typeof(NotEnoughClearedStageLevelException))]
         // CombinationSlotState not exist.
-        [InlineData(true, true, false, 3, 5, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
+        [InlineData(true, true, true, true, false, 3, 5, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
         // CombinationSlotState locked.
-        [InlineData(true, true, false, 3, 0, false, 0, 1, null, true, false, false, typeof(CombinationSlotUnlockException))]
+        [InlineData(true, true, true, true, false, 3, 0, false, 0, 1, null, true, false, false, typeof(CombinationSlotUnlockException))]
         // Stage not cleared.
-        [InlineData(true, true, false, 3, 0, true, 0, 2, null, true, false, false, typeof(NotEnoughClearedStageLevelException))]
+        [InlineData(true, true, true, true, false, 3, 0, true, 0, 2, null, true, false, false, typeof(NotEnoughClearedStageLevelException))]
         // Not enough material.
-        [InlineData(true, true, false, 3, 0, true, 0, 1, null, false, false, false, typeof(NotEnoughMaterialException))]
+        [InlineData(true, true, true, true, false, 3, 0, true, 0, 1, null, false, false, false, typeof(NotEnoughMaterialException))]
         // Insufficient NCG.
-        [InlineData(true, true, false, 11, 0, true, 0, 2, 3, true, false, true, typeof(InsufficientBalanceException))]
+        [InlineData(true, true, true, true, false, 11, 0, true, 0, 2, 3, true, false, true, typeof(InsufficientBalanceException))]
         public void Execute(
+            bool unlockIdsExist,
+            bool crystalUnlock,
             bool agentExist,
             bool avatarExist,
             bool migrationRequired,
@@ -126,6 +134,20 @@ namespace Lib9c.Tests.Action
         )
         {
             IAccountStateDelta state = _initialState;
+            if (unlockIdsExist)
+            {
+                var unlockIds = List.Empty.Add(1.Serialize());
+                if (crystalUnlock)
+                {
+                    for (int i = 2; i < recipeId + 1; i++)
+                    {
+                        unlockIds = unlockIds.Add(i.Serialize());
+                    }
+                }
+
+                state = state.SetState(_avatarAddress.Derive("recipe_ids"), unlockIds);
+            }
+
             if (agentExist)
             {
                 state = state.SetState(_agentAddress, _agentState.Serialize());
