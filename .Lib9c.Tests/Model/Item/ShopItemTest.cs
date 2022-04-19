@@ -24,21 +24,10 @@
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
 
-        public static IEnumerable<object[]> GetShopItems() => new List<object[]>
+        [Fact]
+        public void Serialize()
         {
-            new object[]
-            {
-                GetShopItemWithFirstCostume(),
-                GetShopItemWithFirstEquipment(),
-                GetShopItemWithFirstMaterial(),
-            },
-        };
-
-        [Theory]
-        [MemberData(nameof(GetShopItems))]
-        public void Serialize(params ShopItem[] shopItems)
-        {
-            foreach (var shopItem in shopItems)
+            foreach (var shopItem in GetShopItems())
             {
                 var serialized = shopItem.Serialize();
                 var deserialized = new ShopItem((BxDictionary)serialized);
@@ -47,11 +36,10 @@
             }
         }
 
-        [Theory]
-        [MemberData(nameof(GetShopItems))]
-        public void Serialize_With_DotNet_Api(params ShopItem[] shopItems)
+        [Fact]
+        public void Serialize_With_DotNet_Api()
         {
-            foreach (var shopItem in shopItems)
+            foreach (var shopItem in GetShopItems())
             {
                 var formatter = new BinaryFormatter();
                 using var ms = new MemoryStream();
@@ -131,6 +119,13 @@
             serialized = serialized.SetItem(ShopItem.ExpiredBlockIndexKey, "-1");
             Assert.Throws<ArgumentOutOfRangeException>(() => new ShopItem(serialized));
         }
+
+        private static ShopItem[] GetShopItems() => new[]
+        {
+            GetShopItemWithFirstCostume(),
+            GetShopItemWithFirstEquipment(),
+            GetShopItemWithFirstMaterial(),
+        };
 
         private static ShopItem GetShopItemWithFirstCostume()
         {
