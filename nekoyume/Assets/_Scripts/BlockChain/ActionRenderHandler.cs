@@ -101,6 +101,7 @@ namespace Nekoyume.BlockChain
             CombinationEquipment();
             ItemEnhancement();
             RapidCombination();
+            Grinding();
 
             // Market
             Sell();
