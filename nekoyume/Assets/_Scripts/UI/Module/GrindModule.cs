@@ -38,7 +38,8 @@ namespace Nekoyume.UI.Module
         private const int LimitGrindingCount = 10;
 
         private bool CanGrind => _selectedItemsForGrind.Any() &&
-                                 States.Instance.CurrentAvatarState.actionPoint > Grinding.CostAp;
+                                 States.Instance.CurrentAvatarState.actionPoint > Grinding.CostAp &&
+                                 _selectedItemsForGrind.All(item => !item.Equipped.Value);
 
         private void Initialize()
         {
@@ -106,9 +107,9 @@ namespace Nekoyume.UI.Module
         {
             Initialize();
 
-            grindInventory.SetGrinding(ShowItemTooltip);
             _selectedItemsForGrind.Clear();
-            grindButton.Interactable = CanGrind;
+            grindInventory.SetGrinding(ShowItemTooltip, OnUpdateInventory);
+            grindButton.Interactable = false;
         }
 
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
@@ -131,6 +132,22 @@ namespace Nekoyume.UI.Module
                 onSubmit,
                 grindInventory.ClearSelectedItem,
                 target: target);
+        }
+
+        private void OnUpdateInventory(Inventory inventory)
+        {
+            var selectedItemCount = _selectedItemsForGrind.Count;
+            for (int i = 0; i < selectedItemCount; i++)
+            {
+                if (inventory.TryGetModel(_selectedItemsForGrind[i].ItemBase, out var inventoryItem))
+                {
+                    inventoryItem.GrindingCount.SetValueAndForceNotify(_selectedItemsForGrind[i].GrindingCount.Value);
+                    _selectedItemsForGrind[i] = inventoryItem;
+                    itemSlots[i].UpdateSlot(_selectedItemsForGrind[i]);
+                }
+            }
+
+            grindButton.Interactable = CanGrind;
         }
 
         private void RegisterToGrindingList(InventoryItem item, bool isRegister)

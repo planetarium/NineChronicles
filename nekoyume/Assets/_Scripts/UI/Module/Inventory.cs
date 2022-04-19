@@ -110,7 +110,7 @@ namespace Nekoyume.UI.Module
             _elementalTypes.AddRange(elementalTypes);
         }
 
-        private void Set()
+        private void Set(Action<Inventory> onUpdateInventory = null)
         {
             _disposables.DisposeAllAndClear();
             ReactiveAvatarState.Inventory.Subscribe(inventory =>
@@ -139,6 +139,8 @@ namespace Nekoyume.UI.Module
 
                 scroll.UpdateData(GetModels(_activeItemType), resetScrollOnEnable);
                 UpdateElementalTypeDisable(_elementalTypes);
+
+                onUpdateInventory?.Invoke(this);
             }).AddTo(_disposables);
 
             SetToggle(equipmentButton, ItemType.Equipment);
@@ -416,10 +418,11 @@ namespace Nekoyume.UI.Module
             Set();
         }
 
-        public void SetGrinding(Action<InventoryItem, RectTransform> clickItem)
+        public void SetGrinding(Action<InventoryItem, RectTransform> clickItem,
+            Action<Inventory> onUpdateInventory)
         {
             SetAction(clickItem);
-            Set();
+            Set(onUpdateInventory);
         }
 
         public void ClearSelectedItem()
