@@ -16,8 +16,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_equipment11")]
-    public class CombinationEquipment : GameAction
+    [ActionType("combination_equipment10")]
+    public class CombinationEquipment10 : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
 
