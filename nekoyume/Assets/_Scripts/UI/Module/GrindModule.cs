@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Assets;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,10 +35,13 @@ namespace Nekoyume.UI.Module
 
         private const int LimitGrindingCount = 10;
 
+        private bool CanGrind => _selectedItemsForGrind.Any() &&
+                                 States.Instance.CurrentAvatarState.actionPoint > Grinding.CostAp;
+
         public void Start()
         {
             grindButton.SetCost(ConditionalCostButton.CostType.ActionPoint, 5);
-            grindButton.SetCondition(() => _selectedItemsForGrind.Any());
+            grindButton.SetCondition(() => CanGrind);
             grindButton.OnSubmitSubject.Subscribe(_ =>
             {
                 Action(_selectedItemsForGrind.Select(inventoryItem =>
@@ -73,6 +78,15 @@ namespace Nekoyume.UI.Module
                 itemSlots.ForEach(slot => slot.UpdateSlot());
             }).AddTo(gameObject);
 
+            _selectedItemsForGrind.ObserveCountChanged().Subscribe(count =>
+            {
+                grindButton.Interactable = CanGrind;
+            }).AddTo(gameObject);
+
+            ReactiveAvatarState.ActionPoint
+                .Subscribe(_ => grindButton.Interactable = CanGrind)
+                .AddTo(gameObject);
+
             itemSlots.ForEach(slot => slot.OnClick.Subscribe(_ =>
             {
                 _selectedItemsForGrind.Remove(slot.AssignedItem);
@@ -83,6 +97,7 @@ namespace Nekoyume.UI.Module
         {
             grindInventory.SetGrinding(ShowItemTooltip);
             _selectedItemsForGrind.Clear();
+            grindButton.Interactable = CanGrind;
         }
 
         private void ShowItemTooltip(InventoryItem model, RectTransform target)

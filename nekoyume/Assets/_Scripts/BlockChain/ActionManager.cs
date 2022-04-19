@@ -709,6 +709,11 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(List<Equipment> equipmentList)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            equipmentList.ForEach(equipment =>
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, equipment.TradableId,
+                    equipment.RequiredBlockIndex, 1);
+            });
 
             var action = new Grinding
             {
