@@ -30,6 +30,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<GrindingItemSlot> itemSlots;
 
+        private bool _isInitialized;
+
         private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind =
             new ReactiveCollection<InventoryItem>();
 
@@ -38,8 +40,13 @@ namespace Nekoyume.UI.Module
         private bool CanGrind => _selectedItemsForGrind.Any() &&
                                  States.Instance.CurrentAvatarState.actionPoint > Grinding.CostAp;
 
-        public void Start()
+        private void Initialize()
         {
+            if (_isInitialized)
+            {
+                return;
+            }
+
             grindButton.SetCost(ConditionalCostButton.CostType.ActionPoint, 5);
             grindButton.SetCondition(() => CanGrind);
             grindButton.OnSubmitSubject.Subscribe(_ =>
@@ -91,10 +98,14 @@ namespace Nekoyume.UI.Module
             {
                 _selectedItemsForGrind.Remove(slot.AssignedItem);
             }));
+
+            _isInitialized = true;
         }
 
-        public void Initialize()
+        public void Show()
         {
+            Initialize();
+
             grindInventory.SetGrinding(ShowItemTooltip);
             _selectedItemsForGrind.Clear();
             grindButton.Interactable = CanGrind;
@@ -105,7 +116,9 @@ namespace Nekoyume.UI.Module
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             var isRegister = !_selectedItemsForGrind.Contains(model);
             var isEquipment = model.ItemBase.ItemType == ItemType.Equipment;
-            var interactable = isEquipment && _selectedItemsForGrind.Count < 10 || !isRegister;
+            var interactable =
+                isEquipment && _selectedItemsForGrind.Count < 10 && !model.Equipped.Value
+                || !isRegister;
             var onSubmit = isEquipment
                 ? new System.Action(() => RegisterToGrindingList(model, isRegister))
                 : null;
@@ -134,13 +147,12 @@ namespace Nekoyume.UI.Module
 
         private void Action(List<Equipment> equipments)
         {
-            if (!_selectedItemsForGrind.Any() || _selectedItemsForGrind.Count > LimitGrindingCount)
+            if (!equipments.Any() || equipments.Count > LimitGrindingCount)
             {
-                Debug.LogWarning($"Invalid selected items count. count : {_selectedItemsForGrind.Count}");
+                Debug.LogWarning($"Invalid selected items count. count : {equipments.Count}");
                 return;
             }
 
-            Debug.LogError($"Action Grinding!");
             ActionManager.Instance.Grinding(equipments).Subscribe();
             _selectedItemsForGrind.Clear();
         }
