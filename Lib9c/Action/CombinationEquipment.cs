@@ -85,7 +85,7 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
-            // Validate Required Cleared Stage
+            // Validate Required Cleared Tutorial Stage
             if (!avatarState.worldInformation.IsStageCleared(
                 GameConfig.RequireClearedStageLevel.CombinationEquipmentAction))
             {
@@ -95,7 +95,7 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.CombinationEquipmentAction,
                     current);
             }
-            // ~Validate Required Cleared Stage
+            // ~Validate Required Cleared Tutorial Stage
 
             // Validate SlotIndex
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
