@@ -53,17 +53,26 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(false, true, 120, false, 1, 0, false, false, 0, 0, typeof(FailedLoadStateException))]
-        [InlineData(true, false, 120, false, 1, 0, false, false, 0, 0, typeof(FailedLoadStateException))]
-        [InlineData(true, true, 0, false, 1, 0, false, false, 0, 0, typeof(NotEnoughActionPointException))]
-        [InlineData(true, true, 120, false, 1, 0, false, false, 0, 0, typeof(ItemDoesNotExistException))]
-        [InlineData(true, true, 120, true, 100, 0, false, false, 0, 0, typeof(RequiredBlockIndexException))]
-        [InlineData(true, true, 120, true, 1, 0, true, false, 0, 1000, typeof(InvalidEquipmentException))]
-        [InlineData(true, true, 120, true, 1, 0, false, false, 0, 1000, null)]
-        [InlineData(true, true, 120, true, 1, 2, false, false, 0, 2000, null)]
-        [InlineData(true, true, 120, true, 1, 2, false, true, 0, 2000, null)]
-        [InlineData(true, true, 120, true, 1, 0, false, true, 3, 3000, null)]
-        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 8000, null)]
+        [InlineData(true, true, 120, true, 1, 0, false, false, 0, 1000, 1, null)]
+        [InlineData(true, true, 120, true, 1, 2, false, false, 0, 2000, 1, null)]
+        [InlineData(true, true, 120, true, 1, 2, false, true, 0, 2000, 1, null)]
+        [InlineData(true, true, 120, true, 1, 0, false, true, 3, 3000, 1, null)]
+        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 8000, 1, null)]
+        // Invalid equipment count.
+        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 8000, 0, typeof(InvalidItemCountException))]
+        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 8000, 11, typeof(InvalidItemCountException))]
+        // AgentState not exist.
+        [InlineData(false, true, 120, false, 1, 0, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
+        // AvatarState not exist.
+        [InlineData(true, false, 120, false, 1, 0, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
+        // Required more ActionPoint.
+        [InlineData(true, true, 0, false, 1, 0, false, false, 0, 0, 1, typeof(NotEnoughActionPointException))]
+        // Equipment not exist.
+        [InlineData(true, true, 120, false, 1, 0, false, false, 0, 0, 1, typeof(ItemDoesNotExistException))]
+        // Locked equipment.
+        [InlineData(true, true, 120, true, 100, 0, false, false, 0, 0, 1, typeof(RequiredBlockIndexException))]
+        // Equipped equipment.
+        [InlineData(true, true, 120, true, 1, 0, true, false, 0, 1000, 1, typeof(InvalidEquipmentException))]
         public void Execute(
             bool agentExist,
             bool avatarExist,
@@ -75,6 +84,7 @@ namespace Lib9c.Tests.Action
             bool monsterCollect,
             int monsterCollectLevel,
             int totalAsset,
+            int equipmentCount,
             Type exc
         )
         {
@@ -121,13 +131,18 @@ namespace Lib9c.Tests.Action
                     );
             }
 
+            var equipmentIds = new List<Guid>();
+            for (int i = 0; i < equipmentCount; i++)
+            {
+                equipmentIds.Add(default);
+            }
+
+            Assert.Equal(equipmentCount, equipmentIds.Count);
+
             var action = new Grinding
             {
                 AvatarAddress = _avatarAddress,
-                EquipmentIds = new List<Guid>
-                {
-                    default,
-                },
+                EquipmentIds = equipmentIds,
             };
 
             if (exc is null)

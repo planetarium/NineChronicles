@@ -17,6 +17,7 @@ namespace Nekoyume.Action
     public class Grinding : GameAction
     {
         public const int CostAp = 5;
+        public const int Limit = 10;
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
         public override IAccountStateDelta Execute(IActionContext context)
@@ -41,6 +42,11 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress);
+            }
+
+            if (!EquipmentIds.Any() || EquipmentIds.Count > Limit)
+            {
+                throw new InvalidItemCountException();
             }
 
             if (!states.TryGetAgentAvatarStatesV2(ctx.Signer, AvatarAddress, out var agentState,
