@@ -37,6 +37,11 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress);
             }
 
+            if (RecipeIds.Any(i => i < 2))
+            {
+                throw new InvalidRecipeIdException();
+            }
+
             WorldInformation worldInformation;
             bool migrationRequired = false;
             AvatarState avatarState = null;
@@ -63,16 +68,28 @@ namespace Nekoyume.Action
 
             List<int> unlockedIds = states.TryGetState(unlockedRecipeIdsAddress, out List rawIds)
                 ? rawIds.ToList(StateExtensions.ToInteger)
-                : new List<int>();
+                : new List<int>
+                {
+                    1
+                };
 
             int totalCost = 0;
-            foreach (var recipeId in RecipeIds)
+            var sortedRecipeIds = RecipeIds.OrderBy(i => i);
+            foreach (var recipeId in sortedRecipeIds)
             {
                 if (unlockedIds.Contains(recipeId))
                 {
                     // Already Unlocked
                     throw new AlreadyRecipeUnlockedException($"recipe: {recipeId} already unlocked.");
                 }
+
+                var prevId = recipeId - 1;
+                if (!unlockedIds.Contains(prevId))
+                {
+                    // Can't skip previous recipe unlock.
+                    throw new InvalidRecipeIdException($"unlock {prevId} first.");
+                }
+
                 unlockedIds.Add(recipeId);
 
                 EquipmentItemRecipeSheet.Row row = equipmentRecipeSheet[recipeId];

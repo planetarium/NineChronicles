@@ -55,19 +55,23 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(new[] { 2, 3 }, true, false, false, true, 1000, null)]
+        [InlineData(new[] { 2 }, true, false, false, true, 500, null)]
+        // AvatarState migration.
         [InlineData(new[] { 2 }, true, true, false, true, 500, null)]
+        // Invalid recipe id.
+        [InlineData(new[] { -1 }, true, false, false, false, 500, typeof(InvalidRecipeIdException))]
+        [InlineData(new[] { 1 }, true, false, false, true, 500, typeof(InvalidRecipeIdException))]
         // AvatarState is null.
         [InlineData(new[] { 2 }, false, true, false, true, 500, typeof(FailedLoadStateException))]
         [InlineData(new[] { 2 }, false, false, false, true, 500, typeof(FailedLoadStateException))]
-        // Try unlock tutorial recipe.
-        [InlineData(new[] { 1 }, true, false, true, true, 500, typeof(AlreadyRecipeUnlockedException))]
         // Already unlocked recipe.
         [InlineData(new[] { 2 }, true, false, true, true, 500, typeof(AlreadyRecipeUnlockedException))]
+        // Skip prev recipe.
+        [InlineData(new[] { 3 }, true, false, false, true, 500, typeof(InvalidRecipeIdException))]
         // Stage not cleared.
         [InlineData(new[] { 2 }, true, false, false, false, 500, typeof(NotEnoughClearedStageLevelException))]
         // Insufficient CRYSTAL.
         [InlineData(new[] { 2 }, true, false, false, true, 100, typeof(NotEnoughFungibleAssetValueException))]
-        [InlineData(new[] { 2 }, true, false, false, true, 500, null)]
         public void Execute(
             IEnumerable<int> ids,
             bool stateExist,
