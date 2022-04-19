@@ -98,6 +98,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(UpdateSell))]
         [InlineData(typeof(CreatePendingActivations))]
         [InlineData(typeof(Grinding))]
+        [InlineData(typeof(UnlockEquipmentRecipe))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -254,6 +255,15 @@ namespace Lib9c.Tests.Action
                 {
                     AvatarAddress = new PrivateKey().ToAddress(),
                     EquipmentIds = new List<Guid>(),
+                },
+                UnlockEquipmentRecipe _ => new UnlockEquipmentRecipe
+                {
+                    AvatarAddress = new PrivateKey().ToAddress(),
+                    RecipeIds = new List<int>
+                    {
+                        2,
+                        3,
+                    },
                 },
                 _ => throw new InvalidCastException()
             };
