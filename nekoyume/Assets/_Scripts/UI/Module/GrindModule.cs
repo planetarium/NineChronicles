@@ -25,8 +25,13 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Text stakingBonusText;
 
+        [SerializeField]
+        private List<GrindingItemSlot> itemSlots;
+
         private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind =
             new ReactiveCollection<InventoryItem>();
+
+        private const int LimitGrindingCount = 10;
 
         public void Start()
         {
@@ -34,25 +39,44 @@ namespace Nekoyume.UI.Module
             grindButton.SetCondition(() => _selectedItemsForGrind.Any());
             grindButton.OnSubmitSubject.Subscribe(_ =>
             {
-                _selectedItemsForGrind.Select(inventoryItem =>
-                    ((Equipment) inventoryItem.ItemBase).ItemId);
+                Action(_selectedItemsForGrind.Select(inventoryItem =>
+                    (Equipment) inventoryItem.ItemBase).ToList());
             }).AddTo(gameObject);
 
             _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
             {
                 item.Value.GrindingCount.SetValueAndForceNotify(_selectedItemsForGrind.Count);
+                itemSlots[item.Index].UpdateSlot(item.Value);
                 item.Value.GrindObjectEnabled.OnNext(true);
             }).AddTo(gameObject);
 
             _selectedItemsForGrind.ObserveRemove().Subscribe(item =>
             {
                 var listSize = _selectedItemsForGrind.Count;
-                for (int i = item.Index; i < listSize; i++)
+                for (int i = item.Index; i < LimitGrindingCount; i++)
                 {
-                    _selectedItemsForGrind[i].GrindingCount.SetValueAndForceNotify(i + 1);
+                    if (i < listSize)
+                    {
+                        _selectedItemsForGrind[i].GrindingCount.SetValueAndForceNotify(i + 1);
+                        itemSlots[i].UpdateSlot(_selectedItemsForGrind[i]);
+                    }
+                    else
+                    {
+                        itemSlots[i].UpdateSlot();
+                    }
                 }
-                item.Value.GrindObjectEnabled.OnNext(false);
+                item.Value.GrindingCount.SetValueAndForceNotify(0);
             }).AddTo(gameObject);
+
+            _selectedItemsForGrind.ObserveReset().Subscribe(_ =>
+            {
+                itemSlots.ForEach(slot => slot.UpdateSlot());
+            }).AddTo(gameObject);
+
+            itemSlots.ForEach(slot => slot.OnClick.Subscribe(_ =>
+            {
+                _selectedItemsForGrind.Remove(slot.AssignedItem);
+            }));
         }
 
         public void Initialize()
@@ -95,12 +119,15 @@ namespace Nekoyume.UI.Module
 
         private void Action(List<Equipment> equipments)
         {
-            if (!_selectedItemsForGrind.Any())
+            if (!_selectedItemsForGrind.Any() || _selectedItemsForGrind.Count > LimitGrindingCount)
             {
+                Debug.LogWarning($"Invalid selected items count. count : {_selectedItemsForGrind.Count}");
                 return;
             }
 
+            Debug.LogError($"Action Grinding!");
             ActionManager.Instance.Grinding(equipments).Subscribe();
+            _selectedItemsForGrind.Clear();
         }
     }
 }
