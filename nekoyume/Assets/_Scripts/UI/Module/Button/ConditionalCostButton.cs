@@ -19,7 +19,8 @@ namespace Nekoyume.UI.Module
             None,
             NCG,
             ActionPoint,
-            Hourglass
+            Hourglass,
+            Crystal
         }
 
         [SerializeField]

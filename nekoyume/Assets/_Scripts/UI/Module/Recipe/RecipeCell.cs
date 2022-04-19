@@ -27,7 +27,8 @@ namespace Nekoyume.UI.Module
         [SerializeField] private GameObject lockObject = null;
         [SerializeField] private GameObject lockVFXObject = null;
         [SerializeField] private GameObject lockOpenVFXObject = null;
-        [SerializeField] private GameObject indicatorObject = null;
+        [SerializeField] private GameObject loadingObject = null;
+        [SerializeField] private GameObject notificationObject = null;
         [SerializeField] private TextMeshProUGUI unlockConditionText = null;
         [SerializeField] private Button button = null;
         [SerializeField] private bool selectable = true;
@@ -92,7 +93,7 @@ namespace Nekoyume.UI.Module
             _disposablesForOnDisable.DisposeAllAndClear();
         }
 
-        public void Show(SheetRow<int> recipeRow, bool checkLocked = true)
+        public async void ShowAsync(SheetRow<int> recipeRow, bool checkLocked = true)
         {
             _unlockable = false;
             _recipeRow = recipeRow;
@@ -101,17 +102,25 @@ namespace Nekoyume.UI.Module
 
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
-                var resultItem = equipmentRow.GetResultEquipmentItemRow();
-                var viewData = recipeViewData.GetData(resultItem.Grade);
-                equipmentView.Show(viewData, resultItem);
-                consumableView.Hide();
+                IsLocked = true;
                 if (checkLocked)
                 {
+                    loadingObject.SetActive(true);
+                    await Craft.SharedModel.UnlockedRecipes.Task;
+                    loadingObject.SetActive(false);
                     UpdateLocked(equipmentRow);
                 }
                 else
                 {
                     IsLocked = false;
+                }
+
+                if (!IsLocked)
+                {
+                    var resultItem = equipmentRow.GetResultEquipmentItemRow();
+                    var viewData = recipeViewData.GetData(resultItem.Grade);
+                    equipmentView.Show(viewData, resultItem);
+                    consumableView.Hide();
                 }
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
@@ -155,7 +164,8 @@ namespace Nekoyume.UI.Module
         {
             lockVFXObject.SetActive(false);
             unlockConditionText.enabled = false;
-            var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var worldInformation = avatarState.worldInformation;
 
             var unlockStage = equipmentRow.UnlockStage;
             var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId) ?
@@ -174,7 +184,14 @@ namespace Nekoyume.UI.Module
                 IsLocked = true;
                 return;
             }
-            else if (!Craft.SharedModel.RecipeVFXSkipList.Contains(equipmentRow.Id))
+            else if (Craft.SharedModel.UnlockedRecipes is null)
+            {
+                unlockConditionText.text = L10nManager.Localize("ERROR_FAILED_LOAD_STATE");
+                equipmentView.Hide();
+                IsLocked = true;
+                return;
+            }
+            else if (!Craft.SharedModel.UnlockedRecipes.Task.Result.Contains(equipmentRow.Id))
             {
                 _recipeIdToUnlock = equipmentRow.Id;
                 lockVFXObject.SetActive(true);
@@ -197,6 +214,13 @@ namespace Nekoyume.UI.Module
             equipmentView.gameObject.SetActive(true);
             IsLocked = false;
             _unlockable = false;
+
+            var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPE");
+            Widget.Find<PaymentPopup>().Show(
+                ReactiveAvatarState.CrystalBalance,
+                500,
+                usageMessage,
+                () => Game.Game.instance.ActionManager.UnlockEquipmentRecipe(new List<int>() { _recipeRow.Key }));
         }
 
         public void SetSelected(SheetRow<int> row)
@@ -217,7 +241,7 @@ namespace Nekoyume.UI.Module
         public void SetNotified(SheetRow<int> row)
         {
             var equals = ReferenceEquals(row, _recipeRow);
-            indicatorObject.SetActive(equals);
+            notificationObject.SetActive(equals);
         }
     }
 }

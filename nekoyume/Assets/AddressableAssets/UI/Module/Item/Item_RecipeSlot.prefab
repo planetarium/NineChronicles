@@ -510,7 +510,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2024987690994350524
 RectTransform:
   m_ObjectHideFlags: 0
@@ -529,7 +529,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 4.2, y: -9}
-  m_SizeDelta: {x: 0, y: 50}
+  m_SizeDelta: {x: 13.9, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &721916887796100888
 CanvasRenderer:
@@ -673,7 +673,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 5
-  l10nKey: 
+  l10nKey: UI_LOADING_STATES
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -2519,7 +2519,8 @@ MonoBehaviour:
   lockObject: {fileID: 6706624862869275031}
   lockVFXObject: {fileID: 5196846471741088220}
   lockOpenVFXObject: {fileID: 6942684687364404803}
-  indicatorObject: {fileID: 4301618597938750152}
+  loadingObject: {fileID: 1694029400667041539}
+  notificationObject: {fileID: 4301618597938750152}
   unlockConditionText: {fileID: 2566518020154693237}
   button: {fileID: 2408656741481977993}
   selectable: 1

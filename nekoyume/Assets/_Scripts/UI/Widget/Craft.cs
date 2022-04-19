@@ -115,6 +115,7 @@ namespace Nekoyume.UI
             {
                 if (address.Equals(default)) return;
                 SharedModel.LoadRecipeVFXSkipList();
+                SharedModel.UpdateUnlockedRecipesAsync(address);
             }).AddTo(gameObject);
 
             recipeScroll.InitializeNotification();

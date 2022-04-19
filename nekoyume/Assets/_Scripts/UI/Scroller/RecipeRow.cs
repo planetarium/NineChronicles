@@ -87,7 +87,7 @@ namespace Nekoyume.UI.Scroller
                 else
                 {
                     var cell = recipeCells[i];
-                    cell.Show(viewModel.Rows[i]);
+                    cell.ShowAsync(viewModel.Rows[i]);
                 }
             }
         }

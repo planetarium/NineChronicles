@@ -1,6 +1,10 @@
+using Bencodex.Types;
+using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
@@ -10,6 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 
@@ -34,6 +39,7 @@ namespace Nekoyume.UI.Model
         public RecipeCell SelectedRecipeCell { get; set; }
         public EquipmentItemRecipeSheet.Row RecipeForTutorial { get; private set; }
         public HashSet<int> RecipeVFXSkipList { get; private set; }
+        public TaskCompletionSource<List<int>> UnlockedRecipes { get; private set; }
         private const string RecipeVFXSkipListKey = "Nekoyume.UI.EquipmentRecipe.FirstEnterRecipeKey_{0}";
         private const string EquipmentSplitFormat = "{0}_{1}";
         private const int RecipeIdForTutorial = 1;
@@ -191,6 +197,18 @@ namespace Nekoyume.UI.Model
             }
 
             PlayerPrefs.SetString(key, data);
+        }
+
+        public async void UpdateUnlockedRecipesAsync(Address address)
+        {
+            UnlockedRecipes = new TaskCompletionSource<List<int>>();
+            var unlockedRecipeIdsAddress = address.Derive("recipe_ids");
+            var task = Game.Game.instance.Agent.GetStateAsync(unlockedRecipeIdsAddress);
+            await task;
+            var result = task.Result != null ?
+                ((List)task.Result).ToList(StateExtensions.ToInteger) :
+                new List<int>() { 1 };
+            UnlockedRecipes.SetResult(result);
         }
 
         public static string GetEquipmentGroup(int itemId)

@@ -1275,9 +1275,9 @@ GameObject:
   - component: {fileID: 6540354676906955612}
   - component: {fileID: 6542624472781015284}
   - component: {fileID: 6379748143871339756}
-  - component: {fileID: 669985233943835034}
+  - component: {fileID: 3337104967903002731}
   m_Layer: 5
-  m_Name: UI_PricePopup
+  m_Name: UI_PaymentPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1331,7 +1331,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &669985233943835034
+--- !u!114 &3337104967903002731
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1340,13 +1340,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 6475550475323157878}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51be37562a81405f90398e2491558996, type: 3}
+  m_Script: {fileID: 11500000, guid: fd44827469713f94fb4e6c986d537d6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  confirm: {fileID: 5921507572653683991}
-  cancel: {fileID: 6495711805411063220}
+  title: {fileID: 5968462093368198312}
+  content: {fileID: 80732125048866605}
+  buttonYes: {fileID: 4489836064358545039}
+  buttonNo: {fileID: 1361672825991667205}
+  titleBorder: {fileID: 5755573070622404356}
+  costText: {fileID: 2392000209274826356}
 --- !u!1 &6738380806087503804
 GameObject:
   m_ObjectHideFlags: 0
