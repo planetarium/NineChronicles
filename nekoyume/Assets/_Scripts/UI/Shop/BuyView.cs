@@ -119,7 +119,7 @@ namespace Nekoyume
             new ReactiveProperty<ItemSubTypeFilter>(ItemSubTypeFilter.All);
 
         private readonly ReactiveProperty<ShopSortFilter> _selectedSortFilter =
-            new ReactiveProperty<ShopSortFilter>(ShopSortFilter.Class);
+            new ReactiveProperty<ShopSortFilter>(ShopSortFilter.CP);
 
         private readonly ReactiveProperty<List<int>> _selectedItemIds =
             new ReactiveProperty<List<int>>(new List<int>());
@@ -376,7 +376,7 @@ namespace Nekoyume
             _resetAnimator.Play(_hashDisabled);
 
             _selectedSubTypeFilter.SetValueAndForceNotify(ItemSubTypeFilter.Weapon);
-            _selectedSortFilter.SetValueAndForceNotify(ShopSortFilter.Class);
+            _selectedSortFilter.SetValueAndForceNotify(ShopSortFilter.CP);
             _selectedItemIds.Value.Clear();
             _isAscending.SetValueAndForceNotify(false);
             _levelLimit.SetValueAndForceNotify(false);
