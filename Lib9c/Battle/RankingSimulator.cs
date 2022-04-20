@@ -18,7 +18,6 @@ namespace Nekoyume.Battle
         private readonly EnemyPlayer _enemyPlayer;
         private readonly int _stageId;
         private List<ItemBase> _rewards;
-        private readonly ArenaInfo _enemyInfo;
 
         /// <summary>
         /// Use this property after invoke the `PostSimulate(rewards)` function.
@@ -33,7 +32,6 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             RankingSimulatorSheets rankingSimulatorSheets,
             int stageId,
-            ArenaInfo enemyInfo,
             CostumeStatSheet costumeStatSheet
         ) : base(
             random,
@@ -48,7 +46,6 @@ namespace Nekoyume.Battle
             };
             _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
             _stageId = stageId;
-            _enemyInfo = enemyInfo;
             if (!(costumeStatSheet is null))
             {
                 Player.SetCostumeStat(costumeStatSheet);
@@ -62,8 +59,7 @@ namespace Nekoyume.Battle
             AvatarState enemyAvatarState,
             List<Guid> foods,
             RankingSimulatorSheets rankingSimulatorSheets,
-            int stageId,
-            ArenaInfo enemyInfo
+            int stageId
         ) : this(
             random,
             new Player(avatarState, rankingSimulatorSheets),
@@ -71,7 +67,6 @@ namespace Nekoyume.Battle
             foods,
             rankingSimulatorSheets,
             stageId,
-            enemyInfo,
             null
         )
         {
@@ -84,7 +79,6 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             RankingSimulatorSheets rankingSimulatorSheets,
             int stageId,
-            ArenaInfo enemyInfo,
             CostumeStatSheet costumeStatSheet
         ) : this(
             random,
@@ -92,8 +86,7 @@ namespace Nekoyume.Battle
             enemyAvatarState,
             foods,
             rankingSimulatorSheets,
-            stageId,
-            enemyInfo
+            stageId
         )
         {
             Player.SetCostumeStat(costumeStatSheet);

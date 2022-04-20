@@ -218,7 +218,6 @@ namespace Nekoyume.Action
                     new List<Guid>(),
                     rankingSheets,
                     StageId,
-                    enemyInfo,
                     costumeStatSheet);
 
                 simulator.Simulate();
