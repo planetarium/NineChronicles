@@ -327,63 +327,6 @@
             <param name="localVersion">The currently running application's
             <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
         </member>
-        <member name="T:Libplanet.Net.DifferentAppProtocolVersionException">
-            <summary>
-            The exception that is thrown when the version of the
-            <see cref="T:Libplanet.Net.Messages.Message"/> that <see cref="T:Libplanet.Net.Swarm`1"/> received
-            is different.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Net.DifferentAppProtocolVersionException.#ctor(System.String,Libplanet.Net.Peer,System.Byte[],Libplanet.Net.AppProtocolVersion,Libplanet.Net.AppProtocolVersion,System.Boolean)">
-            <summary>
-            Initializes a new instance of the
-            <see cref="T:Libplanet.Net.DifferentAppProtocolVersionException"/> class.
-            </summary>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.</param>
-            <param name="peer">The <see cref="P:Libplanet.Net.Messages.Message.Remote"/> of the <see cref="T:Libplanet.Net.Messages.Message"/>
-            received.</param>
-            <param name="identity">The <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of the <see cref="T:Libplanet.Net.Messages.Message"/>
-            received.</param>
-            <param name="expectedAppProtocolVersion">The protocol version of
-            the local <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
-            <param name="actualAppProtocolVersion">The protocol version of the <see cref="P:Libplanet.Net.DifferentAppProtocolVersionException.Peer"/>
-            that the local <see cref="T:Libplanet.Net.Swarm`1"/> is trying to connect to.</param>
-            <param name="trusted">Whether <paramref name="actualAppProtocolVersion"/>
-            is signed by a trusted signer.</param>
-        </member>
-        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.Identity">
-            <summary>
-            The identity of the message received.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ExpectedApv">
-            <summary>
-            The protocol version of the current <see cref="T:Libplanet.Net.Swarm`1"/>.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.ActualApv">
-            <summary>
-            The protocol version of the <see cref="P:Libplanet.Net.DifferentAppProtocolVersionException.Peer"/> that the
-            <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect to.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.DifferentAppProtocolVersionException.Trusted">
-            <summary>
-            Whether <see cref="P:Libplanet.Net.DifferentAppProtocolVersionException.ActualApv"/> is signed by a trusted signer.
-            </summary>
-        </member>
-        <member name="T:Libplanet.Net.InvalidMessageSignatureException">
-            <summary>
-            An exception that is thrown when the signature of an encoded <see cref="T:Libplanet.Net.Messages.Message"/> is
-            invalid.
-            </summary>
-        </member>
-        <member name="T:Libplanet.Net.InvalidMessageTimestampException">
-            <summary>
-            An exception that is thrown when the timestamp of an encoded <see cref="T:Libplanet.Net.Messages.Message"/> is
-            invalid.
-            </summary>
-        </member>
         <member name="P:Libplanet.Net.Messages.BlockHashes.StartIndex">
             <summary>
             The block index of the first hash in <see cref="P:Libplanet.Net.Messages.BlockHashes.Hashes"/>.
@@ -408,40 +351,40 @@
             </summary>
             <seealso cref="T:Libplanet.Net.Messages.Neighbors"/>
         </member>
-        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset)">
+        <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.Peer,System.DateTimeOffset)">
             <summary>
             Encodes the message to <see typeref="T"/>-typed instance with given
             <paramref name="privateKey"/> and <paramref name="peer"/>.
             </summary>
-            <param name="message">A message to encode.</param>
-            <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> to sign message.</param>
-            <param name="peer"><see cref="T:Libplanet.Net.Peer"/>-typed representation of the
-            sender's transport layer.
+            <param name="message">The message to encode.</param>
+            <param name="privateKey">The <see cref="T:Libplanet.Crypto.PrivateKey"/> to sign the encoded message.
+            </param>
+            <param name="appProtocolVersion">The <see cref="T:Libplanet.Net.AppProtocolVersion"/> of
+            the transport layer.</param>
+            <param name="peer">The <see cref="T:Libplanet.Net.Peer"/>-typed representation of
+            the transport layer.
             <seealso cref="P:Libplanet.Net.Transports.ITransport.AsPeer"/></param>
-            <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> of the message is created.
+            <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> of the time
+            <paramref name="message"/> is encoded.
             </param>
             <returns>A <see typeref="T"/> containing the signed <see cref="T:Libplanet.Net.Messages.Message"/>.
             </returns>
+            <exception cref="T:Libplanet.Net.Transports.InvalidCredentialException">Thrown when <paramref name="privateKey"/>'s
+            <see cref="T:Libplanet.Crypto.PublicKey"/> does not match that of <paramref name="peer"/>.</exception>
         </member>
         <member name="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean)">
             <summary>
             Decodes given <see typeref="T"/>-typed <paramref name="encoded"/> into
             <see cref="T:Libplanet.Net.Messages.Message"/> and checks its validity.
-            <seealso cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset)"/>
+            <seealso cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.Peer,System.DateTimeOffset)"/>
             </summary>
             <param name="encoded">A <see typeref="T"/>-typed instance to parse.</param>
             <param name="reply">A flag to express whether the target is a reply of other message.
             </param>
             <returns>A <see cref="T:Libplanet.Net.Messages.Message"/> parsed from <paramref name="encoded"/>.</returns>
-            <exception cref="T:System.ArgumentException">
-            Thrown when empty <paramref name="encoded"/> is given.</exception>
-            <exception cref="T:Libplanet.Net.DifferentAppProtocolVersionException">Thrown when
-            local version does not match with given <paramref name="encoded"/>'s
-            <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
-            </exception>
-            <exception cref="T:Libplanet.Net.InvalidMessageTimestampException"> Thrown when the timestamp of
-            <paramref name="encoded"/> is invalid.</exception>
-            <exception cref="T:Libplanet.Net.InvalidMessageSignatureException"> Thrown when the signer of
+            <exception cref="T:System.ArgumentException">Thrown when empty <paramref name="encoded"/>
+            is given.</exception>
+            <exception cref="T:Libplanet.Net.Transports.InvalidMessageSignatureException">Thrown when the signer of
             <paramref name="encoded"/> is invalid.</exception>
         </member>
         <member name="T:Libplanet.Net.Messages.Message">
@@ -604,7 +547,7 @@
             <summary>
             <para>
             The local <see cref="T:Libplanet.Net.AppProtocolVersion"/> used for
-            <see cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset)"/> and <see cref="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean)"/> methods.
+            <see cref="M:Libplanet.Net.Messages.IMessageCodec`1.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.Peer,System.DateTimeOffset)"/> and <see cref="M:Libplanet.Net.Messages.IMessageCodec`1.Decode(`0,System.Boolean)"/> methods.
             </para>
             <para>
             In particular, this is used in the following cases:
@@ -674,39 +617,34 @@
             </para>
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Messages.MessageValidator.ValidateAppProtocolVersion(Libplanet.Net.Peer,System.Byte[],Libplanet.Net.AppProtocolVersion)">
+        <member name="M:Libplanet.Net.Messages.MessageValidator.ValidateAppProtocolVersion(Libplanet.Net.Messages.Message)">
             <summary>
             Validates an <see cref="T:Libplanet.Net.AppProtocolVersion"/> against <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/>.
             Any <see cref="T:Libplanet.Net.AppProtocolVersion"/> that is different from <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/> is
-            considered invalid and an <see cref="T:Libplanet.Net.DifferentAppProtocolVersionException"/> will be
+            considered invalid and an <see cref="T:Libplanet.Net.Transports.DifferentAppProtocolVersionException"/> will be
             thrown.
             </summary>
-            <param name="peer">The <see cref="T:Libplanet.Net.Peer"/> that has sent the <see cref="T:Libplanet.Net.Messages.Message"/>
-            with <paramref name="peerAppProtocolVersion"/>.</param>
-            <param name="identity">The <see cref="P:Libplanet.Net.Messages.Message.Identity"/> attached to the
-            <see cref="T:Libplanet.Net.Messages.Message"/> with <paramref name="peerAppProtocolVersion"/>.</param>
-            <param name="peerAppProtocolVersion">The <see cref="T:Libplanet.Net.AppProtocolVersion"/> to validate.
-            </param>
-            <exception cref="T:Libplanet.Net.DifferentAppProtocolVersionException">Thrown when
-            <paramref name="peerAppProtocolVersion"/> is different from <see cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/>.
-            </exception>
+            <param name="message">The <see cref="T:Libplanet.Net.Messages.Message"/> to validate.</param>
             <remarks>
-            If <paramref name="peerAppProtocolVersion"/> is not valid but is signed by
-            a trusted signer, then <see cref="P:Libplanet.Net.Messages.MessageValidator.DifferentApvEncountered"/> is called.
+            If <see cref="P:Libplanet.Net.Messages.Message.Version"/> of <paramref name="message"/> is not valid but
+            is signed by a trusted signer, then <see cref="P:Libplanet.Net.Messages.MessageValidator.DifferentApvEncountered"/> is called.
             </remarks>
+            <exception cref="T:System.NullReferenceException">Thrown when <see cref="P:Libplanet.Net.Messages.Message.Remote"/> is
+            <c>null</c> for <paramref name="message"/>.</exception>
+            <exception cref="T:Libplanet.Net.Transports.DifferentAppProtocolVersionException">Thrown when
+            local version does not match with given <paramref name="message"/>'s
+            <see cref="P:Libplanet.Net.Messages.Message.Version"/>.</exception>
             <seealso cref="P:Libplanet.Net.Messages.MessageValidator.Apv"/>
             <seealso cref="P:Libplanet.Net.Messages.MessageValidator.TrustedApvSigners"/>
             <seealso cref="P:Libplanet.Net.Messages.MessageValidator.DifferentApvEncountered"/>
         </member>
-        <member name="M:Libplanet.Net.Messages.MessageValidator.ValidateTimestamp(Libplanet.Net.Peer,System.DateTimeOffset,System.DateTimeOffset)">
+        <member name="M:Libplanet.Net.Messages.MessageValidator.ValidateTimestamp(Libplanet.Net.Messages.Message)">
             <summary>
             Validates a <see cref="T:System.DateTimeOffset"/> timestamp against current timestamp.
             </summary>
-            <param name="peer">The <see cref="T:Libplanet.Net.Peer"/> that has sent the <see cref="T:Libplanet.Net.Messages.Message"/>
-            with <paramref name="messageTimestamp"/>.</param>
-            <param name="currentTimestamp">Current timestamp.</param>
-            <param name="messageTimestamp">The <see cref="P:Libplanet.Net.Messages.Message.Timestamp"/> of
-            the <see cref="T:Libplanet.Net.Messages.Message"/> in question.</param>
+            <param name="message">The <see cref="T:Libplanet.Net.Messages.Message"/> to validate.</param>
+            <exception cref="T:Libplanet.Net.Transports.InvalidMessageTimestampException">Thrown when the timestamp of
+            <paramref name="message"/> is invalid.</exception>
             <seealso cref="P:Libplanet.Net.Messages.MessageValidator.MessageTimestampBuffer"/>.
         </member>
         <member name="T:Libplanet.Net.Messages.Neighbors">
@@ -715,21 +653,12 @@
             </summary>
             <seealso cref="T:Libplanet.Net.Messages.FindNeighbors"/>
         </member>
-        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.#ctor(Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.#ctor">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Messages.NetMQMessageCodec"/> instance.
             </summary>
-            <param name="appProtocolVersion">The <see cref="T:Libplanet.Net.AppProtocolVersion"/> to use
-            when encoding and decoding.</param>
-            <param name="trustedAppProtocolVersionSigners">The set of signers to trust when
-            decoding a message.</param>
-            <param name="differentAppProtocolVersionEncountered">A callback method that gets
-            invoked when an <see cref="T:Libplanet.Net.AppProtocolVersion"/> by a <em>trusted</em> signer that is
-            different from <paramref name="appProtocolVersion"/> is encountered.</param>
-            <param name="messageTimestampBuffer">A <see cref="T:System.TimeSpan"/> to use as a buffer
-            when decoding <see cref="T:Libplanet.Net.Messages.Message"/>s.</param>
         </member>
-        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset)">
+        <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.Peer,System.DateTimeOffset)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Net.Messages.NetMQMessageCodec.Decode(NetMQ.NetMQMessage,System.Boolean)">
@@ -747,21 +676,12 @@
             </summary>
             <seealso cref="T:Libplanet.Net.Messages.Ping"/>
         </member>
-        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.#ctor(Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.#ctor">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Messages.TcpMessageCodec"/> instance.
             </summary>
-            <param name="appProtocolVersion">The <see cref="T:Libplanet.Net.AppProtocolVersion"/> to use
-            when encoding and decoding.</param>
-            <param name="trustedAppProtocolVersionSigners">The set of signers to trust when
-            decoding a message.</param>
-            <param name="differentAppProtocolVersionEncountered">A callback method that gets
-            invoked when an <see cref="T:Libplanet.Net.AppProtocolVersion"/> by a <em>trusted</em> signer that is
-            different from <paramref name="appProtocolVersion"/> is encountered.</param>
-            <param name="messageTimestampBuffer">A <see cref="T:System.TimeSpan"/> to use as a buffer
-            when decoding <see cref="T:Libplanet.Net.Messages.Message"/>s.</param>
         </member>
-        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset)">
+        <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Encode(Libplanet.Net.Messages.Message,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,Libplanet.Net.Peer,System.DateTimeOffset)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Net.Messages.TcpMessageCodec.Decode(System.Byte[],System.Boolean)">
@@ -1866,6 +1786,67 @@
             operation should be canceled.</param>
             <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
         </member>
+        <member name="T:Libplanet.Net.Transports.CommunicationFailException">
+            <summary>
+            An <see cref="T:System.Exception"/> thrown when fail to complete a sending and receiving messages
+            cycle via <see cref="T:Libplanet.Net.Transports.ITransport"/> for one of the expected reasons such as normal timeout,
+            receiving a invalid reply, etc.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Transports.DifferentAppProtocolVersionException">
+            <summary>
+            The exception that is thrown when the version of the
+            <see cref="T:Libplanet.Net.Messages.Message"/> that <see cref="T:Libplanet.Net.Swarm`1"/> received
+            is different.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Transports.DifferentAppProtocolVersionException.#ctor(System.String,Libplanet.Net.AppProtocolVersion,Libplanet.Net.AppProtocolVersion,System.Boolean)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:Libplanet.Net.Transports.DifferentAppProtocolVersionException"/> class.
+            </summary>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.</param>
+            <param name="expectedAppProtocolVersion">The protocol version of
+            the local <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
+            <param name="actualAppProtocolVersion">The protocol version of the <see cref="T:Libplanet.Net.Peer"/>
+            that the local <see cref="T:Libplanet.Net.Swarm`1"/> is trying to connect to.</param>
+            <param name="trusted">Whether <paramref name="actualAppProtocolVersion"/>
+            is signed by a trusted signer.</param>
+        </member>
+        <member name="P:Libplanet.Net.Transports.DifferentAppProtocolVersionException.ExpectedApv">
+            <summary>
+            The protocol version of the current <see cref="T:Libplanet.Net.Swarm`1"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Transports.DifferentAppProtocolVersionException.ActualApv">
+            <summary>
+            The protocol version of the <see cref="T:Libplanet.Net.Peer"/> that the
+            <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect to.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Transports.DifferentAppProtocolVersionException.Trusted">
+            <summary>
+            Whether <see cref="P:Libplanet.Net.Transports.DifferentAppProtocolVersionException.ActualApv"/> is signed by a trusted signer.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Transports.InvalidCredentialException">
+            <summary>
+            An <see cref="T:System.Exception"/> that is thrown when a provided credential is invalid
+            when signing an encoded <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Transports.InvalidMessageSignatureException">
+            <summary>
+            An exception that is thrown when the signature of an encoded <see cref="T:Libplanet.Net.Messages.Message"/> is
+            invalid.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Transports.InvalidMessageTimestampException">
+            <summary>
+            An exception that is thrown when the timestamp of an encoded <see cref="T:Libplanet.Net.Messages.Message"/> is
+            invalid.
+            </summary>
+        </member>
         <member name="T:Libplanet.Net.Transports.ITransport">
             <summary>
             An interface to handle peer-to-peer networking, including <see cref="T:Libplanet.Net.Messages.Message"/> exchanging
@@ -1939,8 +1920,10 @@
             operation should be canceled.</param>
             <returns>The replies of the <paramref name="message"/>
             sent by <paramref name="peer"/>.</returns>
-            <exception cref="T:System.ObjectDisposedException">
-            Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is already disposed.</exception>
+            <exception cref="T:Libplanet.Net.Transports.CommunicationFailException">Thrown when fail send or receive
+            a <see cref="T:Libplanet.Net.Messages.Message"/>.</exception>
+            <exception cref="T:System.ObjectDisposedException">Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance
+            is already disposed.</exception>
         </member>
         <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
             <summary>
@@ -1958,6 +1941,8 @@
             operation should be canceled.</param>
             <returns>The replies of the <paramref name="message"/>
             sent by <paramref name="peer"/>.</returns>
+            <exception cref="T:Libplanet.Net.Transports.CommunicationFailException">Thrown when fail send or receive
+            a <see cref="T:Libplanet.Net.Messages.Message"/>.</exception>
             <exception cref="T:System.ObjectDisposedException">Thrown when <see cref="T:Libplanet.Net.Transports.ITransport"/> instance
             is already disposed.</exception>
         </member>
@@ -2060,6 +2045,11 @@
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.ReplyMessageAsync(Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
             <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Net.Transports.SendMessageFailException">
+            <summary>
+            An <see cref="T:System.Exception"/> thrown when fail to send a <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
         </member>
         <member name="P:Libplanet.Net.Transports.TcpTransport.ProcessMessageHandler">
             <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.ProcessMessageHandler"/>

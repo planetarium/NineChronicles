@@ -1009,17 +1009,31 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
-                var epd = (List) eval.Extra[nameof(Action.RankingBattle.EnemyPlayerDigest)];
-                var eid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
-                var aid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
-                var enemyPlayerDigest = new EnemyPlayerDigest(epd);
-                var arenaInfo = new ArenaInfo(aid);
-                var enemyInfo = new ArenaInfo(eid);
-                var rankingSimulatorSheets =
-                    Game.Game.instance.TableSheets.GetRankingSimulatorSheets();
-                var player = new Player(States.Instance.CurrentAvatarState,
-                    rankingSimulatorSheets);
 
+                var tableSheets = Game.Game.instance.TableSheets;
+                ArenaInfo arenaInfo;
+                ArenaInfo enemyArenaInfo;
+                EnemyPlayerDigest enemyPlayerDigest;
+                if (eval.Extra is { })
+                {
+                    var aid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
+                    arenaInfo = new ArenaInfo(aid);
+                    var eid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
+                    enemyArenaInfo = new ArenaInfo(eid);
+                    var epd = (List) eval.Extra[nameof(Action.RankingBattle.EnemyPlayerDigest)];
+                    enemyPlayerDigest = new EnemyPlayerDigest(epd);
+                }
+                else
+                {
+                    var avatarState = eval.PreviousStates.GetAvatarStateV2(eval.Action.avatarAddress);
+                    arenaInfo = new ArenaInfo(avatarState, tableSheets.CharacterSheet, true);
+                    var enemyAvatarState = eval.PreviousStates.GetAvatarStateV2(eval.Action.enemyAddress);
+                    enemyArenaInfo = new ArenaInfo(enemyAvatarState, tableSheets.CharacterSheet, true);
+                    enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
+                }
+
+                var rankingSimulatorSheets = tableSheets.GetRankingSimulatorSheets();
+                var player = new Player(States.Instance.CurrentAvatarState, rankingSimulatorSheets);
                 var simulator = new RankingSimulator(
                     new LocalRandom(eval.RandomSeed),
                     player,
@@ -1027,11 +1041,20 @@ namespace Nekoyume.BlockChain
                     new List<Guid>(),
                     rankingSimulatorSheets,
                     Action.RankingBattle.StageId,
-                    arenaInfo,
-                    enemyInfo,
-                    Game.Game.instance.TableSheets.CostumeStatSheet
+                    tableSheets.CostumeStatSheet
                 );
                 simulator.Simulate();
+                var rewards = RewardSelector.Select(
+                    simulator.Random,
+                    tableSheets.WeeklyArenaRewardSheet,
+                    tableSheets.MaterialItemSheet,
+                    player.Level,
+                    arenaInfo.GetRewardCount());
+                var challengerScoreDelta = arenaInfo.Update(
+                    enemyArenaInfo,
+                    simulator.Result,
+                    ArenaScoreHelper.GetScore);
+                simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
                 var log = simulator.Log;
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
