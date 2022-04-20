@@ -306,52 +306,35 @@ namespace Nekoyume.UI
 
         private async Task UpdateWeeklyCache(WeeklyArenaState state)
         {
-            if (Game.Game.instance.Agent.BlockIndex >= RankingBattle.UpdateTargetBlockIndex)
+            var agent = Game.Game.instance.Agent;
+            var rawList = await agent.GetStateAsync(state.address.Derive("address_list"));
+            if (rawList is List list)
             {
-                // For backward compatibility, create list based on previous week.
-                if (Game.Game.instance.Agent.BlockIndex <= RankingBattle.UpdateTargetBlockIndex +
-                    States.Instance.GameConfigState.WeeklyArenaInterval && !_arenaInfoList.Locked)
+                var avatarAddressList = list.ToList(StateExtensions.ToAddress);
+                var arenaInfoAddressList = new List<Address>();
+                foreach (var avatarAddress in avatarAddressList)
                 {
-                    var prevWeekAddress = ArenaHelper.GetPrevWeekAddress();
-                    var rawWeekly = await Game.Game.instance.Agent.GetStateAsync(prevWeekAddress);
-                    var prevWeekly = new WeeklyArenaState(rawWeekly);
-                    var copiedState = new WeeklyArenaState(state.address);
-                    copiedState.Update(prevWeekly, state.ResetIndex);
-                    _arenaInfoList.Update(copiedState, true);
+                    var arenaInfoAddress = state.address.Derive(avatarAddress.ToByteArray());
+                    if (!arenaInfoAddressList.Contains(arenaInfoAddress))
+                    {
+                        arenaInfoAddressList.Add(arenaInfoAddress);
+                    }
                 }
-                var rawList =
-                    await Game.Game.instance.Agent.GetStateAsync(
-                        state.address.Derive("address_list"));
-                if (rawList is List list)
+
+                var result = await agent.GetStateBulk(arenaInfoAddressList);
+                var infoList = new List<ArenaInfo>();
+                foreach (var iValue in result.Values)
                 {
-                    List<Address> avatarAddressList = list.ToList(StateExtensions.ToAddress);
-                    List<Address> arenaInfoAddressList = new List<Address>();
-                    foreach (var avatarAddress in avatarAddressList)
+                    if (iValue is Dictionary dictionary)
                     {
-                        var arenaInfoAddress = state.address.Derive(avatarAddress.ToByteArray());
-                        if (!arenaInfoAddressList.Contains(arenaInfoAddress))
-                        {
-                            arenaInfoAddressList.Add(arenaInfoAddress);
-                        }
+                        var info = new ArenaInfo(dictionary);
+                        infoList.Add(info);
                     }
-                    Dictionary<Address, IValue> result = await Game.Game.instance.Agent.GetStateBulk(arenaInfoAddressList);
-                    var infoList = new List<ArenaInfo>();
-                    foreach (var iValue in result.Values)
-                    {
-                        if (iValue is Dictionary dictionary)
-                        {
-                            var info = new ArenaInfo(dictionary);
-                            infoList.Add(info);
-                        }
-                    }
-                    _arenaInfoList.Update(infoList);
                 }
+
+                _arenaInfoList.Update(infoList);
             }
-            else
-            {
-                // TODO delete this flag after RankingBattle.UpdateTargetBlockIndex.
-                _arenaInfoList.Update(state, false);
-            }
+
             var infos = _arenaInfoList.GetArenaInfos(1, 3);
             if (States.Instance.CurrentAvatarState != null)
             {
@@ -369,7 +352,7 @@ namespace Nekoyume.UI
             }
 
             var addressList = infos.Select(i => i.arenaInfo.AvatarAddress).ToList();
-            var avatarStates = await Game.Game.instance.Agent.GetAvatarStates(addressList);
+            var avatarStates = await agent.GetAvatarStates(addressList);
             _weeklyCachedInfo = infos
                 .Select(tuple =>
                 {
