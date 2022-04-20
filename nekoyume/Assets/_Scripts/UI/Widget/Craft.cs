@@ -29,6 +29,7 @@ namespace Nekoyume.UI
         [SerializeField] private RecipeScroll recipeScroll = null;
         [SerializeField] private SubRecipeView equipmentSubRecipeView = null;
         [SerializeField] private SubRecipeView consumableSubRecipeView = null;
+        [SerializeField] private RecipeUnlockInfo recipeUnlockInfo = null;
 
         [SerializeField] private CanvasGroup canvasGroup = null;
 
@@ -111,6 +112,18 @@ namespace Nekoyume.UI
             SharedModel.SelectedRow
                 .Subscribe(SetSubRecipe)
                 .AddTo(gameObject);
+            SharedModel.UnlockedRecipes
+                .Subscribe(list =>
+                {
+                    if (list != null &&
+                        SharedModel.SelectedRow.Value != null &&
+                        list.Contains(SharedModel.SelectedRow.Value.Key))
+                    {
+                        SetSubRecipe(SharedModel.SelectedRow.Value);
+                    }
+                })
+                .AddTo(gameObject);
+
             ReactiveAvatarState.Address.Subscribe(address =>
             {
                 if (address.Equals(default)) return;
@@ -189,6 +202,12 @@ namespace Nekoyume.UI
             }
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            SharedModel.SelectedRow.Value = null;
+            base.Close(ignoreCloseAnimation);
+        }
+
         private void ShowEquipment()
         {
             equipmentSubRecipeView.ResetSelectedIndex();
@@ -207,20 +226,33 @@ namespace Nekoyume.UI
         {
             if (row is EquipmentItemRecipeSheet.Row equipmentRow)
             {
-                equipmentSubRecipeView.gameObject.SetActive(true);
-                consumableSubRecipeView.gameObject.SetActive(false);
-                equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
+                if (!SharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id))
+                {
+                    equipmentSubRecipeView.gameObject.SetActive(false);
+                    consumableSubRecipeView.gameObject.SetActive(false);
+                    recipeUnlockInfo.gameObject.SetActive(true);
+                    recipeUnlockInfo.Set(equipmentRow);
+                }
+                else
+                {
+                    equipmentSubRecipeView.gameObject.SetActive(true);
+                    consumableSubRecipeView.gameObject.SetActive(false);
+                    recipeUnlockInfo.gameObject.SetActive(false);
+                    equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
+                }
             }
             else if (row is ConsumableItemRecipeSheet.Row consumableRow)
             {
                 equipmentSubRecipeView.gameObject.SetActive(false);
                 consumableSubRecipeView.gameObject.SetActive(true);
+                recipeUnlockInfo.gameObject.SetActive(false);
                 consumableSubRecipeView.SetData(consumableRow, null);
             }
             else
             {
                 equipmentSubRecipeView.gameObject.SetActive(false);
                 consumableSubRecipeView.gameObject.SetActive(false);
+                recipeUnlockInfo.gameObject.SetActive(false);
             }
         }
 

@@ -131,7 +131,7 @@ namespace Nekoyume.UI
                     ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
                     : stat.ValueAsInt.ToString();
                 statText.text = string.Format(StatTextFormat, stat.Type, statValueText);
-                recipeCell.ShowAsync(equipmentRow, false);
+                recipeCell.Show(equipmentRow, false);
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
             {
@@ -143,7 +143,7 @@ namespace Nekoyume.UI
                     ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
                     : stat.ValueAsInt.ToString();
                 statText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
-                recipeCell.ShowAsync(consumableRow, false);
+                recipeCell.Show(consumableRow, false);
             }
 
             titleText.text = title;

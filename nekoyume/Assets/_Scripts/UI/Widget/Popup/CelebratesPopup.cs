@@ -232,7 +232,7 @@ namespace Nekoyume.UI
 
             menuContainer.SetActive(false);
             questRewards.SetActive(false);
-            recipeCell.ShowAsync(row, false);
+            recipeCell.Show(row, false);
 
             var resultItem = row.GetResultEquipmentItemRow();
             for (int i = 0; i < gradeImages.Length; ++i)

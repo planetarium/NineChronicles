@@ -27,7 +27,6 @@ namespace Nekoyume.UI.Module
         [SerializeField] private GameObject lockObject = null;
         [SerializeField] private GameObject lockVFXObject = null;
         [SerializeField] private GameObject lockOpenVFXObject = null;
-        [SerializeField] private GameObject loadingObject = null;
         [SerializeField] private GameObject notificationObject = null;
         [SerializeField] private TextMeshProUGUI unlockConditionText = null;
         [SerializeField] private Button button = null;
@@ -36,6 +35,7 @@ namespace Nekoyume.UI.Module
         private SheetRow<int> _recipeRow = null;
         private bool _unlockable = false;
         private int _recipeIdToUnlock;
+        private bool _isWaitingForUnlock = false;
 
         private readonly List<IDisposable> _disposablesForOnDisable = new List<IDisposable>();
 
@@ -53,14 +53,10 @@ namespace Nekoyume.UI.Module
             {
                 button.onClick.AddListener(() =>
                 {
-                    if (!IsLocked)
+                    if (!IsLocked || _unlockable)
                     {
                         AudioController.PlayClick();
                         Craft.SharedModel.SelectedRow.Value = _recipeRow;
-                    }
-                    else if (_unlockable)
-                    {
-                        Unlock();
                     }
                     else
                     {
@@ -93,11 +89,10 @@ namespace Nekoyume.UI.Module
             _disposablesForOnDisable.DisposeAllAndClear();
         }
 
-        public async void ShowAsync(SheetRow<int> recipeRow, bool checkLocked = true)
+        public void Show(SheetRow<int> recipeRow, bool checkLocked = true)
         {
-            _unlockable = false;
             _recipeRow = recipeRow;
-
+            animator.SetTrigger("Normal");
             var tableSheets = Game.Game.instance.TableSheets;
 
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
@@ -105,9 +100,6 @@ namespace Nekoyume.UI.Module
                 IsLocked = true;
                 if (checkLocked)
                 {
-                    loadingObject.SetActive(true);
-                    await Craft.SharedModel.UnlockedRecipes.Task;
-                    loadingObject.SetActive(false);
                     UpdateLocked(equipmentRow);
                 }
                 else
@@ -144,13 +136,17 @@ namespace Nekoyume.UI.Module
             {
                 var selected = Craft.SharedModel.SelectedRow;
                 var notified = Craft.SharedModel.NotifiedRow;
+                var unlocked = Craft.SharedModel.UnlockedRecipes;
 
-                if(!IsLocked) SetSelected(selected.Value);
+                if (!IsLocked) SetSelected(selected.Value);
                 selected.Subscribe(SetSelected)
                     .AddTo(_disposablesForOnDisable);
 
                 SetNotified(notified.Value);
                 notified.Subscribe(SetNotified)
+                    .AddTo(_disposablesForOnDisable);
+
+                unlocked.Subscribe(SetUnlocked)
                     .AddTo(_disposablesForOnDisable);
             }
         }
@@ -164,6 +160,8 @@ namespace Nekoyume.UI.Module
         {
             lockVFXObject.SetActive(false);
             unlockConditionText.enabled = false;
+            _unlockable = false;
+            _isWaitingForUnlock = false;
             var avatarState = States.Instance.CurrentAvatarState;
             var worldInformation = avatarState.worldInformation;
 
@@ -191,7 +189,7 @@ namespace Nekoyume.UI.Module
                 IsLocked = true;
                 return;
             }
-            else if (!Craft.SharedModel.UnlockedRecipes.Task.Result.Contains(equipmentRow.Id))
+            else if (!Craft.SharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id))
             {
                 _recipeIdToUnlock = equipmentRow.Id;
                 lockVFXObject.SetActive(true);
@@ -206,21 +204,15 @@ namespace Nekoyume.UI.Module
 
         public void Unlock()
         {
+            _isWaitingForUnlock = true;
             AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
             lockOpenVFXObject.SetActive(true);
             Craft.SharedModel.RecipeVFXSkipList.Add(_recipeIdToUnlock);
             Craft.SharedModel.SaveRecipeVFXSkipList();
 
             equipmentView.gameObject.SetActive(true);
-            IsLocked = false;
-            _unlockable = false;
-
-            var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPE");
-            Widget.Find<PaymentPopup>().Show(
-                ReactiveAvatarState.CrystalBalance,
-                500,
-                usageMessage,
-                () => Game.Game.instance.ActionManager.UnlockEquipmentRecipe(new List<int>() { _recipeRow.Key }));
+            lockObject.SetActive(false);
+            animator.SetTrigger("Loading");
         }
 
         public void SetSelected(SheetRow<int> row)
@@ -242,6 +234,14 @@ namespace Nekoyume.UI.Module
         {
             var equals = ReferenceEquals(row, _recipeRow);
             notificationObject.SetActive(equals);
+        }
+
+        public void SetUnlocked(List<int> recipeIds)
+        {
+            if (_isWaitingForUnlock)
+            {
+                Show(_recipeRow);
+            }
         }
     }
 }
