@@ -219,7 +219,10 @@ namespace Nekoyume.Action
                 sheets.GetSheet<MaterialItemSheet>(),
                 player.Level,
                 ArenaInfo.GetRewardCount());
-            var challengerScoreDelta = ArenaInfo.Update(EnemyArenaInfo, simulator.Result);
+            var challengerScoreDelta = ArenaInfo.Update(
+                EnemyArenaInfo,
+                simulator.Result,
+                ArenaScoreHelper.GetScore);
             simulator.PostSimulate(rewards, challengerScoreDelta, ArenaInfo.Score);
 
             sw.Stop();

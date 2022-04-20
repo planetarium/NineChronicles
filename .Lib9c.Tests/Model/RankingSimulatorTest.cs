@@ -72,7 +72,10 @@ namespace Lib9c.Tests.Model
                 _tableSheets.MaterialItemSheet,
                 arenaInfo.Level,
                 arenaInfo.GetRewardCount());
-            var challengerScoreDelta = arenaInfo.Update(enemyInfo, simulator.Result);
+            var challengerScoreDelta = arenaInfo.Update(
+                enemyInfo,
+                simulator.Result,
+                ArenaScoreHelper.GetScore);
             simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
             Assert.Equal(expected, simulator.Reward.Any());
         }
@@ -121,7 +124,10 @@ namespace Lib9c.Tests.Model
                 _tableSheets.MaterialItemSheet,
                 arenaInfo.Level,
                 arenaInfo.GetRewardCount());
-            var challengerScoreDelta = arenaInfo.Update(enemyInfo, simulator.Result);
+            var challengerScoreDelta = arenaInfo.Update(
+                enemyInfo,
+                simulator.Result,
+                ArenaScoreHelper.GetScore);
             simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
             Assert.Equal(expected, simulator.Reward.Count());
         }
@@ -223,7 +229,10 @@ namespace Lib9c.Tests.Model
                     _tableSheets.MaterialItemSheet,
                     arenaInfo.Level,
                     arenaInfo.GetRewardCount());
-                var challengerScoreDelta = arenaInfo.Update(enemyInfo, simulator.Result);
+                var challengerScoreDelta = arenaInfo.Update(
+                    enemyInfo,
+                    simulator.Result,
+                    ArenaScoreHelper.GetScore);
                 simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
                 foreach (var itemBase in simulator.Reward)
                 {

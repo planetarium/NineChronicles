@@ -226,7 +226,10 @@ namespace Lib9c.Tests.Action
                 _tableSheets.MaterialItemSheet,
                 player.Level,
                 previousArenaInfo.GetRewardCount());
-            var challengerScoreDelta = previousArenaInfo.Update(previousEnemyArenaInfo, simulator.Result);
+            var challengerScoreDelta = previousArenaInfo.Update(
+                previousEnemyArenaInfo,
+                simulator.Result,
+                ArenaScoreHelper.GetScore);
             simulator.PostSimulate(rewards, challengerScoreDelta, previousArenaInfo.Score);
 
             Assert.Equal(nextArenaInfo.Score, simulator.Log.score);
@@ -335,7 +338,10 @@ namespace Lib9c.Tests.Action
                 _tableSheets.MaterialItemSheet,
                 player.Level,
                 previousArenaInfo.GetRewardCount());
-            var challengerScoreDelta = previousArenaInfo.Update(previousEnemyArenaInfo, simulator.Result);
+            var challengerScoreDelta = previousArenaInfo.Update(
+                previousEnemyArenaInfo,
+                simulator.Result,
+                ArenaScoreHelper.GetScore);
             simulator.PostSimulate(rewards, challengerScoreDelta, previousArenaInfo.Score);
 
             Assert.Equal(nextArenaInfo1.Score, simulator.Log.score);
