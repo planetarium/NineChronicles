@@ -189,7 +189,7 @@ namespace Nekoyume.Action
 
             ArenaInfo = new ArenaInfo((Dictionary)weeklyArenaState[avatarAddress].Serialize());
             EnemyArenaInfo = new ArenaInfo((Dictionary)weeklyArenaState[enemyAddress].Serialize());
-            var simulator = new RankingSimulator(
+            var simulator = new RankingSimulatorV1(
                 ctx.Random,
                 avatarState,
                 enemyAvatarState,
