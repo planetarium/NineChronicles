@@ -218,7 +218,6 @@ namespace Nekoyume.Action
                     new List<Guid>(),
                     rankingSheets,
                     StageId,
-                    arenaInfo,
                     enemyInfo,
                     costumeStatSheet);
 
@@ -240,7 +239,8 @@ namespace Nekoyume.Action
                     sheets.GetSheet<MaterialItemSheet>(),
                     player.Level,
                     arenaInfo.GetRewardCount());
-                simulator.PostSimulate(rewards);
+                var challengerScoreDelta = arenaInfo.Update(enemyInfo, simulator.Result);
+                simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
 
                 Log.Verbose(
                     "{AddressesHex}Execute RankingBattle({AvatarAddress}); result: {Result} event count: {EventCount}",

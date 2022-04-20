@@ -18,7 +18,6 @@ namespace Nekoyume.Battle
         private readonly EnemyPlayer _enemyPlayer;
         private readonly int _stageId;
         private List<ItemBase> _rewards;
-        private readonly ArenaInfo _arenaInfo;
         private readonly ArenaInfo _enemyInfo;
 
         /// <summary>
@@ -34,7 +33,6 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             RankingSimulatorSheets rankingSimulatorSheets,
             int stageId,
-            ArenaInfo arenaInfo,
             ArenaInfo enemyInfo,
             CostumeStatSheet costumeStatSheet
         ) : base(
@@ -50,7 +48,6 @@ namespace Nekoyume.Battle
             };
             _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
             _stageId = stageId;
-            _arenaInfo = arenaInfo;
             _enemyInfo = enemyInfo;
             if (!(costumeStatSheet is null))
             {
@@ -66,7 +63,6 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             RankingSimulatorSheets rankingSimulatorSheets,
             int stageId,
-            ArenaInfo arenaInfo,
             ArenaInfo enemyInfo
         ) : this(
             random,
@@ -75,7 +71,6 @@ namespace Nekoyume.Battle
             foods,
             rankingSimulatorSheets,
             stageId,
-            arenaInfo,
             enemyInfo,
             null
         )
@@ -89,7 +84,6 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             RankingSimulatorSheets rankingSimulatorSheets,
             int stageId,
-            ArenaInfo arenaInfo,
             ArenaInfo enemyInfo,
             CostumeStatSheet costumeStatSheet
         ) : this(
@@ -99,7 +93,6 @@ namespace Nekoyume.Battle
             foods,
             rankingSimulatorSheets,
             stageId,
-            arenaInfo,
             enemyInfo
         )
         {
@@ -186,8 +179,6 @@ namespace Nekoyume.Battle
                 Characters.Enqueue(character, TurnPriority / character.SPD);
             }
 
-            Log.diffScore = _arenaInfo.Update(_enemyInfo, Result);
-            Log.score = _arenaInfo.Score;
             Log.result = Result;
 #if TEST_LOG
             sb.Clear();
@@ -201,11 +192,16 @@ namespace Nekoyume.Battle
             return Player;
         }
 
-        public void PostSimulate(List<ItemBase> rewards)
+        public void PostSimulate(
+            List<ItemBase> rewards,
+            int challengerScoreDelta,
+            int challengerScore)
         {
             _rewards = rewards;
             var getReward = new GetReward(null, rewards);
             Log.Add(getReward);
+            Log.diffScore = challengerScoreDelta;
+            Log.score = challengerScore;
         }
 
         private void Spawn()
