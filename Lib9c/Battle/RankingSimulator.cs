@@ -185,6 +185,9 @@ namespace Nekoyume.Battle
             return Player;
         }
 
+        /// <summary>
+        /// This function should invoke after the `Simulate()` function invoked.
+        /// </summary>
         public void PostSimulate(
             List<ItemBase> rewards,
             int challengerScoreDelta,
