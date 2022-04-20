@@ -206,7 +206,7 @@ namespace Nekoyume.Action
             var rankingSheets = sheets.GetRankingSimulatorSheets();
             var player = new Player(avatarState, rankingSheets);
             var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
-            var simulator = new RankingSimulator(
+            var simulator = new RankingSimulatorV1(
                 ctx.Random,
                 player,
                 enemyPlayerDigest,

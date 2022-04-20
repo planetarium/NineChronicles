@@ -212,7 +212,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.CharacterSheet,
                 _tableSheets.CharacterLevelSheet,
                 _tableSheets.EquipmentItemSetEffectSheet);
-            var simulator = new RankingSimulator(
+            var simulator = new RankingSimulatorV1(
                 new TestRandom(),
                 player,
                 action.EnemyPlayerDigest,
@@ -346,7 +346,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.CharacterSheet,
                 _tableSheets.CharacterLevelSheet,
                 _tableSheets.EquipmentItemSetEffectSheet);
-            var simulator = new RankingSimulator(
+            var simulator = new RankingSimulatorV1(
                 new TestRandom(),
                 player,
                 action.EnemyPlayerDigest,

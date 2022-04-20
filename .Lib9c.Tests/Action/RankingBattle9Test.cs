@@ -229,7 +229,7 @@ namespace Lib9c.Tests.Action
             Assert.True(nextWeeklyState[_avatar1Address].Score > prevScore);
 
             // Check simulation result equal.
-            var simulator = new RankingSimulator(
+            var simulator = new RankingSimulatorV1(
                 new TestRandom(),
                 previousAvatar1State,
                 action.EnemyAvatarState,
