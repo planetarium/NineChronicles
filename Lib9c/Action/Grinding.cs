@@ -2,13 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
+using Nekoyume.TableData.Crystal;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -60,6 +64,12 @@ namespace Nekoyume.Action
                 agentState.MonsterCollectionRound
             );
 
+            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
+            {
+                typeof(CrystalEquipmentGrindingSheet),
+                typeof(CrystalMonsterCollectionMultiplierSheet)
+            });
+
             int monsterCollectionLevel = 0;
             if (states.TryGetState(monsterCollectionAddress, out Dictionary mcDict))
             {
@@ -74,11 +84,9 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= CostAp;
 
-            var currency = new Currency("CRYSTAL", 18, minters: null);
-            int cost = 0;
+            List<Equipment> equipmentList = new List<Equipment>();
             foreach (var equipmentId in EquipmentIds)
             {
-                int baseCost = 1000;
                 if(avatarState.inventory.TryGetNonFungibleItem(equipmentId, out Equipment equipment))
                 {
                     if (equipment.RequiredBlockIndex > context.BlockIndex)
@@ -89,12 +97,6 @@ namespace Nekoyume.Action
                     if (equipment.equipped)
                     {
                         throw new InvalidEquipmentException($"Can't grind equipped item. {equipmentId}");
-                    }
-
-                    if (equipment.level > 0)
-                    {
-                        // TODO Different multiplier by sheet data.
-                        baseCost *= equipment.level;
                     }
                 }
                 else
@@ -107,22 +109,19 @@ namespace Nekoyume.Action
                 {
                     throw new ItemDoesNotExistException($"Can't find Equipment. {equipmentId}");
                 }
-
-                cost += baseCost;
+                equipmentList.Add(equipment);
             }
 
-            if (monsterCollectionLevel > 0)
-            {
-                // TODO Different multiplier by sheet data.
-                cost *= monsterCollectionLevel;
-            }
+            FungibleAssetValue crystal = CalculateCrystal(equipmentList,
+                sheets.GetSheet<CrystalEquipmentGrindingSheet>(), monsterCollectionLevel,
+                sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>());
 
             var mail = new GrindingMail(
                 ctx.BlockIndex,
                 Id,
                 ctx.BlockIndex,
                 EquipmentIds.Count,
-                cost * currency
+                crystal
             );
             avatarState.Update(mail);
 
@@ -136,7 +135,7 @@ namespace Nekoyume.Action
             return states
                 .SetState(AvatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .MintAsset(AvatarAddress, cost * currency);
+                .MintAsset(AvatarAddress, crystal);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -149,6 +148,26 @@ namespace Nekoyume.Action
         {
             AvatarAddress = plainValue["a"].ToAddress();
             EquipmentIds = plainValue["e"].ToList(StateExtensions.ToGuid);
+        }
+        public static FungibleAssetValue CalculateCrystal(
+            IEnumerable<Equipment> equipmentList,
+            CrystalEquipmentGrindingSheet crystalEquipmentGrindingSheet,
+            int monsterCollectionLevel,
+            CrystalMonsterCollectionMultiplierSheet crystalMonsterCollectionMultiplierSheet
+        )
+        {
+            Currency currency = new Currency("CRYSTAL", 18, minters: null);
+            FungibleAssetValue crystal = 0 * currency;
+            foreach (var equipment in equipmentList)
+            {
+                CrystalEquipmentGrindingSheet.Row grindingRow = crystalEquipmentGrindingSheet[equipment.Id];
+                int level = Math.Max(0, equipment.level - 1);
+                crystal += BigInteger.Pow(2, level) * grindingRow.CRYSTAL * currency;
+            }
+            CrystalMonsterCollectionMultiplierSheet.Row multiplierRow =
+                crystalMonsterCollectionMultiplierSheet[monsterCollectionLevel];
+            var extra = crystal.DivRem(100, out _) * (multiplierRow.Multiplier / 100);
+            return crystal + extra;
         }
     }
 }
