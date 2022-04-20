@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle11")]
+    [ActionType("ranking_battle12")]
     public class RankingBattle : GameAction
     {
         public const int StageId = 999999;
@@ -211,7 +211,7 @@ namespace Nekoyume.Action
                 var rankingSheets = sheets.GetRankingSimulatorSheets();
                 var player = new Player(avatarState, rankingSheets);
                 var enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
-                var simulator = new RankingSimulatorV1(
+                var simulator = new RankingSimulator(
                     ctx.Random,
                     player,
                     enemyPlayerDigest,
@@ -232,6 +232,15 @@ namespace Nekoyume.Action
                 string.Join(",", simulator.Player.Costumes.Select(r => r.ItemId)),
                 sw.Elapsed
                 );
+
+                // reward 계산 후 BattleLog에 GetReward 넣어주기.
+                var rewards = RewardSelector.Select(
+                    ctx.Random,
+                    sheets.GetSheet<WeeklyArenaRewardSheet>(),
+                    sheets.GetSheet<MaterialItemSheet>(),
+                    player.Level,
+                    arenaInfo.GetRewardCount());
+                simulator.PostSimulate(rewards);
 
                 Log.Verbose(
                     "{AddressesHex}Execute RankingBattle({AvatarAddress}); result: {Result} event count: {EventCount}",

@@ -55,6 +55,7 @@ namespace Lib9c.Tests.Model
                 _tableSheets.WorldUnlockSheet
             );
 
+            var arenaInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
             var simulator = new RankingSimulator(
                 _random,
                 avatarState,
@@ -62,11 +63,17 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
                 1,
-                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
+                arenaInfo,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
             );
-            simulator.SimulateV2();
-
+            simulator.Simulate();
+            var rewards = RewardSelector.Select(
+                new TestRandom(),
+                _tableSheets.WeeklyArenaRewardSheet,
+                _tableSheets.MaterialItemSheet,
+                arenaInfo.Level,
+                arenaInfo.GetRewardCount());
+            simulator.PostSimulate(rewards);
             Assert.Equal(expected, simulator.Reward.Any());
         }
 
@@ -109,8 +116,14 @@ namespace Lib9c.Tests.Model
                 info,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
             );
-            simulator.SimulateV2();
-
+            simulator.Simulate();
+            var rewards = RewardSelector.Select(
+                new TestRandom(),
+                _tableSheets.WeeklyArenaRewardSheet,
+                _tableSheets.MaterialItemSheet,
+                info.Level,
+                info.GetRewardCount());
+            simulator.PostSimulate(rewards);
             Assert.Equal(expected, simulator.Reward.Count());
         }
 
@@ -160,7 +173,7 @@ namespace Lib9c.Tests.Model
             var player = simulator.Player;
             Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);
 
-            var player2 = simulator.SimulateV2();
+            var player2 = simulator.Simulate();
             Assert.Equal(row.Stat, player2.Stats.OptionalStats.ATK);
 
             var e = simulator.Log.OfType<SpawnEnemyPlayer>().First();
@@ -187,12 +200,13 @@ namespace Lib9c.Tests.Model
                 default)
             {
                 level = level,
+                worldInformation = new WorldInformation(
+                    0,
+                    _tableSheets.WorldSheet,
+                    GameConfig.RequireClearedStageLevel.ActionsInRankingBoard),
             };
-            avatarState.worldInformation = new WorldInformation(
-                0,
-                _tableSheets.WorldSheet,
-                GameConfig.RequireClearedStageLevel.ActionsInRankingBoard);
 
+            var arenaInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
             var simulator = new RankingSimulator(
                 _random,
                 avatarState,
@@ -200,13 +214,20 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
                 1,
-                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
+                arenaInfo,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false));
 
             var rewardIds = new HashSet<int>();
-            for (int i = 0; i < simulationCount; ++i)
+            for (var i = 0; i < simulationCount; ++i)
             {
-                simulator.SimulateV2();
+                simulator.Simulate();
+                var rewards = RewardSelector.Select(
+                    _random,
+                    _tableSheets.WeeklyArenaRewardSheet,
+                    _tableSheets.MaterialItemSheet,
+                    arenaInfo.Level,
+                    arenaInfo.GetRewardCount());
+                simulator.PostSimulate(rewards);
                 foreach (var itemBase in simulator.Reward)
                 {
                     if (!rewardIds.Contains(itemBase.Id))
