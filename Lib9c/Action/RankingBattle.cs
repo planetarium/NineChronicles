@@ -48,12 +48,6 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
             }
 
-            // Avoid InvalidBlockStateRootHashException
-            if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
-            {
-                return states;
-            }
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress, enemyAddress);
 
             var sw = new Stopwatch();
@@ -102,17 +96,14 @@ namespace Nekoyume.Action
 
             var items = equipmentIds.Concat(costumeIds);
             avatarState.EquipItems(items);
-            if (context.BlockIndex > 3806324)
-            {
-                avatarState.ValidateItemRequirement(
-                    costumeItemIds.ToList(),
-                    equipments,
-                    states.GetSheet<ItemRequirementSheet>(),
-                    states.GetSheet<EquipmentItemRecipeSheet>(),
-                    states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
-                    states.GetSheet<EquipmentItemOptionSheet>(),
-                    addressesHex);
-            }
+            avatarState.ValidateItemRequirement(
+                costumeItemIds.ToList(),
+                equipments,
+                states.GetSheet<ItemRequirementSheet>(),
+                states.GetSheet<EquipmentItemRecipeSheet>(),
+                states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                states.GetSheet<EquipmentItemOptionSheet>(),
+                addressesHex);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Equip Equipments: {Elapsed}", addressesHex, sw.Elapsed);
