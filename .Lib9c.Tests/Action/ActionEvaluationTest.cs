@@ -89,7 +89,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(MimisbrunnrBattle))]
         [InlineData(typeof(MonsterCollect))]
         [InlineData(typeof(PatchTableSheet))]
-        [InlineData(typeof(RankingBattle11))]
+        [InlineData(typeof(RankingBattle))]
         [InlineData(typeof(RapidCombination))]
         [InlineData(typeof(RedeemCode))]
         [InlineData(typeof(RewardGold))]
@@ -218,7 +218,7 @@ namespace Lib9c.Tests.Action
                     TableCsv = "table",
                     TableName = "name",
                 },
-                RankingBattle11 _ => new RankingBattle11
+                RankingBattle _ => new RankingBattle
                 {
                     avatarAddress = new PrivateKey().ToAddress(),
                     enemyAddress = new PrivateKey().ToAddress(),
