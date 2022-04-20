@@ -162,6 +162,17 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        /// <summary>
+        /// Returns true if any of the selected equipment has enhanced equipment or has skills.
+        /// </summary>
+        /// <param name="equipments"></param>
+        /// <returns></returns>
+        private static bool CheckSelectedItemsAreStrong(List<Equipment> equipments)
+        {
+            return equipments.Exists(item =>
+                item.level > 0 || item.Skills.Any() || item.BuffSkills.Any());
+        }
+
         private void Action(List<Equipment> equipments)
         {
             if (!equipments.Any() || equipments.Count > LimitGrindingCount)
@@ -170,8 +181,25 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            ActionManager.Instance.Grinding(equipments).Subscribe();
-            _selectedItemsForGrind.Clear();
+            if (CheckSelectedItemsAreStrong(equipments))
+            {
+                var system = Widget.Find<IconAndButtonSystem>();
+                // TODO: Add localizing key
+                system.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
+                    "You chose strong equipment. It is ok?",
+                    L10nManager.Localize("UI_OK"),
+                    L10nManager.Localize("UI_CANCEL"),
+                    false,
+                    IconAndButtonSystem.SystemType.Information);
+                system.ConfirmCallback = () => ActionManager.Instance.Grinding(equipments).Subscribe();
+                system.CancelCallback = () => system.Close();
+            }
+            else
+            {
+                // TODO: Add notification of grinding. (UI, Animation, ETC.)
+                ActionManager.Instance.Grinding(equipments).Subscribe();
+                _selectedItemsForGrind.Clear();
+            }
         }
     }
 }
