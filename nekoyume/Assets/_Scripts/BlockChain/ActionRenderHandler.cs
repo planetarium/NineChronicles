@@ -115,6 +115,7 @@ namespace Nekoyume.BlockChain
             RedeemCode();
             ChargeActionPoint();
             ClaimMonsterCollectionReward();
+            MonsterCollect();
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
 #endif
@@ -288,6 +289,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint)
+                .AddTo(_disposables);
+        }
+
+        private void MonsterCollect()
+        {
+            _actionRenderer.EveryRender<MonsterCollect>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseMonsterCollect)
                 .AddTo(_disposables);
         }
 
@@ -1106,6 +1116,29 @@ namespace Nekoyume.BlockChain
                 }
 
                 UpdateCurrentAvatarStateAsync(eval);
+            }
+        }
+
+        private void ResponseMonsterCollect(ActionBase.ActionEvaluation<MonsterCollect> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                Debug.LogException(eval.Exception);
+                return;
+            }
+
+            // TODO: Check Should the client handle Monster Collect Action.
+            NotificationSystem.Push(
+                MailType.System,
+                "monster collect success",
+                NotificationCell.NotificationType.Information);
+
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            var mcState = GetMonsterCollectionState(eval);
+            if (mcState != null)
+            {
+                UpdateMonsterCollectionState(mcState);
             }
         }
 

@@ -30,6 +30,8 @@ namespace Nekoyume.State
 
         public GoldBalanceState GoldBalanceState { get; private set; }
 
+        public MonsterCollectionState MonsterCollectionState { get; private set; }
+
         private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
@@ -105,6 +107,18 @@ namespace Nekoyume.State
 
             GoldBalanceState = LocalLayer.Instance.Modify(goldBalanceState);
             AgentStateSubject.OnNextGold(GoldBalanceState.Gold);
+        }
+
+        public void SetMonsterCollectionState(MonsterCollectionState monsterCollectionState)
+        {
+            if (monsterCollectionState is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetMonsterCollectionState)}] {nameof(monsterCollectionState)} is null.");
+                return;
+            }
+
+            MonsterCollectionState = monsterCollectionState;
+            MonsterCollectionStateSubject.OnNextLevel(monsterCollectionState.Level);
         }
 
         public async UniTask<AvatarState> AddOrReplaceAvatarStateAsync(
