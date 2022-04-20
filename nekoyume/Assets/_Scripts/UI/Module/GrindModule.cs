@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Scroller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -191,15 +192,23 @@ namespace Nekoyume.UI.Module
                     L10nManager.Localize("UI_CANCEL"),
                     false,
                     IconAndButtonSystem.SystemType.Information);
-                system.ConfirmCallback = () => ActionManager.Instance.Grinding(equipments).Subscribe();
+                system.ConfirmCallback = () => PushAction(equipments);
                 system.CancelCallback = () => system.Close();
             }
             else
             {
-                // TODO: Add notification of grinding. (UI, Animation, ETC.)
-                ActionManager.Instance.Grinding(equipments).Subscribe();
-                _selectedItemsForGrind.Clear();
+                PushAction(equipments);
             }
+        }
+
+        private void PushAction(List<Equipment> equipments)
+        {
+            // TODO: add animation and etc.
+            NotificationSystem.Push(MailType.Workshop,
+                "Grind Start",
+                NotificationCell.NotificationType.Information);
+            ActionManager.Instance.Grinding(equipments).Subscribe();
+            _selectedItemsForGrind.Clear();
         }
     }
 }
