@@ -137,6 +137,8 @@ namespace Lib9c.Tests
 
         public CrystalEquipmentGrindingSheet CrystalEquipmentGrindingSheet { get; private set; }
 
+        public CrystalMonsterCollectionMultiplierSheet CrystalMonsterCollectionMultiplierSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
