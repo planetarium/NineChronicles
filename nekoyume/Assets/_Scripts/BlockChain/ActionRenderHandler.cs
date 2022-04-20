@@ -114,6 +114,9 @@ namespace Nekoyume.BlockChain
             RedeemCode();
             ChargeActionPoint();
             ClaimMonsterCollectionReward();
+
+            // Crystal Unlocks
+            UnlockEquipmentRecipe();
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
 #endif
@@ -252,6 +255,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseGrinding)
+                .AddTo(_disposables);
+        }
+
+        private void UnlockEquipmentRecipe()
+        {
+            _actionRenderer.EveryRender<UnlockEquipmentRecipe>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnlockEquipmentRecipe)
                 .AddTo(_disposables);
         }
 
@@ -1263,6 +1275,16 @@ namespace Nekoyume.BlockChain
             var currency = new Currency("CRYSTAL", 18, minters: null);
             var crystal = eval.OutputStates.GetBalance(avatarAddress, currency);
             ReactiveAvatarState.UpdateCrystal(crystal);
+        }
+
+        private void ResponseUnlockEquipmentRecipe(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
+        {
+            var unlockedRecipeIdsAddress = eval.Action.AvatarAddress.Derive("recipe_ids");
+            var rawIds = Game.Game.instance.Agent.GetState(unlockedRecipeIdsAddress);
+            var recipeIds = rawIds != null ?
+                ((List)rawIds).ToList(Model.State.StateExtensions.ToInteger) :
+                new List<int>() { 1 };
+            Craft.SharedModel.SetUnlockedRecipes(recipeIds);
         }
 
         private static ItemBase GetItem(IAccountStateDelta state, Guid tradableId)

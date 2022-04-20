@@ -34,12 +34,14 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<SheetRow<int>> NotifiedRow
             = new ReactiveProperty<SheetRow<int>>();
 
+        public readonly ReactiveProperty<List<int>> UnlockedRecipes =
+            new ReactiveProperty<List<int>>();
+
         public bool HasNotification => !(NotifiedRow.Value is null);
 
         public RecipeCell SelectedRecipeCell { get; set; }
         public EquipmentItemRecipeSheet.Row RecipeForTutorial { get; private set; }
         public HashSet<int> RecipeVFXSkipList { get; private set; }
-        public TaskCompletionSource<List<int>> UnlockedRecipes { get; private set; }
         private const string RecipeVFXSkipListKey = "Nekoyume.UI.EquipmentRecipe.FirstEnterRecipeKey_{0}";
         private const string EquipmentSplitFormat = "{0}_{1}";
         private const int RecipeIdForTutorial = 1;
@@ -201,14 +203,18 @@ namespace Nekoyume.UI.Model
 
         public async void UpdateUnlockedRecipesAsync(Address address)
         {
-            UnlockedRecipes = new TaskCompletionSource<List<int>>();
             var unlockedRecipeIdsAddress = address.Derive("recipe_ids");
             var task = Game.Game.instance.Agent.GetStateAsync(unlockedRecipeIdsAddress);
             await task;
             var result = task.Result != null ?
                 ((List)task.Result).ToList(StateExtensions.ToInteger) :
                 new List<int>() { 1 };
-            UnlockedRecipes.SetResult(result);
+            SetUnlockedRecipes(result);
+        }
+
+        public void SetUnlockedRecipes(List<int> recipeIds)
+        {
+            UnlockedRecipes.SetValueAndForceNotify(recipeIds);
         }
 
         public static string GetEquipmentGroup(int itemId)
