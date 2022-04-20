@@ -135,7 +135,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void PrepareNextArena(bool afterUpdate)
         {
-            var weeklyIndex = RankingBattle.UpdateTargetWeeklyArenaIndex - 1;
+            var weeklyIndex = RankingBattle11.UpdateTargetWeeklyArenaIndex - 1;
             if (afterUpdate)
             {
                 weeklyIndex++;
@@ -159,7 +159,7 @@ namespace Lib9c.Tests.Action
                 .SetState(nextWeekly.address, nextWeekly.Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize());
 
-            var blockIndex = RankingBattle.UpdateTargetBlockIndex;
+            var blockIndex = RankingBattle11.UpdateTargetBlockIndex;
 
             if (afterUpdate)
             {
@@ -223,7 +223,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ResetChallengeCount()
         {
-            var legacyWeeklyIndex = RankingBattle.UpdateTargetWeeklyArenaIndex - 1;
+            var legacyWeeklyIndex = RankingBattle11.UpdateTargetWeeklyArenaIndex - 1;
             var legacyWeekly = new WeeklyArenaState(legacyWeeklyIndex);
             legacyWeekly.Set(_avatarState, _tableSheets.CharacterSheet);
             legacyWeekly[_avatarState.address].Update(legacyWeekly[_avatarState.address], BattleLog.Result.Lose);
@@ -244,7 +244,7 @@ namespace Lib9c.Tests.Action
 
             var migrationCtx = new ActionContext
             {
-                BlockIndex = RankingBattle.UpdateTargetBlockIndex,
+                BlockIndex = RankingBattle11.UpdateTargetBlockIndex,
                 PreviousStates = _baseState,
                 Miner = default,
             };
@@ -266,7 +266,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(4, prevInfo.DailyChallengeCount);
 
-            var blockIndex = RankingBattle.UpdateTargetBlockIndex + gameConfigState.DailyArenaInterval;
+            var blockIndex = RankingBattle11.UpdateTargetBlockIndex + gameConfigState.DailyArenaInterval;
 
             var ctx = new ActionContext
             {
