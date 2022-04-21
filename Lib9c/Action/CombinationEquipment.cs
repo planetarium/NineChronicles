@@ -76,8 +76,22 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress);
             }
 
-            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            if (recipeId != 1)
+            {
+                var unlockedRecipeIdsAddress = avatarAddress.Derive("recipe_ids");
+                if (!states.TryGetState(unlockedRecipeIdsAddress, out List rawIds))
+                {
+                    throw new FailedLoadStateException("can't find UnlockedRecipeList.");
+                }
 
+                List<int> unlockedIds = rawIds.ToList(StateExtensions.ToInteger);
+                if (!unlockedIds.Contains(recipeId))
+                {
+                    throw new InvalidRecipeIdException($"unlock {recipeId} first.");
+                }
+            }
+
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out var agentState,
                 out var avatarState, out _))
             {
@@ -85,7 +99,7 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
-            // Validate Required Cleared Stage
+            // Validate Required Cleared Tutorial Stage
             if (!avatarState.worldInformation.IsStageCleared(
                 GameConfig.RequireClearedStageLevel.CombinationEquipmentAction))
             {
@@ -95,7 +109,7 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.CombinationEquipmentAction,
                     current);
             }
-            // ~Validate Required Cleared Stage
+            // ~Validate Required Cleared Tutorial Stage
 
             // Validate SlotIndex
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
