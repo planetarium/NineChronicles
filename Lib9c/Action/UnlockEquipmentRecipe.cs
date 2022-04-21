@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -73,8 +74,7 @@ namespace Nekoyume.Action
                     1
                 };
 
-            int totalCost = 0;
-            var sortedRecipeIds = RecipeIds.OrderBy(i => i);
+            var sortedRecipeIds = RecipeIds.OrderBy(i => i).ToList();
             foreach (var recipeId in sortedRecipeIds)
             {
                 if (unlockedIds.Contains(recipeId))
@@ -97,15 +97,12 @@ namespace Nekoyume.Action
                 {
                     throw new NotEnoughClearedStageLevelException($"clear {row.UnlockStage} first.");
                 }
-
-                totalCost += 500;
             }
 
-            var currency = new Currency("CRYSTAL", 18, minters: null);
-            FungibleAssetValue balance = states.GetBalance(AvatarAddress, currency);
-            FungibleAssetValue cost = totalCost * currency;
+            FungibleAssetValue cost = CrystalCalculator.CalculateCost(sortedRecipeIds, equipmentRecipeSheet);
+            FungibleAssetValue balance = states.GetBalance(AvatarAddress, cost.Currency);
 
-            if (balance < totalCost * currency)
+            if (balance < cost)
             {
                 throw new NotEnoughFungibleAssetValueException($"required {cost}, but balance is {balance}");
             }
