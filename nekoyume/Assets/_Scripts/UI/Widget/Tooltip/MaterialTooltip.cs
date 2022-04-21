@@ -24,7 +24,7 @@ namespace Nekoyume.UI
         [SerializeField]
         protected GameObject acquisitionGroup;
 
-        private const string StakingDescriptionUrl =
+        public const string StakingDescriptionUrl =
             "https://ninechronicles.medium.com/monster-collection-muspelheim-the-realm-of-fire-part-2-b5c36e089b81";
 
         public override void Show(

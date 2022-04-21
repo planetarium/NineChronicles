@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Nekoyume.State.Subjects;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -17,7 +18,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TMP_Text stakingBonusText;
 
+        [SerializeField]
+        private Button button;
+
         private Func<int, string> _bonusTextFunc;
+
+        private void Awake()
+        {
+            button.onClick.AddListener(() => { Application.OpenURL(MaterialTooltip.StakingDescriptionUrl); });
+        }
 
         public void SetBonusTextFunc(Func<int, string> bonusTextFunc)
         {

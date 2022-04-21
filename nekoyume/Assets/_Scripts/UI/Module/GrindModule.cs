@@ -38,9 +38,6 @@ namespace Nekoyume.UI.Module
         private GameObject ncgRewardObject;
 
         [SerializeField]
-        private GameObject crystalRewardObject;
-
-        [SerializeField]
         private TMP_Text ncgRewardText;
 
         [SerializeField]
@@ -48,13 +45,14 @@ namespace Nekoyume.UI.Module
 
         private bool _isInitialized;
 
+        private string _cachedGrindingRewardCrystal;
+
         private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind =
             new ReactiveCollection<InventoryItem>();
 
         private const int LimitGrindingCount = 10;
 
         private bool CanGrind => _selectedItemsForGrind.Any() &&
-                                 States.Instance.CurrentAvatarState.actionPoint > Grinding.CostAp &&
                                  _selectedItemsForGrind.All(item => !item.Equipped.Value);
 
         private void Initialize()
@@ -71,6 +69,32 @@ namespace Nekoyume.UI.Module
                 Action(_selectedItemsForGrind.Select(inventoryItem =>
                     (Equipment) inventoryItem.ItemBase).ToList());
             }).AddTo(gameObject);
+            grindButton.OnClickDisabledSubject
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                {
+                    switch (grindButton.CurrentState.Value)
+                    {
+                        case ConditionalButton.State.Conditional:
+                            OneLineSystem.Push(MailType.System,
+                                L10nManager.Localize("ERROR_ACTION_POINT"),
+                                NotificationCell.NotificationType.Alert);
+                            break;
+                        case ConditionalButton.State.Disabled:
+                            var l10nkey = _selectedItemsForGrind.Any()
+                                ? "ERROR_NOT_GRINDING_EQUIPPED"
+                                : "GRIND_UI_SLOTNOTICE";
+                            OneLineSystem.Push(MailType.System,
+                                L10nManager.Localize(l10nkey),
+                                NotificationCell.NotificationType.Notification);
+                            break;
+                        case ConditionalButton.State.Normal:
+                            Debug.LogError("If state is normal, should not be receive message in this stream!");
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }).AddTo(gameObject);
 
             _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
             {
@@ -100,22 +124,19 @@ namespace Nekoyume.UI.Module
             _selectedItemsForGrind.ObserveReset().Subscribe(_ =>
             {
                 itemSlots.ForEach(slot => slot.UpdateSlot());
-                crystalRewardObject.SetActive(false);
             }).AddTo(gameObject);
 
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(count =>
             {
                 grindButton.Interactable = CanGrind;
 
-                crystalRewardObject.SetActive(count > 0);
                 if (count > 0)
                 {
-                    crystalRewardText.text = Grinding.CalculateCrystal(
-                            _selectedItemsForGrind.Select(item => (Equipment) item.ItemBase),
-                            TableSheets.Instance.CrystalEquipmentGrindingSheet,
-                            States.Instance.MonsterCollectionState?.Level ?? 0,
-                            TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet)
-                        .GetQuantityString();
+                    UpdateCrystalReward();
+                }
+                else
+                {
+                    _cachedGrindingRewardCrystal = crystalRewardText.text = string.Empty;
                 }
             }).AddTo(gameObject);
 
@@ -154,7 +175,7 @@ namespace Nekoyume.UI.Module
             grindInventory.SetGrinding(ShowItemTooltip, OnUpdateInventory);
             grindButton.Interactable = false;
             UpdateStakingBonusObject(States.Instance.MonsterCollectionState?.Level ?? 0);
-            crystalRewardObject.SetActive(false);
+            crystalRewardText.text = string.Empty;
         }
 
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
@@ -168,6 +189,11 @@ namespace Nekoyume.UI.Module
             var onSubmit = isEquipment
                 ? new System.Action(() => RegisterToGrindingList(model, isRegister))
                 : null;
+            var blockMessage = model.Equipped.Value ? "ERROR_NOT_GRINDING_EQUIPPED" : "ERROR_GRINDING_COUNT_OVERFLOW";
+            var onBlock = new System.Action(() =>
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize(blockMessage),
+                    NotificationCell.NotificationType.Alert));
             tooltip.Show(
                 model,
                 isRegister
@@ -176,7 +202,8 @@ namespace Nekoyume.UI.Module
                 interactable,
                 onSubmit,
                 grindInventory.ClearSelectedItem,
-                target: target);
+                onBlock,
+                target);
         }
 
         private void OnUpdateInventory(Inventory inventory)
@@ -212,6 +239,22 @@ namespace Nekoyume.UI.Module
             stakingBonusDisabledObject.SetActive(level <= 0);
             stakingBonus.gameObject.SetActive(level > 0);
             stakingBonus.OnUpdateStakingLevel(level);
+
+            if (_selectedItemsForGrind.Any())
+            {
+                UpdateCrystalReward();
+            }
+        }
+
+        private void UpdateCrystalReward()
+        {
+            _cachedGrindingRewardCrystal = Grinding.CalculateCrystal(
+                    _selectedItemsForGrind.Select(item => (Equipment) item.ItemBase),
+                    TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                    States.Instance.MonsterCollectionState?.Level ?? 0,
+                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet)
+                .GetQuantityString();
+            crystalRewardText.text = _cachedGrindingRewardCrystal;
         }
 
         /// <summary>
@@ -236,12 +279,11 @@ namespace Nekoyume.UI.Module
             if (CheckSelectedItemsAreStrong(equipments))
             {
                 var system = Widget.Find<IconAndButtonSystem>();
-                // TODO: Add localizing key
-                system.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
-                    "You chose strong equipment. It is ok?",
-                    L10nManager.Localize("UI_OK"),
-                    L10nManager.Localize("UI_CANCEL"),
-                    false,
+                system.ShowWithTwoButton("UI_CONFIRM",
+                    "UI_GRINDING_CONFIRM",
+                    "UI_OK",
+                    "UI_CANCEL",
+                    true,
                     IconAndButtonSystem.SystemType.Information);
                 system.ConfirmCallback = () => PushAction(equipments);
                 system.CancelCallback = () => system.Close();
