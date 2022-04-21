@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using Libplanet;
@@ -13,6 +14,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Nekoyume.TableData.Crystal;
     using Xunit;
     using static SerializeKeys;
 
@@ -49,18 +51,25 @@ namespace Lib9c.Tests.Action
 
             _agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _initialState = new State().SetState(Addresses.GameConfig, gameConfigState.Serialize());
+            _initialState = new State()
+                .SetState(
+                    Addresses.GetSheetAddress<CrystalMonsterCollectionMultiplierSheet>(),
+                    _tableSheets.CrystalMonsterCollectionMultiplierSheet.Serialize())
+                .SetState(
+                    Addresses.GetSheetAddress<CrystalEquipmentGrindingSheet>(),
+                    _tableSheets.CrystalEquipmentGrindingSheet.Serialize())
+                .SetState(Addresses.GameConfig, gameConfigState.Serialize());
         }
 
         [Theory]
-        [InlineData(true, true, 120, true, 1, 0, false, false, 0, 1000, 1, null)]
-        [InlineData(true, true, 120, true, 1, 2, false, false, 0, 2000, 1, null)]
-        [InlineData(true, true, 120, true, 1, 2, false, true, 0, 2000, 1, null)]
-        [InlineData(true, true, 120, true, 1, 0, false, true, 3, 3000, 1, null)]
-        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 8000, 1, null)]
+        [InlineData(true, true, 120, true, 1, 0, false, false, 0, 100, 1, null)]
+        [InlineData(true, true, 120, true, 1, 2, false, false, 0, 200, 1, null)]
+        [InlineData(true, true, 120, true, 1, 2, false, true, 0, 200, 1, null)]
+        [InlineData(true, true, 120, true, 1, 0, false, true, 3, 130, 1, null)]
+        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 280, 1, null)]
         // Invalid equipment count.
-        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 8000, 0, typeof(InvalidItemCountException))]
-        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 8000, 11, typeof(InvalidItemCountException))]
+        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 280, 0, typeof(InvalidItemCountException))]
+        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 280, 11, typeof(InvalidItemCountException))]
         // AgentState not exist.
         [InlineData(false, true, 120, false, 1, 0, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
         // AvatarState not exist.
@@ -72,7 +81,7 @@ namespace Lib9c.Tests.Action
         // Locked equipment.
         [InlineData(true, true, 120, true, 100, 0, false, false, 0, 0, 1, typeof(RequiredBlockIndexException))]
         // Equipped equipment.
-        [InlineData(true, true, 120, true, 1, 0, true, false, 0, 1000, 1, typeof(InvalidEquipmentException))]
+        [InlineData(true, true, 120, true, 1, 0, true, false, 0, 100, 1, typeof(InvalidEquipmentException))]
         public void Execute(
             bool agentExist,
             bool avatarExist,
@@ -177,6 +186,61 @@ namespace Lib9c.Tests.Action
                     Random = _random,
                 }));
             }
+        }
+
+        [Theory]
+        [ClassData(typeof(CalculateCrystalData))]
+        public void CalculateCrystal((int equipmentId, int level)[] equipmentInfos, int monsterCollectionLevel, int expected)
+        {
+            var equipmentList = new List<Equipment>();
+            foreach (var (equipmentId, level) in equipmentInfos)
+            {
+                var row = _tableSheets.EquipmentItemSheet[equipmentId];
+                var equipment =
+                    ItemFactory.CreateItemUsable(row, default, 0, level);
+                equipmentList.Add((Equipment)equipment);
+            }
+
+            Assert.Equal(
+                expected * _currency,
+                Grinding.CalculateCrystal(
+                    equipmentList,
+                    _tableSheets.CrystalEquipmentGrindingSheet,
+                    monsterCollectionLevel,
+                    _tableSheets.CrystalMonsterCollectionMultiplierSheet
+                )
+            );
+        }
+
+        private class CalculateCrystalData : IEnumerable<object[]>
+        {
+            private readonly List<object[]> _data = new List<object[]>
+            {
+                new object[]
+                {
+                    new[]
+                    {
+                        (10100000, 0),
+                        (10100000, 2),
+                    },
+                    0,
+                    300,
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        (10100000, 1),
+                        (10100000, 2),
+                    },
+                    3,
+                    390,
+                },
+            };
+
+            public IEnumerator<object[]> GetEnumerator() => _data.GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => _data.GetEnumerator();
         }
     }
 }
