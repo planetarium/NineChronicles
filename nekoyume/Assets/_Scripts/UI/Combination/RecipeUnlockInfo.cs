@@ -64,13 +64,24 @@ namespace Nekoyume.UI
 
             recipeNameText.text = resultItem.GetLocalizedName(false);
 
+            if (Craft.SharedModel.UnlockingRecipes.Contains(row.Id))
+            {
+                openConditionText.text = L10nManager.Localize("UI_LOADING_STATES");
+                openConditionText.enabled = true;
+                costButton.gameObject.SetActive(false);
+                return;
+            }
+
             var unlockedRecipeIds = Craft.SharedModel.UnlockedRecipes.Value;
             var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
             var previousRecipeIds = sheet.Values
-                .Where(x => x.Id < row.Id)
+                .Where(x =>
+                x.GetResultEquipmentItemRow().ItemSubType == row.GetResultEquipmentItemRow().ItemSubType &&
+                x.Id < row.Id)
                 .Select(x => x.Id);
             var unlockable = previousRecipeIds.All(unlockedRecipeIds.Contains);
             costButton.gameObject.SetActive(unlockable);
+            openConditionText.text = L10nManager.Localize("UI_INFORM_OPEN_PREVIOUS_RECIPE");
             openConditionText.enabled = !unlockable;
 
             if (unlockable)
@@ -90,6 +101,10 @@ namespace Nekoyume.UI
                 States.Instance.CurrentAvatarState.address, -costButton.Cost);
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockList);
+
+            openConditionText.text = L10nManager.Localize("UI_LOADING_STATES");
+            openConditionText.enabled = true;
+            costButton.gameObject.SetActive(false);
         }
     }
 }

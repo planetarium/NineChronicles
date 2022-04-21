@@ -12,7 +12,10 @@ using System.Collections;
 
 namespace Nekoyume.UI.Scroller
 {
+    using Nekoyume.L10n;
+    using Nekoyume.State;
     using Nekoyume.UI.Module;
+    using System.Numerics;
     using UniRx;
 
     public class RecipeScroll : RectScroll<RecipeRow.Model, RecipeScroll.ContextModel>
@@ -52,9 +55,19 @@ namespace Nekoyume.UI.Scroller
         private GameObject emptyObject = null;
 
         [SerializeField]
+        private GameObject openAllRecipeArea = null;
+
+        [SerializeField]
+        private Button openAllRecipeButton = null;
+
+        [SerializeField]
         private float animationInterval = 0.3f;
 
         private Coroutine _animationCoroutine = null;
+
+        private List<int> _unlockableRecipes = null;
+
+        private BigInteger _previousOpenCost;
 
         protected void Awake()
         {
@@ -79,6 +92,41 @@ namespace Nekoyume.UI.Scroller
                     ShowAsFood(type);
                 });
             }
+
+            openAllRecipeButton.onClick.AddListener(OpenEveryAvailableRecipes);
+        }
+
+        private void OpenEveryAvailableRecipes()
+        {
+            var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            _previousOpenCost = CrystalCalculator.CalculateCost(_unlockableRecipes, sheet).MajorUnit;
+
+            var usageMessage = L10nManager.Localize("UI_UNLOCK_AVAILABLE_RECIPES");
+            Widget.Find<PaymentPopup>().Show(
+                ReactiveAvatarState.CrystalBalance,
+                _previousOpenCost,
+                usageMessage,
+                UnlockRecipeAction);
+        }
+
+        private void UnlockRecipeAction()
+        {
+            var sharedModel = Craft.SharedModel;
+
+            sharedModel.UnlockingRecipes.AddRange(_unlockableRecipes);
+            var cells = GetComponentsInChildren<RecipeCell>();
+            foreach (var cell in cells)
+            {
+                if (_unlockableRecipes.Contains(cell.RecipeId))
+                {
+                    cell.Unlock();
+                }
+            }
+
+            LocalLayerModifier.ModifyAvatarCrystal(
+                States.Instance.CurrentAvatarState.address, -_previousOpenCost);
+            Game.Game.instance.ActionManager
+                .UnlockEquipmentRecipe(_unlockableRecipes);
         }
 
         public void InitializeNotification()
@@ -112,10 +160,29 @@ namespace Nekoyume.UI.Scroller
             emptyObject.SetActive(!items.Any());
             Show(items, true);
             AnimateScroller();
+
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId))
+            {
+                openAllRecipeArea.SetActive(false);
+            }
+            else
+            {
+                var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+                _unlockableRecipes = sheet.Values
+                    .Where(x =>
+                        x.GetResultEquipmentItemRow().ItemSubType == type &&
+                        x.UnlockStage <= lastClearedStageId &&
+                        !Craft.SharedModel.UnlockedRecipes.Value.Contains(x.Id))
+                    .Select(x => x.Id)
+                    .OrderBy(x => x)
+                    .ToList();
+                openAllRecipeArea.SetActive(_unlockableRecipes.Any());
+            }
         }
 
         public void ShowAsFood(StatType type, bool updateToggle = false)
         {
+            openAllRecipeArea.SetActive(false);
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);
             consumableTab.SetActive(true);
