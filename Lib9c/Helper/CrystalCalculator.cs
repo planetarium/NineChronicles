@@ -17,5 +17,14 @@ namespace Nekoyume.Helper
                 .Select(id => equipmentItemRecipeSheet[id])
                 .Aggregate(cost, (current, row) => current + row.CRYSTAL * CRYSTAL);
         }
+
+        public static FungibleAssetValue CalculateWorldUnlockCost(IEnumerable<int> worldIds, WorldUnlockSheet worldUnlockSheet)
+        {
+            var cost = 0 * CRYSTAL;
+
+            return worldIds
+                .Select(id => worldUnlockSheet.OrderedList.First(r => r.WorldIdToUnlock == id))
+                .Aggregate(cost, (current, row) => current + row.CRYSTAL * CRYSTAL);
+        }
     }
 }
