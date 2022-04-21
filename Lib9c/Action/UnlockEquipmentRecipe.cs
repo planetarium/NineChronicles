@@ -99,7 +99,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            FungibleAssetValue cost = CrystalCalculator.CalculateCost(sortedRecipeIds, equipmentRecipeSheet);
+            FungibleAssetValue cost = CrystalCalculator.CalculateRecipeUnlockCost(sortedRecipeIds, equipmentRecipeSheet);
             FungibleAssetValue balance = states.GetBalance(AvatarAddress, cost.Currency);
 
             if (balance < cost)
