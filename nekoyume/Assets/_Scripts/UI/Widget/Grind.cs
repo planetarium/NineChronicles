@@ -12,6 +12,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton;
 
+        // TODO: link animator with GrindModule.
+        [SerializeField]
+        private Animator animator;
+
         protected override void Awake()
         {
             base.Awake();

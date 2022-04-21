@@ -34,6 +34,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<GrindingItemSlot> itemSlots;
 
+        // TODO: It is used when NCG can be obtained through grinding later.
         [SerializeField]
         private GameObject ncgRewardObject;
 
