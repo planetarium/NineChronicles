@@ -1,15 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -23,13 +26,25 @@ namespace Nekoyume.UI.Module
         private ConditionalCostButton grindButton;
 
         [SerializeField]
-        private Text stakingLevelText;
+        private StakingBonus stakingBonus;
 
         [SerializeField]
-        private Text stakingBonusText;
+        private GameObject stakingBonusDisabledObject;
 
         [SerializeField]
         private List<GrindingItemSlot> itemSlots;
+
+        [SerializeField]
+        private GameObject ncgRewardObject;
+
+        [SerializeField]
+        private GameObject crystalRewardObject;
+
+        [SerializeField]
+        private TMP_Text ncgRewardText;
+
+        [SerializeField]
+        private TMP_Text crystalRewardText;
 
         private bool _isInitialized;
 
@@ -85,11 +100,23 @@ namespace Nekoyume.UI.Module
             _selectedItemsForGrind.ObserveReset().Subscribe(_ =>
             {
                 itemSlots.ForEach(slot => slot.UpdateSlot());
+                crystalRewardObject.SetActive(false);
             }).AddTo(gameObject);
 
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(count =>
             {
                 grindButton.Interactable = CanGrind;
+
+                crystalRewardObject.SetActive(count > 0);
+                if (count > 0)
+                {
+                    crystalRewardText.text = Grinding.CalculateCrystal(
+                            _selectedItemsForGrind.Select(item => (Equipment) item.ItemBase),
+                            TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                            States.Instance.MonsterCollectionState?.Level ?? 0,
+                            TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet)
+                        .GetQuantityString();
+                }
             }).AddTo(gameObject);
 
             ReactiveAvatarState.ActionPoint
@@ -101,6 +128,21 @@ namespace Nekoyume.UI.Module
                 _selectedItemsForGrind.Remove(slot.AssignedItem);
             }));
 
+            stakingBonus.SetBonusTextFunc(level =>
+            {
+                if (TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet.TryGetValue(level,
+                        out var row))
+                {
+                    return $"x{row.Multiplier / 100.0:F2}";
+                }
+
+                return "None";
+            });
+
+            MonsterCollectionStateSubject.Level
+                .Subscribe(UpdateStakingBonusObject)
+                .AddTo(gameObject);
+
             _isInitialized = true;
         }
 
@@ -111,6 +153,8 @@ namespace Nekoyume.UI.Module
             _selectedItemsForGrind.Clear();
             grindInventory.SetGrinding(ShowItemTooltip, OnUpdateInventory);
             grindButton.Interactable = false;
+            UpdateStakingBonusObject(States.Instance.MonsterCollectionState?.Level ?? 0);
+            crystalRewardObject.SetActive(false);
         }
 
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
@@ -161,6 +205,13 @@ namespace Nekoyume.UI.Module
             {
                 _selectedItemsForGrind.Remove(item);
             }
+        }
+
+        private void UpdateStakingBonusObject(int level)
+        {
+            stakingBonusDisabledObject.SetActive(level <= 0);
+            stakingBonus.gameObject.SetActive(level > 0);
+            stakingBonus.OnUpdateStakingLevel(level);
         }
 
         /// <summary>
