@@ -256,10 +256,13 @@ namespace Nekoyume.UI.Module
         {
             // TODO: add animation and etc.
             NotificationSystem.Push(MailType.Workshop,
-                "Grind Start",
+                $"Grinding Start, You will get {_cachedGrindingRewardCrystal} {L10nManager.Localize("UI_CRYSTAL")}.",
                 NotificationCell.NotificationType.Information);
+
             ActionManager.Instance.Grinding(equipments).Subscribe();
             _selectedItemsForGrind.Clear();
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
+        }
         }
     }
 }

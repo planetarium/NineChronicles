@@ -1,11 +1,9 @@
 using System;
 using Libplanet.Assets;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -36,6 +34,12 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
         }
 
+        public void SetProgressCircle(bool isVisible)
+        {
+            loadingObject.SetActive(isVisible);
+            text.enabled = !isVisible;
+        }
+
         private async void UpdateCrystalAsync()
         {
             var currentAvatarState = States.Instance.CurrentAvatarState;
@@ -58,12 +62,6 @@ namespace Nekoyume.UI.Module
         private void SetCrystal(FungibleAssetValue crystal)
         {
             text.text = crystal.GetQuantityString();
-        }
-
-        private void SetProgressCircle(bool isVisible)
-        {
-            loadingObject.SetActive(isVisible);
-            text.enabled = !isVisible;
         }
     }
 }

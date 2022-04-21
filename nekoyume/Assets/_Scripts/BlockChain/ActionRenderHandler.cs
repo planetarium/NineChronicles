@@ -1276,6 +1276,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponseGrinding(ActionBase.ActionEvaluation<Grinding> eval)
         {
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             if (!(eval.Exception is null))
             {
                 return;
@@ -1289,7 +1290,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            // TODO: add handling about LocalLayer
+            // TODO: Add localized text
             var message =
                 $"[{nameof(GrindingMail)}] ItemCount: {mail.ItemCount}, Asset: {mail.Asset}";
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
