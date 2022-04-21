@@ -29,7 +29,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI openConditionText = null;
 
-        private int _currentRecipeKey;
+        private List<int> _unlockList = null;
 
         private void Awake()
         {
@@ -44,7 +44,7 @@ namespace Nekoyume.UI
                     var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPE");
                     Widget.Find<PaymentPopup>().Show(
                         ReactiveAvatarState.CrystalBalance,
-                        500,
+                        costButton.Cost,
                         usageMessage,
                         UnlockRecipeAction);
                 })
@@ -53,7 +53,7 @@ namespace Nekoyume.UI
 
         public void Set(EquipmentItemRecipeSheet.Row row)
         {
-            _currentRecipeKey = row.Key;
+            _unlockList = new List<int> { row.Key };
             recipeCell.Show(row, false);
 
             var resultItem = row.GetResultEquipmentItemRow();
@@ -65,8 +65,8 @@ namespace Nekoyume.UI
             recipeNameText.text = resultItem.GetLocalizedName(false);
 
             var unlockedRecipeIds = Craft.SharedModel.UnlockedRecipes.Value;
-            var previousRecipeIds =
-                Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
+            var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            var previousRecipeIds = sheet.Values
                 .Where(x => x.Id < row.Id)
                 .Select(x => x.Id);
             var unlockable = previousRecipeIds.All(unlockedRecipeIds.Contains);
@@ -75,14 +75,21 @@ namespace Nekoyume.UI
 
             if (unlockable)
             {
-                costButton.SetCost(ConditionalCostButton.CostType.Crystal, 500);
+                var cost = CrystalCalculator.CalculateCost(_unlockList, sheet);
+                costButton.SetCost(ConditionalCostButton.CostType.Crystal, (int)cost.MajorUnit);
             }
         }
 
         public void UnlockRecipeAction()
         {
-            Craft.SharedModel.SelectedRecipeCell.Unlock();
-            Game.Game.instance.ActionManager.UnlockEquipmentRecipe(new List<int>() { _currentRecipeKey });
+            var sharedModel = Craft.SharedModel;
+
+            sharedModel.SelectedRecipeCell.Unlock();
+            sharedModel.UnlockingRecipes.AddRange(_unlockList);
+            LocalLayerModifier.ModifyAvatarCrystal(
+                States.Instance.CurrentAvatarState.address, -costButton.Cost);
+            Game.Game.instance.ActionManager
+                .UnlockEquipmentRecipe(_unlockList);
         }
     }
 }

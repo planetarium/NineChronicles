@@ -92,7 +92,6 @@ namespace Nekoyume.UI.Module
         public void Show(SheetRow<int> recipeRow, bool checkLocked = true)
         {
             _recipeRow = recipeRow;
-            animator.SetTrigger("Normal");
             var tableSheets = Game.Game.instance.TableSheets;
 
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
@@ -105,14 +104,7 @@ namespace Nekoyume.UI.Module
                 else
                 {
                     IsLocked = false;
-                }
-
-                if (!IsLocked)
-                {
-                    var resultItem = equipmentRow.GetResultEquipmentItemRow();
-                    var viewData = recipeViewData.GetData(resultItem.Grade);
-                    equipmentView.Show(viewData, resultItem);
-                    consumableView.Hide();
+                    SetEquipmentView(equipmentRow);
                 }
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
@@ -164,7 +156,7 @@ namespace Nekoyume.UI.Module
             _isWaitingForUnlock = false;
             var avatarState = States.Instance.CurrentAvatarState;
             var worldInformation = avatarState.worldInformation;
-
+            
             var unlockStage = equipmentRow.UnlockStage;
             var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId) ?
                 stageId : 0;
@@ -189,6 +181,14 @@ namespace Nekoyume.UI.Module
                 IsLocked = true;
                 return;
             }
+            else if (Craft.SharedModel.UnlockingRecipes.Contains(equipmentRow.Id))
+            {
+                _isWaitingForUnlock = true;
+                equipmentView.gameObject.SetActive(true);
+                animator.SetTrigger("Loading");
+                IsLocked = false;
+                return;
+            }
             else if (!Craft.SharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id))
             {
                 _recipeIdToUnlock = equipmentRow.Id;
@@ -199,7 +199,17 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            animator.SetTrigger("Normal");
+            SetEquipmentView(equipmentRow);
             IsLocked = false;
+        }
+
+        private void SetEquipmentView(EquipmentItemRecipeSheet.Row row)
+        {
+            var resultItem = row.GetResultEquipmentItemRow();
+            var viewData = recipeViewData.GetData(resultItem.Grade);
+            equipmentView.Show(viewData, resultItem);
+            consumableView.Hide();
         }
 
         public void Unlock()
@@ -207,9 +217,9 @@ namespace Nekoyume.UI.Module
             _isWaitingForUnlock = true;
             AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
             lockOpenVFXObject.SetActive(true);
-            Craft.SharedModel.RecipeVFXSkipList.Add(_recipeIdToUnlock);
-            Craft.SharedModel.SaveRecipeVFXSkipList();
 
+            var row = _recipeRow as EquipmentItemRecipeSheet.Row;
+            SetEquipmentView(row);
             equipmentView.gameObject.SetActive(true);
             lockObject.SetActive(false);
             animator.SetTrigger("Loading");
@@ -219,14 +229,14 @@ namespace Nekoyume.UI.Module
         {
             var equals = ReferenceEquals(row, _recipeRow);
             selectedObject.SetActive(equals);
+
+            if (!_isWaitingForUnlock)
+            {
+                animator.SetTrigger(equals ? "Clicked" : "Normal");
+            }
             if (equals)
             {
                 Craft.SharedModel.SelectedRecipeCell = this;
-                animator.SetTrigger("Clicked");
-            }
-            else
-            {
-                animator.SetTrigger("Normal");
             }
         }
 
@@ -238,9 +248,9 @@ namespace Nekoyume.UI.Module
 
         public void SetUnlocked(List<int> recipeIds)
         {
-            if (_isWaitingForUnlock)
+            if (_recipeRow is EquipmentItemRecipeSheet.Row row)
             {
-                Show(_recipeRow);
+                UpdateLocked(row);
             }
         }
     }

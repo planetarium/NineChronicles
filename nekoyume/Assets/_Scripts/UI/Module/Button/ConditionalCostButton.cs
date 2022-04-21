@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Module
 
         private CostType _costType = CostType.NCG;
 
-        private int _cost = int.MaxValue;
+        public int Cost { get; private set; } = int.MaxValue;
 
         public Color CostTextColor
         {
@@ -48,7 +48,7 @@ namespace Nekoyume.UI.Module
 
         public void SetCost(CostType costType, int value)
         {
-            _cost = value;
+            Cost = value;
             _costType = costType;
             foreach (var text in costTexts)
             {
@@ -72,13 +72,13 @@ namespace Nekoyume.UI.Module
                     Debug.LogError("Cost not set!");
                     return false;
                 case CostType.NCG:
-                    return States.Instance.GoldBalanceState.Gold.MajorUnit >= _cost;
+                    return States.Instance.GoldBalanceState.Gold.MajorUnit >= Cost;
                 case CostType.ActionPoint:
-                    return States.Instance.CurrentAvatarState.actionPoint >= _cost;
+                    return States.Instance.CurrentAvatarState.actionPoint >= Cost;
                 case CostType.Hourglass:
                     var inventory = States.Instance.CurrentAvatarState.inventory;
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
-                    return count >= _cost;
+                    return count >= Cost;
                 default:
                     return true;
             }
@@ -94,7 +94,7 @@ namespace Nekoyume.UI.Module
             switch (_costType)
             {
                 case CostType.NCG:
-                    if (States.Instance.GoldBalanceState.Gold.MajorUnit < _cost)
+                    if (States.Instance.GoldBalanceState.Gold.MajorUnit < Cost)
                     {
                         OneLineSystem.Push(
                             MailType.System,
@@ -104,7 +104,7 @@ namespace Nekoyume.UI.Module
                     }
                     break;
                 case CostType.ActionPoint:
-                    if (States.Instance.CurrentAvatarState.actionPoint < _cost)
+                    if (States.Instance.CurrentAvatarState.actionPoint < Cost)
                     {
                         OneLineSystem.Push(
                             MailType.System,
@@ -116,7 +116,7 @@ namespace Nekoyume.UI.Module
                 case CostType.Hourglass:
                     var inventory = States.Instance.CurrentAvatarState.inventory;
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
-                    if (count < _cost)
+                    if (count < Cost)
                     {
                         OneLineSystem.Push(
                             MailType.System,

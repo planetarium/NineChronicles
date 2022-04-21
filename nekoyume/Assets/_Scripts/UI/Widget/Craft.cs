@@ -127,7 +127,6 @@ namespace Nekoyume.UI
             ReactiveAvatarState.Address.Subscribe(address =>
             {
                 if (address.Equals(default)) return;
-                SharedModel.LoadRecipeVFXSkipList();
                 SharedModel.UpdateUnlockedRecipesAsync(address);
             }).AddTo(gameObject);
 
@@ -165,7 +164,7 @@ namespace Nekoyume.UI
             recipeScroll.ShowAsEquipment(itemRow.ItemSubType, true);
             var group = RecipeModel.GetEquipmentGroup(row.ResultEquipmentId);
             recipeScroll.GoToRecipeGroup(group);
-            if (SharedModel.RecipeVFXSkipList.Contains(equipmentRecipeId))
+            if (SharedModel.UnlockedRecipes.Value.Contains(equipmentRecipeId))
             {
                 SharedModel.SelectedRow.Value = row;
             }

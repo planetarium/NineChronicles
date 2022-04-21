@@ -1223,35 +1223,6 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval);
         }
 
-        public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
-        {
-            if (avatarAddress != States.Instance.CurrentAvatarState.address)
-            {
-                return;
-            }
-
-            var questList = States.Instance.CurrentAvatarState.questList;
-            foreach (var id in ids)
-            {
-                var quest = questList.First(q => q.Id == id);
-                var rewardMap = quest.Reward.ItemMap;
-
-                foreach (var reward in rewardMap)
-                {
-                    var materialRow = Game.Game.instance.TableSheets
-                        .MaterialItemSheet
-                        .First(pair => pair.Key == reward.Key);
-
-                    LocalLayerModifier.RemoveItem(
-                        avatarAddress,
-                        materialRow.Value.ItemId,
-                        reward.Value);
-                }
-
-                LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
-            }
-        }
-
         private void ResponseGrinding(ActionBase.ActionEvaluation<Grinding> eval)
         {
             if (!(eval.Exception is null))
@@ -1279,12 +1250,59 @@ namespace Nekoyume.BlockChain
 
         private void ResponseUnlockEquipmentRecipe(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
         {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
             var unlockedRecipeIdsAddress = eval.Action.AvatarAddress.Derive("recipe_ids");
             var rawIds = Game.Game.instance.Agent.GetState(unlockedRecipeIdsAddress);
             var recipeIds = rawIds != null ?
                 ((List)rawIds).ToList(Model.State.StateExtensions.ToInteger) :
                 new List<int>() { 1 };
-            Craft.SharedModel.SetUnlockedRecipes(recipeIds);
+
+            var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            var cost = CrystalCalculator.CalculateCost(eval.Action.RecipeIds, sheet);
+            LocalLayerModifier.ModifyAvatarCrystal(
+                States.Instance.CurrentAvatarState.address, cost.MajorUnit);
+
+            var sharedModel = Craft.SharedModel;
+            foreach (var id in recipeIds)
+            {
+                sharedModel.UnlockingRecipes.Remove(id);
+            }
+            sharedModel.SetUnlockedRecipes(recipeIds);
+
+            UpdateCurrentAvatarStateAsync(eval);
+        }
+
+        public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
+        {
+            if (avatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                return;
+            }
+
+            var questList = States.Instance.CurrentAvatarState.questList;
+            foreach (var id in ids)
+            {
+                var quest = questList.First(q => q.Id == id);
+                var rewardMap = quest.Reward.ItemMap;
+
+                foreach (var reward in rewardMap)
+                {
+                    var materialRow = Game.Game.instance.TableSheets
+                        .MaterialItemSheet
+                        .First(pair => pair.Key == reward.Key);
+
+                    LocalLayerModifier.RemoveItem(
+                        avatarAddress,
+                        materialRow.Value.ItemId,
+                        reward.Value);
+                }
+
+                LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
+            }
         }
 
         private static ItemBase GetItem(IAccountStateDelta state, Guid tradableId)

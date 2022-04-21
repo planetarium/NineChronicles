@@ -496,14 +496,7 @@ namespace Nekoyume.UI
                 Debug.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
                 return;
             }
-
-            // Temporarily lock tutorial recipe.
-            var skipMap = Craft.SharedModel.RecipeVFXSkipList;
-            if (skipMap.Contains(firstRecipeRow.Id))
-            {
-                skipMap.Remove(firstRecipeRow.Id);
-            }
-            Craft.SharedModel.SaveRecipeVFXSkipList();
+             
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
