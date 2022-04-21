@@ -306,6 +306,5 @@ namespace Nekoyume.UI.Module
             _selectedItemsForGrind.Clear();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
         }
-        }
     }
 }
