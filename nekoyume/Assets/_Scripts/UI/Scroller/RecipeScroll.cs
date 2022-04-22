@@ -126,7 +126,8 @@ namespace Nekoyume.UI.Scroller
             LocalLayerModifier.ModifyAvatarCrystal(
                 States.Instance.CurrentAvatarState.address, -_previousOpenCost);
             Game.Game.instance.ActionManager
-                .UnlockEquipmentRecipe(_unlockableRecipes);
+                .UnlockEquipmentRecipe(_unlockableRecipes)
+                .Subscribe();
         }
 
         public void InitializeNotification()
