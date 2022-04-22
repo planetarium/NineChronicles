@@ -152,13 +152,14 @@ namespace Nekoyume.UI.Module
 
             stakingBonus.SetBonusTextFunc(level =>
             {
-                if (TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet.TryGetValue(level,
+                if (level > 0 &&
+                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet.TryGetValue(level,
                         out var row))
                 {
-                    return $"x{row.Multiplier / 100.0:F2}";
+                    return $"+{row.Multiplier}%";
                 }
 
-                return "None";
+                return "+0%";
             });
 
             MonsterCollectionStateSubject.Level
@@ -237,8 +238,6 @@ namespace Nekoyume.UI.Module
 
         private void UpdateStakingBonusObject(int level)
         {
-            stakingBonusDisabledObject.SetActive(level <= 0);
-            stakingBonus.gameObject.SetActive(level > 0);
             stakingBonus.OnUpdateStakingLevel(level);
 
             if (_selectedItemsForGrind.Any())

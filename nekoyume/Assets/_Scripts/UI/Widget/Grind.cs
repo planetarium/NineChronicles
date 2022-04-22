@@ -19,7 +19,17 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            closeButton.onClick.AddListener(() => Close());
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<CombinationMain>().Show();
+            });
+
+            CloseWidget = () =>
+            {
+                Close(true);
+                Find<CombinationMain>().Show();
+            };
         }
 
         public override void Show(bool ignoreShowAnimation = false)
