@@ -61,6 +61,7 @@ namespace Lib9c.Tests.Action
         // Invalid recipe id.
         [InlineData(new[] { -1 }, true, false, false, false, 100, typeof(InvalidRecipeIdException))]
         [InlineData(new[] { 1 }, true, false, false, true, 100, typeof(InvalidRecipeIdException))]
+        [InlineData(new int[] { }, true, false, false, false, 100, typeof(InvalidRecipeIdException))]
         // AvatarState is null.
         [InlineData(new[] { 2 }, false, true, false, true, 100, typeof(FailedLoadStateException))]
         [InlineData(new[] { 2 }, false, false, false, true, 100, typeof(FailedLoadStateException))]

@@ -38,7 +38,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress);
             }
 
-            if (RecipeIds.Any(i => i < 2))
+            if (!RecipeIds.Any() || RecipeIds.Any(i => i < 2))
             {
                 throw new InvalidRecipeIdException();
             }
