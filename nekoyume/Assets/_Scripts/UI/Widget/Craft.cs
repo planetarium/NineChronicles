@@ -130,7 +130,6 @@ namespace Nekoyume.UI
                 SharedModel.UpdateUnlockedRecipesAsync(address);
             }).AddTo(gameObject);
 
-            recipeScroll.InitializeNotification();
             ReactiveAvatarState.QuestList
                 .Subscribe(SubscribeQuestList)
                 .AddTo(gameObject);

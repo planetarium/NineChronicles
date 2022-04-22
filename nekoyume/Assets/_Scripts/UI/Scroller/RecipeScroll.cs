@@ -69,6 +69,10 @@ namespace Nekoyume.UI.Scroller
 
         private BigInteger _previousOpenCost;
 
+        private ItemSubType _displayingItemSubType;
+
+        private List<IDisposable> _disposablesOnDisabled = new List<IDisposable>();
+
         protected void Awake()
         {
             foreach (var categoryToggle in equipmentCategoryToggles)
@@ -94,6 +98,11 @@ namespace Nekoyume.UI.Scroller
             }
 
             openAllRecipeButton.onClick.AddListener(OpenEveryAvailableRecipes);
+        }
+
+        private void OnDisable()
+        {
+            _disposablesOnDisabled.DisposeAllAndClear();
         }
 
         private void OpenEveryAvailableRecipes()
@@ -130,15 +139,16 @@ namespace Nekoyume.UI.Scroller
                 .Subscribe();
         }
 
-        public void InitializeNotification()
+        public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
         {
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
-                .AddTo(gameObject);
-        }
+                .AddTo(_disposablesOnDisabled);
+            Craft.SharedModel.UnlockedRecipes
+                .Subscribe(UpdateUnlockAllButton)
+                .AddTo(_disposablesOnDisabled);
 
-        public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
-        {
+            _displayingItemSubType = type;
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(true);
             consumableTab.SetActive(false);
@@ -161,7 +171,10 @@ namespace Nekoyume.UI.Scroller
             emptyObject.SetActive(!items.Any());
             Show(items, true);
             AnimateScroller();
+        }
 
+        private void UpdateUnlockAllButton(List<int> unlockedRecipes)
+        {
             if (!States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId))
             {
                 openAllRecipeArea.SetActive(false);
@@ -171,18 +184,22 @@ namespace Nekoyume.UI.Scroller
                 var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
                 _unlockableRecipes = sheet.Values
                     .Where(x =>
-                        x.GetResultEquipmentItemRow().ItemSubType == type &&
+                        x.GetResultEquipmentItemRow().ItemSubType == _displayingItemSubType &&
                         x.UnlockStage <= lastClearedStageId &&
-                        !Craft.SharedModel.UnlockedRecipes.Value.Contains(x.Id))
+                        !unlockedRecipes.Contains(x.Id))
                     .Select(x => x.Id)
                     .OrderBy(x => x)
                     .ToList();
-                openAllRecipeArea.SetActive(_unlockableRecipes.Any());
+                openAllRecipeArea.SetActive(_unlockableRecipes.Count() >= 2);
             }
         }
 
         public void ShowAsFood(StatType type, bool updateToggle = false)
         {
+            Craft.SharedModel.NotifiedRow
+                .Subscribe(SubscribeNotifiedRow)
+                .AddTo(_disposablesOnDisabled);
+
             openAllRecipeArea.SetActive(false);
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);

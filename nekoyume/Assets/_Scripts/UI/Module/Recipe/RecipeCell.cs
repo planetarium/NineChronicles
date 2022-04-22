@@ -23,9 +23,9 @@ namespace Nekoyume.UI.Module
         [SerializeField] private RecipeViewData recipeViewData = null;
         [SerializeField] private RecipeView equipmentView = null;
         [SerializeField] private RecipeView consumableView = null;
+        [SerializeField] private RecipeView loadingView = null;
         [SerializeField] private GameObject selectedObject = null;
         [SerializeField] private GameObject lockObject = null;
-        [SerializeField] private GameObject loadingObject = null;
         [SerializeField] private GameObject lockVFXObject = null;
         [SerializeField] private GameObject lockOpenVFXObject = null;
         [SerializeField] private GameObject notificationObject = null;
@@ -107,7 +107,6 @@ namespace Nekoyume.UI.Module
                 else
                 {
                     IsLocked = false;
-                    loadingObject.SetActive(false);
                     SetEquipmentView(equipmentRow);
                 }
             }
@@ -155,7 +154,7 @@ namespace Nekoyume.UI.Module
         public void UpdateLocked(EquipmentItemRecipeSheet.Row equipmentRow)
         {
             animator.Rebind();
-            loadingObject.SetActive(false);
+            loadingView.gameObject.SetActive(false);
             lockVFXObject.SetActive(false);
             unlockConditionText.enabled = false;
             _unlockable = false;
@@ -190,8 +189,7 @@ namespace Nekoyume.UI.Module
             else if (Craft.SharedModel.UnlockingRecipes.Contains(equipmentRow.Id))
             {
                 _isWaitingForUnlock = true;
-                equipmentView.Hide();
-                loadingObject.SetActive(true);
+                SetLoadingView(equipmentRow);
                 IsLocked = false;
                 return;
             }
@@ -215,6 +213,16 @@ namespace Nekoyume.UI.Module
             var viewData = recipeViewData.GetData(resultItem.Grade);
             equipmentView.Show(viewData, resultItem);
             consumableView.Hide();
+            loadingView.Hide();
+        }
+
+        private void SetLoadingView(EquipmentItemRecipeSheet.Row row)
+        {
+            var resultItem = row.GetResultEquipmentItemRow();
+            var viewData = recipeViewData.GetData(resultItem.Grade);
+            equipmentView.Hide();
+            consumableView.Hide();
+            loadingView.Show(viewData, resultItem);
         }
 
         public void Unlock()
@@ -223,9 +231,8 @@ namespace Nekoyume.UI.Module
             AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
             lockOpenVFXObject.SetActive(true);
 
-            equipmentView.Hide();
             lockObject.SetActive(false);
-            loadingObject.SetActive(true);
+            SetLoadingView(_recipeRow as EquipmentItemRecipeSheet.Row);
         }
 
         public void SetSelected(SheetRow<int> row)

@@ -31,6 +31,8 @@ namespace Nekoyume.UI
 
         private List<int> _unlockList = null;
 
+        private EquipmentItemRecipeSheet.Row _row = null;
+
         private void Awake()
         {
             costButton.OnClickSubject
@@ -53,6 +55,7 @@ namespace Nekoyume.UI
 
         public void Set(EquipmentItemRecipeSheet.Row row)
         {
+            _row = row;
             _unlockList = new List<int> { row.Key };
             recipeCell.Show(row, false);
 
@@ -72,14 +75,18 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var unlockedRecipeIds = Craft.SharedModel.UnlockedRecipes.Value;
+            UpdateButton(Craft.SharedModel.UnlockedRecipes.Value);
+        }
+
+        private void UpdateButton(List<int> unlockedRecipes)
+        {
             var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
             var previousRecipeIds = sheet.Values
                 .Where(x =>
-                x.GetResultEquipmentItemRow().ItemSubType == row.GetResultEquipmentItemRow().ItemSubType &&
-                x.Id < row.Id)
+                x.GetResultEquipmentItemRow().ItemSubType == _row.GetResultEquipmentItemRow().ItemSubType &&
+                x.Id < _row.Id)
                 .Select(x => x.Id);
-            var unlockable = previousRecipeIds.All(unlockedRecipeIds.Contains);
+            var unlockable = previousRecipeIds.All(unlockedRecipes.Contains);
             costButton.gameObject.SetActive(unlockable);
             openConditionText.text = L10nManager.Localize("UI_INFORM_OPEN_PREVIOUS_RECIPE");
             openConditionText.enabled = !unlockable;
