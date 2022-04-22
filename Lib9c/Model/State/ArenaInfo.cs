@@ -109,6 +109,20 @@ namespace Nekoyume.Model.State
             Active = false;
             ArenaRecord = new Record();
         }
+        
+        public ArenaInfo Clone() => new ArenaInfo(this)
+        {
+            Score = Score,
+            DailyChallengeCount = DailyChallengeCount,
+            Active = Active,
+            Receive = Receive,
+            ArenaRecord =
+            {
+                Win = ArenaRecord.Win,
+                Lose = ArenaRecord.Lose,
+                Draw = ArenaRecord.Draw
+            }
+        };
 
         public IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>

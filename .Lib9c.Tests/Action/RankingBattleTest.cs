@@ -181,8 +181,8 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
                 Rehearsal = false,
             });
-            Assert.NotNull(action.ArenaInfo);
-            Assert.NotNull(action.EnemyArenaInfo);
+            Assert.NotNull(action.PreviousArenaInfo);
+            Assert.NotNull(action.PreviousEnemyArenaInfo);
 
             var nextWeeklyArenaState = nextState.GetWeeklyArenaState(0);
             Assert.True(nextState.TryGetState(
@@ -220,16 +220,16 @@ namespace Lib9c.Tests.Action
                 RankingBattle.StageId,
                 _tableSheets.CostumeStatSheet);
             simulator.Simulate();
+            var challengerScoreDelta = previousArenaInfo.Update(
+                previousEnemyArenaInfo,
+                simulator.Result,
+                ArenaScoreHelper.GetScore);
             var rewards = RewardSelector.Select(
                 new TestRandom(),
                 _tableSheets.WeeklyArenaRewardSheet,
                 _tableSheets.MaterialItemSheet,
                 player.Level,
                 previousArenaInfo.GetRewardCount());
-            var challengerScoreDelta = previousArenaInfo.Update(
-                previousEnemyArenaInfo,
-                simulator.Result,
-                ArenaScoreHelper.GetScore);
             simulator.PostSimulate(rewards, challengerScoreDelta, previousArenaInfo.Score);
 
             Assert.Equal(nextArenaInfo.Score, simulator.Log.score);
@@ -305,8 +305,8 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
                 Rehearsal = false,
             });
-            Assert.NotNull(action.ArenaInfo);
-            Assert.NotNull(action.EnemyArenaInfo);
+            Assert.NotNull(action.PreviousArenaInfo);
+            Assert.NotNull(action.PreviousEnemyArenaInfo);
 
             var nextAvatar1State = nextState.GetAvatarStateV2(_avatar1Address);
             Assert.Contains(nextAvatar1State.inventory.Materials, i => itemIds.Contains(i.Id));
@@ -332,16 +332,16 @@ namespace Lib9c.Tests.Action
                 RankingBattle.StageId,
                 _tableSheets.CostumeStatSheet);
             simulator.Simulate();
+            var challengerScoreDelta = previousArenaInfo.Update(
+                previousEnemyArenaInfo,
+                simulator.Result,
+                ArenaScoreHelper.GetScore);
             var rewards = RewardSelector.Select(
                 new TestRandom(),
                 _tableSheets.WeeklyArenaRewardSheet,
                 _tableSheets.MaterialItemSheet,
                 player.Level,
                 previousArenaInfo.GetRewardCount());
-            var challengerScoreDelta = previousArenaInfo.Update(
-                previousEnemyArenaInfo,
-                simulator.Result,
-                ArenaScoreHelper.GetScore);
             simulator.PostSimulate(rewards, challengerScoreDelta, previousArenaInfo.Score);
 
             Assert.Equal(nextArenaInfo1.Score, simulator.Log.score);
