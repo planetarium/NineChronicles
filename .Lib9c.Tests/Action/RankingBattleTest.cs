@@ -181,8 +181,8 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
                 Rehearsal = false,
             });
-            Assert.NotNull(action.ArenaInfo);
-            Assert.NotNull(action.EnemyArenaInfo);
+            Assert.NotNull(action.PreviousArenaInfo);
+            Assert.NotNull(action.PreviousEnemyArenaInfo);
 
             var nextWeeklyArenaState = nextState.GetWeeklyArenaState(0);
             Assert.True(nextState.TryGetState(
@@ -305,8 +305,8 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
                 Rehearsal = false,
             });
-            Assert.NotNull(action.ArenaInfo);
-            Assert.NotNull(action.EnemyArenaInfo);
+            Assert.NotNull(action.PreviousArenaInfo);
+            Assert.NotNull(action.PreviousEnemyArenaInfo);
 
             var nextAvatar1State = nextState.GetAvatarStateV2(_avatar1Address);
             Assert.Contains(nextAvatar1State.inventory.Materials, i => itemIds.Contains(i.Id));
