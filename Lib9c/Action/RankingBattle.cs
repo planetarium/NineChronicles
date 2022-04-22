@@ -163,8 +163,7 @@ namespace Nekoyume.Action
             }
 
             // Run updated model
-            var (arenaInfoAddress, previousArenaInfo, isNewArenaInfo) = GetArenaInfo(
-                states,
+            var (arenaInfoAddress, previousArenaInfo, isNewArenaInfo) = states.GetArenaInfo(
                 weeklyArenaAddress,
                 avatarState,
                 sheets.GetSheet<CharacterSheet>(),
@@ -189,8 +188,7 @@ namespace Nekoyume.Action
                 StageId,
                 costumeStatSheet);
             simulator.Simulate();
-            var (enemyArenaInfoAddress, previousEnemyArenaInfo, isNewEnemyArenaInfo) = GetArenaInfo(
-                states,
+            var (enemyArenaInfoAddress, previousEnemyArenaInfo, isNewEnemyArenaInfo) = states.GetArenaInfo(
                 weeklyArenaAddress,
                 enemyAvatarState,
                 sheets.GetSheet<CharacterSheet>(),
@@ -310,29 +308,6 @@ namespace Nekoyume.Action
             equipmentIds = ((List)plainValue["equipment_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();
-        }
-
-        private static (Address arenaInfoAddress, ArenaInfo arenaInfo, bool isNewArenaInfo) GetArenaInfo(
-            IAccountStateDelta states,
-            Address weeklyArenaAddress,
-            AvatarState avatarState,
-            CharacterSheet characterSheet,
-            CostumeStatSheet costumeStatSheet)
-        {
-            var arenaInfoAddress = weeklyArenaAddress.Derive(avatarState.address.ToByteArray());
-            var isNew = false;
-            ArenaInfo arenaInfo;
-            if (states.TryGetState(arenaInfoAddress, out Dictionary rawArenaInfo))
-            {
-                arenaInfo = new ArenaInfo(rawArenaInfo);
-            }
-            else
-            {
-                arenaInfo = new ArenaInfo(avatarState, characterSheet, costumeStatSheet, true);
-                isNew = true;
-            }
-
-            return (arenaInfoAddress, arenaInfo, isNew);
         }
     }
 }
