@@ -49,7 +49,7 @@ namespace Nekoyume.UI
             string insufficientMessage,
             System.Action onPaymentSucceed)
         {
-            var title = L10nManager.Localize("UI_COST_PREFIX");
+            var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost.ToString();
             if (asset.MajorUnit >= cost)
             {
