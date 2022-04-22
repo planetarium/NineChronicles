@@ -321,7 +321,20 @@ namespace Nekoyume.UI
                     }
                 }
 
-                var result = await agent.GetStateBulk(arenaInfoAddressList);
+                // Chunking list for reduce loading time.
+                var chunks = arenaInfoAddressList
+                    .Select((x, i) => new { Index = i, Value = x })
+                    .GroupBy(x => x.Index / 1000)
+                    .Select(x => x.Select(v => v.Value).ToList())
+                    .ToList();
+                Dictionary<Address, IValue> result = new Dictionary<Address, IValue>();
+                for (var index = 0; index < chunks.Count; index++)
+                {
+                    var chunk = chunks[index];
+                    var states = await Game.Game.instance.Agent.GetStateBulk(chunk);
+                    result = result.Union(states)
+                        .ToDictionary(pair => pair.Key, pair => pair.Value);
+                }
                 var infoList = new List<ArenaInfo>();
                 foreach (var iValue in result.Values)
                 {
