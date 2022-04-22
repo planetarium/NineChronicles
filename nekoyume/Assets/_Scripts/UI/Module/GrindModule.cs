@@ -190,7 +190,7 @@ namespace Nekoyume.UI.Module
             var onSubmit = isEquipment
                 ? new System.Action(() => RegisterToGrindingList(model, isRegister))
                 : null;
-            var blockMessage = model.Equipped.Value ? "ERROR_NOT_GRINDING_EQUIPPED" : "ERROR_GRINDING_COUNT_OVERFLOW";
+            var blockMessage = model.Equipped.Value ? "ERROR_NOT_GRINDING_EQUIPPED" : "ERROR_NOT_GRINDING_10OVER";
             var onBlock = new System.Action(() =>
                 OneLineSystem.Push(MailType.System,
                     L10nManager.Localize(blockMessage),

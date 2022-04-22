@@ -1290,10 +1290,9 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            // TODO: Add localized text
-            var message =
-                $"[{nameof(GrindingMail)}] ItemCount: {mail.ItemCount}, Asset: {mail.Asset}";
-            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+            OneLineSystem.Push(MailType.Auction,
+                L10nManager.Localize("UI_GRINDING_NOTIFY"),
+                NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
             var currency = new Currency("CRYSTAL", 18, minters: null);
             var crystal = eval.OutputStates.GetBalance(avatarAddress, currency);
