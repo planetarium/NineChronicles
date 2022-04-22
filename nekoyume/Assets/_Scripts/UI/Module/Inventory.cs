@@ -64,6 +64,7 @@ namespace Nekoyume.UI.Module
         private readonly List<ElementalType> _elementalTypes = new List<ElementalType>();
         private ItemType _activeItemType = ItemType.Equipment;
         private bool _checkTradable;
+        private bool _reverseOrder;
 
         public bool HasNotification => _equipments.Any(x => x.Value.Any(item=> item.HasNotification.Value));
 
@@ -137,7 +138,13 @@ namespace Nekoyume.UI.Module
                     AddItem(item.item, item.count);
                 }
 
-                scroll.UpdateData(GetModels(_activeItemType), resetScrollOnEnable);
+                var models = GetModels(_activeItemType);
+                if (_reverseOrder)
+                {
+                    models.Reverse();
+                }
+
+                scroll.UpdateData(models, resetScrollOnEnable);
                 UpdateElementalTypeDisable(_elementalTypes);
 
                 onUpdateInventory?.Invoke(this);
@@ -419,10 +426,12 @@ namespace Nekoyume.UI.Module
         }
 
         public void SetGrinding(Action<InventoryItem, RectTransform> clickItem,
-            Action<Inventory> onUpdateInventory)
+            Action<Inventory> onUpdateInventory,
+            bool reverseOrder)
         {
             SetAction(clickItem);
             Set(onUpdateInventory);
+            _reverseOrder = reverseOrder;
         }
 
         public void ClearSelectedItem()

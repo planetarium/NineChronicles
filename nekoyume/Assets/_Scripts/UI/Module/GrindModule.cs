@@ -169,12 +169,12 @@ namespace Nekoyume.UI.Module
             _isInitialized = true;
         }
 
-        public void Show()
+        public void Show(bool reverseInventoryOrder = true)
         {
             Initialize();
 
             _selectedItemsForGrind.Clear();
-            grindInventory.SetGrinding(ShowItemTooltip, OnUpdateInventory);
+            grindInventory.SetGrinding(ShowItemTooltip, OnUpdateInventory, reverseInventoryOrder);
             grindButton.Interactable = false;
             UpdateStakingBonusObject(States.Instance.MonsterCollectionState?.Level ?? 0);
             crystalRewardText.text = string.Empty;
