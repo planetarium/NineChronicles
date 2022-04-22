@@ -916,47 +916,16 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                var rand = new LocalRandom(eval.RandomSeed);
-                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-                var stageSheet = Game.Game.instance.TableSheets.StageSheet;
-                stageSheet.TryGetValue(eval.Action.stageId, out var stageRow);
-
-
-                Debug.Log("-### ------------------");
-                // Debug.Log($"### 획득한 경험치 : {eval.Action.earnedExp}");
-                //
-                // var items = Action.HackAndSlashSweep.GetRewardItems(rand, eval.Action.playCount, stageRow,
-                //     materialSheet);
-
-                // var bundle = new Dictionary<ItemBase, int>();
-                // foreach (var itemBase in items)
-                // {
-                //     if (bundle.ContainsKey(itemBase))
-                //     {
-                //         bundle[itemBase] += 1;
-                //     }
-                //     else
-                //     {
-                //         bundle.Add(itemBase, 1);
-                //     }
-                // }
-
-                var avatarAddress = eval.Action.avatarAddress;
+                Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
 
                 if (eval.Action.apStoneCount > 0)
                 {
                     var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                         r.ItemSubType == ItemSubType.ApStone);
+                    var avatarAddress = eval.Action.avatarAddress;
                     LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
                 }
 
-                // foreach (var pair in bundle)
-                // {
-                //     Debug.Log($"### 획득 아이템 : {pair.Key.GetLocalizedName()} - {pair.Value}개");
-                //     var material = pair.Key as Material;
-                //     LocalLayerModifier.AddItem(avatarAddress, material.ItemId, pair.Value);
-                // }
-                // Debug.Log("-------------------");
                 UpdateCurrentAvatarStateAsync(eval);
             }
         }

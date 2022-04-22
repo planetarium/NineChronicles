@@ -7,7 +7,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
-using Nekoyume.UI;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
@@ -16,7 +15,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume
+namespace Nekoyume.UI
 {
     using UniRx;
 
@@ -54,6 +53,7 @@ namespace Nekoyume
 
         private readonly ReactiveProperty<int> _apStoneCount = new ReactiveProperty<int>();
         private StageSheet.Row _stageRow;
+        private long _gainedExp;
         private int _worldId;
 
         protected override void Awake()
@@ -122,7 +122,9 @@ namespace Nekoyume
             var levelSheet = Game.Game.instance.TableSheets.CharacterLevelSheet;
             var (level, exp) = avatarState.GetLevelAndExp(levelSheet, _stageRow.Id, playCount);
 
-            levelUpText.text = L10nManager.Localize("UI_SWEEP_LEVEL_UP", level);
+            levelUpText.text = L10nManager.Localize("UI_SWEEP_LEVEL_UP", level- avatarState.level);
+            _gainedExp = exp - avatarState.exp;
+            expText.text = L10nManager.Localize("UI_SWEEP_EXP", _gainedExp);
             expText.text = L10nManager.Localize("UI_SWEEP_EXP", exp - avatarState.exp);
             useApStoneText.text = $"{_apStoneCount.Value}/{HackAndSlashSweep.UsableApStoneCount}";
         }
@@ -157,6 +159,7 @@ namespace Nekoyume
             LocalLayerModifier.RemoveItem(avatarState.address, apStoneRow.ItemId, apStoneCount);
             Game.Game.instance.ActionManager.HackAndSlashSweep(apStoneCount, worldId, stageRow.Id);
             Close();
+            Find<SweepResultPopup>().Show(stageRow, playCount, _gainedExp);
         }
     }
 }
