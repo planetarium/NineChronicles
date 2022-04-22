@@ -189,12 +189,6 @@ namespace Nekoyume.Action
                 StageId,
                 costumeStatSheet);
             simulator.Simulate();
-            var rewards = RewardSelector.Select(
-                ctx.Random,
-                sheets.GetSheet<WeeklyArenaRewardSheet>(),
-                sheets.GetSheet<MaterialItemSheet>(),
-                player.Level,
-                arenaInfo.GetRewardCount());
             var (enemyArenaInfoAddress, previousEnemyArenaInfo, isNewEnemyArenaInfo) = GetArenaInfo(
                 states,
                 weeklyArenaAddress,
@@ -207,6 +201,12 @@ namespace Nekoyume.Action
                 enemyArenaInfo,
                 simulator.Result,
                 ArenaScoreHelper.GetScore);
+            var rewards = RewardSelector.Select(
+                ctx.Random,
+                sheets.GetSheet<WeeklyArenaRewardSheet>(),
+                sheets.GetSheet<MaterialItemSheet>(),
+                player.Level,
+                arenaInfo.GetRewardCount());
             simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
 
             sw.Stop();
