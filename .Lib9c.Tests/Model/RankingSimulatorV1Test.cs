@@ -16,12 +16,12 @@ namespace Lib9c.Tests.Model
     using Nekoyume.TableData;
     using Xunit;
 
-    public class RankingSimulatorTest
+    public class RankingSimulatorV1Test
     {
         private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
 
-        public RankingSimulatorTest()
+        public RankingSimulatorV1Test()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _random = new TestRandom();
@@ -55,28 +55,18 @@ namespace Lib9c.Tests.Model
                 _tableSheets.WorldUnlockSheet
             );
 
-            var arenaInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
-            var enemyInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
-            var simulator = new RankingSimulator(
+            var simulator = new RankingSimulatorV1(
                 _random,
                 avatarState,
                 avatarState,
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
-                1
+                1,
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
             );
-            simulator.Simulate();
-            var rewards = RewardSelector.Select(
-                new TestRandom(),
-                _tableSheets.WeeklyArenaRewardSheet,
-                _tableSheets.MaterialItemSheet,
-                arenaInfo.Level,
-                arenaInfo.GetRewardCount());
-            var challengerScoreDelta = arenaInfo.Update(
-                enemyInfo,
-                simulator.Result,
-                ArenaScoreHelper.GetScore);
-            simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
+            simulator.SimulateV2();
+
             Assert.Equal(expected, simulator.Reward.Any());
         }
 
@@ -107,28 +97,20 @@ namespace Lib9c.Tests.Model
 
             var serialized = (Dictionary)new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false).Serialize();
             serialized = serialized.SetItem("score", score.Serialize());
-            var arenaInfo = new ArenaInfo(serialized);
-            var enemyInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
-            var simulator = new RankingSimulator(
+            var info = new ArenaInfo(serialized);
+
+            var simulator = new RankingSimulatorV1(
                 _random,
                 avatarState,
                 avatarState,
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
-                1
+                1,
+                info,
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
             );
-            simulator.Simulate();
-            var rewards = RewardSelector.Select(
-                new TestRandom(),
-                _tableSheets.WeeklyArenaRewardSheet,
-                _tableSheets.MaterialItemSheet,
-                arenaInfo.Level,
-                arenaInfo.GetRewardCount());
-            var challengerScoreDelta = arenaInfo.Update(
-                enemyInfo,
-                simulator.Result,
-                ArenaScoreHelper.GetScore);
-            simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
+            simulator.SimulateV2();
+
             Assert.Equal(expected, simulator.Reward.Count());
         }
 
@@ -163,20 +145,22 @@ namespace Lib9c.Tests.Model
             enemyCostume.equipped = true;
             enemyAvatarState.inventory.AddItem(enemyCostume);
 
-            var simulator = new RankingSimulator(
+            var simulator = new RankingSimulatorV1(
                 _random,
                 avatarState,
                 enemyAvatarState,
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
                 1,
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
+                new ArenaInfo(enemyAvatarState, _tableSheets.CharacterSheet, false),
                 _tableSheets.CostumeStatSheet
             );
 
             var player = simulator.Player;
             Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);
 
-            var player2 = simulator.Simulate();
+            var player2 = simulator.SimulateV2();
             Assert.Equal(row.Stat, player2.Stats.OptionalStats.ATK);
 
             var e = simulator.Log.OfType<SpawnEnemyPlayer>().First();
@@ -203,37 +187,26 @@ namespace Lib9c.Tests.Model
                 default)
             {
                 level = level,
-                worldInformation = new WorldInformation(
-                    0,
-                    _tableSheets.WorldSheet,
-                    GameConfig.RequireClearedStageLevel.ActionsInRankingBoard),
             };
+            avatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                GameConfig.RequireClearedStageLevel.ActionsInRankingBoard);
 
-            var arenaInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
-            var enemyInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
-            var simulator = new RankingSimulator(
+            var simulator = new RankingSimulatorV1(
                 _random,
                 avatarState,
                 avatarState,
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
-                1);
+                1,
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false));
 
             var rewardIds = new HashSet<int>();
-            for (var i = 0; i < simulationCount; ++i)
+            for (int i = 0; i < simulationCount; ++i)
             {
-                simulator.Simulate();
-                var rewards = RewardSelector.Select(
-                    _random,
-                    _tableSheets.WeeklyArenaRewardSheet,
-                    _tableSheets.MaterialItemSheet,
-                    arenaInfo.Level,
-                    arenaInfo.GetRewardCount());
-                var challengerScoreDelta = arenaInfo.Update(
-                    enemyInfo,
-                    simulator.Result,
-                    ArenaScoreHelper.GetScore);
-                simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
+                simulator.SimulateV2();
                 foreach (var itemBase in simulator.Reward)
                 {
                     if (!rewardIds.Contains(itemBase.Id))
