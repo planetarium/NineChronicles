@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Battle;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
@@ -60,7 +61,10 @@ namespace Lib9c.Tests.Action
         {
             var weekly = new WeeklyArenaState(0);
             weekly.Set(_avatarState, _tableSheets.CharacterSheet);
-            weekly[_avatarState.address].Update(weekly[_avatarState.address], BattleLog.Result.Lose);
+            weekly[_avatarState.address].Update(
+                weekly[_avatarState.address],
+                BattleLog.Result.Lose,
+                ArenaScoreHelper.GetScore);
             var gameConfigState = new GameConfigState();
             gameConfigState.Set(_tableSheets.GameConfigSheet);
             var state = _baseState
@@ -135,7 +139,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void PrepareNextArena(bool afterUpdate)
         {
-            var weeklyIndex = RankingBattle.UpdateTargetWeeklyArenaIndex - 1;
+            var weeklyIndex = RankingBattle11.UpdateTargetWeeklyArenaIndex - 1;
             if (afterUpdate)
             {
                 weeklyIndex++;
@@ -146,7 +150,10 @@ namespace Lib9c.Tests.Action
             if (!afterUpdate)
             {
                 weekly.Set(_avatarState, _tableSheets.CharacterSheet);
-                weekly[avatarAddress].Update(weekly[avatarAddress], BattleLog.Result.Lose);
+                weekly[avatarAddress].Update(
+                    weekly[avatarAddress],
+                    BattleLog.Result.Lose,
+                    ArenaScoreHelper.GetScore);
 
                 Assert.Equal(4, weekly[avatarAddress].DailyChallengeCount);
             }
@@ -159,12 +166,15 @@ namespace Lib9c.Tests.Action
                 .SetState(nextWeekly.address, nextWeekly.Serialize())
                 .SetState(gameConfigState.address, gameConfigState.Serialize());
 
-            var blockIndex = RankingBattle.UpdateTargetBlockIndex;
+            var blockIndex = RankingBattle11.UpdateTargetBlockIndex;
 
             if (afterUpdate)
             {
                 var prevInfo = new ArenaInfo(_avatarState, _tableSheets.CharacterSheet, true);
-                prevInfo.Update(prevInfo, BattleLog.Result.Lose);
+                prevInfo.Update(
+                    prevInfo,
+                    BattleLog.Result.Lose,
+                    ArenaScoreHelper.GetScore);
 
                 Assert.Equal(4, prevInfo.DailyChallengeCount);
 
@@ -223,10 +233,13 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ResetChallengeCount()
         {
-            var legacyWeeklyIndex = RankingBattle.UpdateTargetWeeklyArenaIndex - 1;
+            var legacyWeeklyIndex = RankingBattle11.UpdateTargetWeeklyArenaIndex - 1;
             var legacyWeekly = new WeeklyArenaState(legacyWeeklyIndex);
             legacyWeekly.Set(_avatarState, _tableSheets.CharacterSheet);
-            legacyWeekly[_avatarState.address].Update(legacyWeekly[_avatarState.address], BattleLog.Result.Lose);
+            legacyWeekly[_avatarState.address].Update(
+                legacyWeekly[_avatarState.address],
+                BattleLog.Result.Lose,
+                ArenaScoreHelper.GetScore);
 
             Assert.Equal(4, legacyWeekly[_avatarState.address].DailyChallengeCount);
 
@@ -244,7 +257,7 @@ namespace Lib9c.Tests.Action
 
             var migrationCtx = new ActionContext
             {
-                BlockIndex = RankingBattle.UpdateTargetBlockIndex,
+                BlockIndex = RankingBattle11.UpdateTargetBlockIndex,
                 PreviousStates = _baseState,
                 Miner = default,
             };
@@ -262,11 +275,14 @@ namespace Lib9c.Tests.Action
             Assert.True(state.TryGetState(addressListAddress, out List _));
 
             var prevInfo = new ArenaInfo(prevRawInfo);
-            prevInfo.Update(prevInfo, BattleLog.Result.Lose);
+            prevInfo.Update(
+                prevInfo,
+                BattleLog.Result.Lose,
+                ArenaScoreHelper.GetScore);
 
             Assert.Equal(4, prevInfo.DailyChallengeCount);
 
-            var blockIndex = RankingBattle.UpdateTargetBlockIndex + gameConfigState.DailyArenaInterval;
+            var blockIndex = RankingBattle11.UpdateTargetBlockIndex + gameConfigState.DailyArenaInterval;
 
             var ctx = new ActionContext
             {

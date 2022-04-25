@@ -146,7 +146,7 @@ namespace Nekoyume.Action
 
             Log.Verbose("{WeeklyArenaStateAddress}", weeklyArenaState.address.ToHex());
 
-            var simulator = new RankingSimulator(
+            var simulator = new RankingSimulatorV1(
                 ctx.Random,
                 avatarState,
                 enemyAvatarState,

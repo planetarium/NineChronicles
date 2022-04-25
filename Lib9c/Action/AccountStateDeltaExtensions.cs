@@ -759,5 +759,28 @@ namespace Nekoyume.Action
 
             return new ShopState((Dictionary)value);
         }
+        
+        public static (Address arenaInfoAddress, ArenaInfo arenaInfo, bool isNewArenaInfo) GetArenaInfo(
+            this IAccountStateDelta states,
+            Address weeklyArenaAddress,
+            AvatarState avatarState,
+            CharacterSheet characterSheet,
+            CostumeStatSheet costumeStatSheet)
+        {
+            var arenaInfoAddress = weeklyArenaAddress.Derive(avatarState.address.ToByteArray());
+            var isNew = false;
+            ArenaInfo arenaInfo;
+            if (states.TryGetState(arenaInfoAddress, out Dictionary rawArenaInfo))
+            {
+                arenaInfo = new ArenaInfo(rawArenaInfo);
+            }
+            else
+            {
+                arenaInfo = new ArenaInfo(avatarState, characterSheet, costumeStatSheet, true);
+                isNew = true;
+            }
+
+            return (arenaInfoAddress, arenaInfo, isNew);
+        }
     }
 }
