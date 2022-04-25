@@ -14635,7 +14635,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: UI_UNLOCK_AVAILABLE_RECIPES
+  m_text: UI_UNLOCK_RECIPES
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 0dd5ff07d6b414a099a10f9e2c6f9c2a, type: 2}
@@ -14722,7 +14722,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_UNLOCK_AVAILABLE_RECIPES
+  l10nKey: UI_UNLOCK_RECIPES
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -38756,6 +38756,11 @@ PrefabInstance:
         type: 3}
       propertyPath: selectable
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 776551737451904066, guid: 9102ea9092785405295b3a86fcd0d154,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 1074716463758100926, guid: 9102ea9092785405295b3a86fcd0d154,
         type: 3}
