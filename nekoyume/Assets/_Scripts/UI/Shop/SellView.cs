@@ -27,7 +27,7 @@ namespace Nekoyume
             new ReactiveProperty<ItemSubTypeFilter>(ItemSubTypeFilter.All);
 
         private readonly ReactiveProperty<ShopSortFilter> _selectedSortFilter =
-            new ReactiveProperty<ShopSortFilter>(ShopSortFilter.Class);
+            new ReactiveProperty<ShopSortFilter>(ShopSortFilter.CP);
 
         public void ClearSelectedItem()
         {
@@ -66,7 +66,7 @@ namespace Nekoyume
                     }
                     catch
                     {
-                        return ShopSortFilter.Class;
+                        return ShopSortFilter.CP;
                     }
                 })
                 .Subscribe(filter => _selectedSortFilter.Value = filter).AddTo(gameObject);
@@ -108,7 +108,7 @@ namespace Nekoyume
             itemSubTypeFilter.SetValueWithoutNotify(0);
             sortFilter.SetValueWithoutNotify(0);
             _selectedSubTypeFilter.Value = ItemSubTypeFilter.All;
-            _selectedSortFilter.Value = ShopSortFilter.Class;
+            _selectedSortFilter.Value = ShopSortFilter.CP;
             _selectedItem = null;
         }
 

@@ -1009,32 +1009,66 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
-                var epd = (List)eval.Extra[nameof(Action.RankingBattle.EnemyPlayerDigest)];
-                var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
-                var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
-                var enemyPlayerDigest = new EnemyPlayerDigest(epd);
-                var arenaInfo = new ArenaInfo(aid);
-                var enemyInfo = new ArenaInfo(eid);
-                var rankingSimulatorSheets = Game.Game.instance.TableSheets.GetRankingSimulatorSheets();
-                var player = new Player(States.Instance.CurrentAvatarState, rankingSimulatorSheets);
 
+                var tableSheets = Game.Game.instance.TableSheets;
+                ArenaInfo previousArenaInfo;
+                ArenaInfo previousEnemyArenaInfo;
+                EnemyPlayerDigest previousEnemyPlayerDigest;
+                if (eval.Extra is { })
+                {
+                    var aid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.PreviousArenaInfo)];
+                    previousArenaInfo = new ArenaInfo(aid);
+                    var eid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.PreviousEnemyArenaInfo)];
+                    previousEnemyArenaInfo = new ArenaInfo(eid);
+                    var epd = (List) eval.Extra[nameof(Action.RankingBattle.PreviousEnemyPlayerDigest)];
+                    previousEnemyPlayerDigest = new EnemyPlayerDigest(epd);
+                }
+                else
+                {
+                    var previousAvatarState = eval.PreviousStates.GetAvatarStateV2(eval.Action.avatarAddress);
+                    var tuple = eval.PreviousStates.GetArenaInfo(
+                        eval.Action.weeklyArenaAddress,
+                        previousAvatarState,
+                        tableSheets.CharacterSheet,
+                        tableSheets.CostumeStatSheet);
+                    previousArenaInfo = tuple.arenaInfo;
+                    var previousEnemyAvatarState = eval.PreviousStates.GetAvatarStateV2(eval.Action.enemyAddress);
+                    var enemyTuple = eval.PreviousStates.GetArenaInfo(
+                        eval.Action.weeklyArenaAddress,
+                        previousEnemyAvatarState,
+                        tableSheets.CharacterSheet,
+                        tableSheets.CostumeStatSheet);
+                    previousEnemyArenaInfo = enemyTuple.arenaInfo;
+                    previousEnemyPlayerDigest = new EnemyPlayerDigest(previousEnemyAvatarState);
+                }
+
+                var rankingSimulatorSheets = tableSheets.GetRankingSimulatorSheets();
+                var player = new Player(States.Instance.CurrentAvatarState, rankingSimulatorSheets);
                 var simulator = new RankingSimulator(
                     new LocalRandom(eval.RandomSeed),
                     player,
-                    enemyPlayerDigest,
+                    previousEnemyPlayerDigest,
                     new List<Guid>(),
                     rankingSimulatorSheets,
                     Action.RankingBattle.StageId,
-                    arenaInfo,
-                    enemyInfo,
-                    Game.Game.instance.TableSheets.CostumeStatSheet
+                    tableSheets.CostumeStatSheet
                 );
                 simulator.Simulate();
-                var log = simulator.Log;
+                var challengerScoreDelta = previousArenaInfo.Update(
+                    previousEnemyArenaInfo,
+                    simulator.Result,
+                    ArenaScoreHelper.GetScore);
+                var rewards = RewardSelector.Select(
+                    simulator.Random,
+                    tableSheets.WeeklyArenaRewardSheet,
+                    tableSheets.MaterialItemSheet,
+                    player.Level,
+                    previousArenaInfo.GetRewardCount());
+                simulator.PostSimulate(rewards, challengerScoreDelta, previousArenaInfo.Score);
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
                 {
-                    Widget.Find<RankingBoard>().GoToStage(log);
+                    Widget.Find<RankingBoard>().GoToStage(simulator.Log);
                 }
             }
             else

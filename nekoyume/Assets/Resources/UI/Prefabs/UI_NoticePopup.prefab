@@ -86,11 +86,11 @@ MonoBehaviour:
   detailButton: {fileID: 8915038191723940672}
   closeButton: {fileID: 9158407257095490729}
   noticeList:
-  - name: ItemLevelRequirement
-    contentImage: {fileID: 21300000, guid: 43bb393ec180a4c8c8f93a801f72c298, type: 3}
-    beginTime: 2022/04/18 00:00:00
-    endTime: 2022/05/12 23:59:59
-    pageUrlFormat: https://onboarding.nine-chronicles.com/earn
+  - name: ArenaSeason3
+    contentImage: {fileID: 21300000, guid: 1433fe5c41a34b94ba7162de74de5c55, type: 3}
+    beginTime: 2022/04/27 15:00:00
+    endTime: 2022/05/11 14:59:59
+    pageUrlFormat: http://ninechronicles-banner.com/02
 --- !u!1 &288844463192487935
 GameObject:
   m_ObjectHideFlags: 0
@@ -859,7 +859,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 43bb393ec180a4c8c8f93a801f72c298, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1433fe5c41a34b94ba7162de74de5c55, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
