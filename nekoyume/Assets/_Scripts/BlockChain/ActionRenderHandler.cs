@@ -1011,25 +1011,35 @@ namespace Nekoyume.BlockChain
                         });
 
                 var tableSheets = Game.Game.instance.TableSheets;
-                ArenaInfo arenaInfo;
-                ArenaInfo enemyArenaInfo;
-                EnemyPlayerDigest enemyPlayerDigest;
+                ArenaInfo previousArenaInfo;
+                ArenaInfo previousEnemyArenaInfo;
+                EnemyPlayerDigest previousEnemyPlayerDigest;
                 if (eval.Extra is { })
                 {
-                    var aid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.ArenaInfo)];
-                    arenaInfo = new ArenaInfo(aid);
-                    var eid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.EnemyArenaInfo)];
-                    enemyArenaInfo = new ArenaInfo(eid);
-                    var epd = (List) eval.Extra[nameof(Action.RankingBattle.EnemyPlayerDigest)];
-                    enemyPlayerDigest = new EnemyPlayerDigest(epd);
+                    var aid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.PreviousArenaInfo)];
+                    previousArenaInfo = new ArenaInfo(aid);
+                    var eid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.PreviousEnemyArenaInfo)];
+                    previousEnemyArenaInfo = new ArenaInfo(eid);
+                    var epd = (List) eval.Extra[nameof(Action.RankingBattle.PreviousEnemyPlayerDigest)];
+                    previousEnemyPlayerDigest = new EnemyPlayerDigest(epd);
                 }
                 else
                 {
-                    var avatarState = eval.PreviousStates.GetAvatarStateV2(eval.Action.avatarAddress);
-                    arenaInfo = new ArenaInfo(avatarState, tableSheets.CharacterSheet, true);
-                    var enemyAvatarState = eval.PreviousStates.GetAvatarStateV2(eval.Action.enemyAddress);
-                    enemyArenaInfo = new ArenaInfo(enemyAvatarState, tableSheets.CharacterSheet, true);
-                    enemyPlayerDigest = new EnemyPlayerDigest(enemyAvatarState);
+                    var previousAvatarState = eval.PreviousStates.GetAvatarStateV2(eval.Action.avatarAddress);
+                    var tuple = eval.PreviousStates.GetArenaInfo(
+                        eval.Action.weeklyArenaAddress,
+                        previousAvatarState,
+                        tableSheets.CharacterSheet,
+                        tableSheets.CostumeStatSheet);
+                    previousArenaInfo = tuple.arenaInfo;
+                    var previousEnemyAvatarState = eval.PreviousStates.GetAvatarStateV2(eval.Action.enemyAddress);
+                    var enemyTuple = eval.PreviousStates.GetArenaInfo(
+                        eval.Action.weeklyArenaAddress,
+                        previousEnemyAvatarState,
+                        tableSheets.CharacterSheet,
+                        tableSheets.CostumeStatSheet);
+                    previousEnemyArenaInfo = enemyTuple.arenaInfo;
+                    previousEnemyPlayerDigest = new EnemyPlayerDigest(previousEnemyAvatarState);
                 }
 
                 var rankingSimulatorSheets = tableSheets.GetRankingSimulatorSheets();
@@ -1037,29 +1047,28 @@ namespace Nekoyume.BlockChain
                 var simulator = new RankingSimulator(
                     new LocalRandom(eval.RandomSeed),
                     player,
-                    enemyPlayerDigest,
+                    previousEnemyPlayerDigest,
                     new List<Guid>(),
                     rankingSimulatorSheets,
                     Action.RankingBattle.StageId,
                     tableSheets.CostumeStatSheet
                 );
                 simulator.Simulate();
+                var challengerScoreDelta = previousArenaInfo.Update(
+                    previousEnemyArenaInfo,
+                    simulator.Result,
+                    ArenaScoreHelper.GetScore);
                 var rewards = RewardSelector.Select(
                     simulator.Random,
                     tableSheets.WeeklyArenaRewardSheet,
                     tableSheets.MaterialItemSheet,
                     player.Level,
-                    arenaInfo.GetRewardCount());
-                var challengerScoreDelta = arenaInfo.Update(
-                    enemyArenaInfo,
-                    simulator.Result,
-                    ArenaScoreHelper.GetScore);
-                simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
-                var log = simulator.Log;
+                    previousArenaInfo.GetRewardCount());
+                simulator.PostSimulate(rewards, challengerScoreDelta, previousArenaInfo.Score);
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
                 {
-                    Widget.Find<RankingBoard>().GoToStage(log);
+                    Widget.Find<RankingBoard>().GoToStage(simulator.Log);
                 }
             }
             else
