@@ -1542,7 +1542,7 @@ GameObject:
   - component: {fileID: 4007486520234516097}
   - component: {fileID: 6584015150839035940}
   m_Layer: 5
-  m_Name: Goods
+  m_Name: Unlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3151,11 +3151,13 @@ MonoBehaviour:
   consumableView: {fileID: 4915981089427194667}
   loadingView: {fileID: 4244012839166109594}
   selectedObject: {fileID: 4423364714699765298}
+  unlockObject: {fileID: 3136777223874932668}
   lockObject: {fileID: 6706624862869275031}
   lockVFXObject: {fileID: 5196846471741088220}
   lockOpenVFXObject: {fileID: 6942684687364404803}
   notificationObject: {fileID: 4301618597938750152}
   unlockConditionText: {fileID: 2566518020154693237}
+  unlockPriceText: {fileID: 5075942277264504113}
   button: {fileID: 2408656741481977993}
   selectable: 1
 --- !u!225 &4930007547896894781
@@ -5139,22 +5141,22 @@ PrefabInstance:
     - target: {fileID: 25989777477300684, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 820817692270203243, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1174739493389459207, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1660906100606220769, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4071687373215305825, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
@@ -5274,7 +5276,7 @@ PrefabInstance:
     - target: {fileID: 4612396974484430484, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5038344582823747716, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
@@ -5294,7 +5296,7 @@ PrefabInstance:
     - target: {fileID: 8953190639730100402, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6037582c7dfa5493aa5be5e1ca0401e6, type: 3}

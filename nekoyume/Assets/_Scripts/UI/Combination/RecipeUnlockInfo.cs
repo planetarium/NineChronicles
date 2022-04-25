@@ -97,7 +97,7 @@ namespace Nekoyume.UI
                 costButton.SetCost(ConditionalCostButton.CostType.Crystal, (int)cost.MajorUnit);
             }
         }
-
+        
         public void UnlockRecipeAction()
         {
             var sharedModel = Craft.SharedModel;

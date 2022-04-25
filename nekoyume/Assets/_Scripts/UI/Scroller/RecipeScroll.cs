@@ -141,15 +141,15 @@ namespace Nekoyume.UI.Scroller
 
         public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
         {
+            _displayingItemSubType = type;
+            Craft.SharedModel.SelectedRow.Value = null;
+
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
                 .AddTo(_disposablesOnDisabled);
             Craft.SharedModel.UnlockedRecipes
                 .Subscribe(UpdateUnlockAllButton)
                 .AddTo(_disposablesOnDisabled);
-
-            _displayingItemSubType = type;
-            Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(true);
             consumableTab.SetActive(false);
             if (updateToggle)

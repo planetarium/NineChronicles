@@ -25,11 +25,13 @@ namespace Nekoyume.UI.Module
         [SerializeField] private RecipeView consumableView = null;
         [SerializeField] private RecipeView loadingView = null;
         [SerializeField] private GameObject selectedObject = null;
+        [SerializeField] private GameObject unlockObject = null;
         [SerializeField] private GameObject lockObject = null;
         [SerializeField] private GameObject lockVFXObject = null;
         [SerializeField] private GameObject lockOpenVFXObject = null;
         [SerializeField] private GameObject notificationObject = null;
         [SerializeField] private TextMeshProUGUI unlockConditionText = null;
+        [SerializeField] private TextMeshProUGUI unlockPriceText = null;
         [SerializeField] private Button button = null;
         [SerializeField] private bool selectable = true;
 
@@ -157,6 +159,7 @@ namespace Nekoyume.UI.Module
             loadingView.gameObject.SetActive(false);
             lockVFXObject.SetActive(false);
             unlockConditionText.enabled = false;
+            unlockObject.SetActive(false);
             _unlockable = false;
             _isWaitingForUnlock = false;
             var avatarState = States.Instance.CurrentAvatarState;
@@ -198,6 +201,8 @@ namespace Nekoyume.UI.Module
                 _recipeIdToUnlock = equipmentRow.Id;
                 lockVFXObject.SetActive(true);
                 equipmentView.Hide();
+                unlockObject.SetActive(true);
+                unlockPriceText.text = equipmentRow.CRYSTAL.ToString();
                 IsLocked = true;
                 _unlockable = true;
                 return;
