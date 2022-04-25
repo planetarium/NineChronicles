@@ -67,7 +67,7 @@ namespace Nekoyume.UI.Scroller
 
         private List<int> _unlockableRecipes = null;
 
-        private BigInteger _previousOpenCost;
+        private BigInteger _openCost;
 
         private ItemSubType _displayingItemSubType;
 
@@ -107,13 +107,10 @@ namespace Nekoyume.UI.Scroller
 
         private void OpenEveryAvailableRecipes()
         {
-            var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
-            _previousOpenCost = CrystalCalculator.CalculateCost(_unlockableRecipes, sheet).MajorUnit;
-
-            var usageMessage = L10nManager.Localize("UI_UNLOCK_AVAILABLE_RECIPES");
+            var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPES_FORMAT", _unlockableRecipes.Count);
             Widget.Find<PaymentPopup>().Show(
                 ReactiveAvatarState.CrystalBalance,
-                _previousOpenCost,
+                _openCost,
                 usageMessage,
                 UnlockRecipeAction);
         }
@@ -133,7 +130,7 @@ namespace Nekoyume.UI.Scroller
             }
 
             LocalLayerModifier.ModifyAvatarCrystal(
-                States.Instance.CurrentAvatarState.address, -_previousOpenCost);
+                States.Instance.CurrentAvatarState.address, -_openCost);
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockableRecipes)
                 .Subscribe();
@@ -143,13 +140,6 @@ namespace Nekoyume.UI.Scroller
         {
             _displayingItemSubType = type;
             Craft.SharedModel.SelectedRow.Value = null;
-
-            Craft.SharedModel.NotifiedRow
-                .Subscribe(SubscribeNotifiedRow)
-                .AddTo(_disposablesOnDisabled);
-            Craft.SharedModel.UnlockedRecipes
-                .Subscribe(UpdateUnlockAllButton)
-                .AddTo(_disposablesOnDisabled);
             equipmentTab.SetActive(true);
             consumableTab.SetActive(false);
             if (updateToggle)
@@ -171,6 +161,14 @@ namespace Nekoyume.UI.Scroller
             emptyObject.SetActive(!items.Any());
             Show(items, true);
             AnimateScroller();
+
+            Craft.SharedModel.NotifiedRow
+                .Subscribe(SubscribeNotifiedRow)
+                .AddTo(_disposablesOnDisabled);
+            Craft.SharedModel.UnlockedRecipes
+                .Subscribe(UpdateUnlockAllButton)
+                .AddTo(_disposablesOnDisabled);
+
         }
 
         private void UpdateUnlockAllButton(List<int> unlockedRecipes)
@@ -182,14 +180,26 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
-                _unlockableRecipes = sheet.Values
+                var availableRecipes = sheet.Values
                     .Where(x =>
                         x.GetResultEquipmentItemRow().ItemSubType == _displayingItemSubType &&
                         x.UnlockStage <= lastClearedStageId &&
                         !unlockedRecipes.Contains(x.Id))
-                    .Select(x => x.Id)
-                    .OrderBy(x => x)
-                    .ToList();
+                    .OrderBy(x => x.UnlockStage);
+
+                _unlockableRecipes = new List<int>();
+                var balance = ReactiveAvatarState.CrystalBalance.MajorUnit;
+                _openCost = 0;
+                foreach (var availableRecipe in availableRecipes)
+                {
+                    if (_openCost + availableRecipe.CRYSTAL > balance)
+                    {
+                        break;
+                    }
+
+                    _openCost += availableRecipe.CRYSTAL;
+                    _unlockableRecipes.Add(availableRecipe.Id);
+                }
                 openAllRecipeArea.SetActive(_unlockableRecipes.Count() >= 2);
             }
         }
