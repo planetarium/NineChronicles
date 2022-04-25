@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -13,30 +14,42 @@ namespace Nekoyume.Model.State
     {
         public class StakeAchievements
         {
-            private readonly Dictionary<int, int[]> _achievements;
+            private readonly Dictionary<int, int> _achievements;
 
-            public StakeAchievements(Dictionary<int, int[]> achievements = null)
+            public StakeAchievements(Dictionary<int, int> achievements = null)
             {
-                _achievements = achievements ?? new Dictionary<int, int[]>();
+                _achievements = achievements ?? new Dictionary<int, int>();
             }
 
             public StakeAchievements(Dictionary serialized)
             {
                 _achievements = serialized.ToDictionary(
                     pair => int.Parse(((Text) pair.Key).Value, CultureInfo.InvariantCulture),
-                    pair => ((List) pair.Value).Cast<Integer>().Select(x => (int)x.Value).ToArray());
+                    pair => (int) (Integer) pair.Value);
             }
 
             public IValue Serialize() =>
                 new Dictionary(_achievements.OrderBy(pair => pair.Key).Select(pair =>
                     new KeyValuePair<IKey, IValue>(
                         (Text) pair.Key.ToString(CultureInfo.InvariantCulture),
-                        new List(pair.Value.Select(x => (IValue) (Integer) x)))));
+                        (Integer) pair.Value)));
 
             public bool Check(int level, int step)
             {
-                return _achievements.TryGetValue(level, out int[] achievedSteps) &&
-                       achievedSteps.Length > step;
+                return _achievements.TryGetValue(level, out int achievedSteps) &&
+                       achievedSteps >= step;
+            }
+
+            public void Achieve(int level, int step)
+            {
+                if (_achievements.ContainsKey(level))
+                {
+                    _achievements[level] = Math.Max(_achievements[level], step);
+                }
+                else
+                {
+                    _achievements[level] = step;
+                }
             }
         }
 
