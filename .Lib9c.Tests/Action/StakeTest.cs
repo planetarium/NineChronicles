@@ -123,9 +123,9 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_currency * 0, states.GetBalance(_signerAddress, _currency));
 
             var achievements = stakeState.Achievements;
-            Assert.True(achievements.Check(0, 0));
+            Assert.False(achievements.Check(0, 0));
             Assert.False(achievements.Check(0, 1));
-            Assert.False(achievements.Check(1, 0));
+            Assert.True(achievements.Check(1, 0));
 
             var cancelAction = new Stake(0);
             states = cancelAction.Execute(new ActionContext
@@ -137,7 +137,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(Null.Value, states.GetState(stakeState.address));
             Assert.Equal(_currency * 0, states.GetBalance(stakeState.address, _currency));
-            Assert.Equal(_currency * 10000, states.GetBalance(_signerAddress, _currency));
+            Assert.Equal(_currency * 100, states.GetBalance(_signerAddress, _currency));
         }
     }
 }
