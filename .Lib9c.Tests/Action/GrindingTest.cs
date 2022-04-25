@@ -65,9 +65,8 @@ namespace Lib9c.Tests.Action
         [InlineData(true, true, 120, true, 1, 0, false, false, 0, 100, 1, null)]
         [InlineData(true, true, 120, true, 1, 2, false, false, 0, 200, 1, null)]
         [InlineData(true, true, 120, true, 1, 2, false, true, 0, 200, 1, null)]
-        // Check multiplier by monster collection level.
-        [InlineData(true, true, 120, true, 1, 0, false, true, 3, 3100, 1, null)]
-        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 8200, 1, null)]
+        [InlineData(true, true, 120, true, 1, 0, false, true, 3, 130, 1, null)]
+        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 280, 1, null)]
         // Invalid equipment count.
         [InlineData(true, true, 120, true, 1, 2, false, true, 4, 280, 0, typeof(InvalidItemCountException))]
         [InlineData(true, true, 120, true, 1, 2, false, true, 4, 280, 11, typeof(InvalidItemCountException))]
@@ -235,7 +234,7 @@ namespace Lib9c.Tests.Action
                         (10100000, 2),
                     },
                     3,
-                    9300, // This value would change by CrystalMonsterCollectionMultiplierSheet.
+                    390,
                 },
             };
 
