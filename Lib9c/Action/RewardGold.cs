@@ -6,7 +6,6 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Nekoyume.Battle;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
@@ -14,6 +13,9 @@ namespace Nekoyume.Action
     [Serializable]
     public class RewardGold : ActionBase
     {
+        // Start filtering inactivate ArenaInfo
+        // https://github.com/planetarium/lib9c/issues/946
+        public const long FilterInactiveArenaInfoBlockIndex = 3_976_000L;
         public override IValue PlainValue =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
@@ -157,6 +159,8 @@ namespace Nekoyume.Action
                         }
                         else
                         {
+                            bool filterInactive =
+                                ctx.BlockIndex >= FilterInactiveArenaInfoBlockIndex;
                             // Copy addresses from prev weekly address list.
                             var prevListAddress = prevWeekly.address.Derive("address_list");
 
@@ -169,18 +173,28 @@ namespace Nekoyume.Action
                                 }
                             }
 
-                            // Copy ArenaInfo from prev ArenaInfo.
-                            foreach (var address in addressList)
+                            // Copy list for loop.
+                            var enumerator = addressList.ToList();
+
+                            // Copy activated ArenaInfo from prev ArenaInfo.
+                            foreach (var address in enumerator)
                             {
                                 if (states.TryGetState(
                                         prevWeekly.address.Derive(address.ToByteArray()),
                                         out Dictionary rawInfo))
                                 {
                                     var prevInfo = new ArenaInfo(rawInfo);
-                                    var info = new ArenaInfo(prevInfo);
+                                    var record = prevInfo.ArenaRecord;
+                                    // Filter ArenaInfo
+                                    if (filterInactive && record.Win == 0 && record.Draw == 0 &&
+                                        record.Lose == 0)
+                                    {
+                                        addressList.Remove(address);
+                                        continue;
+                                    }
                                     states = states.SetState(
                                         weeklyAddress.Derive(address.ToByteArray()),
-                                        info.Serialize());
+                                        new ArenaInfo(prevInfo).Serialize());
                                 }
                             }
                         }
