@@ -45,7 +45,7 @@ namespace Nekoyume.Action
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress);
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer);
             }
 
             if (!EquipmentIds.Any() || EquipmentIds.Count > Limit)
@@ -135,7 +135,7 @@ namespace Nekoyume.Action
             return states
                 .SetState(AvatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .MintAsset(AvatarAddress, crystal);
+                .MintAsset(context.Signer, crystal);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>

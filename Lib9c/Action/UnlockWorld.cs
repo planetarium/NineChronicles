@@ -32,7 +32,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress, Addresses.UnlockWorld);
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, Addresses.UnlockWorld);
             }
 
             if (!WorldIds.Any() || WorldIds.Any(i => i < 2 || i == GameConfig.MimisbrunnrWorldId))
@@ -100,7 +100,7 @@ namespace Nekoyume.Action
 
             FungibleAssetValue cost =
                 CrystalCalculator.CalculateWorldUnlockCost(sortedWorldIds, worldUnlockSheet);
-            FungibleAssetValue balance = states.GetBalance(AvatarAddress, cost.Currency);
+            FungibleAssetValue balance = states.GetBalance(context.Signer, cost.Currency);
 
             // Insufficient CRYSTAL.
             if (balance < cost)
@@ -119,7 +119,7 @@ namespace Nekoyume.Action
 
             return states
                 .SetState(unlockedWorldIdsAddress, new List(unlockedIds.Select(i => i.Serialize())))
-                .TransferAsset(AvatarAddress, Addresses.UnlockWorld, cost);
+                .TransferAsset(context.Signer, Addresses.UnlockWorld, cost);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal

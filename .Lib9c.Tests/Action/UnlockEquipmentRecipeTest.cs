@@ -86,7 +86,7 @@ namespace Lib9c.Tests.Action
             Type exc
         )
         {
-            var state = _initialState.MintAsset(_avatarAddress, balance * _currency);
+            var state = _initialState.MintAsset(_agentAddress, balance * _currency);
             List<int> recipeIds = ids.ToList();
             Address unlockedRecipeIdsAddress = _avatarAddress.Derive("recipe_ids");
             if (stateExist)
@@ -146,7 +146,7 @@ namespace Lib9c.Tests.Action
                 var unlockedIds = rawIds.ToList(StateExtensions.ToInteger);
 
                 Assert.All(recipeIds, recipeId => Assert.Contains(recipeId, unlockedIds));
-                Assert.Equal(0 * _currency, nextState.GetBalance(_avatarAddress, _currency));
+                Assert.Equal(0 * _currency, nextState.GetBalance(_agentAddress, _currency));
                 Assert.Equal(balance * _currency, nextState.GetBalance(Addresses.UnlockEquipmentRecipe, _currency));
             }
             else

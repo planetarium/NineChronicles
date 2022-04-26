@@ -167,7 +167,7 @@ namespace Lib9c.Tests.Action
                 var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
                 FungibleAssetValue asset = totalAsset * _currency;
 
-                Assert.Equal(asset, nextState.GetBalance(_avatarAddress, _currency));
+                Assert.Equal(asset, nextState.GetBalance(_agentAddress, _currency));
                 Assert.False(nextAvatarState.inventory.HasNonFungibleItem(default));
                 Assert.Equal(115, nextAvatarState.actionPoint);
 
