@@ -7,19 +7,30 @@ namespace Lib9c.Tests
 
     public class CrystalCalculatorTest
     {
-        private readonly EquipmentItemRecipeSheet _sheet;
+        private readonly EquipmentItemRecipeSheet _equipmentItemRecipeSheet;
+        private readonly WorldUnlockSheet _worldUnlockSheet;
 
         public CrystalCalculatorTest()
         {
-            _sheet = new TableSheets(TableSheetsImporter.ImportSheets()).EquipmentItemRecipeSheet;
+            var tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            _equipmentItemRecipeSheet = tableSheets.EquipmentItemRecipeSheet;
+            _worldUnlockSheet = tableSheets.WorldUnlockSheet;
         }
 
         [Theory]
         [InlineData(new[] { 2 }, 100)]
         [InlineData(new[] { 2, 3 }, 200)]
-        public void CalculateCost(IEnumerable<int> recipeIds, int expected)
+        public void CalculateRecipeUnlockCost(IEnumerable<int> recipeIds, int expected)
         {
-            Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateCost(recipeIds, _sheet));
+            Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, _equipmentItemRecipeSheet));
+        }
+
+        [Theory]
+        [InlineData(new[] { 2 }, 500)]
+        [InlineData(new[] { 2, 3 }, 1000)]
+        public void CalculateWorldUnlockCost(IEnumerable<int> worldIds, int expected)
+        {
+            Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateWorldUnlockCost(worldIds, _worldUnlockSheet));
         }
     }
 }

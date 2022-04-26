@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -14,19 +13,18 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("unlock_equipment_recipe")]
-    public class UnlockEquipmentRecipe: GameAction
+    [ActionType("unlock_world")]
+    public class UnlockWorld: GameAction
     {
-        public List<int> RecipeIds = new List<int>();
+        public List<int> WorldIds;
         public Address AvatarAddress;
-
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
             var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
             var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
-            var unlockedRecipeIdsAddress = AvatarAddress.Derive("recipe_ids");
+            var unlockedWorldIdsAddress = AvatarAddress.Derive("world_ids");
             if (context.Rehearsal)
             {
                 return states
@@ -34,18 +32,18 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
-                    .SetState(unlockedRecipeIdsAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress);
             }
 
-            if (!RecipeIds.Any() || RecipeIds.Any(i => i < 2))
+            if (!WorldIds.Any() || WorldIds.Any(i => i < 2 || i == GameConfig.MimisbrunnrWorldId))
             {
-                throw new InvalidRecipeIdException();
+                throw new InvalidWorldException();
             }
 
             WorldInformation worldInformation;
-            bool migrationRequired = false;
             AvatarState avatarState = null;
+            bool migrationRequired = false;
+
             if (states.TryGetState(worldInformationAddress, out Dictionary rawInfo))
             {
                 worldInformation = new WorldInformation(rawInfo);
@@ -65,72 +63,74 @@ namespace Nekoyume.Action
                 }
             }
 
-            var equipmentRecipeSheet = states.GetSheet<EquipmentItemRecipeSheet>();
-
-            List<int> unlockedIds = states.TryGetState(unlockedRecipeIdsAddress, out List rawIds)
+            List<int> unlockedIds = states.TryGetState(unlockedWorldIdsAddress, out List rawIds)
                 ? rawIds.ToList(StateExtensions.ToInteger)
                 : new List<int>
                 {
-                    1
+                    1,
+                    GameConfig.MimisbrunnrWorldId,
                 };
 
-            var sortedRecipeIds = RecipeIds.OrderBy(i => i).ToList();
-            foreach (var recipeId in sortedRecipeIds)
+            var sortedWorldIds = WorldIds.OrderBy(i => i).ToList();
+            var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
+            foreach (var worldId in sortedWorldIds)
             {
-                if (unlockedIds.Contains(recipeId))
+                // Already Unlocked.
+                if (unlockedIds.Contains(worldId))
                 {
-                    // Already Unlocked
-                    throw new AlreadyRecipeUnlockedException($"recipe: {recipeId} already unlocked.");
+                    throw new AlreadyWorldUnlockedException($"World {worldId} Already unlocked.");
                 }
 
-                var prevId = recipeId - 1;
-                if (!unlockedIds.Contains(prevId))
+                WorldUnlockSheet.Row row =
+                    worldUnlockSheet.OrderedList.First(r => r.WorldIdToUnlock == worldId);
+                // Check Previous world unlocked.
+                if (!worldInformation.IsWorldUnlocked(row.WorldId))
                 {
-                    // Can't skip previous recipe unlock.
-                    throw new InvalidRecipeIdException($"unlock {prevId} first.");
+                    throw new FailedToUnlockWorldException($"unlock ${row.WorldId} first.");
                 }
 
-                unlockedIds.Add(recipeId);
-
-                EquipmentItemRecipeSheet.Row row = equipmentRecipeSheet[recipeId];
-                if (!worldInformation.IsStageCleared(row.UnlockStage))
+                // Check stage cleared in HackAndSlash.
+                if (!worldInformation.IsWorldUnlocked(worldId))
                 {
-                    throw new NotEnoughClearedStageLevelException($"clear {row.UnlockStage} first.");
+                    throw new FailedToUnlockWorldException($"{worldId} is locked.");
                 }
+
+                unlockedIds.Add(worldId);
             }
 
-            FungibleAssetValue cost = CrystalCalculator.CalculateRecipeUnlockCost(sortedRecipeIds, equipmentRecipeSheet);
+            FungibleAssetValue cost =
+                CrystalCalculator.CalculateWorldUnlockCost(sortedWorldIds, worldUnlockSheet);
             FungibleAssetValue balance = states.GetBalance(AvatarAddress, cost.Currency);
 
+            // Insufficient CRYSTAL.
             if (balance < cost)
             {
-                throw new NotEnoughFungibleAssetValueException($"required {cost}, but balance is {balance}");
+                throw new NotEnoughFungibleAssetValueException($"UnlockWorld required {cost}, but balance is {balance}");
             }
 
             if (migrationRequired)
             {
                 states = states
                     .SetState(AvatarAddress, avatarState.SerializeV2())
-                    .SetState(worldInformationAddress, worldInformation.Serialize())
                     .SetState(questListAddress, avatarState.questList.Serialize())
+                    .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                     .SetState(inventoryAddress, avatarState.inventory.Serialize());
             }
 
-            states = states.SetState(unlockedRecipeIdsAddress,
-                    unlockedIds.Aggregate(List.Empty,
-                        (current, address) => current.Add(address.Serialize())));
-            return states.BurnAsset(AvatarAddress, cost);
+            return states
+                .SetState(unlockedWorldIdsAddress, new List(unlockedIds.Select(i => i.Serialize())))
+                .BurnAsset(AvatarAddress, cost);
         }
 
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            new Dictionary<string, IValue>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal
+            => new Dictionary<string, IValue>
             {
-                ["r"] = new List(RecipeIds.Select(i => i.Serialize())),
+                ["w"] = new List(WorldIds.Select(i => i.Serialize())),
                 ["a"] = AvatarAddress.Serialize(),
             }.ToImmutableDictionary();
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            RecipeIds = plainValue["r"].ToList(StateExtensions.ToInteger);
+            WorldIds = plainValue["w"].ToList(StateExtensions.ToInteger);
             AvatarAddress = plainValue["a"].ToAddress();
         }
     }

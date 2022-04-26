@@ -58,6 +58,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(InvalidEquipmentException))]
         [InlineData(typeof(AlreadyRecipeUnlockedException))]
         [InlineData(typeof(InvalidRecipeIdException))]
+        [InlineData(typeof(AlreadyWorldUnlockedException))]
         public void Exception_Serializable(Type excType)
         {
             if (Activator.CreateInstance(excType, "for testing") is Exception exc)
