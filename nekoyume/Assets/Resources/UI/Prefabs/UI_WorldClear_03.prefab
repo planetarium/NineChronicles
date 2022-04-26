@@ -176,7 +176,7 @@ RectTransform:
   m_GameObject: {fileID: 4188544221954492990}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_Children:
   - {fileID: 6659977891436692593}
   m_Father: {fileID: 0}
@@ -521,7 +521,7 @@ RectTransform:
   m_GameObject: {fileID: 6285298383000280224}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_Children:
   - {fileID: 4297405023636265106}
   - {fileID: 5128368469929818891}
@@ -561,7 +561,7 @@ MonoBehaviour:
       data:
         delay: 0
         flowType: 0
-        target: {fileID: 6285298383000280224}
+        target: {fileID: 0}
         duration: 3
         loopCount: -1
         loopType: 1
@@ -608,7 +608,7 @@ MonoBehaviour:
             m_RotationOrder: 4
         isRelative: 0
         autoKill: 0
-        scale: {x: 1.02, y: 1.02, z: 1.02}
+        scale: {x: 0.85, y: 0.85, z: 0.85}
         axisConstraint: 0
 --- !u!1 &8649145514223292103
 GameObject:
