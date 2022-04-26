@@ -36,7 +36,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(unlockedRecipeIdsAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress);
+                    .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress, Addresses.UnlockEquipmentRecipe);
             }
 
             if (!RecipeIds.Any() || RecipeIds.Any(i => i < 2))
@@ -140,7 +140,7 @@ namespace Nekoyume.Action
             states = states.SetState(unlockedRecipeIdsAddress,
                     unlockedIds.Aggregate(List.Empty,
                         (current, address) => current.Add(address.Serialize())));
-            return states.BurnAsset(AvatarAddress, cost);
+            return states.TransferAsset(AvatarAddress, Addresses.UnlockEquipmentRecipe,  cost);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>

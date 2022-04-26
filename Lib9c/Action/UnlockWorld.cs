@@ -32,7 +32,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress);
+                    .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress, Addresses.UnlockWorld);
             }
 
             if (!WorldIds.Any() || WorldIds.Any(i => i < 2 || i == GameConfig.MimisbrunnrWorldId))
@@ -119,7 +119,7 @@ namespace Nekoyume.Action
 
             return states
                 .SetState(unlockedWorldIdsAddress, new List(unlockedIds.Select(i => i.Serialize())))
-                .BurnAsset(AvatarAddress, cost);
+                .TransferAsset(AvatarAddress, Addresses.UnlockWorld, cost);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal

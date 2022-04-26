@@ -147,6 +147,7 @@ namespace Lib9c.Tests.Action
 
                 Assert.All(recipeIds, recipeId => Assert.Contains(recipeId, unlockedIds));
                 Assert.Equal(0 * _currency, nextState.GetBalance(_avatarAddress, _currency));
+                Assert.Equal(balance * _currency, nextState.GetBalance(Addresses.UnlockEquipmentRecipe, _currency));
             }
             else
             {

@@ -153,6 +153,7 @@ namespace Lib9c.Tests.Action
 
                 Assert.All(worldIds, worldId => Assert.Contains(worldId, unlockedIds));
                 Assert.Equal(0 * _currency, nextState.GetBalance(_avatarAddress, _currency));
+                Assert.Equal(balance * _currency, nextState.GetBalance(Addresses.UnlockWorld, _currency));
             }
             else
             {
