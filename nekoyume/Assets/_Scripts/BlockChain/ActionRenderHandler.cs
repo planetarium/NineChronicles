@@ -1127,10 +1127,9 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            // TODO: Check Should the client handle Monster Collect Action.
             NotificationSystem.Push(
                 MailType.System,
-                "monster collect success",
+                L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
             UpdateAgentStateAsync(eval).Forget();
