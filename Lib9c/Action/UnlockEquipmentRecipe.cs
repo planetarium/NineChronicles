@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
@@ -65,7 +66,13 @@ namespace Nekoyume.Action
                 }
             }
 
-            var equipmentRecipeSheet = states.GetSheet<EquipmentItemRecipeSheet>();
+            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
+            {
+                typeof(EquipmentItemRecipeSheet),
+                typeof(EquipmentItemSheet)
+            });
+            var equipmentRecipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
+            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
 
             List<int> unlockedIds = states.TryGetState(unlockedRecipeIdsAddress, out List rawIds)
                 ? rawIds.ToList(StateExtensions.ToInteger)
@@ -83,20 +90,34 @@ namespace Nekoyume.Action
                     throw new AlreadyRecipeUnlockedException($"recipe: {recipeId} already unlocked.");
                 }
 
-                var prevId = recipeId - 1;
-                if (!unlockedIds.Contains(prevId))
+                EquipmentItemRecipeSheet.Row recipeRow = equipmentRecipeSheet[recipeId];
+
+                if (!worldInformation.IsStageCleared(recipeRow.UnlockStage))
                 {
-                    // Can't skip previous recipe unlock.
-                    throw new InvalidRecipeIdException($"unlock {prevId} first.");
+                    throw new NotEnoughClearedStageLevelException($"clear {recipeRow.UnlockStage} first.");
+                }
+
+                EquipmentItemSheet.Row equipmentRow = equipmentItemSheet[recipeRow.ResultEquipmentId];
+
+                // Ignore grade 0 for default equipment.
+                int firstId = equipmentItemSheet
+                    .OrderedList
+                    .First(r => r.ItemSubType == equipmentRow.ItemSubType && r.Grade > 0)
+                    .Id;
+                // Check recipe is first row by ItemSubType.
+                if (equipmentRow.Id != firstId)
+                {
+                    var prevId = recipeId - 1;
+                    if (!unlockedIds.Contains(prevId))
+                    {
+                        // Can't skip previous recipe unlock.
+                        throw new InvalidRecipeIdException($"unlock {prevId} first.");
+                    }
                 }
 
                 unlockedIds.Add(recipeId);
 
                 EquipmentItemRecipeSheet.Row row = equipmentRecipeSheet[recipeId];
-                if (!worldInformation.IsStageCleared(row.UnlockStage))
-                {
-                    throw new NotEnoughClearedStageLevelException($"clear {row.UnlockStage} first.");
-                }
             }
 
             FungibleAssetValue cost = CrystalCalculator.CalculateRecipeUnlockCost(sortedRecipeIds, equipmentRecipeSheet);

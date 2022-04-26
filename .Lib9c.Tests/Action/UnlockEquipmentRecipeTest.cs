@@ -49,6 +49,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
+                .SetState(Addresses.GetSheetAddress<EquipmentItemSheet>(), _tableSheets.EquipmentItemSheet.Serialize())
                 .SetState(Addresses.GetSheetAddress<EquipmentItemRecipeSheet>(), _tableSheets.EquipmentItemRecipeSheet.Serialize())
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize());
         }
@@ -56,6 +57,8 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(new[] { 2, 3 }, true, false, false, true, 200, null)]
         [InlineData(new[] { 2 }, true, false, false, true, 100, null)]
+        // Unlock Belt without Armor unlock.
+        [InlineData(new[] { 83 }, true, false, false, true, 100, null)]
         // AvatarState migration.
         [InlineData(new[] { 2 }, true, true, false, true, 100, null)]
         // Invalid recipe id.
