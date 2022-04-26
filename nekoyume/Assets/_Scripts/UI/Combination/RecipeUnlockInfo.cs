@@ -45,7 +45,7 @@ namespace Nekoyume.UI
 
                     var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPE");
                     Widget.Find<PaymentPopup>().Show(
-                        ReactiveAvatarState.CrystalBalance,
+                        ReactiveCrystalState.CrystalBalance,
                         costButton.Cost,
                         usageMessage,
                         UnlockRecipeAction);
@@ -93,7 +93,7 @@ namespace Nekoyume.UI
 
             if (unlockable)
             {
-                var cost = CrystalCalculator.CalculateCost(_unlockList, sheet);
+                var cost = CrystalCalculator.CalculateRecipeUnlockCost(_unlockList, sheet);
                 costButton.SetCost(ConditionalCostButton.CostType.Crystal, (int)cost.MajorUnit);
             }
         }
@@ -104,8 +104,8 @@ namespace Nekoyume.UI
 
             sharedModel.SelectedRecipeCell.Unlock();
             sharedModel.UnlockingRecipes.AddRange(_unlockList);
-            LocalLayerModifier.ModifyAvatarCrystal(
-                States.Instance.CurrentAvatarState.address, -costButton.Cost);
+            LocalLayerModifier.ModifyAgentCrystal(
+                States.Instance.AgentState.address, -costButton.Cost);
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockList);
 

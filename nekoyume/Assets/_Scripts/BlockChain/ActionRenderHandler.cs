@@ -1276,8 +1276,8 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
             var currency = new Currency("CRYSTAL", 18, minters: null);
-            var crystal = eval.OutputStates.GetBalance(avatarAddress, currency);
-            ReactiveAvatarState.UpdateCrystal(crystal);
+            var crystal = eval.OutputStates.GetBalance(eval.Signer, currency);
+            ReactiveCrystalState.UpdateCrystal(crystal);
         }
 
         private void ResponseUnlockEquipmentRecipe(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
@@ -1294,9 +1294,9 @@ namespace Nekoyume.BlockChain
                 new List<int>() { 1 };
 
             var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
-            var cost = CrystalCalculator.CalculateCost(eval.Action.RecipeIds, sheet);
-            LocalLayerModifier.ModifyAvatarCrystal(
-                States.Instance.CurrentAvatarState.address, cost.MajorUnit);
+            var cost = CrystalCalculator.CalculateRecipeUnlockCost(eval.Action.RecipeIds, sheet);
+            LocalLayerModifier.ModifyAgentCrystal(
+                States.Instance.AgentState.address, cost.MajorUnit);
 
             var sharedModel = Craft.SharedModel;
             foreach (var id in recipeIds)

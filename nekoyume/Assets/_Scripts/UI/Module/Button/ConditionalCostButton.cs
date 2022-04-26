@@ -80,7 +80,7 @@ namespace Nekoyume.UI.Module
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
                     return count >= Cost;
                 case CostType.Crystal:
-                    return ReactiveAvatarState.CrystalBalance.MajorUnit >= Cost;
+                    return ReactiveCrystalState.CrystalBalance.MajorUnit >= Cost;
                 default:
                     return true;
             }

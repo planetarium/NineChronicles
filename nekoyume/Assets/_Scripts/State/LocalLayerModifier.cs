@@ -57,7 +57,7 @@ namespace Nekoyume.State
                 0));
         }
 
-        public static void ModifyAvatarCrystal(Address avatarAddress, BigInteger crystal)
+        public static void ModifyAgentCrystal(Address agentAddress, BigInteger crystal)
         {
             if (crystal == 0)
             {
@@ -66,11 +66,11 @@ namespace Nekoyume.State
 
             var fav = new FungibleAssetValue(new Currency("CRYSTAL", 18, minter: null), crystal, 0);
             var modifier = new AvatarCrystalModifier(fav);
-            LocalLayer.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(agentAddress, modifier);
 
-            if (States.Instance.CurrentAvatarState.address.Equals(avatarAddress))
+            if (States.Instance.AgentState.address.Equals(agentAddress))
             {
-                ReactiveAvatarState.UpdateCrystal(ReactiveAvatarState.CrystalBalance + fav);
+                ReactiveCrystalState.UpdateCrystal(ReactiveCrystalState.CrystalBalance + fav);
             }
         }
 

@@ -109,7 +109,7 @@ namespace Nekoyume.UI.Scroller
         {
             var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPES_FORMAT", _unlockableRecipes.Count);
             Widget.Find<PaymentPopup>().Show(
-                ReactiveAvatarState.CrystalBalance,
+                ReactiveCrystalState.CrystalBalance,
                 _openCost,
                 usageMessage,
                 UnlockRecipeAction);
@@ -129,8 +129,8 @@ namespace Nekoyume.UI.Scroller
                 }
             }
 
-            LocalLayerModifier.ModifyAvatarCrystal(
-                States.Instance.CurrentAvatarState.address, -_openCost);
+            LocalLayerModifier.ModifyAgentCrystal(
+                States.Instance.AgentState.address, -_openCost);
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockableRecipes)
                 .Subscribe();
@@ -188,7 +188,7 @@ namespace Nekoyume.UI.Scroller
                     .OrderBy(x => x.UnlockStage);
 
                 _unlockableRecipes = new List<int>();
-                var balance = ReactiveAvatarState.CrystalBalance.MajorUnit;
+                var balance = ReactiveCrystalState.CrystalBalance.MajorUnit;
                 _openCost = 0;
                 foreach (var availableRecipe in availableRecipes)
                 {
