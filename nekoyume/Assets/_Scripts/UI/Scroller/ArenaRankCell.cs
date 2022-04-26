@@ -85,16 +85,25 @@ namespace Nekoyume.UI.Scroller
 
         public IObservable<ArenaRankCell> OnClickChallenge => _onClickChallenge;
 
+        private static bool IsLoadingAvatarState = false;
+
         private void Awake()
         {
             characterView.OnClickCharacterIcon
                 .Subscribe(async avatarState =>
                 {
+                    if (IsLoadingAvatarState)
+                    {
+                        return;
+                    }
+
                     if (avatarState is null)
                     {
+                        IsLoadingAvatarState = true;
                         var (exist, state) =
                             await States.TryGetAvatarStateAsync(ArenaInfo.AvatarAddress);
                         avatarState = exist ? state : null;
+                        IsLoadingAvatarState = false;
                         if (avatarState is null)
                         {
                             return;
