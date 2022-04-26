@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -101,7 +102,7 @@ namespace Nekoyume.UI.Module
             {
                 item.Value.GrindingCount.SetValueAndForceNotify(_selectedItemsForGrind.Count);
                 itemSlots[item.Index].UpdateSlot(item.Value);
-                item.Value.GrindObjectEnabled.OnNext(true);
+                item.Value.GrindingCountEnabled.OnNext(true);
             }).AddTo(gameObject);
 
             _selectedItemsForGrind.ObserveRemove().Subscribe(item =>
@@ -174,7 +175,10 @@ namespace Nekoyume.UI.Module
             Initialize();
 
             _selectedItemsForGrind.Clear();
-            grindInventory.SetGrinding(ShowItemTooltip, OnUpdateInventory, reverseInventoryOrder);
+            grindInventory.SetGrinding(ShowItemTooltip,
+                OnUpdateInventory,
+                MakeDimConditionPredicateList(),
+                reverseInventoryOrder);
             grindButton.Interactable = false;
             UpdateStakingBonusObject(States.Instance.MonsterCollectionState?.Level ?? 0);
             crystalRewardText.text = string.Empty;
@@ -186,7 +190,7 @@ namespace Nekoyume.UI.Module
             var isRegister = !_selectedItemsForGrind.Contains(model);
             var isEquipment = model.ItemBase.ItemType == ItemType.Equipment;
             var interactable =
-                isEquipment && _selectedItemsForGrind.Count < 10 && !model.Equipped.Value
+                isEquipment && _selectedItemsForGrind.Count < 10 && !InventoryHelper.CheckCanNotGrinding(model)
                 || !isRegister;
             var onSubmit = isEquipment
                 ? new System.Action(() => RegisterToGrindingList(model, isRegister))
@@ -222,6 +226,17 @@ namespace Nekoyume.UI.Module
             }
 
             grindButton.Interactable = CanGrind;
+        }
+
+        private static List<(ItemType type, Predicate<InventoryItem>)> MakeDimConditionPredicateList()
+        {
+            return new List<(ItemType type, Predicate<InventoryItem>)>
+            {
+                (ItemType.Equipment, InventoryHelper.CheckCanNotGrinding),
+                (ItemType.Consumable, _ => false),
+                (ItemType.Material, _ => false),
+                (ItemType.Costume, _ => false)
+            };
         }
 
         private void RegisterToGrindingList(InventoryItem item, bool isRegister)

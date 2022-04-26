@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Module
 
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b)).AddTo(_disposables);
             model.LevelLimited.Subscribe(b => baseItemView.LevelLimitObject.SetActive(b)).AddTo(_disposables);
-            model.ElementalTypeDisabled.Subscribe(b => baseItemView.ElementalDisableObject.SetActive(b)).AddTo(_disposables);
+            model.DimObjectEnabled.Subscribe(b => baseItemView.DimObject.SetActive(b)).AddTo(_disposables);
             model.Tradable.Subscribe(b => baseItemView.TradableObject.SetActive(b)).AddTo(_disposables);
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
             model.Focused.Subscribe(b => baseItemView.FocusObject.SetActive(b)).AddTo(_disposables);
@@ -89,7 +89,7 @@ namespace Nekoyume.UI.Module
                     baseItemView.GrindingCountText.text = count.ToString();
                 }
             }).AddTo(_disposables);
-            model.GrindObjectEnabled
+            model.GrindingCountEnabled
                 .Subscribe(b => baseItemView.GrindingCountObject.SetActive(b))
                 .AddTo(_disposables);
             model.View = GetComponent<RectTransform>();
