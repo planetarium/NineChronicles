@@ -39,6 +39,8 @@ namespace Nekoyume.UI
         private struct OptionView
         {
             public GameObject ParentObject;
+            public GameObject NormalObject;
+            public GameObject LockedObject;
             public TextMeshProUGUI OptionText;
             public TextMeshProUGUI PercentageText;
         }
@@ -71,6 +73,7 @@ namespace Nekoyume.UI
 
         private const string StatTextFormat = "{0} {1}";
         private const int MimisbrunnrRecipeIndex = 2;
+        private IDisposable _disposableForOnDisable;
 
         private void Awake()
         {
@@ -107,15 +110,32 @@ namespace Nekoyume.UI
                     }
                 })
                 .AddTo(gameObject);
+        }
 
-            Craft.SharedModel.UnlockedRecipes.Subscribe(_ =>
+        private void OnEnable()
+        {
+            if (_disposableForOnDisable != null)
+            {
+                _disposableForOnDisable.Dispose();
+                _disposableForOnDisable = null;
+            }
+
+            _disposableForOnDisable = Craft.SharedModel.UnlockedRecipes?.Subscribe(_ =>
             {
                 if (gameObject.activeSelf)
                 {
                     UpdateButton();
                 }
-            })
-            .AddTo(gameObject);
+            });
+        }
+
+        private void OnDisable()
+        {
+            if (_disposableForOnDisable != null)
+            {
+                _disposableForOnDisable.Dispose();
+                _disposableForOnDisable = null;
+            }
         }
 
         public void SetData(SheetRow<int> recipeRow, List<int> subrecipeIds)
@@ -207,8 +227,10 @@ namespace Nekoyume.UI
                 skillView.ParentObject.SetActive(false);
             }
 
+            var isLocked = false;
             if (equipmentRow != null)
             {
+                isLocked = !Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key);
                 var baseMaterialInfo = new EquipmentItemSubRecipeSheet.MaterialInfo(
                     equipmentRow.MaterialId,
                     equipmentRow.MaterialCount);
@@ -233,7 +255,7 @@ namespace Nekoyume.UI
                         .Select(x => x.Ratio.NormalizeFromTenThousandths())
                         .Aggregate((a, b) => a * b);
 
-                    SetOptions(options);
+                    SetOptions(options, isLocked);
 
                     var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
                     var resultItemRow = equipmentRow.GetResultEquipmentItemRow();
@@ -257,7 +279,8 @@ namespace Nekoyume.UI
                     requiredItemRecipeView.SetData(
                         baseMaterialInfo,
                         subRecipe.Materials,
-                        true);
+                        true,
+                        isLocked);
 
                     costNCG += subRecipe.RequiredGold;
 
@@ -268,7 +291,7 @@ namespace Nekoyume.UI
                 else
                 {
                     toggleParent.SetActive(false);
-                    requiredItemRecipeView.SetData(baseMaterialInfo, null, true);
+                    requiredItemRecipeView.SetData(baseMaterialInfo, null, true, isLocked);
                 }
             }
             else if (consumableRow != null)
@@ -302,9 +325,10 @@ namespace Nekoyume.UI
                 materialList.AddRange(materials);
             }
 
-            blockIndexText.text = blockIndex.ToString();
-            greatSuccessRateText.text = greatSuccessRate == 0m ?
-                "-" : greatSuccessRate.ToString("0.0%");
+
+            blockIndexText.text = isLocked ? "???" : blockIndex.ToString();
+            greatSuccessRateText.text = isLocked ? "???" :
+                greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
 
             var recipeInfo = new RecipeInfo
             {
@@ -315,7 +339,19 @@ namespace Nekoyume.UI
                 Materials = materialList
             };
             _selectedRecipeInfo = recipeInfo;
-            UpdateButton();
+
+            if (equipmentRow != null)
+            {
+                UpdateButton();
+            }
+            else if (consumableRow != null)
+            {
+                var submittable = CheckMaterialAndSlot();
+                button.SetCost(ConditionalCostButton.CostType.NCG, (int)_selectedRecipeInfo.CostNCG);
+                button.Interactable = submittable;
+                button.gameObject.SetActive(true);
+                lockedObject.SetActive(false);
+            }
         }
 
         private void UpdateButton()
@@ -344,12 +380,13 @@ namespace Nekoyume.UI
             {
                 button.gameObject.SetActive(false);
                 lockedObject.SetActive(true);
-                lockedText.text = L10nManager.Localize("UI_INFORM_UNLOCK_PREVIOUS_RECIPE");
+                lockedText.text = L10nManager.Localize("UI_INFORM_UNLOCK_RECIPE");
             }
         }
 
         private void SetOptions(
-            List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos)
+            List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos,
+            bool isLocked)
         {
             var tableSheets = Game.Game.instance.TableSheets;
             var optionSheet = tableSheets.EquipmentItemOptionSheet;
@@ -374,21 +411,30 @@ namespace Nekoyume.UI
                 if (option.StatType != StatType.NONE)
                 {
                     var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
-
-                    optionView.OptionText.text = option.OptionRowToString();
-                    optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
-                    optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
+                    if (!isLocked)
+                    {
+                        optionView.OptionText.text = option.OptionRowToString();
+                        optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
+                        optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
+                    }
                     optionView.ParentObject.SetActive(true);
+                    optionView.NormalObject.SetActive(!isLocked);
+                    optionView.LockedObject.SetActive(isLocked);
                 }
                 else
                 {
                     var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
-                    var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
-                        skillRow.GetLocalizedName() : string.Empty;
-                    skillView.OptionText.text = description;
-                    skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
-                    skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
+                    if (!isLocked)
+                    {
+                        var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
+                            skillRow.GetLocalizedName() : string.Empty;
+                        skillView.OptionText.text = description;
+                        skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
+                        skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
+                    }
                     skillView.ParentObject.SetActive(true);
+                    skillView.NormalObject.SetActive(!isLocked);
+                    skillView.LockedObject.SetActive(isLocked);
                 }
 
                 ++siblingIndex;

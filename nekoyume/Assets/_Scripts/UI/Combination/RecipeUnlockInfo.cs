@@ -107,7 +107,8 @@ namespace Nekoyume.UI
             LocalLayerModifier.ModifyAgentCrystal(
                 States.Instance.AgentState.address, -costButton.Cost);
             Game.Game.instance.ActionManager
-                .UnlockEquipmentRecipe(_unlockList);
+                .UnlockEquipmentRecipe(_unlockList)
+                .Subscribe();
 
             openConditionText.text = L10nManager.Localize("UI_LOADING_STATES");
             openConditionText.enabled = true;

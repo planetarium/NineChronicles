@@ -12,10 +12,12 @@ using System.Collections;
 
 namespace Nekoyume.UI.Scroller
 {
+    using Nekoyume.EnumType;
     using Nekoyume.L10n;
     using Nekoyume.State;
     using Nekoyume.UI.Module;
     using System.Numerics;
+    using TMPro;
     using UniRx;
 
     public class RecipeScroll : RectScroll<RecipeRow.Model, RecipeScroll.ContextModel>
@@ -59,6 +61,9 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField]
         private Button openAllRecipeButton = null;
+
+        [SerializeField]
+        private TextMeshProUGUI openAllRecipeCostText = null;
 
         [SerializeField]
         private float animationInterval = 0.3f;
@@ -129,6 +134,7 @@ namespace Nekoyume.UI.Scroller
                 }
             }
 
+            UpdateUnlockAllButton(Craft.SharedModel.UnlockedRecipes.Value);
             LocalLayerModifier.ModifyAgentCrystal(
                 States.Instance.AgentState.address, -_openCost);
             Game.Game.instance.ActionManager
@@ -184,6 +190,7 @@ namespace Nekoyume.UI.Scroller
                     .Where(x =>
                         x.GetResultEquipmentItemRow().ItemSubType == _displayingItemSubType &&
                         x.UnlockStage <= lastClearedStageId &&
+                        !Craft.SharedModel.UnlockingRecipes.Contains(x.Id) &&
                         !unlockedRecipes.Contains(x.Id))
                     .OrderBy(x => x.UnlockStage);
 
@@ -200,7 +207,18 @@ namespace Nekoyume.UI.Scroller
                     _openCost += availableRecipe.CRYSTAL;
                     _unlockableRecipes.Add(availableRecipe.Id);
                 }
-                openAllRecipeArea.SetActive(_unlockableRecipes.Count() >= 2);
+
+                var isActive = _unlockableRecipes.Count() >= 2;
+                openAllRecipeArea.SetActive(isActive);
+                if (isActive)
+                {
+                    openAllRecipeCostText.text = _openCost.ToString();
+
+                    var hasEnoughBalance = ReactiveCrystalState.CrystalBalance.MajorUnit >= _openCost;
+                    openAllRecipeCostText.color = hasEnoughBalance ?
+                        Palette.GetColor(ColorType.ButtonEnabled) :
+                        Palette.GetColor(ColorType.ButtonDisabled);
+                }
             }
         }
 
