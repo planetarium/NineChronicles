@@ -35,7 +35,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(unlockedRecipeIdsAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, AvatarAddress, Addresses.UnlockEquipmentRecipe);
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, Addresses.UnlockEquipmentRecipe);
             }
 
             if (!RecipeIds.Any() || RecipeIds.Any(i => i < 2))
@@ -100,7 +100,7 @@ namespace Nekoyume.Action
             }
 
             FungibleAssetValue cost = CrystalCalculator.CalculateRecipeUnlockCost(sortedRecipeIds, equipmentRecipeSheet);
-            FungibleAssetValue balance = states.GetBalance(AvatarAddress, cost.Currency);
+            FungibleAssetValue balance = states.GetBalance(context.Signer, cost.Currency);
 
             if (balance < cost)
             {
@@ -119,7 +119,7 @@ namespace Nekoyume.Action
             states = states.SetState(unlockedRecipeIdsAddress,
                     unlockedIds.Aggregate(List.Empty,
                         (current, address) => current.Add(address.Serialize())));
-            return states.TransferAsset(AvatarAddress, Addresses.UnlockEquipmentRecipe,  cost);
+            return states.TransferAsset(context.Signer, Addresses.UnlockEquipmentRecipe,  cost);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>

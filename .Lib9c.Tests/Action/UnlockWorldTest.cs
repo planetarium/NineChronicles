@@ -85,7 +85,7 @@ namespace Lib9c.Tests.Action
             Type exc
         )
         {
-            var state = _initialState.MintAsset(_avatarAddress, balance * _currency);
+            var state = _initialState.MintAsset(_agentAddress, balance * _currency);
             var worldIds = ids.ToList();
 
             if (stateExist)
@@ -152,7 +152,7 @@ namespace Lib9c.Tests.Action
                 var unlockedIds = rawIds.ToList(StateExtensions.ToInteger);
 
                 Assert.All(worldIds, worldId => Assert.Contains(worldId, unlockedIds));
-                Assert.Equal(0 * _currency, nextState.GetBalance(_avatarAddress, _currency));
+                Assert.Equal(0 * _currency, nextState.GetBalance(_agentAddress, _currency));
                 Assert.Equal(balance * _currency, nextState.GetBalance(Addresses.UnlockWorld, _currency));
             }
             else
