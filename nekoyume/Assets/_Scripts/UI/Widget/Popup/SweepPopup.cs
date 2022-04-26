@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -154,7 +155,8 @@ namespace Nekoyume.UI
         {
             var avatarState = States.Instance.CurrentAvatarState;
             var (apPlayCount, apStonePlayCount) = GetPlayCount(avatarState, stageRow);
-            if (apPlayCount + apStonePlayCount <= 0)
+            var sumPlayCount = apPlayCount + apStonePlayCount;
+            if (sumPlayCount <= 0)
             {
                 NotificationSystem.Push(MailType.System,
                     L10nManager.Localize("UI_SWEEP_PLAY_COUNT_ZERO"),
@@ -166,8 +168,16 @@ namespace Nekoyume.UI
                 r.ItemSubType == ItemSubType.ApStone);
             LocalLayerModifier.RemoveItem(avatarState.address, apStoneRow.ItemId, apStoneCount);
             Game.Game.instance.ActionManager.HackAndSlashSweep(apStoneCount, worldId, stageRow.Id);
+
+            Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Value
+            {
+                ["stageId"] = stageRow.Id,
+                ["apStoneCount"] = apStoneCount,
+                ["playCount"] = sumPlayCount,
+            });
+
             Close();
-            Find<SweepResultPopup>().Show(stageRow, worldId, apPlayCount + apStonePlayCount, _gainedExp);
+            Find<SweepResultPopup>().Show(stageRow, worldId, sumPlayCount, _gainedExp);
         }
     }
 }
