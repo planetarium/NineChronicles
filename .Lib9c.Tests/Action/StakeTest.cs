@@ -139,5 +139,15 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_currency * 0, states.GetBalance(stakeState.address, _currency));
             Assert.Equal(_currency * 100, states.GetBalance(_signerAddress, _currency));
         }
+
+        [Fact]
+        public void Serialization()
+        {
+            var action = new Stake(100);
+            var deserialized = new Stake();
+            deserialized.LoadPlainValue(action.PlainValue);
+
+            Assert.Equal(action.Amount, deserialized.Amount);
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace Nekoyume.Action
 {
     public class Stake : ActionBase
     {
-        private BigInteger Amount { get; set; }
+        internal BigInteger Amount { get; set; }
 
         public Stake(BigInteger amount)
         {
@@ -20,7 +20,13 @@ namespace Nekoyume.Action
                 : throw new ArgumentOutOfRangeException(nameof(amount));
         }
 
-        public override IValue PlainValue { get; }
+        public Stake()
+        {
+        }
+
+        public override IValue PlainValue =>
+            Dictionary.Empty.Add(AmountKey, (IValue) (Integer) Amount);
+
         public override void LoadPlainValue(IValue plainValue)
         {
             var dictionary = (Dictionary) plainValue;
