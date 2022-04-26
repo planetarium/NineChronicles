@@ -124,65 +124,6 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public void ValidateNextBlockTxWithAuthorizedMiners()
-        {
-            var adminPrivateKey = new PrivateKey();
-            var adminAddress = adminPrivateKey.ToAddress();
-            var authorizedMinerPrivateKey = new PrivateKey();
-
-            (ActivationKey ak, PendingActivationState ps) = ActivationKey.Create(
-                new PrivateKey(),
-                new byte[] { 0x00, 0x01 }
-            );
-
-            var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
-                minimumDifficulty: 10_000,
-                hashAlgorithmTypePolicy: null,
-                maxBlockBytesPolicy: null,
-                minTransactionsPerBlockPolicy: null,
-                maxTransactionsPerBlockPolicy: null,
-                maxTransactionsPerSignerPerBlockPolicy: null,
-                authorizedMinersPolicy: AuthorizedMinersPolicy
-                    .Default
-                    .Add(new SpannedSubPolicy<ImmutableHashSet<Address>>(
-                        startIndex: 0,
-                        endIndex: 10,
-                        filter: index => index % 5 == 0,
-                        value: new Address[] { authorizedMinerPrivateKey.ToAddress() }
-                            .ToImmutableHashSet())),
-                permissionedMinersPolicy: null);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
-                adminAddress,
-                ImmutableHashSet.Create(adminAddress),
-                pendingActivations: new[] { ps }
-            );
-            using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
-            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
-                policy,
-                stagePolicy,
-                store,
-                stateStore,
-                genesis,
-                renderers: new[] { blockPolicySource.BlockRenderer }
-            );
-
-            Transaction<PolymorphicAction<ActionBase>> txFromAuthorizedMiner =
-                Transaction<PolymorphicAction<ActionBase>>.Create(
-                    0,
-                    authorizedMinerPrivateKey,
-                    genesis.Hash,
-                    new PolymorphicAction<ActionBase>[] { ak.CreateActivateAccount(new byte[] { 0x00, 0x01 }) }
-                );
-
-            // Deny tx even if contains valid activation key.
-            Assert.NotNull(policy.ValidateNextBlockTx(blockChain, txFromAuthorizedMiner));
-        }
-
-        [Fact]
         public void MustNotIncludeBlockActionAtTransaction()
         {
             var adminPrivateKey = new PrivateKey();
@@ -334,7 +275,6 @@ namespace Lib9c.Tests
                 await blockChain.MineBlock(stranger);
             });
             // Old proof mining still works.
-            new Miner(blockChain, null, minerKeys[0]).StageProofTransaction();
             await blockChain.MineBlock(minerKeys[0]);
 
             // Index 3. Anyone can mine.
@@ -424,7 +364,6 @@ namespace Lib9c.Tests
             // Index 2, target index
             Assert.Equal(4096, policy.GetNextBlockDifficulty(blockChain));
 
-            minerObj.StageProofTransaction();
             dateTimeOffset += TimeSpan.FromSeconds(1);
             await blockChain.MineBlock(minerKey, dateTimeOffset);
 
@@ -440,7 +379,6 @@ namespace Lib9c.Tests
             // Index 4, target index
             Assert.Equal(4096, policy.GetNextBlockDifficulty(blockChain));
 
-            minerObj.StageProofTransaction();
             dateTimeOffset += TimeSpan.FromSeconds(1);
             await blockChain.MineBlock(minerKey, dateTimeOffset);
 
@@ -457,7 +395,6 @@ namespace Lib9c.Tests
             // Index 6, target index
             Assert.Equal(4096, policy.GetNextBlockDifficulty(blockChain));
 
-            minerObj.StageProofTransaction();
             dateTimeOffset += TimeSpan.FromSeconds(1);
             await blockChain.MineBlock(minerKey, dateTimeOffset);
 
