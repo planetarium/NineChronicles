@@ -167,7 +167,7 @@ namespace Nekoyume.UI
             LocalLayerModifier.RemoveItem(avatarState.address, apStoneRow.ItemId, apStoneCount);
             Game.Game.instance.ActionManager.HackAndSlashSweep(apStoneCount, worldId, stageRow.Id);
             Close();
-            Find<SweepResultPopup>().Show(stageRow, apPlayCount + apStonePlayCount, _gainedExp);
+            Find<SweepResultPopup>().Show(stageRow, worldId, apPlayCount + apStonePlayCount, _gainedExp);
         }
     }
 }

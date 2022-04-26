@@ -52,6 +52,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI expText;
 
         [SerializeField]
+        private Transform titleDecoContainer;
+
+        [SerializeField]
         private List<SweepItem> items;
 
         [SerializeField]
@@ -75,6 +78,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private int maxPlayCount = 11;
 
+        private GameObject _titleDeco;
         private Coroutine _coroutine;
         private StageSheet.Row _stageRow;
         private float _timeElapsed;
@@ -93,16 +97,16 @@ namespace Nekoyume.UI
 
             mainButton.Text = L10nManager.Localize("UI_MAIN");
             mainButton.OnSubmitSubject.Subscribe(_ =>
-                {
-                    Close();
-                    Find<BattlePreparation>().Close();
-                    Find<StageInformation>().Close();
-                    Find<WorldMap>().Close();
-                    Game.Event.OnRoomEnter.Invoke(true);
-                }).AddTo(gameObject);
+            {
+                Close();
+                Find<BattlePreparation>().Close();
+                Find<StageInformation>().Close();
+                Find<WorldMap>().Close();
+                Game.Event.OnRoomEnter.Invoke(true);
+            }).AddTo(gameObject);
         }
 
-        public void Show(StageSheet.Row stageRow, int totalPlayCount, long exp,
+        public void Show(StageSheet.Row stageRow, int worldId, int totalPlayCount, long exp,
             bool ignoreShowAnimation = false)
         {
             _stageRow = stageRow;
@@ -112,6 +116,7 @@ namespace Nekoyume.UI
             loadingRewind.IsRunning = true;
             stageText.text = $"STAGE {stageRow.Id}";
             expText.text = $"EXP + {exp}";
+            UpdateTitleDeco(worldId);
 
             base.Show(ignoreShowAnimation);
 
@@ -120,9 +125,24 @@ namespace Nekoyume.UI
                 var isActive = i < stageRow.Rewards.Count;
                 questions[i].SetActive(isActive);
             }
+
             _attackCount.SetValueAndForceNotify(0);
             _sweepRewind.SetValueAndForceNotify(true);
             playableDirector.Play();
+        }
+
+        private void UpdateTitleDeco(int worldId)
+        {
+            if (_titleDeco)
+            {
+                Destroy(_titleDeco);
+            }
+
+            var cutscenePath = $"UI/Prefabs/UI_WorldClear_{worldId:D2}";
+            Debug.Log($"cutscenePath :{cutscenePath}");
+            var clone = Resources.Load<GameObject>(cutscenePath) ??
+                        Resources.Load<GameObject>("UI/Prefabs/UI_WorldClear_01");
+            _titleDeco = Instantiate(clone, titleDecoContainer);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

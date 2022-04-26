@@ -1,0 +1,146 @@
+
+UI_SweepBG.png
+size: 2048,2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+BG
+  rotate: false
+  xy: 2, 1703
+  size: 680, 343
+  orig: 680, 343
+  offset: 0, 0
+  index: -1
+grass_01
+  rotate: true
+  xy: 1796, 1583
+  size: 84, 69
+  orig: 84, 69
+  offset: 0, 0
+  index: -1
+grass_02
+  rotate: true
+  xy: 1796, 1482
+  size: 99, 57
+  orig: 99, 57
+  offset: 0, 0
+  index: -1
+grass_F
+  rotate: false
+  xy: 1366, 1904
+  size: 679, 68
+  orig: 679, 68
+  offset: 0, 0
+  index: -1
+ground_00
+  rotate: false
+  xy: 684, 1890
+  size: 680, 156
+  orig: 680, 156
+  offset: 0, 0
+  index: -1
+ground_01
+  rotate: false
+  xy: 1869, 1673
+  size: 141, 28
+  orig: 141, 28
+  offset: 0, 0
+  index: -1
+ground_02
+  rotate: false
+  xy: 1869, 1643
+  size: 141, 28
+  orig: 141, 28
+  offset: 0, 0
+  index: -1
+leaves_01
+  rotate: true
+  xy: 1186, 1482
+  size: 198, 123
+  orig: 198, 123
+  offset: 0, 0
+  index: -1
+leaves_02
+  rotate: true
+  xy: 1867, 1443
+  size: 198, 123
+  orig: 198, 123
+  offset: 0, 0
+  index: -1
+leaves_03
+  rotate: true
+  xy: 1186, 1682
+  size: 206, 132
+  orig: 206, 132
+  offset: 0, 0
+  index: -1
+leaves_04
+  rotate: false
+  xy: 2, 1513
+  size: 289, 188
+  orig: 289, 188
+  offset: 0, 0
+  index: -1
+leaves_05
+  rotate: false
+  xy: 293, 1514
+  size: 199, 187
+  orig: 199, 187
+  offset: 0, 0
+  index: -1
+leaves_06
+  rotate: true
+  xy: 1869, 1703
+  size: 199, 156
+  orig: 199, 156
+  offset: 0, 0
+  index: -1
+leaves_07
+  rotate: false
+  xy: 1796, 1338
+  size: 205, 103
+  orig: 205, 103
+  offset: 0, 0
+  index: -1
+leaves_B01
+  rotate: false
+  xy: 1366, 1669
+  size: 501, 233
+  orig: 501, 233
+  offset: 0, 0
+  index: -1
+leaves_B02
+  rotate: false
+  xy: 1311, 1439
+  size: 483, 228
+  orig: 483, 228
+  offset: 0, 0
+  index: -1
+stone_01
+  rotate: true
+  xy: 2027, 1874
+  size: 28, 14
+  orig: 28, 14
+  offset: 0, 0
+  index: -1
+stone_02
+  rotate: true
+  xy: 2012, 1632
+  size: 69, 29
+  orig: 69, 29
+  offset: 0, 0
+  index: -1
+tree_01
+  rotate: false
+  xy: 1366, 1974
+  size: 680, 72
+  orig: 680, 72
+  offset: 0, 0
+  index: -1
+tree_02
+  rotate: false
+  xy: 684, 1644
+  size: 500, 244
+  orig: 500, 244
+  offset: 0, 0
+  index: -1
