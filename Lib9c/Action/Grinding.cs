@@ -166,7 +166,7 @@ namespace Nekoyume.Action
             }
             CrystalMonsterCollectionMultiplierSheet.Row multiplierRow =
                 crystalMonsterCollectionMultiplierSheet[monsterCollectionLevel];
-            var extra = crystal.DivRem(100, out _) * (multiplierRow.Multiplier / 100);
+            var extra = crystal.DivRem(100, out _) * multiplierRow.Multiplier;
             return crystal + extra;
         }
     }
