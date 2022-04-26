@@ -100,7 +100,15 @@ namespace Nekoyume.UI
         private void UpdateApStoneCount(int value)
         {
             var current = Mathf.Min(_apStoneCount.Value + value, _inventoryApStoneCount);
-            _apStoneCount.Value = Mathf.Clamp(current, 0, HackAndSlashSweep.UsableApStoneCount);
+            current = Mathf.Clamp(current, 0, HackAndSlashSweep.UsableApStoneCount);
+            if (current != 0 && current == _apStoneCount.Value)
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("NO_LONGER_AVAILABLE"),
+                    NotificationCell.NotificationType.Notification);
+            }
+
+            _apStoneCount.Value = current;
         }
 
         private void UpdateView()
@@ -120,7 +128,10 @@ namespace Nekoyume.UI
 
             _gainedExp = exp - avatarState.exp;
 
-            apText.text = $"{apPlayCount}<color=#39FD39>(+{apStonePlayCount})</color>";
+            var actionMaxPoint = States.Instance.GameConfigState.ActionPointMax;
+            apText.text = apStonePlayCount > 0
+                ? $"{avatarState.actionPoint}<color=#39FD39>(+{_apStoneCount.Value * actionMaxPoint})</color>"
+                : $"{avatarState.actionPoint}";
             expText.text = _gainedExp.ToString();
 
             useApStoneText.text = $"{_apStoneCount.Value}/{HackAndSlashSweep.UsableApStoneCount}";
@@ -143,7 +154,6 @@ namespace Nekoyume.UI
         {
             var avatarState = States.Instance.CurrentAvatarState;
             var (apPlayCount, apStonePlayCount) = GetPlayCount(avatarState, stageRow);
-            Debug.Log($"[Sweep] : apPlayCount: {apPlayCount} ---- apStonePlayCount : {apStonePlayCount}");
             if (apPlayCount + apStonePlayCount <= 0)
             {
                 NotificationSystem.Push(MailType.System,
