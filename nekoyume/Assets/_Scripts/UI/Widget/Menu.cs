@@ -186,23 +186,17 @@ namespace Nekoyume.UI
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
 
             var currentAddress = States.Instance.CurrentAvatarState?.address;
-            if (currentAddress != null)
+            if (currentAddress.HasValue)
             {
                 ArenaInfo arenaInfo = null;
                 var avatarAddress = currentAddress.Value;
-                if (Game.Game.instance.Agent.BlockIndex >= RankingBattle.UpdateTargetBlockIndex)
+                var infoAddress = States.Instance.WeeklyArenaState.address.Derive(avatarAddress.ToByteArray());
+                var rawInfo = await Game.Game.instance.Agent.GetStateAsync(infoAddress);
+                if (rawInfo is Dictionary dictionary)
                 {
-                    var infoAddress = States.Instance.WeeklyArenaState.address.Derive(avatarAddress.ToByteArray());
-                    var rawInfo = await Game.Game.instance.Agent.GetStateAsync(infoAddress);
-                    if (rawInfo is Dictionary dictionary)
-                    {
-                        arenaInfo = new ArenaInfo(dictionary);
-                    }
+                    arenaInfo = new ArenaInfo(dictionary);
                 }
-                else
-                {
-                    arenaInfo = States.Instance.WeeklyArenaState.GetArenaInfo(currentAddress.Value);
-                }
+
                 rankingExclamationMark.gameObject.SetActive(
                     btnRanking.IsUnlocked &&
                     (arenaInfo == null || arenaInfo.DailyChallengeCount > 0));

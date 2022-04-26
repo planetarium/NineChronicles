@@ -85,13 +85,12 @@ MonoBehaviour:
   contentImage: {fileID: 7751381609379836820}
   detailButton: {fileID: 8915038191723940672}
   closeButton: {fileID: 9158407257095490729}
-  blur: {fileID: 4364962393925945222}
   noticeList:
-  - name: ItemLevelRequirement
-    contentImage: {fileID: 21300000, guid: b589945f0075e4edd97b91455a20dc3a, type: 3}
-    beginTime: 2022/03/17 15:00:00
-    endTime: 2022/04/18 14:59:59
-    pageUrlFormat: https://ninechronicles.medium.com/item-level-requirements-3f5936733007
+  - name: ArenaSeason3
+    contentImage: {fileID: 21300000, guid: 1433fe5c41a34b94ba7162de74de5c55, type: 3}
+    beginTime: 2022/04/27 15:00:00
+    endTime: 2022/05/11 14:59:59
+    pageUrlFormat: http://ninechronicles-banner.com/02
 --- !u!1 &288844463192487935
 GameObject:
   m_ObjectHideFlags: 0
@@ -860,7 +859,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b589945f0075e4edd97b91455a20dc3a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1433fe5c41a34b94ba7162de74de5c55, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -998,15 +997,3 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1734889137708128112}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4364962393925945222 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2630355418658099446, guid: 087d608eb50946b409525e83801de9d2,
-    type: 3}
-  m_PrefabInstance: {fileID: 1734889137708128112}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0398d8905be44004b803f2412d77ef52, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

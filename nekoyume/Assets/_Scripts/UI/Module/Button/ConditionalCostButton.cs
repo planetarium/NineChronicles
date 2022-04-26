@@ -110,7 +110,7 @@ namespace Nekoyume.UI.Module
                     {
                         OneLineSystem.Push(
                             MailType.System,
-                            L10nManager.Localize("UI_NOT_ENOUGH_AP"),
+                            L10nManager.Localize("ERROR_ACTION_POINT"),
                             NotificationCell.NotificationType.Alert);
                         return;
                     }

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Bcl.HashCode</name>
+    </assembly>
+    <members>
+        <member name="M:System.Numerics.BitOperations.RotateLeft(System.UInt32,System.Int32)">
+            <summary>
+            Rotates the specified value left by the specified number of bits.
+            Similar in behavior to the x86 instruction ROL.
+            </summary>
+            <param name="value">The value to rotate.</param>
+            <param name="offset">The number of bits to rotate by.
+            Any value outside the range [0..31] is treated as congruent mod 32.</param>
+            <returns>The rotated value.</returns>
+        </member>
+        <member name="M:System.Numerics.BitOperations.RotateLeft(System.UInt64,System.Int32)">
+            <summary>
+            Rotates the specified value left by the specified number of bits.
+            Similar in behavior to the x86 instruction ROL.
+            </summary>
+            <param name="value">The value to rotate.</param>
+            <param name="offset">The number of bits to rotate by.
+            Any value outside the range [0..63] is treated as congruent mod 64.</param>
+            <returns>The rotated value.</returns>
+        </member>
+        <member name="P:System.SR.HashCode_EqualityNotSupported">
+            <summary>HashCode is a mutable struct and should not be compared with other HashCodes.</summary>
+        </member>
+        <member name="P:System.SR.HashCode_HashCodeNotSupported">
+            <summary>HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.</summary>
+        </member>
+    </members>
+</doc>
