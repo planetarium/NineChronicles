@@ -5,16 +5,11 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
-using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
 using UniRx;
 using UnityEngine;
 
@@ -24,7 +19,7 @@ namespace Nekoyume.UI.Model
     {
         public readonly Dictionary<string, RecipeRow.Model> EquipmentRecipeMap
                 = new Dictionary<string, RecipeRow.Model>();
-
+        
         public readonly Dictionary<int, RecipeRow.Model> ConsumableRecipeMap
                 = new Dictionary<int, RecipeRow.Model>();
 
@@ -38,6 +33,7 @@ namespace Nekoyume.UI.Model
             new ReactiveProperty<List<int>>();
 
         public readonly List<int> UnlockingRecipes = new List<int>();
+        public readonly List<int> DummyLockedRecipes = new List<int>();
 
         public bool HasNotification => !(NotifiedRow.Value is null);
         public RecipeCell SelectedRecipeCell { get; set; }

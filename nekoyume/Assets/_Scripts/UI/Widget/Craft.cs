@@ -399,7 +399,7 @@ namespace Nekoyume.UI
         public void TutorialActionClickFirstRecipeCellView()
         {
             SharedModel.SelectedRow.Value = SharedModel.RecipeForTutorial;
-            SharedModel.SelectedRecipeCell.Unlock();
+            SharedModel.SelectedRecipeCell.UnlockDummyLocked();
         }
 
         public void TutorialActionClickCombinationSubmitButton()

@@ -37,7 +37,6 @@ namespace Nekoyume.UI.Module
 
         private SheetRow<int> _recipeRow = null;
         private bool _unlockable = false;
-        private int _recipeIdToUnlock;
         private bool _isWaitingForUnlock = false;
 
         private readonly List<IDisposable> _disposablesForOnDisable = new List<IDisposable>();
@@ -182,9 +181,18 @@ namespace Nekoyume.UI.Module
                 IsLocked = true;
                 return;
             }
+            else if (Craft.SharedModel.DummyLockedRecipes.Contains(equipmentRow.Id))
+            {
+                lockVFXObject.SetActive(true);
+                equipmentView.Hide();
+                IsLocked = true;
+                _unlockable = true;
+                return;
+            }
             else if (Craft.SharedModel.UnlockedRecipes is null)
             {
                 unlockConditionText.text = L10nManager.Localize("ERROR_FAILED_LOAD_STATE");
+                unlockConditionText.enabled = true;
                 equipmentView.Hide();
                 IsLocked = true;
                 return;
@@ -198,7 +206,6 @@ namespace Nekoyume.UI.Module
             }
             else if (!Craft.SharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id))
             {
-                _recipeIdToUnlock = equipmentRow.Id;
                 lockVFXObject.SetActive(true);
                 equipmentView.Hide();
                 unlockObject.SetActive(true);
@@ -238,6 +245,15 @@ namespace Nekoyume.UI.Module
 
             lockObject.SetActive(false);
             SetLoadingView(_recipeRow as EquipmentItemRecipeSheet.Row);
+        }
+
+        public void UnlockDummyLocked()
+        {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
+            lockOpenVFXObject.SetActive(true);
+            lockObject.SetActive(false);
+            Craft.SharedModel.DummyLockedRecipes.Remove(RecipeId);
+            SetEquipmentView(_recipeRow as EquipmentItemRecipeSheet.Row);
         }
 
         public void SetSelected(SheetRow<int> row)

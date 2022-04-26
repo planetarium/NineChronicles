@@ -496,7 +496,8 @@ namespace Nekoyume.UI
                 Debug.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
                 return;
             }
-             
+
+            Craft.SharedModel.DummyLockedRecipes.Add(firstRecipeRow.Id);
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
