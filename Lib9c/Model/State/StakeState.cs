@@ -29,10 +29,9 @@ namespace Nekoyume.Model.State
             }
 
             public IValue Serialize() =>
-                new Dictionary(_achievements.OrderBy(pair => pair.Key).Select(pair =>
-                    new KeyValuePair<IKey, IValue>(
-                        (Text) pair.Key.ToString(CultureInfo.InvariantCulture),
-                        (Integer) pair.Value)));
+                new Dictionary(_achievements.ToDictionary(
+                    pair => (IKey)(Text) pair.Key.ToString(CultureInfo.InvariantCulture),
+                    pair => (IValue)(Integer) pair.Value));
 
             public bool Check(int level, int step)
             {
