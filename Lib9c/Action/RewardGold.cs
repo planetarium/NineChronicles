@@ -135,12 +135,12 @@ namespace Nekoyume.Action
                     var addressList = states.TryGetState(listAddress, out List rawList)
                         ? rawList.ToList(StateExtensions.ToAddress)
                         : new List<Address>();
-                    if (ctx.BlockIndex >= RankingBattle.UpdateTargetBlockIndex)
+                    if (ctx.BlockIndex >= RankingBattle11.UpdateTargetBlockIndex)
                     {
                         weekly.ResetIndex = ctx.BlockIndex;
 
                         // Copy Map to address list.
-                        if (ctx.BlockIndex == RankingBattle.UpdateTargetBlockIndex)
+                        if (ctx.BlockIndex == RankingBattle11.UpdateTargetBlockIndex)
                         {
                             foreach (var kv in prevWeekly.Map)
                             {
@@ -214,7 +214,7 @@ namespace Nekoyume.Action
             if (ctx.BlockIndex - resetIndex >= gameConfigState.DailyArenaInterval)
             {
                 var weekly = new WeeklyArenaState(rawWeekly);
-                if (resetIndex >= RankingBattle.UpdateTargetBlockIndex)
+                if (resetIndex >= RankingBattle11.UpdateTargetBlockIndex)
                 {
                     // Reset count each ArenaInfo.
                     weekly.ResetIndex = ctx.BlockIndex;

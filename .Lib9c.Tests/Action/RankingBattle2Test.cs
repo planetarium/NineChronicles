@@ -47,14 +47,14 @@ namespace Lib9c.Tests.Action
 
             var rankingMapAddress = new PrivateKey().ToAddress();
 
-            var (agent1State, avatar1State) = RankingBattleTest.GetAgentStateWithAvatarState(
+            var (agent1State, avatar1State) = RankingBattle11Test.GetAgentStateWithAvatarState(
                 sheets,
                 _tableSheets,
                 rankingMapAddress);
             _agent1Address = agent1State.address;
             _avatar1Address = avatar1State.address;
 
-            var (agent2State, avatar2State) = RankingBattleTest.GetAgentStateWithAvatarState(
+            var (agent2State, avatar2State) = RankingBattle11Test.GetAgentStateWithAvatarState(
                 sheets,
                 _tableSheets,
                 rankingMapAddress);
