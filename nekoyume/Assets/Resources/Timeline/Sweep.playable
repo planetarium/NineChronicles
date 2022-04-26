@@ -119,7 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c38f6fa1940124db1ab7f6fe7268d1, type: 3}
   m_Name: Signal Emitter
   m_EditorClassIdentifier: 
-  m_Time: 3.65
+  m_Time: 5
   m_Retroactive: 0
   m_EmitOnce: 0
   m_Asset: {fileID: 11400000, guid: 3baf3af9c58c5a747b7d9af877c9be54, type: 2}
@@ -209,6 +209,7 @@ MonoBehaviour:
   m_Markers:
     m_Objects:
     - {fileID: -7134327629590224641}
+    - {fileID: 2884780154316939778}
 --- !u!114 &-4939726248832049519
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -821,14 +822,14 @@ MonoBehaviour:
     m_Recordable: 0
     m_PostExtrapolationMode: 1
     m_PreExtrapolationMode: 1
-    m_PostExtrapolationTime: 5.016666666666668
+    m_PostExtrapolationTime: 5.033333333333336
     m_PreExtrapolationTime: 0
     m_DisplayName: Sweep_Start
   - m_Version: 1
-    m_Start: 5.350000000000001
+    m_Start: 5.366666666666669
     m_ClipIn: 0
     m_Asset: {fileID: -4275122452651127093}
-    m_Duration: 0.5166666666666666
+    m_Duration: 0.5
     m_TimeScale: 1.0000000000000002
     m_ParentTrack: {fileID: -1941242699615188658}
     m_EaseInDuration: 0
@@ -872,11 +873,11 @@ MonoBehaviour:
     m_Recordable: 0
     m_PostExtrapolationMode: 1
     m_PreExtrapolationMode: 1
-    m_PostExtrapolationTime: 0
+    m_PostExtrapolationTime: 0.016666666666666607
     m_PreExtrapolationTime: 0
     m_DisplayName: Sweep_BattleEnd
   - m_Version: 1
-    m_Start: 5.866666666666668
+    m_Start: 5.8833333333333355
     m_ClipIn: 0
     m_Asset: {fileID: -8037402772877200637}
     m_Duration: 1
@@ -909,7 +910,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: Sweep_Loading
   - m_Version: 1
-    m_Start: 6.9
+    m_Start: 6.916666666666668
     m_ClipIn: 0
     m_Asset: {fileID: -6190836466765010047}
     m_Duration: 3.166666666666666
@@ -960,8 +961,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: Sweep_Result
   m_Markers:
-    m_Objects:
-    - {fileID: 6513064026988706760}
+    m_Objects: []
   m_InfiniteClipPreExtrapolation: 0
   m_InfiniteClipPostExtrapolation: 0
   m_InfiniteClipOffsetPosition: {x: 0, y: 0, z: 0}
@@ -1095,7 +1095,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: '[*] Dest'
   - m_Version: 1
-    m_Start: 5.316666666666666
+    m_Start: 5.333333333333334
     m_ClipIn: 0
     m_Asset: {fileID: -7478570544852953975}
     m_Duration: 0.5166666666666675
@@ -1164,7 +1164,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: '[JTM] Dest'
   - m_Version: 1
-    m_Start: 5.866666666666668
+    m_Start: 5.8833333333333355
     m_ClipIn: 0
     m_Asset: {fileID: -978674383711555368}
     m_Duration: 0.7833333333333332
@@ -1233,7 +1233,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: '[*] Loading'
   - m_Version: 1
-    m_Start: 6.85
+    m_Start: 6.866666666666667
     m_ClipIn: 0
     m_Asset: {fileID: 671310986034305526}
     m_Duration: 1.0999999999999996
@@ -1434,7 +1434,7 @@ MonoBehaviour:
   m_Children: []
   m_Clips:
   - m_Version: 1
-    m_Start: 0.3333333333333333
+    m_Start: 0.35
     m_ClipIn: 0
     m_Asset: {fileID: 4457677935395666322}
     m_Duration: 5
@@ -1449,10 +1449,10 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 0
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0
@@ -1461,7 +1461,7 @@ MonoBehaviour:
         value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 0
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0
@@ -1476,24 +1476,24 @@ MonoBehaviour:
         value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 0
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 0
+        value: 1
         inSlope: 0
         outSlope: 0
-        tangentMode: 0
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    m_BlendInCurveMode: 0
-    m_BlendOutCurveMode: 0
+    m_BlendInCurveMode: 1
+    m_BlendOutCurveMode: 1
     m_ExposedParameterNames: []
     m_AnimationCurves: {fileID: 0}
     m_Recordable: 0
@@ -1503,7 +1503,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: SpineAnimationStateClip
   - m_Version: 1
-    m_Start: 5.350000000000001
+    m_Start: 5.366666666666669
     m_ClipIn: 0
     m_Asset: {fileID: -729343969502404988}
     m_Duration: 5
@@ -1515,49 +1515,13 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -1641,7 +1605,7 @@ MonoBehaviour:
   m_Children: []
   m_Clips:
   - m_Version: 1
-    m_Start: 2.783333333333333
+    m_Start: 2.8000000000000003
     m_ClipIn: 0
     m_Asset: {fileID: 2847696375175074383}
     m_Duration: 0.3500000000000001
@@ -1710,7 +1674,7 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: UI_sweep_attack_VFX
   - m_Version: 1
-    m_Start: 3.7333333333333334
+    m_Start: 3.7500000000000004
     m_ClipIn: 0
     m_Asset: {fileID: 2620523337378199173}
     m_Duration: 0.2999999999999998
@@ -2001,6 +1965,22 @@ MonoBehaviour:
   searchHierarchy: 0
   active: 1
   postPlayback: 2
+--- !u!114 &2884780154316939778
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15c38f6fa1940124db1ab7f6fe7268d1, type: 3}
+  m_Name: Signal Emitter
+  m_EditorClassIdentifier: 
+  m_Time: 0.016666666666666666
+  m_Retroactive: 0
+  m_EmitOnce: 0
+  m_Asset: {fileID: 11400000, guid: 102615566beba2a4cb8b2a5e26e4ac8e, type: 2}
 --- !u!114 &3357797132803803071
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2062,10 +2042,10 @@ MonoBehaviour:
     animationReference: {fileID: 11400000, guid: 02dd874a690816e46b4d48aca15b9459,
       type: 2}
     loop: 0
-    customDuration: 0
+    customDuration: 1
     useBlendDuration: 1
     isInitialized: 1
-    mixDuration: 0.1
+    mixDuration: 0
     holdPrevious: 0
     attachmentThreshold: 0.5
     eventThreshold: 0.5

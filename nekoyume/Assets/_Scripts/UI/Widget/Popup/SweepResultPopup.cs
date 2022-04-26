@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Libplanet.Action;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -148,6 +149,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             StopSweep();
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Main, 2.0f);
             base.Close(ignoreCloseAnimation);
         }
 
@@ -256,6 +258,11 @@ namespace Nekoyume.UI
         public void OnBattleFinish() // for signal receiver
         {
             _attackCount.Value += 1;
+        }
+
+        public void OnStopMusic()
+        {
+            AudioController.instance.StopMusicAll();
         }
     }
 }
