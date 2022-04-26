@@ -11,7 +11,6 @@ using System;
 using System.Globalization;
 using Nekoyume.State;
 using System.Numerics;
-using UnityEngine.UI;
 using Nekoyume.Model.Item;
 using Libplanet;
 using System.Security.Cryptography;
@@ -60,7 +59,8 @@ namespace Nekoyume.UI
         [SerializeField] private RequiredItemRecipeView requiredItemRecipeView = null;
 
         [SerializeField] private ConditionalCostButton button = null;
-        [SerializeField] private Button combineButton = null;
+        [SerializeField] private GameObject lockedObject = null;
+        [SerializeField] private TextMeshProUGUI lockedText = null;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
@@ -86,12 +86,6 @@ namespace Nekoyume.UI
                 });
             }
 
-            combineButton.onClick.AddListener(() =>
-            {
-                AudioController.PlayClick();
-                CombineCurrentRecipe();
-            });
-
             button.OnClickSubject
                 .Subscribe(state =>
                 {
@@ -113,6 +107,15 @@ namespace Nekoyume.UI
                     }
                 })
                 .AddTo(gameObject);
+
+            Craft.SharedModel.UnlockedRecipes.Subscribe(_ =>
+            {
+                if (gameObject.activeSelf)
+                {
+                    UpdateButton();
+                }
+            })
+            .AddTo(gameObject);
         }
 
         public void SetData(SheetRow<int> recipeRow, List<int> subrecipeIds)
@@ -312,10 +315,37 @@ namespace Nekoyume.UI
                 Materials = materialList
             };
             _selectedRecipeInfo = recipeInfo;
+            UpdateButton();
+        }
 
-            var submittable = CheckMaterialAndSlot();
-            button.SetCost(ConditionalCostButton.CostType.NCG, (int) _selectedRecipeInfo.CostNCG);
-            button.Interactable = submittable;
+        private void UpdateButton()
+        {
+            button.Interactable = false;
+            if (_selectedRecipeInfo.Equals(default))
+            {
+                return;
+            }
+
+            if (Craft.SharedModel.UnlockedRecipes.Value.Contains(_selectedRecipeInfo.RecipeId))
+            {
+                var submittable = CheckMaterialAndSlot();
+                button.SetCost(ConditionalCostButton.CostType.NCG, (int)_selectedRecipeInfo.CostNCG);
+                button.Interactable = submittable;
+                button.gameObject.SetActive(true);
+                lockedObject.SetActive(false);
+            }
+            else if (Craft.SharedModel.UnlockingRecipes.Contains(_selectedRecipeInfo.RecipeId))
+            {
+                button.gameObject.SetActive(false);
+                lockedObject.SetActive(true);
+                lockedText.text = L10nManager.Localize("UI_LOADING_STATES");
+            }
+            else
+            {
+                button.gameObject.SetActive(false);
+                lockedObject.SetActive(true);
+                lockedText.text = L10nManager.Localize("UI_INFORM_UNLOCK_PREVIOUS_RECIPE");
+            }
         }
 
         private void SetOptions(

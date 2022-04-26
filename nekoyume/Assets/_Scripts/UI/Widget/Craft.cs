@@ -29,7 +29,6 @@ namespace Nekoyume.UI
         [SerializeField] private RecipeScroll recipeScroll = null;
         [SerializeField] private SubRecipeView equipmentSubRecipeView = null;
         [SerializeField] private SubRecipeView consumableSubRecipeView = null;
-        [SerializeField] private RecipeUnlockInfo recipeUnlockInfo = null;
 
         [SerializeField] private CanvasGroup canvasGroup = null;
 
@@ -224,33 +223,20 @@ namespace Nekoyume.UI
         {
             if (row is EquipmentItemRecipeSheet.Row equipmentRow)
             {
-                if (!SharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id))
-                {
-                    equipmentSubRecipeView.gameObject.SetActive(false);
-                    consumableSubRecipeView.gameObject.SetActive(false);
-                    recipeUnlockInfo.gameObject.SetActive(true);
-                    recipeUnlockInfo.Set(equipmentRow);
-                }
-                else
-                {
-                    equipmentSubRecipeView.gameObject.SetActive(true);
-                    consumableSubRecipeView.gameObject.SetActive(false);
-                    recipeUnlockInfo.gameObject.SetActive(false);
-                    equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
-                }
+                equipmentSubRecipeView.gameObject.SetActive(true);
+                consumableSubRecipeView.gameObject.SetActive(false);
+                equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
             }
             else if (row is ConsumableItemRecipeSheet.Row consumableRow)
             {
                 equipmentSubRecipeView.gameObject.SetActive(false);
                 consumableSubRecipeView.gameObject.SetActive(true);
-                recipeUnlockInfo.gameObject.SetActive(false);
                 consumableSubRecipeView.SetData(consumableRow, null);
             }
             else
             {
                 equipmentSubRecipeView.gameObject.SetActive(false);
                 consumableSubRecipeView.gameObject.SetActive(false);
-                recipeUnlockInfo.gameObject.SetActive(false);
             }
         }
 
