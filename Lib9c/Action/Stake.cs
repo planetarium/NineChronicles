@@ -68,7 +68,7 @@ namespace Nekoyume.Action
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
                 var sheet = states.GetSheet<StakeAchievementRewardSheet>();
-                var stakeSheet = new StakeState(stakeStateAddress, context.BlockIndex);
+                stakeState = new StakeState(stakeStateAddress, context.BlockIndex);
                 var orderedRows = sheet.Values.OrderBy(row => row.Steps[0].RequiredGold).ToList();
                 int FindLevel()
                 {
@@ -84,11 +84,11 @@ namespace Nekoyume.Action
                     return orderedRows.Last().Level;
                 }
 
-                stakeSheet.Achievements.Achieve(FindLevel(), 0);
+                stakeState.Achievements.Achieve(FindLevel(), 0);
                 return states
                     .SetState(
                         stakeStateAddress,
-                        stakeSheet.SerializeV2())
+                        stakeState.SerializeV2())
                     .TransferAsset(context.Signer, stakeStateAddress, targetStakeBalance);
             }
 
