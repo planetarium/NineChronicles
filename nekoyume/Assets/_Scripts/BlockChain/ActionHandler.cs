@@ -54,6 +54,13 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
+        protected void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var currency = new Currency("CRYSTAL", 18, minter: null);
+            var crystal = evaluation.OutputStates.GetBalance(evaluation.Signer, currency);
+            ReactiveCrystalState.UpdateCrystal(crystal);
+        }
+
         protected async UniTask UpdateAgentStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
@@ -67,6 +74,8 @@ namespace Nekoyume.BlockChain
             {
                 UpdateGoldBalanceState(null);
             }
+
+            UpdateCrystalBalance(evaluation);
         }
 
         protected static async UniTask UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
