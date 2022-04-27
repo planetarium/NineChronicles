@@ -264,7 +264,7 @@ namespace Nekoyume.BlockChain
         private void UnlockEquipmentRecipe()
         {
             _actionRenderer.EveryRender<UnlockEquipmentRecipe>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnlockEquipmentRecipe)
                 .AddTo(_disposables);

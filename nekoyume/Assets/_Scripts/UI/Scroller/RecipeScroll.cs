@@ -134,12 +134,12 @@ namespace Nekoyume.UI.Scroller
                 }
             }
 
-            UpdateUnlockAllButton(Craft.SharedModel.UnlockedRecipes.Value);
             LocalLayerModifier.ModifyAgentCrystal(
                 States.Instance.AgentState.address, -_openCost);
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockableRecipes)
                 .Subscribe();
+            UpdateUnlockAllButton(Craft.SharedModel.UnlockedRecipes.Value);
         }
 
         public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)

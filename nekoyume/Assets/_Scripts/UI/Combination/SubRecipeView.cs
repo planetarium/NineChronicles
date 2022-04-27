@@ -39,8 +39,6 @@ namespace Nekoyume.UI
         private struct OptionView
         {
             public GameObject ParentObject;
-            public GameObject NormalObject;
-            public GameObject LockedObject;
             public TextMeshProUGUI OptionText;
             public TextMeshProUGUI PercentageText;
         }
@@ -112,23 +110,6 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        private void OnEnable()
-        {
-            if (_disposableForOnDisable != null)
-            {
-                _disposableForOnDisable.Dispose();
-                _disposableForOnDisable = null;
-            }
-
-            _disposableForOnDisable = Craft.SharedModel.UnlockedRecipes?.Subscribe(_ =>
-            {
-                if (gameObject.activeSelf)
-                {
-                    UpdateButton();
-                }
-            });
-        }
-
         private void OnDisable()
         {
             if (_disposableForOnDisable != null)
@@ -187,6 +168,21 @@ namespace Nekoyume.UI
             {
                 ChangeTab(0);
             }
+
+            if (_disposableForOnDisable != null)
+            {
+                _disposableForOnDisable.Dispose();
+                _disposableForOnDisable = null;
+            }
+
+            _disposableForOnDisable = Craft.SharedModel.UnlockedRecipes.Subscribe(_ =>
+            {
+                if (Craft.SharedModel.UnlockedRecipes.HasValue &&
+                    gameObject.activeSelf)
+                {
+                    UpdateButton();
+                }
+            });
         }
 
         public void ResetSelectedIndex()
@@ -255,7 +251,7 @@ namespace Nekoyume.UI
                         .Select(x => x.Ratio.NormalizeFromTenThousandths())
                         .Aggregate((a, b) => a * b);
 
-                    SetOptions(options, isLocked);
+                    SetOptions(options);
 
                     var sheet = Game.Game.instance.TableSheets.ItemRequirementSheet;
                     var resultItemRow = equipmentRow.GetResultEquipmentItemRow();
@@ -385,8 +381,7 @@ namespace Nekoyume.UI
         }
 
         private void SetOptions(
-            List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos,
-            bool isLocked)
+            List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos)
         {
             var tableSheets = Game.Game.instance.TableSheets;
             var optionSheet = tableSheets.EquipmentItemOptionSheet;
@@ -411,30 +406,22 @@ namespace Nekoyume.UI
                 if (option.StatType != StatType.NONE)
                 {
                     var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
-                    if (!isLocked)
-                    {
-                        optionView.OptionText.text = option.OptionRowToString();
-                        optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
-                        optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
-                    }
+
+                    optionView.OptionText.text = option.OptionRowToString();
+                    optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
+                    optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
-                    optionView.NormalObject.SetActive(!isLocked);
-                    optionView.LockedObject.SetActive(isLocked);
                 }
                 else
                 {
                     var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
-                    if (!isLocked)
-                    {
-                        var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
-                            skillRow.GetLocalizedName() : string.Empty;
-                        skillView.OptionText.text = description;
-                        skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
-                        skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
-                    }
+
+                    var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
+                        skillRow.GetLocalizedName() : string.Empty;
+                    skillView.OptionText.text = description;
+                    skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
+                    skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
-                    skillView.NormalObject.SetActive(!isLocked);
-                    skillView.LockedObject.SetActive(isLocked);
                 }
 
                 ++siblingIndex;
