@@ -57,6 +57,23 @@ namespace Nekoyume.State
                 0));
         }
 
+        public static void ModifyAgentCrystal(Address agentAddress, BigInteger crystal)
+        {
+            if (crystal == 0)
+            {
+                return;
+            }
+
+            var fav = new FungibleAssetValue(new Currency("CRYSTAL", 18, minter: null), crystal, 0);
+            var modifier = new AvatarCrystalModifier(fav);
+            LocalLayer.Instance.Add(agentAddress, modifier);
+
+            if (States.Instance.AgentState.address.Equals(agentAddress))
+            {
+                ReactiveCrystalState.UpdateCrystal(ReactiveCrystalState.CrystalBalance + fav);
+            }
+        }
+
         /// <summary>
         /// Modify the avatar's action point.
         /// </summary>

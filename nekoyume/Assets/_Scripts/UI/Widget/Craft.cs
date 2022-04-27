@@ -111,13 +111,24 @@ namespace Nekoyume.UI
             SharedModel.SelectedRow
                 .Subscribe(SetSubRecipe)
                 .AddTo(gameObject);
+            SharedModel.UnlockedRecipes
+                .Subscribe(list =>
+                {
+                    if (list != null &&
+                        SharedModel.SelectedRow.Value != null &&
+                        list.Contains(SharedModel.SelectedRow.Value.Key))
+                    {
+                        SetSubRecipe(SharedModel.SelectedRow.Value);
+                    }
+                })
+                .AddTo(gameObject);
+
             ReactiveAvatarState.Address.Subscribe(address =>
             {
                 if (address.Equals(default)) return;
-                SharedModel.LoadRecipeVFXSkipList();
+                SharedModel.UpdateUnlockedRecipesAsync(address);
             }).AddTo(gameObject);
 
-            recipeScroll.InitializeNotification();
             ReactiveAvatarState.QuestList
                 .Subscribe(SubscribeQuestList)
                 .AddTo(gameObject);
@@ -151,7 +162,7 @@ namespace Nekoyume.UI
             recipeScroll.ShowAsEquipment(itemRow.ItemSubType, true);
             var group = RecipeModel.GetEquipmentGroup(row.ResultEquipmentId);
             recipeScroll.GoToRecipeGroup(group);
-            if (SharedModel.RecipeVFXSkipList.Contains(equipmentRecipeId))
+            if (SharedModel.UnlockedRecipes.Value.Contains(equipmentRecipeId))
             {
                 SharedModel.SelectedRow.Value = row;
             }
@@ -186,6 +197,12 @@ namespace Nekoyume.UI
             {
                 AudioController.instance.PlayMusic(musicName);
             }
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            SharedModel.SelectedRow.Value = null;
+            base.Close(ignoreCloseAnimation);
         }
 
         private void ShowEquipment()
@@ -368,7 +385,7 @@ namespace Nekoyume.UI
         public void TutorialActionClickFirstRecipeCellView()
         {
             SharedModel.SelectedRow.Value = SharedModel.RecipeForTutorial;
-            SharedModel.SelectedRecipeCell.Unlock();
+            SharedModel.SelectedRecipeCell.UnlockDummyLocked();
         }
 
         public void TutorialActionClickCombinationSubmitButton()

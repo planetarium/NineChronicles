@@ -116,6 +116,9 @@ namespace Nekoyume.BlockChain
             RedeemCode();
             ChargeActionPoint();
             ClaimMonsterCollectionReward();
+
+            // Crystal Unlocks
+            UnlockEquipmentRecipe();
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
 #endif
@@ -146,6 +149,9 @@ namespace Nekoyume.BlockChain
                 {
                     await UpdateAgentStateAsync(eval);
                     await UpdateAvatarState(eval, eval.Action.index);
+                    var currency = new Currency("CRYSTAL", 18, minters: null);
+                    var crystal = eval.OutputStates.GetBalance(eval.Signer, currency);
+                    ReactiveCrystalState.UpdateCrystal(crystal);
                 })
                 .AddTo(_disposables);
         }
@@ -254,6 +260,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseGrinding)
+                .AddTo(_disposables);
+        }
+
+        private void UnlockEquipmentRecipe()
+        {
+            _actionRenderer.EveryRender<UnlockEquipmentRecipe>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnlockEquipmentRecipe)
                 .AddTo(_disposables);
         }
 
@@ -1276,6 +1291,60 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval);
         }
 
+        private void ResponseGrinding(ActionBase.ActionEvaluation<Grinding> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+            var avatarAddress = eval.Action.AvatarAddress;
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+            var mail = avatarState.mailBox.OfType<GrindingMail>().FirstOrDefault(m => m.id.Equals(eval.Action.Id));
+            if (mail is null)
+            {
+                return;
+            }
+
+            // TODO: add handling about LocalLayer
+            var message =
+                $"[{nameof(GrindingMail)}] ItemCount: {mail.ItemCount}, Asset: {mail.Asset}";
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+            UpdateCurrentAvatarStateAsync(eval);
+            var currency = new Currency("CRYSTAL", 18, minters: null);
+            var crystal = eval.OutputStates.GetBalance(eval.Signer, currency);
+            ReactiveCrystalState.UpdateCrystal(crystal);
+        }
+
+        private void ResponseUnlockEquipmentRecipe(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var unlockedRecipeIdsAddress = eval.Action.AvatarAddress.Derive("recipe_ids");
+            var rawIds = Game.Game.instance.Agent.GetState(unlockedRecipeIdsAddress);
+            var recipeIds = rawIds != null ?
+                ((List)rawIds).ToList(Model.State.StateExtensions.ToInteger) :
+                new List<int>() { 1 };
+
+            var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            var cost = CrystalCalculator.CalculateRecipeUnlockCost(eval.Action.RecipeIds, sheet);
+            LocalLayerModifier.ModifyAgentCrystal(
+                States.Instance.AgentState.address, cost.MajorUnit);
+
+            var sharedModel = Craft.SharedModel;
+            foreach (var id in recipeIds)
+            {
+                sharedModel.UnlockingRecipes.Remove(id);
+            }
+            sharedModel.SetUnlockedRecipes(recipeIds);
+
+            UpdateCurrentAvatarStateAsync(eval);
+        }
+
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
         {
             if (avatarAddress != States.Instance.CurrentAvatarState.address)
@@ -1303,31 +1372,6 @@ namespace Nekoyume.BlockChain
 
                 LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
             }
-        }
-
-        private void ResponseGrinding(ActionBase.ActionEvaluation<Grinding> eval)
-        {
-            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
-            if (!(eval.Exception is null))
-            {
-                return;
-            }
-
-            var avatarAddress = eval.Action.AvatarAddress;
-            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
-            var mail = avatarState.mailBox.OfType<GrindingMail>().FirstOrDefault(m => m.id.Equals(eval.Action.Id));
-            if (mail is null)
-            {
-                return;
-            }
-
-            OneLineSystem.Push(MailType.Auction,
-                L10nManager.Localize("UI_GRINDING_NOTIFY"),
-                NotificationCell.NotificationType.Information);
-            UpdateCurrentAvatarStateAsync(eval);
-            var currency = new Currency("CRYSTAL", 18, minters: null);
-            var crystal = eval.OutputStates.GetBalance(avatarAddress, currency);
-            ReactiveAvatarState.UpdateCrystal(crystal);
         }
 
         private static ItemBase GetItem(IAccountStateDelta state, Guid tradableId)

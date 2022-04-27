@@ -26,11 +26,11 @@ namespace Nekoyume.UI.Module
         public void SetData(
             EquipmentItemSubRecipeSheet.MaterialInfo baseMaterialInfo,
             List<EquipmentItemSubRecipeSheet.MaterialInfo> materials,
-            bool checkInventory
-            )
+            bool checkInventory,
+            bool hideEnoughObject)
         {
             requiredItemViews[0].gameObject.SetActive(true);
-            SetView(requiredItemViews[0], baseMaterialInfo.Id, baseMaterialInfo.Count, checkInventory);
+            SetView(requiredItemViews[0], baseMaterialInfo.Id, baseMaterialInfo.Count, checkInventory, hideEnoughObject);
             plusImage.SetActive(materials.Any());
 
             if (materials != null)
@@ -45,7 +45,7 @@ namespace Nekoyume.UI.Module
                     else
                     {
                         var material = materials[i - 1];
-                        SetView(itemView, material.Id, material.Count, checkInventory);
+                        SetView(itemView, material.Id, material.Count, checkInventory, hideEnoughObject);
                         itemView.gameObject.SetActive(true);
                     }
                 }
@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Module
                 else
                 {
                     var material = materials[i];
-                    SetView(itemView, material.Id, material.Count, checkInventory);
+                    SetView(itemView, material.Id, material.Count, checkInventory, false);
                     itemView.gameObject.SetActive(true);
                 }
             }
@@ -88,7 +88,8 @@ namespace Nekoyume.UI.Module
             RequiredItemView view,
             int materialId,
             int requiredCount,
-            bool checkInventory
+            bool checkInventory,
+            bool hideEnoughObject
             )
         {
             var material = ItemFactory.CreateMaterial(Game.Game.instance.TableSheets.MaterialItemSheet, materialId);
@@ -101,6 +102,7 @@ namespace Nekoyume.UI.Module
                     : 0;
             }
             var countableItem = new CountableItem(material, itemCount);
+            view.HideEnoughObject = hideEnoughObject;
             view.SetData(countableItem, requiredCount);
             if (!checkInventory)
             {

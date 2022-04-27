@@ -1,13 +1,15 @@
 using Libplanet.Assets;
 using Nekoyume.L10n;
 using System.Numerics;
-using UnityEngine;
+using TMPro;
 
 namespace Nekoyume.UI
 {
-    public static class PaymentManager
+    public class PaymentPopup : ConfirmPopup
     {
-        public static void ConfirmPayment(
+        public TextMeshProUGUI costText;
+
+        public void Show(
             FungibleAssetValue balance,
             BigInteger cost,
             string usageMessage,
@@ -24,7 +26,7 @@ namespace Nekoyume.UI
                     ncgText,
                     usageMessage);
                 var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
-                ShowPaymentPopup(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed);
+                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed);
             }
             // crystal
             else if (balance.Currency.Equals(new Currency("CRYSTAL", 18, minters: null)))
@@ -36,27 +38,38 @@ namespace Nekoyume.UI
                     crystalText,
                     usageMessage);
                 var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                ShowPaymentPopup(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed);
+                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed);
             }
         }
 
-        private static void ShowPaymentPopup(
+        private void ShowInternal(
             FungibleAssetValue asset,
             BigInteger cost,
             string enoughMessage,
             string insufficientMessage,
             System.Action onPaymentSucceed)
         {
+            var title = L10nManager.Localize("UI_TOTAL_COST");
+            costText.text = cost.ToString();
             if (asset.MajorUnit >= cost)
             {
                 var yes = L10nManager.Localize("UI_YES");
                 var no = L10nManager.Localize("UI_NO");
-                Widget.Find<TwoButtonSystem>().Show(enoughMessage, yes, no, onPaymentSucceed);
+                CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.Yes)
+                    {
+                        onPaymentSucceed();
+                    }
+                };
+                Show(title, enoughMessage, yes, no, false);
             }
             else
             {
-                var ok = L10nManager.Localize("UI_OK");
-                Widget.Find<OneButtonSystem>().Show(insufficientMessage, ok, null);
+                var yes = L10nManager.Localize("UI_YES");
+                var no = L10nManager.Localize("UI_NO");
+                CloseCallback = null;
+                Show(title, insufficientMessage, yes, no, false);
             }
         }
     }

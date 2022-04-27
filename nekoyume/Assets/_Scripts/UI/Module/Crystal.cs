@@ -24,8 +24,8 @@ namespace Nekoyume.UI.Module
         protected override void OnEnable()
         {
             base.OnEnable();
-            _disposable = ReactiveAvatarState.Crystal.Subscribe(SetCrystal);
-            UpdateCrystalAsync();
+            _disposable = ReactiveCrystalState.Crystal.Subscribe(SetCrystal);
+            UpdateCrystal();
         }
 
         protected override void OnDisable()
@@ -40,23 +40,14 @@ namespace Nekoyume.UI.Module
             text.enabled = !isVisible;
         }
 
-        private async void UpdateCrystalAsync()
+        private void UpdateCrystal()
         {
-            var currentAvatarState = States.Instance.CurrentAvatarState;
-            if (currentAvatarState is null ||
-                ReactiveAvatarState.Crystal is null)
+            if (ReactiveCrystalState.Crystal is null)
             {
                 return;
             }
 
-            SetProgressCircle(true);
-            var address = currentAvatarState.address;
-            var currency = new Currency("CRYSTAL", 18, minters: null);
-            var task = Game.Game.instance.Agent.GetBalanceAsync(address, currency);
-            await task;
-
-            SetCrystal(task.Result);
-            SetProgressCircle(false);
+            SetCrystal(ReactiveCrystalState.CrystalBalance);
         }
 
         private void SetCrystal(FungibleAssetValue crystal)

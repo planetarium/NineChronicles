@@ -730,6 +730,25 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
+        public IObservable<ActionBase.ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(List<int> recipeIdList)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            var action = new UnlockEquipmentRecipe
+            {
+                AvatarAddress = avatarAddress,
+                RecipeIds = recipeIdList
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<UnlockEquipmentRecipe>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
