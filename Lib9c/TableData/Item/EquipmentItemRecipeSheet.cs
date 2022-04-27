@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Nekoyume.Model.Item;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
@@ -18,6 +20,7 @@ namespace Nekoyume.TableData
             public int UnlockStage { get; private set; }
             public List<int> SubRecipeIds { get; private set; }
             public int CRYSTAL { get; private set; }
+            public ItemSubType? ItemSubType { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -43,6 +46,11 @@ namespace Nekoyume.TableData
                 if (fields.Count >= 12)
                 {
                     CRYSTAL = ParseInt(fields[11]);
+                }
+
+                if (fields.Count >= 13)
+                {
+                    ItemSubType = (ItemSubType) Enum.Parse(typeof(ItemSubType), fields[12]);
                 }
             }
 
