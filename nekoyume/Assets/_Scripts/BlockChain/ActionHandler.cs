@@ -75,7 +75,14 @@ namespace Nekoyume.BlockChain
                 UpdateGoldBalanceState(null);
             }
 
-            UpdateCrystalBalance(evaluation);
+            try
+            {
+                UpdateCrystalBalance(evaluation);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
+            }
         }
 
         protected static async UniTask UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
