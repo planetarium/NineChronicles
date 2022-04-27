@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash12")]
+    [ActionType("hack_and_slash13")]
     public class HackAndSlash : GameAction
     {
         public List<Guid> costumes;
@@ -24,7 +24,6 @@ namespace Nekoyume.Action
         public List<Guid> foods;
         public int worldId;
         public int stageId;
-        public int playCount = 1;
         public Address avatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -35,7 +34,6 @@ namespace Nekoyume.Action
                 ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
-                ["playCount"] = playCount.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
@@ -47,7 +45,6 @@ namespace Nekoyume.Action
             foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
-            playCount = plainValue["playCount"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
@@ -171,18 +168,11 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Validate Items: {Elapsed}", addressesHex, sw.Elapsed);
 
-            if (playCount <= 0)
-            {
-                throw new PlayCountIsZeroException($"{addressesHex}playCount must be greater than 0. " +
-                                                   $"current playCount : {playCount}");
-            }
-
-            var totalCostActionPoint = stageRow.CostAP * playCount;
-            if (avatarState.actionPoint < totalCostActionPoint)
+            if (avatarState.actionPoint < stageRow.CostAP)
             {
                 throw new NotEnoughActionPointException(
                     $"{addressesHex}Aborted due to insufficient action point: " +
-                    $"{avatarState.actionPoint} < totalAP({totalCostActionPoint}) = cost({stageRow.CostAP}) * boostCount({playCount})"
+                    $"{avatarState.actionPoint} < cost({stageRow.CostAP}))"
                 );
             }
 
@@ -197,7 +187,7 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 addressesHex);
 
-            avatarState.actionPoint -= totalCostActionPoint;
+            avatarState.actionPoint -= stageRow.CostAP;
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -230,14 +220,13 @@ namespace Nekoyume.Action
                 stageId,
                 sheets.GetStageSimulatorSheets(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.ConstructorVersionV100080,
-                playCount);
+                StageSimulator.ConstructorVersionV100080);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.Simulate(playCount);
+            simulator.Simulate(1);
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
