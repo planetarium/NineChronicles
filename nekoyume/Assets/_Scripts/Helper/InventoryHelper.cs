@@ -15,12 +15,11 @@ namespace Nekoyume.Helper
         /// </summary>
         /// <param name="elementalTypes">Allowable Item elemental types</param>
         /// <returns>Predicate func or null. If it need to dim item, func will return true.</returns>
-        public static Predicate<InventoryItem> MakePredicateByElementalTypesForDimEnable(IEnumerable<ElementalType> elementalTypes)
+        public static Predicate<InventoryItem> MakePredicateByElementalTypesForDimEnable(List<ElementalType> elementalTypes)
         {
-            var enumerable = elementalTypes.ToList();
-            if (!enumerable.SequenceEqual(ElementalTypeExtension.GetAllTypes()))
+            if (!elementalTypes.SequenceEqual(ElementalTypeExtension.GetAllTypes()))
             {
-                return item => !enumerable.Contains(item.ItemBase.ElementalType);
+                return item => !elementalTypes.Contains(item.ItemBase.ElementalType);
             }
 
             return null;

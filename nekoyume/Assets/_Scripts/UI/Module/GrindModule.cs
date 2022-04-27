@@ -52,10 +52,42 @@ namespace Nekoyume.UI.Module
         private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind =
             new ReactiveCollection<InventoryItem>();
 
+        private readonly List<IDisposable> _disposables;
+
+        private static readonly List<(ItemType type, Predicate<InventoryItem>)>
+            DimConditionPredicateList
+                = new List<(ItemType type, Predicate<InventoryItem>)>
+                {
+                    (ItemType.Equipment, InventoryHelper.CheckCanNotGrinding),
+                    (ItemType.Consumable, _ => false),
+                    (ItemType.Material, _ => false),
+                    (ItemType.Costume, _ => false),
+                };
+
         private const int LimitGrindingCount = 10;
 
         private bool CanGrind => _selectedItemsForGrind.Any() &&
                                  _selectedItemsForGrind.All(item => !item.Equipped.Value);
+
+        public void Show(bool reverseInventoryOrder = true)
+        {
+            Initialize();
+            Subscribe();
+
+            _selectedItemsForGrind.Clear();
+            grindInventory.SetGrinding(ShowItemTooltip,
+                OnUpdateInventory,
+                DimConditionPredicateList,
+                reverseInventoryOrder);
+            grindButton.Interactable = false;
+            UpdateStakingBonusObject(States.Instance.MonsterCollectionState?.Level ?? 0);
+            crystalRewardText.text = string.Empty;
+        }
+
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
+        }
 
         private void Initialize()
         {
@@ -66,11 +98,28 @@ namespace Nekoyume.UI.Module
 
             grindButton.SetCost(ConditionalCostButton.CostType.ActionPoint, 5);
             grindButton.SetCondition(() => CanGrind);
+            stakingBonus.SetBonusTextFunc(level =>
+            {
+                if (level > 0 &&
+                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet.TryGetValue(level,
+                        out var row))
+                {
+                    return $"+{row.Multiplier}%";
+                }
+
+                return "+0%";
+            });
+
+            _isInitialized = true;
+        }
+
+        private void Subscribe()
+        {
             grindButton.OnSubmitSubject.Subscribe(_ =>
             {
                 Action(_selectedItemsForGrind.Select(inventoryItem =>
                     (Equipment) inventoryItem.ItemBase).ToList());
-            }).AddTo(gameObject);
+            }).AddTo(_disposables);
             grindButton.OnClickDisabledSubject
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
@@ -96,15 +145,14 @@ namespace Nekoyume.UI.Module
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                }).AddTo(gameObject);
+                }).AddTo(_disposables);
 
             _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
             {
                 item.Value.GrindingCount.SetValueAndForceNotify(_selectedItemsForGrind.Count);
                 itemSlots[item.Index].UpdateSlot(item.Value);
                 item.Value.GrindingCountEnabled.OnNext(true);
-            }).AddTo(gameObject);
-
+            }).AddTo(_disposables);
             _selectedItemsForGrind.ObserveRemove().Subscribe(item =>
             {
                 var listSize = _selectedItemsForGrind.Count;
@@ -121,13 +169,11 @@ namespace Nekoyume.UI.Module
                     }
                 }
                 item.Value.GrindingCount.SetValueAndForceNotify(0);
-            }).AddTo(gameObject);
-
+            }).AddTo(_disposables);
             _selectedItemsForGrind.ObserveReset().Subscribe(_ =>
             {
                 itemSlots.ForEach(slot => slot.UpdateSlot());
-            }).AddTo(gameObject);
-
+            }).AddTo(_disposables);
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(count =>
             {
                 grindButton.Interactable = CanGrind;
@@ -140,48 +186,20 @@ namespace Nekoyume.UI.Module
                 {
                     _cachedGrindingRewardCrystal = crystalRewardText.text = string.Empty;
                 }
-            }).AddTo(gameObject);
+            }).AddTo(_disposables);
 
             ReactiveAvatarState.ActionPoint
                 .Subscribe(_ => grindButton.Interactable = CanGrind)
-                .AddTo(gameObject);
+                .AddTo(_disposables);
+
+            MonsterCollectionStateSubject.Level
+                .Subscribe(UpdateStakingBonusObject)
+                .AddTo(_disposables);
 
             itemSlots.ForEach(slot => slot.OnClick.Subscribe(_ =>
             {
                 _selectedItemsForGrind.Remove(slot.AssignedItem);
-            }));
-
-            stakingBonus.SetBonusTextFunc(level =>
-            {
-                if (level > 0 &&
-                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet.TryGetValue(level,
-                        out var row))
-                {
-                    return $"+{row.Multiplier}%";
-                }
-
-                return "+0%";
-            });
-
-            MonsterCollectionStateSubject.Level
-                .Subscribe(UpdateStakingBonusObject)
-                .AddTo(gameObject);
-
-            _isInitialized = true;
-        }
-
-        public void Show(bool reverseInventoryOrder = true)
-        {
-            Initialize();
-
-            _selectedItemsForGrind.Clear();
-            grindInventory.SetGrinding(ShowItemTooltip,
-                OnUpdateInventory,
-                MakeDimConditionPredicateList(),
-                reverseInventoryOrder);
-            grindButton.Interactable = false;
-            UpdateStakingBonusObject(States.Instance.MonsterCollectionState?.Level ?? 0);
-            crystalRewardText.text = string.Empty;
+            }).AddTo(_disposables));
         }
 
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
@@ -226,17 +244,6 @@ namespace Nekoyume.UI.Module
             }
 
             grindButton.Interactable = CanGrind;
-        }
-
-        private static List<(ItemType type, Predicate<InventoryItem>)> MakeDimConditionPredicateList()
-        {
-            return new List<(ItemType type, Predicate<InventoryItem>)>
-            {
-                (ItemType.Equipment, InventoryHelper.CheckCanNotGrinding),
-                (ItemType.Consumable, _ => false),
-                (ItemType.Material, _ => false),
-                (ItemType.Costume, _ => false)
-            };
         }
 
         private void RegisterToGrindingList(InventoryItem item, bool isRegister)
