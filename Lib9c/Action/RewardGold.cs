@@ -137,6 +137,7 @@ namespace Nekoyume.Action
                     var addressList = states.TryGetState(listAddress, out List rawList)
                         ? rawList.ToList(StateExtensions.ToAddress)
                         : new List<Address>();
+                    var serializedList = rawList ?? List.Empty;
                     if (ctx.BlockIndex >= RankingBattle11.UpdateTargetBlockIndex)
                     {
                         weekly.ResetIndex = ctx.BlockIndex;
@@ -153,7 +154,7 @@ namespace Nekoyume.Action
                                     weeklyAddress.Derive(address.ToByteArray()), info.Serialize());
                                 if (!addressList.Contains(address))
                                 {
-                                    addressList.Add(address);
+                                    serializedList = serializedList.Add(address.Serialize());
                                 }
                             }
                         }
@@ -173,11 +174,8 @@ namespace Nekoyume.Action
                                 }
                             }
 
-                            // Copy list for loop.
-                            var enumerator = addressList.ToList();
-
                             // Copy activated ArenaInfo from prev ArenaInfo.
-                            foreach (var address in enumerator)
+                            foreach (var address in addressList)
                             {
                                 if (states.TryGetState(
                                         prevWeekly.address.Derive(address.ToByteArray()),
@@ -189,20 +187,18 @@ namespace Nekoyume.Action
                                     if (filterInactive && record.Win == 0 && record.Draw == 0 &&
                                         record.Lose == 0)
                                     {
-                                        addressList.Remove(address);
                                         continue;
                                     }
+
+                                    serializedList = serializedList.Add(address.Serialize());
                                     states = states.SetState(
                                         weeklyAddress.Derive(address.ToByteArray()),
                                         new ArenaInfo(prevInfo).Serialize());
                                 }
                             }
                         }
-
                         // Set address list.
-                        states = states.SetState(listAddress,
-                            addressList.Aggregate(List.Empty,
-                                (current, address) => current.Add(address.Serialize())));
+                        states = states.SetState(listAddress, serializedList);
                     }
                     // Run legacy Update.
                     else
