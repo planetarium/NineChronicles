@@ -983,8 +983,6 @@ namespace Lib9c.Tests.Action
                      x.item is IFungibleItem ownedFungibleItem &&
                      x.item.Id != 400000 && x.item.Id != 500000);
 
-            Assert.Equal(stageRow.Rewards.Count(), rewardItem.Count());
-
             var worldQuestSheet = state.GetSheet<WorldQuestSheet>();
             var questRow = worldQuestSheet.OrderedList.FirstOrDefault(e => e.Goal == stageId);
             var questRewardSheet = state.GetSheet<QuestRewardSheet>();
