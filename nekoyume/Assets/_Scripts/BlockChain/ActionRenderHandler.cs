@@ -91,6 +91,7 @@ namespace Nekoyume.BlockChain
             GameConfig();
             CreateAvatar();
             TransferAsset();
+            MonsterCollect();
 
             // Battle
             HackAndSlash();
@@ -102,6 +103,7 @@ namespace Nekoyume.BlockChain
             CombinationEquipment();
             ItemEnhancement();
             RapidCombination();
+            Grinding();
 
             // Market
             Sell();
@@ -302,6 +304,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint)
+                .AddTo(_disposables);
+        }
+
+        private void MonsterCollect()
+        {
+            _actionRenderer.EveryRender<MonsterCollect>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseMonsterCollect)
                 .AddTo(_disposables);
         }
 
@@ -1155,6 +1166,28 @@ namespace Nekoyume.BlockChain
             }
         }
 
+        private void ResponseMonsterCollect(ActionBase.ActionEvaluation<MonsterCollect> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                Debug.LogException(eval.Exception);
+                return;
+            }
+
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
+                NotificationCell.NotificationType.Information);
+
+            UpdateAgentStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval);
+            var mcState = GetMonsterCollectionState(eval);
+            if (mcState != null)
+            {
+                UpdateMonsterCollectionState(mcState);
+            }
+        }
+
         private void ResponseClaimMonsterCollectionReward(ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
         {
             if (!(eval.Exception is null))
@@ -1265,6 +1298,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             var avatarAddress = eval.Action.AvatarAddress;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
             var mail = avatarState.mailBox.OfType<GrindingMail>().FirstOrDefault(m => m.id.Equals(eval.Action.Id));
@@ -1278,6 +1312,7 @@ namespace Nekoyume.BlockChain
                 $"[{nameof(GrindingMail)}] ItemCount: {mail.ItemCount}, Asset: {mail.Asset}";
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
+            UpdateAgentStateAsync(eval);
             var currency = new Currency("CRYSTAL", 18, minters: null);
             var crystal = eval.OutputStates.GetBalance(eval.Signer, currency);
             ReactiveCrystalState.UpdateCrystal(crystal);

@@ -430,6 +430,15 @@ namespace Nekoyume.BlockChain
                 States.Instance.SetGoldBalanceState(new GoldBalanceState(Address,
                     await GetBalanceAsync(Address, goldCurrency)));
                 ReactiveCrystalState.Initialize(Address);
+                var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
+                    Address,
+                    States.Instance.AgentState.MonsterCollectionRound
+                );
+                if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
+                {
+                    var monsterCollectionState = new MonsterCollectionState(mcDict);
+                    States.Instance.SetMonsterCollectionState(monsterCollectionState);
+                }
 
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
                 if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)

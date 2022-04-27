@@ -439,7 +439,7 @@ namespace Nekoyume.UI
                         : L10nManager.Localize("UI_EQUIP");
                     if (!Game.Game.instance.Stage.IsInStage)
                     {
-                        if (model.ElementalTypeDisabled.Value)
+                        if (model.DimObjectEnabled.Value)
                         {
                             interactable = model.Equipped.Value;
                         }

@@ -250,6 +250,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Enhancement>());
             yield return null;
+            secondWidgets.Add(Widget.Create<Grind>());
+            yield return null;
 
             // header menu
             secondWidgets.Add(Widget.Create<HeaderMenuStatic>());

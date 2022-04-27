@@ -530,7 +530,7 @@ namespace Nekoyume.UI
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-                    if (model.ElementalTypeDisabled.Value)
+                    if (model.DimObjectEnabled.Value)
                     {
                         interactable = model.Equipped.Value;
                     }

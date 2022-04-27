@@ -54,6 +54,22 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
+        protected static MonsterCollectionState GetMonsterCollectionState<T>(
+            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var agentAddress = States.Instance.AgentState.address;
+            var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
+                agentAddress,
+                States.Instance.AgentState.MonsterCollectionRound
+            );
+            if (evaluation.OutputStates.GetState(monsterCollectionAddress) is Bencodex.Types.Dictionary mcDict)
+            {
+                return new MonsterCollectionState(mcDict);
+            }
+
+            return null;
+        }
+
         protected void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var currency = new Currency("CRYSTAL", 18, minter: null);
@@ -125,6 +141,14 @@ namespace Nekoyume.BlockChain
         {
             var state = evaluation.OutputStates.GetGameConfigState();
             States.Instance.SetGameConfigState(state);
+        }
+
+        protected static void UpdateMonsterCollectionState(MonsterCollectionState mcState)
+        {
+            if (mcState is { })
+            {
+                States.Instance.SetMonsterCollectionState(mcState);
+            }
         }
 
         private static UniTask UpdateAgentStateAsync(AgentState state)

@@ -55,6 +55,12 @@ namespace Nekoyume.UI.Module
         private readonly List<InventoryItem> _cachedFocusItems = new List<InventoryItem>();
         private readonly List<InventoryItem> _cachedBestItems = new List<InventoryItem>();
 
+        private readonly Dictionary<ItemType, List<Predicate<InventoryItem>>> _dimConditionFuncsByItemType =
+            new Dictionary<ItemType, List<Predicate<InventoryItem>>>();
+
+        private static readonly ItemType[] ItemTypes =
+            Enum.GetValues(typeof(ItemType)) as ItemType[];
+
         private InventoryItem _selectedModel;
 
         private Action<InventoryItem, RectTransform> _onClickItem;
@@ -64,6 +70,7 @@ namespace Nekoyume.UI.Module
         private readonly List<ElementalType> _elementalTypes = new List<ElementalType>();
         private ItemType _activeItemType = ItemType.Equipment;
         private bool _checkTradable;
+        private bool _reverseOrder;
 
         public bool HasNotification => _equipments.Any(x => x.Value.Any(item=> item.HasNotification.Value));
 
@@ -91,6 +98,11 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
             materialButton.OnClick.Subscribe(_ => SetToggle(materialButton, ItemType.Material))
                 .AddTo(gameObject);
+
+            foreach (var type in ItemTypes)
+            {
+                _dimConditionFuncsByItemType[type] = new List<Predicate<InventoryItem>>();
+            }
         }
 
         private void SetAction(Action<InventoryItem, RectTransform> clickItem,
@@ -104,15 +116,18 @@ namespace Nekoyume.UI.Module
             _onToggleCostume = clickCostumeToggle;
         }
 
-        private void SetElementalTypes(IEnumerable<ElementalType> elementalTypes)
-        {
-            _elementalTypes.Clear();
-            _elementalTypes.AddRange(elementalTypes);
-        }
-
-        private void Set()
+        private void Set(Action<Inventory> onUpdateInventory = null,
+            List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null)
         {
             _disposables.DisposeAllAndClear();
+            foreach (var type in ItemTypes)
+            {
+                _dimConditionFuncsByItemType[type].Clear();
+            }
+
+            itemSetDimPredicates?.ForEach(tuple =>
+                _dimConditionFuncsByItemType[tuple.type].Add(tuple.predicate));
+
             ReactiveAvatarState.Inventory.Subscribe(inventory =>
             {
                 _equipments.Clear();
@@ -137,8 +152,16 @@ namespace Nekoyume.UI.Module
                     AddItem(item.item, item.count);
                 }
 
-                scroll.UpdateData(GetModels(_activeItemType), resetScrollOnEnable);
-                UpdateElementalTypeDisable(_elementalTypes);
+                var models = GetModels(_activeItemType);
+                if (_reverseOrder)
+                {
+                    models.Reverse();
+                }
+
+                scroll.UpdateData(models, resetScrollOnEnable);
+                UpdateDimmedInventoryItem();
+
+                onUpdateInventory?.Invoke(this);
             }).AddTo(_disposables);
 
             SetToggle(equipmentButton, ItemType.Equipment);
@@ -150,7 +173,8 @@ namespace Nekoyume.UI.Module
         {
             _activeItemType = itemType;
             scroll.UpdateData(GetModels(itemType), !toggle.IsToggledOn);
-            UpdateElementalTypeDisable(_elementalTypes);
+            UpdateDimmedInventoryItem();
+
             ClearFocus();
             _toggleGroup.SetToggledOffAll();
             toggle.SetToggledOn();
@@ -392,20 +416,25 @@ namespace Nekoyume.UI.Module
             return bestItems;
         }
 
-        private void UpdateElementalTypeDisable(List<ElementalType> elementalTypes)
+        private void UpdateDimmedInventoryItem()
         {
-            if (elementalTypes == null || !elementalTypes.Any())
+            foreach (var itemType in ItemTypes)
             {
-                return;
-            }
-
-            foreach (var pair in _equipments)
-            {
-                foreach (var item in pair.Value)
+                if (_dimConditionFuncsByItemType[itemType].Any())
                 {
-                    var elementalType = item.ItemBase.ElementalType;
-                    item.ElementalTypeDisabled.Value =
-                        !elementalTypes.Exists(x => x.Equals(elementalType));
+                    foreach (var inventoryItem in itemType switch
+                             {
+                                 ItemType.Consumable => _consumables,
+                                 ItemType.Costume => _costumes,
+                                 ItemType.Equipment => _equipments.SelectMany(pair => pair.Value),
+                                 ItemType.Material => _materials,
+                                 _ => throw new ArgumentOutOfRangeException()
+                             })
+                    {
+                        inventoryItem.DimObjectEnabled.Value =
+                            _dimConditionFuncsByItemType[itemType]
+                                .Any(predicate => predicate.Invoke(inventoryItem));
+                    }
                 }
             }
         }
@@ -417,8 +446,12 @@ namespace Nekoyume.UI.Module
             IEnumerable<ElementalType> elementalTypes)
         {
             SetAction(clickItem, doubleClickItem, clickEquipmentToggle, clickCostumeToggle);
-            SetElementalTypes(elementalTypes);
-            Set();
+            var predicateByElementalType = InventoryHelper.GetDimmedFuncByElementalTypes(elementalTypes.ToList());
+            var predicateList = predicateByElementalType != null
+                ? new List<(ItemType type, Predicate<InventoryItem>)>
+                    {(ItemType.Equipment, predicateByElementalType)}
+                : null;
+            Set(itemSetDimPredicates: predicateList);
         }
 
         public void SetShop(Action<InventoryItem, RectTransform> clickItem)
@@ -426,6 +459,16 @@ namespace Nekoyume.UI.Module
             _checkTradable = true;
             SetAction(clickItem);
             Set();
+        }
+
+        public void SetGrinding(Action<InventoryItem, RectTransform> clickItem,
+            Action<Inventory> onUpdateInventory,
+            List<(ItemType type, Predicate<InventoryItem>)> predicateList,
+            bool reverseOrder)
+        {
+            _reverseOrder = reverseOrder;
+            SetAction(clickItem);
+            Set(onUpdateInventory, predicateList);
         }
 
         public void ClearSelectedItem()
