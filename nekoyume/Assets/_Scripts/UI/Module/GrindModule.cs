@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
@@ -17,6 +17,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using Libplanet.Assets;
+    using System.Collections;
     using UniRx;
     public class GrindModule : MonoBehaviour
     {
@@ -45,14 +47,19 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TMP_Text crystalRewardText;
 
+        [SerializeField]
+        private CanvasGroup canvasGroup;
+
         private bool _isInitialized;
 
-        private string _cachedGrindingRewardCrystal;
+        private FungibleAssetValue _cachedGrindingRewardNCG;
+
+        private FungibleAssetValue _cachedGrindingRewardCrystal;
 
         private readonly ReactiveCollection<InventoryItem> _selectedItemsForGrind =
             new ReactiveCollection<InventoryItem>();
 
-        private readonly List<IDisposable> _disposables;
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private static readonly List<(ItemType type, Predicate<InventoryItem>)>
             DimConditionPredicateList
@@ -177,15 +184,7 @@ namespace Nekoyume.UI.Module
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(count =>
             {
                 grindButton.Interactable = CanGrind;
-
-                if (count > 0)
-                {
-                    UpdateCrystalReward();
-                }
-                else
-                {
-                    _cachedGrindingRewardCrystal = crystalRewardText.text = string.Empty;
-                }
+                UpdateCrystalReward();
             }).AddTo(_disposables);
 
             ReactiveAvatarState.ActionPoint
@@ -271,12 +270,13 @@ namespace Nekoyume.UI.Module
         private void UpdateCrystalReward()
         {
             _cachedGrindingRewardCrystal = Grinding.CalculateCrystal(
-                    _selectedItemsForGrind.Select(item => (Equipment) item.ItemBase),
+                    _selectedItemsForGrind.Select(item => (Equipment)item.ItemBase),
                     TableSheets.Instance.CrystalEquipmentGrindingSheet,
                     States.Instance.MonsterCollectionState?.Level ?? 0,
-                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet)
-                .GetQuantityString();
-            crystalRewardText.text = _cachedGrindingRewardCrystal;
+                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet);
+            crystalRewardText.text = _cachedGrindingRewardCrystal.MajorUnit > 0 ?
+                _cachedGrindingRewardCrystal.GetQuantityString() :
+                string.Empty;
         }
 
         /// <summary>
@@ -323,9 +323,30 @@ namespace Nekoyume.UI.Module
                 $"Grinding Start, You will get {_cachedGrindingRewardCrystal} {L10nManager.Localize("UI_CRYSTAL")}.",
                 NotificationCell.NotificationType.Information);
 
+            StartCoroutine(CoCombineNPCAnimation());
             ActionManager.Instance.Grinding(equipments).Subscribe();
             _selectedItemsForGrind.Clear();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
+        }
+
+        private IEnumerator CoCombineNPCAnimation()
+        {
+            var loadingScreen = Widget.Find<CombinationLoadingScreen>();
+            loadingScreen.OnDisappear = OnNPCDisappear;
+            loadingScreen.Show();
+            canvasGroup.interactable = false;
+            loadingScreen.SetCurrency(
+                (int)_cachedGrindingRewardNCG.MajorUnit,
+                (int)_cachedGrindingRewardCrystal.MajorUnit);
+            yield return new WaitForSeconds(.5f);
+
+            var quote = L10nManager.Localize("UI_GRIND_NPC_QUOTE");
+            loadingScreen.AnimateNPC(ItemType.Equipment, quote);
+        }
+
+        private void OnNPCDisappear()
+        {
+            canvasGroup.interactable = true;
         }
     }
 }
