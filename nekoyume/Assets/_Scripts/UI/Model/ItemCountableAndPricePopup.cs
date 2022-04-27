@@ -5,7 +5,6 @@ namespace Nekoyume.UI.Model
 {
     public class ItemCountableAndPricePopup : ItemCountPopup<ItemCountableAndPricePopup>
     {
-        public readonly ReactiveProperty<FungibleAssetValue> Price = new ReactiveProperty<FungibleAssetValue>();
         public readonly ReactiveProperty<FungibleAssetValue> TotalPrice = new ReactiveProperty<FungibleAssetValue>();
         public readonly ReactiveProperty<FungibleAssetValue> PreTotalPrice = new ReactiveProperty<FungibleAssetValue>();
         public readonly ReactiveProperty<int> Count = new ReactiveProperty<int>(1);
@@ -17,7 +16,6 @@ namespace Nekoyume.UI.Model
 
         public override void Dispose()
         {
-            Price.Dispose();
             TotalPrice.Dispose();
             PreTotalPrice.Dispose();
             Count.Dispose();

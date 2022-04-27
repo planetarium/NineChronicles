@@ -188,7 +188,6 @@ namespace Nekoyume.UI
             var data = SharedModel.ItemCountableAndPricePopup.Value;
             var currency = States.Instance.GoldBalanceState.Gold.Currency;
             data.TotalPrice.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
-            data.Price.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
             data.Count.Value = 1;
             data.IsSell.Value = true;
 
@@ -206,17 +205,6 @@ namespace Nekoyume.UI
         private void ShowUpdateSellPopup(ShopItem model)
         {
             var data = SharedModel.ItemCountableAndPricePopup.Value;
-
-            if (decimal.TryParse(model.OrderDigest.Price.GetQuantityString(),
-                    NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
-                    out var totalPrice))
-            {
-                var price = totalPrice / model.OrderDigest.ItemCount;
-                var majorUnit = (int)price;
-                var minorUnit = (int)((price - majorUnit) * 100);
-                var currency = States.Instance.GoldBalanceState.Gold.Currency;
-                data.Price.Value = new FungibleAssetValue(currency, majorUnit, minorUnit);
-            }
 
             data.PreTotalPrice.Value = model.OrderDigest.Price;
             data.TotalPrice.Value = model.OrderDigest.Price;
@@ -347,60 +335,27 @@ namespace Nekoyume.UI
         private void SubscribeSellPopupCount(int count)
         {
             SharedModel.ItemCountableAndPricePopup.Value.Count.Value = count;
-            UpdateTotalPrice(PriorityType.Count);
         }
 
         private void SubscribeSellPopupPrice(decimal price)
         {
-            var majorUnit = (int)price;
-            var minorUnit = (int)((Math.Truncate((price - majorUnit) * 100) / 100) * 100);
             var model = SharedModel.ItemCountableAndPricePopup.Value;
-            model.Price.SetValueAndForceNotify(new FungibleAssetValue(model.Price.Value.Currency,
-                majorUnit, minorUnit));
-            UpdateTotalPrice(PriorityType.Price);
-        }
-
-        private void UpdateTotalPrice(PriorityType priorityType)
-        {
-            var model = SharedModel.ItemCountableAndPricePopup.Value;
-            decimal price = 0;
-            if (decimal.TryParse(model.Price.Value.GetQuantityString(),
-                    NumberStyles.AllowDecimalPoint,
-                    CultureInfo.InvariantCulture, out var result))
+            
+            if (price > LimitPrice)
             {
-                price = result;
-            }
-
-            var count = model.Count.Value;
-            var totalPrice = price * count;
-
-            if (totalPrice > LimitPrice)
-            {
-                switch (priorityType)
-                {
-                    case PriorityType.Price:
-                        price = LimitPrice / model.Count.Value;
-                        var majorUnit = (int)price;
-                        var minorUnit = (int)((price - majorUnit) * 100);
-                        model.Price.Value = new FungibleAssetValue(model.Price.Value.Currency,
-                            majorUnit, minorUnit);
-                        break;
-                    case PriorityType.Count:
-                        count = LimitPrice / (int)price;
-                        model.Count.Value = count;
-                        break;
-                }
-
+                price = LimitPrice;
+                
                 OneLineSystem.Push(
                     MailType.System,
                     L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"),
                     NotificationCell.NotificationType.Alert);
+                Debug.LogError(L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"));
             }
 
             var currency = model.TotalPrice.Value.Currency;
-            var sum = price * count;
-            var major = (int)sum;
-            var minor = (int)((sum - (int)sum) * 100);
+            var major = (int)price;
+            var minor = (int)((Math.Truncate((price - major) * 100) / 100) * 100);
+
             var fungibleAsset = new FungibleAssetValue(currency, major, minor);
             model.TotalPrice.SetValueAndForceNotify(fungibleAsset);
         }

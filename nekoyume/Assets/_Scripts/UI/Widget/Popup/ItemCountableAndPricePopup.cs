@@ -180,13 +180,12 @@ namespace Nekoyume.UI
 
             priceInputField.text = data.Count.Value.ToString();
             countInputField.text = data.Count.Value.ToString();
-            _data.Price.Value = data.Price.Value;
             _data.TotalPrice.Value = data.TotalPrice.Value;
 
             _data.Count.Subscribe(value => countInputField.text = value.ToString())
                 .AddTo(_disposablesForSetData);
 
-            _data.Price.Subscribe(value =>
+            _data.TotalPrice.Subscribe(value =>
                 {
                     if (value.MinorUnit == 0 && priceInputField.text.Contains(".0"))
                     {
@@ -200,11 +199,7 @@ namespace Nekoyume.UI
                     {
                         priceInputField.text = value.GetQuantityString();
                     }
-                })
-                .AddTo(_disposablesForSetData);
-
-            _data.TotalPrice.Subscribe(value =>
-                {
+                
                     totalPrice.text = value.GetQuantityString();
                     var isValid = IsValid();
                     submitButton.Interactable = isValid;
