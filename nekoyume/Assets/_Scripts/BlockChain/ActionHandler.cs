@@ -70,6 +70,13 @@ namespace Nekoyume.BlockChain
             return null;
         }
 
+        protected void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var currency = new Currency("CRYSTAL", 18, minter: null);
+            var crystal = evaluation.OutputStates.GetBalance(evaluation.Signer, currency);
+            ReactiveCrystalState.UpdateCrystal(crystal);
+        }
+
         protected async UniTask UpdateAgentStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
@@ -82,6 +89,15 @@ namespace Nekoyume.BlockChain
             catch (BalanceDoesNotExistsException)
             {
                 UpdateGoldBalanceState(null);
+            }
+
+            try
+            {
+                UpdateCrystalBalance(evaluation);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
             }
         }
 

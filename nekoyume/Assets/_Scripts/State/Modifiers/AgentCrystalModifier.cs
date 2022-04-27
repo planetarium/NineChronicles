@@ -8,21 +8,21 @@ using UnityEngine;
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
-    public class AvatarCrystalModifier : AvatarStateModifier
+    public class AgentCrystalModifier : AgentStateModifier
     {
         [SerializeField]
         private FungibleAssetValue crystal;
 
         public override bool IsEmpty => crystal.Sign == 0;
 
-        public AvatarCrystalModifier(FungibleAssetValue crystal)
+        public AgentCrystalModifier(FungibleAssetValue crystal)
         {
             this.crystal = crystal;
         }
 
-        public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
+        public override void Add(IAccumulatableStateModifier<AgentState> modifier)
         {
-            if (!(modifier is AvatarCrystalModifier m))
+            if (!(modifier is AgentCrystalModifier m))
             {
                 return;
             }
@@ -30,9 +30,9 @@ namespace Nekoyume.State.Modifiers
             crystal += m.crystal;
         }
 
-        public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
+        public override void Remove(IAccumulatableStateModifier<AgentState> modifier)
         {
-            if (!(modifier is AvatarCrystalModifier m))
+            if (!(modifier is AgentCrystalModifier m))
             {
                 return;
             }
@@ -40,7 +40,7 @@ namespace Nekoyume.State.Modifiers
             crystal -= m.crystal;
         }
 
-        public override AvatarState Modify(AvatarState state)
+        public override AgentState Modify(AgentState state)
         {
             return state;
         }
