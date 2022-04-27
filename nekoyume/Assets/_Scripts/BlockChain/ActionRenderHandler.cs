@@ -870,12 +870,10 @@ namespace Nekoyume.BlockChain
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
                     Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080,
-                    eval.Action.playCount
-                );
-                simulator.Simulate(eval.Action.playCount);
+                    StageSimulator.ConstructorVersionV100080);
+                simulator.Simulate(1);
                 var log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
+                Game.Game.instance.Stage.PlayCount = 1;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {

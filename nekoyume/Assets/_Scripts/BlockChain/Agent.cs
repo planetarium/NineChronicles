@@ -867,7 +867,6 @@ namespace Nekoyume.BlockChain
                     new List<Equipment>(),
                     new List<Consumable>(),
                     1,
-                    1,
                     1).StartAsCoroutine();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }

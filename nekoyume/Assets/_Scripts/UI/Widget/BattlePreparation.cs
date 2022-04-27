@@ -21,6 +21,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Game.Character;
 using Nekoyume.Model.Elemental;
+using Nekoyume.TableData;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using Material = Nekoyume.Model.Item.Material;
@@ -91,6 +92,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button sweepPopupButton;
+
+        [SerializeField]
+        private Button boostPopupButton;
 
         [SerializeField]
         private GameObject mimisbrunnrBg;
@@ -188,6 +192,19 @@ namespace Nekoyume.UI
                     OneLineSystem.Push(
                         MailType.System,
                         L10nManager.Localize("UI_SWEEP_UNLOCK_CONDITION"),
+                        NotificationCell.NotificationType.Alert))
+                .AddTo(gameObject);
+
+            boostPopupButton.OnClickAsObservable()
+                .Where(_ => EnoughToPlay && !_stage.IsInStage)
+                .Subscribe(_ => ShowBoosterPopup());
+
+            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("ERROR_ACTION_POINT"),
                         NotificationCell.NotificationType.Alert))
                 .AddTo(gameObject);
 
@@ -655,6 +672,31 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
+        private void ShowBoosterPopup()
+        {
+            if (_stageType == StageType.Mimisbrunnr && !CheckEquipmentElementalType(_stageId.Value))
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAILED"),
+                    NotificationCell.NotificationType.UnlockCondition);
+                return;
+            }
+
+            var equipments = _player.Equipments;
+            var costumes = _player.Costumes;
+            var consumables = consumableSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Consumable)slot.Item).ToList();
+
+            _stage.IsExitReserved = false;
+            _stage.IsRepeatStage = false;
+            _stage.foodCount = consumables.Count;
+            ActionRenderHandler.Instance.Pending = true;
+
+            Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables,
+                GetBoostMaxCount(_stageId.Value), _worldId, _stageId.Value);
+        }
+
         private void PostEquipOrUnequip(EquipmentSlot slot)
         {
             UpdateStat(Game.Game.instance.States.CurrentAvatarState);
@@ -737,8 +779,7 @@ namespace Nekoyume.UI
                         equipments,
                         consumables,
                         _worldId,
-                        _stageId.Value,
-                        1
+                        _stageId.Value
                     ).Subscribe();
                     break;
                 case StageType.Mimisbrunnr:
@@ -775,6 +816,26 @@ namespace Nekoyume.UI
             confirm.CancelCallback = () => confirm.Close();
         }
 
+        private int GetBoostMaxCount(int stageId)
+        {
+            if (!Game.Game.instance.TableSheets.GameConfigSheet.TryGetValue("action_point_max",
+                    out var ap))
+            {
+                return 1;
+            }
+
+            var stage = Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(
+                i => i.Id == stageId);
+
+            if (stage is null)
+            {
+                return 1;
+            }
+
+            var maxActionPoint = TableExtensions.ParseInt(ap.Value);
+            return maxActionPoint / stage.CostAP;
+        }
+
         private static void ShowHelpTooltip(StageType stageType)
         {
             switch (stageType)
@@ -809,7 +870,21 @@ namespace Nekoyume.UI
                 .Select(slot => (Consumable) slot.Item).Select(food => food.Id);
             var canBattle = Util.CanBattle(_player, foodIds);
             startButton.gameObject.SetActive(canBattle);
-            sweepPopupButton.gameObject.SetActive(avatarState.worldInformation.IsStageCleared(_stageId.Value));
+
+            switch (_stageType)
+            {
+                case StageType.HackAndSlash:
+                    boostPopupButton.gameObject.SetActive(false);
+                    sweepPopupButton.gameObject.SetActive(avatarState.worldInformation.IsStageCleared(_stageId.Value));
+                    break;
+                case StageType.Mimisbrunnr:
+                    boostPopupButton.gameObject.SetActive(canBattle);
+                    sweepPopupButton.gameObject.SetActive(false);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             blockStartingTextObject.SetActive(!canBattle);
         }
 

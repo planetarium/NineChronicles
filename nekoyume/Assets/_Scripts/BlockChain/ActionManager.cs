@@ -212,27 +212,25 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(Player player, int worldId, int stageId, int playCount) => HackAndSlash(
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(Player player, int worldId, int stageId) => HackAndSlash(
             player.Costumes,
             player.Equipments,
             null,
             worldId,
-            stageId,
-            playCount);
+            stageId);
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
-            int stageId,
-            int playCount)
+            int stageId)
         {
             Analyzer.Instance.Track("Unity/HackAndSlash", new Value
             {
                 ["WorldId"] = worldId,
                 ["StageId"] = stageId,
-                ["PlayCount"] = playCount,
+                ["PlayCount"] = 1,
             });
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -247,7 +245,6 @@ namespace Nekoyume.BlockChain
                 foods = foods.Select(f => f.ItemId).ToList(),
                 worldId = worldId,
                 stageId = stageId,
-                playCount = playCount,
                 avatarAddress = avatarAddress,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);

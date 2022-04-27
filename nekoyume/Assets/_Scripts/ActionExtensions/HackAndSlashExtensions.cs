@@ -45,8 +45,7 @@ namespace Nekoyume.ActionExtensions
                 throw new SheetRowNotFoundException(stageSheet.GetType().Name, action.stageId);
             }
 
-            var costAP = row.CostAP * action.playCount;
-            currentAvatarState.actionPoint -= costAP;
+            currentAvatarState.actionPoint -= row.CostAP;
 
             var inventory = currentAvatarState.inventory;
             for (var i = 0; i < action.foods.Count; i++)
