@@ -9,6 +9,7 @@ using Libplanet.Assets;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
@@ -66,61 +67,11 @@ namespace Nekoyume.Action
                 }
             }
 
-            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
-            {
-                typeof(EquipmentItemRecipeSheet),
-                typeof(EquipmentItemSheet)
-            });
-            var equipmentRecipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
-            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
+            var equipmentRecipeSheet = states.GetSheet<EquipmentItemRecipeSheet>();
 
-            List<int> unlockedIds = states.TryGetState(unlockedRecipeIdsAddress, out List rawIds)
-                ? rawIds.ToList(StateExtensions.ToInteger)
-                : new List<int>
-                {
-                    1
-                };
+            var unlockedIds = UnlockedIds(states, unlockedRecipeIdsAddress, equipmentRecipeSheet, worldInformation, RecipeIds);
 
-            var sortedRecipeIds = RecipeIds.OrderBy(i => i).ToList();
-            foreach (var recipeId in sortedRecipeIds)
-            {
-                if (unlockedIds.Contains(recipeId))
-                {
-                    // Already Unlocked
-                    throw new AlreadyRecipeUnlockedException($"recipe: {recipeId} already unlocked.");
-                }
-
-                EquipmentItemRecipeSheet.Row recipeRow = equipmentRecipeSheet[recipeId];
-
-                if (!worldInformation.IsStageCleared(recipeRow.UnlockStage))
-                {
-                    throw new NotEnoughClearedStageLevelException($"clear {recipeRow.UnlockStage} first.");
-                }
-
-                EquipmentItemSheet.Row equipmentRow = equipmentItemSheet[recipeRow.ResultEquipmentId];
-
-                // Ignore grade 0 for default equipment.
-                int firstId = equipmentItemSheet
-                    .OrderedList
-                    .First(r => r.ItemSubType == equipmentRow.ItemSubType && r.Grade > 0)
-                    .Id;
-                // Check recipe is first row by ItemSubType.
-                if (equipmentRow.Id != firstId)
-                {
-                    var prevId = recipeId - 1;
-                    if (!unlockedIds.Contains(prevId))
-                    {
-                        // Can't skip previous recipe unlock.
-                        throw new InvalidRecipeIdException($"unlock {prevId} first.");
-                    }
-                }
-
-                unlockedIds.Add(recipeId);
-
-                EquipmentItemRecipeSheet.Row row = equipmentRecipeSheet[recipeId];
-            }
-
-            FungibleAssetValue cost = CrystalCalculator.CalculateRecipeUnlockCost(sortedRecipeIds, equipmentRecipeSheet);
+            FungibleAssetValue cost = CrystalCalculator.CalculateRecipeUnlockCost(RecipeIds, equipmentRecipeSheet);
             FungibleAssetValue balance = states.GetBalance(context.Signer, cost.Currency);
 
             if (balance < cost)
@@ -141,6 +92,66 @@ namespace Nekoyume.Action
                     unlockedIds.Aggregate(List.Empty,
                         (current, address) => current.Add(address.Serialize())));
             return states.TransferAsset(context.Signer, Addresses.UnlockEquipmentRecipe,  cost);
+        }
+
+        public static List<int> UnlockedIds(
+            IAccountStateDelta states,
+            Address unlockedRecipeIdsAddress,
+            EquipmentItemRecipeSheet equipmentRecipeSheet,
+            WorldInformation worldInformation,
+            List<int> recipeIds
+        )
+        {
+            List<int> unlockedIds = states.TryGetState(unlockedRecipeIdsAddress, out List rawIds)
+                ? rawIds.ToList(StateExtensions.ToInteger)
+                : new List<int>
+                {
+                    1
+                };
+
+            // Sort recipe by ItemSubType & UnlockStage.
+            // 999 is not opened recipe.
+            var sortedRecipeRows = equipmentRecipeSheet.Values
+                .Where(r => r.UnlockStage != 999)
+                .OrderBy(r => r.ItemSubType)
+                .ThenBy(r => r.UnlockStage)
+                .ToList();
+
+            var unlockRecipeRows = sortedRecipeRows
+                .Where(r => recipeIds.Contains(r.Id))
+                .ToList();
+
+            foreach (var recipeRow in unlockRecipeRows)
+            {
+                var recipeId = recipeRow.Id;
+                if (unlockedIds.Contains(recipeId))
+                {
+                    // Already Unlocked
+                    throw new AlreadyRecipeUnlockedException(
+                        $"recipe: {recipeId} already unlocked.");
+                }
+
+                if (!worldInformation.IsStageCleared(recipeRow.UnlockStage))
+                {
+                    throw new NotEnoughClearedStageLevelException(
+                        $"clear {recipeRow.UnlockStage} first.");
+                }
+
+                var index = sortedRecipeRows.IndexOf(recipeRow);
+                if (index > 0)
+                {
+                    var prevRow = sortedRecipeRows[index - 1];
+                    if (prevRow.ItemSubType == recipeRow.ItemSubType && !unlockedIds.Contains(prevRow.Id))
+                    {
+                        // Can't skip previous recipe unlock.
+                        throw new InvalidRecipeIdException($"unlock {prevRow.Id} first.");
+                    }
+                }
+
+                unlockedIds.Add(recipeId);
+            }
+
+            return unlockedIds;
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
