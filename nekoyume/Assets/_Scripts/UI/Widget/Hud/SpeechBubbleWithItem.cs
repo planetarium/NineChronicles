@@ -1,21 +1,64 @@
-﻿using Nekoyume.UI.Model;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using System;
+using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class SpeechBubbleWithItem : SpeechBubble
     {
+        [Serializable]
+        private struct CurrencyView
+        {
+            public GameObject view;
+            public TMP_Text amountText;
+        }
+
         [SerializeField]
         private SimpleItemView itemView = null;
 
-        public Item item { get; private set; }
+        [SerializeField]
+        private CurrencyView ncgView;
+
+        [SerializeField]
+        private CurrencyView crystalView;
+
+        private bool _showItemView;
+        private bool _showNCGView;
+        private bool _showCrystalView;
+
+        public Item Item { get; private set; }
         public SimpleItemView ItemView => itemView;
 
         public void SetItemMaterial(Item item, bool isConsumable)
         {
-            this.item = item;
+            Item = item;
             itemView.SetData(item, isConsumable);
+
+            _showItemView = true;
+            _showNCGView = false;
+            _showCrystalView = false;
+        }
+
+        public void SetCurrency(int ncg, int crystal)
+        {
+            Item = null;
+            var hasNCG = ncg > 0;
+            var hasCrystal = crystal > 0;
+
+            if (hasNCG)
+            {
+                ncgView.amountText.text = ncg.ToString();
+            }
+            if (hasCrystal)
+            {
+                crystalView.amountText.text = crystal.ToString();
+            }
+
+            _showItemView = false;
+            _showNCGView = hasNCG;
+            _showCrystalView = hasCrystal;
         }
 
         public override void Hide()
@@ -23,13 +66,20 @@ namespace Nekoyume.UI
             base.Hide();
 
             itemView.Hide();
+            ncgView.view.SetActive(false);
+            crystalView.view.SetActive(false);
         }
 
         protected override void SetBubbleImageInternal()
         {
             base.SetBubbleImageInternal();
 
-            itemView.Show();
+            if (_showItemView)
+            {
+                itemView.Show();
+            }
+            ncgView.view.SetActive(_showNCGView);
+            crystalView.view.SetActive(_showCrystalView);
         }
     }
 }

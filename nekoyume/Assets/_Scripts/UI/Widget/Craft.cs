@@ -170,7 +170,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            Find<CombinationLoadingScreen>().OnDisappear = OnNPCDisappear;
             equipmentSubRecipeView.gameObject.SetActive(false);
             consumableSubRecipeView.gameObject.SetActive(false);
             base.Show(ignoreShowAnimation);
@@ -365,6 +364,7 @@ namespace Nekoyume.UI
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
             loadingScreen.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.OnDisappear = OnNPCDisappear;
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
             Push();
