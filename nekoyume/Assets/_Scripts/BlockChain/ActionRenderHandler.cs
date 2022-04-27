@@ -91,6 +91,7 @@ namespace Nekoyume.BlockChain
             GameConfig();
             CreateAvatar();
             TransferAsset();
+            MonsterCollect();
 
             // Battle
             HackAndSlash();
@@ -115,7 +116,6 @@ namespace Nekoyume.BlockChain
             RedeemCode();
             ChargeActionPoint();
             ClaimMonsterCollectionReward();
-            MonsterCollect();
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
 #endif
@@ -1164,8 +1164,8 @@ namespace Nekoyume.BlockChain
                 L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
-            UpdateAgentStateAsync(eval).Forget();
-            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval);
             var mcState = GetMonsterCollectionState(eval);
             if (mcState != null)
             {
