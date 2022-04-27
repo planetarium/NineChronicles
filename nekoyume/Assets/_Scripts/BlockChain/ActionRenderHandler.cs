@@ -1312,6 +1312,7 @@ namespace Nekoyume.BlockChain
                 $"[{nameof(GrindingMail)}] ItemCount: {mail.ItemCount}, Asset: {mail.Asset}";
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
+            UpdateAgentStateAsync(eval);
             var currency = new Currency("CRYSTAL", 18, minters: null);
             var crystal = eval.OutputStates.GetBalance(eval.Signer, currency);
             ReactiveCrystalState.UpdateCrystal(crystal);
