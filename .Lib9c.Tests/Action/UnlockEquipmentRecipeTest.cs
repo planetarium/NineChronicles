@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -59,6 +60,8 @@ namespace Lib9c.Tests.Action
         [InlineData(new[] { 2 }, true, false, false, true, 100, null)]
         // Unlock Belt without Armor unlock.
         [InlineData(new[] { 83 }, true, false, false, true, 100, null)]
+        // Unlock Weapon & Ring
+        [InlineData(new[] { 2, 133 }, true, false, false, true, 200, null)]
         // AvatarState migration.
         [InlineData(new[] { 2 }, true, true, false, true, 100, null)]
         // Invalid recipe id.
@@ -159,6 +162,32 @@ namespace Lib9c.Tests.Action
                     Random = _random,
                 }));
             }
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.Weapon)]
+        [InlineData(ItemSubType.Armor)]
+        [InlineData(ItemSubType.Belt)]
+        [InlineData(ItemSubType.Necklace)]
+        [InlineData(ItemSubType.Ring)]
+        public void UnlockedIds(ItemSubType itemSubType)
+        {
+            var worldInformation = _avatarState.worldInformation;
+            var rows = _tableSheets.EquipmentItemRecipeSheet.Values
+                .Where(i => i.ItemSubType == itemSubType && i.Id != 1 && i.UnlockStage != 999);
+
+            // Clear Stage
+            for (int i = 1; i < 6; i++)
+            {
+                var worldRow = _tableSheets.WorldSheet[i];
+                for (int v = worldRow.StageBegin; v < worldRow.StageEnd + 1; v++)
+                {
+                    worldInformation.ClearStage(worldRow.Id, v, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+                }
+            }
+
+            // Unlock All recipe by ItemSubType
+            UnlockEquipmentRecipe.UnlockedIds(_initialState, new PrivateKey().ToAddress(), _tableSheets.EquipmentItemRecipeSheet, worldInformation, rows.Select(i => i.Id).ToList());
         }
     }
 }
