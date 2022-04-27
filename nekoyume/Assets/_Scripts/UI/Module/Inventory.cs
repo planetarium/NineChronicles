@@ -446,7 +446,7 @@ namespace Nekoyume.UI.Module
             IEnumerable<ElementalType> elementalTypes)
         {
             SetAction(clickItem, doubleClickItem, clickEquipmentToggle, clickCostumeToggle);
-            var predicateByElementalType = InventoryHelper.MakePredicateByElementalTypesForDimEnable(elementalTypes.ToList());
+            var predicateByElementalType = InventoryHelper.GetDimmedFuncByElementalTypes(elementalTypes.ToList());
             var predicateList = predicateByElementalType != null
                 ? new List<(ItemType type, Predicate<InventoryItem>)>
                     {(ItemType.Equipment, predicateByElementalType)}
