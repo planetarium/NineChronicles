@@ -137,7 +137,7 @@ namespace Nekoyume.Action
                     var addressList = states.TryGetState(listAddress, out List rawList)
                         ? rawList.ToList(StateExtensions.ToAddress)
                         : new List<Address>();
-                    var serializedList = rawList ?? List.Empty;
+                    var nextAddresses = rawList ?? List.Empty;
                     if (ctx.BlockIndex >= RankingBattle11.UpdateTargetBlockIndex)
                     {
                         weekly.ResetIndex = ctx.BlockIndex;
@@ -154,7 +154,7 @@ namespace Nekoyume.Action
                                     weeklyAddress.Derive(address.ToByteArray()), info.Serialize());
                                 if (!addressList.Contains(address))
                                 {
-                                    serializedList = serializedList.Add(address.Serialize());
+                                    nextAddresses = nextAddresses.Add(address.Serialize());
                                 }
                             }
                         }
@@ -190,7 +190,7 @@ namespace Nekoyume.Action
                                         continue;
                                     }
 
-                                    serializedList = serializedList.Add(address.Serialize());
+                                    nextAddresses = nextAddresses.Add(address.Serialize());
                                     states = states.SetState(
                                         weeklyAddress.Derive(address.ToByteArray()),
                                         new ArenaInfo(prevInfo).Serialize());
@@ -198,7 +198,7 @@ namespace Nekoyume.Action
                             }
                         }
                         // Set address list.
-                        states = states.SetState(listAddress, serializedList);
+                        states = states.SetState(listAddress, nextAddresses);
                     }
                     // Run legacy Update.
                     else
