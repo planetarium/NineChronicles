@@ -36,13 +36,6 @@ namespace Nekoyume.BlockChain.Policy
                 && admin.AdminAddress.Equals(transaction.Signer);
         }
 
-        private static bool IsAuthorizedMinerTransactionRaw(
-            Transaction<NCAction> transaction,
-            ImmutableHashSet<Address> allAuthorizedMiners)
-        {
-            return allAuthorizedMiners.Contains(transaction.Signer);
-        }
-
         internal static AdminState GetAdminState(
             BlockChain<NCAction> blockChain)
         {

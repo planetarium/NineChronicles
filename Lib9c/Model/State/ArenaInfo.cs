@@ -109,6 +109,20 @@ namespace Nekoyume.Model.State
             Active = false;
             ArenaRecord = new Record();
         }
+        
+        public ArenaInfo Clone() => new ArenaInfo(this)
+        {
+            Score = Score,
+            DailyChallengeCount = DailyChallengeCount,
+            Active = Active,
+            Receive = Receive,
+            ArenaRecord =
+            {
+                Win = ArenaRecord.Win,
+                Lose = ArenaRecord.Lose,
+                Draw = ArenaRecord.Draw
+            }
+        };
 
         public IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
@@ -125,6 +139,8 @@ namespace Nekoyume.Model.State
                 [(Text)"score"] = Score.Serialize(),
                 [(Text)"receive"] = Receive.Serialize(),
             });
+
+        #region Obsoleted `Update()` functions
 
         [Obsolete("Use Update()")]
         public void UpdateV1(AvatarState state, CharacterSheet characterSheet)
@@ -194,7 +210,8 @@ namespace Nekoyume.Model.State
             return earnedScore;
         }
 
-        public int Update(ArenaInfo enemyInfo, BattleLog.Result result)
+        [Obsolete("Use Update()")]
+        public int UpdateV5(ArenaInfo enemyInfo, BattleLog.Result result)
         {
             DailyChallengeCount--;
             switch (result)
@@ -213,10 +230,39 @@ namespace Nekoyume.Model.State
             }
 
             var score =
-                ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result);
+                ArenaScoreHelper.GetScoreV3(Score, enemyInfo.Score, result);
             Score = Math.Max(1000, Score + score.challengerScore);
             enemyInfo.Score = Math.Max(1000, enemyInfo.Score + score.defenderScore);
             return score.challengerScore;
+        }
+
+        #endregion
+
+        public int Update(
+            ArenaInfo enemyInfo,
+            BattleLog.Result result,
+            Func<int, int, BattleLog.Result, (int challengerScore, int defenderScore)> scoreGetter)
+        {
+            DailyChallengeCount--;
+            switch (result)
+            {
+                case BattleLog.Result.Win:
+                    ArenaRecord.Win++;
+                    break;
+                case BattleLog.Result.Lose:
+                    ArenaRecord.Lose++;
+                    break;
+                case BattleLog.Result.TimeOver:
+                    ArenaRecord.Draw++;
+                    return 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(result), result, null);
+            }
+        
+            var (challengerScore, defenderScore) = scoreGetter(Score, enemyInfo.Score, result);
+            Score = Math.Max(1000, Score + challengerScore);
+            enemyInfo.Score = Math.Max(1000, enemyInfo.Score + defenderScore);
+            return challengerScore;
         }
 
         public void Activate()
