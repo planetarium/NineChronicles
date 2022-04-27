@@ -153,7 +153,8 @@ namespace Nekoyume.Action
             }
 
             // burn ap
-            avatarState.actionPoint = 0;
+            var remainActionPoint = Math.Max(0, avatarState.actionPoint - stageRow.CostAP * apPlayCount);
+            avatarState.actionPoint = remainActionPoint;
 
             var stageWaveSheet = sheets.GetSheet<StageWaveSheet>();
             avatarState.UpdateMonsterMap(stageWaveSheet, stageId);
