@@ -1307,8 +1307,8 @@ namespace Nekoyume.BlockChain
                 sharedModel.UnlockingRecipes.Remove(id);
             }
             sharedModel.SetUnlockedRecipes(recipeIds);
-
             UpdateCurrentAvatarStateAsync(eval);
+            UpdateAgentStateAsync(eval);
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

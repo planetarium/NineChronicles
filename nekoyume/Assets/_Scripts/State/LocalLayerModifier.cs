@@ -65,7 +65,7 @@ namespace Nekoyume.State
             }
 
             var fav = new FungibleAssetValue(new Currency("CRYSTAL", 18, minter: null), crystal, 0);
-            var modifier = new AvatarCrystalModifier(fav);
+            var modifier = new AgentCrystalModifier(fav);
             LocalLayer.Instance.Add(agentAddress, modifier);
 
             if (States.Instance.AgentState.address.Equals(agentAddress))
