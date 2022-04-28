@@ -29,7 +29,7 @@ namespace Nekoyume.Action
             var states = context.PreviousStates;
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
-                throw new InvalidOperationException();
+                throw new FailedLoadStateException(nameof(StakeState));
             }
 
             var sheets = states.GetSheets(sheetTypes: new[]
