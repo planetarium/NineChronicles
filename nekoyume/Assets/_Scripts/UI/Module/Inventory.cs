@@ -4,8 +4,10 @@ using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -71,6 +73,8 @@ namespace Nekoyume.UI.Module
         private ItemType _activeItemType = ItemType.Equipment;
         private bool _checkTradable;
         private bool _reverseOrder;
+        private bool _allowMoveTab;
+        private string _notAllowedMoveTabMessage;
 
         public bool HasNotification => _equipments.Any(x => x.Value.Any(item=> item.HasNotification.Value));
 
@@ -80,28 +84,46 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(consumableButton);
             _toggleGroup.RegisterToggleable(materialButton);
             _toggleGroup.RegisterToggleable(costumeButton);
+            _toggleGroup.DisabledFunc = () => !_allowMoveTab;
 
-            equipmentButton.OnClick.Subscribe(_ =>
+            equipmentButton.OnClick.Subscribe(button =>
                 {
-                    SetToggle(equipmentButton, ItemType.Equipment);
-                    _onToggleEquipment?.Invoke();
+                    OnTabButtonClick(button, ItemType.Equipment, _onToggleEquipment);
                 })
                 .AddTo(gameObject);
-            costumeButton.OnClick.Subscribe(_ =>
+            costumeButton.OnClick.Subscribe(button =>
                 {
-                    SetToggle(costumeButton, ItemType.Costume);
-                    _onToggleCostume?.Invoke();
+                    OnTabButtonClick(button, ItemType.Costume, _onToggleCostume);
                 })
                 .AddTo(gameObject);
             consumableButton.OnClick
-                .Subscribe(_ => { SetToggle(consumableButton, ItemType.Consumable); })
+                .Subscribe(button =>
+                {
+                    OnTabButtonClick(button, ItemType.Consumable);
+                })
                 .AddTo(gameObject);
-            materialButton.OnClick.Subscribe(_ => SetToggle(materialButton, ItemType.Material))
+            materialButton.OnClick.Subscribe(button =>
+                {
+                    OnTabButtonClick(button, ItemType.Material);
+                })
                 .AddTo(gameObject);
 
             foreach (var type in ItemTypes)
             {
                 _dimConditionFuncsByItemType[type] = new List<Predicate<InventoryItem>>();
+            }
+        }
+
+        private void OnTabButtonClick(IToggleable toggleable, ItemType type, System.Action onSetToggle = null)
+        {
+            if (_allowMoveTab)
+            {
+                SetToggle(toggleable, type);
+                onSetToggle?.Invoke();
+            }
+            else
+            {
+                OneLineSystem.Push(MailType.System, _notAllowedMoveTabMessage, NotificationCell.NotificationType.Notification);
             }
         }
 
@@ -439,12 +461,9 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SetCategoryInteractable(bool interactable)
+        private void SetCategoryMovable(bool movable)
         {
-            equipmentButton.SetInteractable(interactable);
-            consumableButton.SetInteractable(interactable);
-            materialButton.SetInteractable(interactable);
-            costumeButton.SetInteractable(interactable);
+            _allowMoveTab = movable;
         }
 
         public void SetAvatarInfo(Action<InventoryItem, RectTransform> clickItem,
@@ -461,7 +480,7 @@ namespace Nekoyume.UI.Module
                     {(ItemType.Equipment, predicateByElementalType)}
                 : null;
             Set(itemSetDimPredicates: predicateList);
-            SetCategoryInteractable(true);
+            SetCategoryMovable(true);
         }
 
         public void SetShop(Action<InventoryItem, RectTransform> clickItem)
@@ -470,7 +489,7 @@ namespace Nekoyume.UI.Module
             _checkTradable = true;
             SetAction(clickItem);
             Set();
-            SetCategoryInteractable(true);
+            SetCategoryMovable(true);
         }
 
         public void SetGrinding(Action<InventoryItem, RectTransform> clickItem,
@@ -481,7 +500,8 @@ namespace Nekoyume.UI.Module
             _reverseOrder = reverseOrder;
             SetAction(clickItem);
             Set(onUpdateInventory, predicateList);
-            SetCategoryInteractable(false);
+            SetCategoryMovable(false);
+            _notAllowedMoveTabMessage = L10nManager.Localize("ERROR_NOT_GRINDING_TABCHANGE");
         }
 
         public void ClearSelectedItem()
