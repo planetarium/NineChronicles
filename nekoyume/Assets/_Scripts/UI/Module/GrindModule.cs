@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -50,6 +51,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private CanvasGroup canvasGroup;
 
+        [SerializeField]
+        private ItemMoveAnimation crystalMoveAnimation;
+
         private bool _isInitialized;
 
         private FungibleAssetValue _cachedGrindingRewardNCG;
@@ -72,6 +76,8 @@ namespace Nekoyume.UI.Module
                 };
 
         private const int LimitGrindingCount = 10;
+
+        private static readonly Vector3 CrystalMovePositionOffset = new Vector3(0.05f, 0.05f);
 
         private bool CanGrind => _selectedItemsForGrind.Any() &&
                                  _selectedItemsForGrind.All(item => !item.Equipped.Value);
@@ -339,11 +345,34 @@ namespace Nekoyume.UI.Module
 
             var quote = L10nManager.Localize("UI_GRIND_NPC_QUOTE");
             loadingScreen.AnimateNPC(ItemType.Equipment, quote);
+            loadingScreen.SetCloseAction(() =>
+            {
+                StartCoroutine(CoCrystalGetAnimation(30));
+            });
         }
 
         private void OnNPCDisappear()
         {
             canvasGroup.interactable = true;
+        }
+
+        private IEnumerator CoCrystalGetAnimation(int count)
+        {
+            while (count-- > 0)
+            {
+                var anim = Instantiate(crystalMoveAnimation,
+                    MainCanvas.instance.GetLayerRootTransform(WidgetType.Animation));
+
+                anim.Show(
+                    crystalRewardText.transform.position,
+                    Widget.Find<HeaderMenuStatic>().Crystal.IconPosition +
+                    CrystalMovePositionOffset,
+                    Vector2.one,
+                    true,
+                    true,
+                    setMidByRandom: true);
+                yield return null;
+            }
         }
     }
 }

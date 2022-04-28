@@ -5164,6 +5164,8 @@ MonoBehaviour:
   ncgRewardText: {fileID: 2563625234340738077}
   crystalRewardText: {fileID: 7302351471691852791}
   canvasGroup: {fileID: 1555575497798929212}
+  crystalMoveAnimation: {fileID: 2540273645456425560, guid: e9092b151ff8d41db99e69923790db6d,
+    type: 3}
 --- !u!1 &2332145174559759128
 GameObject:
   m_ObjectHideFlags: 0
