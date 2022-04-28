@@ -10,6 +10,12 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/503
+    /// Updated at https://github.com/planetarium/lib9c/pull/504
+    /// Updated at https://github.com/planetarium/lib9c/pull/602
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionType("migration_legacy_shop2")]
     public class MigrationLegacyShop : GameAction

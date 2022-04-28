@@ -16,6 +16,13 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Introduced at https://github.com/planetarium/lib9c/pull/331
+    /// Updated at many pull requests
+    /// Obsoleted at https://github.com/planetarium/lib9c/pull/487
+    /// Updated at many pull requests
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("buy_multiple")]

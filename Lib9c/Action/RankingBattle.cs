@@ -17,7 +17,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Pull request: https://github.com/planetarium/lib9c/pull/945
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/941
+    /// Updated at https://github.com/planetarium/lib9c/pull/945
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
     [ActionType("ranking_battle12")]

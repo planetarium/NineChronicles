@@ -16,6 +16,11 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/637
+    /// Updated at https://github.com/planetarium/lib9c/pull/861
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionType("combination_consumable8")]
     public class CombinationConsumable : GameAction
