@@ -24,6 +24,7 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using mixpanel;
+using Material = Nekoyume.Model.Item.Material;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -95,6 +96,7 @@ namespace Nekoyume.BlockChain
             HackAndSlash();
             RankingBattle();
             MimisbrunnrBattle();
+            HackAndSlashSweep();
 
             // Craft
             CombinationConsumable();
@@ -295,6 +297,15 @@ namespace Nekoyume.BlockChain
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
+                .AddTo(_disposables);
+        }
+
+        private void HackAndSlashSweep()
+        {
+            _actionRenderer.EveryRender<HackAndSlashSweep>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseHackAndSlashSweep)
                 .AddTo(_disposables);
         }
 
@@ -859,12 +870,10 @@ namespace Nekoyume.BlockChain
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
                     Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080,
-                    eval.Action.playCount
-                );
-                simulator.Simulate(eval.Action.playCount);
+                    StageSimulator.ConstructorVersionV100080);
+                simulator.Simulate(1);
                 var log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
+                Game.Game.instance.Stage.PlayCount = 1;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -898,6 +907,24 @@ namespace Nekoyume.BlockChain
                 }
 
                 Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
+            }
+        }
+
+        private void ResponseHackAndSlashSweep(ActionBase.ActionEvaluation<HackAndSlashSweep> eval)
+        {
+            if (eval.Exception is null)
+            {
+                Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
+
+                if (eval.Action.apStoneCount > 0)
+                {
+                    var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                        r.ItemSubType == ItemSubType.ApStone);
+                    var avatarAddress = eval.Action.avatarAddress;
+                    LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
+                }
+
+                UpdateCurrentAvatarStateAsync(eval);
             }
         }
 
