@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
+    using System.Numerics;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
@@ -13,6 +14,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Extensions;
+    using Nekoyume.Helper;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
@@ -70,11 +72,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success)]
-        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success)]
-        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail)]
-        public void Execute(int level, int expectedGold, bool backward, int randomSeed, int expectedLevel, ItemEnhancement.EnhancementResult expected)
+        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0)]
+        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0)]
+        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 1600)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 1760)]
+        public void Execute(int level, int expectedGold, bool backward, int randomSeed, int expectedLevel, ItemEnhancement.EnhancementResult expected, int monsterCollectLevel, BigInteger expectedCrystal)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
@@ -119,6 +122,15 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
+            }
+
+            if (monsterCollectLevel > 0)
+            {
+                var mcAddress = MonsterCollectionState.DeriveAddress(_agentAddress, 0);
+                _initialState = _initialState.SetState(
+                    mcAddress,
+                    new MonsterCollectionState(mcAddress, monsterCollectLevel, 0).Serialize()
+                );
             }
 
             var action = new ItemEnhancement()
@@ -180,6 +192,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(preItemUsable.TradableId, slotResult.preItemUsable.TradableId);
             Assert.Equal(preItemUsable.TradableId, resultEquipment.TradableId);
             Assert.Equal(costRow.Cost, slotResult.gold);
+            Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, slotResult.CRYSTAL);
         }
 
         [Fact]
