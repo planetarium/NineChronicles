@@ -72,6 +72,8 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100170ObsoleteIndex, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             var sw = new Stopwatch();
