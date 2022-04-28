@@ -439,12 +439,21 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        private void SetCategoryInteractable(bool interactable)
+        {
+            equipmentButton.SetInteractable(interactable);
+            consumableButton.SetInteractable(interactable);
+            materialButton.SetInteractable(interactable);
+            costumeButton.SetInteractable(interactable);
+        }
+
         public void SetAvatarInfo(Action<InventoryItem, RectTransform> clickItem,
             Action<InventoryItem> doubleClickItem,
             System.Action clickEquipmentToggle,
             System.Action clickCostumeToggle,
             IEnumerable<ElementalType> elementalTypes)
         {
+            _reverseOrder = false;
             SetAction(clickItem, doubleClickItem, clickEquipmentToggle, clickCostumeToggle);
             var predicateByElementalType = InventoryHelper.GetDimmedFuncByElementalTypes(elementalTypes.ToList());
             var predicateList = predicateByElementalType != null
@@ -452,13 +461,16 @@ namespace Nekoyume.UI.Module
                     {(ItemType.Equipment, predicateByElementalType)}
                 : null;
             Set(itemSetDimPredicates: predicateList);
+            SetCategoryInteractable(true);
         }
 
         public void SetShop(Action<InventoryItem, RectTransform> clickItem)
         {
+            _reverseOrder = false;
             _checkTradable = true;
             SetAction(clickItem);
             Set();
+            SetCategoryInteractable(true);
         }
 
         public void SetGrinding(Action<InventoryItem, RectTransform> clickItem,
@@ -469,6 +481,7 @@ namespace Nekoyume.UI.Module
             _reverseOrder = reverseOrder;
             SetAction(clickItem);
             Set(onUpdateInventory, predicateList);
+            SetCategoryInteractable(false);
         }
 
         public void ClearSelectedItem()

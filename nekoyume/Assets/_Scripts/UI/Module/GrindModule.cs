@@ -78,6 +78,8 @@ namespace Nekoyume.UI.Module
 
         public void Show(bool reverseInventoryOrder = true)
         {
+            gameObject.SetActive(true);
+
             Initialize();
             Subscribe();
 
