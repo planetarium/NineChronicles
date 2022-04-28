@@ -7,6 +7,11 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/805
+    /// Updated at https://github.com/planetarium/lib9c/pull/815
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionType("renew_admin_state")]
     public class RenewAdminState : GameAction

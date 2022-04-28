@@ -9,6 +9,10 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Updated at https://github.com/planetarium/lib9c/pull/746
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionType("create_pending_activations")]
     public class CreatePendingActivations : ActionBase

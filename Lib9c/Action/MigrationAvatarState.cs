@@ -8,6 +8,10 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Introduced at https://github.com/planetarium/lib9c/pull/618
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionType("migration_avatar_state")]
     public class MigrationAvatarState : GameAction
