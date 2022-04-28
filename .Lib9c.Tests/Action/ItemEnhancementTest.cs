@@ -21,11 +21,9 @@ namespace Lib9c.Tests.Action
 
     public class ItemEnhancementTest
     {
-        private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private readonly Address _slotAddress;
         private readonly AvatarState _avatarState;
         private readonly Currency _currency;
         private IAccountStateDelta _initialState;
@@ -33,7 +31,6 @@ namespace Lib9c.Tests.Action
         public ItemEnhancementTest()
         {
             var sheets = TableSheetsImporter.ImportSheets();
-            _random = new TestRandom();
             _tableSheets = new TableSheets(sheets);
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();
@@ -53,13 +50,12 @@ namespace Lib9c.Tests.Action
 
             _currency = new Currency("NCG", 2, minter: null);
             var gold = new GoldCurrencyState(_currency);
-            _slotAddress =
-                _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
+            var slotAddress = _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
-                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 0).Serialize())
+                .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000)
                 .TransferAsset(Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
@@ -74,11 +70,11 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 1000, true)]
-        [InlineData(6, 980, true)]
-        [InlineData(0, 1000, false)]
-        [InlineData(6, 980, false)]
-        public void Execute(int level, int expectedGold, bool backward)
+        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success)]
+        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success)]
+        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail)]
+        public void Execute(int level, int expectedGold, bool backward, int randomSeed, int expectedLevel, ItemEnhancement.EnhancementResult expected)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
@@ -138,13 +134,14 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = _random,
+                Random = new TestRandom(randomSeed),
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
             var resultEquipment = (Equipment)slotState.Result.itemUsable;
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Equal(default, resultEquipment.ItemId);
+            Assert.Equal(expectedLevel, resultEquipment.level);
             Assert.Equal(expectedGold * _currency, nextState.GetBalance(_agentAddress, _currency));
             Assert.Equal(
                 (1000 - expectedGold) * _currency,
@@ -155,18 +152,18 @@ namespace Lib9c.Tests.Action
             var grade = resultEquipment.Grade;
             var costRow = _tableSheets.EnhancementCostSheetV2
                 .OrderedList
-                .FirstOrDefault(x => x.Grade == grade && x.Level == resultEquipment.level);
+                .First(x => x.Grade == grade && x.Level == level + 1);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
             var slotResult = (ItemEnhancement.ResultModel)slot.Result;
+            Assert.Equal(expected, slotResult.enhancementResult);
 
-            switch ((ItemEnhancement.EnhancementResult)slotResult.enhancementResult)
+            switch (slotResult.enhancementResult)
             {
                 case ItemEnhancement.EnhancementResult.GreatSuccess:
                     var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
-                    Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
                     break;
                 case ItemEnhancement.EnhancementResult.Success:
                     var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);
@@ -174,11 +171,9 @@ namespace Lib9c.Tests.Action
                     var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var extraMaxAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.InRange(resultEquipment.StatsMap.ATK, (int)(baseMinAtk + extraMinAtk), (int)(baseMaxAtk + extraMaxAtk) + 1);
-                    Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
                     break;
                 case ItemEnhancement.EnhancementResult.Fail:
                     Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);
-                    Assert.Equal(preItemUsable.level, resultEquipment.level);
                     break;
             }
 
