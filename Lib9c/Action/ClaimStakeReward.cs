@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -31,8 +32,18 @@ namespace Nekoyume.Action
                 throw new InvalidOperationException();
             }
 
-            var stakeRegularRewardSheet = states.GetSheet<StakeRegularRewardSheet>();
-            var stakeAchievementRewardSheet = states.GetSheet<StakeAchievementRewardSheet>();
+            var sheets = states.GetSheets(sheetTypes: new[]
+            {
+                typeof(StakeRegularRewardSheet),
+                typeof(StakeAchievementRewardSheet),
+                typeof(ConsumableItemSheet),
+                typeof(CostumeItemSheet),
+                typeof(EquipmentItemSheet),
+                typeof(MaterialItemSheet),
+            });
+
+            var stakeRegularRewardSheet = sheets.GetSheet<StakeRegularRewardSheet>();
+            var stakeAchievementRewardSheet = sheets.GetSheet<StakeAchievementRewardSheet>();
 
             var currency = states.GetGoldCurrency();
             var balance = states.GetBalance(context.Signer, currency);
@@ -45,7 +56,7 @@ namespace Nekoyume.Action
             var avatarState = states.GetAvatarState(AvatarAddress);
             int level = stakeRegularRewardSheet.FindLevelByStakedAmount(balance);
             var rewards = stakeRegularRewardSheet[level].Rewards;
-            ItemSheet itemSheet = states.GetItemSheet();
+            ItemSheet itemSheet = sheets.GetItemSheet();
             foreach (var reward in rewards)
             {
                 var (quantity, _) = balance.DivRem(currency * reward.Rate);
