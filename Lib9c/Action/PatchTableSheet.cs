@@ -8,6 +8,14 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Introduced at Initial commit(2e645be18a4e2caea031c347f00777fbad5dbcc6)
+    /// Updated at https://github.com/planetarium/lib9c/pull/42
+    /// Updated at https://github.com/planetarium/lib9c/pull/101
+    /// Updated at https://github.com/planetarium/lib9c/pull/287
+    /// Updated at https://github.com/planetarium/lib9c/pull/315
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionType("patch_table_sheet")]
     public class PatchTableSheet : GameAction
