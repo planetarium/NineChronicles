@@ -179,6 +179,11 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
             }
 
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
             var action = new HackAndSlash
             {
                 costumes = costumes,
@@ -265,6 +270,11 @@ namespace Lib9c.Tests.Action
             avatarState = state.GetAvatarStateV2(avatarState.address);
             avatarWorldQuests = avatarState.questList.OfType<WorldQuest>().ToList();
             Assert.DoesNotContain(avatarWorldQuests, e => e.Complete);
+
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
 
             // Second Execute
             state = action.Execute(new ActionContext
@@ -439,30 +449,6 @@ namespace Lib9c.Tests.Action
             SerializeException<FailedLoadStateException>(exec);
         }
 
-        [Fact]
-        public void ExecuteThrowSheetRowNotFoundExceptionByWorld()
-        {
-            var action = new HackAndSlash
-            {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 100,
-                stageId = 1,
-                playCount = 1,
-                avatarAddress = _avatarAddress,
-            };
-
-            var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
-            {
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-            }));
-
-            SerializeException<SheetRowNotFoundException>(exec);
-        }
-
         [Theory]
         [InlineData(0)]
         [InlineData(51)]
@@ -551,25 +537,37 @@ namespace Lib9c.Tests.Action
             SerializeException<FailedAddWorldException>(exec);
         }
 
-        [Fact]
-        public void ExecuteThrowInvalidWorldException()
+        [Theory]
+        // Try challenge Mimisbrunnr.
+        [InlineData(GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, false)]
+        // Unlock CRYSTAL first.
+        [InlineData(2, 51, false)]
+        [InlineData(2, 51, true)]
+        public void Execute_Throw_InvalidWorldException(int worldId, int stageId, bool unlockedIdsExist)
         {
             var action = new HackAndSlash
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
-                worldId = 2,
-                stageId = 51,
+                worldId = worldId,
+                stageId = stageId,
                 playCount = 1,
                 avatarAddress = _avatarAddress,
             };
 
-            Assert.False(_avatarState.worldInformation.IsStageCleared(51));
+            IAccountStateDelta state = _initialState;
+            if (unlockedIdsExist)
+            {
+                state = state.SetState(
+                    _avatarAddress.Derive("world_ids"),
+                    List.Empty.Add(worldId.Serialize())
+                );
+            }
 
             var exec = Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousStates = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -972,6 +970,11 @@ namespace Lib9c.Tests.Action
                         _avatarAddress.Derive(LegacyQuestListKey),
                         previousAvatarState.questList.Serialize());
             }
+
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
 
             var action = new HackAndSlash
             {
