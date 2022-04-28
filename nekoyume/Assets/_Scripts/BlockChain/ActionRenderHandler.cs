@@ -1307,10 +1307,9 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            // TODO: add handling about LocalLayer
-            var message =
-                $"[{nameof(GrindingMail)}] ItemCount: {mail.ItemCount}, Asset: {mail.Asset}";
-            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+            OneLineSystem.Push(MailType.Workshop,
+                L10nManager.Localize("UI_GRINDING_NOTIFY"),
+                NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
             UpdateAgentStateAsync(eval);
             var currency = new Currency("CRYSTAL", 18, minters: null);

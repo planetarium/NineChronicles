@@ -320,11 +320,6 @@ namespace Nekoyume.UI.Module
 
         private void PushAction(List<Equipment> equipments)
         {
-            // TODO: add animation and etc.
-            NotificationSystem.Push(MailType.Workshop,
-                $"Grinding Start, You will get {_cachedGrindingRewardCrystal} {L10nManager.Localize("UI_CRYSTAL")}.",
-                NotificationCell.NotificationType.Information);
-
             StartCoroutine(CoCombineNPCAnimation());
             ActionManager.Instance.Grinding(equipments).Subscribe();
             _selectedItemsForGrind.Clear();
