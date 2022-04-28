@@ -114,7 +114,7 @@ namespace Nekoyume.Action
 
             FungibleAssetValue crystal = CrystalCalculator.CalculateCrystal(equipmentList,
                 sheets.GetSheet<CrystalEquipmentGrindingSheet>(), monsterCollectionLevel,
-                sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>());
+                sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>(), false);
 
             var mail = new GrindingMail(
                 ctx.BlockIndex,

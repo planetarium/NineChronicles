@@ -38,7 +38,7 @@ namespace Lib9c.Tests
 
         [Theory]
         [ClassData(typeof(CalculateCrystalData))]
-        public void CalculateCrystal((int equipmentId, int level)[] equipmentInfos, int monsterCollectionLevel, int expected)
+        public void CalculateCrystal((int equipmentId, int level)[] equipmentInfos, int monsterCollectionLevel, bool enhancementFaield, int expected)
         {
             var equipmentList = new List<Equipment>();
             foreach (var (equipmentId, level) in equipmentInfos)
@@ -55,7 +55,8 @@ namespace Lib9c.Tests
                     equipmentList,
                     _tableSheets.CrystalEquipmentGrindingSheet,
                     monsterCollectionLevel,
-                    _tableSheets.CrystalMonsterCollectionMultiplierSheet
+                    _tableSheets.CrystalMonsterCollectionMultiplierSheet,
+                    enhancementFaield
                 )
             );
         }
@@ -72,7 +73,28 @@ namespace Lib9c.Tests
                         (10100000, 2),
                     },
                     0,
+                    false,
                     300,
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        (10100000, 0),
+                    },
+                    0,
+                    true,
+                    50,
+                },
+                new object[]
+                {
+                    new[]
+                    {
+                        (10100000, 3),
+                    },
+                    3,
+                    true,
+                    260,
                 },
                 new object[]
                 {
@@ -82,6 +104,7 @@ namespace Lib9c.Tests
                         (10100000, 2),
                     },
                     3,
+                    false,
                     390,
                 },
             };

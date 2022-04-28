@@ -35,17 +35,24 @@ namespace Nekoyume.Helper
             IEnumerable<Equipment> equipmentList,
             CrystalEquipmentGrindingSheet crystalEquipmentGrindingSheet,
             int monsterCollectionLevel,
-            CrystalMonsterCollectionMultiplierSheet crystalMonsterCollectionMultiplierSheet
+            CrystalMonsterCollectionMultiplierSheet crystalMonsterCollectionMultiplierSheet,
+            bool enhancementFailed
         )
         {
-            Currency currency = new Currency("CRYSTAL", 18, minters: null);
-            FungibleAssetValue crystal = 0 * currency;
+            FungibleAssetValue crystal = 0 * CRYSTAL;
             foreach (var equipment in equipmentList)
             {
                 CrystalEquipmentGrindingSheet.Row grindingRow = crystalEquipmentGrindingSheet[equipment.Id];
                 int level = Math.Max(0, equipment.level - 1);
-                crystal += BigInteger.Pow(2, level) * grindingRow.CRYSTAL * currency;
+                crystal += BigInteger.Pow(2, level) * grindingRow.CRYSTAL * CRYSTAL;
             }
+
+            // Divide Reward when itemEnhancement failed.
+            if (enhancementFailed)
+            {
+                crystal = crystal.DivRem(2, out _);
+            }
+
             CrystalMonsterCollectionMultiplierSheet.Row multiplierRow =
                 crystalMonsterCollectionMultiplierSheet[monsterCollectionLevel];
             var extra = crystal.DivRem(100, out _) * multiplierRow.Multiplier;
