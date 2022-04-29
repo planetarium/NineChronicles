@@ -306,7 +306,7 @@ namespace Nekoyume.UI
                 CombinationConsumableAction(recipeInfo);
                 return;
             }
-            
+
             CombinationConsumableAction(recipeInfo);
         }
 
@@ -364,6 +364,7 @@ namespace Nekoyume.UI
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
             loadingScreen.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.SetCloseAction(null);
             loadingScreen.OnDisappear = OnNPCDisappear;
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
