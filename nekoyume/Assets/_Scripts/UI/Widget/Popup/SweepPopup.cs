@@ -89,11 +89,11 @@ namespace Nekoyume.UI
             var avatarState = States.Instance.CurrentAvatarState;
             var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
-            if (avatarState.inventory.TryGetFungibleItems(apStoneRow.ItemId, out var items))
-            {
-                _inventoryApStoneCount = items.Sum(x => x.count);
-                inventoryApStoneText.text = _inventoryApStoneCount.ToString();
-            }
+            _inventoryApStoneCount =
+                avatarState.inventory.TryGetFungibleItems(apStoneRow.ItemId, out var items)
+                    ? items.Sum(x => x.count)
+                    : 0;
+            inventoryApStoneText.text = _inventoryApStoneCount.ToString();
 
             apText.text = avatarState.actionPoint.ToString();
             _apStoneCount.SetValueAndForceNotify(0);
