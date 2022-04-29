@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet.Assets;
@@ -98,6 +97,21 @@ namespace Nekoyume.BlockChain
             else
             {
                 Debug.LogError($"Failed to get AvatarState: {agentAddress}, {avatarAddress}");
+            }
+        }
+        
+        protected async UniTask UpdateCurrentAvatarStateAsync()
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatars =
+                await Game.Game.instance.Agent.GetAvatarStates(new[] { avatarAddress });
+            if (avatars.TryGetValue(avatarAddress, out var avatarState))
+            {
+                await UpdateCurrentAvatarStateAsync(avatarState);
+            }
+            else
+            {
+                Debug.LogError($"Failed to get AvatarState: {avatarAddress}");
             }
         }
 
