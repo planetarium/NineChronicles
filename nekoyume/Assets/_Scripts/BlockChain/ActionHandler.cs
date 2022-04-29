@@ -95,6 +95,10 @@ namespace Nekoyume.BlockChain
             {
                 await UpdateCurrentAvatarStateAsync(avatarState);
             }
+            else
+            {
+                Debug.LogError($"Failed to get AvatarState: {agentAddress}, {avatarAddress}");
+            }
         }
 
         protected static void UpdateWeeklyArenaState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -136,6 +140,7 @@ namespace Nekoyume.BlockChain
             // When in battle, do not immediately update the AvatarState, but pending it.
             if (Pending)
             {
+                Debug.Log($"[{nameof(ActionHandler)}] Pending AvatarState");
                 Game.Game.instance.Stage.AvatarState = avatarState;
                 return;
             }
