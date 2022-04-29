@@ -12,7 +12,8 @@ namespace Nekoyume.Model.Mail
     {
         Workshop = 1,
         Auction,
-        System
+        System,
+        Grinding,
     }
     [Serializable]
     public abstract class Mail : IState

@@ -28,7 +28,7 @@ namespace Nekoyume.Model.Mail
             mail.Read(this);
         }
 
-        public override MailType MailType => MailType.Auction;
+        public override MailType MailType => MailType.Grinding;
 
         protected override string TypeId => nameof(GrindingMail);
         public override IValue Serialize() =>
