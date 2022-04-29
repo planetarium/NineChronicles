@@ -52,6 +52,8 @@ namespace Nekoyume.UI
         private int _worldId;
         private int _inventoryApStoneCount;
 
+        public int CostAP { get; private set; }
+
         protected override void Awake()
         {
             _apStoneCount.Subscribe(v => UpdateView()).AddTo(gameObject);
@@ -164,10 +166,12 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
-                r.ItemSubType == ItemSubType.ApStone);
-            LocalLayerModifier.RemoveItem(avatarState.address, apStoneRow.ItemId, apStoneCount);
-            Game.Game.instance.ActionManager.HackAndSlashSweep(apStoneCount, worldId, stageRow.Id);
+            CostAP = apPlayCount * stageRow.CostAP;
+            Game.Game.instance.ActionManager.HackAndSlashSweep(
+                apStoneCount,
+                worldId,
+                stageRow.Id,
+                CostAP);
 
             Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Value
             {
