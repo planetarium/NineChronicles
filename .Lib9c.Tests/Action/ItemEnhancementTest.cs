@@ -77,7 +77,7 @@ namespace Lib9c.Tests.Action
         [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0)]
         [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 1600)]
         [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 1760)]
-        public void Execute(int level, int expectedGold, bool backward, int randomSeed, int expectedLevel, ItemEnhancement.EnhancementResult expected, int monsterCollectLevel, BigInteger expectedCrystal)
+        public void Execute(int level, int expectedGold, bool backward, int randomSeed, int expectedLevel, ItemEnhancement.EnhancementResult expected, int monsterCollectLevel, int expectedCrystal)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
@@ -161,10 +161,9 @@ namespace Lib9c.Tests.Action
             );
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
-            var grade = resultEquipment.Grade;
             var costRow = _tableSheets.EnhancementCostSheetV2
                 .OrderedList
-                .First(x => x.Grade == grade && x.Level == level + 1);
+                .First(x => x.Grade == 1 && x.Level == level + 1);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
             var slotResult = (ItemEnhancement.ResultModel)slot.Result;

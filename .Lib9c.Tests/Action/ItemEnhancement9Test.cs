@@ -152,10 +152,9 @@ namespace Lib9c.Tests.Action
             );
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
-            var grade = resultEquipment.Grade;
             var costRow = _tableSheets.EnhancementCostSheetV2
                 .OrderedList
-                .FirstOrDefault(x => x.Grade == grade && x.Level == resultEquipment.level);
+                .FirstOrDefault(x => x.Grade == 1 && x.Level == level + 1);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
             var slotResult = (ItemEnhancement9.ResultModel)slot.Result;
