@@ -46,7 +46,7 @@ namespace Nekoyume.Action
             var stakeAchievementRewardSheet = sheets.GetSheet<StakeAchievementRewardSheet>();
 
             var currency = states.GetGoldCurrency();
-            var balance = states.GetBalance(context.Signer, currency);
+            var stakedAmount = states.GetBalance(stakeState.address, currency);
 
             if (!stakeState.IsClaimable(context.BlockIndex))
             {
@@ -54,12 +54,12 @@ namespace Nekoyume.Action
             }
 
             var avatarState = states.GetAvatarStateV2(AvatarAddress);
-            int level = stakeRegularRewardSheet.FindLevelByStakedAmount(balance);
+            int level = stakeRegularRewardSheet.FindLevelByStakedAmount(stakedAmount);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
             foreach (var reward in rewards)
             {
-                var (quantity, _) = balance.DivRem(currency * reward.Rate);
+                var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);
                 ItemSheet.Row row = itemSheet[reward.ItemId];
                 ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
@@ -67,7 +67,7 @@ namespace Nekoyume.Action
                 avatarState.inventory.AddItem(item, (int) quantity);
             }
 
-            int achievementRewardLevel = stakeAchievementRewardSheet.FindLevel(balance);
+            int achievementRewardLevel = stakeAchievementRewardSheet.FindLevel(stakedAmount);
             int achievementRewardStep = stakeAchievementRewardSheet.FindStep(
                 achievementRewardLevel,
                 context.BlockIndex - stakeState.StartedBlockIndex);
