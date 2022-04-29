@@ -83,8 +83,9 @@ namespace Nekoyume.UI
         private Coroutine _coroutine;
         private StageSheet.Row _stageRow;
         private float _timeElapsed;
-        private int _totalPlayCount = 0;
+        private int _apPlayCount = 0;
         private int _apStonePlayCount = 0;
+        private int _fixedApStonePlayCount = 0;
 
         private readonly ReactiveProperty<int> _attackCount = new ReactiveProperty<int>();
         private readonly ReactiveProperty<bool> _sweepRewind = new ReactiveProperty<bool>(true);
@@ -107,12 +108,14 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
         }
 
-        public void Show(StageSheet.Row stageRow, int worldId, int totalPlayCount, long exp,
-            bool ignoreShowAnimation = false)
+        public void Show(StageSheet.Row stageRow, int worldId,
+            int apPlayCount, int apStonePlayCount,
+            long exp, bool ignoreShowAnimation = false)
         {
             _stageRow = stageRow;
-            _apStonePlayCount = States.Instance.GameConfigState.ActionPointMax / stageRow.CostAP;
-            _totalPlayCount = totalPlayCount;
+            _fixedApStonePlayCount = States.Instance.GameConfigState.ActionPointMax / stageRow.CostAP;
+            _apPlayCount = apPlayCount;
+            _apStonePlayCount = apStonePlayCount;
 
             loadingRewind.IsRunning = true;
             stageText.text = $"STAGE {stageRow.Id}";
@@ -162,7 +165,7 @@ namespace Nekoyume.UI
 
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             var rewards = Action.HackAndSlashSweep.GetRewardItems(rand,
-                _totalPlayCount, _stageRow, materialSheet);
+                _apPlayCount + _apStonePlayCount, _stageRow, materialSheet);
 
             var bundle = new Dictionary<ItemBase, int>();
             foreach (var itemBase in rewards)
@@ -195,11 +198,16 @@ namespace Nekoyume.UI
 
         private void UpdatePlayCount(int attackCount)
         {
-            var attackMaxCount = Mathf.Clamp(_totalPlayCount / _apStonePlayCount, 1, maxPlayCount);
+            var max = _apStonePlayCount / _fixedApStonePlayCount;
+            if (_apPlayCount > 0)
+            {
+                max += 1;
+            }
+            var attackMaxCount = Mathf.Clamp(max, 1, maxPlayCount);
             playCountBar.fillAmount = (float)attackCount / attackMaxCount;
 
-            var curPlayCount = Mathf.Min(attackCount * _apStonePlayCount, _totalPlayCount);
-            playCountText.text = $"{curPlayCount}/{_totalPlayCount}";
+            var curPlayCount = Mathf.Min(attackCount * _fixedApStonePlayCount, _apPlayCount + _apStonePlayCount);
+            playCountText.text = $"{curPlayCount}/{_apPlayCount + _apStonePlayCount}";
 
             if (attackCount >= attackMaxCount)
             {
