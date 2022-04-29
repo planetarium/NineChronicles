@@ -89,7 +89,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = StakeState.LockupInterval,
             });
 
-            AvatarState avatarState = states.GetAvatarState(_avatarAddress);
+            AvatarState avatarState = states.GetAvatarStateV2(_avatarAddress);
             // regular (100 / 50) + achieve (80 + 80)
             Assert.Equal(162, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
             // regular (100 / 50) + achieve (1 + 1)
