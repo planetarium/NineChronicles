@@ -170,7 +170,7 @@ namespace Nekoyume
                 case MonsterCollectionMail _:
                     return L10nManager.Localize("UI_MONSTER_COLLECTION_MAIL_FORMAT");
                 case GrindingMail grindingMail:
-                    return L10nManager.Localize("UI_GRINDING_CRYSTALMAIL_FORMAT", grindingMail.Asset.GetQuantityString());
+                    return L10nManager.Localize("UI_GRINDING_CRYSTALMAIL_FORMAT", grindingMail.Asset.ToString());
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
