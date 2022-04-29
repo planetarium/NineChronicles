@@ -12,6 +12,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
+    using static SerializeKeys;
 
     public class ClaimStakeRewardTest
     {
@@ -62,7 +63,16 @@ namespace Lib9c.Tests.Action
             };
             _initialState = _initialState
                 .SetState(_signerAddress, agentState.Serialize())
-                .SetState(_avatarAddress, avatarState.Serialize())
+                .SetState(_avatarAddress, avatarState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    avatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    avatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    avatarState.questList.Serialize())
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
                 .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
                 .MintAsset(_signerAddress, _currency * 100);

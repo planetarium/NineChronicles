@@ -53,7 +53,7 @@ namespace Nekoyume.Action
                 throw new RequiredBlockIndexException();
             }
 
-            var avatarState = states.GetAvatarState(AvatarAddress);
+            var avatarState = states.GetAvatarStateV2(AvatarAddress);
             int level = stakeRegularRewardSheet.FindLevelByStakedAmount(balance);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
@@ -91,7 +91,10 @@ namespace Nekoyume.Action
             stakeState.Claim(context.BlockIndex);
 
             return states.SetState(stakeState.address, stakeState.Serialize())
-                .SetState(avatarState.address, avatarState.Serialize());
+                .SetState(avatarState.address, avatarState.SerializeV2())
+                .SetState(
+                    avatarState.address.Derive(LegacyInventoryKey),
+                    avatarState.inventory.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
