@@ -46,6 +46,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI useApStoneText;
 
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private readonly ReactiveProperty<int> _apStoneCount = new ReactiveProperty<int>();
         private StageSheet.Row _stageRow;
         private long _gainedExp;
@@ -86,16 +87,9 @@ namespace Nekoyume.UI
             _worldId = worldId;
             _stageRow = stageRow;
 
-            var avatarState = States.Instance.CurrentAvatarState;
-            var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
-                r.ItemSubType == ItemSubType.ApStone);
-            _inventoryApStoneCount =
-                avatarState.inventory.TryGetFungibleItems(apStoneRow.ItemId, out var items)
-                    ? items.Sum(x => x.count)
-                    : 0;
-            inventoryApStoneText.text = _inventoryApStoneCount.ToString();
+            UpdateInventoryStoneCount();
 
-            apText.text = avatarState.actionPoint.ToString();
+            apText.text = States.Instance.CurrentAvatarState.actionPoint.ToString();
             _apStoneCount.SetValueAndForceNotify(0);
             base.Show(ignoreShowAnimation);
         }
@@ -112,6 +106,44 @@ namespace Nekoyume.UI
             }
 
             _apStoneCount.Value = current;
+        }
+
+        private void UpdateInventoryStoneCount()
+        {
+            _disposables.DisposeAllAndClear();
+            ReactiveAvatarState.Inventory.Subscribe(inventory =>
+            {
+                if (inventory is null)
+                {
+                    return;
+                }
+
+                _inventoryApStoneCount = 0;
+                foreach (var item in inventory.Items.Where(x=> x.item.ItemSubType == ItemSubType.ApStone))
+                {
+                    if (item.Locked)
+                    {
+                        continue;
+                    }
+
+                    if (item.item is ITradableItem tradableItem)
+                    {
+                        var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                        if (tradableItem.RequiredBlockIndex > blockIndex)
+                        {
+                            continue;
+                        }
+
+                        _inventoryApStoneCount += item.count;
+                    }
+                    else
+                    {
+                        _inventoryApStoneCount += item.count;
+                    }
+                }
+
+                inventoryApStoneText.text = _inventoryApStoneCount.ToString();
+            }).AddTo(_disposables);
         }
 
         private void UpdateView()
