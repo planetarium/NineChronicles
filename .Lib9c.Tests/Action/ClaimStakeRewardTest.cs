@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
                     avatarState.questList.Serialize())
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
                 .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
-                .MintAsset(_signerAddress, _currency * 100);
+                .MintAsset(stakeStateAddress, _currency * 100);
         }
 
         [Fact]
