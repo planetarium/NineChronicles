@@ -328,6 +328,7 @@ namespace Nekoyume.Model.Item
                     }
                 }
 
+                // Sorting non-tradable item to be selected first.
                 targetItems = targetItems
                     .Where(e => !e.Locked)
                     .OrderBy(e => e.item is ITradableItem)

@@ -24,6 +24,7 @@ namespace Nekoyume.Action
         public const int Limit = 10;
         public Address AvatarAddress;
         public List<Guid> EquipmentIds;
+        public bool ChargeAp;
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IActionContext ctx = context;
@@ -67,7 +68,8 @@ namespace Nekoyume.Action
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
             {
                 typeof(CrystalEquipmentGrindingSheet),
-                typeof(CrystalMonsterCollectionMultiplierSheet)
+                typeof(CrystalMonsterCollectionMultiplierSheet),
+                typeof(MaterialItemSheet)
             });
 
             int monsterCollectionLevel = 0;
@@ -79,7 +81,24 @@ namespace Nekoyume.Action
 
             if (avatarState.actionPoint < CostAp)
             {
-                throw new NotEnoughActionPointException("");
+                switch (ChargeAp)
+                {
+                    case false:
+                        throw new NotEnoughActionPointException("");
+                    case true:
+                    {
+                        MaterialItemSheet.Row row = sheets.GetSheet<MaterialItemSheet>()
+                            .OrderedList
+                            .First(r => r.ItemSubType == ItemSubType.ApStone);
+                        if (!avatarState.inventory.RemoveFungibleItem(row.ItemId, context.BlockIndex))
+                        {
+                            throw new NotEnoughMaterialException("not enough ap stone.");
+                        }
+                        GameConfigState gameConfigState = states.GetGameConfigState();
+                        avatarState.actionPoint = gameConfigState.ActionPointMax;
+                        break;
+                    }
+                }
             }
 
             avatarState.actionPoint -= CostAp;
@@ -143,11 +162,13 @@ namespace Nekoyume.Action
             {
                 ["a"] = AvatarAddress.Serialize(),
                 ["e"] = new List(EquipmentIds.OrderBy(i => i).Select(i => i.Serialize())),
+                ["c"] = ChargeAp.Serialize(),
             }.ToImmutableDictionary();
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["a"].ToAddress();
             EquipmentIds = plainValue["e"].ToList(StateExtensions.ToGuid);
+            ChargeAp = plainValue["c"].ToBoolean();
         }
         public static FungibleAssetValue CalculateCrystal(
             IEnumerable<Equipment> equipmentList,

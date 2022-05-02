@@ -58,34 +58,43 @@ namespace Lib9c.Tests.Action
                 .SetState(
                     Addresses.GetSheetAddress<CrystalEquipmentGrindingSheet>(),
                     _tableSheets.CrystalEquipmentGrindingSheet.Serialize())
+                .SetState(
+                    Addresses.GetSheetAddress<MaterialItemSheet>(),
+                    _tableSheets.MaterialItemSheet.Serialize())
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize());
         }
 
         [Theory]
-        [InlineData(true, true, 120, true, 1, 0, false, false, 0, 100, 1, null)]
-        [InlineData(true, true, 120, true, 1, 2, false, false, 0, 200, 1, null)]
-        [InlineData(true, true, 120, true, 1, 2, false, true, 0, 200, 1, null)]
-        [InlineData(true, true, 120, true, 1, 0, false, true, 3, 130, 1, null)]
-        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 280, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, 0, 100, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, 0, 200, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 0, 200, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, true, 3, 130, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 4, 280, 1, null)]
+        // Charge AP.
+        [InlineData(true, true, 0, true, true, true, 1, 0, false, false, 0, 100, 1, null)]
         // Invalid equipment count.
-        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 280, 0, typeof(InvalidItemCountException))]
-        [InlineData(true, true, 120, true, 1, 2, false, true, 4, 280, 11, typeof(InvalidItemCountException))]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 4, 280, 0, typeof(InvalidItemCountException))]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 4, 280, 11, typeof(InvalidItemCountException))]
         // AgentState not exist.
-        [InlineData(false, true, 120, false, 1, 0, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
+        [InlineData(false, true, 120, false, false, false, 1, 0, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
         // AvatarState not exist.
-        [InlineData(true, false, 120, false, 1, 0, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
+        [InlineData(true, false, 120, false, false, false, 1, 0, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
         // Required more ActionPoint.
-        [InlineData(true, true, 0, false, 1, 0, false, false, 0, 0, 1, typeof(NotEnoughActionPointException))]
+        [InlineData(true, true, 0, false, false, false, 1, 0, false, false, 0, 0, 1, typeof(NotEnoughActionPointException))]
+        // Failed Charge AP.
+        [InlineData(true, true, 0, true, false, false, 1, 0, false, false, 0, 100, 1, typeof(NotEnoughMaterialException))]
         // Equipment not exist.
-        [InlineData(true, true, 120, false, 1, 0, false, false, 0, 0, 1, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, 120, false, false, false, 1, 0, false, false, 0, 0, 1, typeof(ItemDoesNotExistException))]
         // Locked equipment.
-        [InlineData(true, true, 120, true, 100, 0, false, false, 0, 0, 1, typeof(RequiredBlockIndexException))]
+        [InlineData(true, true, 120, false, false, true, 100, 0, false, false, 0, 0, 1, typeof(RequiredBlockIndexException))]
         // Equipped equipment.
-        [InlineData(true, true, 120, true, 1, 0, true, false, 0, 100, 1, typeof(InvalidEquipmentException))]
+        [InlineData(true, true, 120, false, false, true, 1, 0, true, false, 0, 100, 1, typeof(InvalidEquipmentException))]
         public void Execute(
             bool agentExist,
             bool avatarExist,
             int ap,
+            bool chargeAp,
+            bool apStoneExist,
             bool equipmentExist,
             long requiredBlockIndex,
             int itemLevel,
@@ -121,6 +130,14 @@ namespace Lib9c.Tests.Action
                     _avatarState.inventory.AddItem(consumable, count: 1);
                 }
 
+                if (chargeAp && apStoneExist)
+                {
+                    var row = _tableSheets.MaterialItemSheet.Values.First(r =>
+                        r.ItemSubType == ItemSubType.ApStone);
+                    var apStone = ItemFactory.CreateMaterial(row);
+                    _avatarState.inventory.AddItem(apStone);
+                }
+
                 state = state
                     .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
                     .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
@@ -152,6 +169,7 @@ namespace Lib9c.Tests.Action
             {
                 AvatarAddress = _avatarAddress,
                 EquipmentIds = equipmentIds,
+                ChargeAp = chargeAp,
             };
 
             if (exc is null)
@@ -175,6 +193,10 @@ namespace Lib9c.Tests.Action
 
                 Assert.Equal(1, mail.ItemCount);
                 Assert.Equal(asset, mail.Asset);
+
+                var row = _tableSheets.MaterialItemSheet.Values.First(r =>
+                    r.ItemSubType == ItemSubType.ApStone);
+                Assert.False(nextAvatarState.inventory.HasItem(row.Id));
             }
             else
             {
