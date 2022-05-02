@@ -322,9 +322,8 @@ namespace Nekoyume.UI
             }
 
 
-            blockIndexText.text = isLocked ? "???" : blockIndex.ToString();
-            greatSuccessRateText.text = isLocked ? "???" :
-                greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
+            blockIndexText.text = blockIndex.ToString();
+            greatSuccessRateText.text = greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
 
             var recipeInfo = new RecipeInfo
             {
