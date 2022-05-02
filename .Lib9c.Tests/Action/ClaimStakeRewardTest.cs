@@ -114,5 +114,14 @@ namespace Lib9c.Tests.Action
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
         }
+
+        [Fact]
+        public void CannotBePolymorphicAction()
+        {
+            Assert.Throws<MissingActionTypeException>(() =>
+            {
+                PolymorphicAction<ActionBase> action = new ClaimStakeReward(_avatarAddress);
+            });
+        }
     }
 }
