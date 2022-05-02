@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using Libplanet.Assets;
 using Nekoyume.Model.State;
 using static Nekoyume.TableData.TableExtensions;
 using static Lib9c.SerializeKeys;
@@ -102,6 +103,21 @@ namespace Nekoyume.TableData
             }
 
             row.Rewards.Add(value.Rewards[0]);
+        }
+
+        public int FindLevelByStakedAmount(FungibleAssetValue balance)
+        {
+            var orderedRows = Values.OrderBy(row => row.RequiredGold).ToList();
+            for (int i = 0; i < orderedRows.Count - 1; ++i)
+            {
+                if (balance.Currency * orderedRows[i].RequiredGold < balance &&
+                    balance < balance.Currency * orderedRows[i + 1].RequiredGold)
+                {
+                    return orderedRows[i].Level;
+                }
+            }
+
+            return orderedRows.Last().Level;
         }
     }
 }

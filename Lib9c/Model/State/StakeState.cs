@@ -92,6 +92,21 @@ namespace Nekoyume.Model.State
 
         public bool IsCancellable(long blockIndex) => blockIndex >= CancellableBlockIndex;
 
+        public bool IsClaimable(long blockIndex)
+        {
+            if (ReceivedBlockIndex == 0)
+            {
+                return StartedBlockIndex + RewardInterval <= blockIndex;
+            }
+
+            return ReceivedBlockIndex + RewardInterval <= blockIndex;
+        }
+
+        public void Claim(long blockIndex)
+        {
+            ReceivedBlockIndex = blockIndex;
+        }
+
         public static Address DeriveAddress(Address agentAddress) => agentAddress.Derive("stake");
     }
 }
