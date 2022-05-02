@@ -139,6 +139,8 @@ namespace Lib9c.Tests
 
         public CrystalMonsterCollectionMultiplierSheet CrystalMonsterCollectionMultiplierSheet { get; private set; }
 
+        public CrystalMaterialCostSheet CrystalMaterialCostSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
