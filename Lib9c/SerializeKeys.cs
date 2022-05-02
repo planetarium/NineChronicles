@@ -96,12 +96,6 @@ namespace Lib9c
         public const string QuantityKey = "q";
         public const string RewardLevelMapKey = "rlm";
 
-        // Stake
-        public const string RateKey = "r";
-        public const string CancellableBlockIndexKey = "cbi";
-        public const string AchievementsKey = "ach";
-        public const string AmountKey = "am";
-
         // State
         public const string AddressKey = "a";
         public const string NameKey = "n";
