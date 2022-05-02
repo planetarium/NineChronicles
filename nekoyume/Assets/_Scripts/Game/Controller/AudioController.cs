@@ -335,7 +335,7 @@ namespace Nekoyume.Game.Controller
             StopSfxAll();
         }
 
-        private void StopMusicAll(float fadeOut = 1f)
+        public void StopMusicAll(float fadeOut = 1f)
         {
             if (CurrentState != State.Idle)
             {
