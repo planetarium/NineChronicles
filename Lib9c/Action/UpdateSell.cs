@@ -84,15 +84,6 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex} updateSell exec started", addressesHex);
 
-            foreach (var updateSellInfo in updateSellInfos)
-            {
-                if (updateSellInfo.price.Sign < 0)
-                {
-                    throw new InvalidPriceException(
-                        $"{addressesHex} Aborted as the price is less than zero: {updateSellInfo.price}.");
-                }                
-            }
-            
             if (!states.TryGetAvatarStateV2(context.Signer, sellerAvatarAddress, out var avatarState, out _))
             {
                 throw new FailedLoadStateException(
@@ -122,6 +113,12 @@ namespace Nekoyume.Action
             
             foreach (var updateSellInfo in updateSellInfos)
             {
+                if (updateSellInfo.price.Sign < 0)
+                {
+                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_PRICE));
+                    continue;
+                }
+                
                 var shopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, updateSellInfo.orderId);
                 var updateSellShopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, updateSellInfo.updateSellOrderId);
                 var updateSellOrderAddress = Order.DeriveAddress(updateSellInfo.updateSellOrderId);

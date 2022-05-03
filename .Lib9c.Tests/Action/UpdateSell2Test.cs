@@ -20,7 +20,7 @@
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class UpdateSellTest
+    public class UpdateSell2Test
     {
         private const long ProductPrice = 100;
         private readonly Address _agentAddress;
@@ -31,7 +31,7 @@
         private readonly GoldCurrencyState _goldCurrencyState;
         private IAccountStateDelta _initialState;
 
-        public UpdateSellTest(ITestOutputHelper outputHelper)
+        public UpdateSell2Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -209,30 +209,16 @@
 
             var currencyState = prevState.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, ProductPrice, 0);
-
-            var updateSellInfo = new UpdateSellInfo(
-                orderId,
-                updateSellOrderId,
-                itemId,
-                itemSubType,
-                price,
-                itemCount
-            );
-
-            var defaultUpdateSellInfo = new UpdateSellInfo(
-                default,
-                default,
-                default,
-                ItemSubType.Food,
-                2 * _currency,
-                1);
-
-            var action = new UpdateSell
+            var action = new UpdateSell2
             {
+                orderId = orderId,
+                updateSellOrderId = updateSellOrderId,
+                tradableId = itemId,
                 sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo, defaultUpdateSellInfo },
+                itemSubType = itemSubType,
+                price = price,
+                count = itemCount,
             };
-
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 101,
@@ -254,24 +240,43 @@
         [Fact]
         public void Execute_Throw_FailedLoadStateException()
         {
-            var updateSellInfo = new UpdateSellInfo(
-                default,
-                default,
-                default,
-                ItemSubType.Food,
-                0 * _currency,
-                1);
-
-            var action = new UpdateSell
+            var action = new UpdateSell2
             {
+                orderId = default,
+                updateSellOrderId = default,
+                tradableId = default,
                 sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo },
+                itemSubType = ItemSubType.Food,
+                price = 0 * _currency,
+                count = 1,
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
                 PreviousStates = new State(),
+                Signer = _agentAddress,
+            }));
+        }
+
+        [Fact]
+        public void Execute_Throw_InvalidPriceException()
+        {
+            var action = new UpdateSell2
+            {
+                orderId = default,
+                updateSellOrderId = default,
+                tradableId = default,
+                sellerAvatarAddress = _avatarAddress,
+                itemSubType = default,
+                price = -1 * _currency,
+                count = 1,
+            };
+
+            Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
+            {
+                BlockIndex = 0,
+                PreviousStates = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -290,18 +295,15 @@
 
             _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var updateSellInfo = new UpdateSellInfo(
-                default,
-                default,
-                default,
-                ItemSubType.Food,
-                0 * _currency,
-                1);
-
-            var action = new UpdateSell
+            var action = new UpdateSell2
             {
+                updateSellOrderId = default,
+                orderId = default,
+                tradableId = default,
                 sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo },
+                itemSubType = ItemSubType.Food,
+                price = 0 * _currency,
+                count = 1,
             };
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
@@ -313,60 +315,20 @@
         }
 
         [Fact]
-        public void Execute_Throw_InvalidPriceException()
-        {
-            var avatarState = new AvatarState(_avatarState)
-            {
-                worldInformation = new WorldInformation(
-                    0,
-                    _tableSheets.WorldSheet,
-                    GameConfig.RequireClearedStageLevel.ActionsInShop
-                ),
-            };
-            _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
-
-            var updateSellInfo = new UpdateSellInfo(
-                default,
-                default,
-                default,
-                default,
-                -1 * _currency,
-                1);
-
-            var action = new UpdateSell
-            {
-                sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo },
-            };
-
-            action.Execute(new ActionContext
-            {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-            });
-            Assert.Contains(action.errors, e => e.errorType == ShopErrorType.ERROR_CODE_INVALID_PRICE);
-        }
-
-        [Fact]
         public void Rehearsal()
         {
             var tradableId = Guid.NewGuid();
             var orderId = Guid.NewGuid();
             var updateSellOrderId = Guid.NewGuid();
-
-            var updateSellInfo = new UpdateSellInfo(
-                orderId,
-                updateSellOrderId,
-                tradableId,
-                ItemSubType.Weapon,
-                _currency * ProductPrice,
-                1);
-
-            var action = new UpdateSell
+            var action = new UpdateSell2
             {
+                orderId = orderId,
+                updateSellOrderId = updateSellOrderId,
+                tradableId = tradableId,
                 sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo },
+                itemSubType = ItemSubType.Weapon,
+                price = _currency * ProductPrice,
+                count = 1,
             };
 
             var updatedAddresses = new List<Address>()
