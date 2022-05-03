@@ -6,6 +6,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
@@ -132,8 +133,18 @@ namespace Nekoyume.Action
             var endBlockIndex = context.BlockIndex;
             var requiredFungibleItems = new Dictionary<int, int>();
 
+            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
+            {
+                typeof(EquipmentItemRecipeSheet),
+                typeof(EquipmentItemSheet),
+                typeof(MaterialItemSheet),
+                typeof(EquipmentItemSubRecipeSheetV2),
+                typeof(EquipmentItemOptionSheet),
+                typeof(SkillSheet),
+            });
+
             // Validate RecipeId
-            var equipmentItemRecipeSheet = states.GetSheet<EquipmentItemRecipeSheet>();
+            var equipmentItemRecipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
             if (!equipmentItemRecipeSheet.TryGetValue(recipeId, out var recipeRow))
             {
                 throw new SheetRowNotFoundException(
@@ -155,7 +166,7 @@ namespace Nekoyume.Action
             // ~Validate Recipe Unlocked
 
             // Validate Recipe ResultEquipmentId
-            var equipmentItemSheet = states.GetSheet<EquipmentItemSheet>();
+            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
             if (!equipmentItemSheet.TryGetValue(recipeRow.ResultEquipmentId, out var equipmentRow))
             {
                 throw new SheetRowNotFoundException(
@@ -166,7 +177,7 @@ namespace Nekoyume.Action
             // ~Validate Recipe ResultEquipmentId
 
             // Validate Recipe Material
-            var materialItemSheet = states.GetSheet<MaterialItemSheet>();
+            var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             if (!materialItemSheet.TryGetValue(recipeRow.MaterialId, out var materialRow))
             {
                 throw new SheetRowNotFoundException(
@@ -196,7 +207,7 @@ namespace Nekoyume.Action
                     );
                 }
 
-                var equipmentItemSubRecipeSheetV2 = states.GetSheet<EquipmentItemSubRecipeSheetV2>();
+                var equipmentItemSubRecipeSheetV2 = sheets.GetSheet<EquipmentItemSubRecipeSheetV2>();
                 if (!equipmentItemSubRecipeSheetV2.TryGetValue(subRecipeId.Value, out subRecipeRow))
                 {
                     throw new SheetRowNotFoundException(
@@ -291,8 +302,8 @@ namespace Nekoyume.Action
                     equipment,
                     context.Random,
                     subRecipeRow,
-                    states.GetSheet<EquipmentItemOptionSheet>(),
-                    states.GetSheet<SkillSheet>()
+                    sheets.GetSheet<EquipmentItemOptionSheet>(),
+                    sheets.GetSheet<SkillSheet>()
                 );
                 endBlockIndex = equipment.RequiredBlockIndex;
             }
