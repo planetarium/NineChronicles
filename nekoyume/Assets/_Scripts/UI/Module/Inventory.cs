@@ -461,11 +461,6 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SetCategoryMovable(bool movable)
-        {
-            _allowMoveTab = movable;
-        }
-
         public void SetAvatarInfo(Action<InventoryItem, RectTransform> clickItem,
             Action<InventoryItem> doubleClickItem,
             System.Action clickEquipmentToggle,
@@ -480,7 +475,7 @@ namespace Nekoyume.UI.Module
                     {(ItemType.Equipment, predicateByElementalType)}
                 : null;
             Set(itemSetDimPredicates: predicateList);
-            SetCategoryMovable(true);
+            _allowMoveTab = true;
         }
 
         public void SetShop(Action<InventoryItem, RectTransform> clickItem)
@@ -489,7 +484,7 @@ namespace Nekoyume.UI.Module
             _checkTradable = true;
             SetAction(clickItem);
             Set();
-            SetCategoryMovable(true);
+            _allowMoveTab = true;
         }
 
         public void SetGrinding(Action<InventoryItem, RectTransform> clickItem,
@@ -500,7 +495,7 @@ namespace Nekoyume.UI.Module
             _reverseOrder = reverseOrder;
             SetAction(clickItem);
             Set(onUpdateInventory, predicateList);
-            SetCategoryMovable(false);
+            _allowMoveTab = false;
             _notAllowedMoveTabMessage = L10nManager.Localize("ERROR_NOT_GRINDING_TABCHANGE");
         }
 
