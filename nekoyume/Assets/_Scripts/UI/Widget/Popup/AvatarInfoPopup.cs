@@ -402,7 +402,11 @@ namespace Nekoyume.UI
             confirm.ShowWithTwoButton("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT",
                 "UI_OK", "UI_CANCEL",
                 true, IconAndButtonSystem.SystemType.Information);
-            confirm.ConfirmCallback = () => Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
+            confirm.ConfirmCallback = () =>
+            {
+                Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
+                confirm.Close();
+            };
             confirm.CancelCallback = () => confirm.Close();
         }
 

@@ -812,7 +812,10 @@ namespace Nekoyume.UI
                 "UI_OK", "UI_CANCEL",
                 true, IconAndButtonSystem.SystemType.Information);
             confirm.ConfirmCallback = () =>
+            {
                 Game.Game.instance.ActionManager.ChargeActionPoint(material).Subscribe();
+                confirm.Close();
+            };
             confirm.CancelCallback = () => confirm.Close();
         }
 
