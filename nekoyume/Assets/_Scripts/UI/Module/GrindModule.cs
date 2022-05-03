@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -347,32 +347,18 @@ namespace Nekoyume.UI.Module
             loadingScreen.AnimateNPC(ItemType.Equipment, quote);
             loadingScreen.SetCloseAction(() =>
             {
-                StartCoroutine(CoCrystalGetAnimation(30));
+                StartCoroutine(ItemMoveAnimationFactory.CoItemMoveAnimation(
+                    ItemMoveAnimationFactory.AnimationItemType.Crystal,
+                    crystalRewardText.transform.position,
+                    Widget.Find<HeaderMenuStatic>().Crystal.IconPosition +
+                    CrystalMovePositionOffset,
+                    30));
             });
         }
 
         private void OnNPCDisappear()
         {
             canvasGroup.interactable = true;
-        }
-
-        private IEnumerator CoCrystalGetAnimation(int count)
-        {
-            while (count-- > 0)
-            {
-                var anim = Instantiate(crystalMoveAnimation,
-                    MainCanvas.instance.GetLayerRootTransform(WidgetType.Animation));
-
-                anim.Show(
-                    crystalRewardText.transform.position,
-                    Widget.Find<HeaderMenuStatic>().Crystal.IconPosition +
-                    CrystalMovePositionOffset,
-                    Vector2.one,
-                    true,
-                    true,
-                    setMidByRandom: true);
-                yield return null;
-            }
         }
     }
 }

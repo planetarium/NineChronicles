@@ -31,9 +31,16 @@ namespace Nekoyume.UI
 
 
         public static ItemMoveAnimation Show(Sprite itemSprite,
-            Vector3 startWorldPosition, Vector3 endWorldPosition,
-            Vector2 defaultScale, bool moveToLeft = false, bool playItemMoveVFXOnPlay = false,
-            float animationTime = 1f, float middleXGap = 0f, EndPoint endPoint = EndPoint.None, bool setMidByRandom = false)
+            Vector3 startWorldPosition,
+            Vector3 endWorldPosition,
+            Vector2 defaultScale,
+            bool moveToLeft = false,
+            bool playItemMoveVFXOnPlay = false,
+            float animationTime = 1f,
+            float middleXGap = 0f,
+            EndPoint endPoint = EndPoint.None,
+            bool setMidByRandom = false,
+            bool destroy = true)
         {
             if (MainCamera == null)
             {
@@ -53,14 +60,25 @@ namespace Nekoyume.UI
             result._animationTime = animationTime;
             result._middleXGap = middleXGap;
 
-            result.StartCoroutine(result.CoPlay(defaultScale, moveToLeft, playItemMoveVFXOnPlay,
-                endPoint, setMidByRandom));
+            result.StartCoroutine(result.CoPlay(defaultScale,
+                moveToLeft,
+                playItemMoveVFXOnPlay,
+                endPoint,
+                setMidByRandom,
+                destroy));
             return result;
         }
 
-        public ItemMoveAnimation Show(Vector3 startWorldPosition, Vector3 endWorldPosition,
-            Vector2 defaultScale, bool moveToLeft = false, bool playItemMoveVFXOnPlay = false,
-            float animationTime = 1f, float middleXGap = 0f, EndPoint endPoint = EndPoint.None, bool setMidByRandom = false)
+        public ItemMoveAnimation Show(Vector3 startWorldPosition,
+            Vector3 endWorldPosition,
+            Vector2 defaultScale,
+            bool moveToLeft = false,
+            bool playItemMoveVFXOnPlay = false,
+            float animationTime = 1f,
+            float middleXGap = 0f,
+            EndPoint endPoint = EndPoint.None,
+            bool setMidByRandom = false,
+            bool destroy = true)
         {
             Show();
 
@@ -70,6 +88,7 @@ namespace Nekoyume.UI
             }
 
             IsPlaying = true;
+            itemImage.enabled = true;
             var rect = RectTransform;
             rect.anchoredPosition = startWorldPosition.ToCanvasPosition(ActionCamera.instance.Cam,
                 MainCanvas.instance.Canvas);
@@ -79,12 +98,17 @@ namespace Nekoyume.UI
             _animationTime = animationTime;
             _middleXGap = middleXGap;
 
-            StartCoroutine(CoPlay(defaultScale, moveToLeft, playItemMoveVFXOnPlay, endPoint, setMidByRandom));
+            StartCoroutine(CoPlay(defaultScale,
+                moveToLeft,
+                playItemMoveVFXOnPlay,
+                endPoint,
+                setMidByRandom,
+                destroy));
             return this;
         }
 
         private IEnumerator CoPlay(Vector2 defaultScale, bool moveToLeft,
-            bool playItemMoveVFXOnPlay, EndPoint endPoint, bool setMidByRandom)
+            bool playItemMoveVFXOnPlay, EndPoint endPoint, bool setMidByRandom, bool destroy)
         {
             if (playItemMoveVFXOnPlay)
             {
@@ -130,7 +154,14 @@ namespace Nekoyume.UI
 
             IsPlaying = false;
 
-            Close();
+            if (destroy)
+            {
+                Close();
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 }

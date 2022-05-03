@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Util;
+using Nekoyume.UI;
+using Nekoyume.UI.Module;
+using UnityEngine;
+
+namespace Nekoyume.Game.Factory
+{
+    public static class ItemMoveAnimationFactory
+    {
+        private static ObjectPool _objectPool;
+        private static bool _initialized;
+
+        public enum AnimationItemType
+        {
+            Crystal,
+            Ncg,
+        }
+
+        private const string CrystalAnimationPrefabName = "item_CrystalGetAnimation";
+
+        private static void Initialize()
+        {
+            if (!_initialized)
+            {
+                _initialized = true;
+                _objectPool = MainCanvas.instance.GetLayerRootTransform(WidgetType.Animation)
+                    .GetComponent<ObjectPool>();
+                _objectPool.Initialize();
+            }
+        }
+
+        public static IEnumerator CoItemMoveAnimation(AnimationItemType type, Vector3 startPosition, Vector3 endPosition, int count)
+        {
+            Initialize();
+            while (count-- > 0)
+            {
+                var anim = _objectPool.Get(type switch
+                {
+                    AnimationItemType.Crystal => CrystalAnimationPrefabName,
+                    AnimationItemType.Ncg => "DummyNcg?",
+                    _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+                }, true, startPosition);
+
+                anim.GetComponent<ItemMoveAnimation>().Show(
+                    startPosition,
+                    endPosition,
+                    Vector2.one,
+                    true,
+                    true,
+                    setMidByRandom: true,
+                    destroy: false);
+                yield return null;
+            }
+        }
+    }
+}
