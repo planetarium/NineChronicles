@@ -90,10 +90,10 @@ namespace Lib9c.Tests.Action
             });
 
             AvatarState avatarState = states.GetAvatarStateV2(_avatarAddress);
-            // regular (100 / 50) + achieve (80 + 80)
-            Assert.Equal(162, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
-            // regular (100 / 50) + achieve (1 + 1)
-            Assert.Equal(4, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
+            // regular (100 / 8) + achieve (80 + 80)
+            Assert.Equal(172, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
+            // regular (100 / 200) + achieve (1 + 1)
+            Assert.Equal(2, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
 
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
             const int level = 1;  // Expect requiredGold = 100. Assertions for synchronization with the table data.

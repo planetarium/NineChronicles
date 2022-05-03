@@ -98,10 +98,10 @@ namespace Lib9c.Tests.Action.Scenario
             });
 
             var avatarState = states.GetAvatarStateV2(_avatarAddress);
-            // regular (100 / 50)
-            Assert.Equal(2, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
-            // regular (100 / 50)
-            Assert.Equal(2, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
+            // regular (100 / 8)
+            Assert.Equal(12, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
+            // regular (100 / 200)
+            Assert.Equal(0, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
         }
 
         [Fact]
