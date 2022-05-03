@@ -9,15 +9,15 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Nekoyume.EnumType;
+using Nekoyume.L10n;
+using Nekoyume.State;
+using System.Numerics;
+using TMPro;
 
 namespace Nekoyume.UI.Scroller
 {
-    using Nekoyume.EnumType;
-    using Nekoyume.L10n;
-    using Nekoyume.State;
     using Nekoyume.UI.Module;
-    using System.Numerics;
-    using TMPro;
     using UniRx;
 
     public class RecipeScroll : RectScroll<RecipeRow.Model, RecipeScroll.ContextModel>
@@ -70,11 +70,11 @@ namespace Nekoyume.UI.Scroller
 
         private Coroutine _animationCoroutine = null;
 
-        private List<int> _unlockableRecipes = null;
-
         private BigInteger _openCost;
 
         private ItemSubType _displayingItemSubType;
+
+        private List<int> _unlockableRecipeIds = new List<int>();
 
         private List<IDisposable> _disposablesOnDisabled = new List<IDisposable>();
 
@@ -112,7 +112,7 @@ namespace Nekoyume.UI.Scroller
 
         private void OpenEveryAvailableRecipes()
         {
-            var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPES_FORMAT", _unlockableRecipes.Count);
+            var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPES_FORMAT", _unlockableRecipeIds.Count);
             Widget.Find<PaymentPopup>().Show(
                 ReactiveCrystalState.CrystalBalance,
                 _openCost,
@@ -124,11 +124,11 @@ namespace Nekoyume.UI.Scroller
         {
             var sharedModel = Craft.SharedModel;
 
-            sharedModel.UnlockingRecipes.AddRange(_unlockableRecipes);
+            sharedModel.UnlockingRecipes.AddRange(_unlockableRecipeIds);
             var cells = GetComponentsInChildren<RecipeCell>();
             foreach (var cell in cells)
             {
-                if (_unlockableRecipes.Contains(cell.RecipeId))
+                if (_unlockableRecipeIds.Contains(cell.RecipeId))
                 {
                     cell.Unlock();
                 }
@@ -136,14 +136,16 @@ namespace Nekoyume.UI.Scroller
 
             LocalLayerModifier.ModifyAgentCrystal(
                 States.Instance.AgentState.address, -_openCost);
+
             Game.Game.instance.ActionManager
-                .UnlockEquipmentRecipe(_unlockableRecipes)
+                .UnlockEquipmentRecipe(_unlockableRecipeIds)
                 .Subscribe();
-            UpdateUnlockAllButton(Craft.SharedModel.UnlockedRecipes.Value);
+            UpdateUnlockAllButton();
         }
 
         public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
         {
+            _disposablesOnDisabled.DisposeAllAndClear();
             _displayingItemSubType = type;
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(true);
@@ -172,62 +174,16 @@ namespace Nekoyume.UI.Scroller
                 .Subscribe(SubscribeNotifiedRow)
                 .AddTo(_disposablesOnDisabled);
             Craft.SharedModel.UnlockedRecipes
-                .Subscribe(UpdateUnlockAllButton)
+                .Subscribe(_ => UpdateUnlockAllButton())
                 .AddTo(_disposablesOnDisabled);
-
-        }
-
-        private void UpdateUnlockAllButton(List<int> unlockedRecipes)
-        {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId))
-            {
-                openAllRecipeArea.SetActive(false);
-            }
-            else
-            {
-                var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
-                var availableRecipes = sheet.Values
-                    .Where(x =>
-                        x.GetResultEquipmentItemRow().ItemSubType == _displayingItemSubType &&
-                        x.UnlockStage <= lastClearedStageId &&
-                        !Craft.SharedModel.UnlockingRecipes.Contains(x.Id) &&
-                        !unlockedRecipes.Contains(x.Id))
-                    .OrderBy(x => x.UnlockStage);
-
-                _unlockableRecipes = new List<int>();
-                var balance = ReactiveCrystalState.CrystalBalance.MajorUnit;
-                _openCost = 0;
-                foreach (var availableRecipe in availableRecipes)
-                {
-                    if (_openCost + availableRecipe.CRYSTAL > balance)
-                    {
-                        break;
-                    }
-
-                    _openCost += availableRecipe.CRYSTAL;
-                    _unlockableRecipes.Add(availableRecipe.Id);
-                }
-
-                var isActive = _unlockableRecipes.Count() >= 2;
-                openAllRecipeArea.SetActive(isActive);
-                if (isActive)
-                {
-                    openAllRecipeCostText.text = _openCost.ToString();
-
-                    var hasEnoughBalance = ReactiveCrystalState.CrystalBalance.MajorUnit >= _openCost;
-                    openAllRecipeCostText.color = hasEnoughBalance ?
-                        Palette.GetColor(ColorType.ButtonEnabled) :
-                        Palette.GetColor(ColorType.ButtonDisabled);
-                }
-            }
+            ReactiveCrystalState.Crystal
+                .Subscribe(_ => UpdateUnlockAllButton())
+                .AddTo(_disposablesOnDisabled);
         }
 
         public void ShowAsFood(StatType type, bool updateToggle = false)
         {
-            Craft.SharedModel.NotifiedRow
-                .Subscribe(SubscribeNotifiedRow)
-                .AddTo(_disposablesOnDisabled);
-
+            _disposablesOnDisabled.DisposeAllAndClear();
             openAllRecipeArea.SetActive(false);
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);
@@ -251,6 +207,30 @@ namespace Nekoyume.UI.Scroller
             emptyObject.SetActive(!items.Any());
             Show(items, true);
             AnimateScroller();
+
+
+            Craft.SharedModel.NotifiedRow
+                .Subscribe(SubscribeNotifiedRow)
+                .AddTo(_disposablesOnDisabled);
+        }
+
+        private void UpdateUnlockAllButton()
+        {
+            Craft.SharedModel.UpdateUnlockableRecipes(_displayingItemSubType);
+            _unlockableRecipeIds = Craft.SharedModel.UnlockableRecipes.Value;
+            _openCost = Craft.SharedModel.UnlockableRecipesOpenCost;
+
+            var isActive = _unlockableRecipeIds.Count >= 2;
+            openAllRecipeArea.SetActive(isActive);
+            if (isActive)
+            {
+                openAllRecipeCostText.text = _openCost.ToString();
+
+                var hasEnoughBalance = ReactiveCrystalState.CrystalBalance.MajorUnit >= _openCost;
+                openAllRecipeCostText.color = hasEnoughBalance ?
+                    Palette.GetColor(ColorType.ButtonEnabled) :
+                    Palette.GetColor(ColorType.ButtonDisabled);
+            }
         }
 
         private void AnimateScroller()

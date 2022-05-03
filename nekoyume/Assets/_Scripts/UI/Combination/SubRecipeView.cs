@@ -15,13 +15,13 @@ using Nekoyume.Model.Item;
 using Libplanet;
 using System.Security.Cryptography;
 using Nekoyume.Extensions;
-using Toggle = Nekoyume.UI.Module.Toggle;
+using Nekoyume.Model.Mail;
+using Nekoyume.UI.Scroller;
 using Nekoyume.L10n;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Model.Mail;
-    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class SubRecipeView : MonoBehaviour
@@ -125,8 +125,10 @@ namespace Nekoyume.UI
             _subrecipeIds = subrecipeIds;
 
             string title = null;
+            var isEquipment = false;
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
+                isEquipment = true;
                 var resultItem = equipmentRow.GetResultEquipmentItemRow();
                 title = resultItem.GetLocalizedName(true, false);
 
@@ -175,14 +177,17 @@ namespace Nekoyume.UI
                 _disposableForOnDisable = null;
             }
 
-            _disposableForOnDisable = Craft.SharedModel.UnlockedRecipes.Subscribe(_ =>
+            if (isEquipment)
             {
-                if (Craft.SharedModel.UnlockedRecipes.HasValue &&
-                    gameObject.activeSelf)
+                _disposableForOnDisable = Craft.SharedModel.UnlockedRecipes.Subscribe(_ =>
                 {
-                    UpdateButton();
-                }
-            });
+                    if (Craft.SharedModel.UnlockedRecipes.HasValue &&
+                        gameObject.activeSelf)
+                    {
+                        UpdateButton();
+                    }
+                });
+            }
         }
 
         public void ResetSelectedIndex()
@@ -320,7 +325,6 @@ namespace Nekoyume.UI
                     .Select(x => CreateMaterial(x.Id, x.Count));
                 materialList.AddRange(materials);
             }
-
 
             blockIndexText.text = blockIndex.ToString();
             greatSuccessRateText.text = greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
