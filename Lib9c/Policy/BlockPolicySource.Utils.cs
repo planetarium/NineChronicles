@@ -51,6 +51,13 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
+        private static bool IsAuthorizedMinerTransactionRaw(
+            Transaction<NCAction> transaction,
+            ImmutableHashSet<Address> allAuthorizedMiners)
+        {
+            return allAuthorizedMiners.Contains(transaction.Signer);
+        }
+
         private static InvalidBlockHashAlgorithmTypeException ValidateHashAlgorithmTypeRaw(
             Block<NCAction> block,
             IVariableSubPolicy<HashAlgorithmType> hashAlgorithmTypePolicy)
