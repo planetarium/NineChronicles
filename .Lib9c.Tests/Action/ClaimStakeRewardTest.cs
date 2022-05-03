@@ -90,8 +90,8 @@ namespace Lib9c.Tests.Action
             });
 
             AvatarState avatarState = states.GetAvatarStateV2(_avatarAddress);
-            // regular (100 / 8) + achieve (80 + 80)
-            Assert.Equal(172, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
+            // regular (100 / 8) * 4 + achieve (80 + 80)
+            Assert.Equal(208, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
             // regular (100 / 200) + achieve (1 + 1)
             Assert.Equal(2, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
 

@@ -58,6 +58,7 @@ namespace Nekoyume.Action
             int level = stakeRegularRewardSheet.FindLevelByStakedAmount(stakedAmount);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
+            var accumulatedRewards = stakeState.CalculateAccumulatedRewards(context.BlockIndex);
             foreach (var reward in rewards)
             {
                 var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);
@@ -65,7 +66,7 @@ namespace Nekoyume.Action
                 ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
                     : ItemFactory.CreateItem(row, context.Random);
-                avatarState.inventory.AddItem(item, (int) quantity);
+                avatarState.inventory.AddItem(item, (int) quantity * accumulatedRewards);
             }
 
             int achievementRewardLevel = stakeAchievementRewardSheet.FindLevel(stakedAmount);
