@@ -16,8 +16,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash_sweep2")]
-    public class HackAndSlashSweep : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100193ObsoleteIndex)]
+    [ActionType("hack_and_slash_sweep")]
+    public class HackAndSlashSweep1 : GameAction
     {
         public const int UsableApStoneCount = 10;
 
@@ -57,6 +58,8 @@ namespace Nekoyume.Action
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(context.Signer, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100193ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -114,12 +117,7 @@ namespace Nekoyume.Action
                 throw new SheetRowColumnException($"{addressesHex}world is not contains in world information: {worldId}");
             }
 
-            if (!world.IsStageCleared)
-            {
-                throw new StageClearedException($"{addressesHex}There is no stage cleared in that world (worldId:{worldId})");
-            }
-
-            if (stageId > world.StageClearedId)
+            if (!world.IsStageCleared && stageId > world.StageClearedId)
             {
                 throw new InvalidStageException(
                     $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
