@@ -5,6 +5,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
@@ -31,6 +32,11 @@ namespace Nekoyume.UI.Model
 
         public readonly ReactiveProperty<List<int>> UnlockedRecipes =
             new ReactiveProperty<List<int>>();
+
+        public readonly ReactiveProperty<List<int>> UnlockableRecipes =
+            new ReactiveProperty<List<int>>();
+
+        public int UnlockableRecipesOpenCost { get; private set; }
 
         public readonly List<int> UnlockingRecipes = new List<int>();
         public readonly List<int> DummyLockedRecipes = new List<int>();
@@ -142,6 +148,40 @@ namespace Nekoyume.UI.Model
         public void SetUnlockedRecipes(List<int> recipeIds)
         {
             UnlockedRecipes.SetValueAndForceNotify(recipeIds);
+        }
+
+        public void UpdateUnlockableRecipes(ItemSubType type)
+        {
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId))
+            {
+                return;
+            }
+
+            var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            var availableRecipes = sheet.Values
+                .Where(x =>
+                    x.GetResultEquipmentItemRow().ItemSubType == type &&
+                    x.UnlockStage <= lastClearedStageId &&
+                    !UnlockedRecipes.Value.Contains(x.Id) &&
+                    !UnlockingRecipes.Contains(x.Id))
+                .OrderBy(x => x.UnlockStage);
+
+            var unlockableRecipes = new List<int>();
+            var balance = ReactiveCrystalState.CrystalBalance.MajorUnit;
+            var totalCost = 0;
+            foreach (var availableRecipe in availableRecipes)
+            {
+                if (totalCost + availableRecipe.CRYSTAL > balance)
+                {
+                    break;
+                }
+
+                totalCost += availableRecipe.CRYSTAL;
+                unlockableRecipes.Add(availableRecipe.Id);
+            }
+
+            UnlockableRecipesOpenCost = totalCost;
+            UnlockableRecipes.SetValueAndForceNotify(unlockableRecipes);
         }
 
         public static string GetEquipmentGroup(int itemId)

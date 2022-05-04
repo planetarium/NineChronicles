@@ -2,12 +2,14 @@ using Libplanet.Assets;
 using Nekoyume.L10n;
 using System.Numerics;
 using TMPro;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class PaymentPopup : ConfirmPopup
     {
-        public TextMeshProUGUI costText;
+        [SerializeField]
+        private TextMeshProUGUI costText;
 
         public void Show(
             FungibleAssetValue balance,
