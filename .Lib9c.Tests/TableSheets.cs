@@ -134,6 +134,10 @@ namespace Lib9c.Tests
 
         public MonsterCollectionRewardSheet MonsterCollectionRewardSheet { get; private set; }
 
+        public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
+
+        public StakeAchievementRewardSheet StakeAchievementRewardSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
