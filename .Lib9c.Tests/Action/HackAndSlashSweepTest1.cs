@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class HackAndSlashSweepTest
+    public class HackAndSlashSweepTest1
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialState;
         private readonly IRandom _random;
 
-        public HackAndSlashSweepTest()
+        public HackAndSlashSweepTest1()
         {
             _random = new TestRandom();
             _sheets = TableSheetsImporter.ImportSheets();
@@ -153,9 +153,9 @@ namespace Lib9c.Tests.Action
 
                 var random = new TestRandom(_random.Seed);
                 var expectedRewardItems =
-                    HackAndSlashSweep.GetRewardItems(random, playCount, stageRow, _tableSheets.MaterialItemSheet);
+                    HackAndSlashSweep1.GetRewardItems(random, playCount, stageRow, _tableSheets.MaterialItemSheet);
 
-                var action = new HackAndSlashSweep
+                var action = new HackAndSlashSweep1
                 {
                     avatarAddress = _avatarAddress,
                     apStoneCount = apStoneCount,
@@ -188,7 +188,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep1
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -218,7 +218,7 @@ namespace Lib9c.Tests.Action
         [InlineData(100, 1)]
         public void Execute_SheetRowNotFoundException(int worldId, int stageId)
         {
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep1
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -238,7 +238,7 @@ namespace Lib9c.Tests.Action
         [InlineData(1, 999)]
         public void Execute_SheetRowColumnException(int worldId, int stageId)
         {
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep1
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -255,57 +255,19 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_StageClearedException()
+        public void Execute_InvalidStageException()
         {
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep1
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
                 worldId = 1,
                 stageId = 50,
             };
-
-            Assert.Throws<StageClearedException>(() => action.Execute(new ActionContext()
-            {
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-            }));
-        }
-
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute_InvalidStageException(bool backward)
-        {
-            var action = new HackAndSlashSweep
-            {
-                apStoneCount = 1,
-                avatarAddress = _avatarAddress,
-                worldId = 1,
-                stageId = 50,
-            };
-            var worldSheet = _initialState.GetSheet<WorldSheet>();
-            var worldUnlockSheet = _initialState.GetSheet<WorldUnlockSheet>();
-
-            _avatarState.worldInformation.ClearStage(1, 2, 1, worldSheet, worldUnlockSheet);
-
-            var state = _initialState;
-            if (backward)
-            {
-                state = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
-            }
-            else
-            {
-                state = _initialState
-                    .SetState(
-                        _avatarAddress.Derive(LegacyWorldInformationKey),
-                        _avatarState.worldInformation.Serialize());
-            }
 
             Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = state,
+                PreviousStates = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -349,7 +311,7 @@ namespace Lib9c.Tests.Action
                         avatarState.questList.Serialize());
             }
 
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep1
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
@@ -403,7 +365,7 @@ namespace Lib9c.Tests.Action
                         avatarState.questList.Serialize());
             }
 
-            var action = new HackAndSlashSweep
+            var action = new HackAndSlashSweep1
             {
                 apStoneCount = apStoneCount,
                 avatarAddress = _avatarAddress,
@@ -475,7 +437,7 @@ namespace Lib9c.Tests.Action
                     25,
                     playCount);
 
-                var action = new HackAndSlashSweep
+                var action = new HackAndSlashSweep1
                 {
                     avatarAddress = _avatarAddress,
                     apStoneCount = useApStoneCount,
@@ -544,7 +506,7 @@ namespace Lib9c.Tests.Action
                     25,
                     playCount);
 
-                var action = new HackAndSlashSweep
+                var action = new HackAndSlashSweep1
                 {
                     avatarAddress = _avatarAddress,
                     apStoneCount = 0,
