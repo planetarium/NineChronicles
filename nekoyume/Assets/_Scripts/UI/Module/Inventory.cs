@@ -138,7 +138,7 @@ namespace Nekoyume.UI.Module
             _onToggleCostume = clickCostumeToggle;
         }
 
-        private void Set(Action<Inventory> onUpdateInventory = null,
+        private void Set(Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null)
         {
             _disposables.DisposeAllAndClear();
@@ -183,7 +183,7 @@ namespace Nekoyume.UI.Module
                 scroll.UpdateData(models, resetScrollOnEnable);
                 UpdateDimmedInventoryItem();
 
-                onUpdateInventory?.Invoke(this);
+                onUpdateInventory?.Invoke(this, inventory);
             }).AddTo(_disposables);
 
             SetToggle(equipmentButton, ItemType.Equipment);
@@ -488,7 +488,7 @@ namespace Nekoyume.UI.Module
         }
 
         public void SetGrinding(Action<InventoryItem, RectTransform> clickItem,
-            Action<Inventory> onUpdateInventory,
+            Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory,
             List<(ItemType type, Predicate<InventoryItem>)> predicateList,
             bool reverseOrder)
         {

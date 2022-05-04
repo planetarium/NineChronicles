@@ -56,6 +56,8 @@ namespace Nekoyume.UI.Module
 
         private bool _isInitialized;
 
+        private int _inventoryApStoneCount;
+
         private FungibleAssetValue _cachedGrindingRewardNCG;
 
         private FungibleAssetValue _cachedGrindingRewardCrystal;
@@ -228,7 +230,7 @@ namespace Nekoyume.UI.Module
                 target);
         }
 
-        private void OnUpdateInventory(Inventory inventory)
+        private void OnUpdateInventory(Inventory inventory, Nekoyume.Model.Item.Inventory inventoryModel)
         {
             var selectedItemCount = _selectedItemsForGrind.Count;
             for (int i = 0; i < selectedItemCount; i++)
@@ -240,8 +242,31 @@ namespace Nekoyume.UI.Module
                     itemSlots[i].UpdateSlot(_selectedItemsForGrind[i]);
                 }
             }
-
             grindButton.Interactable = CanGrind;
+
+            _inventoryApStoneCount = 0;
+            foreach (var item in inventoryModel.Items.Where(x=> x.item.ItemSubType == ItemSubType.ApStone))
+            {
+                if (item.Locked)
+                {
+                    continue;
+                }
+
+                if (item.item is ITradableItem tradableItem)
+                {
+                    var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                    if (tradableItem.RequiredBlockIndex > blockIndex)
+                    {
+                        continue;
+                    }
+
+                    _inventoryApStoneCount += item.count;
+                }
+                else
+                {
+                    _inventoryApStoneCount += item.count;
+                }
+            }
         }
 
         private void RegisterToGrindingList(InventoryItem item, bool isRegister)
@@ -330,14 +355,11 @@ namespace Nekoyume.UI.Module
             {
                 case ConditionalButton.State.Conditional:
                 {
-                    var apStoneRow = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
-                        r.ItemSubType == ItemSubType.ApStone);
-                    if (States.Instance.CurrentAvatarState.inventory.TryGetItem(
-                            apStoneRow.Id, out var apStone))
+                    if (_inventoryApStoneCount > 0)
                     {
                         var confirm = Widget.Find<IconAndButtonSystem>();
                         confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
-                            L10nManager.Localize("UI_GRIND_APREFILLGRIND_FORMAT", apStone.count),
+                            L10nManager.Localize("UI_GRIND_APREFILLGRIND_FORMAT", _inventoryApStoneCount),
                             L10nManager.Localize("UI_OK"),
                             L10nManager.Localize("UI_CANCEL"),
                             false, IconAndButtonSystem.SystemType.Information);
