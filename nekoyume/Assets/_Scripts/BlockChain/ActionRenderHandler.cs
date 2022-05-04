@@ -1307,6 +1307,18 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            if (eval.Action.ChargeAp)
+            {
+                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                    r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.AddItem(avatarAddress, row.ItemId);
+
+                if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.AvatarAddress))
+                {
+                    GameConfigStateSubject.ActionPointState.Remove(eval.Action.AvatarAddress);
+                }
+            }
+
             OneLineSystem.Push(MailType.Workshop,
                 L10nManager.Localize("UI_GRINDING_NOTIFY"),
                 NotificationCell.NotificationType.Information);

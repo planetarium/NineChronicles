@@ -18,6 +18,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
@@ -714,6 +715,23 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, equipment.TradableId,
                     equipment.RequiredBlockIndex, 1);
             });
+
+            if (chargeAp)
+            {
+                var row = TableSheets.Instance.MaterialItemSheet
+                    .OrderedList
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
+                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
+
+                var address = States.Instance.CurrentAvatarState.address;
+                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+                {
+                    GameConfigStateSubject.ActionPointState.Remove(address);
+                }
+
+                GameConfigStateSubject.ActionPointState.Add(address, true);
+            }
 
             var action = new Grinding
             {
