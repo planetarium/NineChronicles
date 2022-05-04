@@ -255,7 +255,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_InvalidStageException()
+        public void Execute_StageClearedException()
         {
             var action = new HackAndSlashSweep
             {
@@ -265,9 +265,47 @@ namespace Lib9c.Tests.Action
                 stageId = 50,
             };
 
-            Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
+            Assert.Throws<StageClearedException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_InvalidStageException(bool backward)
+        {
+            var action = new HackAndSlashSweep
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = 1,
+                stageId = 50,
+            };
+            var worldSheet = _initialState.GetSheet<WorldSheet>();
+            var worldUnlockSheet = _initialState.GetSheet<WorldUnlockSheet>();
+
+            _avatarState.worldInformation.ClearStage(1, 2, 1, worldSheet, worldUnlockSheet);
+
+            var state = _initialState;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        _avatarState.worldInformation.Serialize());
+            }
+
+            Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
