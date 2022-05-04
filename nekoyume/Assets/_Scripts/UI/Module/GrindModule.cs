@@ -359,7 +359,7 @@ namespace Nekoyume.UI.Module
                     {
                         var confirm = Widget.Find<IconAndButtonSystem>();
                         confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
-                            L10nManager.Localize("UI_GRIND_APREFILLGRIND_FORMAT", _inventoryApStoneCount),
+                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT", L10nManager.Localize("GRIND_UI_BUTTON"), _inventoryApStoneCount),
                             L10nManager.Localize("UI_OK"),
                             L10nManager.Localize("UI_CANCEL"),
                             false, IconAndButtonSystem.SystemType.Information);
