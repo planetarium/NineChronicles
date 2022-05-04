@@ -5164,6 +5164,8 @@ MonoBehaviour:
   ncgRewardText: {fileID: 2563625234340738077}
   crystalRewardText: {fileID: 7302351471691852791}
   canvasGroup: {fileID: 1555575497798929212}
+  crystalMoveAnimation: {fileID: 2540273645456425560, guid: e9092b151ff8d41db99e69923790db6d,
+    type: 3}
 --- !u!1 &2332145174559759128
 GameObject:
   m_ObjectHideFlags: 0
@@ -39873,7 +39875,7 @@ PrefabInstance:
     - target: {fileID: 6679572050248287148, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: helpId
-      value: 100017
+      value: 100022
       objectReference: {fileID: 0}
     - target: {fileID: 6950815306001856415, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}

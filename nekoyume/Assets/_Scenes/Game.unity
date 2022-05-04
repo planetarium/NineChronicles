@@ -220,7 +220,7 @@ RectTransform:
   - {fileID: 1333831683}
   - {fileID: 282372975}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -812,7 +812,7 @@ RectTransform:
   - {fileID: 384134973}
   - {fileID: 721921032}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2027,6 +2027,7 @@ GameObject:
   - component: {fileID: 1962509240}
   - component: {fileID: 1962509241}
   - component: {fileID: 1962509242}
+  - component: {fileID: 1962509243}
   m_Layer: 5
   m_Name: AnimationLayer
   m_TagString: Untagged
@@ -2091,6 +2092,23 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 32
+--- !u!114 &1962509243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962509239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a35844bbaeff714a89b2c2d4be92a92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  list:
+  - Prefab: {fileID: 1974293732692372025, guid: e9092b151ff8d41db99e69923790db6d,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
 --- !u!1 &2035760899
 GameObject:
   m_ObjectHideFlags: 0
@@ -2203,5 +2221,5 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

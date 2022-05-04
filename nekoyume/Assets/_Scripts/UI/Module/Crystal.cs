@@ -14,12 +14,17 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI text = null;
 
-        private IDisposable _disposable;
-
         [SerializeField]
         private GameObject loadingObject;
 
+        [SerializeField]
+        private Transform iconTransform;
+
         public bool NowCharging => loadingObject.activeSelf;
+
+        public Vector3 IconPosition => iconTransform.position;
+
+        private IDisposable _disposable;
 
         protected override void OnEnable()
         {

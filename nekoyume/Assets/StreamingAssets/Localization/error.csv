@@ -24,3 +24,5 @@ ERROR_CODE_INSUFFICIENT_BALANCE,Insufficient balance.,잔액이 부족합니다.
 ERROR_NOT_ENOUGH_AVATAR_LEVEL,Not enough avatar level.,아바타의 레벨이 충분하지 않습니다.,,,,,,,,,,,,,,,,
 ERROR_NOT_GRINDING_EQUIPPED,Can not grind Equipment being equipped.,장착중인 장비는 분해 할 수 없습니다.,,,,,,,,,,,,,,,,
 ERROR_NOT_GRINDING_10OVER,There are up to 10 pieces of equipment that can be ground at once.,한번에 분해 할 수 있는 장비는 최대 10개입니다.,,,,,,,,,,,,,,,,
+ERROR_NOT_GRINDING_TABCHANGE,You can not change tab while grind. Please move tab after cancel or stop grind.,분해 중에는 이동이 불가능 합니다. 분해를 끄고 이동해주세요.,,,,,,,,,,,,,,,,
+
