@@ -50,6 +50,9 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
+        private bool showCostAlert = true;
+
+        [SerializeField]
         private List<CostObject> costObjects = null;
 
         [SerializeField]
@@ -189,7 +192,7 @@ namespace Nekoyume.UI.Module
         {
             base.OnClickButton();
 
-            if (CurrentState.Value != State.Conditional)
+            if (!showCostAlert && CurrentState.Value != State.Conditional)
             {
                 return;
             }
