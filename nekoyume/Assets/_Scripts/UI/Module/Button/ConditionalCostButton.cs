@@ -5,6 +5,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -14,6 +15,31 @@ namespace Nekoyume.UI.Module
 {
     public class ConditionalCostButton : ConditionalButton
     {
+        public struct CostParam
+        {
+            public CostType type;
+            public int cost;
+            public CostParam(CostType type, int cost)
+            {
+                this.type = type;
+                this.cost = cost;
+            }
+        }
+
+        [Serializable]
+        private struct CostObject
+        {
+            public CostType type;
+            public List<CostText> costTexts;
+        }
+
+        [Serializable]
+        private struct CostText
+        {
+            public GameObject parent;
+            public TMP_Text text;
+        }
+
         public enum CostType
         {
             None,
@@ -24,63 +50,124 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
-        private List<TextMeshProUGUI> costTexts = null;
+        private List<CostObject> costObjects = null;
 
-        private CostType _costType = CostType.NCG;
+        [SerializeField]
+        private List<GameObject> costParents = null;
+        
+        private readonly Dictionary<CostType, int> _costMap = new Dictionary<CostType, int>();
 
-        public int Cost { get; private set; } = int.MaxValue;
-
-        public Color CostTextColor
+        public void SetCost(params CostParam[] costs)
         {
-            get
+            _costMap.Clear();
+            foreach (var cost in costs)
             {
-                var text = costTexts.FirstOrDefault();
-                return text is null ? Color.white : text.color;
+                _costMap[cost.type] = cost.cost;
             }
-            set
-            {
-                foreach (var text in costTexts)
-                {
-                    text.color = value;
-                }
-            }
+            UpdateObjects();
         }
 
-        public void SetCost(CostType costType, int value)
+        public void SetCost(CostType type, int cost)
         {
-            Cost = value;
-            _costType = costType;
-            foreach (var text in costTexts)
-            {
-                text.text = value.ToString();
-            }
+            _costMap.Clear();
+            _costMap[type] = cost;
             UpdateObjects();
         }
 
         public override void UpdateObjects()
         {
             base.UpdateObjects();
-            CostTextColor = CheckCost() ? Palette.GetColor(ColorType.ButtonEnabled) :
-                Palette.GetColor(ColorType.ButtonDisabled);
+
+            //costParent.SetActive(_costMap.Count > 0);
+
+            foreach (var costObject in costObjects)
+            {
+                var exist = _costMap.ContainsKey(costObject.type);
+                foreach (var costText in costObject.costTexts)
+                {
+                    costText.parent.SetActive(exist);
+                }
+                if (exist)
+                {
+                    foreach (var costText in costObject.costTexts)
+                    {
+                        var cost = _costMap[costObject.type];
+                        costText.text.text = cost.ToString();
+                        costText.text.color = CheckCostOfType(costObject.type, cost) ?
+                            Palette.GetColor(ColorType.ButtonEnabled) :
+                            Palette.GetColor(ColorType.ButtonDisabled);
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Cost object not exists. Type : {costObject.type}");
+                }
+            }
         }
 
-        protected bool CheckCost()
+        /// <summary>
+        /// Checks if costs are enough to pay for current avatar.
+        /// </summary>
+        /// <returns>
+        /// Type of cost that is not enough to pay. If <see cref="CostType.None"/> is returned, costs are enough to pay.
+        /// </returns>
+        protected CostType CheckCost()
         {
-            switch (_costType)
+            foreach (var pair in _costMap)
             {
-                case CostType.None:
-                    Debug.LogError("Cost not set!");
-                    return false;
+                var type = pair.Key;
+                var cost = pair.Value;
+
+                switch (type)
+                {
+                    case CostType.NCG:
+                        if (States.Instance.GoldBalanceState.Gold.MajorUnit < cost)
+                        {
+                            return CostType.NCG;
+                        }
+                        break;
+                    case CostType.Crystal:
+                        if (ReactiveCrystalState.CrystalBalance.MajorUnit < cost)
+                        {
+                            return CostType.Crystal;
+                        }
+                        break;
+                    case CostType.ActionPoint:
+                        if (States.Instance.CurrentAvatarState.actionPoint < cost)
+                        {
+                            return CostType.ActionPoint;
+                        }
+                        break;
+                    case CostType.Hourglass:
+                        var inventory = States.Instance.CurrentAvatarState.inventory;
+                        var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
+                        if (count < cost)
+                        {
+                            return CostType.Hourglass;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return CostType.None;
+        }
+
+        protected bool CheckCostOfType(CostType type, int cost)
+        {
+            switch (type)
+            {
                 case CostType.NCG:
-                    return States.Instance.GoldBalanceState.Gold.MajorUnit >= Cost;
+                    return States.Instance.GoldBalanceState.Gold.MajorUnit >= cost;
+                case CostType.Crystal:
+                    return ReactiveCrystalState.CrystalBalance.MajorUnit >= cost;
                 case CostType.ActionPoint:
-                    return States.Instance.CurrentAvatarState.actionPoint >= Cost;
+                    return States.Instance.CurrentAvatarState.actionPoint >= cost;
                 case CostType.Hourglass:
                     var inventory = States.Instance.CurrentAvatarState.inventory;
                     var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
-                    return count >= Cost;
-                case CostType.Crystal:
-                    return ReactiveCrystalState.CrystalBalance.MajorUnit >= Cost;
+                    return count >= cost;
                 default:
                     return true;
             }
@@ -88,45 +175,40 @@ namespace Nekoyume.UI.Module
 
         protected override bool CheckCondition()
         {
-            return CheckCost() && base.CheckCondition();
+            return CheckCost() == CostType.None
+                && base.CheckCondition();
         }
 
         protected override void OnClickButton()
         {
-            switch (_costType)
+            switch (CheckCost())
             {
+                case CostType.None:
+                    break;
                 case CostType.NCG:
-                    if (States.Instance.GoldBalanceState.Gold.MajorUnit < Cost)
-                    {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
-                            NotificationCell.NotificationType.Alert);
-                        return;
-                    }
-                    break;
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                        NotificationCell.NotificationType.Alert);
+                    return;
                 case CostType.ActionPoint:
-                    if (States.Instance.CurrentAvatarState.actionPoint < Cost)
-                    {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("ERROR_ACTION_POINT"),
-                            NotificationCell.NotificationType.Alert);
-                        return;
-                    }
-                    break;
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("ERROR_ACTION_POINT"),
+                        NotificationCell.NotificationType.Alert);
+                    return;
                 case CostType.Hourglass:
-                    var inventory = States.Instance.CurrentAvatarState.inventory;
-                    var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
-                    if (count < Cost)
-                    {
-                        OneLineSystem.Push(
-                            MailType.System,
-                            L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"),
-                            NotificationCell.NotificationType.Alert);
-                        return;
-                    }
-                    break;
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"),
+                        NotificationCell.NotificationType.Alert);
+                    return;
+                case CostType.Crystal:
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
+                        NotificationCell.NotificationType.Alert);
+                    return;
                 default:
                     break;
             }

@@ -88,7 +88,7 @@ GameObject:
   - component: {fileID: 8775724273358801762}
   - component: {fileID: 4742008499639262220}
   m_Layer: 5
-  m_Name: Cost_1
+  m_Name: Crystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -505,10 +505,24 @@ MonoBehaviour:
   disabledText: {fileID: 1703180057978164017}
   effectOverlay: {fileID: 294468779394328190}
   conditionInfoKey: 
-  costTexts:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  costObjects:
+  - type: 1
+    costTexts:
+    - parent: {fileID: 8047227888830826470}
+      text: {fileID: 483938379393025288}
+    - parent: {fileID: 1287663159180831632}
+      text: {fileID: 8551346286917119630}
+    - parent: {fileID: 2603154647040513447}
+      text: {fileID: 6950520814263277102}
+  - type: 4
+    costTexts:
+    - parent: {fileID: 2444607528532635737}
+      text: {fileID: 1557061150485671941}
+    - parent: {fileID: 313637574970352941}
+      text: {fileID: 635055132470339038}
+    - parent: {fileID: 4141431072124935929}
+      text: {fileID: 82808351145309564}
+  costParents: []
 --- !u!114 &2840644199905785920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -653,7 +667,7 @@ GameObject:
   - component: {fileID: 4542340409338992339}
   - component: {fileID: 8762838810776294125}
   m_Layer: 5
-  m_Name: Cost_2
+  m_Name: NCG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1046,7 +1060,7 @@ GameObject:
   - component: {fileID: 4914667141576698718}
   - component: {fileID: 2828512773849254785}
   m_Layer: 5
-  m_Name: Cost_1
+  m_Name: Crystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1119,7 +1133,7 @@ GameObject:
   - component: {fileID: 6398451150834222904}
   - component: {fileID: 8678452625596331845}
   m_Layer: 5
-  m_Name: Cost_2
+  m_Name: NCG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1303,7 +1317,7 @@ GameObject:
   - component: {fileID: 8443318205789264824}
   - component: {fileID: 85560860698734526}
   m_Layer: 5
-  m_Name: IconNCG (1)
+  m_Name: IconCrystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1749,7 +1763,7 @@ GameObject:
   - component: {fileID: 1199112027139833010}
   - component: {fileID: 2750800583172401227}
   m_Layer: 5
-  m_Name: Cost_1
+  m_Name: Crystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2226,7 +2240,7 @@ GameObject:
   - component: {fileID: 4614559700812155805}
   - component: {fileID: 6465126525075688959}
   m_Layer: 5
-  m_Name: IconNCG (1)
+  m_Name: IconCrystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2488,7 +2502,7 @@ GameObject:
   - component: {fileID: 9068212581345882149}
   - component: {fileID: 8683761181771164675}
   m_Layer: 5
-  m_Name: IconNCG (1)
+  m_Name: IconCrystal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3934,7 +3948,7 @@ GameObject:
   - component: {fileID: 2985367481784965844}
   - component: {fileID: 4991808566759096528}
   m_Layer: 5
-  m_Name: Cost_2
+  m_Name: NCG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -343,7 +343,8 @@ namespace Nekoyume.UI
             else if (consumableRow != null)
             {
                 var submittable = CheckMaterialAndSlot();
-                button.SetCost(ConditionalCostButton.CostType.NCG, (int)_selectedRecipeInfo.CostNCG);
+                var cost = new ConditionalCostButton.CostParam(ConditionalCostButton.CostType.NCG, (int)_selectedRecipeInfo.CostNCG);
+                button.SetCost(cost);
                 button.Interactable = submittable;
                 button.gameObject.SetActive(true);
                 lockedObject.SetActive(false);
