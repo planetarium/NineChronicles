@@ -190,10 +190,7 @@ namespace Nekoyume.UI
             {
                 StartCoroutine(CoWorkshopItemMove());
             }
-            else
-            {
-                // TODO : NCG, Crystal obtain animation should be added here.
-            }
+
             if (_sparkVFX)
             {
                 _sparkVFX.LazyStop();

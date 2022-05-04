@@ -1307,10 +1307,9 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            // TODO: add handling about LocalLayer
-            var message =
-                $"[{nameof(GrindingMail)}] ItemCount: {mail.ItemCount}, Asset: {mail.Asset}";
-            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+            OneLineSystem.Push(MailType.Workshop,
+                L10nManager.Localize("UI_GRINDING_NOTIFY"),
+                NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
             UpdateAgentStateAsync(eval);
             var currency = new Currency("CRYSTAL", 18, minters: null);
@@ -1320,8 +1319,14 @@ namespace Nekoyume.BlockChain
 
         private void ResponseUnlockEquipmentRecipe(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
         {
+            var sharedModel = Craft.SharedModel;
             if (!(eval.Exception is null))
             {
+                foreach (var id in eval.Action.RecipeIds)
+                {
+                    sharedModel.UnlockingRecipes.Remove(id);
+                }
+                sharedModel.SetUnlockedRecipes(sharedModel.UnlockedRecipes.Value);
                 return;
             }
 
@@ -1336,7 +1341,6 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.ModifyAgentCrystal(
                 States.Instance.AgentState.address, cost.MajorUnit);
 
-            var sharedModel = Craft.SharedModel;
             foreach (var id in recipeIds)
             {
                 sharedModel.UnlockingRecipes.Remove(id);

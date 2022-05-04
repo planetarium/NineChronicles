@@ -3,18 +3,18 @@ using UnityEngine.UI;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.TableData;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.State;
 using TMPro;
 using System;
 using Nekoyume.Model.Mail;
+using Nekoyume.EnumType;
+using Nekoyume.L10n;
+using Nekoyume.UI.Scroller;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.L10n;
-    using Nekoyume.UI.Scroller;
-    using System.Collections.Generic;
     using UniRx;
 
     public class RecipeCell : MonoBehaviour
@@ -98,8 +98,10 @@ namespace Nekoyume.UI.Module
             _recipeRow = recipeRow;
             var tableSheets = Game.Game.instance.TableSheets;
 
+            loadingView.Hide();
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
+                consumableView.Hide();
                 IsLocked = true;
                 if (checkLocked)
                 {
@@ -133,6 +135,7 @@ namespace Nekoyume.UI.Module
                 var selected = Craft.SharedModel.SelectedRow;
                 var notified = Craft.SharedModel.NotifiedRow;
                 var unlocked = Craft.SharedModel.UnlockedRecipes;
+                var unlockable = Craft.SharedModel.UnlockableRecipes;
 
                 if (!IsLocked) SetSelected(selected.Value);
                 selected.Subscribe(SetSelected)
@@ -143,6 +146,9 @@ namespace Nekoyume.UI.Module
                     .AddTo(_disposablesForOnDisable);
 
                 unlocked.Subscribe(SetUnlocked)
+                    .AddTo(_disposablesForOnDisable);
+
+                unlockable.Subscribe(SetUnlockable)
                     .AddTo(_disposablesForOnDisable);
             }
         }
@@ -155,7 +161,6 @@ namespace Nekoyume.UI.Module
         public void UpdateLocked(EquipmentItemRecipeSheet.Row equipmentRow)
         {
             animator.Rebind();
-            loadingView.gameObject.SetActive(false);
             lockVFXObject.SetActive(false);
             unlockConditionText.enabled = false;
             unlockObject.SetActive(false);
@@ -256,7 +261,7 @@ namespace Nekoyume.UI.Module
             SetEquipmentView(_recipeRow as EquipmentItemRecipeSheet.Row);
         }
 
-        public void SetSelected(SheetRow<int> row)
+        private void SetSelected(SheetRow<int> row)
         {
             var equals = ReferenceEquals(row, _recipeRow);
             selectedObject.SetActive(equals);
@@ -276,18 +281,26 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetNotified(SheetRow<int> row)
+        private void SetNotified(SheetRow<int> row)
         {
             var equals = ReferenceEquals(row, _recipeRow);
             notificationObject.SetActive(equals);
         }
 
-        public void SetUnlocked(List<int> recipeIds)
+        private void SetUnlocked(List<int> recipeIds)
         {
             if (_recipeRow is EquipmentItemRecipeSheet.Row row)
             {
                 UpdateLocked(row);
             }
+        }
+
+        private void SetUnlockable(List<int> recipeIds)
+        {
+            var unlockable = recipeIds.Contains(_recipeRow.Key);
+            lockVFXObject.SetActive(unlockable);
+            unlockPriceText.color = unlockable ?
+                Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.ButtonDisabled);
         }
     }
 }

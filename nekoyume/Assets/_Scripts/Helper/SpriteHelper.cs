@@ -144,6 +144,10 @@ namespace Nekoyume.Helper
                     result = Resources.Load<Sprite>(
                         string.Format(MailIconPathFormat, "icon_mail_system"));
                     break;
+                case MailType.Grinding:
+                    result = Resources.Load<Sprite>(
+                        string.Format(MailIconPathFormat, "icon_mail_grind"));
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mailType), mailType, null);
             }
