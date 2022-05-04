@@ -187,6 +187,13 @@ namespace Nekoyume.UI.Module
 
         protected override void OnClickButton()
         {
+            base.OnClickButton();
+
+            if (CurrentState.Value != State.Conditional)
+            {
+                return;
+            }
+
             switch (CheckCost())
             {
                 case CostType.None:
@@ -195,6 +202,12 @@ namespace Nekoyume.UI.Module
                     OneLineSystem.Push(
                         MailType.System,
                         L10nManager.Localize("UI_NOT_ENOUGH_NCG"),
+                        NotificationCell.NotificationType.Alert);
+                    return;
+                case CostType.Crystal:
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
                         NotificationCell.NotificationType.Alert);
                     return;
                 case CostType.ActionPoint:
@@ -209,17 +222,9 @@ namespace Nekoyume.UI.Module
                         L10nManager.Localize("UI_NOT_ENOUGH_HOURGLASS"),
                         NotificationCell.NotificationType.Alert);
                     return;
-                case CostType.Crystal:
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
-                        NotificationCell.NotificationType.Alert);
-                    return;
                 default:
                     break;
             }
-
-            base.OnClickButton();
         }
     }
 }

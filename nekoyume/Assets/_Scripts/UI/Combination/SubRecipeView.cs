@@ -87,14 +87,9 @@ namespace Nekoyume.UI
                 });
             }
 
-            button.OnClickSubject
+            button.OnSubmitSubject
                 .Subscribe(state =>
                 {
-                    if (state == ConditionalButton.State.Disabled)
-                    {
-                        return;
-                    }
-
                     CombineCurrentRecipe();
                 })
                 .AddTo(gameObject);
