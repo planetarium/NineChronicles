@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -50,6 +51,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private CanvasGroup canvasGroup;
 
+        [SerializeField]
+        private ItemMoveAnimation crystalMoveAnimation;
+
         private bool _isInitialized;
 
         private FungibleAssetValue _cachedGrindingRewardNCG;
@@ -73,11 +77,15 @@ namespace Nekoyume.UI.Module
 
         private const int LimitGrindingCount = 10;
 
+        private static readonly Vector3 CrystalMovePositionOffset = new Vector3(0.05f, 0.05f);
+
         private bool CanGrind => _selectedItemsForGrind.Any() &&
                                  _selectedItemsForGrind.All(item => !item.Equipped.Value);
 
         public void Show(bool reverseInventoryOrder = true)
         {
+            gameObject.SetActive(true);
+
             Initialize();
             Subscribe();
 
@@ -318,11 +326,6 @@ namespace Nekoyume.UI.Module
 
         private void PushAction(List<Equipment> equipments)
         {
-            // TODO: add animation and etc.
-            NotificationSystem.Push(MailType.Workshop,
-                $"Grinding Start, You will get {_cachedGrindingRewardCrystal} {L10nManager.Localize("UI_CRYSTAL")}.",
-                NotificationCell.NotificationType.Information);
-
             StartCoroutine(CoCombineNPCAnimation());
             ActionManager.Instance.Grinding(equipments).Subscribe();
             _selectedItemsForGrind.Clear();
@@ -342,6 +345,15 @@ namespace Nekoyume.UI.Module
 
             var quote = L10nManager.Localize("UI_GRIND_NPC_QUOTE");
             loadingScreen.AnimateNPC(ItemType.Equipment, quote);
+            loadingScreen.SetCloseAction(() =>
+            {
+                StartCoroutine(ItemMoveAnimationFactory.CoItemMoveAnimation(
+                    ItemMoveAnimationFactory.AnimationItemType.Crystal,
+                    crystalRewardText.transform.position,
+                    Widget.Find<HeaderMenuStatic>().Crystal.IconPosition +
+                    CrystalMovePositionOffset,
+                    30));
+            });
         }
 
         private void OnNPCDisappear()
