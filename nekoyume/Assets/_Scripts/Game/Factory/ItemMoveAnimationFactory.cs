@@ -12,10 +12,14 @@ namespace Nekoyume.Game.Factory
     public static class ItemMoveAnimationFactory
     {
         private static readonly Lazy<ObjectPool> ObjectPool = new Lazy<ObjectPool>(() =>
-            MainCanvas
+        {
+            var pool = MainCanvas
                 .instance
                 .GetLayerRootTransform(WidgetType.Animation)
-                .GetComponent<ObjectPool>());
+                .GetComponent<ObjectPool>();
+            pool.Initialize();
+            return pool;
+        });
 
         public enum AnimationItemType
         {
