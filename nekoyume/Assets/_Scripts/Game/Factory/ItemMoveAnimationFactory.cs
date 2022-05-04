@@ -11,8 +11,11 @@ namespace Nekoyume.Game.Factory
 {
     public static class ItemMoveAnimationFactory
     {
-        private static ObjectPool _objectPool;
-        private static bool _initialized;
+        private static readonly Lazy<ObjectPool> ObjectPool = new Lazy<ObjectPool>(() =>
+            MainCanvas
+                .instance
+                .GetLayerRootTransform(WidgetType.Animation)
+                .GetComponent<ObjectPool>());
 
         public enum AnimationItemType
         {
@@ -22,23 +25,11 @@ namespace Nekoyume.Game.Factory
 
         private const string CrystalAnimationPrefabName = "item_CrystalGetAnimation";
 
-        private static void Initialize()
-        {
-            if (!_initialized)
-            {
-                _initialized = true;
-                _objectPool = MainCanvas.instance.GetLayerRootTransform(WidgetType.Animation)
-                    .GetComponent<ObjectPool>();
-                _objectPool.Initialize();
-            }
-        }
-
         public static IEnumerator CoItemMoveAnimation(AnimationItemType type, Vector3 startPosition, Vector3 endPosition, int count)
         {
-            Initialize();
             while (count-- > 0)
             {
-                var anim = _objectPool.Get(type switch
+                var anim = ObjectPool.Value.Get(type switch
                 {
                     AnimationItemType.Crystal => CrystalAnimationPrefabName,
                     AnimationItemType.Ncg => "DummyNcg?",
