@@ -133,34 +133,25 @@ namespace Nekoyume.UI.Module
             grindButton.OnSubmitSubject.Subscribe(_ =>
             {
                 Action(_selectedItemsForGrind.Select(inventoryItem =>
-                    (Equipment) inventoryItem.ItemBase).ToList());
+                    (Equipment) inventoryItem.ItemBase).ToList(), false);
             }).AddTo(_disposables);
-            grindButton.OnClickDisabledSubject
-                .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ =>
+            grindButton.OnClickDisabledSubject.Subscribe(_ =>
+            {
+                var l10nkey = _selectedItemsForGrind.Any()
+                    ? "ERROR_NOT_GRINDING_EQUIPPED"
+                    : "GRIND_UI_SLOTNOTICE";
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize(l10nkey),
+                    NotificationCell.NotificationType.Notification);
+            }).AddTo(_disposables);
+            grindButton.OnClickSubject.Subscribe(state =>
+            {
+                if (state == ConditionalButton.State.Conditional)
                 {
-                    switch (grindButton.CurrentState.Value)
-                    {
-                        case ConditionalButton.State.Conditional:
-                            OneLineSystem.Push(MailType.System,
-                                L10nManager.Localize("ERROR_ACTION_POINT"),
-                                NotificationCell.NotificationType.Alert);
-                            break;
-                        case ConditionalButton.State.Disabled:
-                            var l10nkey = _selectedItemsForGrind.Any()
-                                ? "ERROR_NOT_GRINDING_EQUIPPED"
-                                : "GRIND_UI_SLOTNOTICE";
-                            OneLineSystem.Push(MailType.System,
-                                L10nManager.Localize(l10nkey),
-                                NotificationCell.NotificationType.Notification);
-                            break;
-                        case ConditionalButton.State.Normal:
-                            Debug.LogError("If state is normal, should not be receive message in this stream!");
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }).AddTo(_disposables);
+                    Action(_selectedItemsForGrind.Select(inventoryItem =>
+                        (Equipment) inventoryItem.ItemBase).ToList(), true);
+                }
+            }).AddTo(_disposables);
 
             _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
             {
@@ -298,7 +289,7 @@ namespace Nekoyume.UI.Module
                 item.level > 0 || item.Skills.Any() || item.BuffSkills.Any());
         }
 
-        private void Action(List<Equipment> equipments)
+        private void Action(List<Equipment> equipments, bool chargeAp)
         {
             if (!equipments.Any() || equipments.Count > LimitGrindingCount)
             {
@@ -315,19 +306,69 @@ namespace Nekoyume.UI.Module
                     "UI_CANCEL",
                     true,
                     IconAndButtonSystem.SystemType.Information);
-                system.ConfirmCallback = () => PushAction(equipments);
-                system.CancelCallback = () => system.Close();
+                system.ConfirmCallback = () =>
+                {
+                    if (chargeAp)
+                    {
+                        CheckUseApPotionForAction(equipments);
+                    }
+                    else
+                    {
+                        PushAction(equipments, false);
+                    }
+                };
             }
             else
             {
-                PushAction(equipments);
+                CheckUseApPotionForAction(equipments);
             }
         }
 
-        private void PushAction(List<Equipment> equipments)
+        private void CheckUseApPotionForAction(List<Equipment> equipments)
+        {
+            switch (grindButton.CurrentState.Value)
+            {
+                case ConditionalButton.State.Conditional:
+                {
+                    var apStoneRow = TableSheets.Instance.MaterialItemSheet.Values.First(r =>
+                        r.ItemSubType == ItemSubType.ApStone);
+                    if (States.Instance.CurrentAvatarState.inventory.TryGetItem(
+                            apStoneRow.Id, out var apStone))
+                    {
+                        var confirm = Widget.Find<IconAndButtonSystem>();
+                        confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
+                            L10nManager.Localize("UI_GRIND_APREFILLGRIND_FORMAT", apStone.count),
+                            L10nManager.Localize("UI_OK"),
+                            L10nManager.Localize("UI_CANCEL"),
+                            false, IconAndButtonSystem.SystemType.Information);
+                        confirm.ConfirmCallback = () =>
+                            PushAction(equipments, true);
+                        confirm.CancelCallback = () => confirm.Close();
+                    }
+                    else
+                    {
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("ERROR_ACTION_POINT"),
+                            NotificationCell.NotificationType.Alert);
+                    }
+
+                    break;
+                }
+                case ConditionalButton.State.Normal:
+                    PushAction(equipments, false);
+                    break;
+                case ConditionalButton.State.Disabled:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void PushAction(List<Equipment> equipments, bool chargeAp)
         {
             StartCoroutine(CoCombineNPCAnimation());
-            ActionManager.Instance.Grinding(equipments).Subscribe();
+            ActionManager.Instance.Grinding(equipments, chargeAp).Subscribe();
             _selectedItemsForGrind.Clear();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
         }

@@ -7,7 +7,6 @@ using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -57,7 +56,7 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private List<GameObject> costParents = null;
-        
+
         private readonly Dictionary<CostType, int> _costMap = new Dictionary<CostType, int>();
 
         public void SetCost(params CostParam[] costs)

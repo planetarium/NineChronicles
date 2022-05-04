@@ -706,7 +706,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(List<Equipment> equipmentList)
+        public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(List<Equipment> equipmentList, bool chargeAp)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             equipmentList.ForEach(equipment =>
@@ -718,7 +718,8 @@ namespace Nekoyume.BlockChain
             var action = new Grinding
             {
                 AvatarAddress = avatarAddress,
-                EquipmentIds = equipmentList.Select(i => i.ItemId).ToList()
+                EquipmentIds = equipmentList.Select(i => i.ItemId).ToList(),
+                ChargeAp = chargeAp
             };
             ProcessAction(action);
 
