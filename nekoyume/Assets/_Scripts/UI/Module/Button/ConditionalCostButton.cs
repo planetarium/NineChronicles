@@ -62,7 +62,10 @@ namespace Nekoyume.UI.Module
             _costMap.Clear();
             foreach (var cost in costs)
             {
-                _costMap[cost.type] = cost.cost;
+                if (cost.cost > 0)
+                {
+                    _costMap[cost.type] = cost.cost;
+                }
             }
             UpdateObjects();
         }
@@ -70,7 +73,10 @@ namespace Nekoyume.UI.Module
         public void SetCost(CostType type, int cost)
         {
             _costMap.Clear();
-            _costMap[type] = cost;
+            if (cost > 0)
+            {
+                _costMap[type] = cost;
+            }
             UpdateObjects();
         }
 
@@ -78,7 +84,11 @@ namespace Nekoyume.UI.Module
         {
             base.UpdateObjects();
 
-            //costParent.SetActive(_costMap.Count > 0);
+            var showCost = _costMap.Count > 0;
+            foreach (var parent in costParents)
+            {
+                parent.SetActive(showCost);
+            }
 
             foreach (var costObject in costObjects)
             {
@@ -97,10 +107,6 @@ namespace Nekoyume.UI.Module
                             Palette.GetColor(ColorType.ButtonEnabled) :
                             Palette.GetColor(ColorType.ButtonDisabled);
                     }
-                }
-                else
-                {
-                    Debug.LogError($"Cost object not exists. Type : {costObject.type}");
                 }
             }
         }
