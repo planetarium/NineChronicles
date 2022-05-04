@@ -191,7 +191,7 @@ namespace Nekoyume.UI.Module
         {
             base.OnClickButton();
 
-            if (!showCostAlert && CurrentState.Value != State.Conditional)
+            if (!showCostAlert && CurrentState.Value == State.Conditional)
             {
                 return;
             }
