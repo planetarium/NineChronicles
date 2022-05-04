@@ -928,6 +928,11 @@ namespace Nekoyume.BlockChain
 
                 UpdateCurrentAvatarStateAsync().Forget();
             }
+            else
+            {
+                Widget.Find<SweepResultPopup>().Close();
+                Game.Game.BackToMain(false, eval.Exception.InnerException).Forget();
+            }
         }
 
         private void ResponseMimisbrunnr(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
