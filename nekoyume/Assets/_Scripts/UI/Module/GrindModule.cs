@@ -325,12 +325,8 @@ namespace Nekoyume.UI.Module
             if (CheckSelectedItemsAreStrong(equipments))
             {
                 var system = Widget.Find<IconAndButtonSystem>();
-                system.ShowWithTwoButton("UI_CONFIRM",
-                    "UI_GRINDING_CONFIRM",
-                    "UI_OK",
-                    "UI_CANCEL",
-                    true,
-                    IconAndButtonSystem.SystemType.Information);
+                system.ShowWithTwoButton("UI_WARNING",
+                    "UI_GRINDING_CONFIRM");
                 system.ConfirmCallback = () =>
                 {
                     if (chargeAp)

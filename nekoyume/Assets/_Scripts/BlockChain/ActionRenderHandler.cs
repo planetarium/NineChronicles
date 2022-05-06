@@ -1319,7 +1319,7 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            OneLineSystem.Push(MailType.Workshop,
+            OneLineSystem.Push(MailType.Grinding,
                 L10nManager.Localize("UI_GRINDING_NOTIFY"),
                 NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
