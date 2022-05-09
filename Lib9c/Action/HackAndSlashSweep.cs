@@ -167,8 +167,7 @@ namespace Nekoyume.Action
             var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
             if (cp < cpRow.RequiredCP)
             {
-                throw new NotEnoughCombatPointException(
-                    $"{addressesHex}Aborted due to lack of player cp ({cp} < {cpRow.RequiredCP})");;
+                throw new NotEnoughCombatPointException($"{addressesHex}Aborted due to lack of player cp ({cp} < {cpRow.RequiredCP})");
             }
 
             var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
