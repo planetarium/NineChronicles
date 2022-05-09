@@ -157,16 +157,18 @@ namespace Nekoyume.Action
                 addressesHex);
 
             var sweepRequiredCpSheet = sheets.GetSheet<SweepRequiredCPSheet>();
-            if (sweepRequiredCpSheet.TryGetValue(stageId, out var cpRow))
+            if (!sweepRequiredCpSheet.TryGetValue(stageId, out var cpRow))
             {
-                var characterSheet = sheets.GetSheet<CharacterSheet>();
-                var costumeStatSheet = sheets.GetSheet<CostumeStatSheet>();
-                var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
-                if (cp < cpRow.RequiredCP)
-                {
-                    throw new NotEnoughCombatPointException(
-                        $"{addressesHex}Aborted due to lack of player cp ({cp} < {cpRow.RequiredCP})");;
-                }
+                throw new SheetRowColumnException($"{addressesHex}There is no row in SweepRequiredCPSheet: {stageId}");
+            }
+
+            var characterSheet = sheets.GetSheet<CharacterSheet>();
+            var costumeStatSheet = sheets.GetSheet<CostumeStatSheet>();
+            var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
+            if (cp < cpRow.RequiredCP)
+            {
+                throw new NotEnoughCombatPointException(
+                    $"{addressesHex}Aborted due to lack of player cp ({cp} < {cpRow.RequiredCP})");;
             }
 
             var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
