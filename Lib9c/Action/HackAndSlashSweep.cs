@@ -15,6 +15,10 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/994
+    /// Updated at https://github.com/planetarium/lib9c/pull/994
+    /// </summary>
     [Serializable]
     /// <summary>
     /// Introduced at https://github.com/planetarium/lib9c/pull/1017
