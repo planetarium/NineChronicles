@@ -371,7 +371,10 @@ namespace Nekoyume.State
             CurrentAvatarState = state;
 
             if (!initializeReactiveState)
+            {
+                Debug.Log($"[{nameof(States)}] {nameof(UpdateCurrentAvatarState)}() initializeReactiveState: false");
                 return;
+            }
 
             ReactiveAvatarState.Initialize(CurrentAvatarState);
         }

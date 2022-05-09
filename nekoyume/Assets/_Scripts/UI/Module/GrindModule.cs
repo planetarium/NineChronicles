@@ -298,11 +298,12 @@ namespace Nekoyume.UI.Module
 
         private void UpdateCrystalReward()
         {
-            _cachedGrindingRewardCrystal = Grinding.CalculateCrystal(
+            _cachedGrindingRewardCrystal = CrystalCalculator.CalculateCrystal(
                     _selectedItemsForGrind.Select(item => (Equipment)item.ItemBase),
                     TableSheets.Instance.CrystalEquipmentGrindingSheet,
                     States.Instance.MonsterCollectionState?.Level ?? 0,
-                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet);
+                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
+                    false);
             crystalRewardText.text = _cachedGrindingRewardCrystal.MajorUnit > 0 ?
                 _cachedGrindingRewardCrystal.GetQuantityString() :
                 string.Empty;
