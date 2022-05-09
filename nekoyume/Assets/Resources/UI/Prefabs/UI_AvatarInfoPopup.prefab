@@ -6484,7 +6484,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uBD84\uD574\uD560 \uC544\uC774\uD15C\uC744 \uC120\uD0DD\uD574\uC8FC\uC138\uC694."
+  m_text: GRIND_UI_SLOTNOTICE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 9be5cbfa755af41c8bd952ef863ff2ee, type: 2}
@@ -6571,7 +6571,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 5
-  l10nKey: UI_UPGRADE_GUIDE
+  l10nKey: GRIND_UI_SLOTNOTICE
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -32246,7 +32246,12 @@ PrefabInstance:
     - target: {fileID: 2424622643390601637, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2547095590449951747, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3909500369725347631, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -32353,6 +32358,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4888166535097214629, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4966547586583953229, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4966547586583953229, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -32428,6 +32443,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -28.5
       objectReference: {fileID: 0}
+    - target: {fileID: 6277880972764344563, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: showCostAlert
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6431724912016450242, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_Sprite
@@ -32483,6 +32503,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -28.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7209602763357028017, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8060754518305157581, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -32632,9 +32657,9 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5406227109810086307}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &7385476112986188376 stripped
+--- !u!1 &7168439143332045885 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 3276577140673186811, guid: 9067b4811aa0241b7a96a2cc09536ced,
+  m_CorrespondingSourceObject: {fileID: 2917681106673124766, guid: 9067b4811aa0241b7a96a2cc09536ced,
     type: 3}
   m_PrefabInstance: {fileID: 5406227109810086307}
   m_PrefabAsset: {fileID: 0}
@@ -32644,9 +32669,9 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5406227109810086307}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &7168439143332045885 stripped
+--- !u!1 &6376440165635346909 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 2917681106673124766, guid: 9067b4811aa0241b7a96a2cc09536ced,
+  m_CorrespondingSourceObject: {fileID: 1403834878283968638, guid: 9067b4811aa0241b7a96a2cc09536ced,
     type: 3}
   m_PrefabInstance: {fileID: 5406227109810086307}
   m_PrefabAsset: {fileID: 0}
@@ -32656,9 +32681,9 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5406227109810086307}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &6376440165635346909 stripped
+--- !u!1 &7385476112986188376 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1403834878283968638, guid: 9067b4811aa0241b7a96a2cc09536ced,
+  m_CorrespondingSourceObject: {fileID: 3276577140673186811, guid: 9067b4811aa0241b7a96a2cc09536ced,
     type: 3}
   m_PrefabInstance: {fileID: 5406227109810086307}
   m_PrefabAsset: {fileID: 0}

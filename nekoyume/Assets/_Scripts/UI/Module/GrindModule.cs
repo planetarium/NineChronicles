@@ -56,6 +56,8 @@ namespace Nekoyume.UI.Module
 
         private bool _isInitialized;
 
+        private int _inventoryApStoneCount;
+
         private FungibleAssetValue _cachedGrindingRewardNCG;
 
         private FungibleAssetValue _cachedGrindingRewardCrystal;
@@ -130,37 +132,33 @@ namespace Nekoyume.UI.Module
 
         private void Subscribe()
         {
-            grindButton.OnSubmitSubject.Subscribe(_ =>
+            grindButton.OnClickDisabledSubject.Subscribe(_ =>
             {
-                Action(_selectedItemsForGrind.Select(inventoryItem =>
-                    (Equipment) inventoryItem.ItemBase).ToList());
+                var l10nkey = _selectedItemsForGrind.Any()
+                    ? "ERROR_NOT_GRINDING_EQUIPPED"
+                    : "GRIND_UI_SLOTNOTICE";
+                OneLineSystem.Push(MailType.System,
+                    L10nManager.Localize(l10nkey),
+                    NotificationCell.NotificationType.Notification);
             }).AddTo(_disposables);
-            grindButton.OnClickDisabledSubject
-                .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ =>
+            grindButton.OnClickSubject.Subscribe(state =>
+            {
+                switch (state)
                 {
-                    switch (grindButton.CurrentState.Value)
-                    {
-                        case ConditionalButton.State.Conditional:
-                            OneLineSystem.Push(MailType.System,
-                                L10nManager.Localize("ERROR_ACTION_POINT"),
-                                NotificationCell.NotificationType.Alert);
-                            break;
-                        case ConditionalButton.State.Disabled:
-                            var l10nkey = _selectedItemsForGrind.Any()
-                                ? "ERROR_NOT_GRINDING_EQUIPPED"
-                                : "GRIND_UI_SLOTNOTICE";
-                            OneLineSystem.Push(MailType.System,
-                                L10nManager.Localize(l10nkey),
-                                NotificationCell.NotificationType.Notification);
-                            break;
-                        case ConditionalButton.State.Normal:
-                            Debug.LogError("If state is normal, should not be receive message in this stream!");
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }).AddTo(_disposables);
+                    case ConditionalButton.State.Normal:
+                        Action(_selectedItemsForGrind.Select(inventoryItem =>
+                            (Equipment) inventoryItem.ItemBase).ToList());
+                        break;
+                    case ConditionalButton.State.Conditional:
+                        Action(_selectedItemsForGrind.Select(inventoryItem =>
+                            (Equipment) inventoryItem.ItemBase).ToList());
+                        break;
+                    case ConditionalButton.State.Disabled:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                }
+            }).AddTo(_disposables);
 
             _selectedItemsForGrind.ObserveAdd().Subscribe(item =>
             {
@@ -237,7 +235,7 @@ namespace Nekoyume.UI.Module
                 target);
         }
 
-        private void OnUpdateInventory(Inventory inventory)
+        private void OnUpdateInventory(Inventory inventory, Nekoyume.Model.Item.Inventory inventoryModel)
         {
             var selectedItemCount = _selectedItemsForGrind.Count;
             for (int i = 0; i < selectedItemCount; i++)
@@ -249,8 +247,31 @@ namespace Nekoyume.UI.Module
                     itemSlots[i].UpdateSlot(_selectedItemsForGrind[i]);
                 }
             }
-
             grindButton.Interactable = CanGrind;
+
+            _inventoryApStoneCount = 0;
+            foreach (var item in inventoryModel.Items.Where(x=> x.item.ItemSubType == ItemSubType.ApStone))
+            {
+                if (item.Locked)
+                {
+                    continue;
+                }
+
+                if (item.item is ITradableItem tradableItem)
+                {
+                    var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                    if (tradableItem.RequiredBlockIndex > blockIndex)
+                    {
+                        continue;
+                    }
+
+                    _inventoryApStoneCount += item.count;
+                }
+                else
+                {
+                    _inventoryApStoneCount += item.count;
+                }
+            }
         }
 
         private void RegisterToGrindingList(InventoryItem item, bool isRegister)
@@ -309,25 +330,61 @@ namespace Nekoyume.UI.Module
             if (CheckSelectedItemsAreStrong(equipments))
             {
                 var system = Widget.Find<IconAndButtonSystem>();
-                system.ShowWithTwoButton("UI_CONFIRM",
-                    "UI_GRINDING_CONFIRM",
-                    "UI_OK",
-                    "UI_CANCEL",
-                    true,
-                    IconAndButtonSystem.SystemType.Information);
-                system.ConfirmCallback = () => PushAction(equipments);
-                system.CancelCallback = () => system.Close();
+                system.ShowWithTwoButton("UI_WARNING",
+                    "UI_GRINDING_CONFIRM");
+                system.ConfirmCallback = () =>
+                {
+                    CheckUseApPotionForAction(equipments);
+                };
             }
             else
             {
-                PushAction(equipments);
+                CheckUseApPotionForAction(equipments);
             }
         }
 
-        private void PushAction(List<Equipment> equipments)
+        private void CheckUseApPotionForAction(List<Equipment> equipments)
+        {
+            switch (grindButton.CurrentState.Value)
+            {
+                case ConditionalButton.State.Conditional:
+                {
+                    if (_inventoryApStoneCount > 0)
+                    {
+                        var confirm = Widget.Find<IconAndButtonSystem>();
+                        confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
+                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT", L10nManager.Localize("GRIND_UI_BUTTON"), _inventoryApStoneCount),
+                            L10nManager.Localize("UI_OK"),
+                            L10nManager.Localize("UI_CANCEL"),
+                            false, IconAndButtonSystem.SystemType.Information);
+                        confirm.ConfirmCallback = () =>
+                            PushAction(equipments, true);
+                        confirm.CancelCallback = () => confirm.Close();
+                    }
+                    else
+                    {
+                        OneLineSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("ERROR_ACTION_POINT"),
+                            NotificationCell.NotificationType.Alert);
+                    }
+
+                    break;
+                }
+                case ConditionalButton.State.Normal:
+                    PushAction(equipments, false);
+                    break;
+                case ConditionalButton.State.Disabled:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void PushAction(List<Equipment> equipments, bool chargeAp)
         {
             StartCoroutine(CoCombineNPCAnimation());
-            ActionManager.Instance.Grinding(equipments).Subscribe();
+            ActionManager.Instance.Grinding(equipments, chargeAp).Subscribe();
             _selectedItemsForGrind.Clear();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
         }

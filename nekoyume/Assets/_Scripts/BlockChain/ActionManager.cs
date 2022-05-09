@@ -18,6 +18,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
@@ -706,7 +707,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(List<Equipment> equipmentList)
+        public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(List<Equipment> equipmentList, bool chargeAp)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             equipmentList.ForEach(equipment =>
@@ -715,10 +716,28 @@ namespace Nekoyume.BlockChain
                     equipment.RequiredBlockIndex, 1);
             });
 
+            if (chargeAp)
+            {
+                var row = TableSheets.Instance.MaterialItemSheet
+                    .OrderedList
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
+                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
+
+                var address = States.Instance.CurrentAvatarState.address;
+                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+                {
+                    GameConfigStateSubject.ActionPointState.Remove(address);
+                }
+
+                GameConfigStateSubject.ActionPointState.Add(address, true);
+            }
+
             var action = new Grinding
             {
                 AvatarAddress = avatarAddress,
-                EquipmentIds = equipmentList.Select(i => i.ItemId).ToList()
+                EquipmentIds = equipmentList.Select(i => i.ItemId).ToList(),
+                ChargeAp = chargeAp
             };
             ProcessAction(action);
 
