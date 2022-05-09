@@ -13,6 +13,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Extensions;
+    using Nekoyume.Helper;
     using Nekoyume.Model;
     using Nekoyume.Model.Elemental;
     using Nekoyume.Model.Item;
@@ -87,34 +88,38 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // Tutorial recipe.
-        [InlineData(false, false, true, true, false, 3, 0, true, 0, 1, null, true, false, false, null)]
+        [InlineData(false, false, true, true, false, 3, 0, true, 0, 1, null, true, false, false, false, null)]
         // Migration AvatarState.
-        [InlineData(false, false, true, true, true, 3, 0, true, 0, 1, null, true, false, false, null)]
+        [InlineData(false, false, true, true, true, 3, 0, true, 0, 1, null, true, false, false, false, null)]
         // SubRecipe
-        [InlineData(true, true, true, true, false, 11, 0, true, 0, 2, 1, true, false, false, null)]
+        [InlineData(true, true, true, true, false, 11, 0, true, 0, 2, 1, true, false, false, false, null)]
         // Mimisbrunnr Equipment.
-        [InlineData(true, true, true, true, false, 11, 0, true, 0, 2, 3, true, true, true, null)]
+        [InlineData(true, true, true, true, false, 11, 0, true, 0, 2, 3, true, true, true, false, null)]
+        // Purchase CRYSTAL.
+        [InlineData(true, true, true, true, false, 3, 0, true, 0, 1, null, false, false, false, true, null)]
         // UnlockEquipmentRecipe not executed.
-        [InlineData(false, true, true, true, false, 11, 0, true, 0, 2, 1, true, false, false, typeof(FailedLoadStateException))]
+        [InlineData(false, true, true, true, false, 11, 0, true, 0, 2, 1, true, false, false, false, typeof(FailedLoadStateException))]
         // CRYSTAL not paid.
-        [InlineData(true, false, true, true, false, 11, 0, true, 0, 2, 1, true, false, false, typeof(InvalidRecipeIdException))]
+        [InlineData(true, false, true, true, false, 11, 0, true, 0, 2, 1, true, false, false, false, typeof(InvalidRecipeIdException))]
         // AgentState not exist.
-        [InlineData(true, true, false, true, false, 3, 0, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
+        [InlineData(true, true, false, true, false, 3, 0, true, 0, 1, null, true, false, false, false, typeof(FailedLoadStateException))]
         // AvatarState not exist.
-        [InlineData(true, true, true, false, false, 3, 0, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
-        [InlineData(true, true, true, false, true, 3, 0, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
+        [InlineData(true, true, true, false, false, 3, 0, true, 0, 1, null, true, false, false, false, typeof(FailedLoadStateException))]
+        [InlineData(true, true, true, false, true, 3, 0, true, 0, 1, null, true, false, false, false, typeof(FailedLoadStateException))]
         // Tutorial not cleared.
-        [InlineData(true, true, true, true, false, 1, 0, true, 0, 1, null, true, false, false, typeof(NotEnoughClearedStageLevelException))]
+        [InlineData(true, true, true, true, false, 1, 0, true, 0, 1, null, true, false, false, false, typeof(NotEnoughClearedStageLevelException))]
         // CombinationSlotState not exist.
-        [InlineData(true, true, true, true, false, 3, 5, true, 0, 1, null, true, false, false, typeof(FailedLoadStateException))]
+        [InlineData(true, true, true, true, false, 3, 5, true, 0, 1, null, true, false, false, false, typeof(FailedLoadStateException))]
         // CombinationSlotState locked.
-        [InlineData(true, true, true, true, false, 3, 0, false, 0, 1, null, true, false, false, typeof(CombinationSlotUnlockException))]
+        [InlineData(true, true, true, true, false, 3, 0, false, 0, 1, null, true, false, false, false, typeof(CombinationSlotUnlockException))]
         // Stage not cleared.
-        [InlineData(true, true, true, true, false, 3, 0, true, 0, 2, null, true, false, false, typeof(NotEnoughClearedStageLevelException))]
+        [InlineData(true, true, true, true, false, 3, 0, true, 0, 2, null, true, false, false, false, typeof(NotEnoughClearedStageLevelException))]
         // Not enough material.
-        [InlineData(true, true, true, true, false, 3, 0, true, 0, 1, null, false, false, false, typeof(NotEnoughMaterialException))]
+        [InlineData(true, true, true, true, false, 3, 0, true, 0, 1, null, false, false, false, false, typeof(NotEnoughMaterialException))]
+        // Purchase CRYSTAL failed by Mimisbrunnr material.
+        [InlineData(true, true, true, true, false, 11, 0, true, 0, 2, 3, false, false, true, true, typeof(NotEnoughMaterialException))]
         // Insufficient NCG.
-        [InlineData(true, true, true, true, false, 11, 0, true, 0, 2, 3, true, false, true, typeof(InsufficientBalanceException))]
+        [InlineData(true, true, true, true, false, 11, 0, true, 0, 2, 3, true, false, true, false, typeof(InsufficientBalanceException))]
         public void Execute(
             bool unlockIdsExist,
             bool crystalUnlock,
@@ -128,8 +133,9 @@ namespace Lib9c.Tests.Action
             int recipeId,
             int? subRecipeId,
             bool enoughMaterial,
-            bool balanceExist,
+            bool ncgBalanceExist,
             bool mimisbrunnr,
+            bool payByCrystal,
             Type exc
         )
         {
@@ -177,7 +183,7 @@ namespace Lib9c.Tests.Action
                                 _avatarState.inventory.AddItem(subMaterial, materialInfo.Count);
                             }
 
-                            if (balanceExist)
+                            if (ncgBalanceExist)
                             {
                                 state = state.MintAsset(
                                     _agentAddress,
@@ -217,12 +223,38 @@ namespace Lib9c.Tests.Action
                 }
             }
 
+            int expectedCrystal = 0;
+            if (payByCrystal)
+            {
+                var crystalBalance = 0;
+                var row = _tableSheets.EquipmentItemRecipeSheet[recipeId];
+                var costSheet = _tableSheets.CrystalMaterialCostSheet;
+                crystalBalance += costSheet[row.MaterialId].CRYSTAL * row.MaterialCount;
+
+                if (subRecipeId.HasValue)
+                {
+                    var subRow = _tableSheets.EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
+
+                    foreach (var materialInfo in subRow.Materials)
+                    {
+                        if (costSheet.ContainsKey(materialInfo.Id))
+                        {
+                            crystalBalance += costSheet[materialInfo.Id].CRYSTAL * row.MaterialCount;
+                        }
+                    }
+                }
+
+                expectedCrystal = crystalBalance;
+                state = state.MintAsset(_agentAddress, crystalBalance * CrystalCalculator.CRYSTAL);
+            }
+
             var action = new CombinationEquipment
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = slotIndex,
                 recipeId = recipeId,
                 subRecipeId = subRecipeId,
+                payByCrystal = payByCrystal,
             };
 
             if (exc is null)
@@ -247,7 +279,7 @@ namespace Lib9c.Tests.Action
                 {
                     Assert.True(equipment.optionCountFromCombination > 0);
 
-                    if (balanceExist)
+                    if (ncgBalanceExist)
                     {
                         Assert.Equal(450 * currency, nextState.GetBalance(Addresses.Blacksmith, currency));
                     }
@@ -275,6 +307,13 @@ namespace Lib9c.Tests.Action
                 var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
                 var mail = nextAvatarState.mailBox.OfType<CombinationMail>().First();
                 Assert.Equal(equipment, mail.attachment.itemUsable);
+
+                if (payByCrystal)
+                {
+                    Assert.Equal(0 * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
+                }
+
+                Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, nextState.GetBalance(Addresses.MaterialCost, CrystalCalculator.CRYSTAL));
             }
             else
             {
@@ -315,6 +354,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(LegacyWorldInformationKey),
                 _avatarAddress.Derive(LegacyQuestListKey),
                 Addresses.Blacksmith,
+                Addresses.MaterialCost,
             };
 
             var state = new State();
