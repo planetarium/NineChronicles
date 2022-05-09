@@ -117,12 +117,8 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(1, 1, 1, true)]
         [InlineData(1, 1, 1, false)]
-        [InlineData(2, 1, 30, true)]
-        [InlineData(2, 1, 30, false)]
-        [InlineData(5, 4, 199, false)]
-        [InlineData(5, 4, 199, true)]
-        [InlineData(9, 5, 250, false)]
-        [InlineData(9, 5, 250, true)]
+        [InlineData(2, 1, 2, true)]
+        [InlineData(2, 1, 2, false)]
         public void Execute(int apStoneCount, int worldId, int stageId, bool backward)
         {
             var gameConfigState = _initialState.GetGameConfigState();
@@ -136,6 +132,7 @@ namespace Lib9c.Tests.Action
             {
                 worldInformation =
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), stageId),
+                level = 400,
             };
 
             var row = _tableSheets.MaterialItemSheet.Values.First(r =>
@@ -438,7 +435,7 @@ namespace Lib9c.Tests.Action
                 apStoneCount = apStoneCount,
                 avatarAddress = _avatarAddress,
                 worldId = 1,
-                stageId = 25,
+                stageId = 2,
             };
 
             Assert.Throws<UsageLimitExceedException>(() => action.Execute(new ActionContext()
@@ -465,6 +462,7 @@ namespace Lib9c.Tests.Action
             {
                 worldInformation =
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+                level = 400,
             };
 
             var row = _tableSheets.MaterialItemSheet.Values.First(r =>
@@ -494,7 +492,7 @@ namespace Lib9c.Tests.Action
 
             var stageSheet = _initialState.GetSheet<StageSheet>();
             var (expectedLevel, expectedExp) = (0, 0L);
-            if (stageSheet.TryGetValue(25, out var stageRow))
+            if (stageSheet.TryGetValue(2, out var stageRow))
             {
                 var itemPlayCount =
                     gameConfigState.ActionPointMax / stageRow.CostAP * useApStoneCount;
@@ -502,7 +500,7 @@ namespace Lib9c.Tests.Action
                 var playCount = apPlayCount + itemPlayCount;
                 (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
-                    25,
+                    2,
                     playCount);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
@@ -515,7 +513,7 @@ namespace Lib9c.Tests.Action
                     actionPoint = avatarState.actionPoint,
                     apStoneCount = useApStoneCount,
                     worldId = 1,
-                    stageId = 25,
+                    stageId = 2,
                 };
 
                 Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
@@ -543,6 +541,7 @@ namespace Lib9c.Tests.Action
             {
                 worldInformation =
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+                level = 400,
                 actionPoint = 0,
             };
 
@@ -568,7 +567,7 @@ namespace Lib9c.Tests.Action
 
             var stageSheet = _initialState.GetSheet<StageSheet>();
             var (expectedLevel, expectedExp) = (0, 0L);
-            if (stageSheet.TryGetValue(25, out var stageRow))
+            if (stageSheet.TryGetValue(2, out var stageRow))
             {
                 var itemPlayCount =
                     gameConfigState.ActionPointMax / stageRow.CostAP * 1;
@@ -576,7 +575,7 @@ namespace Lib9c.Tests.Action
                 var playCount = apPlayCount + itemPlayCount;
                 (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
-                    25,
+                    2,
                     playCount);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
@@ -588,7 +587,7 @@ namespace Lib9c.Tests.Action
                     actionPoint = 999999,
                     apStoneCount = 0,
                     worldId = 1,
-                    stageId = 25,
+                    stageId = 2,
                 };
 
                 Assert.Throws<NotEnoughActionPointException>(() =>
@@ -617,6 +616,7 @@ namespace Lib9c.Tests.Action
             {
                 worldInformation =
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+                level = 400,
                 actionPoint = 0,
             };
 
@@ -642,7 +642,7 @@ namespace Lib9c.Tests.Action
 
             var stageSheet = _initialState.GetSheet<StageSheet>();
             var (expectedLevel, expectedExp) = (0, 0L);
-            if (stageSheet.TryGetValue(25, out var stageRow))
+            if (stageSheet.TryGetValue(2, out var stageRow))
             {
                 var itemPlayCount =
                     gameConfigState.ActionPointMax / stageRow.CostAP * 1;
@@ -650,7 +650,7 @@ namespace Lib9c.Tests.Action
                 var playCount = apPlayCount + itemPlayCount;
                 (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
-                    25,
+                    2,
                     playCount);
 
                 var (equipments, costumes) = GetDummyItems(avatarState);
@@ -662,7 +662,7 @@ namespace Lib9c.Tests.Action
                     actionPoint = 0,
                     apStoneCount = 0,
                     worldId = 1,
-                    stageId = 25,
+                    stageId = 2,
                 };
 
                 Assert.Throws<PlayCountIsZeroException>(() =>
@@ -725,7 +725,7 @@ namespace Lib9c.Tests.Action
                 var playCount = apPlayCount + itemPlayCount;
                 (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
                     _tableSheets.CharacterLevelSheet,
-                    25,
+                    stageId,
                     playCount);
 
                 var action = new HackAndSlashSweep
