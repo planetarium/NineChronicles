@@ -674,21 +674,47 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var itemName = await Util.GetItemNameByOrderId(eval.Action.orderId);
-            var order = await Util.GetOrder(eval.Action.orderId);
-            var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-
-            string message;
-            if (count > 1)
+            var updateSellInfos = eval.Action.updateSellInfos;
+            var errors = eval.Action.errors;
+            foreach (var updateSellInfo in updateSellInfos)
             {
-                message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_COMPLETE"),
-                    itemName, count);
+                var itemName = await Util.GetItemNameByOrderId(updateSellInfo.orderId);
+                var order = await Util.GetOrder(updateSellInfo.orderId);
+                var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
+                var price = updateSellInfo.price;
+                
+                if (errors.Exists(tuple => tuple.orderId.Equals(updateSellInfo.orderId))) // is error
+                {
+                    var errorType = errors.FirstOrDefault(tuple => tuple.orderId.Equals(updateSellInfo.orderId)).errorType;
+                    
+                    string message;
+                    if (count > 1)
+                    {
+                        message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_FAIL"), // Todo : 키 정의 안 됨
+                            itemName, L10nManager.Localize(errorType.ToString()), price, count);
+                    }
+                    else
+                    {
+                        message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_FAIL"),  // Todo : 키 정의 안 됨
+                            itemName, L10nManager.Localize(errorType.ToString()), price);
+                    }
+                    OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Alert);
+                }
+                else
+                {
+                    string message;
+                    if (count > 1)
+                    {
+                        message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_COMPLETE"),
+                            itemName, count);
+                    }
+                    else
+                    {
+                        message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
+                    }
+                    OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+                }
             }
-            else
-            {
-                message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
-            }
-            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval).Forget();
             ReactiveShopState.UpdateSellDigests();
         }

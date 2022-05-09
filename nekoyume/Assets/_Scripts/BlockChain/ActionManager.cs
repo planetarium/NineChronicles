@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -417,34 +418,16 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(
-            Guid orderId,
-            ITradableItem tradableItem,
-            int count,
-            FungibleAssetValue price,
-            ItemSubType itemSubType)
+        public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(List<UpdateSellInfo> updateSellInfos)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
-            if (!(tradableItem is TradableMaterial))
-            {
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,
-                    count);
-            }
-
-            // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
-
             var action = new UpdateSell
             {
-                orderId = orderId,
-                updateSellOrderId = Guid.NewGuid(),
-                tradableId = tradableItem.TradableId,
                 sellerAvatarAddress = avatarAddress,
-                itemSubType = itemSubType,
-                price = price,
-                count = count,
+                updateSellInfos = updateSellInfos
             };
+            
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);

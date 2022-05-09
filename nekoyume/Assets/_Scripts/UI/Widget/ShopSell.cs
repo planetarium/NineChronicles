@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Lib9c.Model.Order;
 using Libplanet.Assets;
+using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -328,12 +331,16 @@ namespace Nekoyume.UI
             }
 
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-            Game.Game.instance.ActionManager.UpdateSell(
+            var updateSellInfo = new UpdateSellInfo(
                 digest.OrderId,
-                tradableItem,
-                count,
+                Guid.NewGuid(),
+                tradableItem.TradableId,
+                itemSubType,
                 totalPrice,
-                itemSubType).Subscribe();
+                count
+            );
+            
+            Game.Game.instance.ActionManager.UpdateSell(new List<UpdateSellInfo> {updateSellInfo}).Subscribe();
             Analyzer.Instance.Track("Unity/UpdateSell");
             ResponseSell();
         }
