@@ -16,8 +16,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash13")]
-    public class HackAndSlash : GameAction
+    [ActionType("hack_and_slash12")]
+    public class HackAndSlash12 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -71,28 +71,6 @@ namespace Nekoyume.Action
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
-
-            if (worldId > 1)
-            {
-                if (worldId == GameConfig.MimisbrunnrWorldId)
-                {
-                    throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
-                }
-
-                var unlockedWorldIdsAddress = avatarAddress.Derive("world_ids");
-
-                // Unlock First.
-                if (!states.TryGetState(unlockedWorldIdsAddress, out List rawIds))
-                {
-                    throw new InvalidWorldException();
-                }
-
-                List<int> unlockedWorldIds = rawIds.ToList(StateExtensions.ToInteger);
-                if (!unlockedWorldIds.Contains(worldId))
-                {
-                    throw new InvalidWorldException();
-                }
-            }
 
             var sw = new Stopwatch();
             sw.Start();
@@ -176,6 +154,11 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
                     $"cleared stage: {world.StageClearedId}"
                 );
+            }
+
+            if (worldId == GameConfig.MimisbrunnrWorldId)
+            {
+                throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
             }
 
             sw.Stop();
