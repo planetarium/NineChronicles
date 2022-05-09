@@ -72,8 +72,6 @@ namespace Nekoyume.UI.Scroller
 
         private BigInteger _openCost;
 
-        private ItemSubType _displayingItemSubType;
-
         private List<int> _unlockableRecipeIds = new List<int>();
 
         private List<IDisposable> _disposablesOnDisabled = new List<IDisposable>();
@@ -113,11 +111,28 @@ namespace Nekoyume.UI.Scroller
         private void OpenEveryAvailableRecipes()
         {
             var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPES_FORMAT", _unlockableRecipeIds.Count);
-            Widget.Find<PaymentPopup>().Show(
-                ReactiveCrystalState.CrystalBalance,
-                _openCost,
-                usageMessage,
-                UnlockRecipeAction);
+
+            System.Action onAttract = () =>
+            {
+                Widget.Find<Craft>().Close(true);
+                Widget.Find<Grind>().Show();
+            };
+
+            if (ReactiveCrystalState.CrystalBalance.MajorUnit >= _openCost)
+            {
+                Widget.Find<PaymentPopup>().Show(
+                    ReactiveCrystalState.CrystalBalance,
+                    _openCost,
+                    usageMessage,
+                    UnlockRecipeAction,
+                    onAttract);
+            }
+            else
+            {
+                var title = L10nManager.Localize("UI_TOTAL_COST");
+                var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
+                Widget.Find<PaymentPopup>().ShowAttract(_openCost, title, message, onAttract);
+            }
         }
 
         private void UnlockRecipeAction()
@@ -146,7 +161,7 @@ namespace Nekoyume.UI.Scroller
         public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
         {
             _disposablesOnDisabled.DisposeAllAndClear();
-            _displayingItemSubType = type;
+            Craft.SharedModel.DisplayingItemSubtype = type;
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(true);
             consumableTab.SetActive(false);
@@ -216,11 +231,11 @@ namespace Nekoyume.UI.Scroller
 
         private void UpdateUnlockAllButton()
         {
-            Craft.SharedModel.UpdateUnlockableRecipes(_displayingItemSubType);
+            Craft.SharedModel.UpdateUnlockableRecipes();
             _unlockableRecipeIds = Craft.SharedModel.UnlockableRecipes.Value;
             _openCost = Craft.SharedModel.UnlockableRecipesOpenCost;
 
-            var isActive = _unlockableRecipeIds.Count >= 2;
+            var isActive = _unlockableRecipeIds.Any();
             openAllRecipeArea.SetActive(isActive);
             if (isActive)
             {

@@ -270,7 +270,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<UnlockEquipmentRecipe>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUnlockEquipmentRecipe)
+                .Subscribe(e => ResponseUnlockEquipmentRecipeAsync(e).Forget())
                 .AddTo(_disposables);
         }
 
@@ -1363,7 +1363,7 @@ namespace Nekoyume.BlockChain
             ReactiveCrystalState.UpdateCrystal(crystal);
         }
 
-        private void ResponseUnlockEquipmentRecipe(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
+        private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
         {
             var sharedModel = Craft.SharedModel;
             if (!(eval.Exception is null))
@@ -1373,8 +1373,17 @@ namespace Nekoyume.BlockChain
                     sharedModel.UnlockingRecipes.Remove(id);
                 }
                 sharedModel.SetUnlockedRecipes(sharedModel.UnlockedRecipes.Value);
+                sharedModel.UpdateUnlockableRecipes();
                 return;
             }
+
+            var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            var cost = CrystalCalculator.CalculateRecipeUnlockCost(eval.Action.RecipeIds, sheet);
+            LocalLayerModifier.ModifyAgentCrystal(
+                States.Instance.AgentState.address, cost.MajorUnit);
+
+            await UpdateCurrentAvatarStateAsync(eval);
+            await UpdateAgentStateAsync(eval);
 
             var unlockedRecipeIdsAddress = eval.Action.AvatarAddress.Derive("recipe_ids");
             var rawIds = Game.Game.instance.Agent.GetState(unlockedRecipeIdsAddress);
@@ -1382,18 +1391,12 @@ namespace Nekoyume.BlockChain
                 ((List)rawIds).ToList(Model.State.StateExtensions.ToInteger) :
                 new List<int>() { 1 };
 
-            var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
-            var cost = CrystalCalculator.CalculateRecipeUnlockCost(eval.Action.RecipeIds, sheet);
-            LocalLayerModifier.ModifyAgentCrystal(
-                States.Instance.AgentState.address, cost.MajorUnit);
-
             foreach (var id in recipeIds)
             {
                 sharedModel.UnlockingRecipes.Remove(id);
             }
             sharedModel.SetUnlockedRecipes(recipeIds);
-            UpdateCurrentAvatarStateAsync(eval);
-            UpdateAgentStateAsync(eval);
+            sharedModel.UpdateUnlockableRecipes();
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
