@@ -6,14 +6,21 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Nekoyume.Battle;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Introduced at Initial commit(2e645be18a4e2caea031c347f00777fbad5dbcc6)
+    /// Updated at many pull requests
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     public class RewardGold : ActionBase
     {
+        // Start filtering inactivate ArenaInfo
+        // https://github.com/planetarium/lib9c/issues/946
+        public const long FilterInactiveArenaInfoBlockIndex = 3_976_000L;
         public override IValue PlainValue =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
@@ -135,6 +142,7 @@ namespace Nekoyume.Action
                     var addressList = states.TryGetState(listAddress, out List rawList)
                         ? rawList.ToList(StateExtensions.ToAddress)
                         : new List<Address>();
+                    var nextAddresses = rawList ?? List.Empty;
                     if (ctx.BlockIndex >= RankingBattle11.UpdateTargetBlockIndex)
                     {
                         weekly.ResetIndex = ctx.BlockIndex;
@@ -151,12 +159,14 @@ namespace Nekoyume.Action
                                     weeklyAddress.Derive(address.ToByteArray()), info.Serialize());
                                 if (!addressList.Contains(address))
                                 {
-                                    addressList.Add(address);
+                                    nextAddresses = nextAddresses.Add(address.Serialize());
                                 }
                             }
                         }
                         else
                         {
+                            bool filterInactive =
+                                ctx.BlockIndex >= FilterInactiveArenaInfoBlockIndex;
                             // Copy addresses from prev weekly address list.
                             var prevListAddress = prevWeekly.address.Derive("address_list");
 
@@ -169,7 +179,7 @@ namespace Nekoyume.Action
                                 }
                             }
 
-                            // Copy ArenaInfo from prev ArenaInfo.
+                            // Copy activated ArenaInfo from prev ArenaInfo.
                             foreach (var address in addressList)
                             {
                                 if (states.TryGetState(
@@ -177,18 +187,23 @@ namespace Nekoyume.Action
                                         out Dictionary rawInfo))
                                 {
                                     var prevInfo = new ArenaInfo(rawInfo);
-                                    var info = new ArenaInfo(prevInfo);
+                                    var record = prevInfo.ArenaRecord;
+                                    // Filter ArenaInfo
+                                    if (filterInactive && record.Win == 0 && record.Draw == 0 &&
+                                        record.Lose == 0)
+                                    {
+                                        continue;
+                                    }
+
+                                    nextAddresses = nextAddresses.Add(address.Serialize());
                                     states = states.SetState(
                                         weeklyAddress.Derive(address.ToByteArray()),
-                                        info.Serialize());
+                                        new ArenaInfo(prevInfo).Serialize());
                                 }
                             }
                         }
-
                         // Set address list.
-                        states = states.SetState(listAddress,
-                            addressList.Aggregate(List.Empty,
-                                (current, address) => current.Add(address.Serialize())));
+                        states = states.SetState(listAddress, nextAddresses);
                     }
                     // Run legacy Update.
                     else

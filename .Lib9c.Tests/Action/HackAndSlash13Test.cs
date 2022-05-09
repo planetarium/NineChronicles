@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class HackAndSlashTest
+    public class HackAndSlash13Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -41,7 +41,7 @@ namespace Lib9c.Tests.Action
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public HackAndSlashTest()
+        public HackAndSlash13Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -183,7 +183,7 @@ namespace Lib9c.Tests.Action
                 List.Empty.Add(worldId.Serialize())
             );
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = costumes,
                 equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -252,8 +252,8 @@ namespace Lib9c.Tests.Action
             Assert.Empty(avatarState.questList.completedQuestIds);
             Assert.Equal(equipments.Count, avatarState.inventory.Items.Count);
 
-            // HackAndSlash
-            var action = new HackAndSlash
+            // HackAndSlash13
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -325,7 +325,7 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.SerializeV2());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -386,7 +386,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(_inventoryAddress, previousAvatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = equipments,
@@ -412,7 +412,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_Throw_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -442,12 +442,35 @@ namespace Lib9c.Tests.Action
             SerializeException<FailedLoadStateException>(exec);
         }
 
+        [Fact]
+        public void ExecuteThrowSheetRowNotFoundExceptionByWorld()
+        {
+            var action = new HackAndSlash13
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 100,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+            };
+
+            var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+
+            SerializeException<SheetRowNotFoundException>(exec);
+        }
+
         [Theory]
         [InlineData(0)]
         [InlineData(51)]
         public void ExecuteThrowSheetRowColumnException(int stageId)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -470,7 +493,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByStage()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -496,7 +519,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedAddWorldException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -535,7 +558,7 @@ namespace Lib9c.Tests.Action
         [InlineData(2, 51, true)]
         public void Execute_Throw_InvalidWorldException(int worldId, int stageId, bool unlockedIdsExist)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -567,7 +590,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -607,7 +630,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageExceptionUnlockedWorld()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -643,7 +666,7 @@ namespace Lib9c.Tests.Action
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
             avatarState.inventory.AddItem(equipment);
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>
@@ -690,7 +713,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             state = state.SetState(_inventoryAddress, avatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>
@@ -721,7 +744,7 @@ namespace Lib9c.Tests.Action
                 actionPoint = 0,
             };
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -781,7 +804,7 @@ namespace Lib9c.Tests.Action
             .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
             .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = costumes,
                 equipments = equipments,
@@ -850,7 +873,7 @@ namespace Lib9c.Tests.Action
                             avatarState.address.Derive(LegacyInventoryKey),
                             avatarState.inventory.Serialize());
 
-                    var action = new HackAndSlash
+                    var action = new HackAndSlash13
                     {
                         costumes = costumes,
                         equipments = equipments,
@@ -959,7 +982,7 @@ namespace Lib9c.Tests.Action
                 List.Empty.Add(worldId.Serialize())
             );
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = costumes,
                 equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -1021,7 +1044,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash13
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),

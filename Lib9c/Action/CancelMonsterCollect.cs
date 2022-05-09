@@ -11,6 +11,13 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Introduced at https://github.com/planetarium/lib9c/pull/383
+    /// Renamed at https://github.com/planetarium/lib9c/pull/400
+    /// Obsoleted at https://github.com/planetarium/lib9c/pull/487
+    /// Updated at many pull requests
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("cancel_monster_collect")]

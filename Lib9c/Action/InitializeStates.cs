@@ -8,6 +8,23 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Introduced at Initial commit(2e645be18a4e2caea031c347f00777fbad5dbcc6)
+    /// Updated at NCG distribution(7e4515b6e14cc5d6eb716d5ebb587ab04b4246f9)
+    /// Updated at https://github.com/planetarium/lib9c/pull/19
+    /// Updated at https://github.com/planetarium/lib9c/pull/36
+    /// Updated at https://github.com/planetarium/lib9c/pull/42
+    /// Updated at https://github.com/planetarium/lib9c/pull/55
+    /// Updated at https://github.com/planetarium/lib9c/pull/57
+    /// Updated at https://github.com/planetarium/lib9c/pull/60
+    /// Updated at https://github.com/planetarium/lib9c/pull/102
+    /// Updated at https://github.com/planetarium/lib9c/pull/128
+    /// Updated at https://github.com/planetarium/lib9c/pull/167
+    /// Updated at https://github.com/planetarium/lib9c/pull/422
+    /// Updated at https://github.com/planetarium/lib9c/pull/747
+    /// Updated at https://github.com/planetarium/lib9c/pull/798
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionType("initialize_states")]
     public class InitializeStates : GameAction

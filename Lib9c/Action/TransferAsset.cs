@@ -12,6 +12,10 @@ using Nekoyume.Model;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/636
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionType("transfer_asset2")]
     public class TransferAsset : ActionBase, ISerializable

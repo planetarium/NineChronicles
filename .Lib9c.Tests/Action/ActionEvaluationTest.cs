@@ -160,7 +160,6 @@ namespace Lib9c.Tests.Action
                     foods = new List<Guid>(),
                     worldId = 0,
                     stageId = 0,
-                    playCount = 0,
                     avatarAddress = new PrivateKey().ToAddress(),
                 },
                 ActivateAccount _ => new ActivateAccount(new PrivateKey().ToAddress(), new byte[] { 0x0 }),
