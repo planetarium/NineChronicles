@@ -138,6 +138,8 @@ namespace Lib9c.Tests
 
         public StakeAchievementRewardSheet StakeAchievementRewardSheet { get; private set; }
 
+        public SweepRequiredCPSheet SweepRequiredCPSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
