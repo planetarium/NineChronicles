@@ -16,27 +16,22 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash_sweep3")]
-    public class HackAndSlashSweep : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex)]
+    [ActionType("hack_and_slash_sweep2")]
+    public class HackAndSlashSweep2 : GameAction
     {
         public const int UsableApStoneCount = 10;
 
-        public List<Guid> costumes;
-        public List<Guid> equipments;
         public Address avatarAddress;
         public int apStoneCount = 0;
-        public int actionPoint = 0;
         public int worldId;
         public int stageId;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
             {
-                ["costumes"] = new List(costumes.OrderBy(i => i).Select(e => e.Serialize())),
-                ["equipments"] = new List(equipments.OrderBy(i => i).Select(e => e.Serialize())),
                 ["avatarAddress"] = avatarAddress.Serialize(),
                 ["apStoneCount"] = apStoneCount.Serialize(),
-                ["actionPoint"] = actionPoint.Serialize(),
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
             }.ToImmutableDictionary();
@@ -44,11 +39,8 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
-            equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             apStoneCount = plainValue["apStoneCount"].ToInteger();
-            actionPoint = plainValue["actionPoint"].ToInteger();
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
         }
@@ -66,6 +58,8 @@ namespace Nekoyume.Action
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(context.Signer, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -96,13 +90,6 @@ namespace Nekoyume.Action
                     typeof(MaterialItemSheet),
                     typeof(StageWaveSheet),
                     typeof(CharacterLevelSheet),
-                    typeof(ItemRequirementSheet),
-                    typeof(EquipmentItemRecipeSheet),
-                    typeof(EquipmentItemSubRecipeSheetV2),
-                    typeof(EquipmentItemOptionSheet),
-                    typeof(CharacterSheet),
-                    typeof(CostumeStatSheet),
-                    typeof(SweepRequiredCPSheet),
                 });
 
             var worldSheet = sheets.GetSheet<WorldSheet>();
@@ -143,32 +130,6 @@ namespace Nekoyume.Action
                 );
             }
 
-            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            var costumeIds = avatarState.ValidateCostume(costumes);
-            var items = equipments.Concat(costumes);
-            avatarState.EquipItems(items);
-            avatarState.ValidateItemRequirement(
-                costumeIds,
-                equipmentList,
-                sheets.GetSheet<ItemRequirementSheet>(),
-                sheets.GetSheet<EquipmentItemRecipeSheet>(),
-                sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
-                sheets.GetSheet<EquipmentItemOptionSheet>(),
-                addressesHex);
-
-            var sweepRequiredCpSheet = sheets.GetSheet<SweepRequiredCPSheet>();
-            if (sweepRequiredCpSheet.TryGetValue(stageId, out var cpRow))
-            {
-                var characterSheet = sheets.GetSheet<CharacterSheet>();
-                var costumeStatSheet = sheets.GetSheet<CostumeStatSheet>();
-                var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
-                if (cp < cpRow.RequiredCP)
-                {
-                    throw new NotEnoughCombatPointException(
-                        $"{addressesHex}Aborted due to lack of player cp ({cp} < {cpRow.RequiredCP})");;
-                }
-            }
-
             var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             if (apStoneCount > 0)
             {
@@ -188,25 +149,20 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the game config state was failed to load.");
             }
 
-            if (actionPoint > avatarState.actionPoint)
+            var apStonePlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
+            var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
+            var playCount = apStonePlayCount + apPlayCount;
+            if (playCount <= 0)
             {
+                var ap = avatarState.actionPoint + gameConfigState.ActionPointMax * apStoneCount;
                 throw new NotEnoughActionPointException(
-                    $"{addressesHex}Aborted due to insufficient action point: " +
-                    $"use AP({actionPoint}) > current AP({avatarState.actionPoint})"
+                    $"{addressesHex}Aborted due to insufficient action point: {ap} < required cost : {stageRow.CostAP})"
                 );
             }
 
             // burn ap
-            avatarState.actionPoint -= actionPoint;
-
-            var apStonePlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
-            var apPlayCount = actionPoint / stageRow.CostAP;
-            var playCount = apStonePlayCount + apPlayCount;
-            if (playCount <= 0)
-            {
-                throw new PlayCountIsZeroException($"{addressesHex}playCount must be greater than 0. " +
-                                                   $"current playCount : {playCount}");
-            }
+            var remainActionPoint = Math.Max(0, avatarState.actionPoint - stageRow.CostAP * apPlayCount);
+            avatarState.actionPoint = remainActionPoint;
 
             var stageWaveSheet = sheets.GetSheet<StageWaveSheet>();
             avatarState.UpdateMonsterMap(stageWaveSheet, stageId);
