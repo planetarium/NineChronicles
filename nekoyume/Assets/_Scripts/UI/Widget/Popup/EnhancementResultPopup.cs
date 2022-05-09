@@ -76,6 +76,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private float _intervalTimeOfShowOptions;
 
+        [SerializeField]
+        private GameObject gainCrystalObject;
+
+        [SerializeField]
+        private TMP_Text gainCrystalText;
+
 #if UNITY_EDITOR
         [Space(10)]
         [Header("Editor Properties For Test")]
@@ -179,13 +185,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Show(result.enhancementResult, preEquipment, equipment);
+            Show(result.enhancementResult, preEquipment, equipment, result.CRYSTAL.GetQuantityString(true));
         }
 
         public void Show(
             ItemEnhancement.EnhancementResult enhancementResult,
             Equipment preEquipment,
-            Equipment equipment)
+            Equipment equipment,
+            string crystal = "0")
         {
             if (preEquipment is null)
             {
@@ -276,6 +283,8 @@ namespace Nekoyume.UI
                     _titleSuccessObject.SetActive(false);
                     _titleGreatSuccessObject.SetActive(false);
                     _titleFailSuccessObject.SetActive(true);
+                    gainCrystalObject.SetActive(!crystal.Equals("0"));
+                    gainCrystalText.text = crystal;
                     Animator.SetTrigger(AnimatorHashFail);
                     break;
                 default:
