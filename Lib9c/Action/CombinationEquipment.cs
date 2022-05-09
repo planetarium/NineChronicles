@@ -7,11 +7,13 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Crystal;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -33,6 +35,8 @@ namespace Nekoyume.Action
 
         public const string SubRecipeIdKey = "i";
         public int? subRecipeId;
+        public const string PayByCrystalKey = "p";
+        public bool payByCrystal;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -41,6 +45,7 @@ namespace Nekoyume.Action
                 [SlotIndexKey] = slotIndex.Serialize(),
                 [RecipeIdKey] = recipeId.Serialize(),
                 [SubRecipeIdKey] = subRecipeId.Serialize(),
+                [PayByCrystalKey] = payByCrystal.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
@@ -50,6 +55,7 @@ namespace Nekoyume.Action
             slotIndex = plainValue[SlotIndexKey].ToInteger();
             recipeId = plainValue[RecipeIdKey].ToInteger();
             subRecipeId = plainValue[SubRecipeIdKey].ToNullableInteger();
+            payByCrystal = plainValue[PayByCrystalKey].ToBoolean();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -74,7 +80,7 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress);
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress, Addresses.MaterialCost);
             }
 
             if (recipeId != 1)
@@ -132,6 +138,7 @@ namespace Nekoyume.Action
             var costNCG = 0L;
             var endBlockIndex = context.BlockIndex;
             var requiredFungibleItems = new Dictionary<int, int>();
+            var costCrystal = 0 * CrystalCalculator.CRYSTAL;
 
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
             {
@@ -141,6 +148,7 @@ namespace Nekoyume.Action
                 typeof(EquipmentItemSubRecipeSheetV2),
                 typeof(EquipmentItemOptionSheet),
                 typeof(SkillSheet),
+                typeof(CrystalMaterialCostSheet),
             });
 
             // Validate RecipeId
@@ -252,16 +260,43 @@ namespace Nekoyume.Action
 
             // Remove Required Materials
             var inventory = avatarState.inventory;
+            var crystalMaterialSheet = sheets.GetSheet<CrystalMaterialCostSheet>();
             foreach (var pair in requiredFungibleItems.OrderBy(pair => pair.Key))
             {
-                if (!materialItemSheet.TryGetValue(pair.Key, out materialRow) ||
-                    !inventory.RemoveFungibleItem(materialRow.ItemId, context.BlockIndex, pair.Value))
+                var itemId = pair.Key;
+                var requiredCount = pair.Value;
+                if (materialItemSheet.TryGetValue(itemId, out materialRow))
                 {
-                    throw new NotEnoughMaterialException(
-                        $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
+                    int itemCount = inventory.TryGetItem(itemId, out Inventory.Item item)
+                        ? item.count
+                        : 0;
+                    if (itemCount < requiredCount && payByCrystal)
+                    {
+                        if (crystalMaterialSheet.TryGetValue(itemId, out var costRow))
+                        {
+                            costCrystal += (requiredCount - itemCount) * costRow.CRYSTAL * CrystalCalculator.CRYSTAL;
+                            requiredCount = itemCount;
+                        }
+                    }
+
+                    if (requiredCount > 0 && !inventory.RemoveFungibleItem(materialRow.ItemId, context.BlockIndex,
+                            requiredCount))
+                    {
+                        throw new NotEnoughMaterialException(
+                            $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
+                    }
+                }
+                else
+                {
+                    throw new SheetRowNotFoundException(nameof(MaterialItemSheet), itemId);
                 }
             }
             // ~Remove Required Materials
+            var crystalBalance = states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
+            if (costCrystal > crystalBalance)
+            {
+                throw new NotEnoughFungibleAssetValueException($"required {costCrystal}, but balance is {crystalBalance}");
+            }
 
             // Subtract Required ActionPoint
             if (costActionPoint > 0)
@@ -342,6 +377,11 @@ namespace Nekoyume.Action
                 endBlockIndex);
             avatarState.Update(mail);
             // ~Create Mail
+
+            if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
+            {
+                states = states.TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
+            }
 
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
