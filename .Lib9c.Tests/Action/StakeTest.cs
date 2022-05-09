@@ -149,5 +149,14 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(action.Amount, deserialized.Amount);
         }
+
+        [Fact]
+        public void CannotBePolymorphicAction()
+        {
+            Assert.Throws<MissingActionTypeException>(() =>
+            {
+                PolymorphicAction<ActionBase> action = new Stake(100);
+            });
+        }
     }
 }
