@@ -185,7 +185,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Show(result.enhancementResult, preEquipment, equipment, result.CRYSTAL.GetQuantityString(true));
+            Show(result.enhancementResult, preEquipment, equipment, result.CRYSTAL.GetQuantityString());
         }
 
         public void Show(

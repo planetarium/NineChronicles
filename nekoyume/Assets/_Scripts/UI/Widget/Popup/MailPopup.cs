@@ -339,7 +339,7 @@ namespace Nekoyume.UI
             {
                 if (itemEnhanceMail.attachment is ItemEnhancement.ResultModel result)
                 {
-                    LocalLayerModifier.ModifyAgentCrystal(States.Instance.AgentState.address, result.CRYSTAL.RawValue);
+                    LocalLayerModifier.ModifyAgentCrystal(States.Instance.AgentState.address, result.CRYSTAL.MajorUnit);
                 }
 
                 LocalLayerModifier.AddItem(

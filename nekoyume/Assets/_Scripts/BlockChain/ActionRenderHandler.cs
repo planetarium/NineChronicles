@@ -563,7 +563,7 @@ namespace Nekoyume.BlockChain
 
                 // Notify
                 var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-                UI.NotificationSystem.Reserve(
+                NotificationSystem.Reserve(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
@@ -600,13 +600,14 @@ namespace Nekoyume.BlockChain
                 }
 
                 LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
-                LocalLayerModifier.ModifyAgentCrystal(agentAddress, -result.CRYSTAL.RawValue);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 UpdateCombinationSlotState(slotIndex, slot);
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                // It needs update gold in UpdateAgentStateAsync. But It doesn't need update crystal in UpdateAgentStateAsync.
+                LocalLayerModifier.ModifyAgentCrystal(agentAddress, -result.CRYSTAL.MajorUnit);
 
                 // Notify
                 string formatKey;
@@ -628,7 +629,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 var format = L10nManager.Localize(formatKey);
-                UI.NotificationSystem.Reserve(
+                NotificationSystem.Reserve(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
@@ -1359,9 +1360,6 @@ namespace Nekoyume.BlockChain
                 NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
             UpdateAgentStateAsync(eval);
-            var currency = new Currency("CRYSTAL", 18, minters: null);
-            var crystal = eval.OutputStates.GetBalance(eval.Signer, currency);
-            ReactiveCrystalState.UpdateCrystal(crystal);
         }
 
         private void ResponseUnlockEquipmentRecipe(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
