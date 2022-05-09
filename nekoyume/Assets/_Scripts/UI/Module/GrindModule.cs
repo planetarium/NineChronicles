@@ -132,11 +132,6 @@ namespace Nekoyume.UI.Module
 
         private void Subscribe()
         {
-            grindButton.OnSubmitSubject.Subscribe(_ =>
-            {
-                Action(_selectedItemsForGrind.Select(inventoryItem =>
-                    (Equipment) inventoryItem.ItemBase).ToList(), false);
-            }).AddTo(_disposables);
             grindButton.OnClickDisabledSubject.Subscribe(_ =>
             {
                 var l10nkey = _selectedItemsForGrind.Any()
@@ -148,10 +143,20 @@ namespace Nekoyume.UI.Module
             }).AddTo(_disposables);
             grindButton.OnClickSubject.Subscribe(state =>
             {
-                if (state == ConditionalButton.State.Conditional)
+                switch (state)
                 {
-                    Action(_selectedItemsForGrind.Select(inventoryItem =>
-                        (Equipment) inventoryItem.ItemBase).ToList(), true);
+                    case ConditionalButton.State.Normal:
+                        Action(_selectedItemsForGrind.Select(inventoryItem =>
+                            (Equipment) inventoryItem.ItemBase).ToList());
+                        break;
+                    case ConditionalButton.State.Conditional:
+                        Action(_selectedItemsForGrind.Select(inventoryItem =>
+                            (Equipment) inventoryItem.ItemBase).ToList());
+                        break;
+                    case ConditionalButton.State.Disabled:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(state), state, null);
                 }
             }).AddTo(_disposables);
 
@@ -314,7 +319,7 @@ namespace Nekoyume.UI.Module
                 item.level > 0 || item.Skills.Any() || item.BuffSkills.Any());
         }
 
-        private void Action(List<Equipment> equipments, bool chargeAp)
+        private void Action(List<Equipment> equipments)
         {
             if (!equipments.Any() || equipments.Count > LimitGrindingCount)
             {
@@ -329,14 +334,7 @@ namespace Nekoyume.UI.Module
                     "UI_GRINDING_CONFIRM");
                 system.ConfirmCallback = () =>
                 {
-                    if (chargeAp)
-                    {
-                        CheckUseApPotionForAction(equipments);
-                    }
-                    else
-                    {
-                        PushAction(equipments, false);
-                    }
+                    CheckUseApPotionForAction(equipments);
                 };
             }
             else
