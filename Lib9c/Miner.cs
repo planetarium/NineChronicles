@@ -40,21 +40,6 @@ namespace Nekoyume.BlockChain
 
         public Address Address => _privateKey.ToAddress();
 
-        public Transaction<NCAction> StageProofTransaction()
-        {
-            // We assume authorized miners create no transactions at all except for
-            // proof transactions.  Without the assumption, nonces for proof txs become
-            // much complicated to determine.
-            var proof = Transaction<NCAction>.Create(
-                _chain.GetNextTxNonce(_privateKey.ToAddress()),
-                _privateKey,
-                _chain.Genesis.Hash,
-                new NCAction[0]
-            );
-            _chain.StageTransaction(proof);
-            return proof;
-        }
-
         public async Task<Block<NCAction>> MineBlockAsync(
             CancellationToken cancellationToken)
         {
@@ -72,18 +57,11 @@ namespace Nekoyume.BlockChain
                     _chain.UnstageTransaction(tx);
                 }
 
-                // All miner needs proof in permissioned mining:
-                Transaction<NCAction> proof = StageProofTransaction();
-
-                // Proof txs have priority over other txs:
-                IComparer<Transaction<NCAction>> txPriority = GetProofTxPriority(proof);
-
                 block = await _chain.MineBlock(
                     _privateKey,
                     DateTimeOffset.UtcNow,
                     cancellationToken: cancellationToken,
-                    append: true,
-                    txPriority: txPriority);
+                    append: true);
 
                 if (_swarm is Swarm<NCAction> s && s.Running)
                 {
@@ -138,12 +116,5 @@ namespace Nekoyume.BlockChain
             _swarm = swarm;
             _privateKey = privateKey;
         }
-
-        public static IComparer<Transaction<NCAction>> GetProofTxPriority(
-            Transaction<NCAction> proofTx
-        ) =>
-            Comparer<Transaction<NCAction>>.Create(
-                (a, b) => a.Id.Equals(proofTx.Id) ? -1 : (b.Id.Equals(proofTx.Id) ? 1 : 0)
-            );
     }
 }

@@ -17,6 +17,13 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/602
+    /// Updated at https://github.com/planetarium/lib9c/pull/609
+    /// Updated at https://github.com/planetarium/lib9c/pull/620
+    /// Updated at https://github.com/planetarium/lib9c/pull/861
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionType("sell_cancellation9")]
     public class SellCancellation : GameAction

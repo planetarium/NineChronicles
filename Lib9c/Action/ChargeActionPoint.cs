@@ -12,6 +12,13 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/430
+    /// Updated at https://github.com/planetarium/lib9c/pull/474
+    /// Updated at https://github.com/planetarium/lib9c/pull/602
+    /// Updated at https://github.com/planetarium/lib9c/pull/861
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// </summary>
     [Serializable]
     [ActionType("charge_action_point3")]
     public class ChargeActionPoint : GameAction
