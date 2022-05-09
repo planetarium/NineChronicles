@@ -24,6 +24,7 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using mixpanel;
+using Material = Nekoyume.Model.Item.Material;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -97,6 +98,7 @@ namespace Nekoyume.BlockChain
             HackAndSlash();
             RankingBattle();
             MimisbrunnrBattle();
+            HackAndSlashSweep();
 
             // Craft
             CombinationConsumable();
@@ -334,6 +336,15 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void HackAndSlashSweep()
+        {
+            _actionRenderer.EveryRender<HackAndSlashSweep>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseHackAndSlashSweep)
+                .AddTo(_disposables);
+        }
+
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
         {
             if (eval.Exception is null)
@@ -420,8 +431,8 @@ namespace Nekoyume.BlockChain
                     NotificationCell.NotificationType.Notification);
 
                 UpdateCombinationSlotState(slotIndex, slotState);
-                UpdateAgentStateAsync(eval);
-                UpdateCurrentAvatarStateAsync(eval);
+                UpdateAgentStateAsync(eval).Forget();
+                UpdateCurrentAvatarStateAsync(eval).Forget();
             }
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
@@ -460,8 +471,8 @@ namespace Nekoyume.BlockChain
                         gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
 
                 UpdateCombinationSlotState(slotIndex, slot);
-                UpdateAgentStateAsync(eval);
-                UpdateCurrentAvatarStateAsync(eval);
+                UpdateAgentStateAsync(eval).Forget();
+                UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
 
                 if (!(nextQuest is null))
@@ -546,8 +557,8 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 UpdateCombinationSlotState(slotIndex, slot);
-                UpdateAgentStateAsync(eval);
-                UpdateCurrentAvatarStateAsync(eval);
+                UpdateAgentStateAsync(eval).Forget();
+                UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
                 // Notify
@@ -592,8 +603,8 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 UpdateCombinationSlotState(slotIndex, slot);
-                UpdateAgentStateAsync(eval);
-                UpdateCurrentAvatarStateAsync(eval);
+                UpdateAgentStateAsync(eval).Forget();
+                UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
                 // Notify
@@ -657,7 +668,7 @@ namespace Nekoyume.BlockChain
                     message,
                     NotificationCell.NotificationType.Information);
 
-                UpdateCurrentAvatarStateAsync(eval);
+                UpdateCurrentAvatarStateAsync(eval).Forget();
                 ReactiveShopState.UpdateSellDigests();
             }
         }
@@ -688,7 +699,7 @@ namespace Nekoyume.BlockChain
             }
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
 
-            UpdateCurrentAvatarStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval).Forget();
             ReactiveShopState.UpdateSellDigests();
         }
 
@@ -714,7 +725,7 @@ namespace Nekoyume.BlockChain
                 message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
             }
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
-            UpdateCurrentAvatarStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval).Forget();
             ReactiveShopState.UpdateSellDigests();
         }
 
@@ -831,8 +842,8 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            UpdateAgentStateAsync(eval);
-            UpdateCurrentAvatarStateAsync(eval);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -848,7 +859,7 @@ namespace Nekoyume.BlockChain
             {
                 LocalLayer.Instance.ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                     eval.Action.avatarAddress);
-                UpdateCurrentAvatarStateAsync(eval);
+                UpdateCurrentAvatarStateAsync(eval).Forget();
                 UI.NotificationSystem.Push(
                     MailType.System,
                     L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"),
@@ -873,7 +884,7 @@ namespace Nekoyume.BlockChain
                         {
                             var task = UniTask.Run(() =>
                             {
-                                UpdateCurrentAvatarStateAsync(eval);
+                                UpdateCurrentAvatarStateAsync(eval).Forget();
                                 UpdateWeeklyArenaState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
@@ -895,12 +906,10 @@ namespace Nekoyume.BlockChain
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
                     Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080,
-                    eval.Action.playCount
-                );
-                simulator.Simulate(eval.Action.playCount);
+                    StageSimulator.ConstructorVersionV100080);
+                simulator.Simulate(1);
                 var log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
+                Game.Game.instance.Stage.PlayCount = 1;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -937,6 +946,31 @@ namespace Nekoyume.BlockChain
             }
         }
 
+        private void ResponseHackAndSlashSweep(ActionBase.ActionEvaluation<HackAndSlashSweep> eval)
+        {
+            if (eval.Exception is null)
+            {
+                Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
+                
+                if (eval.Action.apStoneCount > 0)
+                {
+                    var avatarAddress = eval.Action.avatarAddress;
+                    var costAP = Widget.Find<SweepPopup>().CostAP;
+                    LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, costAP);
+                    var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                        r.ItemSubType == ItemSubType.ApStone);
+                    LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
+                }
+
+                UpdateCurrentAvatarStateAsync().Forget();
+            }
+            else
+            {
+                Widget.Find<SweepResultPopup>().Close();
+                Game.Game.BackToMain(false, eval.Exception.InnerException).Forget();
+            }
+        }
+
         private void ResponseMimisbrunnr(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
         {
             if (eval.Exception is null)
@@ -954,7 +988,7 @@ namespace Nekoyume.BlockChain
                         {
                             var task = UniTask.Run(() =>
                             {
-                                UpdateCurrentAvatarStateAsync(eval);
+                                UpdateCurrentAvatarStateAsync(eval).Forget();
                                 UpdateWeeklyArenaState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
@@ -1034,8 +1068,8 @@ namespace Nekoyume.BlockChain
                         {
                             var task = UniTask.Run(() =>
                             {
-                                UpdateAgentStateAsync(eval);
-                                UpdateCurrentAvatarStateAsync(eval);
+                                UpdateAgentStateAsync(eval).Forget();
+                                UpdateCurrentAvatarStateAsync().Forget();
                                 UpdateWeeklyArenaState(eval);
                                 _disposableForBattleEnd = null;
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
@@ -1132,7 +1166,7 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<CodeRewardPopup>().Show(eval.Action.Code, eval.OutputStates.GetRedeemCodeState());
                 key = "UI_REDEEM_CODE_SUCCESS";
-                UpdateCurrentAvatarStateAsync(eval);
+                UpdateCurrentAvatarStateAsync(eval).Forget();
                 var msg = L10nManager.Localize(key);
                 UI.NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Information);
             }
@@ -1162,7 +1196,7 @@ namespace Nekoyume.BlockChain
                     GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
                 }
 
-                UpdateCurrentAvatarStateAsync(eval);
+                UpdateCurrentAvatarStateAsync(eval).Forget();
             }
         }
 
@@ -1247,8 +1281,8 @@ namespace Nekoyume.BlockChain
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
                 NotificationCell.NotificationType.Information);
 
-            UpdateAgentStateAsync(eval);
-            UpdateCurrentAvatarStateAsync(eval);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 

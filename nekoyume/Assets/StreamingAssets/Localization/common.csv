@@ -157,7 +157,7 @@ Grand succès!! J'ai fini la fabrication de {0}","<color=#FFA78B>[Практик
 عظیم کامیابی!! میں فارغ تیار {0} ہے.","<color=#FFA78B>[车间猫]</color>
 巨大的成功！！ 我已经完成了{0}的制作工作。","<color=#FFA78B>[Műhelymunka]</color>
 Nagy siker!! Végeztem ravaszkodó {0}"
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER,"<color=#FFA78B>[Workshop Deverg]</color>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER,"<color=#FFA78B>[Workshop dverg]</color>
 Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 대성공!! {0} 제작을 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
 Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[Gato de oficina]</color>
@@ -176,7 +176,7 @@ Grand succès!! J'ai fini la fabrication de {0}","<color=#FFA78B>[Практик
 عظیم کامیابی!! میں فارغ تیار {0} ہے.","<color=#FFA78B>[车间猫]</color>
 巨大的成功！！ 我已经完成了{0}的制作工作。","<color=#FFA78B>[Műhelymunka]</color>
 Nagy siker!! Végeztem ravaszkodó {0}"
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop Deverg]</color>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop dverg]</color>
 Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 ]</color>
 미안하네, {0} 강화를 실패했다네.","<color=#FFA78B>[Gato de oficina]</color>
 Desculpe, não consegui atualizar {0}","<color=#FFA78B>[Gato de oficina]</color>
@@ -449,7 +449,7 @@ UI_LOADING_ACTION_EXECUTE,Executing actions... {0} / {1},액션 실행 중... {0
 UI_RECEIVE,Receive,받기,Receber,,受信,Erhalten,,รับ,Odbierz,,,Terima,Recevoir,,,,接收,
 UI_RECEIVED,Received,받음,Recebido,,受信済,Erhalten,,ได้รับ,Odebrano,,,Diterima,Reçu,,,,接收,
 UI_GET_REWARDS,Receive Rewards,보상 받기,Receba as recompensas,,報酬の受けとり,Erhalte Belohnungen,,รับรางวัล,Otrzymaj nagrody,,,Terima Hadiah,Récompenses Reçues,,,,接收奖励,
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<color=#FFA78B>[Workshop Deverg]</color>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<color=#FFA78B>[Workshop dverg]</color>
 I've finished upgrading {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 {0} 강화를 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
 Concluí o upgrade do {0}","<color=#FFA78B>[Gato de oficina]</color>
@@ -1058,7 +1058,6 @@ UI_ACQUISITION_PLACE,Acquisition Place,획득 장소,Lugar de aquisição,,獲�
 UI_PLACE_STAKING,Monster Collection,몬스터콜렉션,Coleção monstro.,,モンスターコレクション,Monster Kollektion.,Colección Monster,คอลเลกชันมอนสเตอร์,Kolekcja Monster.,Monster Collection.,Monstercollectie,Koleksi Monster,Collection de monstres,Коллекция монстра,ការប្រមូលបិសាច,,怪物集合,Szörnyeteggyűjtemény
 UI_EAR_REVOMON,Revomon Limited Ears,레보몬 한정판 귀,Orelhas Limitadas da Revomon,,Revomon Limited Ears.,RevoMon Begrenzte Ohren,Orejas limitadas de Revomon,หู Revomon จำกัด,Revomon Limited Ears.,Revomon Limited Ears.,RevoMon Limited Ears,Revomon Limited Ears.,Revomon limitée oreilles,RevoMon Limited уши,ត្រចៀកមានកំណត់វ៉ារ៉ូម,,Revomon有限的耳朵,Revomon korlátozott fülek
 UI_TAIL_REVOMON,Revomon Limited Tails,레보몬 한정판 꼬리,Revomon Limited Tails.,,Revomon Limited Tails,RevoMon Limited Tails.,Revomon Limited Tails,Revomon Limited Tails,Ogony z Revomon.,Revomon ribotos uodegos,RevoMon Limited Tails,Revomon Limited Tails.,Revomon Limitée Tails,RevoMon Limited хвосты,កន្ទុយលីនុចមានកំណត់,,Revomon有限的尾巴,Revomon korlátozott farok
-UI_RETRYING_RPC_CONNECTION_FORMAT,Retrying RPC connection... (Attempt : {0}/{1}),RPC 연결 재시도 중... (시도 횟수 : {0}/{1}),,,,,,,,,,,,,,,,
 UI_NCG,NCG,,,,,,,,,,,,,,,,,
 UI_CRYSTAL,Crystal,크리스탈,,,,,,,,,,,,,,,,
 UI_UNLOCK_RECIPE,Unlock recipe,레시피 해금,,,,,,,,,,,,,,,,
@@ -1086,3 +1085,15 @@ Do you want to recharge your action points by AP Potion and do {0}?
 AP 포션을 사용하여 AP를 채우고 {0}을(를) 진행하시겠습니까?
 (AP 포션 보유량 : {1})",,,,,,,,,,,,,,,,
 UI_WARNING,Warning,경고,,,,,,,,,,,,,,,,
+UI_RETRYING_RPC_CONNECTION_FORMAT,Retrying RPC connection... (Attempt : {0}/{1}),RPC 연결 재시도중... (시도 횟수 : {0}/{1}),Repetindo a conexão RPC ... (tentativa: {0} / {1}),,RPC接続の再試行...（試行：{0} / {1}）,RPC-Verbindung wiederholen ... (Versuch: {0} / {1}),Reintentar la conexión RPC ... (intento: {0} / {1}),ลองการเชื่อมต่อ RPC อีกครั้ง ... (พยายาม: {0} / {1}),Retrywanie połączenia RPC ... (próba: {0} / {1}),Pakartokite RPC ryšį ... (bandymas: {0} / {1}),Herhaling RPC-verbinding ... (poging: {0} / {1}),Coba lagi Koneksi RPC ... (Upaya: {0} / {1}),Réessayer la connexion RPC ... (tentative: {0} / {1}),Стройное соединение RPC ... (попытка: {0} / {1}),ព្យាយាមតភ្ជាប់ RPC ឡើងវិញ ... (ការប៉ុនប៉ង: {0} / {1}),,重试RPC连接...（尝试：{0} / {1}）,RPC kapcsolat újraindítása ... (kísérlet: {0} / {1})))
+UI_AP,Action point,행동력,Ponto de ação,,アクションポイント,Aktionspunkt,Punto de accion,จุดดำเนินการ,Punkt akcji,Veiksmo taškas,Actiepunt,Titik aksi,Point d'action,Точка действия,ចំណុចសកម្មភាព,,,
+UI_AP_POTION,AP Potion,AP 포션,Poção AP,,APポーション,AP Trank,Poción,AP POTION,Mikstura AP,Ap Potion,AP Potion,Ramuan AP,Ap potion,AP Potion,app potion,,,
+UI_ACQUISITION_EXP,Acquisition EXP,획득 경험치,Aquisição Exp,,買収exp,Akquisition exp,Adquisición exp,EXP ซื้อกิจการ,Exp,Įsigijimo ekspozicija,Acquisition Exp,Akuisisi Exp,Acquisition exp,Приобретение экс,ការទិញយក Exp,,,
+UI_USE,Use,사용,Usar,,使用する,Benutzen,Usar,ใช้,Posługiwać się,Naudoti,Gebruik,Menggunakan,Utiliser,Использовать,រេបី,,,
+UI_SWEEP_PLAY_COUNT_ZERO,Not enough action points. Please use an AP Potion.,AP가 부족합니다. AP 포션을 사용해주세요.,"Pontos de ação não suficientes. Por favor, use uma poção AP.",,十分なアクションポイントがありません。 APポーションを使用してください。,Nicht genug Aktionspunkte. Bitte verwenden Sie einen AP -Trank.,No hay suficientes puntos de acción. Utilice una poción AP.,จุดดำเนินการไม่เพียงพอ กรุณาใช้ยา AP,Za mało punktów akcji. Użyj mikstury AP.,Nepakanka veiksmų taškų. Prašome naudoti „AP Potion“.,Niet genoeg actiepunten. Gebruik een AP -drankje.,Tidak cukup poin tindakan. Harap gunakan ramuan AP.,Pas assez de points d'action. Veuillez utiliser une potion AP.,"Недостаточно очков действия. Пожалуйста, используйте зелье AP.",មិនមានចំណុចសកម្មភាពគ្រប់គ្រាន់ទេ។ សូមប្រើ potion ap ap ។,,,
+UI_SWEEP_UNLOCK_CONDITION,"After 3 star clear, you can use the sweep.",3별 클리어 후 스윕 사용이 가능해집니다.,"Após 3 estrelas limpas, você pode usar a varredura.",,3つ星がクリアされた後、スイープを使用できます。,Nach 3 -Sterne -Clear können Sie den Sweep verwenden.,"Después de 3 estrellas claras, puedes usar el barrido.",หลังจาก 3 ดาวใสคุณสามารถใช้การกวาด,Po 3 gwiazdkach możesz użyć zamiatania.,Po 3 žvaigždžių išvalymo galite naudoti šluotą.,"Na 3 -sterren duidelijk, kun je de sweep gebruiken.","Setelah 3 bintang dengan jelas, Anda dapat menggunakan sapuan.","Après 3 étoiles claires, vous pouvez utiliser le balayage.",После 3 звезды вы можете использовать развертки.,បន្ទាប់ពីផ្កាយ 3 ច្បាស់អ្នកអាចប្រើបោសសំអាត។,,,
+UI_SWEEP,SWEEP SETTINGS,SWEEP 셋팅,Configurações de varredura,,スイープ設定,Einstellungen fegen,Configuración de barrido,การตั้งค่าการกวาด,Ustawienia zamiatania,SWEEP NUSTATYMAI,Sweep -instellingen,Pengaturan Sapu,Paramètres de balayage,Настройки зачистки,Sweep ការកំណត់,,,
+UI_HOLDING,Holding,대기,Contenção,,ホールディング,Holding,Tenencia,การยึดครอง,Trzymać,Laikymasis,Vasthouden,Memegang,En portant,Держа,កាន់,,,
+UI_LOADING_SWEEP_RESULT,Loading acquisition items...,획득 아이템을 확인중입니다.,Carregando itens de aquisição ...,,取得アイテムの読み込み...,Erfassungselemente laden ...,Cargando elementos de adquisición ...,กำลังโหลดรายการที่ได้มา ...,Ładowanie elementów akwizycji ...,Įkeliant įsigijimo elementus ...,Acquisitie -items laden ...,Memuat item akuisisi ...,Chargement des articles d'acquisition ...,Загрузка элементов приобретения ...,ផ្ទុករបស់របរទិញយក ...,,,
+UI_LOADING_SWEEP,,SWEEP 진행중,Varrer em andamento ...,,進行中のスイープ...,In Arbeit fegen ...,Barrer en progreso ...,กวาดกำลังดำเนินการ ...,Wymiat w toku ...,Vyksta ...,Vweeg in uitvoering ...,Sapu sedang berlangsung ...,Balayage en cours ...,Развернуть в процессе ...,បោសវឌ្ឍនភាព ...,,,
+NO_LONGER_AVAILABLE,No longer available,더 이상 사용할 수 없음,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer Available

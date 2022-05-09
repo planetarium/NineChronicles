@@ -213,27 +213,25 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(Player player, int worldId, int stageId, int playCount) => HackAndSlash(
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(Player player, int worldId, int stageId) => HackAndSlash(
             player.Costumes,
             player.Equipments,
             null,
             worldId,
-            stageId,
-            playCount);
+            stageId);
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
-            int stageId,
-            int playCount)
+            int stageId)
         {
             Analyzer.Instance.Track("Unity/HackAndSlash", new Value
             {
                 ["WorldId"] = worldId,
                 ["StageId"] = stageId,
-                ["PlayCount"] = playCount,
+                ["PlayCount"] = 1,
             });
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -248,7 +246,6 @@ namespace Nekoyume.BlockChain
                 foods = foods.Select(f => f.ItemId).ToList(),
                 worldId = worldId,
                 stageId = stageId,
-                playCount = playCount,
                 avatarAddress = avatarAddress,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
@@ -314,6 +311,46 @@ namespace Nekoyume.BlockChain
                 .First()
                 .ObserveOnMainThread()
                 .DoOnError(e => HandleException(action.Id, e));
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
+            int apStoneCount,
+            int worldId,
+            int stageId,
+            int costAP)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = new HackAndSlashSweep
+            {
+                avatarAddress = avatarAddress,
+                apStoneCount = apStoneCount,
+                worldId = worldId,
+                stageId = stageId,
+            };
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -costAP);
+            var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            LocalLayerModifier.RemoveItem(avatarAddress, apStoneRow.ItemId, apStoneCount);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<HackAndSlashSweep>()
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout)
+                .DoOnError(e =>
+                {
+                    try
+                    {
+                        HandleException(action.Id, e);
+                    }
+                    catch (Exception e2)
+                    {
+                        Game.Game.BackToMain(false, e2).Forget();
+                    }
+                });
         }
 
         public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(

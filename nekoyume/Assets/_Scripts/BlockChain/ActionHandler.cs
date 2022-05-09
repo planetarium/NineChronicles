@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet.Assets;
@@ -127,6 +126,25 @@ namespace Nekoyume.BlockChain
             {
                 await UpdateCurrentAvatarStateAsync(avatarState);
             }
+            else
+            {
+                Debug.LogError($"Failed to get AvatarState: {agentAddress}, {avatarAddress}");
+            }
+        }
+        
+        protected async UniTask UpdateCurrentAvatarStateAsync()
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatars =
+                await Game.Game.instance.Agent.GetAvatarStates(new[] { avatarAddress });
+            if (avatars.TryGetValue(avatarAddress, out var avatarState))
+            {
+                await UpdateCurrentAvatarStateAsync(avatarState);
+            }
+            else
+            {
+                Debug.LogError($"Failed to get AvatarState: {avatarAddress}");
+            }
         }
 
         protected static void UpdateWeeklyArenaState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -176,6 +194,7 @@ namespace Nekoyume.BlockChain
             // When in battle, do not immediately update the AvatarState, but pending it.
             if (Pending)
             {
+                Debug.Log($"[{nameof(ActionHandler)}] Pending AvatarState");
                 Game.Game.instance.Stage.AvatarState = avatarState;
                 return;
             }
