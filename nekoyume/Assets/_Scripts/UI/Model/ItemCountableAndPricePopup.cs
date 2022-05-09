@@ -7,6 +7,7 @@ namespace Nekoyume.UI.Model
     {
         public readonly ReactiveProperty<FungibleAssetValue> TotalPrice = new ReactiveProperty<FungibleAssetValue>();
         public readonly ReactiveProperty<FungibleAssetValue> PreTotalPrice = new ReactiveProperty<FungibleAssetValue>();
+        public readonly ReactiveProperty<FungibleAssetValue> UnitPrice = new ReactiveProperty<FungibleAssetValue>();
         public readonly ReactiveProperty<int> Count = new ReactiveProperty<int>(1);
         public readonly ReactiveProperty<bool> IsSell = new ReactiveProperty<bool>();
 
@@ -18,6 +19,7 @@ namespace Nekoyume.UI.Model
         {
             TotalPrice.Dispose();
             PreTotalPrice.Dispose();
+            UnitPrice.Dispose();
             Count.Dispose();
             IsSell.Dispose();
             OnChangeCount.Dispose();

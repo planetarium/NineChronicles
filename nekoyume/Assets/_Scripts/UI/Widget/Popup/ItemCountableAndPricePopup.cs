@@ -17,6 +17,8 @@ namespace Nekoyume.UI
 
     public class ItemCountableAndPricePopup : ItemCountPopup<Model.ItemCountableAndPricePopup>
     {
+        [SerializeField] private Button overrideCancelButton;
+
         [SerializeField] private TMP_InputField priceInputField = null;
         [SerializeField] private TMP_InputField countInputField = null;
 
@@ -28,7 +30,7 @@ namespace Nekoyume.UI
         [SerializeField] private ConditionalButton reregisterButton = null;
         [SerializeField] private List<Button> addPriceButton = null;
 
-        [SerializeField] private TextMeshProUGUI totalPrice;
+        [SerializeField] private TextMeshProUGUI unitPrice;
 
         [SerializeField] private GameObject positiveMessage;
         [SerializeField] private GameObject warningMessage;
@@ -44,6 +46,15 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
+
+            if (overrideCancelButton != null)
+            {
+                overrideCancelButton.onClick.AddListener(() =>
+                {
+                    _data?.OnClickCancel.OnNext(_data);
+                });
+                CloseWidget = overrideCancelButton.onClick.Invoke;
+            }
 
             countInputField.onEndEdit.AsObservable().Subscribe(_ =>
             {
@@ -181,6 +192,7 @@ namespace Nekoyume.UI
             priceInputField.text = data.Count.Value.ToString();
             countInputField.text = data.Count.Value.ToString();
             _data.TotalPrice.Value = data.TotalPrice.Value;
+            _data.UnitPrice.Value = data.UnitPrice.Value;
 
             _data.Count.Subscribe(value => countInputField.text = value.ToString())
                 .AddTo(_disposablesForSetData);
@@ -199,13 +211,18 @@ namespace Nekoyume.UI
                     {
                         priceInputField.text = value.GetQuantityString();
                     }
-                
-                    totalPrice.text = value.GetQuantityString();
+
                     var isValid = IsValid();
                     submitButton.Interactable = isValid;
                     reregisterButton.Interactable = isValid;
                     positiveMessage.SetActive(isValid);
                     warningMessage.SetActive(!isValid);
+                })
+                .AddTo(_disposablesForSetData);
+
+            _data.UnitPrice.Subscribe(value =>
+                {
+                    unitPrice.text = $"/{value.GetQuantityString()}";
                 })
                 .AddTo(_disposablesForSetData);
 
