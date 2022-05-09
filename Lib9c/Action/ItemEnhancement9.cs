@@ -8,14 +8,10 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Assets;
-using Nekoyume.Extensions;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using Nekoyume.TableData.Crystal;
 using Serilog;
 
 using static Lib9c.SerializeKeys;
@@ -23,8 +19,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("item_enhancement10")]
-    public class ItemEnhancement : GameAction
+    [ActionType("item_enhancement9")]
+    public class ItemEnhancement9 : GameAction
     {
         public static readonly Address BlacksmithAddress = Addresses.Blacksmith;
 
@@ -43,14 +39,13 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {
-            protected override string TypeId => "item_enhancement10.result";
+            protected override string TypeId => "item_enhancement9.result";
             public Guid id;
             public IEnumerable<Guid> materialItemIdList;
             public BigInteger gold;
             public int actionPoint;
             public EnhancementResult enhancementResult;
             public ItemUsable preItemUsable;
-            public FungibleAssetValue CRYSTAL;
 
             public ResultModel()
             {
@@ -66,7 +61,6 @@ namespace Nekoyume.Action
                 preItemUsable = serialized.ContainsKey("preItemUsable")
                     ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized["preItemUsable"])
                     : null;
-                CRYSTAL = serialized["c"].ToFungibleAssetValue();
             }
 
             public override IValue Serialize() =>
@@ -81,7 +75,6 @@ namespace Nekoyume.Action
                     [(Text) "actionPoint"] = actionPoint.Serialize(),
                     [(Text) "enhancementResult"] = enhancementResult.Serialize(),
                     [(Text) "preItemUsable"] = preItemUsable.Serialize(),
-                    [(Text) "c"] = CRYSTAL.Serialize(),
                 }.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
         }
@@ -186,16 +179,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}ItemEnhancement Get Equipment: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-
-            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
-            {
-                typeof(EnhancementCostSheetV2),
-                typeof(MaterialItemSheet),
-                typeof(CrystalEquipmentGrindingSheet),
-                typeof(CrystalMonsterCollectionMultiplierSheet)
-            });
-
-            var enhancementCostSheet = sheets.GetSheet<EnhancementCostSheetV2>();
+            var enhancementCostSheet = states.GetSheet<EnhancementCostSheetV2>();
             if (!TryGetRow(enhancementEquipment, enhancementCostSheet, out var row))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), enhancementEquipment.level);
@@ -290,34 +274,10 @@ namespace Nekoyume.Action
 
             // Equipment level up & Update
             var equipmentResult = GetEnhancementResult(row, ctx.Random);
-            FungibleAssetValue crystal = 0 * CrystalCalculator.CRYSTAL;
             if (equipmentResult != EnhancementResult.Fail)
             {
                 enhancementEquipment.LevelUpV2(ctx.Random, row, equipmentResult == EnhancementResult.GreatSuccess);
             }
-            else
-            {
-                Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
-                    context.Signer,
-                    agentState.MonsterCollectionRound
-                );
-                int monsterCollectionLevel = 0;
-                if (states.TryGetState(monsterCollectionAddress, out Dictionary mcDict))
-                {
-                    var monsterCollectionState = new MonsterCollectionState(mcDict);
-                    monsterCollectionLevel = monsterCollectionState.Level;
-                }
-
-                crystal = CrystalCalculator.CalculateCrystal(new [] { preItemUsable },
-                    sheets.GetSheet<CrystalEquipmentGrindingSheet>(), monsterCollectionLevel,
-                    sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>(), true);
-
-                if (crystal > 0 * CrystalCalculator.CRYSTAL)
-                {
-                    states = states.MintAsset(context.Signer, crystal);
-                }
-            }
-
             var requiredBlockCount = GetRequiredBlockCount(row, equipmentResult);
             var requiredBlockIndex = ctx.BlockIndex + requiredBlockCount;
             enhancementEquipment.Update(requiredBlockIndex);
@@ -336,7 +296,6 @@ namespace Nekoyume.Action
                 actionPoint = requiredActionPoint,
                 enhancementResult = equipmentResult,
                 gold = requiredNcg,
-                CRYSTAL = crystal,
             };
 
             var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex);
@@ -346,7 +305,7 @@ namespace Nekoyume.Action
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
 
             // Update quest reward
-            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
+            var materialSheet = states.GetSheet<MaterialItemSheet>();
             avatarState.UpdateQuestRewards(materialSheet);
 
             // Update slot state

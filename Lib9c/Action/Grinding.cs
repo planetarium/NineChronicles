@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Extensions;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -131,9 +131,9 @@ namespace Nekoyume.Action
                 equipmentList.Add(equipment);
             }
 
-            FungibleAssetValue crystal = CalculateCrystal(equipmentList,
+            FungibleAssetValue crystal = CrystalCalculator.CalculateCrystal(equipmentList,
                 sheets.GetSheet<CrystalEquipmentGrindingSheet>(), monsterCollectionLevel,
-                sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>());
+                sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>(), false);
 
             var mail = new GrindingMail(
                 ctx.BlockIndex,
@@ -169,26 +169,6 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["a"].ToAddress();
             EquipmentIds = plainValue["e"].ToList(StateExtensions.ToGuid);
             ChargeAp = plainValue["c"].ToBoolean();
-        }
-        public static FungibleAssetValue CalculateCrystal(
-            IEnumerable<Equipment> equipmentList,
-            CrystalEquipmentGrindingSheet crystalEquipmentGrindingSheet,
-            int monsterCollectionLevel,
-            CrystalMonsterCollectionMultiplierSheet crystalMonsterCollectionMultiplierSheet
-        )
-        {
-            Currency currency = new Currency("CRYSTAL", 18, minters: null);
-            FungibleAssetValue crystal = 0 * currency;
-            foreach (var equipment in equipmentList)
-            {
-                CrystalEquipmentGrindingSheet.Row grindingRow = crystalEquipmentGrindingSheet[equipment.Id];
-                int level = Math.Max(0, equipment.level - 1);
-                crystal += BigInteger.Pow(2, level) * grindingRow.CRYSTAL * currency;
-            }
-            CrystalMonsterCollectionMultiplierSheet.Row multiplierRow =
-                crystalMonsterCollectionMultiplierSheet[monsterCollectionLevel];
-            var extra = crystal.DivRem(100, out _) * multiplierRow.Multiplier;
-            return crystal + extra;
         }
     }
 }

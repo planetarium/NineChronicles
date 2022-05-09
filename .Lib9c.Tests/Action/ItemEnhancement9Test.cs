@@ -5,7 +5,6 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
-    using System.Numerics;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
@@ -14,25 +13,27 @@ namespace Lib9c.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Extensions;
-    using Nekoyume.Helper;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Xunit;
     using static SerializeKeys;
 
-    public class ItemEnhancementTest
+    public class ItemEnhancement9Test
     {
+        private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
+        private readonly Address _slotAddress;
         private readonly AvatarState _avatarState;
         private readonly Currency _currency;
         private IAccountStateDelta _initialState;
 
-        public ItemEnhancementTest()
+        public ItemEnhancement9Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
+            _random = new TestRandom();
             _tableSheets = new TableSheets(sheets);
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();
@@ -52,12 +53,13 @@ namespace Lib9c.Tests.Action
 
             _currency = new Currency("NCG", 2, minter: null);
             var gold = new GoldCurrencyState(_currency);
-            var slotAddress = _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
+            _slotAddress =
+                _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
-                .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
+                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 0).Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000)
                 .TransferAsset(Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
@@ -72,12 +74,11 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0)]
-        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0)]
-        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 1600)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 1760)]
-        public void Execute(int level, int expectedGold, bool backward, int randomSeed, int expectedLevel, ItemEnhancement.EnhancementResult expected, int monsterCollectLevel, int expectedCrystal)
+        [InlineData(0, 1000, true)]
+        [InlineData(6, 980, true)]
+        [InlineData(0, 1000, false)]
+        [InlineData(6, 980, false)]
+        public void Execute(int level, int expectedGold, bool backward)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
@@ -124,16 +125,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
             }
 
-            if (monsterCollectLevel > 0)
-            {
-                var mcAddress = MonsterCollectionState.DeriveAddress(_agentAddress, 0);
-                _initialState = _initialState.SetState(
-                    mcAddress,
-                    new MonsterCollectionState(mcAddress, monsterCollectLevel, 0).Serialize()
-                );
-            }
-
-            var action = new ItemEnhancement()
+            var action = new ItemEnhancement9()
             {
                 itemId = default,
                 materialId = materialId,
@@ -146,14 +138,13 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
-                Random = new TestRandom(randomSeed),
+                Random = _random,
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
             var resultEquipment = (Equipment)slotState.Result.itemUsable;
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Equal(default, resultEquipment.ItemId);
-            Assert.Equal(expectedLevel, resultEquipment.level);
             Assert.Equal(expectedGold * _currency, nextState.GetBalance(_agentAddress, _currency));
             Assert.Equal(
                 (1000 - expectedGold) * _currency,
@@ -163,41 +154,42 @@ namespace Lib9c.Tests.Action
 
             var costRow = _tableSheets.EnhancementCostSheetV2
                 .OrderedList
-                .First(x => x.Grade == 1 && x.Level == level + 1);
+                .FirstOrDefault(x => x.Grade == 1 && x.Level == level + 1);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
-            var slotResult = (ItemEnhancement.ResultModel)slot.Result;
-            Assert.Equal(expected, slotResult.enhancementResult);
+            var slotResult = (ItemEnhancement9.ResultModel)slot.Result;
 
-            switch (slotResult.enhancementResult)
+            switch ((ItemEnhancement9.EnhancementResult)slotResult.enhancementResult)
             {
-                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                case ItemEnhancement9.EnhancementResult.GreatSuccess:
                     var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
+                    Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
                     break;
-                case ItemEnhancement.EnhancementResult.Success:
+                case ItemEnhancement9.EnhancementResult.Success:
                     var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var baseMaxAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var extraMaxAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.InRange(resultEquipment.StatsMap.ATK, (int)(baseMinAtk + extraMinAtk), (int)(baseMaxAtk + extraMaxAtk) + 1);
+                    Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
                     break;
-                case ItemEnhancement.EnhancementResult.Fail:
+                case ItemEnhancement9.EnhancementResult.Fail:
                     Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);
+                    Assert.Equal(preItemUsable.level, resultEquipment.level);
                     break;
             }
 
             Assert.Equal(preItemUsable.TradableId, slotResult.preItemUsable.TradableId);
             Assert.Equal(preItemUsable.TradableId, resultEquipment.TradableId);
             Assert.Equal(costRow.Cost, slotResult.gold);
-            Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, slotResult.CRYSTAL);
         }
 
         [Fact]
         public void Rehearsal()
         {
-            var action = new ItemEnhancement()
+            var action = new ItemEnhancement9()
             {
                 itemId = default,
                 materialId = default,

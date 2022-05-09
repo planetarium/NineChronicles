@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
@@ -208,61 +209,6 @@ namespace Lib9c.Tests.Action
                     Random = _random,
                 }));
             }
-        }
-
-        [Theory]
-        [ClassData(typeof(CalculateCrystalData))]
-        public void CalculateCrystal((int equipmentId, int level)[] equipmentInfos, int monsterCollectionLevel, int expected)
-        {
-            var equipmentList = new List<Equipment>();
-            foreach (var (equipmentId, level) in equipmentInfos)
-            {
-                var row = _tableSheets.EquipmentItemSheet[equipmentId];
-                var equipment =
-                    ItemFactory.CreateItemUsable(row, default, 0, level);
-                equipmentList.Add((Equipment)equipment);
-            }
-
-            Assert.Equal(
-                expected * _currency,
-                Grinding.CalculateCrystal(
-                    equipmentList,
-                    _tableSheets.CrystalEquipmentGrindingSheet,
-                    monsterCollectionLevel,
-                    _tableSheets.CrystalMonsterCollectionMultiplierSheet
-                )
-            );
-        }
-
-        private class CalculateCrystalData : IEnumerable<object[]>
-        {
-            private readonly List<object[]> _data = new List<object[]>
-            {
-                new object[]
-                {
-                    new[]
-                    {
-                        (10100000, 0),
-                        (10100000, 2),
-                    },
-                    0,
-                    300,
-                },
-                new object[]
-                {
-                    new[]
-                    {
-                        (10100000, 1),
-                        (10100000, 2),
-                    },
-                    3,
-                    390,
-                },
-            };
-
-            public IEnumerator<object[]> GetEnumerator() => _data.GetEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator() => _data.GetEnumerator();
         }
     }
 }
