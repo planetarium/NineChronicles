@@ -187,7 +187,7 @@ namespace Nekoyume.UI
 
             var data = SharedModel.ItemCountableAndPricePopup.Value;
             var currency = States.Instance.GoldBalanceState.Gold.Currency;
-            data.TotalPrice.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
+            data.Price.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
             data.UnitPrice.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
             data.Count.Value = 1;
             data.IsSell.Value = true;
@@ -218,8 +218,8 @@ namespace Nekoyume.UI
                 data.UnitPrice.Value = new FungibleAssetValue(currency, majorUnit, minorUnit);
             }
 
-            data.PreTotalPrice.Value = model.OrderDigest.Price;
-            data.TotalPrice.Value = model.OrderDigest.Price;
+            data.PrePrice.Value = model.OrderDigest.Price;
+            data.Price.Value = model.OrderDigest.Price;
             data.Count.Value = model.OrderDigest.ItemCount;
             data.IsSell.Value = false;
 
@@ -270,7 +270,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.TotalPrice.Value.MinorUnit > 0)
+            if (data.Price.Value.MinorUnit > 0)
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -279,13 +279,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit <
+            if (data.Price.Value.Sign * data.Price.Value.MajorUnit <
                 Model.Shop.MinimumPrice)
             {
                 throw new InvalidSellingPriceException(data);
             }
 
-            var totalPrice = data.TotalPrice.Value;
+            var totalPrice = data.Price.Value;
             var count = data.Count.Value;
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
             Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType)
@@ -301,7 +301,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.TotalPrice.Value.MinorUnit > 0)
+            if (data.Price.Value.MinorUnit > 0)
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -310,14 +310,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit < Shop.MinimumPrice)
+            if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Shop.MinimumPrice)
             {
                 throw new InvalidSellingPriceException(data);
             }
 
             var requiredBlockIndex = tradableItem.RequiredBlockIndex;
-            var totalPrice = data.TotalPrice.Value;
-            var preTotalPrice = data.PreTotalPrice.Value;
+            var totalPrice = data.Price.Value;
+            var preTotalPrice = data.PrePrice.Value;
             var count = data.Count.Value;
             var digest =
                 ReactiveShopState.GetSellDigest(tradableItem.TradableId, requiredBlockIndex,
@@ -365,12 +365,12 @@ namespace Nekoyume.UI
                 Debug.LogError(L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"));
             }
 
-            var currency = model.TotalPrice.Value.Currency;
+            var currency = model.Price.Value.Currency;
             var major = (int)price;
             var minor = (int)((Math.Truncate((price - major) * 100) / 100) * 100);
 
             var fungibleAsset = new FungibleAssetValue(currency, major, minor);
-            model.TotalPrice.SetValueAndForceNotify(fungibleAsset);
+            model.Price.SetValueAndForceNotify(fungibleAsset);
             UpdateUnitPrice();
         }
 
@@ -379,7 +379,7 @@ namespace Nekoyume.UI
             var model = SharedModel.ItemCountableAndPricePopup.Value;
 
             decimal price = 0;
-            if (decimal.TryParse(model.TotalPrice.Value.GetQuantityString(),
+            if (decimal.TryParse(model.Price.Value.GetQuantityString(),
                     NumberStyles.AllowDecimalPoint,
                     CultureInfo.InvariantCulture, out var result))
             {

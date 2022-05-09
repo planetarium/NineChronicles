@@ -161,7 +161,7 @@ namespace Nekoyume.UI
 
                 _data?.OnClickCancel.OnNext(_data);
             };
-            
+
             L10nManager.OnLanguageChange.Subscribe(_ =>
             {
                 reregisterButton.Text = L10nManager.Localize("UI_REREGISTER");
@@ -191,13 +191,13 @@ namespace Nekoyume.UI
 
             priceInputField.text = data.Count.Value.ToString();
             countInputField.text = data.Count.Value.ToString();
-            _data.TotalPrice.Value = data.TotalPrice.Value;
+            _data.Price.Value = data.Price.Value;
             _data.UnitPrice.Value = data.UnitPrice.Value;
 
             _data.Count.Subscribe(value => countInputField.text = value.ToString())
                 .AddTo(_disposablesForSetData);
 
-            _data.TotalPrice.Subscribe(value =>
+            _data.Price.Subscribe(value =>
                 {
                     if (value.MinorUnit == 0 && priceInputField.text.Contains(".0"))
                     {
@@ -232,7 +232,7 @@ namespace Nekoyume.UI
 
         private bool IsValid()
         {
-            if (decimal.TryParse(_data.TotalPrice.Value.GetQuantityString(),
+            if (decimal.TryParse(_data.Price.Value.GetQuantityString(),
                 NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var price))
             {
                 if (price - (int) price > 0)
