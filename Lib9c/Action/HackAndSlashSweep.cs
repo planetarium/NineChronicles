@@ -200,8 +200,9 @@ namespace Nekoyume.Action
             // burn ap
             avatarState.actionPoint -= actionPoint;
 
-            var apStonePlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
-            var apPlayCount = actionPoint / stageRow.CostAP;
+            var apMaxPlayCount = stageRow.CostAP > 0 ? gameConfigState.ActionPointMax / stageRow.CostAP : 0;
+            var apStonePlayCount = apMaxPlayCount * apStoneCount;
+            var apPlayCount = stageRow.CostAP > 0 ? actionPoint / stageRow.CostAP : 0;
             var playCount = apStonePlayCount + apPlayCount;
             if (playCount <= 0)
             {
