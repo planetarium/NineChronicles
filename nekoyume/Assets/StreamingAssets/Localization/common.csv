@@ -177,7 +177,7 @@ Grand succès!! J'ai fini la fabrication de {0}","<color=#FFA78B>[Практик
 巨大的成功！！ 我已经完成了{0}的制作工作。","<color=#FFA78B>[Műhelymunka]</color>
 Nagy siker!! Végeztem ravaszkodó {0}"
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop dverg]</color>
-Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 ]</color>
+Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 미안하네, {0} 강화를 실패했다네.","<color=#FFA78B>[Gato de oficina]</color>
 Desculpe, não consegui atualizar {0}","<color=#FFA78B>[Gato de oficina]</color>
 Desculpe, não consegui atualizar {0}","<color=#FFA78B>[ワークショップ猫]</color>
@@ -1097,3 +1097,6 @@ UI_HOLDING,Holding,대기,Contenção,,ホールディング,Holding,Tenencia,�
 UI_LOADING_SWEEP_RESULT,Loading acquisition items...,획득 아이템을 확인중입니다.,Carregando itens de aquisição ...,,取得アイテムの読み込み...,Erfassungselemente laden ...,Cargando elementos de adquisición ...,กำลังโหลดรายการที่ได้มา ...,Ładowanie elementów akwizycji ...,Įkeliant įsigijimo elementus ...,Acquisitie -items laden ...,Memuat item akuisisi ...,Chargement des articles d'acquisition ...,Загрузка элементов приобретения ...,ផ្ទុករបស់របរទិញយក ...,,,
 UI_LOADING_SWEEP,,SWEEP 진행중,Varrer em andamento ...,,進行中のスイープ...,In Arbeit fegen ...,Barrer en progreso ...,กวาดกำลังดำเนินการ ...,Wymiat w toku ...,Vyksta ...,Vweeg in uitvoering ...,Sapu sedang berlangsung ...,Balayage en cours ...,Развернуть в процессе ...,បោសវឌ្ឍនភាព ...,,,
 NO_LONGER_AVAILABLE,No longer available,더 이상 사용할 수 없음,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer Available
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_CRYSTALFAIL,"<color=#FFA78B>[Workshop dverg]</color>
+Sorry, I failed to upgrade {0}. I gave {1}...","<color=#FFA78B>[대장장이 드베르그]</color>
+{0} 강화 실패 보상으로 {1} 을(를) 획득했습니다.",,,,,,,,,,,,,,,,

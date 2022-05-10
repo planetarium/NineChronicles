@@ -81,6 +81,7 @@ namespace Nekoyume
                 case ItemEnhanceMail itemEnhanceMail:
                 {
                     string formatKey;
+                    bool failAndGainCrystal = false;
                     switch (itemEnhanceMail.attachment)
                     {
                         case ItemEnhancement.ResultModel result:
@@ -93,7 +94,15 @@ namespace Nekoyume
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                                     break;
                                 case ItemEnhancement.EnhancementResult.Fail:
-                                    formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
+                                    if (result.CRYSTAL.MajorUnit > 0)
+                                    {
+                                        failAndGainCrystal = true;
+                                        formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_CRYSTALFAIL";
+                                    }
+                                    else
+                                    {
+                                        formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
+                                    }
                                     break;
                                 default:
                                     Debug.LogError($"Unexpected result.enhancementResult: {result.enhancementResult}");
@@ -111,8 +120,14 @@ namespace Nekoyume
                             break;
                     }
 
-                    return string.Format(
-                        L10nManager.Localize(formatKey),
+                    if (failAndGainCrystal)
+                    {
+                        return L10nManager.Localize(formatKey,
+                            GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable),
+                            ((ItemEnhancement.ResultModel) itemEnhanceMail.attachment).CRYSTAL);
+                    }
+
+                    return L10nManager.Localize(formatKey,
                         GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable));
                 }
 
