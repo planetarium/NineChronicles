@@ -17,6 +17,7 @@ namespace Lib9c.Tests.Action
     public class MigrateMonsterCollectionTest
     {
         private readonly Address _signer;
+        private readonly Address _avatarAddress;
         private readonly IAccountStateDelta _state;
 
         public MigrateMonsterCollectionTest(ITestOutputHelper outputHelper)
@@ -27,30 +28,30 @@ namespace Lib9c.Tests.Action
                 .CreateLogger();
 
             _signer = default;
-            var avatarAddress = _signer.Derive("avatar");
+            _avatarAddress = _signer.Derive("avatar");
             _state = new State();
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
             var agentState = new AgentState(_signer);
             var avatarState = new AvatarState(
-                avatarAddress,
+                _avatarAddress,
                 _signer,
                 0,
                 tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
                 rankingMapAddress);
-            agentState.avatarAddresses[0] = avatarAddress;
+            agentState.avatarAddresses[0] = _avatarAddress;
 
             var currency = new Currency("NCG", 2, minters: null);
             var goldCurrencyState = new GoldCurrencyState(currency);
 
             _state = _state
                 .SetState(_signer, agentState.Serialize())
-                .SetState(avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
-                .SetState(avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
-                .SetState(avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2())
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                .SetState(_avatarAddress, avatarState.SerializeV2())
                 .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize());
 
             foreach ((string key, string value) in sheets)
@@ -62,7 +63,7 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [ClassData(typeof(ExecuteFixture))]
-        public void Execute(int collectionLevel, long claimBlockIndex, long stakedAmount)
+        public void Execute(int collectionLevel, long claimBlockIndex, long stakedAmount, (int ItemId, int Quantity)[] expectedItems)
         {
             Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
             var monsterCollectionState = new MonsterCollectionState(collectionAddress, collectionLevel, 0);
@@ -76,7 +77,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(0 * currency, states.GetBalance(_signer, currency));
             Assert.Equal(stakedAmount * currency, states.GetBalance(collectionAddress, currency));
 
-            MigrateMonsterCollection action = new MigrateMonsterCollection();
+            MigrateMonsterCollection action = new MigrateMonsterCollection(_avatarAddress);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,
@@ -91,12 +92,22 @@ namespace Lib9c.Tests.Action
                 states.GetBalance(monsterCollectionState.address, currency));
             Assert.Equal(stakedAmount * currency, states.GetBalance(stakeState.address, currency));
             Assert.Equal(monsterCollectionState.ReceivedBlockIndex, stakeState.ReceivedBlockIndex);
+            Assert.True(
+                states.TryGetAvatarStateV2(
+                    _signer,
+                    _avatarAddress,
+                    out AvatarState avatarState,
+                    out bool _));
+            foreach (var (itemId, quantity) in expectedItems)
+            {
+                Assert.True(avatarState.inventory.HasItem(itemId, quantity));
+            }
         }
 
         [Fact]
         public void Serialization()
         {
-            var action = new MigrateMonsterCollection();
+            var action = new MigrateMonsterCollection(_avatarAddress);
             var deserialized = new MigrateMonsterCollection();
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.PlainValue, deserialized.PlainValue);
@@ -120,42 +131,77 @@ namespace Lib9c.Tests.Action
                     1,
                     MonsterCollectionState.RewardInterval,
                     500,
+                    new (int, int)[]
+                    {
+                        (400000, 80),
+                        (500000, 1),
+                    },
                 },
                 new object[]
                 {
                     2,
                     MonsterCollectionState.RewardInterval,
                     2300,
+                    new (int, int)[]
+                    {
+                        (400000, 265),
+                        (500000, 2),
+                    },
                 },
                 new object[]
                 {
                     3,
                     MonsterCollectionState.RewardInterval,
                     9500,
+                    new (int, int)[]
+                    {
+                        (400000, 1265),
+                        (500000, 5),
+                    },
                 },
                 new object[]
                 {
                     4,
                     MonsterCollectionState.RewardInterval,
                     63500,
+                    new (int, int)[]
+                    {
+                        (400000, 8465),
+                        (500000, 31),
+                    },
                 },
                 new object[]
                 {
                     5,
                     MonsterCollectionState.RewardInterval,
                     333500,
+                    new (int, int)[]
+                    {
+                        (400000, 45965),
+                        (500000, 161),
+                    },
                 },
                 new object[]
                 {
                     6,
                     MonsterCollectionState.RewardInterval,
                     813500,
+                    new (int, int)[]
+                    {
+                        (400000, 120965),
+                        (500000, 361),
+                    },
                 },
                 new object[]
                 {
                     7,
                     MonsterCollectionState.RewardInterval,
                     2313500,
+                    new (int, int)[]
+                    {
+                        (400000, 350965),
+                        (500000, 1121),
+                    },
                 },
             };
 
