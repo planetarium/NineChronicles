@@ -9,9 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1614435221168243920}
-  - component: {fileID: 967328185635250922}
+  - component: {fileID: 3126494861733916865}
+  - component: {fileID: 8040680617457001669}
   m_Layer: 5
-  m_Name: ItemView_2
+  m_Name: CostItemView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37,7 +38,7 @@ RectTransform:
   m_AnchoredPosition: {x: 96.5, y: -145.6}
   m_SizeDelta: {x: 64, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &967328185635250922
+--- !u!114 &3126494861733916865
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,38 +47,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 1549186789349719678}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40fcf8383091bc5408284e882ab64823, type: 3}
+  m_Script: {fileID: 11500000, guid: c42f0ed0866e40cfb7a72e7e9aa790a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  container: {fileID: 7081310451592285323}
-  emptyObject: {fileID: 0}
   itemViewData: {fileID: 11400000, guid: 7bbcb13078addb548a8707df8e95df63, type: 2}
-  touchHandler: {fileID: 0}
-  minusTouchHandler: {fileID: 0}
+  iconImage: {fileID: 266983360610849399}
   gradeImage: {fileID: 958312102553745363}
   gradeHsv: {fileID: 7260069751410703833}
-  enoughObject: {fileID: 0}
-  itemImage: {fileID: 266983360610849399}
-  spineItemImage: {fileID: 0}
-  enhancementImage: {fileID: 0}
+--- !u!114 &8040680617457001669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1549186789349719678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7092df6c8a3c4c54ab02b16a2a030bb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemViewData: {fileID: 11400000, guid: 7bbcb13078addb548a8707df8e95df63, type: 2}
+  iconImage: {fileID: 266983360610849399}
+  gradeImage: {fileID: 958312102553745363}
+  gradeHsv: {fileID: 7260069751410703833}
+  handleTouchEvent: 1
+  touchHandler: {fileID: 0}
+  itemButton: {fileID: 0}
+  backgroundImage: {fileID: 0}
   enhancementText: {fileID: 0}
-  countText: {fileID: 3986365919872697581}
-  priceText: {fileID: 0}
-  optionTag: {fileID: 0}
-  notificationObject: {fileID: 0}
-  equippedObject: {fileID: 0}
-  minusObject: {fileID: 0}
-  focusObject: {fileID: 0}
-  expiredObject: {fileID: 0}
-  tradableObject: {fileID: 0}
-  elementalDisableObject: {fileID: 0}
-  levelLimitObject: {fileID: 0}
-  selectObject: {fileID: 0}
-  selectBaseItemObject: {fileID: 0}
-  selectMaterialItemObject: {fileID: 0}
-  lockObject: {fileID: 0}
-  shadowObject: {fileID: 0}
-  itemGradeParticle: {fileID: 0}
+  enhancementImage: {fileID: 0}
+  selection: {fileID: 0}
+  disable: {fileID: 0}
+  optionTagBg: {fileID: 0}
+  optionTagImages: []
+  optionTagData: {fileID: 0}
+  ignoreOne: 0
+  countText: {fileID: 0}
 --- !u!1 &2804500698416094317
 GameObject:
   m_ObjectHideFlags: 0
