@@ -333,13 +333,17 @@ namespace Nekoyume.UI
             switch (stateName)
             {
                 case "Close":
-                    StartCoroutine(
-                        ItemMoveAnimationFactory.CoItemMoveAnimation(
-                            ItemMoveAnimationFactory.AnimationItemType.Crystal,
-                            crystalIconTransform.GetWorldPositionOfCenter(),
-                            Find<HeaderMenuStatic>().Crystal.IconPosition +
-                            GrindModule.CrystalMovePositionOffset,
-                            1));
+                    if (_titleFailSuccessObject.activeSelf)
+                    {
+                        StartCoroutine(
+                            ItemMoveAnimationFactory.CoItemMoveAnimation(
+                                ItemMoveAnimationFactory.AnimationItemType.Crystal,
+                                crystalIconTransform.GetWorldPositionOfCenter(),
+                                Find<HeaderMenuStatic>().Crystal.IconPosition +
+                                GrindModule.CrystalMovePositionOffset,
+                                1));
+                    }
+
                     base.Close(true);
                     break;
             }
