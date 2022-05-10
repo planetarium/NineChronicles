@@ -15571,7 +15571,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC704\uB85C\uBCF4\uC0C1"
+  m_text: "\uC2E4\uD328 \uBCF4\uC0C1"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
   m_sharedMaterial: {fileID: 7349983812062843314, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
@@ -15659,7 +15659,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_COMPENSATIONFORFAILURE
+  l10nKey: UI_FAIL_REWARD
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -69786,6 +69786,7 @@ MonoBehaviour:
   legacyFailText: {fileID: 6356681027687962688}
   gainCrystalObject: {fileID: 7290688100098793561}
   gainCrystalText: {fileID: 6725458610352969870}
+  crystalIconTransform: {fileID: 4165694876823460347}
   _editorEnhancementResult: 0
   _editorStatOptions: []
   _editorSkillOptions: []

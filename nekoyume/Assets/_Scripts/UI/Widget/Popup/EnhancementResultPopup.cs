@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
@@ -84,6 +86,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TMP_Text gainCrystalText;
+
+        [SerializeField]
+        private RectTransform crystalIconTransform;
 
 #if UNITY_EDITOR
         [Space(10)]
@@ -289,7 +294,7 @@ namespace Nekoyume.UI
                     var gainCrystal = !crystal.Equals("0");
                     gainCrystalObject.SetActive(gainCrystal);
                     legacyFailText.SetActive(!gainCrystal);
-                    gainCrystalText.text = crystal;
+                    gainCrystalText.text = $"{crystal} {L10nManager.Localize("OBTAIN")}";
                     Animator.SetTrigger(AnimatorHashFail);
                     break;
                 default:
@@ -328,6 +333,13 @@ namespace Nekoyume.UI
             switch (stateName)
             {
                 case "Close":
+                    StartCoroutine(
+                        ItemMoveAnimationFactory.CoItemMoveAnimation(
+                            ItemMoveAnimationFactory.AnimationItemType.Crystal,
+                            crystalIconTransform.GetWorldPositionOfCenter(),
+                            Find<HeaderMenuStatic>().Crystal.IconPosition +
+                            GrindModule.CrystalMovePositionOffset,
+                            1));
                     base.Close(true);
                     break;
             }
