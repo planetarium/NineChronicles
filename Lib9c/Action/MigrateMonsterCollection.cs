@@ -36,6 +36,11 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
+            if (states.TryGetStakeState(context.Signer, out StakeState _))
+            {
+                return states;
+            }
+
             var claimMonsterCollectionReward = new ClaimMonsterCollectionReward
             {
                 avatarAddress = AvatarAddress,
