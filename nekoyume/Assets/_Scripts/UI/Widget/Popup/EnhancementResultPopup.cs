@@ -77,6 +77,9 @@ namespace Nekoyume.UI
         private float _intervalTimeOfShowOptions;
 
         [SerializeField]
+        private GameObject legacyFailText;
+
+        [SerializeField]
         private GameObject gainCrystalObject;
 
         [SerializeField]
@@ -283,7 +286,9 @@ namespace Nekoyume.UI
                     _titleSuccessObject.SetActive(false);
                     _titleGreatSuccessObject.SetActive(false);
                     _titleFailSuccessObject.SetActive(true);
-                    gainCrystalObject.SetActive(!crystal.Equals("0"));
+                    var gainCrystal = !crystal.Equals("0");
+                    gainCrystalObject.SetActive(gainCrystal);
+                    legacyFailText.SetActive(!gainCrystal);
                     gainCrystalText.text = crystal;
                     Animator.SetTrigger(AnimatorHashFail);
                     break;
