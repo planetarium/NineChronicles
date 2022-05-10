@@ -5,7 +5,7 @@ namespace Nekoyume.Game.Util
 {
     [CanEditMultipleObjects,
      CustomEditor(typeof(PositionConstraintToScreen))]
-    public class PositionConstraintToScreenEditor : Editor
+    public class PositionConstraintToScreenEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
