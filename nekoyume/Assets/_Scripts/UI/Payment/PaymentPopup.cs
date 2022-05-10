@@ -15,7 +15,8 @@ namespace Nekoyume.UI
             FungibleAssetValue balance,
             BigInteger cost,
             string usageMessage,
-            System.Action onPaymentSucceed)
+            System.Action onPaymentSucceed,
+            System.Action onAttract)
         {
             // gold
             if (balance.Currency.Equals(
@@ -28,7 +29,7 @@ namespace Nekoyume.UI
                     ncgText,
                     usageMessage);
                 var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
-                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed);
+                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed, onAttract);
             }
             // crystal
             else if (balance.Currency.Equals(new Currency("CRYSTAL", 18, minters: null)))
@@ -40,7 +41,7 @@ namespace Nekoyume.UI
                     crystalText,
                     usageMessage);
                 var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed);
+                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed, onAttract);
             }
         }
 
@@ -49,10 +50,10 @@ namespace Nekoyume.UI
             BigInteger cost,
             string enoughMessage,
             string insufficientMessage,
-            System.Action onPaymentSucceed)
+            System.Action onPaymentSucceed,
+            System.Action onAttract)
         {
             var title = L10nManager.Localize("UI_TOTAL_COST");
-            costText.text = cost.ToString();
             if (asset.MajorUnit >= cost)
             {
                 var yes = L10nManager.Localize("UI_YES");
@@ -68,11 +69,27 @@ namespace Nekoyume.UI
             }
             else
             {
-                var yes = L10nManager.Localize("UI_YES");
-                var no = L10nManager.Localize("UI_NO");
-                CloseCallback = null;
-                Show(title, insufficientMessage, yes, no, false);
+                ShowAttract(cost, title, insufficientMessage, onAttract);
             }
+        }
+
+        public void ShowAttract(
+            BigInteger cost,
+            string title,
+            string message,
+            System.Action onAttract)
+        {
+            costText.text = cost.ToString();
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            CloseCallback = result =>
+            {
+                if (result == ConfirmResult.Yes)
+                {
+                    onAttract();
+                }
+            };
+            Show(title, message, yes, no, false);
         }
     }
 }

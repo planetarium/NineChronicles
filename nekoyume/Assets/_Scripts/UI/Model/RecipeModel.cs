@@ -37,6 +37,8 @@ namespace Nekoyume.UI.Model
             new ReactiveProperty<List<int>>();
 
         public int UnlockableRecipesOpenCost { get; private set; }
+        public ItemSubType DisplayingItemSubtype { get; set; }
+
 
         public readonly List<int> UnlockingRecipes = new List<int>();
         public readonly List<int> DummyLockedRecipes = new List<int>();
@@ -150,7 +152,7 @@ namespace Nekoyume.UI.Model
             UnlockedRecipes.SetValueAndForceNotify(recipeIds);
         }
 
-        public void UpdateUnlockableRecipes(ItemSubType type)
+        public void UpdateUnlockableRecipes()
         {
             if (!States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId))
             {
@@ -160,7 +162,7 @@ namespace Nekoyume.UI.Model
             var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
             var availableRecipes = sheet.Values
                 .Where(x =>
-                    x.GetResultEquipmentItemRow().ItemSubType == type &&
+                    x.GetResultEquipmentItemRow().ItemSubType == DisplayingItemSubtype &&
                     x.UnlockStage <= lastClearedStageId &&
                     !UnlockedRecipes.Value.Contains(x.Id) &&
                     !UnlockingRecipes.Contains(x.Id))
@@ -171,7 +173,8 @@ namespace Nekoyume.UI.Model
             var totalCost = 0;
             foreach (var availableRecipe in availableRecipes)
             {
-                if (totalCost + availableRecipe.CRYSTAL > balance)
+                // should contain at least one recipe.
+                if (unlockableRecipes.Any() && totalCost + availableRecipe.CRYSTAL > balance)
                 {
                     break;
                 }
