@@ -47,7 +47,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 9c67e02a967534297bd452ad80ca3261, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
-    totalSpriteSurfaceArea: 969498
+    totalSpriteSurfaceArea: 984862
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -95,6 +95,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1dd52c625e931c8419bd680c998ec26b, type: 3}
   - {fileID: 21300000, guid: c4a70f7223f4542f8a7a694c4752a18e, type: 3}
   - {fileID: 21300000, guid: 3483b1826aa594389a7d7299dcab8151, type: 3}
+  - {fileID: 21300000, guid: 85c0d68258ca635469a2cc53753800d0, type: 3}
   - {fileID: 21300000, guid: cee37092b244a4405ae707ea1ba04755, type: 3}
   - {fileID: 21300000, guid: a9e238a253e87d14c96bd7c73c25b4c1, type: 3}
   - {fileID: 21300000, guid: d59b12e267341a64b939e99d11a3a406, type: 3}
@@ -137,6 +138,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: aa1fa6458568e40e7983241ea9d23893, type: 3}
   - {fileID: 21300000, guid: a7b49855052fb4f3b9c3babee2485d2c, type: 3}
   - {fileID: 21300000, guid: cbca65655fcdd4e0ca14ee0c7fc46cb2, type: 3}
+  - {fileID: 21300000, guid: d87ee57544b45b94d8844655668eee3a, type: 3}
   - {fileID: 21300000, guid: d309b675d7e184bee91db6933ab7f077, type: 3}
   - {fileID: 21300000, guid: b53dd685a2b6c46f28710d1b5e4e59c7, type: 3}
   - {fileID: 21300000, guid: 79d7d7853a4c41446acb200afd5dbfa5, type: 3}
@@ -155,6 +157,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 54636d66abae6fe4d8ac4e716ff9bc3a, type: 3}
   - {fileID: 21300000, guid: 39b6f57621a5c4783a0ab41f1b09f8b4, type: 3}
   - {fileID: 21300000, guid: d2e596a6e4f454d439b735a988b14318, type: 3}
+  - {fileID: 21300000, guid: 01d50aa6de16842469c70f236e4541e0, type: 3}
   - {fileID: 21300000, guid: f8ebc527aa87e4f2da7520536ec17819, type: 3}
   - {fileID: 21300000, guid: 2d8d7e277d39c47dab9df83b6bec36ec, type: 3}
   - {fileID: 21300000, guid: 5c78e13701932bc4cb7acc39d68f0102, type: 3}
@@ -223,6 +226,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 43bc28fa6e76aa6458e51c988b105fa5, type: 3}
   - {fileID: 21300000, guid: 4cc9310b67a2a446495a3a3014bce2b1, type: 3}
   - {fileID: 21300000, guid: 35eb611bce90a4aebb9fa21927f292b2, type: 3}
+  - {fileID: 21300000, guid: 139c121b497271a42b113f74f1f6d474, type: 3}
   - {fileID: 21300000, guid: 8acaca3b35c844ec8891beb27842c733, type: 3}
   - {fileID: 21300000, guid: 9e78384b0271b2047a97b43bce997cb3, type: 3}
   - {fileID: 21300000, guid: ba30455b041df4b29a44c5acdf38d5d6, type: 3}
@@ -349,6 +353,7 @@ SpriteAtlas:
   - icon_combination_01_black
   - UI_icon_Skilloption_Eff
   - button_Orange_03
+  - UI_bg_frame_07_02
   - UI_bg_frame_06
   - UI_main_icon_quest_02
   - icon_profile
@@ -391,6 +396,7 @@ SpriteAtlas:
   - item_bg_Normal
   - UI_bg_frame_12
   - Item_bg_Grade_04
+  - UI_bg_frame_07_01
   - UI_main_icon_gold
   - UI_QuestType_bg_normal
   - icon_Inventory_04
@@ -409,6 +415,7 @@ SpriteAtlas:
   - UI_icon_lock_01
   - button_brown_plus
   - button_brown_01
+  - Common_Prrogressbar_thumbBg_2
   - UI_scroll_bar
   - icon_combination_consumables
   - UI_icon_select_01
@@ -477,6 +484,7 @@ SpriteAtlas:
   - UI_arrow_02
   - Ani_Workshop_00
   - Common_bg_5R
+  - Icon_GaugeController
   - UI_icon_repeat
   - UI_bar_02_pink
   - UI_icon_option_stat
