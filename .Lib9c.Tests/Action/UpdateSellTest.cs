@@ -12,6 +12,7 @@
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Battle;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
@@ -249,6 +250,24 @@
             Assert.Equal(updateSellOrderId, nextShopState.OrderDigestList.First().OrderId);
             Assert.Equal(itemId, nextShopState.OrderDigestList.First().TradableId);
             Assert.Equal(requiredBlockIndex + 101, nextShopState.OrderDigestList.First().ExpiredBlockIndex);
+            Assert.Single(action.errors);
+        }
+
+        [Fact]
+        public void Execute_Throw_ListEmptyException()
+        {
+            var action = new UpdateSell
+            {
+                sellerAvatarAddress = _avatarAddress,
+                updateSellInfos = new List<UpdateSellInfo>(),
+            };
+
+            Assert.Throws<ListEmptyException>(() => action.Execute(new ActionContext
+            {
+                BlockIndex = 0,
+                PreviousStates = new State(),
+                Signer = _agentAddress,
+            }));
         }
 
         [Fact]
@@ -323,7 +342,11 @@
                     GameConfig.RequireClearedStageLevel.ActionsInShop
                 ),
             };
-            _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            var digestListAddress = OrderDigestListState.DeriveAddress(_avatarAddress);
+            var digestList = new OrderDigestListState(digestListAddress);
+            _initialState = _initialState
+                .SetState(_avatarAddress, avatarState.Serialize())
+                .SetState(digestListAddress, digestList.Serialize());
 
             var updateSellInfo = new UpdateSellInfo(
                 default,

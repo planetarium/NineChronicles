@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Battle;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -54,27 +55,7 @@ namespace Nekoyume.Action
             var digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
             if (context.Rehearsal)
             {
-                foreach (var updateSellInfo in updateSellInfos)
-                {
-                    var shopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, updateSellInfo.orderId);
-                    var updateSellShopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, updateSellInfo.updateSellOrderId);
-                    var updateSellOrderAddress = Order.DeriveAddress(updateSellInfo.updateSellOrderId);
-                    var itemAddress = Addresses.GetItemAddress(updateSellInfo.tradableId);
-
-                    states = states
-                        .SetState(itemAddress, MarkChanged)
-                        .SetState(shopAddress, MarkChanged)
-                        .SetState(updateSellShopAddress, MarkChanged)
-                        .SetState(updateSellOrderAddress, MarkChanged);
-                }
-                
-                return states
-                    .SetState(context.Signer, MarkChanged)
-                    .SetState(digestListAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(sellerAvatarAddress, MarkChanged);
+                return states;
             }
 
             // common
@@ -84,6 +65,10 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex} updateSell exec started", addressesHex);
 
+            if (!updateSellInfos.Any())
+            {
+                throw new ListEmptyException($"{addressesHex} List - UpdateSell infos was empty.");
+            }
             if (!states.TryGetAvatarStateV2(context.Signer, sellerAvatarAddress, out var avatarState, out _))
             {
                 throw new FailedLoadStateException(
