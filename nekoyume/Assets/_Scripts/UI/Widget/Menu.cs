@@ -6,7 +6,6 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
-using Nekoyume.UI.Module;
 using Nekoyume.Model.BattleStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -16,6 +15,8 @@ using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Lobby;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
