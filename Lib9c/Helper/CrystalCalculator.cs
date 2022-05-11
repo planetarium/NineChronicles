@@ -44,8 +44,9 @@ namespace Nekoyume.Helper
             {
                 CrystalEquipmentGrindingSheet.Row grindingRow = crystalEquipmentGrindingSheet[equipment.Id];
                 crystal += grindingRow.CRYSTAL * CRYSTAL;
-                // TODO: Change grindingRow.CRYSTAL to crystalEquipmentGrindingSheet[grindingRow.EnchantBaseEquipmentID].CRYSTAL
-                crystal += (BigInteger.Pow(2, equipment.level) - 1) * grindingRow.CRYSTAL * CRYSTAL;
+                crystal += (BigInteger.Pow(2, equipment.level) - 1) *
+                           crystalEquipmentGrindingSheet[grindingRow.EnchantBaseId].CRYSTAL *
+                           CRYSTAL;
             }
 
             // Divide Reward when itemEnhancement failed.

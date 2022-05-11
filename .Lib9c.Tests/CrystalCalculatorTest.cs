@@ -49,35 +49,43 @@ namespace Lib9c.Tests
                 equipmentList.Add((Equipment)equipment);
             }
 
+            var actual = CrystalCalculator.CalculateCrystal(
+                equipmentList,
+                _tableSheets.CrystalEquipmentGrindingSheet,
+                monsterCollectionLevel,
+                _tableSheets.CrystalMonsterCollectionMultiplierSheet,
+                enhancementFailed
+            );
+
             Assert.Equal(
                 expected * CrystalCalculator.CRYSTAL,
-                CrystalCalculator.CalculateCrystal(
-                    equipmentList,
-                    _tableSheets.CrystalEquipmentGrindingSheet,
-                    monsterCollectionLevel,
-                    _tableSheets.CrystalMonsterCollectionMultiplierSheet,
-                    enhancementFaield
-                )
-            );
+                actual);
         }
 
         private class CalculateCrystalData : IEnumerable<object[]>
         {
             private readonly List<object[]> _data = new List<object[]>
             {
+                // 100 + (2^0 - 1) * 100 = 100
+                // enchant level 2
+                // 200 + (2^2 - 1) * 100 = 500
+                // total 600
                 new object[]
                 {
                     new[]
                     {
                         (10100000, 0),
-                        (10100000, 2),
+                        (10110000, 2),
                     },
                     0,
                     false,
-                    300,
+                    600,
                 },
                 new object[]
                 {
+                    // enchant failed
+                    // 100 + (2^0 -1) * 100 % 2 = 50
+                    // total 50
                     new[]
                     {
                         (10100000, 0),
@@ -86,26 +94,50 @@ namespace Lib9c.Tests
                     true,
                     50,
                 },
+                // enchant level 3 & failed
+                // (200 + (2^3 - 1) * 100) % 2 = 450
+                // multiply by staking
+                // 450 * 0.3 = 135
+                // total 585
                 new object[]
                 {
                     new[]
                     {
-                        (10100000, 3),
+                        (10110000, 3),
                     },
                     3,
                     true,
-                    260,
+                    585,
                 },
+                // enchant level 1
+                // 100 + (2^1 - 1) * 100 = 200
+                // enchant level 2
+                // 200 + (2^2 - 1) * 100 = 500
+                // multiply by staking
+                // 700 * 0.3 = 210
+                // total 910
                 new object[]
                 {
                     new[]
                     {
                         (10100000, 1),
-                        (10100000, 2),
+                        (10110000, 2),
                     },
                     3,
                     false,
-                    390,
+                    910,
+                },
+                // enchant level 1
+                // 200 + (2^1 - 1) * 100 = 300
+                new object[]
+                {
+                    new[]
+                    {
+                        (10110000, 1),
+                    },
+                    0,
+                    false,
+                    300,
                 },
             };
 
