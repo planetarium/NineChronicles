@@ -250,7 +250,7 @@ namespace Lib9c.Tests.Action
             Assert.Empty(avatarState.questList.completedQuestIds);
             Assert.Equal(equipments.Count, avatarState.inventory.Items.Count);
 
-            // HackAndSlash
+            // HackAndSlash12
             var action = new HackAndSlash12
             {
                 costumes = new List<Guid>(),

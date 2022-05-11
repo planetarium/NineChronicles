@@ -41,7 +41,7 @@ namespace Nekoyume.Action
 
             CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
 
-            if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException($"Aborted as the avatar state of the signer failed to load.");
             }

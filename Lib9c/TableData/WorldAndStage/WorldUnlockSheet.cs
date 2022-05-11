@@ -16,6 +16,7 @@ namespace Nekoyume.TableData
             public int WorldId { get; private set; }
             public int StageId { get; private set; }
             public int WorldIdToUnlock { get; private set; }
+            public int CRYSTAL { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -31,6 +32,11 @@ namespace Nekoyume.TableData
                 WorldIdToUnlock = string.IsNullOrEmpty(fields[3])
                     ? throw new SheetRowColumnException(nameof(WorldIdToUnlock))
                     : ParseInt(fields[3]);
+                CRYSTAL = 0;
+                if (fields.Count >= 5)
+                {
+                    CRYSTAL = ParseInt(fields[4]);
+                }
             }
         }
 
