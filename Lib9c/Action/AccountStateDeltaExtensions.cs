@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Bencodex.Types;
+using JetBrains.Annotations;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -781,6 +782,18 @@ namespace Nekoyume.Action
             }
 
             return (arenaInfoAddress, arenaInfo, isNew);
+        }
+
+        public static bool TryGetStakeState(this IAccountStateDelta states, Address agentAddress, out StakeState stakeState)
+        {
+            if (states.TryGetState(StakeState.DeriveAddress(agentAddress), out Dictionary dictionary))
+            {
+                stakeState = new StakeState(dictionary);
+                return true;
+            }
+
+            stakeState = null;
+            return false;
         }
     }
 }
