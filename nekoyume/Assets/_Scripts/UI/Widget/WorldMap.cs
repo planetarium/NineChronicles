@@ -22,6 +22,7 @@ namespace Nekoyume.UI
             public readonly ReactiveProperty<int> SelectedStageId = new ReactiveProperty<int>(1);
 
             public WorldInformation WorldInformation;
+            public List<int> UnlockedWorldIds;
         }
 
         [SerializeField] private GameObject worldMapRoot = null;
@@ -72,8 +73,13 @@ namespace Nekoyume.UI
         {
             base.Initialize();
             var firstStageId = Game.Game.instance.TableSheets.StageWaveSheet.First?.StageId ?? 1;
-            SharedViewModel = new ViewModel();
-            SharedViewModel.SelectedStageId.Value = firstStageId;
+            SharedViewModel = new ViewModel
+            {
+                SelectedStageId =
+                {
+                    Value = firstStageId
+                }
+            };
             var sheet = Game.Game.instance.TableSheets.WorldSheet;
             foreach (var worldButton in _worldButtons)
             {

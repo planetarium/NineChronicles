@@ -120,6 +120,7 @@ namespace Nekoyume.BlockChain
 
             // Crystal Unlocks
             UnlockEquipmentRecipe();
+            UnlockWorld();
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
 #endif
@@ -267,6 +268,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(e => ResponseUnlockEquipmentRecipeAsync(e).Forget())
+                .AddTo(_disposables);
+        }
+
+        private void UnlockWorld()
+        {
+            _actionRenderer.EveryRender<UnlockWorld>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnlockWorld)
                 .AddTo(_disposables);
         }
 
@@ -1391,6 +1401,19 @@ namespace Nekoyume.BlockChain
             }
             sharedModel.SetUnlockedRecipes(recipeIds);
             sharedModel.UpdateUnlockableRecipes();
+        }
+
+        private void ResponseUnlockWorld(ActionBase.ActionEvaluation<UnlockWorld> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                // Exception handling...
+            }
+
+            Widget.Find<WorldMap>().SharedViewModel.UnlockedWorldIds = eval.Action.WorldIds;
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval).Forget();
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

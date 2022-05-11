@@ -15,7 +15,8 @@ namespace Nekoyume.UI.Module
         private enum State
         {
             Unlocked,
-            Locked
+            Locked,
+            Unlockable,
         }
 
         private enum AnimationState
@@ -120,9 +121,9 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public void Unlock()
+        public void Unlock(bool crystalLock = false)
         {
-            _state.SetValueAndForceNotify(State.Unlocked);
+            _state.SetValueAndForceNotify(crystalLock ? State.Unlockable : State.Unlocked);
         }
 
         public void Lock()
