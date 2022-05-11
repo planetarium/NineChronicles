@@ -47,7 +47,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 9c67e02a967534297bd452ad80ca3261, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
-    totalSpriteSurfaceArea: 984862
+    totalSpriteSurfaceArea: 984770
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -113,7 +113,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1c4270c34603847f1b8bf5946b2a8e1c, type: 3}
   - {fileID: 21300000, guid: ef5c36c332c2a9549975f5b1544f4061, type: 3}
   - {fileID: 21300000, guid: 736422d3b90bf4e9aa2af40f1b0bc61c, type: 3}
-  - {fileID: 21300000, guid: 587805f34dc9ec1498ca31027498b0eb, type: 3}
   - {fileID: 21300000, guid: 4fa0fb14a5d06b1409966b7db81b585e, type: 3}
   - {fileID: 21300000, guid: 93733c147ae424e038adfc771bdf885f, type: 3}
   - {fileID: 21300000, guid: 3ffd8c14e9e6d4aab877248cbf0d5987, type: 3}
@@ -173,6 +172,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 363d1fb713d3d7544bba7bd873af24d3, type: 3}
   - {fileID: 21300000, guid: 808104c7483594cdb8dcfbd83cf135d3, type: 3}
   - {fileID: 21300000, guid: 1cd1aec7ea4bb4cd580a77754dd8250d, type: 3}
+  - {fileID: 21300000, guid: fb391dd7decfec44ca6c270830d9d10f, type: 3}
   - {fileID: 21300000, guid: 0c2ed0f79d8d543699b1c942e15eb8ea, type: 3}
   - {fileID: 21300000, guid: c48e1ff7c8e3b4faa9c64fedd4677b03, type: 3}
   - {fileID: 21300000, guid: 52d66508027f740f0843704bd3996b6f, type: 3}
@@ -220,6 +220,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0990d1aaad184424da9a5344e88e77e2, type: 3}
   - {fileID: 21300000, guid: 585ed4aadb6b1466eadc2d0703d76377, type: 3}
   - {fileID: 21300000, guid: cc08f1cae86154acebb5737994414f2f, type: 3}
+  - {fileID: 21300000, guid: d5e1b4da7bc57a14781b6768739dcc45, type: 3}
   - {fileID: 21300000, guid: e28a2eda03aa14186b003b0c57fb1ec8, type: 3}
   - {fileID: 21300000, guid: 568239eace6e94a52b9841fb10ac6974, type: 3}
   - {fileID: 21300000, guid: e6175eea41e27468b9e2b59b369f0c77, type: 3}
@@ -371,7 +372,6 @@ SpriteAtlas:
   - UI_Popup_bg_03
   - icon_combination_04_black
   - Item_Recipebg_Lock
-  - Common_bg_2R_test
   - UI_bg_frame_deco_03
   - UI_icon_exit
   - UI_bg_assist
@@ -431,6 +431,7 @@ SpriteAtlas:
   - UI_bg_chat_02
   - UI_page_normal
   - button_orange_close
+  - Common_Prrogressbar_Line_2
   - UI_Btn_bg_03
   - UI_main_icon_gold_big
   - UI_bar_01_red
@@ -478,6 +479,7 @@ SpriteAtlas:
   - UI_main_icon_inventory
   - filter_check
   - icon_costume_01_black
+  - Common_Prrogressbar_Line_1
   - UI_icon_Mainmenu_08
   - UI_Common_Slot_Expired
   - UI_Gradiant_bg_02
