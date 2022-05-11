@@ -38,7 +38,7 @@ namespace Lib9c.Tests
 
         [Theory]
         [ClassData(typeof(CalculateCrystalData))]
-        public void CalculateCrystal((int equipmentId, int level)[] equipmentInfos, int monsterCollectionLevel, bool enhancementFaield, int expected)
+        public void CalculateCrystal((int EquipmentId, int Level)[] equipmentInfos, int monsterCollectionLevel, bool enhancementFailed, int expected)
         {
             var equipmentList = new List<Equipment>();
             foreach (var (equipmentId, level) in equipmentInfos)

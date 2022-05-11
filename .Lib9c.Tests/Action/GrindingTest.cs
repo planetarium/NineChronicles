@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Nekoyume.TableData.Crystal;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class GrindingTest
     {
