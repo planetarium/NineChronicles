@@ -82,11 +82,7 @@ namespace Nekoyume.Action
                                                     $"apStoneCount : {apStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
             }
 
-            if (worldId >= GameConfig.MimisbrunnrWorldId)
-            {
-                throw new InvalidWorldException(
-                    $"{addressesHex} [{worldId}] can't execute HackAndSlashSweep action.");
-            }
+            states.ValidateWorldId(avatarAddress, worldId);
 
             if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState, out var migrationRequired))
             {

@@ -73,27 +73,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
 
-            if (worldId > 1)
-            {
-                if (worldId == GameConfig.MimisbrunnrWorldId)
-                {
-                    throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
-                }
-
-                var unlockedWorldIdsAddress = avatarAddress.Derive("world_ids");
-
-                // Unlock First.
-                if (!states.TryGetState(unlockedWorldIdsAddress, out List rawIds))
-                {
-                    throw new InvalidWorldException();
-                }
-
-                List<int> unlockedWorldIds = rawIds.ToList(StateExtensions.ToInteger);
-                if (!unlockedWorldIds.Contains(worldId))
-                {
-                    throw new InvalidWorldException();
-                }
-            }
+            states.ValidateWorldId(avatarAddress, worldId);
 
             var sw = new Stopwatch();
             sw.Start();
