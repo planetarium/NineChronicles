@@ -193,6 +193,7 @@ namespace Nekoyume.UI.Module
                     {
                         _equipments.Add(itemBase.ItemSubType, new List<InventoryItem>());
                     }
+
                     _equipments[itemBase.ItemSubType].Add(inventoryItem);
                     break;
                 case ItemType.Material:
@@ -275,8 +276,8 @@ namespace Nekoyume.UI.Module
             {
                 ItemType.Consumable => _consumables,
                 ItemType.Costume => _costumes,
-                ItemType.Equipment => GetOrderedEquipments(),
-                ItemType.Material => _materials,
+                ItemType.Equipment => GetOrganizedEquipments(),
+                ItemType.Material => GetOrganizedMaterials(),
                 _ => throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null)
             };
         }
@@ -288,7 +289,7 @@ namespace Nekoyume.UI.Module
             _onDoubleClickItem?.Invoke(item);
         }
 
-        private List<InventoryItem> GetOrderedEquipments()
+        private List<InventoryItem> GetOrganizedEquipments()
         {
             var bestItems = GetUsableBestEquipments();
             UpdateEquipmentNotification(bestItems);
@@ -299,6 +300,7 @@ namespace Nekoyume.UI.Module
             }
 
             result = result.OrderByDescending(x => bestItems.Exists(y => y.Equals(x)))
+                .ThenBy(x => x.ItemBase.ItemSubType)
                 .ThenByDescending(x => Util.IsUsableItem(x.ItemBase)).ToList();
 
             if (_elementalTypes.Any())
@@ -308,6 +310,14 @@ namespace Nekoyume.UI.Module
             }
 
             return result;
+        }
+
+        private List<InventoryItem> GetOrganizedMaterials()
+        {
+            return _materials.OrderByDescending(x =>
+                    x.ItemBase.ItemSubType == ItemSubType.ApStone ||
+                    x.ItemBase.ItemSubType == ItemSubType.Hourglass)
+                .ThenBy(x => x.ItemBase is ITradableItem).ToList();
         }
 
         private void UpdateEquipmentNotification(IEnumerable<InventoryItem> bestItems)
@@ -321,6 +331,7 @@ namespace Nekoyume.UI.Module
             {
                 item.HasNotification.Value = false;
             }
+
             _cachedNotificationItems.Clear();
 
             foreach (var item in bestItems.Where(item => !item.Equipped.Value))
@@ -356,7 +367,8 @@ namespace Nekoyume.UI.Module
 
                         if (!selectedEquipments.ContainsKey(item.ItemBase.ItemSubType))
                         {
-                            selectedEquipments.Add(item.ItemBase.ItemSubType , new List<InventoryItem>());
+                            selectedEquipments.Add(item.ItemBase.ItemSubType,
+                                new List<InventoryItem>());
                         }
 
                         selectedEquipments[item.ItemBase.ItemSubType].Add(item);
@@ -370,7 +382,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var pair in selectedEquipments)
             {
-                var (_, slotCount) = availableSlots.FirstOrDefault(x=> x.Item1.Equals(pair.Key));
+                var (_, slotCount) = availableSlots.FirstOrDefault(x => x.Item1.Equals(pair.Key));
                 var item = pair.Value.Where(x => Util.IsUsableItem(x.ItemBase))
                     .OrderByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
                     .Take(slotCount);
@@ -439,7 +451,6 @@ namespace Nekoyume.UI.Module
                             {
                                 _cachedFocusItems.Add(model);
                             }
-
                         }
                         else
                         {
@@ -468,6 +479,7 @@ namespace Nekoyume.UI.Module
             {
                 item.Focused.Value = false;
             }
+
             _cachedFocusItems.Clear();
         }
 

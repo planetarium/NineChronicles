@@ -27,6 +27,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
+using UnityEngine.Playables;
 using Menu = Nekoyume.UI.Menu;
 
 namespace Nekoyume.Game
@@ -87,6 +88,8 @@ namespace Nekoyume.Game
         private AmazonCloudWatchLogsClient _logsClient;
 
         private NineChroniclesAPIClient _apiClient;
+
+        private PlayableDirector _activeDirector;
 
         private string _msg;
 
@@ -841,6 +844,17 @@ namespace Nekoyume.Game
             }
 
             return msg;
+        }
+
+        public void PauseTimeline(PlayableDirector whichOne)
+        {
+            _activeDirector = whichOne;
+            _activeDirector.playableGraph.GetRootPlayable(0).SetSpeed(0);
+        }
+
+        public void ResumeTimeline()
+        {
+            _activeDirector.playableGraph.GetRootPlayable(0).SetSpeed(1);
         }
     }
 }

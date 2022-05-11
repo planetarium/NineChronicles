@@ -40,11 +40,5 @@ namespace Nekoyume.UI
             Animator.SetTrigger(Close1);
             base.Close(ignoreCloseAnimation);
         }
-
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            base.OnCompleteOfShowAnimationInternal();
-            player.gameObject.SetActive(true);
-        }
     }
 }

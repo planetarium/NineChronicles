@@ -7875,6 +7875,9 @@
         <member name="M:Libplanet.Store.BaseStore.ForkTxNonces(System.Guid,System.Guid)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.BaseStore.PruneOutdatedChains(System.Boolean)">
+            <inheritdoc/>
+        </member>
         <member name="T:Libplanet.Store.BlockDigest">
             <summary>
             Class that store uses to save blocks. This contains:
@@ -8113,6 +8116,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.ForkTxNonces(System.Guid,System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.PruneOutdatedChains(System.Boolean)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.CountTransactions">
@@ -8447,6 +8453,23 @@
             <exception cref="T:Libplanet.Store.ChainIdNotFoundException">Thrown when the given
             <paramref name="sourceChainId"/> does not exist.</exception>
         </member>
+        <member name="M:Libplanet.Store.IStore.PruneOutdatedChains(System.Boolean)">
+            <summary>
+            Delete all non-canonical chains.
+            </summary>
+            <param name="noopWithoutCanon">
+            Flag to determine whether the function throws exception
+            when the canonical chain is not assigned.  <c>false</c> by default.
+            If it set to <c>true</c>, does not throw exception when
+            there is no canonical chain.
+            Otherwise, throws <see cref="T:System.InvalidOperationException"/> when
+            there is no canonical chain.
+            </param>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when there is no canonical chain and
+            <paramref name="noopWithoutCanon"/> is false.
+            </exception>
+        </member>
         <member name="T:Libplanet.Store.MemoryStore">
             <summary>
             Volatile in-memory store.
@@ -8540,37 +8563,6 @@
             If <c>null</c> is present, <c>null</c> is returned.</param>
             <returns>The state root hash of the block, or <c>null</c> if the block is not found or
             <paramref name="blockHash"/> is <c>null</c>.</returns>
-        </member>
-        <member name="T:Libplanet.Store.TrieStateStore">
-            <summary>
-            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
-            </summary>
-            <param name="stateKeyValueStore">The storage to store states. It used by
-            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
-            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
-            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Store.IStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.CopyStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Store.TrieStateStore)">
-            <summary>
-            Copies states under state root hashes of given <paramref name="stateRootHashes"/>
-            to <paramref name="targetStateStore"/>.
-            </summary>
-            <param name="stateRootHashes">The state root hashes of states to copy.</param>
-            <param name="targetStateStore">The target state store to copy state root hashes.</param>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc cref="M:Libplanet.Store.IStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.Dispose">
-            <inheritdoc cref="M:System.IDisposable.Dispose"/>
         </member>
         <member name="T:Libplanet.Store.Trie.CacheableKeyValueStore">
             <summary>
@@ -8991,6 +8983,37 @@
         </member>
         <member name="M:Libplanet.Store.Trie.Nodes.ValueNode.ToBencodex">
             <inheritdoc cref="M:Libplanet.Store.Trie.Nodes.INode.ToBencodex"/>
+        </member>
+        <member name="T:Libplanet.Store.TrieStateStore">
+            <summary>
+            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
+            </summary>
+            <param name="stateKeyValueStore">The storage to store states. It used by
+            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
+            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Store.IStateStore.PruneStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.CopyStates(System.Collections.Immutable.IImmutableSet{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Store.TrieStateStore)">
+            <summary>
+            Copies states under state root hashes of given <paramref name="stateRootHashes"/>
+            to <paramref name="targetStateStore"/>.
+            </summary>
+            <param name="stateRootHashes">The state root hashes of states to copy.</param>
+            <param name="targetStateStore">The target state store to copy state root hashes.</param>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <inheritdoc cref="M:Libplanet.Store.IStateStore.GetStateRoot(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})"/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.Dispose">
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Bencodex.Types;
+using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
@@ -107,7 +109,7 @@ namespace Nekoyume.UI
             UpdateArenaInfo(weeklyArenaState);
         }
 
-        private void UpdateArenaInfo(WeeklyArenaState weeklyArenaState)
+        private async void UpdateArenaInfo(WeeklyArenaState weeklyArenaState)
         {
             var avatarAddress = States.Instance.CurrentAvatarState?.address;
             if (avatarAddress == null)
@@ -117,19 +119,20 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var arenaInfos = weeklyArenaState
-                .GetArenaInfos(avatarAddress.Value, 0, 0);
-
-            if (arenaInfos.Count == 0)
+            var iValue =
+                await Game.Game.instance.Agent.GetStateAsync(
+                    weeklyArenaState.address.Derive(avatarAddress.Value.ToByteArray()));
+            if (iValue is Dictionary dictionary)
             {
-                winCount.text = "-";
-                loseCount.text = "-";
+                var arenaInfo = new ArenaInfo(dictionary);
+                var record = arenaInfo.ArenaRecord;
+                winCount.text = record.Win.ToString();
+                loseCount.text = record.Lose.ToString();
                 return;
             }
 
-            var record = arenaInfos[0].arenaInfo.ArenaRecord;
-            winCount.text = record.Win.ToString();
-            loseCount.text = record.Lose.ToString();
+            winCount.text = "-";
+            loseCount.text = "-";
         }
 
         private void OnSliderChange(float value)

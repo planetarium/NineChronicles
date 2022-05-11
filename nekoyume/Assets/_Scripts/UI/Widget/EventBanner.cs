@@ -30,6 +30,7 @@ namespace Nekoyume.UI.Module
             {
                 var banner = Instantiate(Banner, content);
                 banner.GetComponent<EventBannerItem>().Set(info.SeasonBanner, info.SeasonUrl);
+                banner.transform.SetAsFirstSibling();
             }
 
             var destroyList = new List<GameObject>();

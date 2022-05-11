@@ -1,4 +1,4 @@
-#define TEST_LOG
+//#define TEST_LOG
 
 using System;
 using System.Collections;
@@ -1077,10 +1077,9 @@ namespace Nekoyume.Game
             character.Dead();
         }
 
-        public Player GetPlayer(bool forceCreate = false)
+        public Player GetPlayer()
         {
-            if (!forceCreate &&
-                SelectedPlayer &&
+            if (SelectedPlayer &&
                 SelectedPlayer.gameObject.activeSelf)
             {
                 return SelectedPlayer;
@@ -1102,9 +1101,9 @@ namespace Nekoyume.Game
             return SelectedPlayer;
         }
 
-        public Player GetPlayer(Vector3 position, bool forceCreate = false)
+        public Player GetPlayer(Vector3 position)
         {
-            var player = GetPlayer(forceCreate);
+            var player = GetPlayer();
             player.transform.position = position;
             return player;
         }

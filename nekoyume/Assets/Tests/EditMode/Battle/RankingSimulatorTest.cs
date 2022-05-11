@@ -43,11 +43,20 @@ namespace Tests.EditMode.Battle
                 avatarState,
                 new List<Guid>(),
                 _tableSheets.GetRankingSimulatorSheets(),
-                999999,
-                arenaInfo,
-                arenaInfo
+                999999
             );
             simulator.Simulate();
+            var rewards = RewardSelector.Select(
+                simulator.Random,
+                _tableSheets.WeeklyArenaRewardSheet,
+                _tableSheets.MaterialItemSheet,
+                avatarState.level,
+                arenaInfo.GetRewardCount());
+            var challengerScoreDelta = arenaInfo.Update(
+                arenaInfo,
+                simulator.Result,
+                ArenaScoreHelper.GetScore);
+            simulator.PostSimulate(rewards, challengerScoreDelta, arenaInfo.Score);
 
             void ToBytes()
             {

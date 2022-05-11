@@ -91,6 +91,9 @@ namespace Nekoyume.UI
         private GameObject coverToBlockClick = null;
 
         [SerializeField]
+        private Button sweepPopupButton;
+
+        [SerializeField]
         private Button boostPopupButton;
 
         [SerializeField]
@@ -98,6 +101,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject hasBg;
+
+        [SerializeField]
+        private GameObject blockStartingTextObject;
 
         private Stage _stage;
         private EquipmentSlot _weaponSlot;
@@ -119,6 +125,9 @@ namespace Nekoyume.UI
 
         private bool EnoughToPlay =>
             States.Instance.CurrentAvatarState.actionPoint >= _requiredCost;
+
+        private bool IsStageCleared =>
+            States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value);
 
         #region override
 
@@ -166,12 +175,24 @@ namespace Nekoyume.UI
 
             CloseWidget = () => Close(true);
 
-
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
             startButton.OnSubmitSubject.Where(_ => !_stage.IsInStage)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ => OnClickBattle(repeatToggle.isOn))
+                .AddTo(gameObject);
+
+            sweepPopupButton.OnClickAsObservable()
+                .Where(_ => IsStageCleared)
+                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId.Value));
+
+            sweepPopupButton.OnClickAsObservable().Where(_ => !IsStageCleared)
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLineSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_SWEEP_UNLOCK_CONDITION"),
+                        NotificationCell.NotificationType.Alert))
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
@@ -228,6 +249,7 @@ namespace Nekoyume.UI
             UpdateTitle();
             UpdateStat(currentAvatarState);
             UpdateSlot(currentAvatarState, true);
+            UpdateStartButton(currentAvatarState);
 
             closeButtonText.text = closeButtonName;
             startButton.gameObject.SetActive(true);
@@ -237,7 +259,11 @@ namespace Nekoyume.UI
             equipmentSlots.gameObject.SetActive(true);
             ShowHelpTooltip(stageType);
             ReactiveAvatarState.ActionPoint.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
-            ReactiveAvatarState.Inventory.Subscribe(_ => UpdateSlot(Game.Game.instance.States.CurrentAvatarState)).AddTo(_disposables);
+            ReactiveAvatarState.Inventory.Subscribe(_ =>
+            {
+                UpdateSlot(Game.Game.instance.States.CurrentAvatarState);
+                UpdateStartButton(Game.Game.instance.States.CurrentAvatarState);
+            }).AddTo(_disposables);
             base.Show(ignoreShowAnimation);
         }
 
@@ -357,7 +383,7 @@ namespace Nekoyume.UI
 
         private void Equip(InventoryItem inventoryItem)
         {
-            if (inventoryItem.LevelLimited.Value)
+            if (inventoryItem.LevelLimited.Value && !inventoryItem.Equipped.Value)
             {
                 return;
             }
@@ -528,7 +554,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        interactable = !model.LevelLimited.Value;
+                        interactable = !model.LevelLimited.Value || model.LevelLimited.Value && model.Equipped.Value;
                     }
                     submit = () => Equip(model);
                     blocked = () => NotificationSystem.Push(MailType.System,
@@ -753,8 +779,7 @@ namespace Nekoyume.UI
                         equipments,
                         consumables,
                         _worldId,
-                        _stageId.Value,
-                        1
+                        _stageId.Value
                     ).Subscribe();
                     break;
                 case StageType.Mimisbrunnr:
@@ -800,7 +825,7 @@ namespace Nekoyume.UI
             }
 
             var stage = Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(
-                    i => i.Id == stageId);
+                i => i.Id == stageId);
 
             if (stage is null)
             {
@@ -835,6 +860,32 @@ namespace Nekoyume.UI
         private bool IsExistElementalType(ElementalType elementalType)
         {
             return GetElementalTypes().Exists(x => x == elementalType);
+        }
+
+        private void UpdateStartButton(AvatarState avatarState)
+        {
+            _player.Set(avatarState);
+            var foodIds = consumableSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Consumable) slot.Item).Select(food => food.Id);
+            var canBattle = Util.CanBattle(_player, foodIds);
+            startButton.gameObject.SetActive(canBattle);
+
+            switch (_stageType)
+            {
+                case StageType.HackAndSlash:
+                    boostPopupButton.gameObject.SetActive(false);
+                    sweepPopupButton.gameObject.SetActive(avatarState.worldInformation.IsStageCleared(_stageId.Value));
+                    break;
+                case StageType.Mimisbrunnr:
+                    boostPopupButton.gameObject.SetActive(canBattle);
+                    sweepPopupButton.gameObject.SetActive(false);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            blockStartingTextObject.SetActive(!canBattle);
         }
 
         public List<ElementalType> GetElementalTypes()

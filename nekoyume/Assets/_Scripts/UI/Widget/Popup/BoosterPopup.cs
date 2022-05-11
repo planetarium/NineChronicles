@@ -139,8 +139,7 @@ namespace Nekoyume.UI
                     _equipments,
                     _consumables,
                     _worldId,
-                    _stageId,
-                    (int)apSlider.value
+                    _stageId
                 ).Subscribe();
             }
         }

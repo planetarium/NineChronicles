@@ -68,6 +68,7 @@ namespace Planetarium.Nekoyume.Editor
             }
 
             yield return asyncOperation;
+            Debug.Log($"Download completed. \"{downloadFilePath}\"");
             EditorUtility.ClearProgressBar();
 
             if (request.result != UnityWebRequest.Result.Success)

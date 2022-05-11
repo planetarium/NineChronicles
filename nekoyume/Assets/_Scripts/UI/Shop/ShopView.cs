@@ -65,17 +65,16 @@ namespace Nekoyume.UI.Module
         protected abstract IEnumerable<ShopItem> GetSortedModels(
             Dictionary<ItemSubTypeFilter, List<ShopItem>> items);
 
-        protected virtual void UpdateView(bool resetPage = true)
+        protected virtual void UpdateView(bool resetPage = true, int page = 0)
         {
             _selectedModels.Clear();
             _selectedModels.AddRange(GetSortedModels(_items));
             _pageCount = _selectedModels.Any()
                 ? (_selectedModels.Count() / (_column * _row)) + 1
                 : 1;
-
             if (resetPage)
             {
-                _page.SetValueAndForceNotify(0);
+                _page.SetValueAndForceNotify(page);
             }
 
             UpdateExpired(Game.Game.instance.Agent.BlockIndex);
@@ -214,7 +213,7 @@ namespace Nekoyume.UI.Module
                     AddItem(digest, itemSheet);
                 }
 
-                UpdateView();
+                UpdateView(page:_page.Value);
             }).AddTo(_disposables);
             Game.Game.instance.Agent.BlockIndexSubject.Subscribe(UpdateExpired).AddTo(_disposables);
         }

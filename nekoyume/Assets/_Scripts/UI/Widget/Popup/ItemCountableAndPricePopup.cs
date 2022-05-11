@@ -119,7 +119,7 @@ namespace Nekoyume.UI
                 int digit = i;
                 addPriceButton[i].OnClickAsObservable().Subscribe(_ =>
                 {
-                    var price = InputFieldValueToValue<int>(priceInputField) +
+                    var price = InputFieldValueToValue<decimal>(priceInputField) +
                                 (int) Mathf.Pow(DefaultPrice, digit);
                     _data.OnChangePrice.OnNext(price);
                 }).AddTo(_disposablesForAwake);

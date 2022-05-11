@@ -211,8 +211,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Menu>());
             yield return null;
-            secondWidgets.Add(Widget.Create<RankingBattleLoadingScreen>());
-            yield return null;
             secondWidgets.Add(Widget.Create<ArenaBattleLoadingScreen>());
             yield return null;
             // 메뉴보단 더 앞에 나와야 합니다.
@@ -310,13 +308,17 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ConfirmPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<BoosterPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<SweepPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<BoosterPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<SweepResultPopup>());
             yield return null;
 
             // tooltip

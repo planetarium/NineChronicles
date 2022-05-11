@@ -11,6 +11,7 @@ using UnityEngine.UI;
 using Coffee.UIEffects;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
+using Nekoyume.State;
 
 namespace Nekoyume.UI.Module
 {
@@ -314,6 +315,12 @@ namespace Nekoyume.UI.Module
 
         public void SetDim(bool isDim)
         {
+            if (Item is {ItemType: ItemType.Equipment})
+            {
+                isDim |= Util.GetItemRequirementLevel(Item) >
+                         States.Instance.CurrentAvatarState.level;
+            }
+
             gradeImage.color = isDim ? DimmedColor : OriginColor;
             enhancementText.color = isDim ? DimmedColor : OriginColor;
             itemImage.color = isDim ? DimmedColor : OriginColor;

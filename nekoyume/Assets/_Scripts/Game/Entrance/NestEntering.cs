@@ -20,8 +20,6 @@ namespace Nekoyume.Game.Entrance
             stage.LoadBackground("nest");
 
             Widget.Find<Login>().ready = false;
-
-            stage.SelectedPlayer = null;
             yield return null;
 
             var factory = GetComponent<PlayerFactory>();

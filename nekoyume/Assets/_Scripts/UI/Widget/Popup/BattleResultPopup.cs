@@ -540,8 +540,7 @@ namespace Nekoyume.UI
                     player.Equipments,
                     new List<Consumable>(),
                     SharedModel.WorldID,
-                    SharedModel.StageID + 1,
-                    1).StartAsCoroutine();
+                    SharedModel.StageID + 1).StartAsCoroutine();
             }
         }
 
@@ -602,8 +601,7 @@ namespace Nekoyume.UI
                     player.Equipments,
                     new List<Consumable>(),
                     SharedModel.WorldID,
-                    SharedModel.StageID,
-                    1).StartAsCoroutine();
+                    SharedModel.StageID).StartAsCoroutine();
             }
         }
 

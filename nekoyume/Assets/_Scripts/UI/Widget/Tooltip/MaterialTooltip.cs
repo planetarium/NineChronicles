@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Amazon.CloudWatchLogs.Model.Internal.MarshallTransformations;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -50,7 +51,7 @@ namespace Nekoyume.UI
         }
 
         public override void Show(
-        ShopItem item,
+            ShopItem item,
             System.Action onRegister,
             System.Action onSellCancellation,
             System.Action onClose,
@@ -168,10 +169,12 @@ namespace Nekoyume.UI
                         acquisitionPlaceList.AddRange(stages.Select(stage =>
                         {
                             if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stage.Id,
-                                    out var row))
+                                out var row))
                             {
                                 return MakeAcquisitionPlaceModelByType(
-                                    AcquisitionPlaceButton.PlaceType.Stage, itemBase, row.Id,
+                                    AcquisitionPlaceButton.PlaceType.Stage,
+                                    itemBase,
+                                    row.Id,
                                     stage);
                             }
 
@@ -182,7 +185,8 @@ namespace Nekoyume.UI
                     break;
                 case ItemSubType.FoodMaterial:
                     acquisitionPlaceList.Add(
-                        MakeAcquisitionPlaceModelByType(AcquisitionPlaceButton.PlaceType.Arena,
+                        MakeAcquisitionPlaceModelByType(
+                            AcquisitionPlaceButton.PlaceType.Arena,
                             itemBase));
 
                     break;
@@ -191,7 +195,9 @@ namespace Nekoyume.UI
                     var isTradable = itemBase is ITradableItem;
                     if (isTradable)
                     {
-                        acquisitionPlaceList.Add(MakeAcquisitionPlaceModelByType(AcquisitionPlaceButton.PlaceType.Shop, itemBase));
+                        acquisitionPlaceList.Add(MakeAcquisitionPlaceModelByType(
+                            AcquisitionPlaceButton.PlaceType.Shop,
+                            itemBase));
                         acquisitionPlaceList.Add(
                             MakeAcquisitionPlaceModelByType(
                                 AcquisitionPlaceButton.PlaceType.Staking, itemBase));
@@ -219,20 +225,22 @@ namespace Nekoyume.UI
                 acquisitionPlaceList.Count == 0)
             {
                 if (Game.Game.instance.TableSheets.WeeklyArenaRewardSheet.Any(pair =>
-                        pair.Value.Reward.ItemId == itemBase.Id))
+                    pair.Value.Reward.ItemId == itemBase.Id))
                 {
-                    acquisitionPlaceList.Add(MakeAcquisitionPlaceModelByType(AcquisitionPlaceButton.PlaceType.Arena, itemBase));
+                    acquisitionPlaceList.Add(MakeAcquisitionPlaceModelByType(
+                        AcquisitionPlaceButton.PlaceType.Arena,
+                        itemBase));
                 }
             }
 
             if (acquisitionPlaceList.All(model =>
-                    model.Type != AcquisitionPlaceButton.PlaceType.Quest &&
-                    model.ItemBase.ItemSubType != ItemSubType.Hourglass &&
-                    model.ItemBase.ItemSubType != ItemSubType.ApStone))
+                model.Type != AcquisitionPlaceButton.PlaceType.Quest &&
+                model.ItemBase.ItemSubType != ItemSubType.Hourglass &&
+                model.ItemBase.ItemSubType != ItemSubType.ApStone))
             {
                 // Acquisition place is quest...
                 if (States.Instance.CurrentAvatarState.questList.Any(quest =>
-                        !quest.Complete && quest.Reward.ItemMap.ContainsKey(itemBase.Id)))
+                    !quest.Complete && quest.Reward.ItemMap.ContainsKey(itemBase.Id)))
                 {
                     acquisitionPlaceList.Add(
                         MakeAcquisitionPlaceModelByType(AcquisitionPlaceButton.PlaceType.Quest,
@@ -257,7 +265,6 @@ namespace Nekoyume.UI
             var deletableWidgets = FindWidgets().Where(widget =>
                 !(widget is SystemWidget) &&
                 !(widget is MessageCatTooltip) &&
-                !(widget is Menu) &&
                 !(widget is HeaderMenuStatic) &&
                 !(widget is MaterialTooltip) &&
                 !(widget is ShopBuy) &&
@@ -268,6 +275,7 @@ namespace Nekoyume.UI
                 widget.Close(true);
             }
 
+            Find<Menu>().Close(true);
             Find<ShopBuy>().Close(true, true);
             Find<ShopSell>().Close(true, true);
             Find<EventBanner>().Close(true);
@@ -283,28 +291,43 @@ namespace Nekoyume.UI
         {
             return type switch
             {
-                AcquisitionPlaceButton.PlaceType.Stage => new AcquisitionPlaceButton.Model(
-                    AcquisitionPlaceButton.PlaceType.Stage,
-                    () =>
+                AcquisitionPlaceButton.PlaceType.Stage => stageRow is null
+                    ? throw new Exception($"{nameof(stageRow)} is null")
+                    : new AcquisitionPlaceButton.Model(
+                        AcquisitionPlaceButton.PlaceType.Stage,
+                        () =>
+                        {
+                            CloseOtherWidgets();
+                            Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+
+                            var worldMap = Find<WorldMap>();
+                            worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
+                            worldMap.Show(worldId, stageRow.Id, false);
+                            worldMap.SharedViewModel.WorldInformation.TryGetWorld(worldId, out var worldModel);
+
+                            var isMimisbrunnrWorld = worldId == GameConfig.MimisbrunnrWorldId;
+                            var stageNum = isMimisbrunnrWorld
+                                ? worldMap.SharedViewModel.SelectedStageId.Value % 10000000
+                                : worldMap.SharedViewModel.SelectedStageId.Value;
+                            Find<BattlePreparation>().Show(
+                                isMimisbrunnrWorld ? StageType.Mimisbrunnr : StageType.HackAndSlash,
+                                worldMap.SharedViewModel.SelectedWorldId.Value,
+                                worldMap.SharedViewModel.SelectedStageId.Value,
+                                $"{L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}")} {stageNum}",
+                                true);
+                        },
+                        $"{L10nManager.LocalizeWorldName(worldId)} {stageRow.Id % 10_000_000}",
+                        itemBase,
+                        stageRow),
+                AcquisitionPlaceButton.PlaceType.Arena => new AcquisitionPlaceButton.Model(
+                    AcquisitionPlaceButton.PlaceType.Arena, () =>
                     {
                         CloseOtherWidgets();
-                        Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
-
-                        var worldMap = Find<WorldMap>();
-                        worldMap.Show(States.Instance.CurrentAvatarState.worldInformation);
-                        worldMap.Show(worldId, stageRow.Id, false);
-                        worldMap.SharedViewModel.WorldInformation.TryGetWorld(worldId,
-                            out var worldModel);
-
-                        Find<BattlePreparation>().Show(StageType.HackAndSlash,
-                            worldMap.SharedViewModel.SelectedWorldId.Value,
-                            worldMap.SharedViewModel.SelectedStageId.Value,
-                            $"{L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}")} {worldMap.SharedViewModel.SelectedStageId.Value}",
-                            true);
+                        Find<HeaderMenuStatic>()
+                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+                        Find<RankingBoard>().Show();
                     },
-                    $"{L10nManager.LocalizeWorldName(worldId)} {stageRow.Id % 10_000_000}",
-                    itemBase,
-                    stageRow),
+                    L10nManager.Localize("UI_MAIN_MENU_RANKING"), itemBase),
                 AcquisitionPlaceButton.PlaceType.Shop => new AcquisitionPlaceButton.Model(
                     AcquisitionPlaceButton.PlaceType.Shop, () =>
                     {
@@ -316,15 +339,6 @@ namespace Nekoyume.UI
                     },
                     L10nManager.Localize("UI_MAIN_MENU_SHOP"),
                     itemBase),
-                AcquisitionPlaceButton.PlaceType.Arena => new AcquisitionPlaceButton.Model(
-                    AcquisitionPlaceButton.PlaceType.Arena, () =>
-                    {
-                        CloseOtherWidgets();
-                        Find<HeaderMenuStatic>()
-                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-                        Find<RankingBoard>().Show();
-                    },
-                    L10nManager.Localize("UI_MAIN_MENU_RANKING"), itemBase),
                 AcquisitionPlaceButton.PlaceType.Quest => new AcquisitionPlaceButton.Model(
                     AcquisitionPlaceButton.PlaceType.Quest, () =>
                     {
@@ -335,10 +349,7 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_QUEST"),
                     itemBase),
                 AcquisitionPlaceButton.PlaceType.Staking => new AcquisitionPlaceButton.Model(
-                    AcquisitionPlaceButton.PlaceType.Staking, () =>
-                    {
-                        Application.OpenURL(StakingDescriptionUrl);
-                    },
+                    AcquisitionPlaceButton.PlaceType.Staking, () => { Application.OpenURL(StakingDescriptionUrl); },
                     L10nManager.Localize("UI_PLACE_STAKING"),
                     itemBase),
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
