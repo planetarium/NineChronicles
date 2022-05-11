@@ -6428,7 +6428,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 1778df759ff3c46429e3eb2028d1dc19, type: 2}
+      objectReference: {fileID: 2100000, guid: 60bfa863d8f5d4ed1bb47de6c6694254, type: 2}
     - target: {fileID: 3322241865677903240, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: checkPaddingRequired
@@ -6927,7 +6927,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 1778df759ff3c46429e3eb2028d1dc19, type: 2}
+      objectReference: {fileID: 2100000, guid: 60bfa863d8f5d4ed1bb47de6c6694254, type: 2}
     - target: {fileID: 3335416048235874681, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -7351,7 +7351,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 1778df759ff3c46429e3eb2028d1dc19, type: 2}
+      objectReference: {fileID: 2100000, guid: 60bfa863d8f5d4ed1bb47de6c6694254, type: 2}
     - target: {fileID: 3335416048235874681, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -7756,6 +7756,11 @@ PrefabInstance:
       propertyPath: m_text
       value: Alfheim
       objectReference: {fileID: 0}
+    - target: {fileID: 775495641701927527, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 1778df759ff3c46429e3eb2028d1dc19, type: 2}
     - target: {fileID: 1445823665876805337, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_text
@@ -7863,7 +7868,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 1778df759ff3c46429e3eb2028d1dc19, type: 2}
+      objectReference: {fileID: 2100000, guid: 60bfa863d8f5d4ed1bb47de6c6694254, type: 2}
     - target: {fileID: 3335416048235874681, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -8226,7 +8231,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -8668,7 +8673,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 1778df759ff3c46429e3eb2028d1dc19, type: 2}
+      objectReference: {fileID: 2100000, guid: 60bfa863d8f5d4ed1bb47de6c6694254, type: 2}
     - target: {fileID: 3335416048235874681, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_SizeDelta.x
