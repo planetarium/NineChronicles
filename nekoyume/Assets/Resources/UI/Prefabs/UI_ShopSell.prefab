@@ -248,12 +248,12 @@ RectTransform:
   - {fileID: 54699004583413444}
   - {fileID: 5602555639567307695}
   - {fileID: 3215807633686267367}
-  m_Father: {fileID: 5252992282571642813}
-  m_RootOrder: 5
+  m_Father: {fileID: 30865689375232638}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 134, y: 95}
+  m_AnchoredPosition: {x: 74, y: 73}
   m_SizeDelta: {x: 110, y: 68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5158823851944655577
@@ -1877,7 +1877,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: UI_SHOP_ALLREREGISTRATION
+  m_text: UI_SHOP_UPDATESELLALL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
   m_sharedMaterial: {fileID: 7349983812062843314, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
@@ -1965,7 +1965,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_SHOP_ALLREREGISTRATION
+  l10nKey: UI_SHOP_UPDATESELLALL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -2218,12 +2218,12 @@ RectTransform:
   - {fileID: 2859658825929509183}
   - {fileID: 861546478544187567}
   - {fileID: 6006601907105914327}
-  m_Father: {fileID: 5252992282571642813}
-  m_RootOrder: 6
+  m_Father: {fileID: 30865689375232638}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 24.2, y: 95}
+  m_AnchoredPosition: {x: -35.8, y: 73}
   m_SizeDelta: {x: 110, y: 68}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1517022510279834986
@@ -3274,7 +3274,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5252992282571642813}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3383,6 +3383,7 @@ MonoBehaviour:
   inventory: {fileID: 6321799843940535121}
   view: {fileID: 3430819424073117681}
   speechBubble: {fileID: 1484383931328634777}
+  reregistrationButton: {fileID: 81751535378000471}
   buyButton: {fileID: 7747397739883745861}
   closeButton: {fileID: 854530098940539709}
 --- !u!95 &5874525038533338079
@@ -7642,8 +7643,6 @@ RectTransform:
   - {fileID: 2454364506757418359}
   - {fileID: 2783792659617622205}
   - {fileID: 8664651895086756874}
-  - {fileID: 2070833041945857781}
-  - {fileID: 7669056704772543777}
   - {fileID: 3212477190259798487}
   - {fileID: 1484383931328634776}
   m_Father: {fileID: 2239108142594206111}
@@ -7804,6 +7803,8 @@ RectTransform:
   m_Children:
   - {fileID: 2002507415137059399}
   - {fileID: 8301976284382101322}
+  - {fileID: 2070833041945857781}
+  - {fileID: 7669056704772543777}
   m_Father: {fileID: 8664651895086756874}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9679,7 +9680,7 @@ PrefabInstance:
     - target: {fileID: 4214294061450366437, guid: 53746e77bf093f04ab7301d07111ce65,
         type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4214294061450366437, guid: 53746e77bf093f04ab7301d07111ce65,
         type: 3}
@@ -10240,12 +10241,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5650171301b87ec4d93602825aaede14, type: 3}
---- !u!224 &4367672972885401117 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8387159789622807589, guid: 5650171301b87ec4d93602825aaede14,
-    type: 3}
-  m_PrefabInstance: {fileID: 5258016378320900664}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6321799843940535121 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2252839397671229801, guid: 5650171301b87ec4d93602825aaede14,
@@ -10258,6 +10253,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27e2f785c9f14bf0a7e26bd106882815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &4367672972885401117 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8387159789622807589, guid: 5650171301b87ec4d93602825aaede14,
+    type: 3}
+  m_PrefabInstance: {fileID: 5258016378320900664}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4577499752851267221 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8610515029409893549, guid: 5650171301b87ec4d93602825aaede14,

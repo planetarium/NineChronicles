@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Lib9c.Model.Order;
 using Libplanet.Assets;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -41,6 +43,9 @@ namespace Nekoyume.UI
         private SpeechBubble speechBubble = null;
 
         [SerializeField]
+        private Button reregistrationButton;
+
+        [SerializeField]
         private Button buyButton = null;
 
         [SerializeField]
@@ -55,6 +60,15 @@ namespace Nekoyume.UI
             base.Awake();
             SharedModel = new Shop();
             CloseWidget = null;
+
+            reregistrationButton.onClick.AddListener(() =>
+            {
+                Find<TwoButtonSystem>().Show(
+                    L10nManager.Localize("UI_SHOP_ALLREREGISTRATION"),
+                    L10nManager.Localize("UI_YES"),
+                    L10nManager.Localize("UI_NO"),
+                    SubscribeUpdateSellPopupSubmit);
+            });
 
             buyButton.onClick.AddListener(() =>
             {
@@ -235,6 +249,70 @@ namespace Nekoyume.UI
                 model.OrderDigest.ItemCount,
                 model.OrderDigest.ItemCount);
             data.Item.Value.CountEnabled.Value = false;
+        }
+
+        private void SubscribeUpdateSellPopupSubmit()
+        {
+            var digests = ReactiveShopState.SellDigest.Value;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var orderDigests = digests.Where(d => d.ExpiredBlockIndex - blockIndex <= 0).ToList();
+
+            if (!orderDigests.Any())
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_SHOP_NONEUPDATESELLALL"),
+                    NotificationCell.NotificationType.Alert);
+
+                return;
+            }
+
+            var updateSellInfos = new List<UpdateSellInfo>();
+            var oneLineSystemInfos = new List<(string name, int count)>();
+            foreach (var orderDigest in orderDigests)
+            {
+                if (!ReactiveShopState.TryGetShopItem(orderDigest, out var itemBase))
+                {
+                    return;
+                }
+
+                var updateSellInfo = new UpdateSellInfo(
+                    orderDigest.OrderId,
+                    Guid.NewGuid(),
+                    orderDigest.TradableId,
+                    itemBase.ItemSubType,
+                    orderDigest.Price,
+                    orderDigest.ItemCount
+                );
+                itemBase.GetLocalizedName();
+
+                updateSellInfos.Add(updateSellInfo);
+                oneLineSystemInfos.Add((itemBase.GetLocalizedName(), orderDigest.ItemCount));
+            }
+
+            Game.Game.instance.ActionManager.UpdateSell(updateSellInfos).Subscribe();
+            Analyzer.Instance.Track("Unity/UpdateSellAll", new Value
+            {
+                ["Quantity"] = updateSellInfos.Count
+            });
+
+            foreach (var info in oneLineSystemInfos)
+            {
+                string message;
+                if (info.count > 1)
+                {
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_START"),
+                        info.name,
+                        info.count);
+                }
+                else
+                {
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_START"),
+                        info.name);
+                }
+                OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+            }
+            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
         }
 
         private void ShowRetrievePopup(ShopItem model)
