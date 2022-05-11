@@ -93,7 +93,8 @@ namespace Nekoyume.Action
                 context.Signer,
                 sellerAvatarAddress,
                 out _,
-                out var avatarState))
+                out var avatarState,
+                out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");

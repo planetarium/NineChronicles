@@ -4,6 +4,7 @@ namespace Lib9c.Tests
     using System.Collections.Generic;
     using System.Text;
     using Nekoyume.TableData;
+    using Nekoyume.TableData.Crystal;
 
     public class TableSheets
     {
@@ -139,6 +140,13 @@ namespace Lib9c.Tests
         public StakeAchievementRewardSheet StakeAchievementRewardSheet { get; private set; }
 
         public SweepRequiredCPSheet SweepRequiredCPSheet { get; private set; }
+
+        public CrystalEquipmentGrindingSheet CrystalEquipmentGrindingSheet { get; private set; }
+
+        public CrystalMonsterCollectionMultiplierSheet CrystalMonsterCollectionMultiplierSheet { get; private set; }
+
+        public CrystalMaterialCostSheet CrystalMaterialCostSheet { get; private set; }
+
 
         public void ItemSheetInitialize()
         {

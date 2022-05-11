@@ -170,7 +170,15 @@
                 _tableSheets.WorldSheet,
                 recipeRow.UnlockStage);
 
+            var unlockedRecipeIdsAddress = _avatarAddress.Derive("recipe_ids");
+            var recipeIds = List.Empty;
+            for (int i = 1; i < recipeRow.UnlockStage + 1; i++)
+            {
+                recipeIds = recipeIds.Add(i.Serialize());
+            }
+
             var nextState = _initialState
+                .SetState(unlockedRecipeIdsAddress, recipeIds)
                 .SetState(_inventoryAddress, inventoryState.Serialize())
                 .SetState(_worldInformationAddress, worldInformation.Serialize());
 

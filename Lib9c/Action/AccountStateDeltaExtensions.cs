@@ -321,10 +321,12 @@ namespace Nekoyume.Action
             Address agentAddress,
             Address avatarAddress,
             out AgentState agentState,
-            out AvatarState avatarState
+            out AvatarState avatarState,
+            out bool avatarMigrationRequired
         )
         {
             avatarState = null;
+            avatarMigrationRequired = false;
             agentState = states.GetAgentState(agentAddress);
             if (agentState is null)
             {
@@ -345,6 +347,7 @@ namespace Nekoyume.Action
             {
                 // BackWardCompatible.
                 avatarState = states.GetAvatarState(avatarAddress);
+                avatarMigrationRequired = true;
             }
 
             return !(avatarState is null);
