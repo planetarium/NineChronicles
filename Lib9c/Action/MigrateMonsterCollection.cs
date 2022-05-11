@@ -1,3 +1,4 @@
+using System;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -38,7 +39,7 @@ namespace Nekoyume.Action
             var states = context.PreviousStates;
             if (states.TryGetStakeState(context.Signer, out StakeState _))
             {
-                return states;
+                throw new InvalidOperationException("The user has already staked.");
             }
 
             var claimMonsterCollectionReward = new ClaimMonsterCollectionReward

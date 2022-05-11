@@ -1,8 +1,8 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
-    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -63,7 +63,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_SkipIfAlreadyStakeStateExists()
+        public void Execute_ThrowsIfAlreadyStakeStateExists()
         {
             Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
             var monsterCollectionState = new MonsterCollectionState(
@@ -72,18 +72,14 @@ namespace Lib9c.Tests.Action
             var states = _state.SetState(
                     stakeStateAddress, new StakeState(stakeStateAddress, 0).SerializeV2())
                 .SetState(monsterCollectionAddress, monsterCollectionState.SerializeV2());
-            Assert.IsType<Dictionary>(states.GetState(monsterCollectionAddress));
             MigrateMonsterCollection action = new MigrateMonsterCollection(_avatarAddress);
-            states = action.Execute(new ActionContext
+            Assert.Throws<InvalidOperationException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = states,
                 Signer = _signer,
                 BlockIndex = 0,
                 Random = new TestRandom(),
-            });
-
-            // If the migration proceeded, the monster collection state should be filled with Null.
-            Assert.IsType<Dictionary>(states.GetState(monsterCollectionAddress));
+            }));
         }
 
         [Theory]
