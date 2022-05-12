@@ -21,12 +21,12 @@ namespace Nekoyume.Helper
     public static class Util
     {
         public const int VisibleEnhancementEffectLevel = 10;
-        private const int BlockPerSecond = 12;
         private const string StoredSlotIndex = "AutoSelectedSlotIndex_";
 
-        public static string GetBlockToTime(int block)
+        public static string GetBlockToTime(long block)
         {
-            var remainSecond = block * BlockPerSecond;
+            const int secondsPerBlock = 12;
+            var remainSecond = block * secondsPerBlock;
             var timeSpan = TimeSpan.FromSeconds(remainSecond);
 
             var sb = new StringBuilder();
