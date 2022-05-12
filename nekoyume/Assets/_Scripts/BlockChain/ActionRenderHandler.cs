@@ -563,7 +563,7 @@ namespace Nekoyume.BlockChain
 
                 // Notify
                 var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-                UI.NotificationSystem.Reserve(
+                NotificationSystem.Reserve(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
@@ -606,6 +606,7 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                LocalLayerModifier.ModifyAgentCrystal(agentAddress, -result.CRYSTAL.MajorUnit);
 
                 // Notify
                 string formatKey;
@@ -627,7 +628,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 var format = L10nManager.Localize(formatKey);
-                UI.NotificationSystem.Reserve(
+                NotificationSystem.Reserve(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
@@ -951,7 +952,7 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
-                
+
                 if (eval.Action.apStoneCount > 0)
                 {
                     var avatarAddress = eval.Action.avatarAddress;
@@ -1358,9 +1359,6 @@ namespace Nekoyume.BlockChain
                 NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval);
             UpdateAgentStateAsync(eval);
-            var currency = new Currency("CRYSTAL", 18, minters: null);
-            var crystal = eval.OutputStates.GetBalance(eval.Signer, currency);
-            ReactiveCrystalState.UpdateCrystal(crystal);
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)

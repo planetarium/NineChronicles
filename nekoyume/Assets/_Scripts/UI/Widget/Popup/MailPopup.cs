@@ -337,6 +337,11 @@ namespace Nekoyume.UI
             // LocalLayer
             UniTask.Run(async () =>
             {
+                if (itemEnhanceMail.attachment is ItemEnhancement.ResultModel result)
+                {
+                    LocalLayerModifier.ModifyAgentCrystal(States.Instance.AgentState.address, result.CRYSTAL.MajorUnit);
+                }
+
                 LocalLayerModifier.AddItem(
                     avatarAddress,
                     itemUsable.TradableId,
