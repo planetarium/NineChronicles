@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class ItemEnhancementTest
     {
@@ -75,8 +75,8 @@ namespace Lib9c.Tests.Action
         [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0)]
         [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0)]
         [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 1600)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 1760)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 3250)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 3575)]
         public void Execute(int level, int expectedGold, bool backward, int randomSeed, int expectedLevel, ItemEnhancement.EnhancementResult expected, int monsterCollectLevel, int expectedCrystal)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);

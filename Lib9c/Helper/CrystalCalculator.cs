@@ -43,8 +43,10 @@ namespace Nekoyume.Helper
             foreach (var equipment in equipmentList)
             {
                 CrystalEquipmentGrindingSheet.Row grindingRow = crystalEquipmentGrindingSheet[equipment.Id];
-                int level = Math.Max(0, equipment.level - 1);
-                crystal += BigInteger.Pow(2, level) * grindingRow.CRYSTAL * CRYSTAL;
+                crystal += grindingRow.CRYSTAL * CRYSTAL;
+                crystal += (BigInteger.Pow(2, equipment.level) - 1) *
+                           crystalEquipmentGrindingSheet[grindingRow.EnchantBaseId].CRYSTAL *
+                           CRYSTAL;
             }
 
             // Divide Reward when itemEnhancement failed.
