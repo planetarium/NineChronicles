@@ -186,7 +186,7 @@ namespace Nekoyume.BlockChain
             var agentState = States.Instance.AgentState;
             if (evaluation.Signer.Equals(agentState.address))
             {
-                // crystal = LocalLayer.Instance.ModifyCrystal(crystal);
+                crystal = LocalLayer.Instance.ModifyCrystal(crystal);
                 States.Instance.SetCrystalBalance(crystal);
             }
         }
