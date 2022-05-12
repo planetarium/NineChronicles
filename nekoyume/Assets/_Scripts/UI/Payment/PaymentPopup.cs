@@ -66,6 +66,7 @@ namespace Nekoyume.UI
                         onPaymentSucceed();
                     }
                 };
+                costText.text = cost.ToString();
                 Show(title, enoughMessage, yes, no, false);
                 costText.text = cost.ToString();
             }

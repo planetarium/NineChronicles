@@ -1,7 +1,10 @@
 using System;
 using DG.Tweening;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.TableData;
+using TMPro;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,7 +26,8 @@ namespace Nekoyume.UI.Module
         {
             None,
             Idle,
-            Hover
+            Hover,
+            OpenLock,
         }
 
         [SerializeField]
@@ -53,6 +57,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject unlockImage = null;
 
+        [SerializeField]
+        private GameObject unlockableImage;
+
+        [SerializeField]
+        private TMP_Text openCostText;
+
+        [SerializeField]
+        private Animator animator;
+
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Locked);
 
         private readonly ReactiveProperty<AnimationState> _animationState =
@@ -65,6 +78,7 @@ namespace Nekoyume.UI.Module
 
         public bool IsShown => gameObject.activeSelf;
         private bool IsLocked => _state.Value == State.Locked;
+        public bool IsUnlockable => _state.Value == State.Unlockable;
         public string WorldName => worldName;
         public int Id { get; private set; }
         public int StageBegin { get; private set; }
@@ -147,7 +161,8 @@ namespace Nekoyume.UI.Module
                     colorImage.enabled = true;
                     lockImage.SetActive(false);
                     unlockImage.SetActive(true);
-                    _animationState.SetValueAndForceNotify(AnimationState.Idle);
+                    unlockableImage.SetActive(false);
+                    _animationState.SetValueAndForceNotify(AnimationState.OpenLock);
                     break;
                 case State.Locked:
                     button.interactable = false;
@@ -155,7 +170,14 @@ namespace Nekoyume.UI.Module
                     colorImage.enabled = false;
                     lockImage.SetActive(true);
                     unlockImage.SetActive(false);
+                    unlockableImage.SetActive(false);
                     _animationState.SetValueAndForceNotify(AnimationState.None);
+                    break;
+                case State.Unlockable:
+                    button.interactable = true;
+                    unlockableImage.SetActive(true);
+                    lockImage.SetActive(false);
+                    unlockImage.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -186,6 +208,9 @@ namespace Nekoyume.UI.Module
                         .SetEase(Ease.Linear)
                         .SetLoops(-1, LoopType.Yoyo);
                     break;
+                case AnimationState.OpenLock:
+                    animator.Play("ChainOpen");
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
@@ -196,6 +221,12 @@ namespace Nekoyume.UI.Module
             Id = worldRow.Id;
             StageBegin = worldRow.StageBegin;
             StageEnd = worldRow.StageEnd;
+            if (openCostText != null)
+            {
+                openCostText.text = CrystalCalculator
+                    .CalculateWorldUnlockCost(new[] {Id}, TableSheets.Instance.WorldUnlockSheet)
+                    .GetQuantityString();
+            }
         }
     }
 }

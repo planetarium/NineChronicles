@@ -1410,7 +1410,9 @@ namespace Nekoyume.BlockChain
                 // Exception handling...
             }
 
-            Widget.Find<WorldMap>().SharedViewModel.UnlockedWorldIds = eval.Action.WorldIds;
+            var worldmap = Widget.Find<WorldMap>();
+            worldmap.SharedViewModel.UnlockedWorldIds.AddRange(eval.Action.WorldIds);
+            worldmap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();

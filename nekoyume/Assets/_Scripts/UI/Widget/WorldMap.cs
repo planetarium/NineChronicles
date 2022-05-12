@@ -6,7 +6,11 @@ using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using mixpanel;
+using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.State;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -92,7 +96,17 @@ namespace Nekoyume.UI
                 worldButton.Set(row);
                 worldButton.Show();
                 worldButton.OnClickSubject
-                    .Subscribe(_ => ShowWorld(row.Id));
+                    .Subscribe(worldButton =>
+                    {
+                        if (worldButton.IsUnlockable)
+                        {
+                            ShowWorldUnlockPopup(row.Id);
+                        }
+                        else
+                        {
+                            ShowWorld(row.Id);
+                        }
+                    });
             }
         }
 
@@ -147,7 +161,7 @@ namespace Nekoyume.UI
                 if (worldIsUnlocked)
                 {
                     worldButton.HasNotification.Value = isIncludedInQuest;
-                    worldButton.Unlock();
+                    worldButton.Unlock(!SharedViewModel.UnlockedWorldIds.Contains(worldButton.Id));
                 }
                 else
                 {
@@ -213,6 +227,28 @@ namespace Nekoyume.UI
             var status = Find<Status>();
             status.Close(true);
             worldMapRoot.SetActive(true);
+        }
+
+        private void ShowWorldUnlockPopup(int worldId)
+        {
+            var cost = CrystalCalculator.CalculateWorldUnlockCost(new[] {worldId},
+                Game.TableSheets.Instance.WorldUnlockSheet);
+
+            if (ReactiveCrystalState.CrystalBalance >= cost)
+            {
+                Find<PaymentPopup>().Show(
+                    ReactiveCrystalState.CrystalBalance,
+                    cost.MajorUnit,
+                    "temp-Unlock world",
+                    () => ActionManager.Instance.UnlockWorld(new List<int> {worldId}),
+                    null);
+            }
+            else
+            {
+                var title = L10nManager.Localize("UI_TOTAL_COST");
+                var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
+                Find<PaymentPopup>().ShowAttract(cost.MajorUnit, title, message, null);
+            }
         }
     }
 }
