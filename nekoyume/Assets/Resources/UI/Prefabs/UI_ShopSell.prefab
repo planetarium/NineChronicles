@@ -1877,7 +1877,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: UI_SHOP_ALLREREGISTRATION
+  m_text: UI_SHOP_UPDATESELLALL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
   m_sharedMaterial: {fileID: 7349983812062843314, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
@@ -1965,7 +1965,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 1
-  l10nKey: UI_SHOP_ALLREREGISTRATION
+  l10nKey: UI_SHOP_UPDATESELLALL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -10240,12 +10240,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5650171301b87ec4d93602825aaede14, type: 3}
---- !u!224 &4367672972885401117 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8387159789622807589, guid: 5650171301b87ec4d93602825aaede14,
-    type: 3}
-  m_PrefabInstance: {fileID: 5258016378320900664}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6321799843940535121 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2252839397671229801, guid: 5650171301b87ec4d93602825aaede14,
@@ -10258,6 +10252,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27e2f785c9f14bf0a7e26bd106882815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &4367672972885401117 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8387159789622807589, guid: 5650171301b87ec4d93602825aaede14,
+    type: 3}
+  m_PrefabInstance: {fileID: 5258016378320900664}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4577499752851267221 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8610515029409893549, guid: 5650171301b87ec4d93602825aaede14,
