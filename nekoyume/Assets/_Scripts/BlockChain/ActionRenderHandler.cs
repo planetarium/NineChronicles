@@ -681,22 +681,17 @@ namespace Nekoyume.BlockChain
                 var itemName = await Util.GetItemNameByOrderId(updateSellInfo.orderId);
                 var order = await Util.GetOrder(updateSellInfo.orderId);
                 var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-                var price = updateSellInfo.price;
-                
+
                 if (errors.Exists(tuple => tuple.orderId.Equals(updateSellInfo.orderId))) // is error
                 {
-                    var errorType = errors.FirstOrDefault(tuple => tuple.orderId.Equals(updateSellInfo.orderId)).errorType;
-                    
                     string message;
                     if (count > 1)
                     {
-                        message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_FAIL"), // Todo : 키 정의 안 됨
-                            itemName, L10nManager.Localize(errorType.ToString()), price, count);
+                        message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_FAIL"), itemName, count);
                     }
                     else
                     {
-                        message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_FAIL"),  // Todo : 키 정의 안 됨
-                            itemName, L10nManager.Localize(errorType.ToString()), price);
+                        message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_FAILE"), itemName);
                     }
                     OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Alert);
                 }

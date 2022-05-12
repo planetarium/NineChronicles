@@ -64,7 +64,7 @@ namespace Nekoyume.UI
             reregistrationButton.onClick.AddListener(() =>
             {
                 Find<TwoButtonSystem>().Show(
-                    L10nManager.Localize("UI_SHOP_ALLREREGISTRATION"),
+                    L10nManager.Localize("UI_SHOP_UPDATESELLALL_POPUP"),
                     L10nManager.Localize("UI_YES"),
                     L10nManager.Localize("UI_NO"),
                     SubscribeUpdateSellPopupSubmit);
