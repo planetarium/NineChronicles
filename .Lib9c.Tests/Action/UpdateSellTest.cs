@@ -370,53 +370,5 @@
             });
             Assert.Contains(action.errors, e => e.errorType == ShopErrorType.ERROR_CODE_INVALID_PRICE);
         }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var tradableId = Guid.NewGuid();
-            var orderId = Guid.NewGuid();
-            var updateSellOrderId = Guid.NewGuid();
-
-            var updateSellInfo = new UpdateSellInfo(
-                orderId,
-                updateSellOrderId,
-                tradableId,
-                ItemSubType.Weapon,
-                _currency * ProductPrice,
-                1);
-
-            var action = new UpdateSell
-            {
-                sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo },
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _agentAddress,
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                Addresses.GetItemAddress(tradableId),
-                Order.DeriveAddress(updateSellOrderId),
-                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, orderId),
-                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, updateSellOrderId),
-                OrderDigestListState.DeriveAddress(_avatarAddress),
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousStates = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
-        }
     }
 }
