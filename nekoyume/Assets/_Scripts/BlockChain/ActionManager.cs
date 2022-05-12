@@ -313,20 +313,25 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
+            List<Guid> costumes,
+            List<Guid> equipments,
             int apStoneCount,
+            int actionPoint,
             int worldId,
-            int stageId,
-            int costAP)
+            int stageId)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = new HackAndSlashSweep
             {
+                costumes = costumes,
+                equipments = equipments,
                 avatarAddress = avatarAddress,
                 apStoneCount = apStoneCount,
+                actionPoint = actionPoint,
                 worldId = worldId,
                 stageId = stageId,
             };
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -costAP);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -actionPoint);
             var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
             LocalLayerModifier.RemoveItem(avatarAddress, apStoneRow.ItemId, apStoneCount);
