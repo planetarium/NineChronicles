@@ -234,6 +234,12 @@ namespace Nekoyume.UI
             var cost = CrystalCalculator.CalculateWorldUnlockCost(new[] {worldId},
                 Game.TableSheets.Instance.WorldUnlockSheet);
 
+            System.Action onAttract = () =>
+            {
+                Close(true);
+                Find<Grind>().Show();
+            };
+
             if (ReactiveCrystalState.CrystalBalance >= cost)
             {
                 Find<PaymentPopup>().Show(
@@ -241,13 +247,13 @@ namespace Nekoyume.UI
                     cost.MajorUnit,
                     "temp-Unlock world",
                     () => ActionManager.Instance.UnlockWorld(new List<int> {worldId}),
-                    null);
+                    onAttract);
             }
             else
             {
                 var title = L10nManager.Localize("UI_TOTAL_COST");
                 var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Find<PaymentPopup>().ShowAttract(cost.MajorUnit, title, message, null);
+                Find<PaymentPopup>().ShowAttract(cost.MajorUnit, title, message, onAttract);
             }
         }
     }
