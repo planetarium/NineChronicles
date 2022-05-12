@@ -1,5 +1,7 @@
 using System;
+using System.Numerics;
 using DG.Tweening;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -72,6 +74,7 @@ namespace Nekoyume.UI.Module
             new ReactiveProperty<AnimationState>(AnimationState.None);
 
         private Tweener _tweener;
+        private BigInteger _openCost;
 
         public readonly Subject<WorldButton> OnClickSubject = new Subject<WorldButton>();
         public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
@@ -189,7 +192,7 @@ namespace Nekoyume.UI.Module
             _tweener?.Kill();
             _tweener = null;
 
-            transform.localScale = Vector3.one;
+            transform.localScale = UnityEngine.Vector3.one;
 
             if (_state.Value == State.Locked)
             {
@@ -223,9 +226,20 @@ namespace Nekoyume.UI.Module
             StageEnd = worldRow.StageEnd;
             if (openCostText != null)
             {
-                openCostText.text = CrystalCalculator
+                _openCost = CrystalCalculator
                     .CalculateWorldUnlockCost(new[] {Id}, TableSheets.Instance.WorldUnlockSheet)
-                    .GetQuantityString();
+                    .MajorUnit;
+                openCostText.text = _openCost.ToString();
+            }
+        }
+
+        public void SetOpenCostTextColor(BigInteger balance)
+        {
+            if (openCostText != null)
+            {
+                openCostText.color = Palette.GetColor(balance >= _openCost
+                    ? ColorType.ButtonEnabled
+                    : ColorType.TextDenial);
             }
         }
     }

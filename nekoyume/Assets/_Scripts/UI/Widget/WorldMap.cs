@@ -5,7 +5,6 @@ using Nekoyume.Model;
 using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
 using UnityEngine;
-using mixpanel;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Helper;
@@ -106,8 +105,16 @@ namespace Nekoyume.UI
                         {
                             ShowWorld(row.Id);
                         }
-                    });
+                    }).AddTo(gameObject);
             }
+
+            ReactiveCrystalState.Crystal.Subscribe(crystal =>
+            {
+                foreach (var worldButton in _worldButtons)
+                {
+                    worldButton.SetOpenCostTextColor(crystal.MajorUnit);
+                }
+            }).AddTo(gameObject);
         }
 
         #endregion
