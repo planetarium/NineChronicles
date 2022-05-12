@@ -606,7 +606,6 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-                // It needs update gold in UpdateAgentStateAsync. But It doesn't need update crystal in UpdateAgentStateAsync.
                 LocalLayerModifier.ModifyAgentCrystal(agentAddress, -result.CRYSTAL.MajorUnit);
 
                 // Notify
