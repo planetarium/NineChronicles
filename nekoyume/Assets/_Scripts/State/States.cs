@@ -13,6 +13,8 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Debug = UnityEngine.Debug;
 using static Lib9c.SerializeKeys;
+using Libplanet.Assets;
+using Nekoyume.Helper;
 
 namespace Nekoyume.State
 {
@@ -41,6 +43,8 @@ namespace Nekoyume.State
         public AvatarState CurrentAvatarState { get; private set; }
 
         public GameConfigState GameConfigState { get; private set; }
+
+        public FungibleAssetValue CrystalBalance { get; private set; }
 
         private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
             new Dictionary<int, CombinationSlotState>();
@@ -107,6 +111,18 @@ namespace Nekoyume.State
 
             GoldBalanceState = LocalLayer.Instance.Modify(goldBalanceState);
             AgentStateSubject.OnNextGold(GoldBalanceState.Gold);
+        }
+
+        public void SetCrystalBalance(FungibleAssetValue fav)
+        {
+            if (!fav.Currency.Equals(CrystalCalculator.CRYSTAL))
+            {
+                Debug.LogWarning($"Currency not matches. {fav.Currency}");
+                return;
+            }
+
+            CrystalBalance = LocalLayer.Instance.ModifyCrystal(fav);
+            AgentStateSubject.OnNextCrystal(CrystalBalance);
         }
 
         public void SetMonsterCollectionState(MonsterCollectionState monsterCollectionState)

@@ -339,7 +339,8 @@ namespace Nekoyume.BlockChain
                         : new AgentState(Address));
                 States.Instance.SetGoldBalanceState(
                     new GoldBalanceState(Address, await GetBalanceAsync(Address, goldCurrency)));
-                ReactiveCrystalState.Initialize(Address);
+                States.Instance.SetCrystalBalance(
+                    await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
 
                 // 상점의 상태를 한 번 동기화 한다.
 

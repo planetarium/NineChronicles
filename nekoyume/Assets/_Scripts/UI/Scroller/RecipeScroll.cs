@@ -17,6 +17,7 @@ using TMPro;
 
 namespace Nekoyume.UI.Scroller
 {
+    using Nekoyume.State.Subjects;
     using Nekoyume.UI.Module;
     using UniRx;
 
@@ -118,10 +119,10 @@ namespace Nekoyume.UI.Scroller
                 Widget.Find<Grind>().Show();
             };
 
-            if (ReactiveCrystalState.CrystalBalance.MajorUnit >= _openCost)
+            if (States.Instance.CrystalBalance.MajorUnit >= _openCost)
             {
                 Widget.Find<PaymentPopup>().Show(
-                    ReactiveCrystalState.CrystalBalance,
+                    States.Instance.CrystalBalance,
                     _openCost,
                     usageMessage,
                     UnlockRecipeAction,
@@ -149,11 +150,8 @@ namespace Nekoyume.UI.Scroller
                 }
             }
 
-            LocalLayerModifier.ModifyAgentCrystal(
-                States.Instance.AgentState.address, -_openCost);
-
             Game.Game.instance.ActionManager
-                .UnlockEquipmentRecipe(_unlockableRecipeIds)
+                .UnlockEquipmentRecipe(_unlockableRecipeIds, _openCost)
                 .Subscribe();
             UpdateUnlockAllButton();
         }
@@ -191,7 +189,7 @@ namespace Nekoyume.UI.Scroller
             Craft.SharedModel.UnlockedRecipes
                 .Subscribe(_ => UpdateUnlockAllButton())
                 .AddTo(_disposablesOnDisabled);
-            ReactiveCrystalState.Crystal
+            AgentStateSubject.Crystal
                 .Subscribe(_ => UpdateUnlockAllButton())
                 .AddTo(_disposablesOnDisabled);
         }
@@ -241,7 +239,7 @@ namespace Nekoyume.UI.Scroller
             {
                 openAllRecipeCostText.text = _openCost.ToString();
 
-                var hasEnoughBalance = ReactiveCrystalState.CrystalBalance.MajorUnit >= _openCost;
+                var hasEnoughBalance = States.Instance.CrystalBalance.MajorUnit >= _openCost;
                 openAllRecipeCostText.color = hasEnoughBalance ?
                     Palette.GetColor(ColorType.ButtonEnabled) :
                     Palette.GetColor(ColorType.ButtonDisabled);

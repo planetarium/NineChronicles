@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -67,13 +68,6 @@ namespace Nekoyume.BlockChain
             }
 
             return null;
-        }
-
-        protected void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            var currency = new Currency("CRYSTAL", 18, minter: null);
-            var crystal = evaluation.OutputStates.GetBalance(evaluation.Signer, currency);
-            ReactiveCrystalState.UpdateCrystal(crystal);
         }
 
         protected async UniTask UpdateAgentStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -184,6 +178,17 @@ namespace Nekoyume.BlockChain
             }
 
             States.Instance.SetGoldBalanceState(goldBalanceState);
+        }
+
+        protected void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var crystal = evaluation.OutputStates.GetBalance(evaluation.Signer, CrystalCalculator.CRYSTAL);
+            var agentState = States.Instance.AgentState;
+            if (evaluation.Signer.Equals(agentState.address))
+            {
+                // crystal = LocalLayer.Instance.ModifyCrystal(crystal);
+                States.Instance.SetCrystalBalance(crystal);
+            }
         }
 
         private static UniTask UpdateAvatarState(AvatarState avatarState, int index) =>

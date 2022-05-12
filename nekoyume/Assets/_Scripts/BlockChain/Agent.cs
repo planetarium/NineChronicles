@@ -429,7 +429,8 @@ namespace Nekoyume.BlockChain
                         : new AgentState(Address));
                 States.Instance.SetGoldBalanceState(new GoldBalanceState(Address,
                     await GetBalanceAsync(Address, goldCurrency)));
-                ReactiveCrystalState.Initialize(Address);
+                States.Instance.SetCrystalBalance(
+                    await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
                 var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
                     Address,
                     States.Instance.AgentState.MonsterCollectionRound

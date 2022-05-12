@@ -1,4 +1,5 @@
 using Libplanet.Assets;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using System.Numerics;
 using TMPro;
@@ -32,7 +33,7 @@ namespace Nekoyume.UI
                 ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed, onAttract);
             }
             // crystal
-            else if (balance.Currency.Equals(new Currency("CRYSTAL", 18, minters: null)))
+            else if (balance.Currency.Equals(CrystalCalculator.CRYSTAL))
             {
                 var crystalText = L10nManager.Localize("UI_CRYSTAL");
                 var enoughMessage = L10nManager.Localize(
@@ -66,6 +67,7 @@ namespace Nekoyume.UI
                     }
                 };
                 Show(title, enoughMessage, yes, no, false);
+                costText.text = cost.ToString();
             }
             else
             {
