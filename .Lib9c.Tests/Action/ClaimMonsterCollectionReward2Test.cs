@@ -17,8 +17,8 @@
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
+    using static Lib9c.SerializeKeys;
     using static Nekoyume.Model.Item.Inventory;
-    using static SerializeKeys;
 
     public class ClaimMonsterCollectionReward2Test
     {

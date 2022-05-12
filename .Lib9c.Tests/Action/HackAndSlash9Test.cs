@@ -20,7 +20,7 @@
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class HackAndSlash9Test
     {
