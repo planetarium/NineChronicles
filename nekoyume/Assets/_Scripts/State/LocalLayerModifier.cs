@@ -68,10 +68,9 @@ namespace Nekoyume.State
             var fav = new FungibleAssetValue(CrystalCalculator.CRYSTAL, crystal, 0);
             var modifier = new AgentCrystalModifier(fav);
             LocalLayer.Instance.Add(agentAddress, modifier);
-
-            // fav = LocalLayer.Instance.ModifyCrystal(fav);
-            fav = await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, CrystalCalculator.CRYSTAL);
-            States.Instance.SetCrystalBalance(fav);
+            var crystalBalance = await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, CrystalCalculator.CRYSTAL);
+            crystalBalance = LocalLayer.Instance.ModifyCrystal(crystalBalance);
+            States.Instance.SetCrystalBalance(crystalBalance);
         }
 
         /// <summary>
