@@ -1,5 +1,6 @@
 using Libplanet;
 using Libplanet.Assets;
+using Nekoyume.Helper;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,8 +23,7 @@ namespace Nekoyume.State
 
         public static void Initialize(Address address)
         {
-            var currency = new Currency("CRYSTAL", 18, minters: null);
-            var crystal = Game.Game.instance.Agent.GetBalance(address, currency);
+            var crystal = Game.Game.instance.Agent.GetBalance(address, CrystalCalculator.CRYSTAL);
             _crystal.SetValueAndForceNotify(crystal);
         }
 
@@ -36,5 +36,7 @@ namespace Nekoyume.State
 
             _crystal.SetValueAndForceNotify(crystal);
         }
+
+        public static void AddCrystal(FungibleAssetValue crystal) => UpdateCrystal(_crystal.Value + crystal);
     }
 }

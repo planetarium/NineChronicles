@@ -2,27 +2,35 @@ using System;
 using System.Numerics;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
-    public class AgentCrystalModifier : AgentStateModifier
+    public class AgentCrystalModifier : IAccumulatableValueModifier<FungibleAssetValue>
     {
         [SerializeField]
         private FungibleAssetValue crystal;
 
-        public override bool IsEmpty => crystal.Sign == 0;
+        public bool IsEmpty => crystal.Sign == 0;
 
         public AgentCrystalModifier(FungibleAssetValue crystal)
         {
+            if (!crystal.Currency.Equals(CrystalCalculator.CRYSTAL))
+            {
+                this.crystal = CrystalCalculator.CRYSTAL * 0;
+                return;
+            }
+
             this.crystal = crystal;
         }
 
-        public override void Add(IAccumulatableStateModifier<AgentState> modifier)
+        public void Add(IAccumulatableValueModifier<FungibleAssetValue> modifier)
         {
-            if (!(modifier is AgentCrystalModifier m))
+            if (!(modifier is AgentCrystalModifier m) ||
+                !crystal.Currency.Equals(CrystalCalculator.CRYSTAL))
             {
                 return;
             }
@@ -30,9 +38,10 @@ namespace Nekoyume.State.Modifiers
             crystal += m.crystal;
         }
 
-        public override void Remove(IAccumulatableStateModifier<AgentState> modifier)
+        public void Remove(IAccumulatableValueModifier<FungibleAssetValue> modifier)
         {
-            if (!(modifier is AgentCrystalModifier m))
+            if (!(modifier is AgentCrystalModifier m) ||
+                !crystal.Currency.Equals(CrystalCalculator.CRYSTAL))
             {
                 return;
             }
@@ -40,9 +49,15 @@ namespace Nekoyume.State.Modifiers
             crystal -= m.crystal;
         }
 
-        public override AgentState Modify(AgentState state)
+        public FungibleAssetValue Modify(FungibleAssetValue value)
         {
-            return state;
+            //if (!crystal.Currency.Equals(CrystalCalculator.CRYSTAL))
+            //{
+            //    return value;
+            //}
+
+            //return value + crystal;
+            return value;
         }
 
         public override string ToString()
