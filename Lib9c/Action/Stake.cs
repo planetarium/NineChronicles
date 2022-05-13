@@ -9,6 +9,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    [ActionType("stake")]
     public class Stake : ActionBase
     {
         internal BigInteger Amount { get; set; }

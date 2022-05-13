@@ -11,6 +11,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    [ActionType("claim_stake_reward")]
     public class ClaimStakeReward : GameAction
     {
         internal Address AvatarAddress { get; private set; }
