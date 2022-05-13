@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Bencodex.Types;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -10,7 +9,6 @@ using Nekoyume.Model.BattleStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -21,7 +19,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.UI.Scroller;
+    using Scroller;
     using UniRx;
     public class Menu : Widget
     {
@@ -57,9 +55,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject combinationExclamationMark = null;
-
-        [SerializeField]
-        private GameObject rankingExclamationMark = null;
 
         [SerializeField]
         private GameObject questExclamationMark = null;
@@ -185,23 +180,6 @@ namespace Nekoyume.UI
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
-
-            var currentAddress = States.Instance.CurrentAvatarState?.address;
-            if (currentAddress.HasValue)
-            {
-                ArenaInfo arenaInfo = null;
-                var avatarAddress = currentAddress.Value;
-                var infoAddress = States.Instance.WeeklyArenaState.address.Derive(avatarAddress.ToByteArray());
-                var rawInfo = await Game.Game.instance.Agent.GetStateAsync(infoAddress);
-                if (rawInfo is Dictionary dictionary)
-                {
-                    arenaInfo = new ArenaInfo(dictionary);
-                }
-
-                rankingExclamationMark.gameObject.SetActive(
-                    btnRanking.IsUnlocked &&
-                    (arenaInfo == null || arenaInfo.DailyChallengeCount > 0));
-            }
 
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
