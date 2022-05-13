@@ -130,6 +130,7 @@ namespace Nekoyume.UI
 
             var status = Find<Status>();
             status.Close(true);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             Show(true);
             HelpTooltip.HelpMe(100002, true);
             ShowManyWorldUnlockPopup(worldInformation);
