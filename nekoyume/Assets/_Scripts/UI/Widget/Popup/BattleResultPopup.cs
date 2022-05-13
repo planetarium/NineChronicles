@@ -25,7 +25,7 @@ namespace Nekoyume.UI
 
     public class BattleResultPopup : PopupWidget
     {
-        public enum  NextState
+        public enum NextState
         {
             None,
             GoToMain,
@@ -225,8 +225,7 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            var dialog = Widget.Find<DialogPopup>();
-
+            var dialog = Find<DialogPopup>();
             foreach (var stageDialog in stageDialogs)
             {
                 dialog.Show(stageDialog.DialogId);
@@ -652,8 +651,25 @@ namespace Nekoyume.UI
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.DestroyBackground();
-            Game.Event.OnRoomEnter.Invoke(true);
-            Close();
+
+            if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var lastClearedStageId))
+            {
+                if (SharedModel.IsClear
+                    && SharedModel.IsEndStage
+                    && lastClearedStageId == SharedModel.StageID
+                    && !Find<WorldMap>().SharedViewModel.UnlockedWorldIds.Contains(SharedModel.WorldID + 1))
+                {
+                    CloseWithOtherWidgets();
+                    Find<HeaderMenuStatic>().Show();
+                    Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
+                }
+                else
+                {
+                    Game.Event.OnRoomEnter.Invoke(true);
+                    Close();
+                }
+            }
         }
 
         private void StopCoUpdateBottomText()
