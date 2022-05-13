@@ -135,7 +135,7 @@ namespace Nekoyume.UI.Module
                         }
                         break;
                     case CostType.Crystal:
-                        if (ReactiveCrystalState.CrystalBalance.MajorUnit < cost)
+                        if (States.Instance.CrystalBalance.MajorUnit < cost)
                         {
                             return CostType.Crystal;
                         }
@@ -169,7 +169,7 @@ namespace Nekoyume.UI.Module
                 case CostType.NCG:
                     return States.Instance.GoldBalanceState.Gold.MajorUnit >= cost;
                 case CostType.Crystal:
-                    return ReactiveCrystalState.CrystalBalance.MajorUnit >= cost;
+                    return States.Instance.CrystalBalance.MajorUnit >= cost;
                 case CostType.ActionPoint:
                     return States.Instance.CurrentAvatarState.actionPoint >= cost;
                 case CostType.Hourglass:

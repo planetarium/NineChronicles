@@ -79,7 +79,7 @@ namespace Nekoyume.UI.Module
 
         private const int LimitGrindingCount = 10;
 
-        private static readonly Vector3 CrystalMovePositionOffset = new Vector3(0.05f, 0.05f);
+        public static readonly Vector3 CrystalMovePositionOffset = new Vector3(0.05f, 0.05f);
 
         private bool CanGrind => _selectedItemsForGrind.Any() &&
                                  _selectedItemsForGrind.All(item => !item.Equipped.Value);

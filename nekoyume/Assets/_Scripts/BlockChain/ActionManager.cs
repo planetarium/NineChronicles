@@ -786,10 +786,14 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(List<int> recipeIdList)
+        public IObservable<ActionBase.ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(
+            List<int> recipeIdList,
+            BigInteger openCost)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            LocalLayerModifier.ModifyAgentCrystal(
+                States.Instance.AgentState.address, -openCost);
 
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = new UnlockEquipmentRecipe
             {
                 AvatarAddress = avatarAddress,
