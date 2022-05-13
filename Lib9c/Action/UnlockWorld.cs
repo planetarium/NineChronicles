@@ -84,7 +84,7 @@ namespace Nekoyume.Action
                 WorldUnlockSheet.Row row =
                     worldUnlockSheet.OrderedList.First(r => r.WorldIdToUnlock == worldId);
                 // Check Previous world unlocked.
-                if (!worldInformation.IsWorldUnlocked(row.WorldId))
+                if (!worldInformation.IsWorldUnlocked(row.WorldId) || !unlockedIds.Contains(row.WorldId))
                 {
                     throw new FailedToUnlockWorldException($"unlock ${row.WorldId} first.");
                 }

@@ -19,7 +19,7 @@
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class Sell9Test
     {

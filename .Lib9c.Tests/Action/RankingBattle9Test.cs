@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class RankingBattle9Test
     {
