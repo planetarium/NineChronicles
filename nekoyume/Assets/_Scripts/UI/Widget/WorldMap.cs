@@ -146,16 +146,19 @@ namespace Nekoyume.UI
                 if (unlockAllWorldIds.Count > 1)
                 {
                     var paymentPopup = Find<PaymentPopup>();
+                    var cost = CrystalCalculator.CalculateWorldUnlockCost(unlockAllWorldIds,
+                        tableSheets.WorldUnlockSheet).MajorUnit;
                     paymentPopup.Show(States.Instance.CrystalBalance,
-                        CrystalCalculator.CalculateWorldUnlockCost(unlockAllWorldIds,
-                            tableSheets.WorldUnlockSheet).MajorUnit,
-                        "yes",
+                        cost,
+                        L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
                         () => ActionManager.Instance.UnlockWorld(unlockAllWorldIds),
                         () =>
                         {
                             Close();
                             Find<Grind>().Show();
-                        });
+                        },
+                        false,
+                        false);
                 }
             }
         }
@@ -277,21 +280,12 @@ namespace Nekoyume.UI
                 Find<Grind>().Show();
             };
 
-            if (States.Instance.CrystalBalance >= cost)
-            {
-                Find<PaymentPopup>().Show(
-                    States.Instance.CrystalBalance,
-                    cost.MajorUnit,
-                    "temp-Unlock world",
-                    () => ActionManager.Instance.UnlockWorld(new List<int> {worldId}),
-                    onAttract);
-            }
-            else
-            {
-                var title = L10nManager.Localize("UI_TOTAL_COST");
-                var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Find<PaymentPopup>().ShowAttract(cost.MajorUnit, title, message, onAttract);
-            }
+            Find<PaymentPopup>().Show(
+                States.Instance.CrystalBalance,
+                cost.MajorUnit,
+                L10nManager.Localize("UI_UNLOCK_WORLD_FORMAT", L10nManager.LocalizeWorldName(worldId)),
+                () => ActionManager.Instance.UnlockWorld(new List<int> {worldId}),
+                onAttract);
         }
     }
 }

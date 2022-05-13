@@ -17,32 +17,38 @@ namespace Nekoyume.UI
             BigInteger cost,
             string usageMessage,
             System.Action onPaymentSucceed,
-            System.Action onAttract)
+            System.Action onAttract,
+            bool passToAttraction = true,
+            bool useDefaultPaymentFormat = true)
         {
             // gold
             if (balance.Currency.Equals(
                 Game.Game.instance.States.GoldBalanceState.Gold.Currency))
             {
                 var ncgText = L10nManager.Localize("UI_NCG");
-                var enoughMessage = L10nManager.Localize(
-                    "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
-                    cost,
-                    ncgText,
-                    usageMessage);
+                var enoughMessage = useDefaultPaymentFormat
+                    ? L10nManager.Localize(
+                        "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
+                        cost,
+                        ncgText,
+                        usageMessage)
+                    : usageMessage;
                 var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
-                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed, onAttract);
+                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed, onAttract, passToAttraction);
             }
             // crystal
             else if (balance.Currency.Equals(CrystalCalculator.CRYSTAL))
             {
                 var crystalText = L10nManager.Localize("UI_CRYSTAL");
-                var enoughMessage = L10nManager.Localize(
-                    "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
-                    cost,
-                    crystalText,
-                    usageMessage);
+                var enoughMessage = useDefaultPaymentFormat
+                    ? L10nManager.Localize(
+                        "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
+                        cost,
+                        crystalText,
+                        usageMessage)
+                    : usageMessage;
                 var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed, onAttract);
+                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed, onAttract, passToAttraction);
             }
         }
 
@@ -52,27 +58,35 @@ namespace Nekoyume.UI
             string enoughMessage,
             string insufficientMessage,
             System.Action onPaymentSucceed,
-            System.Action onAttract)
+            System.Action onAttract,
+            bool passToAttraction)
         {
-            var title = L10nManager.Localize("UI_TOTAL_COST");
-            if (asset.MajorUnit >= cost)
+            var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
+            var enoughBalance = asset.MajorUnit >= cost;
+            var yes = L10nManager.Localize("UI_YES");
+            var no = L10nManager.Localize("UI_NO");
+            CloseCallback = result =>
             {
-                var yes = L10nManager.Localize("UI_YES");
-                var no = L10nManager.Localize("UI_NO");
-                CloseCallback = result =>
+                if (result == ConfirmResult.Yes)
                 {
-                    if (result == ConfirmResult.Yes)
+                    if (enoughBalance)
                     {
-                        onPaymentSucceed();
+                        onPaymentSucceed.Invoke();
                     }
-                };
-                costText.text = cost.ToString();
-                Show(title, enoughMessage, yes, no, false);
-                costText.text = cost.ToString();
+                    else
+                    {
+                        ShowAttract(cost, popupTitle, insufficientMessage, onAttract);
+                    }
+                }
+            };
+            costText.text = cost.ToString();
+            if (passToAttraction && !enoughBalance)
+            {
+                ShowAttract(cost, popupTitle, insufficientMessage, onAttract);
             }
             else
             {
-                ShowAttract(cost, title, insufficientMessage, onAttract);
+                Show(popupTitle, enoughMessage, yes, no, false);
             }
         }
 
