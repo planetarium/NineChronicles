@@ -585,6 +585,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+                LocalLayerModifier.ModifyAgentCrystal(agentAddress, -result.CRYSTAL.MajorUnit);
                 LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
                 foreach (var tradableId in result.materialItemIdList)
                 {
@@ -602,7 +603,6 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-                LocalLayerModifier.ModifyAgentCrystal(agentAddress, -result.CRYSTAL.MajorUnit);
 
                 // Notify
                 string formatKey;
