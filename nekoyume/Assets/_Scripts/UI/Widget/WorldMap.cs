@@ -128,6 +128,35 @@ namespace Nekoyume.UI
             status.Close(true);
             Show(true);
             HelpTooltip.HelpMe(100002, true);
+            if (worldInformation.TryGetLastClearedStageId(out var stageId))
+            {
+                var tableSheets = Game.TableSheets.Instance;
+                var canUnlockWorldIdMaximum = Math.Min(stageId / 50 + 1,
+                    tableSheets.WorldUnlockSheet.Count);
+                var unlockAllWorldIds = new List<int>();
+                for (int i = 2; i <= canUnlockWorldIdMaximum; i++)
+                {
+                    if (!SharedViewModel.UnlockedWorldIds.Contains(i))
+                    {
+                        unlockAllWorldIds.Add(i);
+                    }
+                }
+
+                if (unlockAllWorldIds.Count > 1)
+                {
+                    var paymentPopup = Find<PaymentPopup>();
+                    paymentPopup.Show(ReactiveCrystalState.CrystalBalance,
+                        CrystalCalculator.CalculateWorldUnlockCost(unlockAllWorldIds,
+                            tableSheets.WorldUnlockSheet).MajorUnit,
+                        "yes",
+                        () => ActionManager.Instance.UnlockWorld(unlockAllWorldIds),
+                        () =>
+                        {
+                            Close();
+                            Find<Grind>().Show();
+                        });
+                }
+            }
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
