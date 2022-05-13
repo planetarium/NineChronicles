@@ -31,7 +31,6 @@ using Lib9c.DevExtensions.Action;
 #endif
 namespace Nekoyume.BlockChain
 {
-    using Libplanet.Assets;
     using Nekoyume.UI.Scroller;
     using UniRx;
 
@@ -151,9 +150,6 @@ namespace Nekoyume.BlockChain
                 {
                     await UpdateAgentStateAsync(eval);
                     await UpdateAvatarState(eval, eval.Action.index);
-                    var currency = new Currency("CRYSTAL", 18, minters: null);
-                    var crystal = eval.OutputStates.GetBalance(eval.Signer, currency);
-                    ReactiveCrystalState.UpdateCrystal(crystal);
                 })
                 .AddTo(_disposables);
         }

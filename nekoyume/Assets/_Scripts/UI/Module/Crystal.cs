@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using Nekoyume.State.Subjects;
     using UniRx;
 
     public class Crystal : AlphaAnimateModule
@@ -29,7 +30,7 @@ namespace Nekoyume.UI.Module
         protected override void OnEnable()
         {
             base.OnEnable();
-            _disposable = ReactiveCrystalState.Crystal.Subscribe(SetCrystal);
+            _disposable = AgentStateSubject.Crystal.Subscribe(SetCrystal);
             UpdateCrystal();
         }
 
@@ -47,12 +48,12 @@ namespace Nekoyume.UI.Module
 
         private void UpdateCrystal()
         {
-            if (ReactiveCrystalState.Crystal is null)
+            if (AgentStateSubject.Crystal is null)
             {
                 return;
             }
 
-            SetCrystal(ReactiveCrystalState.CrystalBalance);
+            SetCrystal(States.Instance.CrystalBalance);
         }
 
         private void SetCrystal(FungibleAssetValue crystal)
