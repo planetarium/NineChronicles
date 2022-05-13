@@ -10,6 +10,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -108,7 +109,7 @@ namespace Nekoyume.UI
                     }).AddTo(gameObject);
             }
 
-            ReactiveCrystalState.Crystal.Subscribe(crystal =>
+            AgentStateSubject.Crystal.Subscribe(crystal =>
             {
                 foreach (var worldButton in _worldButtons)
                 {
@@ -145,7 +146,7 @@ namespace Nekoyume.UI
                 if (unlockAllWorldIds.Count > 1)
                 {
                     var paymentPopup = Find<PaymentPopup>();
-                    paymentPopup.Show(ReactiveCrystalState.CrystalBalance,
+                    paymentPopup.Show(States.Instance.CrystalBalance,
                         CrystalCalculator.CalculateWorldUnlockCost(unlockAllWorldIds,
                             tableSheets.WorldUnlockSheet).MajorUnit,
                         "yes",
@@ -276,10 +277,10 @@ namespace Nekoyume.UI
                 Find<Grind>().Show();
             };
 
-            if (ReactiveCrystalState.CrystalBalance >= cost)
+            if (States.Instance.CrystalBalance >= cost)
             {
                 Find<PaymentPopup>().Show(
-                    ReactiveCrystalState.CrystalBalance,
+                    States.Instance.CrystalBalance,
                     cost.MajorUnit,
                     "temp-Unlock world",
                     () => ActionManager.Instance.UnlockWorld(new List<int> {worldId}),
