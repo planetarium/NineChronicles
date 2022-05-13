@@ -96,11 +96,14 @@ namespace Nekoyume.UI
                 worldButton.Set(row);
                 worldButton.Show();
                 worldButton.OnClickSubject
-                    .Subscribe(worldButton =>
+                    .Subscribe(world =>
                     {
-                        if (worldButton.IsUnlockable)
+                        if (world.IsUnlockable)
                         {
-                            ShowWorldUnlockPopup(row.Id);
+                            if (!ShowManyWorldUnlockPopup(SharedViewModel.WorldInformation))
+                            {
+                                ShowWorldUnlockPopup(row.Id);
+                            }
                         }
                         else
                         {
@@ -129,38 +132,7 @@ namespace Nekoyume.UI
             status.Close(true);
             Show(true);
             HelpTooltip.HelpMe(100002, true);
-            if (worldInformation.TryGetLastClearedStageId(out var stageId))
-            {
-                var tableSheets = Game.TableSheets.Instance;
-                var canUnlockWorldIdMaximum = Math.Min(stageId / 50 + 1,
-                    tableSheets.WorldUnlockSheet.Count);
-                var unlockAllWorldIds = new List<int>();
-                for (int i = 2; i <= canUnlockWorldIdMaximum; i++)
-                {
-                    if (!SharedViewModel.UnlockedWorldIds.Contains(i))
-                    {
-                        unlockAllWorldIds.Add(i);
-                    }
-                }
-
-                if (unlockAllWorldIds.Count > 1)
-                {
-                    var paymentPopup = Find<PaymentPopup>();
-                    var cost = CrystalCalculator.CalculateWorldUnlockCost(unlockAllWorldIds,
-                        tableSheets.WorldUnlockSheet).MajorUnit;
-                    paymentPopup.Show(States.Instance.CrystalBalance,
-                        cost,
-                        L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
-                        () => ActionManager.Instance.UnlockWorld(unlockAllWorldIds),
-                        () =>
-                        {
-                            Close();
-                            Find<Grind>().Show();
-                        },
-                        false,
-                        false);
-                }
-            }
+            ShowManyWorldUnlockPopup(worldInformation);
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
@@ -269,23 +241,53 @@ namespace Nekoyume.UI
             worldMapRoot.SetActive(true);
         }
 
+        private void OnAttractInPaymentPopup()
+        {
+            Close(true);
+            Find<Grind>().Show();
+        }
+
         private void ShowWorldUnlockPopup(int worldId)
         {
             var cost = CrystalCalculator.CalculateWorldUnlockCost(new[] {worldId},
                 Game.TableSheets.Instance.WorldUnlockSheet);
-
-            System.Action onAttract = () =>
-            {
-                Close(true);
-                Find<Grind>().Show();
-            };
 
             Find<PaymentPopup>().Show(
                 States.Instance.CrystalBalance,
                 cost.MajorUnit,
                 L10nManager.Localize("UI_UNLOCK_WORLD_FORMAT", L10nManager.LocalizeWorldName(worldId)),
                 () => ActionManager.Instance.UnlockWorld(new List<int> {worldId}),
-                onAttract);
+                OnAttractInPaymentPopup);
+        }
+
+        private bool ShowManyWorldUnlockPopup(WorldInformation worldInformation)
+        {
+            if (worldInformation.TryGetLastClearedStageId(out var stageId))
+            {
+                var tableSheets = Game.TableSheets.Instance;
+                var countOfCanUnlockWorld = Math.Min(stageId / 50,
+                    tableSheets.WorldUnlockSheet.Count - 1);
+                var worldIdListForUnlock = Enumerable.Range(2, countOfCanUnlockWorld)
+                    .Where(i => !SharedViewModel.UnlockedWorldIds.Contains(i))
+                    .ToList();
+
+                if (worldIdListForUnlock.Count > 1)
+                {
+                    var paymentPopup = Find<PaymentPopup>();
+                    var cost = CrystalCalculator.CalculateWorldUnlockCost(worldIdListForUnlock,
+                        tableSheets.WorldUnlockSheet).MajorUnit;
+                    paymentPopup.Show(States.Instance.CrystalBalance,
+                        cost,
+                        L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
+                        () => ActionManager.Instance.UnlockWorld(worldIdListForUnlock),
+                        OnAttractInPaymentPopup,
+                        false,
+                        false);
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
