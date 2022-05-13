@@ -2,6 +2,7 @@ using System;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Helper;
@@ -58,7 +59,10 @@ namespace Nekoyume.State
                 0));
         }
 
-        public static async void ModifyAgentCrystalAsync(Address agentAddress, BigInteger crystal)
+        public static void ModifyAgentCrystal(Address agentAddress, BigInteger crystal) =>
+            ModifyAgentCrystalAsync(agentAddress, crystal).Forget();
+
+        public static async UniTaskVoid ModifyAgentCrystalAsync(Address agentAddress, BigInteger crystal)
         {
             if (crystal == 0)
             {
@@ -69,7 +73,6 @@ namespace Nekoyume.State
             var modifier = new AgentCrystalModifier(fav);
             LocalLayer.Instance.Add(agentAddress, modifier);
             var crystalBalance = await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, CrystalCalculator.CRYSTAL);
-            crystalBalance = LocalLayer.Instance.ModifyCrystal(crystalBalance);
             States.Instance.SetCrystalBalance(crystalBalance);
         }
 

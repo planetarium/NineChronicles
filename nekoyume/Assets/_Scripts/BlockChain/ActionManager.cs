@@ -790,7 +790,7 @@ namespace Nekoyume.BlockChain
             List<int> recipeIdList,
             BigInteger openCost)
         {
-            LocalLayerModifier.ModifyAgentCrystalAsync(
+            LocalLayerModifier.ModifyAgentCrystal(
                 States.Instance.AgentState.address, -openCost);
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;

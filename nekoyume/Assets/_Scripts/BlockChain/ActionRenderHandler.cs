@@ -1372,7 +1372,7 @@ namespace Nekoyume.BlockChain
 
             var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
             var cost = CrystalCalculator.CalculateRecipeUnlockCost(eval.Action.RecipeIds, sheet);
-            LocalLayerModifier.ModifyAgentCrystalAsync(
+            LocalLayerModifier.ModifyAgentCrystal(
                 States.Instance.AgentState.address, cost.MajorUnit);
 
             await UpdateCurrentAvatarStateAsync(eval);
