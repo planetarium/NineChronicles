@@ -4,10 +4,11 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.Arena
 {
-    public class ArenaJoinSeasonCellQuarterly : MonoBehaviour
+    public class ArenaJoinSeasonCellPreseason : MonoBehaviour
     {
         [SerializeField]
         private Animator _animator;
+
         public Animator Animator => _animator;
 
         [SerializeField]
@@ -37,12 +38,12 @@ namespace Nekoyume.UI.Module.Arena
         {
             gameObject.SetActive(false);
         }
-        
+
         private void UpdateSelected(bool selected)
         {
             _image.color = selected
-                ? new Color32(238, 104, 53, 218)
-                : new Color32(126, 64, 40, 218);
+                ? new Color32(92, 25, 144, 218)
+                : new Color32(41, 18, 58, 218);
         }
     }
 }

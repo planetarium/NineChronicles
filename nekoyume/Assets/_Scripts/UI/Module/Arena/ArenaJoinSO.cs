@@ -22,22 +22,22 @@ namespace Nekoyume.UI.Module.Arena
             {
                 new ArenaJoinSeasonItemData
                 {
-                    type = ArenaJoinSeasonType.Weekly,
+                    type = ArenaJoinSeasonType.Preseason,
                     name = "Weekly #1"
                 },
                 new ArenaJoinSeasonItemData
                 {
-                    type = ArenaJoinSeasonType.Monthly,
+                    type = ArenaJoinSeasonType.Season,
                     name = "Monthly #1"
                 },
                 new ArenaJoinSeasonItemData
                 {
-                    type = ArenaJoinSeasonType.Weekly,
+                    type = ArenaJoinSeasonType.Preseason,
                     name = "Weekly #2"
                 },
                 new ArenaJoinSeasonItemData
                 {
-                    type = ArenaJoinSeasonType.Quarterly,
+                    type = ArenaJoinSeasonType.Championship,
                     name = "Quarterly #1"
                 },
             };

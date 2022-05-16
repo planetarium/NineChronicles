@@ -29,8 +29,14 @@ namespace Nekoyume.UI.Module.Arena
 
             if (index.HasValue)
             {
-                UpdateSelection(0);
-                _scroller.JumpTo(0);
+                if (index.Value >= data.Count)
+                {
+                    Debug.LogError($"Index out of range: {index.Value} >= {data.Count}");
+                    return;
+                }
+
+                UpdateSelection(index.Value);
+                _scroller.JumpTo(index.Value);
             }
         }
 

@@ -7,9 +7,9 @@ namespace Nekoyume.UI.Module.Arena
     [Serializable]
     public enum ArenaJoinSeasonType
     {
-        Weekly,
-        Monthly,
-        Quarterly,
+        Preseason = 0,
+        Season,
+        Championship,
     }
 
     [Serializable]
@@ -39,13 +39,13 @@ namespace Nekoyume.UI.Module.Arena
         private Animator _animator;
 
         [SerializeField]
-        private ArenaJoinSeasonCellWeekly _weekly;
+        private ArenaJoinSeasonCellPreseason _preseason;
 
         [SerializeField]
-        private ArenaJoinSeasonCellMonthly _monthly;
+        private ArenaJoinSeasonCellSeason _season;
 
         [SerializeField]
-        private ArenaJoinSeasonCellQuarterly _quarterly;
+        private ArenaJoinSeasonCellChampionship _championship;
 
         private ArenaJoinSeasonItemData _currentData;
         private float _currentPosition;
@@ -55,9 +55,9 @@ namespace Nekoyume.UI.Module.Arena
         public override void Initialize()
         {
             base.Initialize();
-            _weekly.OnClick += () => Context.OnCellClicked?.Invoke(Index);
-            _monthly.OnClick += () => Context.OnCellClicked?.Invoke(Index);
-            _quarterly.OnClick += () => Context.OnCellClicked?.Invoke(Index);
+            _preseason.OnClick += () => Context.OnCellClicked?.Invoke(Index);
+            _season.OnClick += () => Context.OnCellClicked?.Invoke(Index);
+            _championship.OnClick += () => Context.OnCellClicked?.Invoke(Index);
         }
 
         public override void UpdateContent(ArenaJoinSeasonItemData itemData)
@@ -65,20 +65,20 @@ namespace Nekoyume.UI.Module.Arena
             _currentData = itemData;
             switch (_currentData.type)
             {
-                case ArenaJoinSeasonType.Weekly:
-                    _weekly.Show(_currentData, Index == Context.SelectedIndex);
-                    _monthly.Hide();
-                    _quarterly.Hide();
+                case ArenaJoinSeasonType.Preseason:
+                    _preseason.Show(_currentData, Index == Context.SelectedIndex);
+                    _season.Hide();
+                    _championship.Hide();
                     break;
-                case ArenaJoinSeasonType.Monthly:
-                    _weekly.Hide();
-                    _monthly.Show(_currentData, Index == Context.SelectedIndex);
-                    _quarterly.Hide();
+                case ArenaJoinSeasonType.Season:
+                    _preseason.Hide();
+                    _season.Show(_currentData, Index == Context.SelectedIndex);
+                    _championship.Hide();
                     break;
-                case ArenaJoinSeasonType.Quarterly:
-                    _weekly.Hide();
-                    _monthly.Hide();
-                    _quarterly.Show(_currentData, Index == Context.SelectedIndex);
+                case ArenaJoinSeasonType.Championship:
+                    _preseason.Hide();
+                    _season.Hide();
+                    _championship.Show(_currentData, Index == Context.SelectedIndex);
                     break;
             }
         }
@@ -90,14 +90,14 @@ namespace Nekoyume.UI.Module.Arena
 
             switch (_currentData?.type)
             {
-                case ArenaJoinSeasonType.Weekly:
-                    PlayAnimation(_weekly.Animator, _currentPosition);
+                case ArenaJoinSeasonType.Preseason:
+                    PlayAnimation(_preseason.Animator, _currentPosition);
                     break;
-                case ArenaJoinSeasonType.Monthly:
-                    PlayAnimation(_monthly.Animator, _currentPosition);
+                case ArenaJoinSeasonType.Season:
+                    PlayAnimation(_season.Animator, _currentPosition);
                     break;
-                case ArenaJoinSeasonType.Quarterly:
-                    PlayAnimation(_quarterly.Animator, _currentPosition);
+                case ArenaJoinSeasonType.Championship:
+                    PlayAnimation(_championship.Animator, _currentPosition);
                     break;
                 default:
                     var value = _currentData?.type.ToString() ?? "null";

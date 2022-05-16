@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Weekly #50
+  m_text: Preseason #1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 72dcfe1acfcde406b8b7dc8b42635600, type: 2}
   m_sharedMaterial: {fileID: 542415631191372739, guid: 72dcfe1acfcde406b8b7dc8b42635600,
@@ -200,7 +200,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quarterly #1
+  m_text: Championship #1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 72dcfe1acfcde406b8b7dc8b42635600, type: 2}
   m_sharedMaterial: {fileID: 542415631191372739, guid: 72dcfe1acfcde406b8b7dc8b42635600,
@@ -358,7 +358,7 @@ GameObject:
   - component: {fileID: 8787510496989507260}
   - component: {fileID: 5499160912271519620}
   m_Layer: 5
-  m_Name: Monthly
+  m_Name: Season
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -529,7 +529,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Monthly #11
+  m_text: Season #1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 72dcfe1acfcde406b8b7dc8b42635600, type: 2}
   m_sharedMaterial: {fileID: 542415631191372739, guid: 72dcfe1acfcde406b8b7dc8b42635600,
@@ -727,9 +727,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 4178482879041537418}
-  _weekly: {fileID: 8994969645100537246}
-  _monthly: {fileID: 5499160912271519620}
-  _quarterly: {fileID: 2162686502432753746}
+  _preseason: {fileID: 8994969645100537246}
+  _season: {fileID: 5499160912271519620}
+  _championship: {fileID: 2162686502432753746}
 --- !u!95 &4178482879041537418
 Animator:
   serializedVersion: 3
@@ -762,7 +762,7 @@ GameObject:
   - component: {fileID: 1525151451237926353}
   - component: {fileID: 2162686502432753746}
   m_Layer: 5
-  m_Name: Quarterly
+  m_Name: Championship
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -881,7 +881,7 @@ GameObject:
   - component: {fileID: 306547865857630683}
   - component: {fileID: 8994969645100537246}
   m_Layer: 5
-  m_Name: Weekly
+  m_Name: Preseason
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
