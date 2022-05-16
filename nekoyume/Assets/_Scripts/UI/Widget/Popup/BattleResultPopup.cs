@@ -669,7 +669,7 @@ namespace Nekoyume.UI
                         Find<HeaderMenuStatic>().Show();
                         Find<Menu>().Close();
                         Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
-                        worldMapLoading.Close();
+                        worldMapLoading.Close(true);
                     });
                 }
             }

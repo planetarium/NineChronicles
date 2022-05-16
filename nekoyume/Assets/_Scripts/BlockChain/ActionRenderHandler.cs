@@ -1400,6 +1400,8 @@ namespace Nekoyume.BlockChain
 
         private void ResponseUnlockWorld(ActionBase.ActionEvaluation<UnlockWorld> eval)
         {
+            Widget.Find<UnlockWorldLoadingScreen>().Close();
+
             if (!(eval.Exception is null))
             {
                 Debug.LogError($"unlock world exc : {eval.Exception.InnerException}");
