@@ -144,8 +144,9 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the game config state was failed to load.");
             }
 
-            var apStonePlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
-            var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
+            var apMaxPlayCount = stageRow.CostAP > 0 ? gameConfigState.ActionPointMax / stageRow.CostAP : 0;
+            var apStonePlayCount = apMaxPlayCount * apStoneCount;
+            var apPlayCount = stageRow.CostAP > 0 ? avatarState.actionPoint / stageRow.CostAP : 0;
             var playCount = apStonePlayCount + apPlayCount;
             if (playCount <= 0)
             {
