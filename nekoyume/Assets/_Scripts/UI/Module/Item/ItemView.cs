@@ -10,9 +10,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Coffee.UIEffects;
-using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+
+#if UNITY_EDITOR
+using Nekoyume.Editor;
+#endif
 
 namespace Nekoyume.UI.Module
 {
@@ -21,7 +24,15 @@ namespace Nekoyume.UI.Module
     public class ItemView<TViewModel> : VanillaItemView
         where TViewModel : Model.Item
     {
+        [SerializeField]
+        private bool handleTouchEvent = true;
+
+
+#if UNITY_EDITOR
+        [ShowOn(nameof(handleTouchEvent))]
+#endif
         public TouchHandler touchHandler;
+
         public Button itemButton;
         public Image backgroundImage;
         public TextMeshProUGUI enhancementText;
@@ -69,24 +80,27 @@ namespace Nekoyume.UI.Module
         public readonly Subject<ItemView<TViewModel>> OnDoubleClick =
             new Subject<ItemView<TViewModel>>();
 
-        #region Mono
+#region Mono
 
         protected virtual void Awake()
         {
             RectTransform = GetComponent<RectTransform>();
 
-            touchHandler.OnClick.Subscribe(_ =>
+            if (handleTouchEvent)
             {
-                AudioController.PlayClick();
-                OnClick.OnNext(this);
-                Model?.OnClick.OnNext(Model);
-            }).AddTo(gameObject);
-            touchHandler.OnDoubleClick.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                OnDoubleClick.OnNext(this);
-                Model?.OnDoubleClick.OnNext(Model);
-            }).AddTo(gameObject);
+                touchHandler.OnClick.Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    OnClick.OnNext(this);
+                    Model?.OnClick.OnNext(Model);
+                }).AddTo(gameObject);
+                touchHandler.OnDoubleClick.Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    OnDoubleClick.OnNext(this);
+                    Model?.OnDoubleClick.OnNext(Model);
+                }).AddTo(gameObject);
+            }
 
             selection.transform.SetAsLastSibling();
             disable.transform.SetAsLastSibling();
@@ -99,7 +113,7 @@ namespace Nekoyume.UI.Module
             OnDoubleClick.Dispose();
         }
 
-        #endregion
+#endregion
 
         public virtual void SetData(TViewModel model, System.Action onClick = null)
         {

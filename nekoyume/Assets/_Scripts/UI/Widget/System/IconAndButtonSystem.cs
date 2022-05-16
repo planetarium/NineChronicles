@@ -186,8 +186,8 @@ namespace Nekoyume.UI
 
         private void Confirm()
         {
-            ConfirmCallback?.Invoke();
             Close();
+            ConfirmCallback?.Invoke();
             AudioController.PlayClick();
         }
 
