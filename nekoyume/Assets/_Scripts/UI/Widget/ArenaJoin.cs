@@ -34,14 +34,19 @@ namespace Nekoyume.UI
         {
             IList<ArenaJoinSeasonItemData> scrollData = null;
 #if UNITY_EDITOR
-            scrollData = _so
+            scrollData = _useSo && _so
                 ? _so.ScrollData
-                : new List<ArenaJoinSeasonItemData>();
+                : GetScrollDataFromChain();
 #else
-            scrollData = new List<ArenaJoinSeasonItemData>();
+            scrollData = GetScrollDataFromChain();
 #endif
 
             return scrollData;
+        }
+
+        private IList<ArenaJoinSeasonItemData> GetScrollDataFromChain()
+        {
+            return new List<ArenaJoinSeasonItemData>();
         }
     }
 }
