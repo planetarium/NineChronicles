@@ -32,7 +32,7 @@ namespace Nekoyume.UI
             public int? SubRecipeId;
             public BigInteger CostNCG;
             public int CostAP;
-            public List<(HashDigest<SHA256>, int count)> Materials;
+            public List<(HashDigest<SHA256>, int materialId, int count)> Materials;
         }
 
         [Serializable]
@@ -209,8 +209,8 @@ namespace Nekoyume.UI
             int costAP = 0;
             int recipeId = 0;
             int? subRecipeId = null;
-            List<(HashDigest<SHA256> material, int count)> materialList
-                = new List<(HashDigest<SHA256> material, int count)>();
+            List<(HashDigest<SHA256> material, int materialId, int count)> materialList
+                = new List<(HashDigest<SHA256> material, int materialId, int count)>();
 
             var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
             var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
@@ -340,8 +340,8 @@ namespace Nekoyume.UI
             }
             else if (consumableRow != null)
             {
-                var submittable = CheckMaterialAndSlot();
-                var cost = new ConditionalCostButton.CostParam(ConditionalCostButton.CostType.NCG, (int)_selectedRecipeInfo.CostNCG);
+                var submittable = CheckNCGAndSlot();
+                var cost = new ConditionalCostButton.CostParam(CostType.NCG, (int)_selectedRecipeInfo.CostNCG);
                 button.SetCost(cost);
                 button.Interactable = submittable;
                 button.gameObject.SetActive(true);
@@ -359,8 +359,8 @@ namespace Nekoyume.UI
 
             if (Craft.SharedModel.UnlockedRecipes.Value.Contains(_selectedRecipeInfo.RecipeId))
             {
-                var submittable = CheckMaterialAndSlot();
-                button.SetCost(ConditionalCostButton.CostType.NCG, (int)_selectedRecipeInfo.CostNCG);
+                var submittable = CheckNCGAndSlot();
+                button.SetCost(CostType.NCG, (int)_selectedRecipeInfo.CostNCG);
                 button.Interactable = submittable;
                 button.gameObject.SetActive(true);
                 lockedObject.SetActive(false);
@@ -438,9 +438,9 @@ namespace Nekoyume.UI
             CombinationActionSubject.OnNext(_selectedRecipeInfo);
         }
 
-        private bool CheckMaterialAndSlot()
+        private bool CheckNCGAndSlot()
         {
-            if (!CheckMaterial(_selectedRecipeInfo.Materials))
+            if (_selectedRecipeInfo.CostNCG > States.Instance.GoldBalanceState.Gold.MajorUnit)
             {
                 return false;
             }
@@ -481,12 +481,6 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            if (!CheckMaterial(_selectedRecipeInfo.Materials))
-            {
-                errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_MATERIALS");
-                return false;
-            }
-
             var slots = Widget.Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out slotIndex))
             {
@@ -499,30 +493,11 @@ namespace Nekoyume.UI
             return true;
         }
 
-        private bool CheckMaterial(List<(HashDigest<SHA256> material, int count)> materials)
-        {
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-
-            foreach (var material in materials)
-            {
-                var itemCount = inventory.TryGetFungibleItems(material.material, out var outFungibleItems)
-                            ? outFungibleItems.Sum(e => e.count)
-                            : 0;
-
-                if (material.count > itemCount)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private (HashDigest<SHA256>, int) CreateMaterial(int id, int count)
+        private (HashDigest<SHA256>, int materialId, int count) CreateMaterial(int id, int count)
         {
             var row = Game.Game.instance.TableSheets.MaterialItemSheet[id];
             var material = ItemFactory.CreateMaterial(row);
-            return (material.FungibleId, count);
+            return (material.FungibleId, id, count);
         }
     }
 }

@@ -285,7 +285,7 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
-            foreach (var (material, count) in recipeInfo.Materials)
+            foreach (var (material, _, count) in recipeInfo.Materials)
             {
                 LocalLayerModifier.RemoveItem(avatarAddress, material, count);
             }
@@ -627,7 +627,8 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
             SubRecipeView.RecipeInfo recipeInfo,
-            int slotIndex)
+            int slotIndex,
+            bool payByCrystal)
         {
             Analyzer.Instance.Track("Unity/Create CombinationEquipment", new Value
             {
@@ -640,7 +641,7 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
-            foreach (var (material, count) in recipeInfo.Materials)
+            foreach (var (material, _, count) in recipeInfo.Materials)
             {
                 LocalLayerModifier.RemoveItem(avatarAddress, material, count);
             }
@@ -651,6 +652,7 @@ namespace Nekoyume.BlockChain
                 slotIndex = slotIndex,
                 recipeId = recipeInfo.RecipeId,
                 subRecipeId = recipeInfo.SubRecipeId,
+                payByCrystal = payByCrystal,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);

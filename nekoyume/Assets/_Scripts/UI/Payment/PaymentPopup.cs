@@ -71,16 +71,16 @@ namespace Nekoyume.UI
             }
             else
             {
-                ShowAttract(cost, title, insufficientMessage, onAttract);
+                ShowAttract(cost, insufficientMessage, onAttract);
             }
         }
 
         public void ShowAttract(
             BigInteger cost,
-            string title,
             string message,
             System.Action onAttract)
         {
+            var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost.ToString();
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");

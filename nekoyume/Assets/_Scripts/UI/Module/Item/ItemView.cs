@@ -33,8 +33,6 @@ namespace Nekoyume.UI.Module
 #endif
         public TouchHandler touchHandler;
 
-        public Button itemButton;
-        public Image backgroundImage;
         public TextMeshProUGUI enhancementText;
         public GameObject enhancementImage;
 

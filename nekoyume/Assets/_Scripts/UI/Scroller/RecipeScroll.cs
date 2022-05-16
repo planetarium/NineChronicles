@@ -130,9 +130,8 @@ namespace Nekoyume.UI.Scroller
             }
             else
             {
-                var title = L10nManager.Localize("UI_TOTAL_COST");
                 var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Widget.Find<PaymentPopup>().ShowAttract(_openCost, title, message, onAttract);
+                Widget.Find<PaymentPopup>().ShowAttract(_openCost, message, onAttract);
             }
         }
 

@@ -39,15 +39,6 @@ namespace Nekoyume.UI.Module
             public TMP_Text text;
         }
 
-        public enum CostType
-        {
-            None,
-            NCG,
-            ActionPoint,
-            Hourglass,
-            Crystal
-        }
-
         [SerializeField]
         private bool showCostAlert = true;
 

@@ -113,7 +113,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            grindButton.SetCost(ConditionalCostButton.CostType.ActionPoint, 5);
+            grindButton.SetCost(CostType.ActionPoint, 5);
             grindButton.SetCondition(() => CanGrind);
             stakingBonus.SetBonusTextFunc(level =>
             {

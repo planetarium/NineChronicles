@@ -18,6 +18,9 @@ using System.Linq;
 
 namespace Nekoyume.UI
 {
+    using Libplanet;
+    using System.Collections.Generic;
+    using System.Security.Cryptography;
     using UniRx;
     using Toggle = Module.Toggle;
 
@@ -329,13 +332,28 @@ namespace Nekoyume.UI
                 requiredBlockIndex += subRecipeRow.RequiredBlockIndex;
             }
 
-            var slots = Find<CombinationSlotsPopup>();
-            slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:equipment);
-
             equipmentSubRecipeView.UpdateView();
-            Game.Game.instance.ActionManager.CombinationEquipment(recipeInfo, slotIndex).Subscribe();
-
-            StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+            var insufficientMaterials = CheckMaterial(recipeInfo.Materials);
+            if (insufficientMaterials.Any())
+            {
+                Find<ReplaceMaterialPopup>().Show(insufficientMaterials,
+                    () =>
+                    {
+                        var slots = Find<CombinationSlotsPopup>();
+                        slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
+                        Game.Game.instance.ActionManager
+                            .CombinationEquipment(recipeInfo, slotIndex, true).Subscribe();
+                        StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+                    });
+            }
+            else
+            {
+                var slots = Find<CombinationSlotsPopup>();
+                slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
+                Game.Game.instance.ActionManager.CombinationEquipment(recipeInfo, slotIndex, false)
+                    .Subscribe();
+                StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+            }
         }
 
         private void CombinationConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
@@ -357,6 +375,26 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager.CombinationConsumable(recipeInfo, slotIndex).Subscribe();
 
             StartCoroutine(CoCombineNPCAnimation(consumable, requiredBlockIndex, true));
+        }
+
+        public static List<(int materialId, int count)> CheckMaterial(List<(HashDigest<SHA256> material, int materialId, int count)> materials)
+        {
+            var insufficientList = new List<(int materialId, int count)>();
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+
+            foreach (var material in materials)
+            {
+                var itemCount = inventory.TryGetFungibleItems(material.material, out var outFungibleItems)
+                            ? outFungibleItems.Sum(e => e.count)
+                            : 0;
+
+                if (material.count > itemCount)
+                {
+                    insufficientList.Add((material.materialId, material.count - itemCount));
+                }
+            }
+
+            return insufficientList;
         }
 
         private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, long blockIndex, bool isConsumable = false)
