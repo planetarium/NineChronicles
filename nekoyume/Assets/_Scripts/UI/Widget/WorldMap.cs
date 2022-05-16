@@ -257,7 +257,7 @@ namespace Nekoyume.UI
                 States.Instance.CrystalBalance,
                 cost.MajorUnit,
                 L10nManager.Localize("UI_UNLOCK_WORLD_FORMAT", L10nManager.LocalizeWorldName(worldId)),
-                () => ActionManager.Instance.UnlockWorld(new List<int> {worldId}),
+                () => ActionManager.Instance.UnlockWorld(new List<int> {worldId}).Subscribe(),
                 OnAttractInPaymentPopup);
         }
 
@@ -280,7 +280,7 @@ namespace Nekoyume.UI
                     paymentPopup.Show(States.Instance.CrystalBalance,
                         cost,
                         L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
-                        () => ActionManager.Instance.UnlockWorld(worldIdListForUnlock),
+                        () => ActionManager.Instance.UnlockWorld(worldIdListForUnlock).Subscribe(),
                         OnAttractInPaymentPopup,
                         false,
                         false);

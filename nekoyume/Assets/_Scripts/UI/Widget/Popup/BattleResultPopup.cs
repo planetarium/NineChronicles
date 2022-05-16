@@ -651,6 +651,8 @@ namespace Nekoyume.UI
 
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
 
             if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
                     out var lastClearedStageId))
@@ -660,14 +662,15 @@ namespace Nekoyume.UI
                     && lastClearedStageId == SharedModel.StageID
                     && !Find<WorldMap>().SharedViewModel.UnlockedWorldIds.Contains(SharedModel.WorldID + 1))
                 {
-                    CloseWithOtherWidgets();
-                    Find<HeaderMenuStatic>().Show();
-                    Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
-                }
-                else
-                {
-                    Game.Event.OnRoomEnter.Invoke(true);
-                    Close();
+                    var worldMapLoading = Find<WorldMapLoadingScreen>();
+                    worldMapLoading.Show();
+                    Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+                    {
+                        Find<HeaderMenuStatic>().Show();
+                        Find<Menu>().Close();
+                        Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
+                        worldMapLoading.Close();
+                    });
                 }
             }
         }
