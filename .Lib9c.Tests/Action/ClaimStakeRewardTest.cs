@@ -90,10 +90,10 @@ namespace Lib9c.Tests.Action
             });
 
             AvatarState avatarState = states.GetAvatarStateV2(_avatarAddress);
-            // regular (100 / 8) * 4 + achieve (80 + 80)
-            Assert.Equal(208, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
-            // regular (100 / 200) + achieve (1 + 1)
-            Assert.Equal(2, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
+            // regular (100 / 8) * 4
+            Assert.Equal(48, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
+            // regular (100 / 200) * 4
+            Assert.Equal(0, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
 
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
             const int level = 1;  // Expect requiredGold = 100. Assertions for synchronization with the table data.
@@ -103,7 +103,9 @@ namespace Lib9c.Tests.Action
                 _tableSheets.StakeAchievementRewardSheet[level].Steps[0].RequiredBlockIndex);
 
             Assert.Equal(StakeState.LockupInterval, stakeState.ReceivedBlockIndex);
-            Assert.True(stakeState.Achievements.Check(level, 1));
+
+            // ClaimStakeReward v0 doesn't claim achievement rewards.
+            Assert.False(stakeState.Achievements.Check(level, 1));
         }
 
         [Fact]
