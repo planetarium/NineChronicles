@@ -280,13 +280,26 @@ namespace Nekoyume.BlockChain
             int slotIndex)
         {
             var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
-            foreach (var (material, _, count) in recipeInfo.Materials)
+            foreach (var (material, id, materialCount) in recipeInfo.Materials)
             {
+                var count = materialCount;
+                var replaced = recipeInfo.ReplacedMaterials.Find(x => x.materialId == id);
+                if (replaced.count > 0)
+                {
+                    if (!avatarState.inventory.TryGetFungibleItems(material, out var items))
+                    {
+                        count = 0;
+                    }
+
+                    count = items.Sum(x => x.count);
+                }
+
                 LocalLayerModifier.RemoveItem(avatarAddress, material, count);
             }
 
@@ -636,13 +649,26 @@ namespace Nekoyume.BlockChain
             });
 
             var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
-            foreach (var (material, _, count) in recipeInfo.Materials)
+            foreach (var (material, id, materialCount) in recipeInfo.Materials)
             {
+                var count = materialCount;
+                var replaced = recipeInfo.ReplacedMaterials.Find(x => x.materialId == id);
+                if (replaced.count > 0)
+                {
+                    if (!avatarState.inventory.TryGetFungibleItems(material, out var items))
+                    {
+                        count = 0;
+                    }
+
+                    count = items.Sum(x => x.count);
+                }
+
                 LocalLayerModifier.RemoveItem(avatarAddress, material, count);
             }
 

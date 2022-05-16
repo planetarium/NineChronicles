@@ -33,6 +33,7 @@ namespace Nekoyume.UI
             public BigInteger CostNCG;
             public int CostAP;
             public List<(HashDigest<SHA256>, int materialId, int count)> Materials;
+            public List<(int materialId, int count)> ReplacedMaterials;
         }
 
         [Serializable]
@@ -87,7 +88,7 @@ namespace Nekoyume.UI
                 });
             }
 
-            button.OnSubmitSubject
+            button.OnClickSubject
                 .Subscribe(state =>
                 {
                     CombineCurrentRecipe();
@@ -330,7 +331,8 @@ namespace Nekoyume.UI
                 CostAP = costAP,
                 RecipeId = recipeId,
                 SubRecipeId = subRecipeId,
-                Materials = materialList
+                Materials = materialList,
+                ReplacedMaterials = Craft.CheckMaterial(materialList),
             };
             _selectedRecipeInfo = recipeInfo;
 
@@ -341,7 +343,9 @@ namespace Nekoyume.UI
             else if (consumableRow != null)
             {
                 var submittable = CheckNCGAndSlot();
-                var cost = new ConditionalCostButton.CostParam(CostType.NCG, (int)_selectedRecipeInfo.CostNCG);
+                var cost = new ConditionalCostButton.CostParam(
+                    CostType.NCG,
+                    (int)_selectedRecipeInfo.CostNCG);
                 button.SetCost(cost);
                 button.Interactable = submittable;
                 button.gameObject.SetActive(true);
@@ -360,7 +364,18 @@ namespace Nekoyume.UI
             if (Craft.SharedModel.UnlockedRecipes.Value.Contains(_selectedRecipeInfo.RecipeId))
             {
                 var submittable = CheckNCGAndSlot();
-                button.SetCost(CostType.NCG, (int)_selectedRecipeInfo.CostNCG);
+                var costNCG = new ConditionalCostButton.CostParam(
+                    CostType.NCG,
+                    (int)_selectedRecipeInfo.CostNCG);
+                var sheet = Game.Game.instance.TableSheets.CrystalMaterialCostSheet;
+
+                var crystalCost = CrystalCalculator.CalculateMaterialCost(
+                    _selectedRecipeInfo.ReplacedMaterials, sheet);
+                var costCrystal = new ConditionalCostButton.CostParam(
+                    CostType.Crystal,
+                    (int) crystalCost.MajorUnit);
+
+                button.SetCost(costNCG, costCrystal);
                 button.Interactable = submittable;
                 button.gameObject.SetActive(true);
                 lockedObject.SetActive(false);

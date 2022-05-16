@@ -333,7 +333,7 @@ namespace Nekoyume.UI
             }
 
             equipmentSubRecipeView.UpdateView();
-            var insufficientMaterials = CheckMaterial(recipeInfo.Materials);
+            var insufficientMaterials = recipeInfo.ReplacedMaterials;
             if (insufficientMaterials.Any())
             {
                 Find<ReplaceMaterialPopup>().Show(insufficientMaterials,
@@ -377,7 +377,8 @@ namespace Nekoyume.UI
             StartCoroutine(CoCombineNPCAnimation(consumable, requiredBlockIndex, true));
         }
 
-        public static List<(int materialId, int count)> CheckMaterial(List<(HashDigest<SHA256> material, int materialId, int count)> materials)
+        public static List<(int materialId, int count)> CheckMaterial(
+            List<(HashDigest<SHA256> material, int materialId, int count)> materials)
         {
             var insufficientList = new List<(int materialId, int count)>();
             var inventory = States.Instance.CurrentAvatarState.inventory;

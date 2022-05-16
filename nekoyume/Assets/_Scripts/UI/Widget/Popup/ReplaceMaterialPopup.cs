@@ -46,7 +46,7 @@ namespace Nekoyume.UI
                 itemView.gameObject.SetActive(true);
             }
 
-            var cost = CrystalCalculator.CalcaulateMaterialCost(materials,
+            var cost = CrystalCalculator.CalculateMaterialCost(materials,
                 Game.Game.instance.TableSheets.CrystalMaterialCostSheet).MajorUnit;
             costText.text = cost.ToString();
 
