@@ -694,7 +694,7 @@
             Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
 
-        private (AvatarState avatarState, AgentState agentState) CreateAvatarState(
+        private (AvatarState AvatarState, AgentState AgentState) CreateAvatarState(
             Address agentAddress, Address avatarAddress)
         {
             var agentState = new AgentState(agentAddress);

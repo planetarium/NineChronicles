@@ -274,7 +274,7 @@ namespace Lib9c.Tests.Action
                         3,
                     },
                 },
-                _ => throw new InvalidCastException()
+                _ => throw new InvalidCastException(),
             };
         }
     }

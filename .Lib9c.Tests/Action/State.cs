@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action
 
         public State(
             IImmutableDictionary<Address, IValue> state = null,
-            IImmutableDictionary<(Address, Currency), FungibleAssetValue> balance = null)
+            IImmutableDictionary<(Address Address, Currency Currency), FungibleAssetValue> balance = null)
         {
             _state = state ?? ImmutableDictionary<Address, IValue>.Empty;
             _balance = balance ?? ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty;

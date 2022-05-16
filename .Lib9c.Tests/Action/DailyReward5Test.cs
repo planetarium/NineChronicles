@@ -107,7 +107,7 @@ namespace Lib9c.Tests.Action
             {
                 1 => nextState.GetAvatarState(_avatarAddress),
                 2 => nextState.GetAvatarStateV2(_avatarAddress),
-                _ => null
+                _ => null,
             };
             if (nextAvatarState is null)
             {

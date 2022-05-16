@@ -80,7 +80,7 @@ namespace Lib9c.Tests.Action
                 .CreateLogger();
         }
 
-        public static (AgentState, AvatarState) GetAgentStateWithAvatarState(
+        public static (AgentState AgentState, AvatarState AvatarState) GetAgentStateWithAvatarState(
             IReadOnlyDictionary<string, string> sheets,
             TableSheets tableSheets,
             Address rankingMapAddress)
