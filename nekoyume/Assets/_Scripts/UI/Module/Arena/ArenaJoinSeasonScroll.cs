@@ -22,9 +22,16 @@ namespace Nekoyume.UI.Module.Arena
         private readonly Subject<int> _onSelectionChanged = new Subject<int>();
         public IObservable<int> OnSelectionChanged => _onSelectionChanged;
 
-        public void SetData(IList<ArenaJoinSeasonItemData> itemsSource)
+        public void SetData(IList<ArenaJoinSeasonItemData> data, int? index = null)
         {
-            UpdateContents(itemsSource);
+            UpdateContents(data);
+            _scroller.SetTotalCount(data.Count);
+
+            if (index.HasValue)
+            {
+                UpdateSelection(0);
+                _scroller.JumpTo(0);
+            }
         }
 
         public void SelectCell(int index)
@@ -39,10 +46,6 @@ namespace Nekoyume.UI.Module.Arena
             UpdateSelection(index);
             _scroller.ScrollTo(index, 0.35f, Ease.OutCubic);
         }
-
-        public void SelectNextCell() => SelectCell(Context.SelectedIndex + 1);
-
-        public void SelectPrevCell() => SelectCell(Context.SelectedIndex - 1);
 
         protected override void Initialize()
         {

@@ -4,6 +4,7 @@ using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Module.Arena
 {
+    [Serializable]
     public enum ArenaJoinSeasonType
     {
         Weekly,
@@ -11,9 +12,12 @@ namespace Nekoyume.UI.Module.Arena
         Quarterly,
     }
 
+    [Serializable]
     public class ArenaJoinSeasonItemData
     {
         public ArenaJoinSeasonType type;
+
+        // NOTE: or int index;
         public string name;
     }
 
@@ -28,7 +32,7 @@ namespace Nekoyume.UI.Module.Arena
     {
         private static class AnimatorHash
         {
-            public static readonly int Scroll = Animator.StringToHash("scroll");
+            public static readonly int Scroll = Animator.StringToHash("Scroll");
         }
 
         [SerializeField]
@@ -84,7 +88,7 @@ namespace Nekoyume.UI.Module.Arena
             _currentPosition = position;
             PlayAnimation(_animator, _currentPosition);
 
-            switch (_currentData.type)
+            switch (_currentData?.type)
             {
                 case ArenaJoinSeasonType.Weekly:
                     PlayAnimation(_weekly.Animator, _currentPosition);
@@ -94,6 +98,10 @@ namespace Nekoyume.UI.Module.Arena
                     break;
                 case ArenaJoinSeasonType.Quarterly:
                     PlayAnimation(_quarterly.Animator, _currentPosition);
+                    break;
+                default:
+                    var value = _currentData?.type.ToString() ?? "null";
+                    Debug.Log($"{nameof(ArenaJoinSeasonCell)} type: {value}");
                     break;
             }
         }

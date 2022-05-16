@@ -287,7 +287,7 @@ namespace Nekoyume.UI
             }
 
             Close(true);
-            Find<RankingBoard>().Show();
+            Find<ArenaJoin>().Show();
             Analyzer.Instance.Track("Unity/Enter arena page");
             AudioController.PlayClick();
         }
