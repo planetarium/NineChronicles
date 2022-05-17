@@ -115,13 +115,22 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1, true)]
-        [InlineData(1, 1, 1, false)]
-        [InlineData(2, 1, 2, true)]
-        [InlineData(2, 1, 2, false)]
-        public void Execute(int apStoneCount, int worldId, int stageId, bool backward)
+        [InlineData(1, 1, 1, false, true)]
+        [InlineData(1, 1, 1, false, false)]
+        [InlineData(2, 1, 2, false, true)]
+        [InlineData(2, 1, 2, false, false)]
+        [InlineData(2, 2, 51, false, true)]
+        [InlineData(2, 2, 51, false, false)]
+        [InlineData(1, 1, 1, true, true)]
+        [InlineData(1, 1, 1, true, false)]
+        [InlineData(2, 1, 2, true, true)]
+        [InlineData(2, 1, 2, true, false)]
+        [InlineData(2, 2, 52, true, true)]
+        [InlineData(2, 2, 52, true, false)]
+        public void Execute(int apStoneCount, int worldId, int stageId, bool challenge, bool backward)
         {
             var gameConfigState = _initialState.GetGameConfigState();
+
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
@@ -130,8 +139,8 @@ namespace Lib9c.Tests.Action
                 gameConfigState,
                 _rankingMapAddress)
             {
-                worldInformation =
-                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), stageId),
+                worldInformation = new WorldInformation(
+                    0, _initialState.GetSheet<WorldSheet>(), challenge ? stageId - 1 : stageId),
                 level = 400,
             };
 
@@ -315,7 +324,7 @@ namespace Lib9c.Tests.Action
             var worldSheet = _initialState.GetSheet<WorldSheet>();
             var worldUnlockSheet = _initialState.GetSheet<WorldUnlockSheet>();
 
-            _avatarState.worldInformation.ClearStage(1, 2, 1, worldSheet, worldUnlockSheet);
+            _avatarState.worldInformation.ClearStage(1, 48, 1, worldSheet, worldUnlockSheet);
 
             var state = _initialState;
             if (backward)
