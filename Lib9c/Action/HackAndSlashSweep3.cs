@@ -16,8 +16,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash_sweep4")]
-    public class HackAndSlashSweep : GameAction
+    [ActionType("hack_and_slash_sweep3")]
+    public class HackAndSlashSweep3 : GameAction
     {
         public const int UsableApStoneCount = 10;
 
