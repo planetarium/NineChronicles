@@ -180,6 +180,7 @@ namespace Nekoyume.UI.Module
                     unlockableImage.SetActive(true);
                     lockImage.SetActive(false);
                     unlockImage.SetActive(false);
+                    animator.Play("WorldOpen");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
