@@ -8,8 +8,8 @@ namespace Nekoyume.UI.Module.Arena
 {
     using UniRx;
 
-    public class ArenaJoinSeasonScroll :
-        FancyScrollView<ArenaJoinSeasonItemData, ArenaJoinSeasonScrollContext>
+    public class ArenaJoinSeasonBarScroll :
+        FancyScrollView<ArenaJoinSeasonBarItemData, ArenaJoinSeasonBarScrollContext>
     {
         [SerializeField]
         private UnityEngine.UI.Extensions.Scroller _scroller;
@@ -22,8 +22,9 @@ namespace Nekoyume.UI.Module.Arena
         private readonly Subject<int> _onSelectionChanged = new Subject<int>();
         public IObservable<int> OnSelectionChanged => _onSelectionChanged;
 
-        public void SetData(IList<ArenaJoinSeasonItemData> data, int? index = null)
+        public void SetData(IList<ArenaJoinSeasonBarItemData> data, int? index = null)
         {
+            cellInterval = 1f / data.Count;
             UpdateContents(data);
             _scroller.SetTotalCount(data.Count);
 
@@ -57,7 +58,6 @@ namespace Nekoyume.UI.Module.Arena
         {
             base.Initialize();
 
-            Context.onCellClicked = index => SelectCell(index, true);
             _scroller.OnValueChanged(UpdatePosition);
             _scroller.OnSelectionChanged(index => UpdateSelection(index, true));
         }
@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Module.Arena
 
             if (invokeEvents)
             {
-                _onSelectionChanged.OnNext(Context.selectedIndex);   
+                _onSelectionChanged.OnNext(Context.selectedIndex);    
             }
         }
     }

@@ -23,8 +23,8 @@ namespace Nekoyume.UI.Module.Arena
 
     public class ArenaJoinSeasonScrollContext
     {
-        public int SelectedIndex = -1;
-        public Action<int> OnCellClicked;
+        public int selectedIndex = -1;
+        public Action<int> onCellClicked;
     }
 
     public class ArenaJoinSeasonCell :
@@ -48,9 +48,19 @@ namespace Nekoyume.UI.Module.Arena
         private ArenaJoinSeasonCellChampionship _championship;
 
         private ArenaJoinSeasonItemData _currentData;
+
+        [SerializeField]
         private float _currentPosition;
 
         private void OnEnable() => UpdatePosition(_currentPosition);
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            _preseason.OnClick += () => Context.onCellClicked?.Invoke(Index);
+            _season.OnClick += () => Context.onCellClicked?.Invoke(Index);
+            _championship.OnClick += () => Context.onCellClicked?.Invoke(Index);
+        }
 
         public override void UpdateContent(ArenaJoinSeasonItemData itemData)
         {
@@ -58,19 +68,19 @@ namespace Nekoyume.UI.Module.Arena
             switch (_currentData.type)
             {
                 case ArenaJoinSeasonType.Preseason:
-                    _preseason.Show(_currentData, Index == Context.SelectedIndex);
+                    _preseason.Show(_currentData, Index == Context.selectedIndex);
                     _season.Hide();
                     _championship.Hide();
                     break;
                 case ArenaJoinSeasonType.Season:
                     _preseason.Hide();
-                    _season.Show(_currentData, Index == Context.SelectedIndex);
+                    _season.Show(_currentData, Index == Context.selectedIndex);
                     _championship.Hide();
                     break;
                 case ArenaJoinSeasonType.Championship:
                     _preseason.Hide();
                     _season.Hide();
-                    _championship.Show(_currentData, Index == Context.SelectedIndex);
+                    _championship.Show(_currentData, Index == Context.selectedIndex);
                     break;
             }
         }
