@@ -130,12 +130,14 @@ namespace Nekoyume.Action
                 throw new SheetRowColumnException($"{addressesHex}world is not contains in world information: {worldId}");
             }
 
-            if (!world.IsStageCleared)
+            worldInformation.TryGetWorldByStageId(stageId - 1, out var clearedWorld);
+
+            if (!clearedWorld.IsStageCleared)
             {
                 throw new StageClearedException($"{addressesHex}There is no stage cleared in that world (worldId:{worldId})");
             }
 
-            if (stageId > world.StageClearedId)
+            if (stageId > clearedWorld.StageClearedId + 1)
             {
                 throw new InvalidStageException(
                     $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +

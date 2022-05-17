@@ -292,13 +292,30 @@ namespace Lib9c.Tests.Action
             }));
         }
 
+        [Fact]
+        public void Execute_StageClearedException()
+        {
+            var action = new HackAndSlashSweep
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = 1,
+                stageId = 50,
+            };
+
+            Assert.Throws<StageClearedException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+        }
+
         [Theory]
         [InlineData(1, 48, 1, 50, true)]
         [InlineData(1, 48, 1, 50, false)]
         [InlineData(1, 49, 2, 51, true)]
         [InlineData(1, 49, 2, 51, false)]
-        [InlineData(1, 50, 2, 52, true)]
-        [InlineData(1, 50, 2, 52, false)]
         public void Execute_InvalidStageException(int clearedWorldId, int clearedStageId, int worldId, int stageId, bool backward)
         {
             var action = new HackAndSlashSweep
