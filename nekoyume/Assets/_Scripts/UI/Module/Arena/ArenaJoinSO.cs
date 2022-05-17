@@ -22,8 +22,8 @@ namespace Nekoyume.UI.Module.Arena
             {
                 new ArenaJoinSeasonItemData
                 {
-                    type = ArenaJoinSeasonType.Preseason,
-                    name = "Preseason #1"
+                    type = ArenaJoinSeasonType.Offseason,
+                    name = "Offseason #1"
                 },
                 new ArenaJoinSeasonItemData
                 {
@@ -32,8 +32,8 @@ namespace Nekoyume.UI.Module.Arena
                 },
                 new ArenaJoinSeasonItemData
                 {
-                    type = ArenaJoinSeasonType.Preseason,
-                    name = "Preseason #2"
+                    type = ArenaJoinSeasonType.Offseason,
+                    name = "Offseason #2"
                 },
                 new ArenaJoinSeasonItemData
                 {

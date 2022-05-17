@@ -7,7 +7,7 @@ namespace Nekoyume.UI.Module.Arena
     [Serializable]
     public enum ArenaJoinSeasonType
     {
-        Preseason = 0,
+        Offseason = 0,
         Season,
         Championship,
     }
@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Module.Arena
         private Animator _animator;
 
         [SerializeField]
-        private ArenaJoinSeasonCellPreseason _preseason;
+        private ArenaJoinSeasonCellOffseason _offseason;
 
         [SerializeField]
         private ArenaJoinSeasonCellSeason _season;
@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Module.Arena
         public override void Initialize()
         {
             base.Initialize();
-            _preseason.OnClick += () => Context.onCellClicked?.Invoke(Index);
+            _offseason.OnClick += () => Context.onCellClicked?.Invoke(Index);
             _season.OnClick += () => Context.onCellClicked?.Invoke(Index);
             _championship.OnClick += () => Context.onCellClicked?.Invoke(Index);
         }
@@ -67,18 +67,18 @@ namespace Nekoyume.UI.Module.Arena
             _currentData = itemData;
             switch (_currentData.type)
             {
-                case ArenaJoinSeasonType.Preseason:
-                    _preseason.Show(_currentData, Index == Context.selectedIndex);
+                case ArenaJoinSeasonType.Offseason:
+                    _offseason.Show(_currentData, Index == Context.selectedIndex);
                     _season.Hide();
                     _championship.Hide();
                     break;
                 case ArenaJoinSeasonType.Season:
-                    _preseason.Hide();
+                    _offseason.Hide();
                     _season.Show(_currentData, Index == Context.selectedIndex);
                     _championship.Hide();
                     break;
                 case ArenaJoinSeasonType.Championship:
-                    _preseason.Hide();
+                    _offseason.Hide();
                     _season.Hide();
                     _championship.Show(_currentData, Index == Context.selectedIndex);
                     break;
@@ -92,8 +92,8 @@ namespace Nekoyume.UI.Module.Arena
 
             switch (_currentData?.type)
             {
-                case ArenaJoinSeasonType.Preseason:
-                    PlayAnimation(_preseason.Animator, _currentPosition);
+                case ArenaJoinSeasonType.Offseason:
+                    PlayAnimation(_offseason.Animator, _currentPosition);
                     break;
                 case ArenaJoinSeasonType.Season:
                     PlayAnimation(_season.Animator, _currentPosition);

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.Arena
 {
-    public class ArenaJoinSeasonCellPreseason : MonoBehaviour
+    public class ArenaJoinSeasonCellOffseason : MonoBehaviour
     {
         [SerializeField]
         private Animator _animator;

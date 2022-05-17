@@ -727,9 +727,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 4178482879041537418}
-  _preseason: {fileID: 8994969645100537246}
+  _offseason: {fileID: 8994969645100537246}
   _season: {fileID: 5499160912271519620}
   _championship: {fileID: 2162686502432753746}
+  _currentPosition: 0
 --- !u!95 &4178482879041537418
 Animator:
   serializedVersion: 3
@@ -881,7 +882,7 @@ GameObject:
   - component: {fileID: 306547865857630683}
   - component: {fileID: 8994969645100537246}
   m_Layer: 5
-  m_Name: Preseason
+  m_Name: Offseason
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
