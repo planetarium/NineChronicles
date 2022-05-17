@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Libplanet.Assets;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
@@ -55,6 +56,7 @@ namespace Nekoyume
             _expiredBlockIndex = expiredBlockIndex;
             var value = expiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
             button.SetSubmittable(value > 0);
+            button.SetSubmitText(L10nManager.Localize("UI_BUY"));
             button.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
             timer.UpdateTimer(expiredBlockIndex);
         }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Helper;
@@ -23,56 +22,82 @@ namespace Nekoyume.UI
     public class SweepPopup : PopupWidget
     {
         [SerializeField]
+        private SweepSlider apSlider;
+
+        [SerializeField]
+        private SweepSlider apStoneSlider;
+
+        [SerializeField]
         private ConditionalButton startButton;
 
         [SerializeField]
-        private ConditionalButton cancelButton;
-
-        [SerializeField]
-        private List<Button> addCountButtons;
-
-        [SerializeField]
-        private TextMeshProUGUI playCountText;
+        private Button cancelButton;
 
         [SerializeField]
         private TextMeshProUGUI expText;
 
         [SerializeField]
-        private TextMeshProUGUI apText;
+        private TextMeshProUGUI playCountText;
 
         [SerializeField]
-        private TextMeshProUGUI inventoryApStoneText;
+        private TextMeshProUGUI totalApText;
 
         [SerializeField]
-        private TextMeshProUGUI useApStoneText;
+        private TextMeshProUGUI apStoneText;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        [SerializeField]
+        private TextMeshProUGUI haveApText;
+
+        [SerializeField]
+        private TextMeshProUGUI haveApStoneText;
+
+        [SerializeField]
+        private TextMeshProUGUI enoughCpText;
+
+        [SerializeField]
+        private TextMeshProUGUI insufficientCpText;
+
+        [SerializeField]
+        private TextMeshProUGUI contentText;
+
+        [SerializeField]
+        private GameObject enoughCpContainer;
+
+        [SerializeField]
+        private GameObject insufficientCpContainer;
+
+        [SerializeField]
+        private GameObject information;
+
+        [SerializeField]
+        private GameObject expGlow;
+
+        [SerializeField]
+        private GameObject playCountGlow;
+
         private readonly ReactiveProperty<int> _apStoneCount = new ReactiveProperty<int>();
-        private StageSheet.Row _stageRow;
-        private long _gainedExp;
-        private int _worldId;
-        private int _inventoryApStoneCount;
+        private readonly ReactiveProperty<int> _ap = new ReactiveProperty<int>();
+        private readonly ReactiveProperty<int> _cp = new ReactiveProperty<int>();
+        private readonly List<Guid> equipments = new List<Guid>();
+        private readonly List<Guid> costumes = new List<Guid>();
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public int CostAP { get; private set; }
+        private StageSheet.Row _stageRow;
+        private int _worldId;
 
         protected override void Awake()
         {
             _apStoneCount.Subscribe(v => UpdateView()).AddTo(gameObject);
+            _ap.Subscribe(v => UpdateView()).AddTo(gameObject);
+            _cp.Subscribe(v => UpdateCpView()).AddTo(gameObject);
 
-            startButton.Text = L10nManager.Localize("UI_START");
             startButton.OnSubmitSubject
-                .Subscribe(_ => Sweep(_apStoneCount.Value, _worldId, _stageRow)).AddTo(gameObject);
+                .Subscribe(_ => Sweep(_apStoneCount.Value, _ap.Value, _worldId, _stageRow))
+                .AddTo(gameObject);
 
-            cancelButton.Text = L10nManager.Localize("UI_CANCEL");
-            cancelButton.OnSubmitSubject.Subscribe(_ => Close()).AddTo(gameObject);
+            cancelButton.onClick.AddListener(() => Close());
 
-            var counts = new[]
-                { -HackAndSlashSweep.UsableApStoneCount, 1, HackAndSlashSweep.UsableApStoneCount };
-            for (var i = 0; i < addCountButtons.Count; i++)
-            {
-                var value = counts[i];
-                addCountButtons[i].onClick.AddListener(() => { UpdateApStoneCount(value); });
-            }
+            CloseWidget = () => { Close(); };
 
             base.Awake();
         }
@@ -84,31 +109,21 @@ namespace Nekoyume.UI
                 throw new Exception();
             }
 
+            SubscribeInventory();
+
             _worldId = worldId;
             _stageRow = stageRow;
-
-            UpdateInventoryStoneCount();
-
-            apText.text = States.Instance.CurrentAvatarState.actionPoint.ToString();
             _apStoneCount.SetValueAndForceNotify(0);
+            _ap.SetValueAndForceNotify(States.Instance.CurrentAvatarState.actionPoint);
+            _cp.SetValueAndForceNotify(States.Instance.CurrentAvatarState.GetCP());
+
+            contentText.text =
+                $"({L10nManager.Localize("UI_AP")} / {L10nManager.Localize("UI_AP_POTION")})";
+
             base.Show(ignoreShowAnimation);
         }
 
-        private void UpdateApStoneCount(int value)
-        {
-            var current = Mathf.Min(_apStoneCount.Value + value, _inventoryApStoneCount);
-            current = Mathf.Clamp(current, 0, HackAndSlashSweep.UsableApStoneCount);
-            if (current != 0 && current == _apStoneCount.Value)
-            {
-                NotificationSystem.Push(MailType.System,
-                    L10nManager.Localize("NO_LONGER_AVAILABLE"),
-                    NotificationCell.NotificationType.Notification);
-            }
-
-            _apStoneCount.Value = current;
-        }
-
-        private void UpdateInventoryStoneCount()
+        private void SubscribeInventory()
         {
             _disposables.DisposeAllAndClear();
             ReactiveAvatarState.Inventory.Subscribe(inventory =>
@@ -118,33 +133,108 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                _inventoryApStoneCount = 0;
-                foreach (var item in inventory.Items.Where(x=> x.item.ItemSubType == ItemSubType.ApStone))
+                var haveApStoneCount = 0;
+                costumes.Clear();
+                equipments.Clear();
+
+                foreach (var item in inventory.Items)
                 {
                     if (item.Locked)
                     {
                         continue;
                     }
 
-                    if (item.item is ITradableItem tradableItem)
+                    switch (item.item.ItemType)
                     {
-                        var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-                        if (tradableItem.RequiredBlockIndex > blockIndex)
-                        {
-                            continue;
-                        }
+                        case ItemType.Costume:
+                            var costume = (Costume)item.item;
+                            if (costume.equipped)
+                            {
+                                costumes.Add(costume.ItemId);
+                            }
 
-                        _inventoryApStoneCount += item.count;
-                    }
-                    else
-                    {
-                        _inventoryApStoneCount += item.count;
+                            break;
+
+                        case ItemType.Equipment:
+                            var equipment = (Equipment)item.item;
+                            if (equipment.equipped)
+                            {
+                                equipments.Add(equipment.ItemId);
+                            }
+
+                            break;
+
+                        case ItemType.Material:
+                            if (item.item.ItemSubType != ItemSubType.ApStone)
+                            {
+                                continue;
+                            }
+
+                            if (item.item is ITradableItem tradableItem)
+                            {
+                                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                                if (tradableItem.RequiredBlockIndex > blockIndex)
+                                {
+                                    continue;
+                                }
+
+                                haveApStoneCount += item.count;
+                            }
+                            else
+                            {
+                                haveApStoneCount += item.count;
+                            }
+
+                            break;
                     }
                 }
 
-                inventoryApStoneText.text = _inventoryApStoneCount.ToString();
+                var haveApCount = States.Instance.CurrentAvatarState.actionPoint;
+
+                haveApText.text = haveApCount.ToString();
+                haveApStoneText.text = haveApStoneCount.ToString();
+
+                apSlider.Set(haveApCount / _stageRow.CostAP, haveApCount / _stageRow.CostAP,
+                    States.Instance.GameConfigState.ActionPointMax, _stageRow.CostAP,
+                    x => _ap.Value = x * _stageRow.CostAP);
+
+                apStoneSlider.Set(Math.Min(haveApStoneCount, HackAndSlashSweep.UsableApStoneCount),
+                    0,
+                    HackAndSlashSweep.UsableApStoneCount, 1,
+                    x => _apStoneCount.Value = x);
+
+                _cp.Value = States.Instance.CurrentAvatarState.GetCP();
             }).AddTo(_disposables);
         }
+
+        private void UpdateCpView()
+        {
+            if (_stageRow is null)
+            {
+                return;
+            }
+
+            if (!TryGetRequiredCP(_stageRow.Id, out var row))
+            {
+                return;
+            }
+
+            if (_cp.Value < row.RequiredCP)
+            {
+                enoughCpContainer.SetActive(false);
+                insufficientCpContainer.SetActive(true);
+                insufficientCpText.text = L10nManager.Localize("UI_SWEEP_CP", row.RequiredCP);
+            }
+            else
+            {
+                enoughCpContainer.SetActive(true);
+                insufficientCpContainer.SetActive(false);
+                enoughCpText.text = L10nManager.Localize("UI_SWEEP_CP", row.RequiredCP);
+            }
+
+            UpdateStartButton();
+        }
+
 
         private void UpdateView()
         {
@@ -154,25 +244,48 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var (apPlayCount, apStonePlayCount) = GetPlayCount(avatarState, _stageRow);
-            playCountText.text = (apPlayCount + apStonePlayCount).ToString();
+            var (apPlayCount, apStonePlayCount) =
+                GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value);
+            var totalPlayCount = apPlayCount + apStonePlayCount;
 
-            var levelSheet = Game.Game.instance.TableSheets.CharacterLevelSheet;
-            var (_, exp) = avatarState.GetLevelAndExp(levelSheet, _stageRow.Id,
-                apPlayCount + apStonePlayCount);
+            playCountText.text = totalPlayCount.ToString();
+            playCountGlow.SetActive(totalPlayCount > 0);
 
-            _gainedExp = exp - avatarState.exp;
+            UpdateExpView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
 
-            var actionMaxPoint = States.Instance.GameConfigState.ActionPointMax;
-            apText.text = apStonePlayCount > 0
-                ? $"{avatarState.actionPoint}<color=#39FD39>(+{_apStoneCount.Value * actionMaxPoint})</color>"
-                : $"{avatarState.actionPoint}";
-            expText.text = _gainedExp.ToString();
+            if (_apStoneCount.Value == 0 && _ap.Value == 0)
+            {
+                information.SetActive(true);
+                totalApText.text = string.Empty;
+                apStoneText.text = string.Empty;
+            }
+            else
+            {
+                information.SetActive(false);
+                totalApText.text = $"{totalPlayCount * _stageRow.CostAP}";
+                apStoneText.text = apStonePlayCount > 0
+                    ? $"(+{apStonePlayCount * _stageRow.CostAP})"
+                    : string.Empty;
+            }
 
-            useApStoneText.text = $"{_apStoneCount.Value}/{HackAndSlashSweep.UsableApStoneCount}";
+            UpdateStartButton();
         }
 
-        private (int, int) GetPlayCount(AvatarState avatarState, StageSheet.Row row)
+        private void UpdateExpView(AvatarState avatarState, StageSheet.Row row, int apPlayCount,
+            int apStonePlayCount)
+        {
+            var earnedExp = GetEarnedExp(avatarState, row, apPlayCount, apStonePlayCount);
+            expText.text = $"+{earnedExp}";
+            expGlow.SetActive(earnedExp > 0);
+        }
+
+        private static bool TryGetRequiredCP(int stageId, out SweepRequiredCPSheet.Row row)
+        {
+            var sheet = Game.Game.instance.TableSheets.SweepRequiredCPSheet;
+            return sheet.TryGetValue(stageId, out row);
+        }
+
+        private static (int, int) GetPlayCount(StageSheet.Row row, int apStoneCount, int ap)
         {
             if (row is null)
             {
@@ -180,17 +293,48 @@ namespace Nekoyume.UI
             }
 
             var actionMaxPoint = States.Instance.GameConfigState.ActionPointMax;
-            var apStonePlayCount = actionMaxPoint / row.CostAP * _apStoneCount.Value;
-            var apPlayCount = avatarState.actionPoint / row.CostAP;
+            var apStonePlayCount = actionMaxPoint / row.CostAP * apStoneCount;
+            var apPlayCount = ap / row.CostAP;
             return (apPlayCount, apStonePlayCount);
         }
 
-        private void Sweep(int apStoneCount, int worldId, StageSheet.Row stageRow)
+        private long GetEarnedExp(AvatarState avatarState, StageSheet.Row row, int apPlayCount,
+            int apStonePlayCount)
+        {
+            var levelSheet = Game.Game.instance.TableSheets.CharacterLevelSheet;
+            var (_, exp) = avatarState.GetLevelAndExp(levelSheet, row.Id,
+                apPlayCount + apStonePlayCount);
+            var earnedExp = exp - avatarState.exp;
+            return earnedExp;
+        }
+
+        private void UpdateStartButton()
+        {
+            if (_apStoneCount.Value == 0 && _ap.Value == 0)
+            {
+                startButton.Interactable = false;
+                return;
+            }
+
+            if (TryGetRequiredCP(_stageRow.Id, out var row))
+            {
+                if (_cp.Value < row.RequiredCP)
+                {
+                    startButton.Interactable = false;
+                    return;
+                }
+            }
+
+            startButton.Interactable = true;
+        }
+
+        private void Sweep(int apStoneCount, int ap, int worldId, StageSheet.Row stageRow)
         {
             var avatarState = States.Instance.CurrentAvatarState;
-            var (apPlayCount, apStonePlayCount) = GetPlayCount(avatarState, stageRow);
-            var sumPlayCount = apPlayCount + apStonePlayCount;
-            if (sumPlayCount <= 0)
+            var (apPlayCount, apStonePlayCount) = GetPlayCount(stageRow, apStoneCount, ap);
+            var totalPlayCount = apPlayCount + apStonePlayCount;
+            var actionPoint = apPlayCount * stageRow.CostAP;
+            if (totalPlayCount <= 0)
             {
                 NotificationSystem.Push(MailType.System,
                     L10nManager.Localize("UI_SWEEP_PLAY_COUNT_ZERO"),
@@ -198,22 +342,40 @@ namespace Nekoyume.UI
                 return;
             }
 
-            CostAP = apPlayCount * stageRow.CostAP;
+            if (!TryGetRequiredCP(stageRow.Id, out var row))
+            {
+                return;
+            }
+
+            if (_cp.Value < row.RequiredCP)
+            {
+                NotificationSystem.Push(MailType.System,
+                    L10nManager.Localize("ERROR_SWEEP_REQUIRED_CP"),
+                    NotificationCell.NotificationType.Notification);
+                return;
+            }
+
             Game.Game.instance.ActionManager.HackAndSlashSweep(
+                costumes,
+                equipments,
                 apStoneCount,
+                actionPoint,
                 worldId,
-                stageRow.Id,
-                CostAP);
+                stageRow.Id);
 
             Analyzer.Instance.Track("Unity/HackAndSlashSweep", new Value
             {
                 ["stageId"] = stageRow.Id,
                 ["apStoneCount"] = apStoneCount,
-                ["playCount"] = sumPlayCount,
+                ["playCount"] = totalPlayCount,
             });
 
             Close();
-            Find<SweepResultPopup>().Show(stageRow, worldId, apPlayCount, apStonePlayCount, _gainedExp);
+
+            var earnedExp = GetEarnedExp(avatarState, stageRow, apPlayCount, apStonePlayCount);
+
+            Find<SweepResultPopup>()
+                .Show(stageRow, worldId, apPlayCount, apStonePlayCount, earnedExp);
         }
     }
 }
