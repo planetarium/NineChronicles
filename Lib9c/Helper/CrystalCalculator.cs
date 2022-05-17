@@ -58,5 +58,32 @@ namespace Nekoyume.Helper
             var extra = crystal.DivRem(100, out _) * multiplierRow.Multiplier;
             return crystal + extra;
         }
+
+        /// <param name="materials"> Key : id of material, Value : count of material </param>
+        public static FungibleAssetValue CalculateMaterialCost(
+            Dictionary<int, int> materials,
+            CrystalMaterialCostSheet crystalMaterialCostsheet)
+        {
+            FungibleAssetValue crystal = 0 * CRYSTAL;
+            foreach (var material in materials)
+            {
+                crystal += CalculateMaterialCost(material.Key, material.Value, crystalMaterialCostsheet);
+            }
+
+            return crystal;
+        }
+
+        public static FungibleAssetValue CalculateMaterialCost(
+            int materialId,
+            int materialCount,
+            CrystalMaterialCostSheet crystalMaterialCostsheet)
+        {
+            if (!crystalMaterialCostsheet.TryGetValue(materialId, out var costRow))
+            {
+                throw new ArgumentException($"This material is not replacable with crystal. id : {materialId}");
+            }
+
+            return costRow.CRYSTAL * materialCount * CRYSTAL;
+        }
     }
 }

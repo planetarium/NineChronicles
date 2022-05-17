@@ -276,11 +276,11 @@ namespace Nekoyume.Action
                         : 0;
                     if (itemCount < requiredCount && payByCrystal)
                     {
-                        if (crystalMaterialSheet.TryGetValue(itemId, out var costRow))
-                        {
-                            costCrystal += (requiredCount - itemCount) * costRow.CRYSTAL * CrystalCalculator.CRYSTAL;
-                            requiredCount = itemCount;
-                        }
+                        costCrystal += CrystalCalculator.CalculateMaterialCost(
+                            itemId,
+                            requiredCount - itemCount,
+                            crystalMaterialSheet);
+                        requiredCount = itemCount;
                     }
 
                     if (requiredCount > 0 && !inventory.RemoveFungibleItem(materialRow.ItemId, context.BlockIndex,
