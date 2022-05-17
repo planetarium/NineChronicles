@@ -8,9 +8,11 @@ namespace Lib9c.Tests.Action
     using Lib9c.Tests.Extensions;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -227,6 +229,69 @@ namespace Lib9c.Tests.Action
                 var expectedSheet = (ISheet)constructor.Invoke(Array.Empty<object>());
                 expectedSheet.Set(sheetsAddressAndValues[address].ToDotnetString());
                 Assert.Equal(sheet, expectedSheet);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void GetCrystalCostState(bool exist)
+        {
+            IAccountStateDelta state = new State();
+            int expectedCount = exist ? 1 : 0;
+            FungibleAssetValue expectedCrystal = exist
+                ? 100 * CrystalCalculator.CRYSTAL
+                : 0 * CrystalCalculator.CRYSTAL;
+            Address address = default;
+            var crystalCostState = new CrystalCostState(address, expectedCrystal);
+            crystalCostState.Count = expectedCount;
+            if (exist)
+            {
+                state = state.SetState(address, crystalCostState.Serialize());
+            }
+
+            CrystalCostState actual = state.GetCrystalCostState(address);
+            Assert.Equal(expectedCount, actual.Count);
+            Assert.Equal(expectedCrystal, actual.CRYSTAL);
+        }
+
+        [Theory]
+        [InlineData(0L, false)]
+        [InlineData(50_400L, false)]
+        [InlineData(100_800L, true)]
+        [InlineData(151_200L, true)]
+        public void GetCrystalCostStates(long blockIndex, bool previousWeeklyExist)
+        {
+            var weeklyIndex = (int)(blockIndex / CrystalCostState.WeeklyIntervalIndex);
+            Address dailyCostAddress =
+                Addresses.GetDailyCrystalCostAddress((int)(blockIndex / CrystalCostState.DailyIntervalIndex));
+            Address weeklyCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex);
+            Address previousCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex - 1);
+            Address beforePreviousCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex - 2);
+            var crystalCostState = new CrystalCostState(default, 100 * CrystalCalculator.CRYSTAL);
+            IAccountStateDelta state = new State()
+                .SetState(dailyCostAddress, crystalCostState.Serialize())
+                .SetState(weeklyCostAddress, crystalCostState.Serialize())
+                .SetState(previousCostAddress, crystalCostState.Serialize())
+                .SetState(beforePreviousCostAddress, crystalCostState.Serialize());
+            var (daily, weekly, previousWeekly, beforePreviousWeekly) =
+                state.GetCrystalCostStates(blockIndex);
+
+            Assert.NotNull(daily);
+            Assert.NotNull(weekly);
+            Assert.Equal(100 * CrystalCalculator.CRYSTAL, daily.CRYSTAL);
+            Assert.Equal(100 * CrystalCalculator.CRYSTAL, weekly.CRYSTAL);
+            if (previousWeeklyExist)
+            {
+                Assert.NotNull(previousWeekly);
+                Assert.NotNull(beforePreviousWeekly);
+                Assert.Equal(100 * CrystalCalculator.CRYSTAL, previousWeekly.CRYSTAL);
+                Assert.Equal(100 * CrystalCalculator.CRYSTAL, beforePreviousWeekly.CRYSTAL);
+            }
+            else
+            {
+                Assert.Null(previousWeekly);
+                Assert.Null(beforePreviousWeekly);
             }
         }
     }
