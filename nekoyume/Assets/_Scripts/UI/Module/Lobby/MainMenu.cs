@@ -1,13 +1,11 @@
 using System;
-using DG.Tweening;
-using UniRx.Triggers;
 using UnityEngine;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.AnimatedGraphics;
 using Nekoyume.UI.Tween;
 
-namespace Nekoyume.UI.Module
+namespace Nekoyume.UI.Module.Lobby
 {
     public enum MenuType
     {

@@ -1203,12 +1203,12 @@ namespace Nekoyume.Game
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
             {
-                menuNames.Add("Shop");
+                menuNames.Add(nameof(Shop));
             }
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
             {
-                menuNames.Add(nameof(RankingBoard));
+                menuNames.Add(nameof(ArenaJoin));
             }
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuMimisbrunnr)

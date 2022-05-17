@@ -107,7 +107,7 @@ namespace Nekoyume.UI
                 default:
                     menuText.text = string.Empty;
                     break;
-                case nameof(RankingBoard):
+                case nameof(ArenaJoin):
                     menuText.text = L10nManager.Localize("UI_MAIN_MENU_RANKING");
                     break;
                 case nameof(Shop):

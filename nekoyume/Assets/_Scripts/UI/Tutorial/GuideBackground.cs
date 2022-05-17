@@ -1,8 +1,7 @@
-using System;
 using System.Collections;
 using Coffee.UISoftMask;
 using DG.Tweening;
-using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Lobby;
 using UnityEngine;
 using UnityEngine.UI;
 
