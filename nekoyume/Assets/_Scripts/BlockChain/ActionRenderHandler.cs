@@ -919,8 +919,7 @@ namespace Nekoyume.BlockChain
                 if (eval.Action.apStoneCount > 0)
                 {
                     var avatarAddress = eval.Action.avatarAddress;
-                    var costAP = Widget.Find<SweepPopup>().CostAP;
-                    LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, costAP);
+                    LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, eval.Action.actionPoint);
                     var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                         r.ItemSubType == ItemSubType.ApStone);
                     LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
