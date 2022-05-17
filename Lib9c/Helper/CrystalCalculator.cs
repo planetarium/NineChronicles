@@ -65,7 +65,7 @@ namespace Nekoyume.Helper
             CrystalMaterialCostSheet crystalMaterialCostsheet)
         {
             FungibleAssetValue crystal = 0 * CRYSTAL;
-            foreach (var material in materials)
+            foreach (var material in materials.OrderBy(pair => pair.Key))
             {
                 crystal += CalculateMaterialCost(material.Key, material.Value, crystalMaterialCostsheet);
             }
