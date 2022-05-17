@@ -20,6 +20,7 @@ namespace Nekoyume.UI
 {
     using Libplanet;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Security.Cryptography;
     using UniRx;
     using Toggle = Module.Toggle;
@@ -377,25 +378,32 @@ namespace Nekoyume.UI
             StartCoroutine(CoCombineNPCAnimation(consumable, requiredBlockIndex, true));
         }
 
-        public static List<(int materialId, int count)> CheckMaterial(
-            List<(HashDigest<SHA256> material, int materialId, int count)> materials)
+        public static Dictionary<int, int> CheckMaterial(Dictionary<int, int> materials)
         {
-            var insufficientList = new List<(int materialId, int count)>();
+            var replacedMaterialMap = new Dictionary<int, int>();
             var inventory = States.Instance.CurrentAvatarState.inventory;
 
-            foreach (var material in materials)
+            foreach (var pair in materials)
             {
-                var itemCount = inventory.TryGetFungibleItems(material.material, out var outFungibleItems)
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
                             ? outFungibleItems.Sum(e => e.count)
                             : 0;
 
-                if (material.count > itemCount)
+                if (count > itemCount)
                 {
-                    insufficientList.Add((material.materialId, material.count - itemCount));
+                    replacedMaterialMap.Add(row.Id, count - itemCount);
                 }
             }
 
-            return insufficientList;
+            return replacedMaterialMap;
         }
 
         private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, long blockIndex, bool isConsumable = false)

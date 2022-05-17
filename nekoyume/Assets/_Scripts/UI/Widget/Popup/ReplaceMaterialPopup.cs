@@ -4,8 +4,10 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Linq;
 using TMPro;
 using UnityEngine;
+using System.Collections.Immutable;
 
 namespace Nekoyume.UI
 {
@@ -17,19 +19,25 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI costText = null;
 
-        public void Show(List<(int materialId, int count)> materials,
+        public void Show(Dictionary<int, int> materials,
             System.Action confirmCallback)
         {
-            for (int i = 0; i < itemViews.Count; ++i)
+            foreach (var view in itemViews)
             {
-                var itemView = itemViews[i];
-                if (i >= materials.Count)
+                view.gameObject.SetActive(false);
+            }
+
+            foreach (var pair in materials)
+            {
+                var itemView = itemViews.FirstOrDefault(x => !x.gameObject.activeSelf);
+                if (itemView == null)
                 {
-                    itemView.gameObject.SetActive(false);
+                    Debug.LogError("ItemView is already full.");
                     continue;
                 }
 
-                var (materialId, count) = materials[i];
+                var materialId = pair.Key;
+                var count = pair.Value;
                 if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(materialId, out var itemRow))
                 {
                     itemView.gameObject.SetActive(false);

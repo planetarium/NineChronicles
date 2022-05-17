@@ -11,9 +11,6 @@ using System;
 using System.Globalization;
 using Nekoyume.State;
 using System.Numerics;
-using Nekoyume.Model.Item;
-using Libplanet;
-using System.Security.Cryptography;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
@@ -32,8 +29,8 @@ namespace Nekoyume.UI
             public int? SubRecipeId;
             public BigInteger CostNCG;
             public int CostAP;
-            public List<(HashDigest<SHA256>, int materialId, int count)> Materials;
-            public List<(int materialId, int count)> ReplacedMaterials;
+            public Dictionary<int, int> Materials;
+            public Dictionary<int, int> ReplacedMaterials;
         }
 
         [Serializable]
@@ -210,8 +207,7 @@ namespace Nekoyume.UI
             int costAP = 0;
             int recipeId = 0;
             int? subRecipeId = null;
-            List<(HashDigest<SHA256> material, int materialId, int count)> materialList
-                = new List<(HashDigest<SHA256> material, int materialId, int count)>();
+            Dictionary<int, int> materialMap = new Dictionary<int, int>();
 
             var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
             var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
@@ -235,8 +231,9 @@ namespace Nekoyume.UI
                 costNCG = equipmentRow.RequiredGold;
                 costAP = equipmentRow.RequiredActionPoint;
                 recipeId = equipmentRow.Id;
-                var baseMaterial = CreateMaterial(equipmentRow.MaterialId, equipmentRow.MaterialCount);
-                materialList.Add(baseMaterial);
+
+                // Add base material
+                materialMap.Add(equipmentRow.MaterialId, equipmentRow.MaterialCount);
 
                 if (_subrecipeIds != null &&
                     _subrecipeIds.Any())
@@ -281,9 +278,10 @@ namespace Nekoyume.UI
 
                     costNCG += subRecipe.RequiredGold;
 
-                    var subMaterials = subRecipe.Materials
-                        .Select(x => CreateMaterial(x.Id, x.Count));
-                    materialList.AddRange(subMaterials);
+                    foreach (var material in subRecipe.Materials)
+                    {
+                        materialMap.Add(material.Id, material.Count);
+                    }
                 }
                 else
                 {
@@ -317,9 +315,10 @@ namespace Nekoyume.UI
                     levelText.enabled = true;
                 }
 
-                var materials = consumableRow.Materials
-                    .Select(x => CreateMaterial(x.Id, x.Count));
-                materialList.AddRange(materials);
+                foreach (var material in consumableRow.Materials)
+                {
+                    materialMap.Add(material.Id, material.Count);
+                }
             }
 
             blockIndexText.text = blockIndex.ToString();
@@ -331,8 +330,8 @@ namespace Nekoyume.UI
                 CostAP = costAP,
                 RecipeId = recipeId,
                 SubRecipeId = subRecipeId,
-                Materials = materialList,
-                ReplacedMaterials = Craft.CheckMaterial(materialList),
+                Materials = materialMap,
+                ReplacedMaterials = Craft.CheckMaterial(materialMap),
             };
             _selectedRecipeInfo = recipeInfo;
 
@@ -506,13 +505,6 @@ namespace Nekoyume.UI
 
             errorMessage = null;
             return true;
-        }
-
-        private (HashDigest<SHA256>, int materialId, int count) CreateMaterial(int id, int count)
-        {
-            var row = Game.Game.instance.TableSheets.MaterialItemSheet[id];
-            var material = ItemFactory.CreateMaterial(row);
-            return (material.FungibleId, id, count);
         }
     }
 }
