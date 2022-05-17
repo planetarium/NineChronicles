@@ -52,14 +52,6 @@ namespace Nekoyume.UI.Module.Arena
 
         private void OnEnable() => UpdatePosition(_currentPosition);
 
-        public override void Initialize()
-        {
-            base.Initialize();
-            _preseason.OnClick += () => Context.OnCellClicked?.Invoke(Index);
-            _season.OnClick += () => Context.OnCellClicked?.Invoke(Index);
-            _championship.OnClick += () => Context.OnCellClicked?.Invoke(Index);
-        }
-
         public override void UpdateContent(ArenaJoinSeasonItemData itemData)
         {
             _currentData = itemData;

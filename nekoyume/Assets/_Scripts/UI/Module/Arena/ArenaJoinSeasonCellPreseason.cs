@@ -20,13 +20,6 @@ namespace Nekoyume.UI.Module.Arena
         [SerializeField]
         private Button _button;
 
-        public event System.Action OnClick = delegate { };
-
-        private void Awake()
-        {
-            _button.onClick.AddListener(() => OnClick.Invoke());
-        }
-
         public void Show(ArenaJoinSeasonItemData itemData, bool selected)
         {
             _name.text = itemData.name;
