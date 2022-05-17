@@ -4,6 +4,7 @@ namespace Lib9c.Tests
     using System.Collections.Generic;
     using Nekoyume.Helper;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
 
@@ -60,6 +61,18 @@ namespace Lib9c.Tests
             Assert.Equal(
                 expected * CrystalCalculator.CRYSTAL,
                 actual);
+        }
+
+        [Theory]
+        [InlineData(2, 1, 200)]
+        [InlineData(1, 2, 50)]
+        public void CalculateCombinationCost(int psCount, int bpsCount, int expected)
+        {
+            var crystal = 100 * CrystalCalculator.CRYSTAL;
+            var ps = new CrystalCostState(default, crystal * psCount);
+            var bps = new CrystalCostState(default, crystal * bpsCount);
+
+            Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateCombinationCost(crystal, ps, bps));
         }
 
         private class CalculateCrystalData : IEnumerable<object[]>

@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Libplanet.Assets;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 
@@ -59,6 +59,22 @@ namespace Nekoyume.Helper
                 crystalMonsterCollectionMultiplierSheet[monsterCollectionLevel];
             var extra = crystal.DivRem(100, out _) * multiplierRow.Multiplier;
             return crystal + extra;
+        }
+
+        public static FungibleAssetValue CalculateCombinationCost(
+            FungibleAssetValue crystal,
+            CrystalCostState prevWeeklyCostState = null,
+            CrystalCostState beforePrevWeeklyCostState = null
+        )
+        {
+            if (!(prevWeeklyCostState is null) && !(beforePrevWeeklyCostState is null))
+            {
+                var multiplier = prevWeeklyCostState.CRYSTAL.RawValue * 100 /
+                                 beforePrevWeeklyCostState.CRYSTAL.RawValue;
+                crystal = crystal.DivRem(100, out _) * multiplier;
+            }
+
+            return crystal;
         }
     }
 }
