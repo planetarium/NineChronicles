@@ -59,20 +59,6 @@ namespace Nekoyume.Helper
             return crystal + extra;
         }
 
-        /// <param name="materials"> Key : id of material, Value : count of material </param>
-        public static FungibleAssetValue CalculateMaterialCost(
-            Dictionary<int, int> materials,
-            CrystalMaterialCostSheet crystalMaterialCostsheet)
-        {
-            FungibleAssetValue crystal = 0 * CRYSTAL;
-            foreach (var material in materials.OrderBy(pair => pair.Key))
-            {
-                crystal += CalculateMaterialCost(material.Key, material.Value, crystalMaterialCostsheet);
-            }
-
-            return crystal;
-        }
-
         public static FungibleAssetValue CalculateMaterialCost(
             int materialId,
             int materialCount,
