@@ -32,7 +32,7 @@ namespace Nekoyume.Action
         public IEnumerable<UpdateSellInfo> updateSellInfos;
         public List<(Guid orderId, ShopErrorType errorType)> errors =
             new List<(Guid orderId, ShopErrorType errorType)>();
-        
+
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
@@ -80,7 +80,7 @@ namespace Nekoyume.Action
             if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
             {
                 avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(addressesHex, 
+                throw new NotEnoughClearedStageLevelException(addressesHex,
                     GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
             sw.Stop();
@@ -89,27 +89,28 @@ namespace Nekoyume.Action
             avatarState.updatedAt = context.BlockIndex;
             avatarState.blockIndex = context.BlockIndex;
 
-            if (!states.TryGetState(digestListAddress, out Dictionary rawList))
-            {
-                throw new FailedLoadStateException($"{addressesHex} failed to load {nameof(OrderDigest)}({digestListAddress}).");
-            }
-
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-            
+
             foreach (var updateSellInfo in updateSellInfos)
             {
+                if (!states.TryGetState(digestListAddress, out Dictionary rawList))
+                {
+                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_FAILED_LOADING_STATE));
+                    continue;
+                }
+
                 if (updateSellInfo.price.Sign < 0)
                 {
                     errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_PRICE));
                     continue;
                 }
-                
+
                 var shopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, updateSellInfo.orderId);
                 var updateSellShopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, updateSellInfo.updateSellOrderId);
                 var updateSellOrderAddress = Order.DeriveAddress(updateSellInfo.updateSellOrderId);
                 var itemAddress = Addresses.GetItemAddress(updateSellInfo.tradableId);
                 var digestList = new OrderDigestListState(rawList);
-                
+
                 // migration method
                 avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress); // Todo
                 avatarState.inventory.ReconfigureFungibleItem(digestList, updateSellInfo.tradableId);
@@ -172,7 +173,7 @@ namespace Nekoyume.Action
                 updateSellShopState.Add(orderDigest, context.BlockIndex);
 
                 digestList.Add(orderDigest);
-                
+
                 states = states
                     .SetState(digestListAddress, digestList.Serialize())
                     .SetState(itemAddress, tradableItem.Serialize())
@@ -181,7 +182,7 @@ namespace Nekoyume.Action
                 sw.Stop();
                 Log.Verbose("{AddressesHex} UpdateSell Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             }
-            
+
             sw.Restart();
             states = states.SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
