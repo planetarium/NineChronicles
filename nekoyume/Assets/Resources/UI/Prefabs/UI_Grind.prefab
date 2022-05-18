@@ -5163,6 +5163,12 @@ MonoBehaviour:
   crystalRewardText: {fileID: 7302351471691852791}
   canvasGroup: {fileID: 1555575497798929212}
   animator: {fileID: 571921049296418333}
+  animationData:
+    crystalAnimationStartRect: {fileID: 0}
+    crystalAnimationTargetRect: {fileID: 0}
+    maximum: 10
+    middle: 5
+    minimum: 1
 --- !u!1 &2332145174559759128
 GameObject:
   m_ObjectHideFlags: 0
@@ -38247,7 +38253,7 @@ PrefabInstance:
     - target: {fileID: 8877169560241246905, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 8877169560241246905, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -38257,7 +38263,7 @@ PrefabInstance:
     - target: {fileID: 8877169560241246905, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 8877169560241246905, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -39909,7 +39915,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
