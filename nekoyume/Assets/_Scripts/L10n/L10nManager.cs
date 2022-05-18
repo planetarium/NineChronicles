@@ -251,6 +251,7 @@ namespace Nekoyume.L10n
                 : text;
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         private static bool TryLocalize(string key, out string text)
         {
             try
