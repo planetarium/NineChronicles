@@ -16,7 +16,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash_sweep3")]
+    /// <summary>
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1017
+    /// </summary>
+    [ActionType("hack_and_slash_sweep4")]
     public class HackAndSlashSweep : GameAction
     {
         public const int UsableApStoneCount = 10;
@@ -127,19 +130,25 @@ namespace Nekoyume.Action
             var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
-                throw new SheetRowColumnException($"{addressesHex}world is not contains in world information: {worldId}");
+                // NOTE: Add new World from WorldSheet
+                worldInformation.AddAndUnlockNewWorld(worldRow, context.BlockIndex, worldSheet);
             }
 
-            if (!world.IsStageCleared)
+            var prevStageId = Math.Max(stageId - 1, 1);
+            worldInformation.TryGetWorldByStageId(prevStageId, out var prevStageWorld);
+
+            if (!prevStageWorld.IsStageCleared)
             {
-                throw new StageClearedException($"{addressesHex}There is no stage cleared in that world (worldId:{worldId})");
+                throw new StageNotClearedException(
+                    $"{addressesHex}There is no stage cleared in that world (worldId:{prevStageWorld.Id})"
+                );
             }
 
-            if (stageId > world.StageClearedId)
+            if (stageId > prevStageWorld.StageClearedId + 1)
             {
                 throw new InvalidStageException(
-                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
-                    $"cleared stage: {world.StageClearedId}"
+                    $"{addressesHex}Aborted as the stage ({prevStageWorld.Id}/{prevStageId}) is not cleared; " +
+                    $"cleared stage: {prevStageWorld.StageClearedId}"
                 );
             }
 

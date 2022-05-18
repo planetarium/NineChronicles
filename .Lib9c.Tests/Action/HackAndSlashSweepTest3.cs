@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class HackAndSlashSweepTest
+    public class HackAndSlashSweepTest3
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -36,7 +36,7 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialState;
         private readonly IRandom _random;
 
-        public HackAndSlashSweepTest()
+        public HackAndSlashSweepTest3()
         {
             _random = new TestRandom();
             _sheets = TableSheetsImporter.ImportSheets();
@@ -115,24 +115,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1, false, true)]
-        [InlineData(1, 1, 1, false, false)]
-        [InlineData(2, 1, 2, false, true)]
-        [InlineData(2, 1, 2, false, false)]
-        [InlineData(2, 2, 51, false, true)]
-        [InlineData(2, 2, 51, false, false)]
-        [InlineData(2, 2, 52, false, true)]
-        [InlineData(2, 2, 52, false, false)]
-        [InlineData(2, 1, 2, true, true)]
-        [InlineData(2, 1, 2, true, false)]
-        [InlineData(2, 2, 51, true, true)]
-        [InlineData(2, 2, 51, true, false)]
-        [InlineData(2, 2, 52, true, true)]
-        [InlineData(2, 2, 52, true, false)]
-        public void Execute(int apStoneCount, int worldId, int stageId, bool challenge, bool backward)
+        [InlineData(1, 1, 1, true)]
+        [InlineData(1, 1, 1, false)]
+        [InlineData(2, 1, 2, true)]
+        [InlineData(2, 1, 2, false)]
+        public void Execute(int apStoneCount, int worldId, int stageId, bool backward)
         {
             var gameConfigState = _initialState.GetGameConfigState();
-
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
@@ -141,8 +130,8 @@ namespace Lib9c.Tests.Action
                 gameConfigState,
                 _rankingMapAddress)
             {
-                worldInformation = new WorldInformation(
-                    0, _initialState.GetSheet<WorldSheet>(), challenge ? stageId - 1 : stageId),
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), stageId),
                 level = 400,
             };
 
@@ -274,7 +263,6 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(1, 999)]
-        [InlineData(2, 50)]
         public void Execute_SheetRowColumnException(int worldId, int stageId)
         {
             var action = new HackAndSlashSweep
@@ -293,17 +281,15 @@ namespace Lib9c.Tests.Action
             }));
         }
 
-        [Theory]
-        [InlineData(1, 50)]
-        [InlineData(2, 51)]
-        public void Execute_StageClearedException(int worldId, int stageId)
+        [Fact]
+        public void Execute_StageClearedException()
         {
             var action = new HackAndSlashSweep
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
-                worldId = worldId,
-                stageId = stageId,
+                worldId = 1,
+                stageId = 50,
             };
 
             Assert.Throws<StageNotClearedException>(() => action.Execute(new ActionContext()
@@ -315,23 +301,21 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 48, 1, 50, true)]
-        [InlineData(1, 48, 1, 50, false)]
-        [InlineData(1, 49, 2, 51, true)]
-        [InlineData(1, 49, 2, 51, false)]
-        public void Execute_InvalidStageException(int clearedWorldId, int clearedStageId, int worldId, int stageId, bool backward)
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_InvalidStageException(bool backward)
         {
             var action = new HackAndSlashSweep
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
-                worldId = worldId,
-                stageId = stageId,
+                worldId = 1,
+                stageId = 50,
             };
             var worldSheet = _initialState.GetSheet<WorldSheet>();
             var worldUnlockSheet = _initialState.GetSheet<WorldUnlockSheet>();
 
-            _avatarState.worldInformation.ClearStage(clearedWorldId, clearedStageId, 1, worldSheet, worldUnlockSheet);
+            _avatarState.worldInformation.ClearStage(1, 2, 1, worldSheet, worldUnlockSheet);
 
             var state = _initialState;
             if (backward)
