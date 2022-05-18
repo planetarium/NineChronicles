@@ -138,7 +138,7 @@ namespace Nekoyume.Action
 
             if (!prevStageWorld.IsStageCleared)
             {
-                throw new StageClearedException(
+                throw new StageNotClearedException(
                     $"{addressesHex}There is no stage cleared in that world (worldId:{prevStageWorld.Id})"
                 );
             }

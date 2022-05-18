@@ -306,7 +306,7 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
             };
 
-            Assert.Throws<StageClearedException>(() => action.Execute(new ActionContext()
+            Assert.Throws<StageNotClearedException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
