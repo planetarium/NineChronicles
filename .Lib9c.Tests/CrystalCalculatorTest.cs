@@ -67,10 +67,10 @@ namespace Lib9c.Tests
         }
 
         [Theory]
-        [InlineData(302000, 1, 100)]
-        [InlineData(302003, 2, 200)]
+        [InlineData(302000, 1, 100, null)]
+        [InlineData(302003, 2, 200, null)]
         [InlineData(306068, 1, 100, typeof(ArgumentException))]
-        public void CalculateMaterialCost(int materialId, int materialCount, BigInteger expected, Type exc = null)
+        public void CalculateMaterialCost(int materialId, int materialCount, BigInteger expected, Type exc)
         {
             if (_crystalMaterialCostSheet.ContainsKey(materialId))
             {
