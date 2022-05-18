@@ -158,6 +158,21 @@ namespace Nekoyume.BlockChain.Policy
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
 
         /// <summary>
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for networks
+        /// with default options, without authorized mining and permissioned mining.
+        /// </summary>
+        public IBlockPolicy<NCAction> GetDefaultPolicy() =>
+            GetPolicy(
+                minimumDifficulty: DifficultyStability,
+                hashAlgorithmTypePolicy: HashAlgorithmTypePolicy.Default,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Default,
+                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Default,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Default,
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Default,
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Default,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Default);
+
+        /// <summary>
         /// Gets a <see cref="BlockPolicy"/> constructed from given parameters.
         /// </summary>
         /// <param name="minimumDifficulty">The minimum difficulty that a <see cref="Block{T}"/>
