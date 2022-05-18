@@ -274,6 +274,7 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(1, 999)]
+        [InlineData(2, 50)]
         public void Execute_SheetRowColumnException(int worldId, int stageId)
         {
             var action = new HackAndSlashSweep
@@ -292,15 +293,17 @@ namespace Lib9c.Tests.Action
             }));
         }
 
-        [Fact]
-        public void Execute_StageClearedException()
+        [Theory]
+        [InlineData(1, 50)]
+        [InlineData(2, 51)]
+        public void Execute_StageClearedException(int worldId, int stageId)
         {
             var action = new HackAndSlashSweep
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
-                worldId = 1,
-                stageId = 50,
+                worldId = worldId,
+                stageId = stageId,
             };
 
             Assert.Throws<StageClearedException>(() => action.Execute(new ActionContext()
