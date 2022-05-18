@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
@@ -33,9 +32,6 @@ namespace Nekoyume.UI.Module
         private StakingBonus stakingBonus;
 
         [SerializeField]
-        private GameObject stakingBonusDisabledObject;
-
-        [SerializeField]
         private List<GrindingItemSlot> itemSlots;
 
         // TODO: It is used when NCG can be obtained through grinding later.
@@ -52,7 +48,7 @@ namespace Nekoyume.UI.Module
         private CanvasGroup canvasGroup;
 
         [SerializeField]
-        private ItemMoveAnimation crystalMoveAnimation;
+        private Animator animator;
 
         private bool _isInitialized;
 
@@ -80,6 +76,8 @@ namespace Nekoyume.UI.Module
         private const int LimitGrindingCount = 10;
 
         public static readonly Vector3 CrystalMovePositionOffset = new Vector3(0.05f, 0.05f);
+        private static readonly int FirstRegister = Animator.StringToHash("FirstRegister");
+        private static readonly int StartGrind = Animator.StringToHash("StartGrind");
 
         private bool CanGrind => _selectedItemsForGrind.Any() &&
                                  _selectedItemsForGrind.All(item => !item.Equipped.Value);
@@ -165,6 +163,11 @@ namespace Nekoyume.UI.Module
                 item.Value.GrindingCount.SetValueAndForceNotify(_selectedItemsForGrind.Count);
                 itemSlots[item.Index].UpdateSlot(item.Value);
                 item.Value.GrindingCountEnabled.OnNext(true);
+
+                if (_selectedItemsForGrind.Count == 1 && animator)
+                {
+                    animator.SetTrigger(FirstRegister);
+                }
             }).AddTo(_disposables);
             _selectedItemsForGrind.ObserveRemove().Subscribe(item =>
             {
@@ -388,6 +391,10 @@ namespace Nekoyume.UI.Module
             ActionManager.Instance.Grinding(equipments, chargeAp).Subscribe();
             _selectedItemsForGrind.Clear();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
+            if (animator)
+            {
+                animator.SetTrigger(StartGrind);
+            }
         }
 
         private IEnumerator CoCombineNPCAnimation()

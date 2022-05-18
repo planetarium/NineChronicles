@@ -769,7 +769,6 @@ MonoBehaviour:
   tutorialActions: 
   grindModule: {fileID: 5421150112388478472}
   closeButton: {fileID: 2124392581732449511}
-  animator: {fileID: 571921049296418333}
 --- !u!1 &576208129950775581
 GameObject:
   m_ObjectHideFlags: 0
@@ -5148,7 +5147,6 @@ MonoBehaviour:
   grindInventory: {fileID: 5670043970988750046}
   grindButton: {fileID: 5830942400651351240}
   stakingBonus: {fileID: 2618838369185831403}
-  stakingBonusDisabledObject: {fileID: 7904847205073885537}
   itemSlots:
   - {fileID: 8261853630317377415}
   - {fileID: 2183732147114985513}
@@ -5164,8 +5162,7 @@ MonoBehaviour:
   ncgRewardText: {fileID: 2563625234340738077}
   crystalRewardText: {fileID: 7302351471691852791}
   canvasGroup: {fileID: 1555575497798929212}
-  crystalMoveAnimation: {fileID: 2540273645456425560, guid: e9092b151ff8d41db99e69923790db6d,
-    type: 3}
+  animator: {fileID: 571921049296418333}
 --- !u!1 &2332145174559759128
 GameObject:
   m_ObjectHideFlags: 0
