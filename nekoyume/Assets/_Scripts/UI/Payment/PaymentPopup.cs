@@ -12,57 +12,19 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI costText;
 
-        public void Show(
-            FungibleAssetValue balance,
-            BigInteger cost,
-            string usageMessage,
-            System.Action onPaymentSucceed,
-            System.Action onAttract,
-            bool passToAttraction = true,
-            bool useDefaultPaymentFormat = true)
-        {
-            // gold
-            if (balance.Currency.Equals(
-                Game.Game.instance.States.GoldBalanceState.Gold.Currency))
-            {
-                var ncgText = L10nManager.Localize("UI_NCG");
-                var enoughMessage = useDefaultPaymentFormat
-                    ? L10nManager.Localize(
-                        "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
-                        cost,
-                        ncgText,
-                        usageMessage)
-                    : usageMessage;
-                var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
-                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed, onAttract, passToAttraction);
-            }
-            // crystal
-            else if (balance.Currency.Equals(CrystalCalculator.CRYSTAL))
-            {
-                var crystalText = L10nManager.Localize("UI_CRYSTAL");
-                var enoughMessage = useDefaultPaymentFormat
-                    ? L10nManager.Localize(
-                        "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
-                        cost,
-                        crystalText,
-                        usageMessage)
-                    : usageMessage;
-                var insufficientMessage = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                ShowInternal(balance, cost, enoughMessage, insufficientMessage, onPaymentSucceed, onAttract, passToAttraction);
-            }
-        }
+        public const string ConfirmPaymentCurrencyFormat = "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT";
 
-        private void ShowInternal(
+        public void Show(
             FungibleAssetValue asset,
             BigInteger cost,
             string enoughMessage,
             string insufficientMessage,
             System.Action onPaymentSucceed,
-            System.Action onAttract,
-            bool passToAttraction)
+            System.Action onAttract)
         {
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
             var enoughBalance = asset.MajorUnit >= cost;
+            costText.text = cost.ToString();
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
             CloseCallback = result =>
@@ -79,15 +41,7 @@ namespace Nekoyume.UI
                     }
                 }
             };
-            costText.text = cost.ToString();
-            if (passToAttraction && !enoughBalance)
-            {
-                ShowAttract(cost, popupTitle, insufficientMessage, onAttract);
-            }
-            else
-            {
-                Show(popupTitle, enoughMessage, yes, no, false);
-            }
+            Show(popupTitle, enoughMessage, yes, no, false);
         }
 
         public void ShowAttract(

@@ -251,12 +251,17 @@ namespace Nekoyume.UI
         private void ShowWorldUnlockPopup(int worldId)
         {
             var cost = CrystalCalculator.CalculateWorldUnlockCost(new[] {worldId},
-                Game.TableSheets.Instance.WorldUnlockSheet);
-
+                    Game.TableSheets.Instance.WorldUnlockSheet)
+                .MajorUnit;
+            var balance = States.Instance.CrystalBalance;
+            var usageMessage = L10nManager.Localize(
+                "UI_UNLOCK_WORLD_FORMAT",
+                L10nManager.LocalizeWorldName(worldId));
             Find<PaymentPopup>().Show(
-                States.Instance.CrystalBalance,
-                cost.MajorUnit,
-                L10nManager.Localize("UI_UNLOCK_WORLD_FORMAT", L10nManager.LocalizeWorldName(worldId)),
+                balance,
+                cost,
+                balance.GetPaymentFormatText(usageMessage, cost),
+                L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
                 () =>
                 {
                     Find<UnlockWorldLoadingScreen>().Show();
@@ -283,15 +288,15 @@ namespace Nekoyume.UI
                         tableSheets.WorldUnlockSheet).MajorUnit;
                     paymentPopup.Show(States.Instance.CrystalBalance,
                         cost,
-                        L10nManager.Localize("CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
+                        L10nManager.Localize(
+                            "CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
+                        L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
                         () =>
                         {
                             Find<UnlockWorldLoadingScreen>().Show();
                             ActionManager.Instance.UnlockWorld(worldIdListForUnlock).Subscribe();
                         },
-                        OnAttractInPaymentPopup,
-                        false,
-                        false);
+                        OnAttractInPaymentPopup);
                     return true;
                 }
             }
