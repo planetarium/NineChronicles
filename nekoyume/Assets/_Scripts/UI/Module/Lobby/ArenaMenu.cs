@@ -31,7 +31,8 @@ namespace Nekoyume.UI.Module.Lobby
             _progressBar.ResumeOrShow();
             _ticketCount.text = string.Empty;
             RxProps.ArenaInfo.SubscribeWithUpdateOnce(info =>
-                    _ticketCount.text = info.DailyChallengeCount.ToString())
+                    _ticketCount.text = info?.DailyChallengeCount.ToString()
+                                        ?? string.Empty)
                 .AddTo(_disposables);
         }
 

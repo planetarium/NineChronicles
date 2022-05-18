@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.UI.Module.Arena;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
@@ -35,12 +36,20 @@ namespace Nekoyume.UI
         [SerializeField]
         private ArenaJoinBottomButtons _buttons;
 
+        [SerializeField]
+        private Button _backButton;
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        
+
         protected override void Awake()
         {
             base.Awake();
-            
+
+            _backButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            }).AddTo(gameObject);
             CloseWidget = () =>
             {
                 Close(true);
@@ -51,6 +60,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             InitializeScrolls(_disposables);
+            UpdateInfo();
             base.Show(ignoreShowAnimation);
         }
 
@@ -62,16 +72,14 @@ namespace Nekoyume.UI
 
         private IList<ArenaJoinSeasonItemData> GetScrollData()
         {
-            IList<ArenaJoinSeasonItemData> scrollData = null;
 #if UNITY_EDITOR
-            scrollData = _useSo && _so
-                ? _so.ScrollData
-                : GetScrollDataFromChain();
-#else
-            scrollData = GetScrollDataFromChain();
+            if (_useSo && _so)
+            {
+                return _so.ScrollData;
+            }
 #endif
 
-            return scrollData;
+            return new List<ArenaJoinSeasonItemData>();
         }
 
         private void InitializeScrolls(IList<IDisposable> disposables)
@@ -83,23 +91,24 @@ namespace Nekoyume.UI
             _barScroll.SetData(
                 GetBarScrollData(barIndexOffset),
                 ReverseScrollIndex(selectedIndex));
-            
+
             // NOTE: Scroll events should subscribe after set data. 
             _scroll.OnSelectionChanged
                 .Select(ReverseScrollIndex)
-                .Subscribe(index =>
-                    _barScroll.SelectCell(index, false))
+                .Subscribe(reversedIndex =>
+                {
+                    _barScroll.SelectCell(reversedIndex, false);
+                    UpdateInfo();
+                })
                 .AddTo(disposables);
             _barScroll.OnSelectionChanged
                 .Select(ReverseScrollIndex)
-                .Subscribe(index =>
-                    _scroll.SelectCell(index, false))
+                .Subscribe(reversedIndex =>
+                {
+                    _scroll.SelectCell(reversedIndex, false);
+                    UpdateInfo();
+                })
                 .AddTo(disposables);
-        }
-
-        private IList<ArenaJoinSeasonItemData> GetScrollDataFromChain()
-        {
-            return new List<ArenaJoinSeasonItemData>();
         }
 
         private IList<ArenaJoinSeasonBarItemData> GetBarScrollData(
@@ -116,5 +125,50 @@ namespace Nekoyume.UI
 
         private int ReverseScrollIndex(int scrollIndex) =>
             _barPointCount - scrollIndex - 1;
+
+        private void UpdateInfo()
+        {
+            _info.SetData(
+                _scroll.SelectedItemData.name,
+                GetMedalId(),
+                GetConditions(),
+                GetRewardType());
+        }
+
+        private int GetMedalId()
+        {
+#if UNITY_EDITOR
+            if (_useSo && _so)
+            {
+                return _so.MedalId;
+            }
+#endif
+
+            return 700000;
+        }
+
+        private (int max, int current) GetConditions()
+        {
+#if UNITY_EDITOR
+            if (_useSo && _so)
+            {
+                return _so.Conditions;
+            }
+#endif
+
+            return (100, 0);
+        }
+
+        private ArenaJoinSeasonInfo.RewardType GetRewardType()
+        {
+#if UNITY_EDITOR
+            if (_useSo && _so)
+            {
+                return _so.RewardType;
+            }
+#endif
+
+            return ArenaJoinSeasonInfo.RewardType.Medal;
+        }
     }
 }
