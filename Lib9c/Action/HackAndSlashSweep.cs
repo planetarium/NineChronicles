@@ -130,7 +130,8 @@ namespace Nekoyume.Action
             var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
-                throw new SheetRowColumnException($"{addressesHex}world is not contains in world information: {worldId}");
+                // NOTE: Add new World from WorldSheet
+                worldInformation.AddAndUnlockNewWorld(worldRow, context.BlockIndex, worldSheet);
             }
 
             var prevStageId = Math.Max(stageId - 1, 1);
