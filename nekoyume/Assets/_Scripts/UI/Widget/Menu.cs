@@ -244,7 +244,6 @@ namespace Nekoyume.UI
             Close();
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             AudioController.PlayClick();
         }
 

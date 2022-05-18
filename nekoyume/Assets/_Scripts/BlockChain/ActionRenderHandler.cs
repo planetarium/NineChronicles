@@ -120,6 +120,7 @@ namespace Nekoyume.BlockChain
 
             // Crystal Unlocks
             UnlockEquipmentRecipe();
+            UnlockWorld();
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
 #endif
@@ -267,6 +268,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(e => ResponseUnlockEquipmentRecipeAsync(e).Forget())
+                .AddTo(_disposables);
+        }
+
+        private void UnlockWorld()
+        {
+            _actionRenderer.EveryRender<UnlockWorld>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnlockWorld)
                 .AddTo(_disposables);
         }
 
@@ -1360,6 +1370,7 @@ namespace Nekoyume.BlockChain
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
         {
             var sharedModel = Craft.SharedModel;
+            var recipeIds = eval.Action.RecipeIds;
             if (!(eval.Exception is null))
             {
                 foreach (var id in eval.Action.RecipeIds)
@@ -1372,18 +1383,12 @@ namespace Nekoyume.BlockChain
             }
 
             var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
-            var cost = CrystalCalculator.CalculateRecipeUnlockCost(eval.Action.RecipeIds, sheet);
+            var cost = CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, sheet);
             LocalLayerModifier.ModifyAgentCrystal(
                 States.Instance.AgentState.address, cost.MajorUnit);
 
             await UpdateCurrentAvatarStateAsync(eval);
             await UpdateAgentStateAsync(eval);
-
-            var unlockedRecipeIdsAddress = eval.Action.AvatarAddress.Derive("recipe_ids");
-            var rawIds = Game.Game.instance.Agent.GetState(unlockedRecipeIdsAddress);
-            var recipeIds = rawIds != null ?
-                ((List)rawIds).ToList(Model.State.StateExtensions.ToInteger) :
-                new List<int>() { 1 };
 
             foreach (var id in recipeIds)
             {
@@ -1391,6 +1396,25 @@ namespace Nekoyume.BlockChain
             }
             sharedModel.SetUnlockedRecipes(recipeIds);
             sharedModel.UpdateUnlockableRecipes();
+        }
+
+        private void ResponseUnlockWorld(ActionBase.ActionEvaluation<UnlockWorld> eval)
+        {
+            Widget.Find<UnlockWorldLoadingScreen>().Close();
+
+            if (!(eval.Exception is null))
+            {
+                Debug.LogError($"unlock world exc : {eval.Exception.InnerException}");
+                return;
+                // Exception handling...
+            }
+
+            var worldMap = Widget.Find<WorldMap>();
+            worldMap.SharedViewModel.UnlockedWorldIds.AddRange(eval.Action.WorldIds);
+            worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval).Forget();
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

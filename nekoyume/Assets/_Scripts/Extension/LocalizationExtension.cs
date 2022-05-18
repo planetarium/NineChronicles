@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
+using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -538,6 +540,37 @@ namespace Nekoyume
         {
             var subTypeText = GetLocalizedItemSubTypeText(itemBase.ItemSubType);
             return subTypeText;
+        }
+
+        public static string GetPaymentFormatText(this FungibleAssetValue asset,
+            string usageMessage,
+            BigInteger cost)
+        {
+            // NCG
+            if (asset.Currency.Equals(
+                    Game.Game.instance.States.GoldBalanceState.Gold.Currency))
+            {
+                var ncgText = L10nManager.Localize("UI_NCG");
+                return L10nManager.Localize(
+                    "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
+                    cost,
+                    ncgText,
+                    usageMessage);
+            }
+
+            // CRYSTAL
+            if (asset.Currency.Equals(CrystalCalculator.CRYSTAL))
+            {
+                var crystalText = L10nManager.Localize("UI_CRYSTAL");
+                return L10nManager.Localize(
+                    "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
+                    cost,
+                    crystalText,
+                    usageMessage);
+            }
+
+            Debug.LogWarning($"This Currency is not defined in 9c! {asset.Currency.ToString()}");
+            return string.Empty;
         }
     }
 }
