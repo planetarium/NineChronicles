@@ -1,15 +1,10 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Nekoyume.State.Subjects;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    using UniRx;
-
     public class StakingBonus : MonoBehaviour
     {
         [SerializeField]
@@ -20,6 +15,12 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Button button;
+
+        [SerializeField]
+        private GameObject enableObject;
+
+        [SerializeField]
+        private GameObject disableObject;
 
         private Func<int, string> _bonusTextFunc;
 
@@ -35,6 +36,9 @@ namespace Nekoyume.UI.Module
 
         public void OnUpdateStakingLevel(int level)
         {
+            var bonusEnabled = level > 0;
+            enableObject.SetActive(bonusEnabled);
+            disableObject.SetActive(!bonusEnabled);
             stakingLevelText.text = $"Staking Lv.{level}";
             stakingBonusText.text = _bonusTextFunc?.Invoke(level);
         }
