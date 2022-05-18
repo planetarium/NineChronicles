@@ -284,7 +284,6 @@ namespace Nekoyume.UI
                     orderDigest.Price,
                     orderDigest.ItemCount
                 );
-                itemBase.GetLocalizedName();
 
                 updateSellInfos.Add(updateSellInfo);
                 oneLineSystemInfos.Add((itemBase.GetLocalizedName(), orderDigest.ItemCount));
