@@ -16,6 +16,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    /// <summary>
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1017
+    /// </summary>
     [ActionType("hack_and_slash_sweep4")]
     public class HackAndSlashSweep : GameAction
     {
