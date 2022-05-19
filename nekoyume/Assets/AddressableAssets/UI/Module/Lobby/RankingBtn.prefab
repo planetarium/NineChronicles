@@ -1854,25 +1854,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2246401602266306784, guid: a96d732584e7f8840a5610703f7683a7,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2741569636385841384, guid: a96d732584e7f8840a5610703f7683a7,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4389808634366690083, guid: a96d732584e7f8840a5610703f7683a7,
         type: 3}
       propertyPath: m_Name
-      value: ArenaSeasonProgressBar
-      objectReference: {fileID: 0}
-    - target: {fileID: 5396236106566504667, guid: a96d732584e7f8840a5610703f7683a7,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
+      value: ArenaTicketProgressBar
       objectReference: {fileID: 0}
     - target: {fileID: 8604577289874423480, guid: a96d732584e7f8840a5610703f7683a7,
         type: 3}

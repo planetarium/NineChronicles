@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Module.Arena
 {
     using UniRx;
 
-    public class ArenaSeasonProgressBar : MonoBehaviour
+    public class ArenaTicketProgressBar : MonoBehaviour
     {
         [SerializeField]
         private Slider _slider;
@@ -29,8 +29,8 @@ namespace Nekoyume.UI.Module.Arena
             _sliderText.text = string.Empty;
             _paused = false;
             _disposables.DisposeAllAndClear();
-            UpdateSliderAndText(RxProps.ArenaProgress.Value);
-            RxProps.ArenaProgress
+            UpdateSliderAndText(RxProps.ArenaTicketProgress.Value);
+            RxProps.ArenaTicketProgress
                 .Where(_ => !_paused)
                 .Subscribe(UpdateSliderAndText)
                 .AddTo(_disposables);

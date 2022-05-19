@@ -21,6 +21,12 @@ namespace Nekoyume.State
         public static IReadOnlyReactiveProperty<(long bedinning, long end, long progress)>
             ArenaProgress => _arenaProgress;
 
+        private static readonly ReactiveProperty<(long bedinning, long end, long progress)>
+            _arenaTicketProgress = new ReactiveProperty<(long bedinning, long end, long progress)>();
+
+        public static IReadOnlyReactiveProperty<(long bedinning, long end, long progress)>
+            ArenaTicketProgress => _arenaTicketProgress;
+
         private static readonly AsyncUpdatableRxProp<ArenaInfo>
             _arenaInfo = new AsyncUpdatableRxProp<ArenaInfo>(UpdateArenaTicketCountAsync);
 
@@ -56,25 +62,45 @@ namespace Nekoyume.State
 
         private static void OnBlockIndex(long blockIndex)
         {
-            var cas = _states.CurrentAvatarState;
             var gcs = _states.GameConfigState;
-            UpdateArenaProgress(blockIndex, cas, gcs);
+            var was = _states.WeeklyArenaState;
+            UpdateArenaProgress(blockIndex, gcs, was);
+            UpdateArenaTicketProgress(blockIndex, gcs, was);
         }
 
         private static void UpdateArenaProgress(
             long blockIndex,
-            AvatarState cas,
-            GameConfigState gcs)
+            GameConfigState gcs,
+            WeeklyArenaState was)
         {
-            if (cas is null || gcs is null)
+            if (gcs is null || was is null)
             {
                 return;
             }
 
-            var beginningBlockIndex = cas.dailyRewardReceivedIndex;
-            var endBlockIndex = beginningBlockIndex + gcs.DailyArenaInterval;
+            var beginningBlockIndex = blockIndex - blockIndex % gcs.WeeklyArenaInterval;
+            var endBlockIndex = beginningBlockIndex + gcs.WeeklyArenaInterval;
             var progressBlockIndex = blockIndex - beginningBlockIndex;
             _arenaProgress.SetValueAndForceNotify((
+                beginningBlockIndex,
+                endBlockIndex,
+                progressBlockIndex));
+        }
+
+        private static void UpdateArenaTicketProgress(
+            long blockIndex,
+            GameConfigState gcs,
+            WeeklyArenaState was)
+        {
+            if (gcs is null || was is null)
+            {
+                return;
+            }
+
+            var beginningBlockIndex = was.ResetIndex;
+            var endBlockIndex = beginningBlockIndex + gcs.DailyArenaInterval;
+            var progressBlockIndex = blockIndex - beginningBlockIndex;
+            _arenaTicketProgress.SetValueAndForceNotify((
                 beginningBlockIndex,
                 endBlockIndex,
                 progressBlockIndex));

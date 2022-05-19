@@ -12,7 +12,7 @@ namespace Nekoyume.UI.Module.Lobby
     public class ArenaMenu : MainMenu
     {
         [SerializeField]
-        private ArenaSeasonProgressBar _progressBar;
+        private ArenaTicketProgressBar _progressBar;
 
         [SerializeField]
         private TextMeshProUGUI _ticketCount;

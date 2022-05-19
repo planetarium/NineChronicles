@@ -31,10 +31,9 @@ namespace Nekoyume.State
 
         public IObservable<TValue> UpdateAsObservable(bool forceNotify)
         {
-            var task = _updateAsyncFunc(Value);
-            var observe = task.ToObservable();
-            observe.First().Subscribe(t => SetValue(t, forceNotify));
-            return observe;
+            var observable = _updateAsyncFunc(Value).ToObservable();
+            observable.First().Subscribe(t => SetValue(t, forceNotify));
+            return observable;
         }
 
         public IDisposable SubscribeWithUpdateOnce(Action<TValue> onNext)
