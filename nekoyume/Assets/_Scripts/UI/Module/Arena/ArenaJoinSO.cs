@@ -16,6 +16,24 @@ namespace Nekoyume.UI.Module.Arena
 
         public IList<ArenaJoinSeasonItemData> ScrollData => _scrollData;
 
+        [SerializeField]
+        private int _medalId;
+
+        public int MedalId => _medalId;
+        
+        [SerializeField]
+        private int _conditionMax;
+
+        [SerializeField]
+        private int _conditionCurrent;
+
+        public (int max, int current) Conditions => (_conditionMax, _conditionCurrent);
+
+        [SerializeField]
+        private ArenaJoinSeasonInfo.RewardType _rewardType;
+
+        public ArenaJoinSeasonInfo.RewardType RewardType => _rewardType;
+
         public ArenaJoinSO()
         {
             _scrollData = new List<ArenaJoinSeasonItemData>
@@ -41,6 +59,11 @@ namespace Nekoyume.UI.Module.Arena
                     name = "Championship #1"
                 },
             };
+
+            _medalId = 700000;
+            _conditionMax = 100;
+            _conditionCurrent = 0;
+            _rewardType = ArenaJoinSeasonInfo.RewardType.Medal;
         }
     }
 }

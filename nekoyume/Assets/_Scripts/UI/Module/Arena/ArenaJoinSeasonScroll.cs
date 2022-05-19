@@ -19,19 +19,24 @@ namespace Nekoyume.UI.Module.Arena
 
         protected override GameObject CellPrefab => _cellPrefab;
 
+        private IList<ArenaJoinSeasonItemData> _data;
+
+        public ArenaJoinSeasonItemData SelectedItemData => _data[Context.selectedIndex];
+
         private readonly Subject<int> _onSelectionChanged = new Subject<int>();
         public IObservable<int> OnSelectionChanged => _onSelectionChanged;
 
         public void SetData(IList<ArenaJoinSeasonItemData> data, int? index = null)
         {
-            UpdateContents(data);
-            _scroller.SetTotalCount(data.Count);
+            _data = data;
+            UpdateContents(_data);
+            _scroller.SetTotalCount(_data.Count);
 
             if (index.HasValue)
             {
-                if (index.Value >= data.Count)
+                if (index.Value >= _data.Count)
                 {
-                    Debug.LogError($"Index out of range: {index.Value} >= {data.Count}");
+                    Debug.LogError($"Index out of range: {index.Value} >= {_data.Count}");
                     return;
                 }
 

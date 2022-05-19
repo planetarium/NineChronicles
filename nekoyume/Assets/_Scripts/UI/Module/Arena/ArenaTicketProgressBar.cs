@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.State;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,7 @@ namespace Nekoyume.UI.Module.Arena
 {
     using UniRx;
 
-    public class ArenaSeasonProgressBar : MonoBehaviour
+    public class ArenaTicketProgressBar : MonoBehaviour
     {
         [SerializeField]
         private Slider _slider;
@@ -22,13 +23,17 @@ namespace Nekoyume.UI.Module.Arena
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public void Show(IObservable<(long beginning, long end, long progress)> observable)
+        public void Show()
         {
             _slider.normalizedValue = 0;
             _sliderText.text = string.Empty;
             _paused = false;
             _disposables.DisposeAllAndClear();
-            observable.Where(_ => !_paused).Subscribe(UpdateSliderAndText).AddTo(_disposables);
+            UpdateSliderAndText(RxProps.ArenaTicketProgress.Value);
+            RxProps.ArenaTicketProgress
+                .Where(_ => !_paused)
+                .Subscribe(UpdateSliderAndText)
+                .AddTo(_disposables);
             gameObject.SetActive(true);
         }
 
@@ -42,7 +47,7 @@ namespace Nekoyume.UI.Module.Arena
 
         public void Resume() => _paused = false;
 
-        public void ResumeOrShow(IObservable<(long beginning, long end, long progress)> observable)
+        public void ResumeOrShow()
         {
             if (_paused)
             {
@@ -50,7 +55,7 @@ namespace Nekoyume.UI.Module.Arena
                 return;
             }
 
-            Show(observable);
+            Show();
         }
 
         private void UpdateSliderAndText((long beginning, long end, long progress) tuple)
