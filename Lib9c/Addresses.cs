@@ -1,6 +1,8 @@
 using System;
+using System.Globalization;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume
@@ -30,5 +32,15 @@ namespace Nekoyume
         public static Address GetSheetAddress(string sheetName) => TableSheet.Derive(sheetName);
 
         public static Address GetItemAddress(Guid itemId) => Blacksmith.Derive(itemId.ToString());
+
+        public static Address GetDailyCrystalCostAddress(int index)
+        {
+            return MaterialCost.Derive($"daily_{index.ToString(CultureInfo.InvariantCulture)}");
+        }
+
+        public static Address GetWeeklyCrystalCostAddress(int index)
+        {
+            return MaterialCost.Derive($"weekly_{index.ToString(CultureInfo.InvariantCulture)}");
+        }
     }
 }
