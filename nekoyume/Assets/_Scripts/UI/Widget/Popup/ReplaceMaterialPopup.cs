@@ -54,8 +54,13 @@ namespace Nekoyume.UI
                 itemView.gameObject.SetActive(true);
             }
 
-            var cost = CrystalCalculator.CalculateMaterialCost(materials,
-                Game.Game.instance.TableSheets.CrystalMaterialCostSheet).MajorUnit;
+            BigInteger cost = 0;
+            foreach (var pair in materials)
+            {
+                cost += CrystalCalculator.CalculateMaterialCost(
+                    pair.Key, pair.Value, Game.Game.instance.TableSheets.CrystalMaterialCostSheet).MajorUnit;
+            }
+
             costText.text = cost.ToString();
 
             var currencyText = L10nManager.Localize("UI_CRYSTAL");

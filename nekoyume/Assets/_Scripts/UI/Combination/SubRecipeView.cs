@@ -367,9 +367,13 @@ namespace Nekoyume.UI
                     CostType.NCG,
                     (int)_selectedRecipeInfo.CostNCG);
                 var sheet = Game.Game.instance.TableSheets.CrystalMaterialCostSheet;
+                
+                var crystalCost = 0 * CrystalCalculator.CRYSTAL;
+                foreach (var pair in _selectedRecipeInfo.ReplacedMaterials)
+                {
+                    crystalCost += CrystalCalculator.CalculateMaterialCost(pair.Key, pair.Value, sheet);
+                }
 
-                var crystalCost = CrystalCalculator.CalculateMaterialCost(
-                    _selectedRecipeInfo.ReplacedMaterials, sheet);
                 var costCrystal = new ConditionalCostButton.CostParam(
                     CostType.Crystal,
                     (int) crystalCost.MajorUnit);
