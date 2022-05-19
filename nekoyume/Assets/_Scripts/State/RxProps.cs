@@ -114,6 +114,8 @@ namespace Nekoyume.State
                 return previous;
             }
 
+            _arenaInfoUpdatedBlockIndex = _agent.BlockIndex;
+
             var currentAddress = States.Instance.CurrentAvatarState?.address;
             if (!currentAddress.HasValue)
             {
@@ -129,7 +131,6 @@ namespace Nekoyume.State
                 return null;
             }
 
-            _arenaInfoUpdatedBlockIndex = _agent.BlockIndex;
             return new ArenaInfo(dictionary);
         }
     }
