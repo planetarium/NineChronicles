@@ -266,6 +266,7 @@ namespace Nekoyume.UI
 
                 return;
             }
+            view.SetLoading(orderDigests);
 
             var updateSellInfos = new List<UpdateSellInfo>();
             var oneLineSystemInfos = new List<(string name, int count)>();

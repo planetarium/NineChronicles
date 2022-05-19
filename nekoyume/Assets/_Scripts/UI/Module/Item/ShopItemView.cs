@@ -38,6 +38,7 @@ namespace Nekoyume.UI.Module
             baseItemView.TradableObject.SetActive(false);
             baseItemView.ElementalDisableObject.SetActive(false);
             baseItemView.EquippedObject.SetActive(false);
+            baseItemView.LoadingObject.SetActive(false);
 
             baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(model.ItemBase);
 
@@ -78,6 +79,7 @@ namespace Nekoyume.UI.Module
 
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
             model.Expired.Subscribe(b => baseItemView.ExpiredObject.SetActive(b)).AddTo(_disposables);
+            model.Loading.Subscribe(b => baseItemView.LoadingObject.SetActive(b)).AddTo(_disposables);
             model.View = GetComponent<RectTransform>();
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)

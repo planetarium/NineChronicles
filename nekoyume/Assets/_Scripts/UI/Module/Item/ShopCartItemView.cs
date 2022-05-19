@@ -42,6 +42,7 @@ namespace Nekoyume.UI.Module
             baseItemView.SelectObject.SetActive(false);
             baseItemView.ExpiredObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
+            baseItemView.LoadingObject.SetActive(false);
 
             baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(model.ItemBase);
 

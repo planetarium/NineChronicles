@@ -41,6 +41,7 @@ namespace Nekoyume.UI.Module
             baseItemView.FocusObject.SetActive(false);
             baseItemView.TradableObject.SetActive(false);
             baseItemView.NotificationObject.SetActive(false);
+            baseItemView.LoadingObject.SetActive(false);
 
             baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(model.ItemBase);
 

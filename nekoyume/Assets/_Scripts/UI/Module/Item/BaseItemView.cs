@@ -9,6 +9,7 @@ using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume
@@ -100,6 +101,9 @@ namespace Nekoyume
         private GameObject shadowObject;
 
         [SerializeField]
+        private GameObject loadingObject;
+
+        [SerializeField]
         private ParticleSystem itemGradeParticle;
 
         public GameObject Container => container;
@@ -129,6 +133,7 @@ namespace Nekoyume
         public GameObject SelectMaterialItemObject => selectMaterialItemObject;
         public GameObject LockObject => lockObject;
         public GameObject ShadowObject => shadowObject;
+        public GameObject LoadingObject => loadingObject;
         public ParticleSystem ItemGradeParticle => itemGradeParticle;
 
         private ItemSheet.Row GetRow(ItemBase itemBase)
