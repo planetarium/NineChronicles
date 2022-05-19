@@ -127,6 +127,7 @@ GameObject:
   - component: {fileID: 168385130769938494}
   - component: {fileID: 615477411575912437}
   - component: {fileID: 4095404920305210632}
+  - component: {fileID: 2906453557495282315}
   m_Layer: 5
   m_Name: Grinding_ItemSlot
   m_TagString: Untagged
@@ -251,6 +252,26 @@ MonoBehaviour:
   removeButton: {fileID: 615477411575912437}
   itemImage: {fileID: 4707952643364775697}
   selectedSlotObject: {fileID: 350046457510957919}
+  animator: {fileID: 2906453557495282315}
+--- !u!95 &2906453557495282315
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5037349739069349168}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 04d9646e15853684caa30ad9603781f1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6571052060604488924
 GameObject:
   m_ObjectHideFlags: 0

@@ -111,8 +111,6 @@ namespace Nekoyume.UI.Scroller
 
         private void OpenEveryAvailableRecipes()
         {
-            var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPES_FORMAT", _unlockableRecipeIds.Count);
-
             System.Action onAttract = () =>
             {
                 Widget.Find<Craft>().Close(true);
@@ -121,10 +119,15 @@ namespace Nekoyume.UI.Scroller
 
             if (States.Instance.CrystalBalance.MajorUnit >= _openCost)
             {
+                var usageMessage = L10nManager.Localize("UI_UNLOCK_RECIPES_FORMAT", _unlockableRecipeIds.Count);
+                var balance = States.Instance.CrystalBalance;
+
                 Widget.Find<PaymentPopup>().Show(
-                    States.Instance.CrystalBalance,
+                    CostType.Crystal,
+                    balance.MajorUnit,
                     _openCost,
-                    usageMessage,
+                    balance.GetPaymentFormatText(usageMessage, _openCost),
+                    L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
                     UnlockRecipeAction,
                     onAttract);
             }

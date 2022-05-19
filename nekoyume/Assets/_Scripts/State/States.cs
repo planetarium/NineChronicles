@@ -13,6 +13,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Debug = UnityEngine.Debug;
 using static Lib9c.SerializeKeys;
+using StateExtensions = Nekoyume.Model.State.StateExtensions;
 using Libplanet.Assets;
 using Nekoyume.Helper;
 
@@ -292,6 +293,17 @@ namespace Nekoyume.State
             var avatarState = _avatarStates[CurrentAvatarKey];
             LocalLayer.Instance.InitializeCurrentAvatarState(avatarState);
             UpdateCurrentAvatarState(avatarState, initializeReactiveState);
+            var agent = Game.Game.instance.Agent;
+            var worldIds =
+                (List) await agent.GetStateAsync(avatarState.address.Derive("world_ids"));
+            var unlockedIds = worldIds != null ?
+                 worldIds.ToList(StateExtensions.ToInteger)
+                : new List<int>
+                {
+                    1,
+                    GameConfig.MimisbrunnrWorldId,
+                };
+            UI.Widget.Find<UI.WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
 
             if (isNew)
             {

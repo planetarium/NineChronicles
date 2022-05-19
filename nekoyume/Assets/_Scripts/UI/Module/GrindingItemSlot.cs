@@ -18,14 +18,19 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject selectedSlotObject;
 
+        [SerializeField]
+        private Animator animator;
+
         public IObservable<Unit> OnClick => removeButton.OnClickAsObservable();
         public InventoryItem AssignedItem { get; private set; }
 
         public void UpdateSlot(InventoryItem item = null)
         {
+            var isRegister = item != null;
             AssignedItem = item;
-            selectedSlotObject.SetActive(item != null);
+            selectedSlotObject.SetActive(isRegister);
             itemImage.overrideSprite = item?.ItemBase.GetIconSprite();
+            animator.SetTrigger(isRegister ? "Register" : "UnRegister");
         }
     }
 }

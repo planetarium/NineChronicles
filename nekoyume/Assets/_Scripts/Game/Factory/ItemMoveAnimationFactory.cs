@@ -16,6 +16,7 @@ namespace Nekoyume.Game.Factory
             var pool = MainCanvas
                 .instance
                 .GetLayerRootTransform(WidgetType.Animation)
+                .Find(AnimationPoolObjectName)
                 .GetComponent<ObjectPool>();
             pool.Initialize();
             return pool;
@@ -28,6 +29,7 @@ namespace Nekoyume.Game.Factory
         }
 
         private const string CrystalAnimationPrefabName = "item_CrystalGetAnimation";
+        private const string AnimationPoolObjectName = "ItemMoveAnimationPool";
 
         public static IEnumerator CoItemMoveAnimation(AnimationItemType type, Vector3 startPosition, Vector3 endPosition, int count)
         {
