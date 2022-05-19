@@ -8004,6 +8004,200 @@
             Gets the ID of the chain not found.
             </summary>
         </member>
+        <member name="T:Libplanet.Store.DataModel">
+             <summary>
+             <para>
+             A <c>class</c> representing an abstract data model that can be easily
+             encoded and decoded to and from a <see cref="T:Bencodex.Types.Dictionary"/>.
+             </para>
+             <para>
+             Inheriting this class and simply declaring properties allows an instance of the child class
+             to encode its data into a <see cref="T:Bencodex.Types.Dictionary"/> where the encoded
+             <see cref="T:Bencodex.Types.Dictionary"/> has the concrete class'es each property name as its key and
+             the each corresponding property value as its value.
+             </para>
+             <para>
+             However, there are certain restrictions that apply when using this <c>class</c>:
+             <list type="bullet">
+                 <item><description>
+                     The complete list of allowed property types are as follows:
+                     <list type="bullet">
+                         <item><description>
+                             Primitive types: <c>bool</c>, <c>int</c>, <c>long</c>, <c>BigInteger</c>,
+                             <c><![CDATA[ImmutableArray<byte>]]></c>, <c>Address</c>, and <c>string</c>.
+                         </description></item>
+                         <item><description>
+                             Special types: Any type inherited from <see cref="T:Libplanet.Store.DataModel"/>.
+                         </description></item>
+                         <item><description>
+                             Collective types:
+                             <list type="bullet">
+                                 <item><description>
+                                     <see cref="T:System.Collections.Immutable.ImmutableList`1"/> where <c>T</c> is a primitive type.
+                                 </description></item>
+                                 <item><description>
+                                     <see cref="T:System.Collections.Immutable.ImmutableDictionary`2"/> where
+                                     <list type="bullet">
+                                         <item><description>
+                                             <c>TKey</c> is one of
+                                             <c><![CDATA[ImmutableArray<byte>]]></c>, <c>Address</c>,
+                                             and <c>string</c>.
+                                         </description></item>
+                                         <item><description>
+                                             <c>TValue</c> is a primitive type.
+                                         </description></item>
+                                     </list>
+                                 </description></item>
+                             </list>
+                         </description></item>
+                     </list>
+                 </description></item>
+                 <item><description>
+                     Value types are not allowed to be declared as <c>nullable</c>, not even as
+                     a generic type parameter.  That is, types such as <c>bool?</c>, <c>Address?</c>,
+                     and <c><![CDATA[ImmutableList<int?>]]></c>are not allowed.
+                 </description></item>
+                 <item><description>
+                     Reference types are not allowed to be assigned <c>null</c>.  This will result
+                     in an <see cref="T:System.Exception"/> when <see cref="M:Libplanet.Store.DataModel.Encode"/> is called.
+                 </description></item>
+                 <item><description>
+                     Trying to assign <c>null</c> to any property or to a part of a collection will
+                     result in an <see cref="T:System.Exception"/> when
+                     <see cref="M:Libplanet.Store.DataModel.#ctor(Bencodex.Types.Dictionary)"/> is called.
+                 </description></item>
+             </list>
+             </para>
+             </summary>
+             <example>
+             The following example shows how this class can be used:
+             <code><![CDATA[
+             public class CharacterData : DataModel
+             {
+                 /// <summary>
+                 /// Name of the character.
+                 /// </summary>
+                 public string Name { get; private set; }
+            
+                 /// <summary>
+                 /// Current level of the character.
+                 /// </summary>
+                 public int Level { get; private set; }
+            
+                 /// <summary>
+                 /// Inventory of the character.
+                 /// </summary>
+                 public InventoryData Inv { get; private set; }
+            
+                 public CharacterData(string name, int level, InventoryData inv)
+                     : base()
+                 {
+                     Name = name;
+                     Level = level;
+                     Inv = inv;
+                 }
+            
+                 public CharacterData(Bencodex.Types.Dictionary encoded)
+                     : base(encoded)
+                 {
+                 }
+             }
+            
+             public class InventoryData : DataModel
+             {
+                 /// <summary>
+                 /// The amount of gold in the inventory.
+                 /// </summary>
+                 public int Gold { get; private set; }
+            
+                 public InventoryData(int gold)
+                     : base()
+                 {
+                     Gold = gold;
+                 }
+            
+                 public InventoryData(Bencodex.Types.Dictionary encoded)
+                     : base(encoded)
+                 {
+                 }
+             }
+             ]]></code>
+             Then the concrete model defined above can be used as shown below:
+             <code><![CDATA[
+             CharacterData characterData = new CharacterData("John", 5, new InventoryData(100));
+             Bencodex.Types.Dictionary encoded = characterData.Encode()
+             ]]></code>
+             This would result in <c>encoded</c> in a following format:
+             <code><![CDATA[
+             Bencodex.Types.Dictionary {
+               "Name": "John",
+               "Level": 5,
+               "Inv": {
+                   "Gold": 100,
+               },
+             }
+             ]]></code>
+             To decode this back into an instance, simply use it as shown below:
+             <code><![CDATA[
+             CharacterData decoded = new CharacterData(encoded);
+             ]]></code>
+             Then <c>decoded.Name</c>, <c>decoded.Level</c>, and <c>decoded.Inv.Gold</c> will have
+             values <c>"John"</c>, <c>5</c>, and <c>100</c> respectively.
+             Note that in the example above, an additional casting to a decoded
+             <see cref="T:Libplanet.Store.DataModel"/> object is required.
+             </example>
+             <remarks>
+             There are certain caveats for using this class:
+             <list type="bullet">
+                 <item><description>
+                     Encoded data type is fixed to <see cref="T:Bencodex.Types.Dictionary"/>.  As each
+                     property name is encoded into <see cref="T:Bencodex.Types.Text"/> as a key, it is
+                     advisable to give short names for properties.  For example, <c>int HP</c> is better
+                     than <c>int HealthPoint</c> to reduce storage size and/or network traffic.
+                     As seen in the example above, actively use documented properties instead.
+                 </description></item>
+                 <item><description>
+                     Property type of <see cref="T:System.Collections.Immutable.ImmutableDictionary`2"/> is inefficient
+                     to encode and decode.  Additional caution is needed when declaring
+                     <see cref="T:System.Collections.Immutable.ImmutableDictionary`2"/> property type.
+                 </description></item>
+                 <item><description>
+                     As supported types are limited, in particular, nullable types and nested
+                     collection types, if a custom data model that isn't supported by this class
+                     is needed, manual implementation of encoding and decoding should be done
+                     separately.
+                 </description></item>
+             </list>
+             </remarks>
+        </member>
+        <member name="M:Libplanet.Store.DataModel.#ctor(Bencodex.Types.Dictionary)">
+            <summary>
+            Decodes a <see cref="T:Bencodex.Types.Dictionary"/> data into an instance.
+            </summary>
+            <param name="encoded">The <see cref="T:Bencodex.Types.Dictionary"/> instance to decode.</param>
+            <returns>A decoded instance from <paramref name="encoded"/>.</returns>
+            <exception cref="T:System.NotSupportedException">Thrown when <c>null</c> value is encountered
+            while decoding.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when invalid encoded type is encountered.
+            </exception>
+            <exception cref="T:System.NullReferenceException">Thrown when <paramref name="encoded"/> is
+            <c>null</c> or <c>null</c> reference is returned by inner instantiation.</exception>
+        </member>
+        <member name="P:Libplanet.Store.DataModel.PropertyInfos">
+            <summary>
+            Cached property info for performance.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.DataModel.Encode">
+            <summary>
+            Encodes an instance into a <see cref="T:Bencodex.Types.Dictionary"/>.
+            </summary>
+            <returns>An encoded <see cref="T:Bencodex.Types.Dictionary"/> instance.</returns>
+            <exception cref="T:System.NotSupportedException">Thrown when <c>nullable</c> value type property
+            or <c>null</c> value inside a reference type is encountered.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when an unknown invalid property type is
+            encountered.</exception>
+        </member>
         <member name="T:Libplanet.Store.DefaultStore">
             <summary>
             The default built-in <see cref="T:Libplanet.Store.IStore"/> implementation.  This stores data in
@@ -9023,13 +9217,25 @@
         </member>
         <member name="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String)">
             <summary>
-            Instantiates a new exception object with proper metadata.
+            Instantiates a new exception object with proper metadata. Use
+            <see cref="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)"/> if innerException
+            is required.
             </summary>
             <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
             the <see cref="P:System.Exception.Message"/> string.</param>
             <param name="message">A descriptive error message for programmers.
             </param>
+        </member>
+        <member name="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Tx.InvalidTxException.#ctor(Libplanet.Tx.TxId,System.String)"/>
+            <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
+            the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="message">A descriptive error message for programmers.
+            </param>
+            <param name="innerException">The <see cref="T:System.Exception"/> for
+            <see cref="P:System.Exception.InnerException"/>.</param>
         </member>
         <member name="P:Libplanet.Tx.InvalidTxException.TxId">
             <summary>
@@ -9675,7 +9881,9 @@
         </member>
         <member name="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String)">
             <summary>
-            Creates a new <see cref="T:Libplanet.Tx.TxPolicyViolationException"/> instance.
+            Creates a new <see cref="T:Libplanet.Tx.TxPolicyViolationException"/> instance. Use
+            <see cref="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)"/> if innerException
+            is required.
             </summary>
             <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the
             <see cref="T:Libplanet.Tx.Transaction`1"/> violating a <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
@@ -9683,6 +9891,16 @@
             <param name="message">A description for the reason of violation
             given by an implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
             </param>
+        </member>
+        <member name="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Tx.TxPolicyViolationException.#ctor(Libplanet.Tx.TxId,System.String)"/>
+            <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the
+            <see cref="T:Libplanet.Tx.Transaction`1"/> violating a <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>.
+            Gets prepended to <paramref name="message"/>.</param>
+            <param name="message">A description for the reason of violation
+            given by an implementation of <see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/>. </param>
+            <param name="innerException">The <see cref="T:System.Exception"/> for
+            <see cref="P:System.Exception.InnerException"/>.</param>
         </member>
         <member name="T:Libplanet.Tx.TxSuccess">
             <summary>
