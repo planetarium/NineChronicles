@@ -125,6 +125,7 @@ namespace Nekoyume.Game
             States = new States();
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
+            RxProps.Start(Agent, States);
             MainCanvas.instance.InitializeIntro();
         }
 
