@@ -34,7 +34,13 @@ namespace Nekoyume.UI
         private ArenaJoinSeasonInfo _info;
 
         [SerializeField]
-        private ArenaJoinBottomButtons _buttons;
+        private Button _joinButton;
+
+        [SerializeField]
+        private Button _paymentButton;
+
+        [SerializeField]
+        private Button _earlyPaymentButton;
 
         [SerializeField]
         private Button _backButton;
@@ -50,6 +56,10 @@ namespace Nekoyume.UI
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             }).AddTo(gameObject);
+            _joinButton.onClick.AsObservable().Subscribe().AddTo(gameObject);
+            _paymentButton.onClick.AsObservable().Subscribe().AddTo(gameObject);
+            _earlyPaymentButton.onClick.AsObservable().Subscribe().AddTo(gameObject);
+
             CloseWidget = () =>
             {
                 Close(true);
@@ -61,6 +71,7 @@ namespace Nekoyume.UI
         {
             InitializeScrolls(_disposables);
             UpdateInfo();
+            UpdateButtons();
             base.Show(ignoreShowAnimation);
         }
 
@@ -99,6 +110,7 @@ namespace Nekoyume.UI
                 {
                     _barScroll.SelectCell(reversedIndex, false);
                     UpdateInfo();
+                    UpdateButtons();
                 })
                 .AddTo(disposables);
             _barScroll.OnSelectionChanged
@@ -107,6 +119,7 @@ namespace Nekoyume.UI
                 {
                     _scroll.SelectCell(reversedIndex, false);
                     UpdateInfo();
+                    UpdateButtons();
                 })
                 .AddTo(disposables);
         }
@@ -133,6 +146,13 @@ namespace Nekoyume.UI
                 GetMedalId(),
                 GetConditions(),
                 GetRewardType());
+        }
+
+        private void UpdateButtons()
+        {
+            _joinButton.gameObject.SetActive(true);
+            _paymentButton.gameObject.SetActive(false);
+            _earlyPaymentButton.gameObject.SetActive(false);
         }
 
         private int GetMedalId()

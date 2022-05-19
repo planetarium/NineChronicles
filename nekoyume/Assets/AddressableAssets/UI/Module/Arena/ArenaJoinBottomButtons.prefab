@@ -987,7 +987,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6370164284995704113}
-  - component: {fileID: 7508794813409703691}
   m_Layer: 5
   m_Name: ArenaJoinBottomButtons
   m_TagString: Untagged
@@ -1017,22 +1016,6 @@ RectTransform:
   m_AnchoredPosition: {x: -20, y: 30}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 1, y: 0}
---- !u!114 &7508794813409703691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3536441049540805236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f17e52fc7bb34da3a3c8b4aa9545428c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _joinButton: {fileID: 8371759301661762182}
-  _paymentButton: {fileID: 8759169933138340696}
-  _buyTicketsButton: {fileID: 0}
-  _earlyPaymentButton: {fileID: 3395364024276581700}
 --- !u!1 &3957355058683634465
 GameObject:
   m_ObjectHideFlags: 0
