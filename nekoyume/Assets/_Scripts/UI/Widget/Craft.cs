@@ -378,34 +378,6 @@ namespace Nekoyume.UI
             StartCoroutine(CoCombineNPCAnimation(consumable, requiredBlockIndex, true));
         }
 
-        public static Dictionary<int, int> CheckMaterial(Dictionary<int, int> materials)
-        {
-            var replacedMaterialMap = new Dictionary<int, int>();
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-
-            foreach (var pair in materials)
-            {
-                var id = pair.Key;
-                var count = pair.Value;
-
-                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
-                {
-                    continue;
-                }
-
-                var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
-                            ? outFungibleItems.Sum(e => e.count)
-                            : 0;
-
-                if (count > itemCount)
-                {
-                    replacedMaterialMap.Add(row.Id, count - itemCount);
-                }
-            }
-
-            return replacedMaterialMap;
-        }
-
         private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, long blockIndex, bool isConsumable = false)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();

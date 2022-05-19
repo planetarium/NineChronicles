@@ -331,7 +331,7 @@ namespace Nekoyume.UI
                 RecipeId = recipeId,
                 SubRecipeId = subRecipeId,
                 Materials = materialMap,
-                ReplacedMaterials = Craft.CheckMaterial(materialMap),
+                ReplacedMaterials = GetReplacedMaterials(materialMap),
             };
             _selectedRecipeInfo = recipeInfo;
 
@@ -341,7 +341,7 @@ namespace Nekoyume.UI
             }
             else if (consumableRow != null)
             {
-                var submittable = CheckNCGAndSlot();
+                var submittable = CheckNCGAndSlotIsEnough();
                 var cost = new ConditionalCostButton.CostParam(
                     CostType.NCG,
                     (int)_selectedRecipeInfo.CostNCG);
@@ -350,6 +350,34 @@ namespace Nekoyume.UI
                 button.gameObject.SetActive(true);
                 lockedObject.SetActive(false);
             }
+        }
+
+        private Dictionary<int, int> GetReplacedMaterials(Dictionary<int, int> required)
+        {
+            var replacedMaterialMap = new Dictionary<int, int>();
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+
+            foreach (var pair in required)
+            {
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
+                            ? outFungibleItems.Sum(e => e.count)
+                            : 0;
+
+                if (count > itemCount)
+                {
+                    replacedMaterialMap.Add(row.Id, count - itemCount);
+                }
+            }
+
+            return replacedMaterialMap;
         }
 
         private void UpdateButton()
@@ -362,7 +390,7 @@ namespace Nekoyume.UI
 
             if (Craft.SharedModel.UnlockedRecipes.Value.Contains(_selectedRecipeInfo.RecipeId))
             {
-                var submittable = CheckNCGAndSlot();
+                var submittable = CheckNCGAndSlotIsEnough();
                 var costNCG = new ConditionalCostButton.CostParam(
                     CostType.NCG,
                     (int)_selectedRecipeInfo.CostNCG);
@@ -456,7 +484,7 @@ namespace Nekoyume.UI
             CombinationActionSubject.OnNext(_selectedRecipeInfo);
         }
 
-        private bool CheckNCGAndSlot()
+        private bool CheckNCGAndSlotIsEnough()
         {
             if (_selectedRecipeInfo.CostNCG > States.Instance.GoldBalanceState.Gold.MajorUnit)
             {
