@@ -141,6 +141,8 @@ namespace Nekoyume.Game
 
         public CrystalMonsterCollectionMultiplierSheet CrystalMonsterCollectionMultiplierSheet { get; private set; }
 
+        public CrystalMaterialCostSheet CrystalMaterialCostSheet { get; private set; }
+
         public SweepRequiredCPSheet SweepRequiredCPSheet { get; private set; }
 
         public void ItemSheetInitialize()

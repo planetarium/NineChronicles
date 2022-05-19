@@ -9,8 +9,6 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
-using Nekoyume.State.Subjects;
-using Nekoyume.TableData;
 
 namespace Nekoyume.State
 {

@@ -123,7 +123,8 @@ namespace Nekoyume.UI.Scroller
                 var balance = States.Instance.CrystalBalance;
 
                 Widget.Find<PaymentPopup>().Show(
-                    balance,
+                    CostType.Crystal,
+                    balance.MajorUnit,
                     _openCost,
                     balance.GetPaymentFormatText(usageMessage, _openCost),
                     L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
@@ -132,9 +133,8 @@ namespace Nekoyume.UI.Scroller
             }
             else
             {
-                var title = L10nManager.Localize("UI_TOTAL_COST");
                 var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Widget.Find<PaymentPopup>().ShowAttract(_openCost, title, message, onAttract);
+                Widget.Find<PaymentPopup>().ShowAttract(_openCost, message, onAttract);
             }
         }
 

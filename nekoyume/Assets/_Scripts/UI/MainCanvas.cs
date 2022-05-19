@@ -320,6 +320,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<PaymentPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<ReplaceMaterialPopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<SweepPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<BoosterPopup>());

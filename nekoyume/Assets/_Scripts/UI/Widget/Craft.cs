@@ -18,6 +18,10 @@ using System.Linq;
 
 namespace Nekoyume.UI
 {
+    using Libplanet;
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Security.Cryptography;
     using UniRx;
     using Toggle = Module.Toggle;
 
@@ -329,13 +333,28 @@ namespace Nekoyume.UI
                 requiredBlockIndex += subRecipeRow.RequiredBlockIndex;
             }
 
-            var slots = Find<CombinationSlotsPopup>();
-            slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:equipment);
-
             equipmentSubRecipeView.UpdateView();
-            Game.Game.instance.ActionManager.CombinationEquipment(recipeInfo, slotIndex).Subscribe();
-
-            StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+            var insufficientMaterials = recipeInfo.ReplacedMaterials;
+            if (insufficientMaterials.Any())
+            {
+                Find<ReplaceMaterialPopup>().Show(insufficientMaterials,
+                    () =>
+                    {
+                        var slots = Find<CombinationSlotsPopup>();
+                        slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
+                        Game.Game.instance.ActionManager
+                            .CombinationEquipment(recipeInfo, slotIndex, true).Subscribe();
+                        StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+                    });
+            }
+            else
+            {
+                var slots = Find<CombinationSlotsPopup>();
+                slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
+                Game.Game.instance.ActionManager.CombinationEquipment(recipeInfo, slotIndex, false)
+                    .Subscribe();
+                StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+            }
         }
 
         private void CombinationConsumableAction(SubRecipeView.RecipeInfo recipeInfo)

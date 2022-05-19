@@ -628,7 +628,7 @@ namespace Nekoyume.UI
             if (stage is null)
                 return;
             _requiredCost = stage.CostAP;
-            startButton.SetCost(ConditionalCostButton.CostType.ActionPoint, _requiredCost);
+            startButton.SetCost(CostType.ActionPoint, _requiredCost);
         }
 
         private void OnClickBattle(bool repeat)
