@@ -31,6 +31,16 @@ namespace Nekoyume.Helper
                 .Aggregate(cost, (current, row) => current + row.CRYSTAL * CRYSTAL);
         }
 
+        public static FungibleAssetValue CalculateBuffGachaCost(int stageId,
+            int count,
+            CrystalStageBuffGachaSheet stageBuffGachaSheet)
+        {
+            var cost = 0 * CRYSTAL;
+            cost *= stageBuffGachaSheet[stageId].CRYSTAL;
+
+            return count == 5 ? cost : cost * 3;
+        }
+
         public static FungibleAssetValue CalculateCrystal(
             IEnumerable<Equipment> equipmentList,
             CrystalEquipmentGrindingSheet crystalEquipmentGrindingSheet,
