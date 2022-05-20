@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.Battle;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
@@ -163,6 +164,31 @@ namespace Nekoyume.Model
         {
         }
 
+        public Player(ArenaPlayerDigest enemyPlayerDigest, ArenaSimulatorSheets simulatorSheets)
+             : base(null,
+                 simulatorSheets.CharacterSheet,
+                 enemyPlayerDigest.CharacterId,
+                 enemyPlayerDigest.Level)
+        {
+            weapon = null;
+            armor = null;
+            belt = null;
+            necklace = null;
+            ring = null;
+            Inventory = new Inventory();
+            monsterMap = new CollectionMap();
+            eventMap = new CollectionMap();
+            hairIndex = enemyPlayerDigest.HairIndex;
+            lensIndex = enemyPlayerDigest.LensIndex;
+            earIndex = enemyPlayerDigest.EarIndex;
+            tailIndex = enemyPlayerDigest.TailIndex;
+            AttackCountMax = AttackCountHelper.GetCountMax(Level);
+            characterLevelSheet = simulatorSheets.CharacterLevelSheet;
+            UpdateExp();
+            SetItems(enemyPlayerDigest.Costumes, enemyPlayerDigest.Equipments,
+                simulatorSheets.EquipmentItemSetEffectSheet, simulatorSheets.CostumeStatSheet);
+        }
+
         protected Player(Player value) : base(value)
         {
             Exp = (ExpData) value.Exp.Clone();
@@ -238,6 +264,18 @@ namespace Nekoyume.Model
                 .Where(e => e.equipped)
                 .ToList();
             SetEquipmentStat(sheet);
+        }
+
+        private void SetItems(
+            List<Costume> arenaCostumes,
+            List<Equipment> arenaEquipments,
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
+            CostumeStatSheet costumeStatSheet)
+        {
+            costumes = arenaCostumes;
+            equipments = arenaEquipments;
+            SetEquipmentStat(equipmentItemSetEffectSheet);
+            SetCostumeStat(costumeStatSheet);
         }
 
         protected void SetEquipmentStat(EquipmentItemSetEffectSheet sheet)
