@@ -74,8 +74,7 @@ namespace Lib9c.Tests.Action.Scenario
                 .SetState(
                     _avatarAddress.Derive(LegacyQuestListKey),
                     avatarState.questList.Serialize())
-                .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
-                .MintAsset(_signerAddress, _currency * 100);
+                .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize());
         }
 
         [Fact]
@@ -107,10 +106,11 @@ namespace Lib9c.Tests.Action.Scenario
         [Fact]
         public void StakeAndClaimStakeRewardBeforeRewardInterval()
         {
+            var states = _initialState.MintAsset(_signerAddress, _currency * 100);
             IAction action = new Stake(100);
-            var states = action.Execute(new ActionContext
+            states = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousStates = states,
                 Signer = _signerAddress,
                 BlockIndex = 0,
             });
