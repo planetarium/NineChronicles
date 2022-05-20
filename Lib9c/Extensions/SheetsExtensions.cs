@@ -190,5 +190,21 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<WeeklyArenaRewardSheet>()
             );
         }
+
+        public static ArenaSimulatorSheets GetArenaSimulatorSheets(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new ArenaSimulatorSheets(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<BuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<CostumeStatSheet>(),
+                sheets.GetSheet<WeeklyArenaRewardSheet>()
+            );
+        }
     }
 }

@@ -147,6 +147,8 @@ namespace Lib9c.Tests
 
         public CrystalMaterialCostSheet CrystalMaterialCostSheet { get; private set; }
 
+        public ArenaSheet ArenaSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
@@ -198,6 +200,21 @@ namespace Lib9c.Tests
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
+                WeeklyArenaRewardSheet
+            );
+        }
+
+        public ArenaSimulatorSheets GetArenaSimulatorSheets()
+        {
+            return new ArenaSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                CostumeStatSheet,
                 WeeklyArenaRewardSheet
             );
         }
