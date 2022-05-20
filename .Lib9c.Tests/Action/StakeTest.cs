@@ -88,15 +88,6 @@ namespace Lib9c.Tests.Action
                 Signer = _signerAddress,
                 BlockIndex = 1,
             }));
-
-            // More
-            updateAction = new Stake(100);
-            Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
-            {
-                PreviousStates = states,
-                Signer = _signerAddress,
-                BlockIndex = 1,
-            }));
         }
 
         [Fact]
