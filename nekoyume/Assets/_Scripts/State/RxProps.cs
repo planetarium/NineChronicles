@@ -32,7 +32,7 @@ namespace Nekoyume.State
 
         private static long _arenaInfoUpdatedBlockIndex;
 
-        public static IAsyncUpdatableReadOnlyRxProp<ArenaInfo>
+        public static IReadOnlyAsyncUpdatableRxProp<ArenaInfo>
             ArenaInfo => _arenaInfo;
 
         #endregion
@@ -66,6 +66,8 @@ namespace Nekoyume.State
             var was = _states.WeeklyArenaState;
             UpdateArenaProgress(blockIndex, gcs, was);
             UpdateArenaTicketProgress(blockIndex, gcs, was);
+
+            _arenaInfo.UpdateAsync().Forget();
         }
 
         private static void UpdateArenaProgress(

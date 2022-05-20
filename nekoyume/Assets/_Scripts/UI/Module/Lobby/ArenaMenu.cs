@@ -30,9 +30,13 @@ namespace Nekoyume.UI.Module.Lobby
 
             _progressBar.ResumeOrShow();
             _ticketCount.text = string.Empty;
-            RxProps.ArenaInfo.SubscribeWithUpdateOnce(info =>
+            RxProps.ArenaInfo
+                .SubscribeOnMainThreadWithUpdateOnce(info =>
+                {
+                    Debug.Log("ArenaMenu Ticket Count Update");
                     _ticketCount.text = info?.DailyChallengeCount.ToString()
-                                        ?? string.Empty)
+                                        ?? string.Empty;
+                })
                 .AddTo(_disposables);
         }
 

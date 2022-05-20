@@ -60,6 +60,7 @@ namespace Nekoyume.UI.Module.Arena
         {
             UpdateSliderAndText(RxProps.ArenaProgress.Value);
             RxProps.ArenaProgress
+                .SubscribeOnMainThread()
                 .Subscribe(UpdateSliderAndText)
                 .AddTo(_disposables);
         }

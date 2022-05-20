@@ -5,53 +5,74 @@ namespace Nekoyume.State
 {
     using UniRx;
 
-    public class AsyncUpdatableRxProp<TValue> :
-        ReactiveProperty<TValue>,
-        IAsyncUpdatableReadOnlyRxProp<TValue>
+    public interface IReadOnlyAsyncUpdatableRxProp<T> : IReadOnlyReactiveProperty<T>
     {
-        private readonly Func<TValue, UniTask<TValue>> _updateAsyncFunc;
+        UniTask<T> UpdateAsync(bool forceNotify = false);
 
-        public AsyncUpdatableRxProp(Func<TValue, UniTask<TValue>> updateAsyncFunc) :
+        IObservable<T> UpdateAsObservable(bool forceNotify = false);
+
+        IDisposable SubscribeWithUpdateOnce(Action<T> onNext, bool forceNotify = false);
+
+        IDisposable SubscribeOnMainThreadWithUpdateOnce(
+            Action<T> onNext,
+            bool forceNotify = false);
+    }
+
+    public interface IAsyncUpdatableRxProp<T> : IReadOnlyAsyncUpdatableRxProp<T>
+    {
+        new T Value { get; set; }
+    }
+
+    public class AsyncUpdatableRxProp<T> :
+        ReactiveProperty<T>,
+        IAsyncUpdatableRxProp<T>
+    {
+        private readonly Func<T, UniTask<T>> _updateAsyncFunc;
+
+        public AsyncUpdatableRxProp(Func<T, UniTask<T>> updateAsyncFunc) :
             this(default, updateAsyncFunc)
         {
         }
 
-        public AsyncUpdatableRxProp(TValue defaultValue, Func<TValue, UniTask<TValue>> updateAsyncFunc)
+        public AsyncUpdatableRxProp(T defaultValue, Func<T, UniTask<T>> updateAsyncFunc)
         {
             Value = defaultValue;
             _updateAsyncFunc = updateAsyncFunc
                                ?? throw new ArgumentNullException(nameof(updateAsyncFunc));
         }
 
-        public async UniTaskVoid UpdateAsync(bool forceNotify)
+        public async UniTask<T> UpdateAsync(bool forceNotify = false)
         {
             var t = await _updateAsyncFunc(Value);
-            SetValue(t, forceNotify);
-        }
-
-        public IObservable<TValue> UpdateAsObservable(bool forceNotify)
-        {
-            var observable = _updateAsyncFunc(Value).ToObservable();
-            observable.First().Subscribe(t => SetValue(t, forceNotify));
-            return this.AsObservable();
-        }
-
-        public IDisposable SubscribeWithUpdateOnce(Action<TValue> onNext)
-        {
-            UpdateAsync(false).Forget();
-            return this.Subscribe(onNext);
-        }
-
-        private void SetValue(TValue value, bool forceNotify)
-        {
             if (forceNotify)
             {
-                SetValueAndForceNotify(value);
+                SetValueAndForceNotify(t);
             }
             else
             {
-                SetValue(value);
+                Value = t;
             }
+
+            return t;
+        }
+
+        public IObservable<T> UpdateAsObservable(bool forceNotify = false) =>
+            UpdateAsync(forceNotify).ToObservable();
+
+        public IDisposable SubscribeWithUpdateOnce(Action<T> onNext, bool forceNotify = false)
+        {
+            UpdateAsync(forceNotify).Forget();
+            return this.Subscribe(onNext);
+        }
+
+        public IDisposable SubscribeOnMainThreadWithUpdateOnce(
+            Action<T> onNext,
+            bool forceNotify = false)
+        {
+            UpdateAsync(forceNotify).Forget();
+            return this
+                .SubscribeOnMainThread()
+                .Subscribe(onNext);
         }
     }
 }

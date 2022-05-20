@@ -32,6 +32,7 @@ namespace Nekoyume.UI.Module.Arena
             UpdateSliderAndText(RxProps.ArenaTicketProgress.Value);
             RxProps.ArenaTicketProgress
                 .Where(_ => !_paused)
+                .SubscribeOnMainThread()
                 .Subscribe(UpdateSliderAndText)
                 .AddTo(_disposables);
             gameObject.SetActive(true);

@@ -34,12 +34,12 @@ namespace Nekoyume.UI.Module
         {
             UpdateSliderAndFillText(RxProps.ArenaInfo.Value);
             RxProps.ArenaInfo
-                .UpdateAsObservable(false)
-                .Subscribe(UpdateSliderAndFillText)
+                .SubscribeOnMainThreadWithUpdateOnce(UpdateSliderAndFillText)
                 .AddTo(_disposables);
 
             UpdateTimespanText(RxProps.ArenaTicketProgress.Value);
             RxProps.ArenaTicketProgress
+                .SubscribeOnMainThread()
                 .Subscribe(UpdateTimespanText)
                 .AddTo(_disposables);
         }
