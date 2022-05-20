@@ -135,16 +135,17 @@ namespace Nekoyume.Action
             }
 
             var prevStageId = Math.Max(stageId - 1, 1);
+            var firstStage = prevStageId == 1;
             worldInformation.TryGetWorldByStageId(prevStageId, out var prevStageWorld);
 
-            if (!prevStageWorld.IsStageCleared)
+            if (!prevStageWorld.IsStageCleared && !firstStage)
             {
                 throw new StageNotClearedException(
                     $"{addressesHex}There is no stage cleared in that world (worldId:{prevStageWorld.Id})"
                 );
             }
 
-            if (stageId > prevStageWorld.StageClearedId + 1)
+            if (stageId > prevStageWorld.StageClearedId + 1 && !firstStage)
             {
                 throw new InvalidStageException(
                     $"{addressesHex}Aborted as the stage ({prevStageWorld.Id}/{prevStageId}) is not cleared; " +

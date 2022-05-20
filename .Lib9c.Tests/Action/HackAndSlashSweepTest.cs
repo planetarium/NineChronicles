@@ -123,6 +123,8 @@ namespace Lib9c.Tests.Action
         [InlineData(2, 2, 51, false, false)]
         [InlineData(2, 2, 52, false, true)]
         [InlineData(2, 2, 52, false, false)]
+        [InlineData(2, 1, 1, true, true)]
+        [InlineData(2, 1, 1, true, false)]
         [InlineData(2, 1, 2, true, true)]
         [InlineData(2, 1, 2, true, false)]
         [InlineData(2, 2, 51, true, true)]
@@ -133,6 +135,7 @@ namespace Lib9c.Tests.Action
         {
             var gameConfigState = _initialState.GetGameConfigState();
 
+            var prevStageId = stageId - 1;
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
@@ -142,7 +145,7 @@ namespace Lib9c.Tests.Action
                 _rankingMapAddress)
             {
                 worldInformation = new WorldInformation(
-                    0, _initialState.GetSheet<WorldSheet>(), challenge ? stageId - 1 : stageId),
+                    0, _initialState.GetSheet<WorldSheet>(), challenge ? prevStageId : stageId),
                 level = 400,
             };
 
