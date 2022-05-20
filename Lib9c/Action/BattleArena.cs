@@ -20,7 +20,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1006
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1029
     /// </summary>
     [Serializable]
     [ActionType("battle_arena")]

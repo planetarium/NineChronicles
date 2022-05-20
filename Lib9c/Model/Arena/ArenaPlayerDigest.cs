@@ -7,6 +7,9 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.Arena
 {
+    /// <summary>
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1029
+    /// </summary>
     public readonly struct ArenaPlayerDigest : IState
     {
         public readonly string NameWithHash;
