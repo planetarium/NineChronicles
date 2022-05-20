@@ -76,5 +76,27 @@ namespace Nekoyume.Helper
 
             return (currentLevel, currentExp);
         }
+
+        public static void ValidEquipmentAndCostume(this AvatarState avatarState,
+            IEnumerable<Guid> costumeIds,
+            List<Guid> equipmentIds,
+            ItemRequirementSheet itemRequirementSheet,
+            EquipmentItemRecipeSheet equipmentItemRecipeSheet,
+            EquipmentItemSubRecipeSheetV2 equipmentItemSubRecipeSheetV2,
+            EquipmentItemOptionSheet equipmentItemOptionSheet,
+            long blockIndex,
+            string addressesHex)
+        {
+            var equipments = avatarState.ValidateEquipmentsV2(equipmentIds, blockIndex);
+            var costumeItemIds = avatarState.ValidateCostume(costumeIds);
+            avatarState.ValidateItemRequirement(
+                costumeItemIds.ToList(),
+                equipments,
+                itemRequirementSheet,
+                equipmentItemRecipeSheet,
+                equipmentItemSubRecipeSheetV2,
+                equipmentItemOptionSheet,
+                addressesHex);
+        }
     }
 }
