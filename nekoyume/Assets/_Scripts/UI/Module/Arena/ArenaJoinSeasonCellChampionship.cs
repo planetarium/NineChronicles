@@ -29,20 +29,12 @@ namespace Nekoyume.UI.Module.Arena
         public void Show(ArenaJoinSeasonItemData itemData, bool selected)
         {
             _name.text = itemData.name;
-            UpdateSelected(selected);
             gameObject.SetActive(true);
         }
 
         public void Hide()
         {
             gameObject.SetActive(false);
-        }
-        
-        private void UpdateSelected(bool selected)
-        {
-            _image.color = selected
-                ? new Color32(238, 104, 53, 218)
-                : new Color32(126, 64, 40, 218);
         }
     }
 }
