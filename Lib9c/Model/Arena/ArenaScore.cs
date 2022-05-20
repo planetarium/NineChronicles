@@ -7,7 +7,7 @@ using Nekoyume.Action;
 namespace Nekoyume.Model.Arena
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1027
     /// </summary>
     public class ArenaScore : IState
     {

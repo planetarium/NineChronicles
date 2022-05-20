@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 namespace Nekoyume.Model.State
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1027
     /// </summary>
     public class ArenaAvatarState : IState
     {

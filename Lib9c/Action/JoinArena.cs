@@ -16,7 +16,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1027
     /// </summary>
     [Serializable]
     [ActionType("join_arena")]
