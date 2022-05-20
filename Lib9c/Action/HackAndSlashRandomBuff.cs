@@ -61,13 +61,15 @@ namespace Nekoyume.Action
             // Insufficient gathered star.
             if (gachaState.StarCount < stageBuffSheet[gachaState.StageId].MaxStar)
             {
-                throw new Exception("not enough stars");
+                throw new NotEnoughGatheredStarException(
+                    $"Not enough gathered stars. Need : {stageBuffSheet[gachaState.StageId].MaxStar}, own : {gachaState.StarCount}");
             }
 
             // Invalid Gacha count.
             if (GachaCount != MinimumGachaCount && GachaCount != MaximumGachaCount)
             {
-                throw new Exception("invalid gacha count");
+                throw new InvalidGachaCountException(
+                    $"Gacha count must equal with {MinimumGachaCount} or {MaximumGachaCount}. input count : {GachaCount}");
             }
 
             var cost =
