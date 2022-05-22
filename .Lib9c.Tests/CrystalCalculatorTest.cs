@@ -75,6 +75,22 @@ namespace Lib9c.Tests
             Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateCombinationCost(crystal, ps, bps));
         }
 
+        [Fact]
+        public void CalculateRandomBuffCost()
+        {
+            var stageBuffGachaSheet = _tableSheets.CrystalStageBuffGachaSheet;
+            foreach (var row in stageBuffGachaSheet.Values)
+            {
+                var expectedCost = row.CRYSTAL * CrystalCalculator.CRYSTAL;
+                Assert.Equal(
+                    expectedCost,
+                    CrystalCalculator.CalculateBuffGachaCost(row.StageId, 5, stageBuffGachaSheet));
+                Assert.Equal(
+                    expectedCost * 3,
+                    CrystalCalculator.CalculateBuffGachaCost(row.StageId, 10, stageBuffGachaSheet));
+            }
+        }
+
         private class CalculateCrystalData : IEnumerable<object[]>
         {
             private readonly List<object[]> _data = new List<object[]>
