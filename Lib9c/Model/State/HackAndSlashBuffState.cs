@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Nekoyume.TableData.Crystal;
 using System.Linq;
+using Libplanet;
 
 namespace Nekoyume.Model.State
 {

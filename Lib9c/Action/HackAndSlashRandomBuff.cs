@@ -55,7 +55,7 @@ namespace Nekoyume.Action
                     $"Can't find {nameof(HackAndSlashBuffState)}. Gacha state address:{gachaStateAddress}");
             }
 
-            var gachaState = new HackAndSlashBuffState(rawGachaState);
+            var gachaState = new HackAndSlashBuffState(gachaStateAddress, rawGachaState);
             var stageBuffSheet = states.GetSheet<CrystalStageBuffGachaSheet>();
 
             // Insufficient gathered star.

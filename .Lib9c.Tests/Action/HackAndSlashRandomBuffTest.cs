@@ -115,7 +115,7 @@
                 level = 400,
             };
             var gachaStateAddress = _avatarAddress.Derive(HackAndSlashBuffStateKey);
-            var gachaState = new HackAndSlashBuffState(stageId);
+            var gachaState = new HackAndSlashBuffState(gachaStateAddress, stageId);
             states = states
                 .SetState(_avatarAddress, avatarState.SerializeV2())
                 .SetState(
