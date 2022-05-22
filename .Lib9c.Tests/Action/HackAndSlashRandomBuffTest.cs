@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -163,6 +165,65 @@
                         Random = _random,
                     });
                 });
+            }
+        }
+
+        [Theory]
+        [InlineData(5, HackAndSlashRandomBuff.BuffRank.A)]
+        [InlineData(10, HackAndSlashRandomBuff.BuffRank.S)]
+        public void ContainMinimumBuffRank(int count, HackAndSlashRandomBuff.BuffRank minimumRank)
+        {
+            var states = _initialState.MintAsset(_agentAddress, 100_000_000 * _currency);
+            var gameConfigState = _initialState.GetGameConfigState();
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _initialState.GetAvatarSheets(),
+                gameConfigState,
+                _rankingMapAddress)
+            {
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 1),
+                level = 400,
+            };
+            var gachaStateAddress = _avatarAddress.Derive(HackAndSlashBuffStateKey);
+            var gachaState = new HackAndSlashBuffState(gachaStateAddress, 1);
+            states = states
+                .SetState(_avatarAddress, avatarState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    avatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    avatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    avatarState.questList.Serialize());
+            var crystalStageSheet = _tableSheets.CrystalStageBuffGachaSheet;
+            var randomBuffSheet = _tableSheets.CrystalRandomBuffSheet;
+            gachaState.Update(100_000_000, crystalStageSheet);
+            states = states.SetState(gachaStateAddress, gachaState.Serialize());
+            var checkCount = 100;
+            while (checkCount-- > 0)
+            {
+                var action = new HackAndSlashRandomBuff
+                {
+                    AvatarAddress = _avatarAddress,
+                    GachaCount = count,
+                };
+                var nextState = action.Execute(new ActionContext
+                {
+                    PreviousStates = states,
+                    Signer = _agentAddress,
+                    Random = _random,
+                });
+                var newGachaState = new HackAndSlashBuffState(
+                    gachaStateAddress,
+                    (List)nextState.GetState(gachaStateAddress));
+                Assert.Contains(
+                    newGachaState.BuffIds.Select(id => randomBuffSheet[id].Rank),
+                    rank => rank <= (int)minimumRank);
             }
         }
     }
