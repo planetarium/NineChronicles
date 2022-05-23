@@ -13,6 +13,9 @@ using Nekoyume.TableData.Crystal;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Created at https://github.com/planetarium/lib9c/pull/1031
+    /// </summary>
     [Serializable]
     [ActionType("hack_and_slash_random_buff")]
     public class HackAndSlashRandomBuff : GameAction
