@@ -78,7 +78,7 @@ namespace Nekoyume.Action
                                                     $"apStoneCount : {apStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
             }
 
-            if (worldId == GameConfig.MimisbrunnrWorldId)
+            if (worldId >= GameConfig.MimisbrunnrWorldId)
             {
                 throw new InvalidWorldException(
                     $"{addressesHex} [{worldId}] can't execute HackAndSlashSweep action.");
@@ -132,23 +132,17 @@ namespace Nekoyume.Action
             {
                 // NOTE: Add new World from WorldSheet
                 worldInformation.AddAndUnlockNewWorld(worldRow, context.BlockIndex, worldSheet);
+                if (!worldInformation.TryGetWorld(worldId, out world))
+                {
+                    // Do nothing.
+                }
             }
 
-            var prevStageId = Math.Max(stageId - 1, 1);
-            worldInformation.TryGetWorldByStageId(prevStageId, out var prevStageWorld);
-
-            if (!prevStageWorld.IsStageCleared)
-            {
-                throw new StageNotClearedException(
-                    $"{addressesHex}There is no stage cleared in that world (worldId:{prevStageWorld.Id})"
-                );
-            }
-
-            if (stageId > prevStageWorld.StageClearedId + 1)
+            if (!world.IsPlayable(stageId))
             {
                 throw new InvalidStageException(
-                    $"{addressesHex}Aborted as the stage ({prevStageWorld.Id}/{prevStageId}) is not cleared; " +
-                    $"cleared stage: {prevStageWorld.StageClearedId}"
+                    $"{addressesHex}Aborted as the stage isn't playable;" +
+                    $"StageClearedId: {world.StageClearedId}"
                 );
             }
 
