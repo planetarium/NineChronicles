@@ -446,7 +446,7 @@ GameObject:
   - component: {fileID: 6782408931262313928}
   - component: {fileID: 7763228803369334000}
   m_Layer: 5
-  m_Name: item_Season
+  m_Name: Item_Season
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -872,7 +872,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4282997600
-  m_fontColor: {r: 0.3764706, g: 0.3565485, b: 0.28627452, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
