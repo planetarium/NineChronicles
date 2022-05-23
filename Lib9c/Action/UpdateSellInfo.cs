@@ -39,11 +39,11 @@ namespace Nekoyume.Action
             orderId = serialized[OrderIdKey].ToGuid();
             updateSellOrderId = serialized[updateSellOrderIdKey].ToGuid();
             tradableId = serialized[ItemIdKey].ToGuid();
-            itemSubType = (ItemSubType)serialized[ItemSubTypeKey].ToInteger();
+            itemSubType = serialized[ItemSubTypeKey].ToEnum<ItemSubType>();
             price = serialized[PriceKey].ToFungibleAssetValue();
             count = serialized[ItemCountKey].ToInteger();
         }
-        
+
         public IValue Serialize()
         {
             var dictionary = new Dictionary<IKey, IValue>
