@@ -36,7 +36,6 @@ namespace Nekoyume.Action
             var sheets = states.GetSheets(sheetTypes: new[]
             {
                 typeof(StakeRegularRewardSheet),
-                typeof(StakeAchievementRewardSheet),
                 typeof(ConsumableItemSheet),
                 typeof(CostumeItemSheet),
                 typeof(EquipmentItemSheet),
@@ -44,7 +43,6 @@ namespace Nekoyume.Action
             });
 
             var stakeRegularRewardSheet = sheets.GetSheet<StakeRegularRewardSheet>();
-            var stakeAchievementRewardSheet = sheets.GetSheet<StakeAchievementRewardSheet>();
 
             var currency = states.GetGoldCurrency();
             var stakedAmount = states.GetBalance(stakeState.address, currency);
@@ -58,6 +56,7 @@ namespace Nekoyume.Action
             int level = stakeRegularRewardSheet.FindLevelByStakedAmount(stakedAmount);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
+            var accumulatedRewards = stakeState.CalculateAccumulatedRewards(context.BlockIndex);
             foreach (var reward in rewards)
             {
                 var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);
@@ -65,30 +64,9 @@ namespace Nekoyume.Action
                 ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
                     : ItemFactory.CreateItem(row, context.Random);
-                avatarState.inventory.AddItem(item, (int) quantity);
+                avatarState.inventory.AddItem(item, (int) quantity * accumulatedRewards);
             }
 
-            int achievementRewardLevel = stakeAchievementRewardSheet.FindLevel(stakedAmount);
-            int achievementRewardStep = stakeAchievementRewardSheet.FindStep(
-                achievementRewardLevel,
-                context.BlockIndex - stakeState.StartedBlockIndex);
-            for (int i = 0; i < achievementRewardStep; ++i)
-            {
-                if (!stakeState.Achievements.Check(achievementRewardLevel, i))
-                {
-                    var step = stakeAchievementRewardSheet[achievementRewardLevel].Steps[i];
-                    foreach (var reward in step.Rewards)
-                    {
-                        ItemSheet.Row row = itemSheet[reward.ItemId];
-                        ItemBase item = row is MaterialItemSheet.Row materialRow
-                            ? ItemFactory.CreateTradableMaterial(materialRow)
-                            : ItemFactory.CreateItem(row, context.Random);
-                        avatarState.inventory.AddItem(item, reward.Quantity);
-                    }
-                }
-            }
-
-            stakeState.Achievements.Achieve(achievementRewardLevel, achievementRewardStep);
             stakeState.Claim(context.BlockIndex);
 
             return states.SetState(stakeState.address, stakeState.Serialize())

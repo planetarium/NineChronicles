@@ -107,6 +107,26 @@ namespace Nekoyume.Model.State
             ReceivedBlockIndex = blockIndex;
         }
 
+        public int CalculateAccumulatedRewards(long blockIndex)
+        {
+            int step = (int)Math.DivRem(
+                blockIndex - StartedBlockIndex,
+                RewardInterval,
+                out _
+            );
+            if (ReceivedBlockIndex > 0)
+            {
+                int previousStep = (int)Math.DivRem(
+                    ReceivedBlockIndex - StartedBlockIndex,
+                    RewardInterval,
+                    out _
+                );
+                step -= previousStep;
+            }
+
+            return step;
+        }
+
         public static Address DeriveAddress(Address agentAddress) => agentAddress.Derive("stake");
     }
 }

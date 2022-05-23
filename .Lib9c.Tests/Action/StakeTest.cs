@@ -88,15 +88,6 @@ namespace Lib9c.Tests.Action
                 Signer = _signerAddress,
                 BlockIndex = 1,
             }));
-
-            // More
-            updateAction = new Stake(100);
-            Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
-            {
-                PreviousStates = states,
-                Signer = _signerAddress,
-                BlockIndex = 1,
-            }));
         }
 
         [Fact]
@@ -138,6 +129,40 @@ namespace Lib9c.Tests.Action
             Assert.Equal(Null.Value, states.GetState(stakeState.address));
             Assert.Equal(_currency * 0, states.GetBalance(stakeState.address, _currency));
             Assert.Equal(_currency * 100, states.GetBalance(_signerAddress, _currency));
+        }
+
+        [Fact]
+        public void Update()
+        {
+            var action = new Stake(50);
+            var states = action.Execute(new ActionContext
+            {
+                PreviousStates = _initialState,
+                Signer = _signerAddress,
+                BlockIndex = 0,
+            });
+
+            states.TryGetStakeState(_signerAddress, out StakeState stakeState);
+            Assert.Equal(0, stakeState.StartedBlockIndex);
+            Assert.Equal(0 + StakeState.LockupInterval, stakeState.CancellableBlockIndex);
+            Assert.Equal(0, stakeState.ReceivedBlockIndex);
+            Assert.Equal(_currency * 50, states.GetBalance(stakeState.address, _currency));
+            Assert.Equal(_currency * 50, states.GetBalance(_signerAddress, _currency));
+
+            var updateAction = new Stake(100);
+            states = updateAction.Execute(new ActionContext
+            {
+                PreviousStates = states,
+                Signer = _signerAddress,
+                BlockIndex = 1,
+            });
+
+            states.TryGetStakeState(_signerAddress, out stakeState);
+            Assert.Equal(1, stakeState.StartedBlockIndex);
+            Assert.Equal(1 + StakeState.LockupInterval, stakeState.CancellableBlockIndex);
+            Assert.Equal(0, stakeState.ReceivedBlockIndex);
+            Assert.Equal(_currency * 100, states.GetBalance(stakeState.address, _currency));
+            Assert.Equal(_currency * 0, states.GetBalance(_signerAddress, _currency));
         }
 
         [Fact]
