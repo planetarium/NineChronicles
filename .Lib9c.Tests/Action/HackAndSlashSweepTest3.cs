@@ -16,7 +16,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class HackAndSlashSweep3Test3
+    public class HackAndSlashSweepTest3
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -36,7 +36,7 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialState;
         private readonly IRandom _random;
 
-        public HackAndSlashSweep3Test3()
+        public HackAndSlashSweepTest3()
         {
             _random = new TestRandom();
             _sheets = TableSheetsImporter.ImportSheets();
