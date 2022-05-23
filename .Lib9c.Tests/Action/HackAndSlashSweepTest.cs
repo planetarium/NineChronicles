@@ -134,8 +134,15 @@ namespace Lib9c.Tests.Action
         public void Execute(int apStoneCount, int worldId, int stageId, bool challenge, bool backward)
         {
             var gameConfigState = _initialState.GetGameConfigState();
-
             var prevStageId = stageId - 1;
+            var worldInformation = new WorldInformation(
+                    0, _initialState.GetSheet<WorldSheet>(), challenge ? prevStageId : stageId);
+
+            if (challenge)
+            {
+                worldInformation.UnlockWorld(worldId, 0,  _tableSheets.WorldSheet);
+            }
+
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
@@ -144,8 +151,7 @@ namespace Lib9c.Tests.Action
                 gameConfigState,
                 _rankingMapAddress)
             {
-                worldInformation = new WorldInformation(
-                    0, _initialState.GetSheet<WorldSheet>(), challenge ? prevStageId : stageId),
+                worldInformation = worldInformation,
                 level = 400,
             };
 
@@ -289,27 +295,6 @@ namespace Lib9c.Tests.Action
             };
 
             Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
-            {
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-            }));
-        }
-
-        [Theory]
-        [InlineData(1, 50)]
-        [InlineData(2, 51)]
-        public void Execute_StageClearedException(int worldId, int stageId)
-        {
-            var action = new HackAndSlashSweep
-            {
-                apStoneCount = 1,
-                avatarAddress = _avatarAddress,
-                worldId = worldId,
-                stageId = stageId,
-            };
-
-            Assert.Throws<StageNotClearedException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
