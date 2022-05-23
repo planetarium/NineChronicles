@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 61, y: 0}
-  m_SizeDelta: {x: 381, y: 640}
+  m_AnchoredPosition: {x: 103, y: -240}
+  m_SizeDelta: {x: 467, y: 1312}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &5738244439190873941
 CanvasRenderer:
@@ -30504,7 +30504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.14676042, g: 0.16451493, b: 0.3207547, a: 1}
+  m_Color: {r: 0.09438412, g: 0.10590958, b: 0.1981132, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -30534,7 +30534,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Direction: 1
-  m_Color1: {r: 0.745283, g: 0.745283, b: 0.745283, a: 1}
+  m_Color1: {r: 1, g: 1, b: 1, a: 1}
   m_Color2: {r: 0, g: 0, b: 0, a: 1}
   m_Color3: {r: 1, g: 1, b: 1, a: 1}
   m_Color4: {r: 1, g: 1, b: 1, a: 1}
@@ -30808,7 +30808,7 @@ PrefabInstance:
     - target: {fileID: 4350066610147198027, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 4350066610147198027, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
         type: 3}
@@ -30818,7 +30818,7 @@ PrefabInstance:
     - target: {fileID: 4350066610147198027, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 4350066610147198027, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
         type: 3}
@@ -31055,7 +31055,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
