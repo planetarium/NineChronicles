@@ -879,7 +879,12 @@ namespace Nekoyume.Game
             var infos = skillInfos.ToList();
             var infosFirstWaveTurn = infos.First().WaveTurn;
             var time = Time.time;
-            yield return new WaitUntil(() => Time.time - time > 5f ||  waveTurn == infosFirstWaveTurn);
+            // If a skill's wave turn is 0, it is casted regardless of turn.
+            if (infosFirstWaveTurn > 0)
+            {
+                yield return new WaitUntil(() => Time.time - time > 5f || waveTurn == infosFirstWaveTurn);
+            }
+
             yield return StartCoroutine(CoBeforeSkill(character));
 
             yield return StartCoroutine(func(infos));

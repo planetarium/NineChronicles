@@ -905,10 +905,14 @@ namespace Nekoyume.BlockChain
                                 .DoOnError(e => Debug.LogException(e));
                         });
 
+
+                var skillRow = new Model.Skill.BuffSkill(Game.Game.instance.TableSheets.SkillSheet[400000], 0, 100);
+                var buffSkillsOnWaveStart = new List<Model.Skill.BuffSkill>() { skillRow };
                 var simulator = new StageSimulator(
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
                     eval.Action.foods,
+                    buffSkillsOnWaveStart,
                     eval.Action.worldId,
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
@@ -1008,10 +1012,15 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
+
+
+                var skillRow = new Model.Skill.BuffSkill(Game.Game.instance.TableSheets.SkillSheet[400000], 0, 100);
+                var buffSkillsOnWaveStart = new List<Model.Skill.BuffSkill>() { skillRow };
                 var simulator = new StageSimulator(
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
                     eval.Action.foods,
+                    buffSkillsOnWaveStart,
                     eval.Action.worldId,
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
