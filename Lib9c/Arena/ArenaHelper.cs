@@ -21,7 +21,9 @@ namespace Nekoyume.Arena
         public static int GetMedalItemId(int championshipId, int round) =>
             700_000 + (championshipId * 100) + round;
 
-        public static Material GetMedal(int championshipId, int round,
+        public static Material GetMedal(
+            int championshipId,
+            int round,
             MaterialItemSheet materialItemSheet)
         {
             var itemId = GetMedalItemId(championshipId, round);
@@ -39,7 +41,7 @@ namespace Nekoyume.Arena
                     continue;
                 }
 
-                var itemId = ArenaHelper.GetMedalItemId(data.Id, data.Round);
+                var itemId = GetMedalItemId(data.Id, data.Round);
                 if (avatarState.inventory.TryGetItem(itemId, out var item))
                 {
                     count += item.count;
@@ -49,7 +51,9 @@ namespace Nekoyume.Arena
             return count;
         }
 
-        public static FungibleAssetValue GetEntranceFee(ArenaSheet.RoundData roundData, long currentBlockIndex)
+        public static FungibleAssetValue GetEntranceFee(
+            ArenaSheet.RoundData roundData,
+            long currentBlockIndex)
         {
             var fee = roundData.IsTheRoundOpened(currentBlockIndex)
                 ? roundData.EntranceFee
@@ -57,8 +61,11 @@ namespace Nekoyume.Arena
             return fee * CrystalCalculator.CRYSTAL;
         }
 
-        public static bool ValidateScoreDifference(IReadOnlyDictionary<ArenaType, (int, int)> scoreLimits,
-            ArenaType arenaType, int myScore, int enemyScore)
+        public static bool ValidateScoreDifference(
+            IReadOnlyDictionary<ArenaType, (int, int)> scoreLimits,
+            ArenaType arenaType,
+            int myScore,
+            int enemyScore)
         {
             if (arenaType.Equals(ArenaType.OffSeason))
             {
@@ -68,6 +75,15 @@ namespace Nekoyume.Arena
             var (upper, lower) = scoreLimits[arenaType];
             var diff = enemyScore - myScore;
             return lower <= diff && diff <= upper;
+        }
+
+        public static int GetCurrentTicketResetCount(
+            long currentBlockIndex,
+            long roundStartBlockIndex,
+            int interval)
+        {
+            var blockDiff = currentBlockIndex - roundStartBlockIndex;
+            return interval > 0 ? (int)(blockDiff / interval) : 0;
         }
     }
 }

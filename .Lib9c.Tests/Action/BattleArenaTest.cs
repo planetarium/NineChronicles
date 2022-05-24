@@ -35,7 +35,8 @@ namespace Lib9c.Tests.Action
         private readonly AvatarState _avatar1;
         private readonly AvatarState _avatar2;
         private readonly AvatarState _avatar3;
-        private readonly Currency _currency;
+        private readonly Currency _crystal;
+        private readonly Currency _ncg;
         private IAccountStateDelta _state;
 
         public BattleArenaTest(ITestOutputHelper outputHelper)
@@ -55,7 +56,10 @@ namespace Lib9c.Tests.Action
             }
 
             _tableSheets = new TableSheets(_sheets);
-            _currency = new Currency("CRYSTAL", 18, minters: null);
+            _crystal = new Currency("CRYSTAL", 18, minters: null);
+            _ncg = new Currency("NCG", 2, minters: null);
+            var goldCurrencyState = new GoldCurrencyState(_ncg);
+
             var rankingMapAddress = new PrivateKey().ToAddress();
             var clearStageId = Math.Max(
                 _tableSheets.StageSheet.First?.Id ?? 1,
@@ -93,6 +97,7 @@ namespace Lib9c.Tests.Action
             _avatar3Address = avatar3State.address;
 
             _state = _state
+                .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize())
                 .SetState(_agent1Address, agent1State.Serialize())
                 .SetState(_avatar1Address.Derive(LegacyInventoryKey), _avatar1.inventory.Serialize())
                 .SetState(_avatar1Address.Derive(LegacyWorldInformationKey), _avatar1.worldInformation.Serialize())
@@ -169,7 +174,7 @@ namespace Lib9c.Tests.Action
 
         public IAccountStateDelta JoinArena(Address signer, Address avatarAddress, long blockIndex, int championshipId, int round, IRandom random)
         {
-            var preCurrency = 1000 * _currency;
+            var preCurrency = 1000 * _crystal;
             _state = _state.MintAsset(signer, preCurrency);
 
             var action = new JoinArena()
@@ -193,13 +198,17 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1, 3)]
-        [InlineData(1, 1, 1, 4)]
-        [InlineData(1, 1, 5, 0)]
-        [InlineData(1, 1, 5, 1)]
-        [InlineData(1, 2, 5, 0)]
-        [InlineData(1, 2, 5, 1)]
-        public void Execute(int championshipId, int round, int ticket, int randomSeed)
+        [InlineData(1, 1, 1, 1, 3)]
+        [InlineData(1, 1, 1, 1, 4)]
+        [InlineData(1, 1, 1, 5, 0)]
+        [InlineData(1, 1, 1, 5, 1)]
+        [InlineData(1, 1, 1, 8, 0)]
+        [InlineData(1, 1, 1, 8, 1)]
+        [InlineData(1, 1, 1, 12, 0)]
+        [InlineData(1, 1, 1, 12, 1)]
+        [InlineData(1, 1, 2, 5, 0)]
+        [InlineData(1, 1, 2, 5, 1)]
+        public void Execute(long nextBlockIndex, int championshipId, int round, int ticket, int randomSeed)
         {
             var arenaSheet = _state.GetSheet<ArenaSheet>();
             if (!arenaSheet.TryGetValue(championshipId, out var row))
@@ -218,6 +227,23 @@ namespace Lib9c.Tests.Action
             _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
             _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
 
+            var arenaInfoAdr = ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
+            if (!_state.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
+            {
+                throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
+            }
+
+            var usedTicket = 2;
+            beforeInfo.UseTicket(usedTicket);
+            _state = _state.SetState(arenaInfoAdr, beforeInfo.Serialize());
+
+            var buyTicket = ticket - beforeInfo.Ticket;
+            if (buyTicket > 0)
+            {
+                var currency = buyTicket * _ncg * roundData.TicketPrice;
+                _state = _state.MintAsset(_agent1Address, currency);
+            }
+
             var action = new BattleArena()
             {
                 myAvatarAddress = _avatar1Address,
@@ -231,7 +257,6 @@ namespace Lib9c.Tests.Action
 
             var myScoreAdr = ArenaScore.DeriveAddress(_avatar1Address, championshipId, round);
             var enemyScoreAdr = ArenaScore.DeriveAddress(_avatar2Address, championshipId, round);
-            var arenaInfoAdr = ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
             if (!_state.TryGetArenaScore(myScoreAdr, out var beforeMyScore))
             {
                 throw new ArenaScoreNotFoundException($"myScoreAdr : {myScoreAdr}");
@@ -242,20 +267,16 @@ namespace Lib9c.Tests.Action
                 throw new ArenaScoreNotFoundException($"enemyScoreAdr : {enemyScoreAdr}");
             }
 
-            if (!_state.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
-            {
-                throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
-            }
-
             Assert.Empty(_avatar1.inventory.Materials);
 
+            var blockIndex = roundData.StartBlockIndex + nextBlockIndex;
             _state = action.Execute(new ActionContext
             {
                 PreviousStates = _state,
                 Signer = _agent1Address,
                 Random = random,
                 Rehearsal = false,
-                BlockIndex = roundData.StartBlockIndex + 1,
+                BlockIndex = blockIndex,
             });
 
             if (!_state.TryGetArenaScore(myScoreAdr, out var myAfterScore))
@@ -283,11 +304,15 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(expectedMyScore, myAfterScore.Score);
             Assert.Equal(expectedEnemyScore, enemyAfterScore.Score);
-            Assert.Equal(ArenaInformation.MaxTicketCount, beforeInfo.Ticket);
+            Assert.Equal(ArenaInformation.MaxTicketCount - usedTicket, beforeInfo.Ticket);
             Assert.Equal(0, beforeInfo.Win);
             Assert.Equal(0, beforeInfo.Lose);
-            Assert.Equal(beforeInfo.Ticket - ticket, afterInfo.Ticket);
-            Assert.Equal(beforeInfo.Ticket, afterInfo.Win + afterInfo.Lose + afterInfo.Ticket);
+
+            var useTicket = Math.Min(ticket, beforeInfo.Ticket);
+            Assert.Equal(beforeInfo.Ticket - useTicket, afterInfo.Ticket);
+            Assert.Equal(ticket, afterInfo.Win + afterInfo.Lose);
+            var balance = _state.GetBalance(_agent1Address, _state.GetGoldCurrency());
+            Assert.Equal(0, balance.RawValue);
 
             var avatarState = _state.GetAvatarStateV2(_avatar1Address);
             var medalCount = 0;
