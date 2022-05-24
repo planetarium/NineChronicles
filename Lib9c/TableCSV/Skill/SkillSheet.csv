@@ -57,3 +57,4 @@ _250001,속도 증가(전체),Normal,Buff,SpeedBuff,Ally,1,1 // 미구현
 250004,속도 증가,Normal,Buff,SpeedBuff,Self,1,10
 300000,힐,Normal,Heal,Heal,Self,1,10
 _300001,힐(전체),Normal,Heal,Heal,Ally,1,1 // 미구현
+400000,다중 버프(테스트),Normal,Buff,Buff,Self,1,999
