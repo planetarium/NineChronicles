@@ -114,6 +114,7 @@ namespace Nekoyume.Action
                 {
                     typeof(WorldSheet),
                     typeof(StageSheet),
+                    typeof(SkillSheet),
                     typeof(QuestRewardSheet),
                     typeof(QuestItemRewardSheet),
                     typeof(EquipmentItemRecipeSheet),
@@ -233,10 +234,15 @@ namespace Nekoyume.Action
             }
 
             sw.Restart();
+
+            var skillRow = new Model.Skill.BuffSkill(sheets.GetSheet<SkillSheet>()[400000], 0, 100);
+            var buffSkillsOnWaveStart = new List<Model.Skill.BuffSkill>() { skillRow }; 
+
             var simulator = new StageSimulator(
                 ctx.Random,
                 avatarState,
                 foods,
+                buffSkillsOnWaveStart,
                 worldId,
                 stageId,
                 sheets.GetStageSimulatorSheets(),
