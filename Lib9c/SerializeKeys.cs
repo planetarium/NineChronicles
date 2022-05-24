@@ -158,5 +158,15 @@ namespace Lib9c
         public const string CompletedQuestIdsKeyDeprecated = "completedQuestIds";
 
         public const string updateSellOrderIdKey = "roi";
+
+        // Arena
+        public const string MyAvatarAddressKey = "maa";
+        public const string EnemyAvatarAddressKey = "eaa";
+        public const string ChampionshipIdKey = "chi";
+        public const string RoundKey = "rd";
+        public const string TicketKey = "tk";
+        public const string CostumesKey = "cs";
+        public const string EquipmentsKey = "es";
+
     }
 }

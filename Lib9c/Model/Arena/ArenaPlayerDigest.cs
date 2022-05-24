@@ -33,8 +33,8 @@ namespace Nekoyume.Model.Arena
             TailIndex = avatarState.tail;
 
             Level = arenaAvatarState.Level;
-            Costumes = avatarState.GetItems<Costume>(arenaAvatarState.Costumes);
-            Equipments = avatarState.GetItems<Equipment>(arenaAvatarState.Equipments);;
+            Costumes = avatarState.GetNonFungibleItems<Costume>(arenaAvatarState.Costumes);
+            Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);;
         }
 
         public ArenaPlayerDigest(List serialized)

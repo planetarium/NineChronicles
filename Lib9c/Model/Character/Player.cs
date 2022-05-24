@@ -170,11 +170,6 @@ namespace Nekoyume.Model
                  enemyPlayerDigest.CharacterId,
                  enemyPlayerDigest.Level)
         {
-            weapon = null;
-            armor = null;
-            belt = null;
-            necklace = null;
-            ring = null;
             Inventory = new Inventory();
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();

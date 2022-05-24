@@ -45,27 +45,27 @@ namespace Nekoyume.Action
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
             {
-                ["myAvatarAddress"] = myAvatarAddress.Serialize(),
-                ["enemyAvatarAddress"] = enemyAvatarAddress.Serialize(),
-                ["championshipId"] = championshipId.Serialize(),
-                ["round"] = round.Serialize(),
-                ["ticket"] = ticket.Serialize(),
-                ["costumes"] = new List(costumes
+                [MyAvatarAddressKey] = myAvatarAddress.Serialize(),
+                [EnemyAvatarAddressKey] = enemyAvatarAddress.Serialize(),
+                [ChampionshipIdKey] = championshipId.Serialize(),
+                [RoundKey] = round.Serialize(),
+                [TicketKey] = ticket.Serialize(),
+                [CostumesKey] = new List(costumes
                     .OrderBy(element => element).Select(e => e.Serialize())),
-                ["equipments"] = new List(equipments
+                [EquipmentsKey] = new List(equipments
                     .OrderBy(element => element).Select(e => e.Serialize())),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            myAvatarAddress = plainValue["myAvatarAddress"].ToAddress();
-            enemyAvatarAddress = plainValue["enemyAvatarAddress"].ToAddress();
-            championshipId = plainValue["championshipId"].ToInteger();
-            round = plainValue["round"].ToInteger();
-            ticket = plainValue["ticket"].ToInteger();
-            costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
-            equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
+            myAvatarAddress = plainValue[MyAvatarAddressKey].ToAddress();
+            enemyAvatarAddress = plainValue[EnemyAvatarAddressKey].ToAddress();
+            championshipId = plainValue[ChampionshipIdKey].ToInteger();
+            round = plainValue[RoundKey].ToInteger();
+            ticket = plainValue[TicketKey].ToInteger();
+            costumes = ((List)plainValue[CostumesKey]).Select(e => e.ToGuid()).ToList();
+            equipments = ((List)plainValue[EquipmentsKey]).Select(e => e.ToGuid()).ToList();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)

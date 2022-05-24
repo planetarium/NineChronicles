@@ -983,7 +983,7 @@ namespace Nekoyume.Model.State
             return BitConverter.ToInt32(hash, 0);
         }
 
-        public List<T> GetItems<T>(List<Guid> itemIds)
+        public List<T> GetNonFungibleItems<T>(List<Guid> itemIds)
         {
             var items = new List<T>();
             foreach (var nonFungibleId in itemIds)
