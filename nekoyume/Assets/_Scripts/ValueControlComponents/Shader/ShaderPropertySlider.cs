@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume.ShaderComponents
+namespace Nekoyume.ValueControlComponents.Shader
 {
     [ExecuteInEditMode]
-    public class ShaderPropertyController : MonoBehaviour
+    public class ShaderPropertySlider : ValueSlider
     {
         [SerializeField]
         private Graphic _graphic;
@@ -12,18 +12,17 @@ namespace Nekoyume.ShaderComponents
         [SerializeField]
         private string _propertyName;
 
-        [SerializeField]
-        private float _value;
-
-        private void Update()
+        protected override void Update()
         {
+            base.Update();
+
             if (_graphic is null ||
                 string.IsNullOrEmpty(_propertyName))
             {
                 return;
             }
 
-            _graphic.material.SetFloat(_propertyName, _value);
+            _graphic.material.SetFloat(_propertyName, Value);
         }
     }
 }
