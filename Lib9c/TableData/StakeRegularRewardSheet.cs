@@ -110,7 +110,7 @@ namespace Nekoyume.TableData
             var orderedRows = Values.OrderBy(row => row.RequiredGold).ToList();
             for (int i = 0; i < orderedRows.Count - 1; ++i)
             {
-                if (balance.Currency * orderedRows[i].RequiredGold < balance &&
+                if (balance.Currency * orderedRows[i].RequiredGold <= balance &&
                     balance < balance.Currency * orderedRows[i + 1].RequiredGold)
                 {
                     return orderedRows[i].Level;

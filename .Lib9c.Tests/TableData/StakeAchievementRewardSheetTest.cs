@@ -1,10 +1,21 @@
 namespace Lib9c.Tests.TableData
 {
+    using Libplanet.Assets;
     using Nekoyume.TableData;
     using Xunit;
 
     public class StakeAchievementRewardSheetTest
     {
+        private readonly StakeAchievementRewardSheet _sheet;
+        private readonly Currency _currency;
+
+        public StakeAchievementRewardSheetTest()
+        {
+            _sheet = new TableSheets(TableSheetsImporter.ImportSheets())
+                .StakeAchievementRewardSheet;
+            _currency = new Currency("NCG", 2, minters: null);
+        }
+
         [Fact]
         public void SetToSheet()
         {
@@ -50,6 +61,15 @@ namespace Lib9c.Tests.TableData
             Assert.Equal(2, sheet[1].Steps[1].Rewards.Count);
             Assert.Equal(500000, sheet[0].Steps[1].Rewards[1].ItemId);
             Assert.Equal(2, sheet[0].Steps[1].Rewards[1].Quantity);
+        }
+
+        [Theory]
+        [InlineData(10, 0)]
+        [InlineData(90, 0)]
+        [InlineData(100, 1)]
+        public void FindLevel(int balance, int expectedLevel)
+        {
+            Assert.Equal(expectedLevel, _sheet.FindLevel(balance * _currency));
         }
     }
 }
