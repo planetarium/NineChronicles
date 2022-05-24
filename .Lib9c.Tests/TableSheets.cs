@@ -147,6 +147,10 @@ namespace Lib9c.Tests
 
         public CrystalMaterialCostSheet CrystalMaterialCostSheet { get; private set; }
 
+        public CrystalStageBuffGachaSheet CrystalStageBuffGachaSheet { get; private set; }
+
+        public CrystalRandomBuffSheet CrystalRandomBuffSheet { get; private set; }
+
         public ArenaSheet ArenaSheet { get; private set; }
 
         public void ItemSheetInitialize()
