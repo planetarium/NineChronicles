@@ -85,6 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8032183764374797593}
   - component: {fileID: 4152273415524904762}
+  - component: {fileID: 6643079804338421610}
   m_Layer: 5
   m_Name: UI_ArenaJoin
   m_TagString: Untagged
@@ -143,6 +144,25 @@ MonoBehaviour:
   _paymentButton: {fileID: 8129093412365192765}
   _earlyPaymentButton: {fileID: 3751603690216505974}
   _backButton: {fileID: 5201403983621810755}
+--- !u!95 &6643079804338421610
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 626583053772561925}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 793a2b01cc7663042b687e8fb3acaf29, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &648160265478679257
 GameObject:
   m_ObjectHideFlags: 0
@@ -30825,6 +30845,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4487763254202746880, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4759704002689620491, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
         type: 3}
       propertyPath: m_Enabled
@@ -31715,6 +31740,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6772403724807335520, guid: cc962a46f90dc234c8b0ae136474a8a6,
+        type: 3}
+      propertyPath: _value
+      value: 0.44554
       objectReference: {fileID: 0}
     - target: {fileID: 7262967264558872911, guid: cc962a46f90dc234c8b0ae136474a8a6,
         type: 3}
