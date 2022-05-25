@@ -60,10 +60,15 @@ namespace Nekoyume.UI
             _joinButton.onClick.AsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                // Find<ArenaBoard>().Show();
+                Find<ArenaBoard>().Show();
                 Close();
             }).AddTo(gameObject);
-            _paymentButton.onClick.AsObservable().Subscribe().AddTo(gameObject);
+            _paymentButton.onClick.AsObservable().Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                Find<ArenaBoard>().Show();
+                Close();
+            }).AddTo(gameObject);
             _earlyPaymentButton.onClick.AsObservable().Subscribe().AddTo(gameObject);
 
             CloseWidget = () =>
@@ -86,18 +91,6 @@ namespace Nekoyume.UI
         {
             _disposables.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
-        }
-
-        private IList<ArenaJoinSeasonItemData> GetScrollData()
-        {
-#if UNITY_EDITOR
-            if (_useSo && _so)
-            {
-                return _so.ArenaDataList.Select(data => data.ItemData).ToList();
-            }
-#endif
-
-            return new List<ArenaJoinSeasonItemData>();
         }
 
         private void InitializeScrolls(IList<IDisposable> disposables)
@@ -129,6 +122,18 @@ namespace Nekoyume.UI
                     UpdateButtons();
                 })
                 .AddTo(disposables);
+        }
+
+        private IList<ArenaJoinSeasonItemData> GetScrollData()
+        {
+#if UNITY_EDITOR
+            if (_useSo && _so)
+            {
+                return _so.ArenaDataList.Select(data => data.ItemData).ToList();
+            }
+#endif
+
+            return new List<ArenaJoinSeasonItemData>();
         }
 
         private IList<ArenaJoinSeasonBarItemData> GetBarScrollData(
