@@ -23,6 +23,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/620
     /// Updated at https://github.com/planetarium/lib9c/pull/861
     /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Updated at https://github.com/planetarium/lib9c/pull/1022
     /// </summary>
     [Serializable]
     [ActionType("update_sell3")]
@@ -112,7 +113,7 @@ namespace Nekoyume.Action
                 var digestList = new OrderDigestListState(rawList);
 
                 // migration method
-                avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress); // Todo
+                avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress); 
                 avatarState.inventory.ReconfigureFungibleItem(digestList, updateSellInfo.tradableId);
                 avatarState.inventory.LockByReferringToDigestList(digestList, updateSellInfo.tradableId,
                     context.BlockIndex);
