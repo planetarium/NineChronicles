@@ -96,16 +96,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(0, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
 
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
-            const int level = 1;  // Expect requiredGold = 100. Assertions for synchronization with the table data.
-            Assert.Equal(100, _tableSheets.StakeAchievementRewardSheet[level].Steps[0].RequiredGold);
-            Assert.Equal(
-                StakeState.RewardInterval,
-                _tableSheets.StakeAchievementRewardSheet[level].Steps[0].RequiredBlockIndex);
-
             Assert.Equal(StakeState.LockupInterval, stakeState.ReceivedBlockIndex);
-
-            // ClaimStakeReward v0 doesn't claim achievement rewards.
-            Assert.False(stakeState.Achievements.Check(level, 1));
         }
 
         [Fact]
