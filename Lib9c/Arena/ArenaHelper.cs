@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Battle;
 using Nekoyume.Helper;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -21,7 +23,9 @@ namespace Nekoyume.Arena
         public static int GetMedalItemId(int championshipId, int round) =>
             700_000 + (championshipId * 100) + round;
 
-        public static Material GetMedal(int championshipId, int round,
+        public static Material GetMedal(
+            int championshipId,
+            int round,
             MaterialItemSheet materialItemSheet)
         {
             var itemId = GetMedalItemId(championshipId, round);
@@ -39,7 +43,7 @@ namespace Nekoyume.Arena
                     continue;
                 }
 
-                var itemId = ArenaHelper.GetMedalItemId(data.Id, data.Round);
+                var itemId = GetMedalItemId(data.Id, data.Round);
                 if (avatarState.inventory.TryGetItem(itemId, out var item))
                 {
                     count += item.count;
@@ -49,7 +53,9 @@ namespace Nekoyume.Arena
             return count;
         }
 
-        public static FungibleAssetValue GetEntranceFee(ArenaSheet.RoundData roundData, long currentBlockIndex)
+        public static FungibleAssetValue GetEntranceFee(
+            ArenaSheet.RoundData roundData,
+            long currentBlockIndex)
         {
             var fee = roundData.IsTheRoundOpened(currentBlockIndex)
                 ? roundData.EntranceFee
@@ -57,8 +63,11 @@ namespace Nekoyume.Arena
             return fee * CrystalCalculator.CRYSTAL;
         }
 
-        public static bool ValidateScoreDifference(IReadOnlyDictionary<ArenaType, (int, int)> scoreLimits,
-            ArenaType arenaType, int myScore, int enemyScore)
+        public static bool ValidateScoreDifference(
+            IReadOnlyDictionary<ArenaType, (int, int)> scoreLimits,
+            ArenaType arenaType,
+            int myScore,
+            int enemyScore)
         {
             if (arenaType.Equals(ArenaType.OffSeason))
             {
@@ -68,6 +77,56 @@ namespace Nekoyume.Arena
             var (upper, lower) = scoreLimits[arenaType];
             var diff = enemyScore - myScore;
             return lower <= diff && diff <= upper;
+        }
+
+        public static int GetCurrentTicketResetCount(
+            long currentBlockIndex,
+            long roundStartBlockIndex,
+            int interval)
+        {
+            var blockDiff = currentBlockIndex - roundStartBlockIndex;
+            return interval > 0 ? (int)(blockDiff / interval) : 0;
+        }
+
+        public static (int, int, int) GetScores(int myScore, int enemyScore)
+        {
+            var (myWinScore, enemyWinScore) = ArenaScoreHelper.GetScore(
+                myScore, enemyScore, BattleLog.Result.Win);
+
+            var (myDefeatScore, _) = ArenaScoreHelper.GetScore(
+                myScore, enemyScore, BattleLog.Result.Lose);
+
+            return (myWinScore, myDefeatScore, enemyWinScore);
+        }
+
+        public static int GetRewardCount(int score)
+        {
+            if (score >= 1800)
+            {
+                return 6;
+            }
+
+            if (score >= 1400)
+            {
+                return 5;
+            }
+
+            if (score >= 1200)
+            {
+                return 4;
+            }
+
+            if (score >= 1100)
+            {
+                return 3;
+            }
+
+            if (score >= 1001)
+            {
+                return 2;
+            }
+
+            return 1;
         }
     }
 }

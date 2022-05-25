@@ -21,14 +21,14 @@ namespace Nekoyume.TableData
             public int RequiredMedalCount { get; }
             public long EntranceFee { get; }
             public long DiscountedEntranceFee { get; }
-            public decimal TicketPrice { get; }
-            public decimal AdditionalTicketPrice { get; }
+            public long TicketPrice { get; }
+            public long AdditionalTicketPrice { get; }
 
             public RoundData(int id, int round, ArenaType arenaType,
                 long startBlockIndex, long endBlockIndex,
                 int requiredMedalCount,
                 long entranceFee, long discountedEntranceFee,
-                decimal ticketPrice, decimal additionalTicketPrice)
+                long ticketPrice, long additionalTicketPrice)
             {
                 Id = id;
                 Round = round;
@@ -65,8 +65,8 @@ namespace Nekoyume.TableData
                 var requiredWins = ParseInt(fields[5]);
                 var entranceFee = ParseLong(fields[6]);
                 var discountedEntranceFee = ParseLong(fields[7]);
-                var ticketPrice = ParseDecimal(fields[8]);
-                var additionalTicketPrice = ParseDecimal(fields[9]);
+                var ticketPrice = ParseLong(fields[8]);
+                var additionalTicketPrice = ParseLong(fields[9]);
                 Round = new List<RoundData>
                 {
                     new RoundData(Id, round, arenaType, startIndex, endIndex,

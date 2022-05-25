@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Battle;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -84,6 +85,12 @@ namespace Nekoyume.Model
         private EnemyPlayer(EnemyPlayer value) : base(value)
         {
             NameWithHash = value.NameWithHash;
+        }
+
+        public EnemyPlayer(ArenaPlayerDigest arenaPlayerDigest, ArenaSimulatorSheets simulatorSheets)
+            : base(arenaPlayerDigest, simulatorSheets)
+        {
+            NameWithHash = arenaPlayerDigest.NameWithHash;
         }
 
         public override void Spawn()
