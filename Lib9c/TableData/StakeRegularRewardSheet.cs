@@ -10,7 +10,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class StakeRegularRewardSheet : Sheet<int, StakeRegularRewardSheet.Row>
+    public class StakeRegularRewardSheet : Sheet<int, StakeRegularRewardSheet.Row>, IStakeRewardSheet
     {
         [Serializable]
         public class RewardInfo
@@ -65,7 +65,7 @@ namespace Nekoyume.TableData
         }
 
         [Serializable]
-        public class Row : SheetRow<int>
+        public class Row : SheetRow<int>, IStakeRewardRow
         {
             public override int Key => Level;
 
@@ -105,19 +105,6 @@ namespace Nekoyume.TableData
             row.Rewards.Add(value.Rewards[0]);
         }
 
-        public int FindLevelByStakedAmount(FungibleAssetValue balance)
-        {
-            var orderedRows = Values.OrderBy(row => row.RequiredGold).ToList();
-            for (int i = 0; i < orderedRows.Count - 1; ++i)
-            {
-                if (balance.Currency * orderedRows[i].RequiredGold <= balance &&
-                    balance < balance.Currency * orderedRows[i + 1].RequiredGold)
-                {
-                    return orderedRows[i].Level;
-                }
-            }
-
-            return orderedRows.Last().Level;
-        }
+        public IReadOnlyList<IStakeRewardRow> OrderedRows => OrderedList;
     }
 }
