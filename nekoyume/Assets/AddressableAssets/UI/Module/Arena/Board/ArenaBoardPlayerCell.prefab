@@ -986,6 +986,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8700826853826352304}
+  - component: {fileID: 1006971833536458844}
   - component: {fileID: 4178482879041537418}
   m_Layer: 5
   m_Name: ArenaBoardPlayerCell
@@ -1014,6 +1015,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1006971833536458844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5773881229359566665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2e91801453c4133a9481a311e963471, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!95 &4178482879041537418
 Animator:
   serializedVersion: 3
