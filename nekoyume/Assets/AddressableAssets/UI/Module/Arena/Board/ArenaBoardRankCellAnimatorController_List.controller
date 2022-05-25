@@ -42,7 +42,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: be9d8e20b7f9b42259343240f864cecc, type: 2}
+  m_Motion: {fileID: 7400000, guid: ffa61ff7dd95b4ef59ec4888767ed627, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -77,7 +77,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ArenaChoiceRankCellAnimatorController
+  m_Name: ArenaBoardRankCellAnimatorController_List
   serializedVersion: 5
   m_AnimatorParameters: []
   m_AnimatorLayers:
