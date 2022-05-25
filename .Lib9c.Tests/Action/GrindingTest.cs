@@ -1,7 +1,6 @@
 namespace Lib9c.Tests.Action
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using Libplanet;
@@ -10,7 +9,6 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Helper;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
@@ -27,7 +25,8 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly AgentState _agentState;
         private readonly AvatarState _avatarState;
-        private readonly Currency _currency;
+        private readonly Currency _crystalCurrency;
+        private readonly Currency _ncgCurrency;
         private readonly IAccountStateDelta _initialState;
 
         public GrindingTest()
@@ -37,7 +36,7 @@ namespace Lib9c.Tests.Action
             _tableSheets = new TableSheets(sheets);
             _agentAddress = new PrivateKey().ToAddress();
             _avatarAddress = new PrivateKey().ToAddress();
-            _currency = new Currency("CRYSTAL", 18, minters: null);
+            _crystalCurrency = new Currency("CRYSTAL", 18, minters: null);
             var gameConfigState = new GameConfigState(sheets[nameof(GameConfigSheet)]);
 
             _agentState = new AgentState(_agentAddress);
@@ -52,6 +51,9 @@ namespace Lib9c.Tests.Action
 
             _agentState.avatarAddresses.Add(0, _avatarAddress);
 
+            _ncgCurrency = new Currency("NCG", 2, minters: null);
+            var goldCurrencyState = new GoldCurrencyState(_ncgCurrency);
+
             _initialState = new State()
                 .SetState(
                     Addresses.GetSheetAddress<CrystalMonsterCollectionMultiplierSheet>(),
@@ -62,34 +64,41 @@ namespace Lib9c.Tests.Action
                 .SetState(
                     Addresses.GetSheetAddress<MaterialItemSheet>(),
                     _tableSheets.MaterialItemSheet.Serialize())
+                .SetState(
+                    Addresses.GetSheetAddress<StakeRegularRewardSheet>(),
+                    _tableSheets.StakeRegularRewardSheet.Serialize())
+                .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize())
                 .SetState(Addresses.GameConfig, gameConfigState.Serialize());
         }
 
         [Theory]
-        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, 0, 200, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, 0, 500, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 0, 500, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 0, false, true, 3, 260, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 4, 700, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, false, 0, 200, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, false, 0, 500, 1, null)]
+        // Multiply by StakeState.
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, false, 0, 500, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, true, false, 1, 220, 1, null)]
+        // Multiply by legacy MonsterCollectionState.
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 500, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, true, 1, 220, 1, null)]
         // Charge AP.
-        [InlineData(true, true, 0, true, true, true, 1, 0, false, false, 0, 200, 1, null)]
+        [InlineData(true, true, 0, true, true, true, 1, 0, false, false, false, 0, 200, 1, null)]
         // Invalid equipment count.
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 4, 280, 0, typeof(InvalidItemCountException))]
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 4, 280, 11, typeof(InvalidItemCountException))]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 200, 0, typeof(InvalidItemCountException))]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 200, 11, typeof(InvalidItemCountException))]
         // AgentState not exist.
-        [InlineData(false, true, 120, false, false, false, 1, 0, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
+        [InlineData(false, true, 120, false, false, false, 1, 0, false, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
         // AvatarState not exist.
-        [InlineData(true, false, 120, false, false, false, 1, 0, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
+        [InlineData(true, false, 120, false, false, false, 1, 0, false, false, false, 0, 0, 1, typeof(FailedLoadStateException))]
         // Required more ActionPoint.
-        [InlineData(true, true, 0, false, false, false, 1, 0, false, false, 0, 0, 1, typeof(NotEnoughActionPointException))]
+        [InlineData(true, true, 0, false, false, false, 1, 0, false, false, false, 0, 0, 1, typeof(NotEnoughActionPointException))]
         // Failed Charge AP.
-        [InlineData(true, true, 0, true, false, false, 1, 0, false, false, 0, 100, 1, typeof(NotEnoughMaterialException))]
+        [InlineData(true, true, 0, true, false, false, 1, 0, false, false, false, 0, 100, 1, typeof(NotEnoughMaterialException))]
         // Equipment not exist.
-        [InlineData(true, true, 120, false, false, false, 1, 0, false, false, 0, 0, 1, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, 120, false, false, false, 1, 0, false, false, false, 0, 0, 1, typeof(ItemDoesNotExistException))]
         // Locked equipment.
-        [InlineData(true, true, 120, false, false, true, 100, 0, false, false, 0, 0, 1, typeof(RequiredBlockIndexException))]
+        [InlineData(true, true, 120, false, false, true, 100, 0, false, false, false, 0, 0, 1, typeof(RequiredBlockIndexException))]
         // Equipped equipment.
-        [InlineData(true, true, 120, false, false, true, 1, 0, true, false, 0, 100, 1, typeof(InvalidEquipmentException))]
+        [InlineData(true, true, 120, false, false, true, 1, 0, true, false, false, 0, 100, 1, typeof(InvalidEquipmentException))]
         public void Execute(
             bool agentExist,
             bool avatarExist,
@@ -100,6 +109,7 @@ namespace Lib9c.Tests.Action
             long requiredBlockIndex,
             int itemLevel,
             bool equipped,
+            bool stake,
             bool monsterCollect,
             int monsterCollectLevel,
             int totalAsset,
@@ -145,17 +155,35 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
 
-                Assert.Equal(0 * _currency, state.GetBalance(_avatarAddress, _currency));
+                Assert.Equal(0 * _crystalCurrency, state.GetBalance(_avatarAddress, _crystalCurrency));
             }
 
-            if (monsterCollect)
+            if (stake || monsterCollect)
             {
-                var mcAddress = MonsterCollectionState.DeriveAddress(_agentAddress, 0);
-                state = state
-                    .SetState(
-                        mcAddress,
-                        new MonsterCollectionState(mcAddress, monsterCollectLevel, 1).Serialize()
-                    );
+                // StakeState;
+                var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
+                var stakeState = new StakeState(stakeStateAddress, 1);
+                var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
+                    .First(r => r.Level == monsterCollectLevel).RequiredGold;
+
+                if (stake)
+                {
+                    state = state
+                        .SetState(stakeStateAddress, stakeState.SerializeV2())
+                        .MintAsset(stakeStateAddress, requiredGold * _ncgCurrency);
+                }
+
+                if (monsterCollect)
+                {
+                    var mcAddress = MonsterCollectionState.DeriveAddress(_agentAddress, 0);
+                    state = state
+                        .SetState(
+                            mcAddress,
+                            new MonsterCollectionState(mcAddress, monsterCollectLevel, 1)
+                                .Serialize()
+                        )
+                        .MintAsset(mcAddress, requiredGold * _ncgCurrency);
+                }
             }
 
             var equipmentIds = new List<Guid>();
@@ -184,9 +212,9 @@ namespace Lib9c.Tests.Action
                 });
 
                 var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-                FungibleAssetValue asset = totalAsset * _currency;
+                FungibleAssetValue asset = totalAsset * _crystalCurrency;
 
-                Assert.Equal(asset, nextState.GetBalance(_agentAddress, _currency));
+                Assert.Equal(asset, nextState.GetBalance(_agentAddress, _crystalCurrency));
                 Assert.False(nextAvatarState.inventory.HasNonFungibleItem(default));
                 Assert.Equal(115, nextAvatarState.actionPoint);
 

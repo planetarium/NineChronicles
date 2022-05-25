@@ -196,7 +196,8 @@ namespace Nekoyume.Action
                 typeof(EnhancementCostSheetV2),
                 typeof(MaterialItemSheet),
                 typeof(CrystalEquipmentGrindingSheet),
-                typeof(CrystalMonsterCollectionMultiplierSheet)
+                typeof(CrystalMonsterCollectionMultiplierSheet),
+                typeof(StakeRegularRewardSheet)
             });
 
             var enhancementCostSheet = sheets.GetSheet<EnhancementCostSheetV2>();
@@ -305,16 +306,30 @@ namespace Nekoyume.Action
                     context.Signer,
                     agentState.MonsterCollectionRound
                 );
-                int monsterCollectionLevel = 0;
-                if (states.TryGetState(monsterCollectionAddress, out Dictionary mcDict))
+
+                Currency currency = states.GetGoldCurrency();
+                FungibleAssetValue stakedAmount = 0 * currency;
+                if (states.TryGetStakeState(context.Signer, out StakeState stakeState))
                 {
-                    var monsterCollectionState = new MonsterCollectionState(mcDict);
-                    monsterCollectionLevel = monsterCollectionState.Level;
+                    stakedAmount = states.GetBalance(stakeState.address, currency);
+                }
+                else
+                {
+                    if (states.TryGetState(monsterCollectionAddress, out Dictionary _))
+                    {
+                        stakedAmount = states.GetBalance(monsterCollectionAddress, currency);
+                    }
                 }
 
-                crystal = CrystalCalculator.CalculateCrystal(new [] { preItemUsable },
-                    sheets.GetSheet<CrystalEquipmentGrindingSheet>(), monsterCollectionLevel,
-                    sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>(), true);
+                crystal = CrystalCalculator.CalculateCrystal(
+                    context.Signer,
+                    new [] { preItemUsable },
+                    stakedAmount,
+                    true,
+                    sheets.GetSheet<CrystalEquipmentGrindingSheet>(),
+                    sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>(),
+                    sheets.GetSheet<StakeRegularRewardSheet>()
+                );
 
                 if (crystal > 0 * CrystalCalculator.CRYSTAL)
                 {

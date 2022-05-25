@@ -3,7 +3,7 @@ namespace Lib9c.Tests
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Numerics;
+    using Libplanet.Assets;
     using Nekoyume.Helper;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
@@ -17,6 +17,7 @@ namespace Lib9c.Tests
         private readonly EquipmentItemRecipeSheet _equipmentItemRecipeSheet;
         private readonly WorldUnlockSheet _worldUnlockSheet;
         private readonly CrystalMaterialCostSheet _crystalMaterialCostSheet;
+        private readonly Currency _ncgCurrency;
 
         public CrystalCalculatorTest()
         {
@@ -24,6 +25,7 @@ namespace Lib9c.Tests
             _equipmentItemRecipeSheet = _tableSheets.EquipmentItemRecipeSheet;
             _worldUnlockSheet = _tableSheets.WorldUnlockSheet;
             _crystalMaterialCostSheet = _tableSheets.CrystalMaterialCostSheet;
+            _ncgCurrency = new Currency("NCG", 2, minters: null);
         }
 
         [Theory]
@@ -44,7 +46,7 @@ namespace Lib9c.Tests
 
         [Theory]
         [ClassData(typeof(CalculateCrystalData))]
-        public void CalculateCrystal((int EquipmentId, int Level)[] equipmentInfos, int monsterCollectionLevel, bool enhancementFailed, int expected)
+        public void CalculateCrystal((int EquipmentId, int Level)[] equipmentInfos, int stakedAmount, bool enhancementFailed, int expected)
         {
             var equipmentList = new List<Equipment>();
             foreach (var (equipmentId, level) in equipmentInfos)
@@ -56,11 +58,13 @@ namespace Lib9c.Tests
             }
 
             var actual = CrystalCalculator.CalculateCrystal(
+                default,
                 equipmentList,
+                stakedAmount * _ncgCurrency,
+                enhancementFailed,
                 _tableSheets.CrystalEquipmentGrindingSheet,
-                monsterCollectionLevel,
                 _tableSheets.CrystalMonsterCollectionMultiplierSheet,
-                enhancementFailed
+                _tableSheets.StakeRegularRewardSheet
             );
 
             Assert.Equal(
@@ -128,7 +132,7 @@ namespace Lib9c.Tests
                         (10100000, 0),
                         (10110000, 2),
                     },
-                    0,
+                    10,
                     false,
                     600,
                 },
@@ -141,32 +145,32 @@ namespace Lib9c.Tests
                     {
                         (10100000, 0),
                     },
-                    0,
+                    10,
                     true,
                     50,
                 },
                 // enchant level 3 & failed
                 // (200 + (2^3 - 1) * 100) % 2 = 450
                 // multiply by staking
-                // 450 * 0.3 = 135
-                // total 585
+                // 450 * 0.1 = 45
+                // total 495
                 new object[]
                 {
                     new[]
                     {
                         (10110000, 3),
                     },
-                    3,
+                    100,
                     true,
-                    585,
+                    495,
                 },
                 // enchant level 1
                 // 100 + (2^1 - 1) * 100 = 200
                 // enchant level 2
                 // 200 + (2^2 - 1) * 100 = 500
                 // multiply by staking
-                // 700 * 0.3 = 210
-                // total 910
+                // 700 * 0.1 = 70
+                // total 770
                 new object[]
                 {
                     new[]
@@ -174,9 +178,9 @@ namespace Lib9c.Tests
                         (10100000, 1),
                         (10110000, 2),
                     },
-                    3,
+                    100,
                     false,
-                    910,
+                    770,
                 },
                 // enchant level 1
                 // 200 + (2^1 - 1) * 100 = 300

@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Libplanet;
 using Libplanet.Assets;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -42,11 +44,13 @@ namespace Nekoyume.Helper
         }
 
         public static FungibleAssetValue CalculateCrystal(
+            Address agentAddress,
             IEnumerable<Equipment> equipmentList,
+            FungibleAssetValue balance,
+            bool enhancementFailed,
             CrystalEquipmentGrindingSheet crystalEquipmentGrindingSheet,
-            int monsterCollectionLevel,
             CrystalMonsterCollectionMultiplierSheet crystalMonsterCollectionMultiplierSheet,
-            bool enhancementFailed
+            StakeRegularRewardSheet stakeRegularRewardSheet
         )
         {
             FungibleAssetValue crystal = 0 * CRYSTAL;
@@ -64,6 +68,8 @@ namespace Nekoyume.Helper
             {
                 crystal = crystal.DivRem(2, out _);
             }
+
+            int monsterCollectionLevel = stakeRegularRewardSheet.FindLevelByStakedAmount(agentAddress, balance);
 
             CrystalMonsterCollectionMultiplierSheet.Row multiplierRow =
                 crystalMonsterCollectionMultiplierSheet[monsterCollectionLevel];
