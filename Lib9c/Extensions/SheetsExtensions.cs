@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.TableData;
@@ -208,14 +209,18 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<WeeklyArenaRewardSheet>()
             );
         }
-        public static int FindLevelByStakedAmount(this IStakeRewardSheet sheet, FungibleAssetValue balance)
+        public static int FindLevelByStakedAmount(this IStakeRewardSheet sheet, Address agentAddress,
+            FungibleAssetValue balance)
         {
             List<IStakeRewardRow> orderedRows =
                 sheet.OrderedRows.OrderBy(row => row.RequiredGold).ToList();
-            // Return minimum level when balance < minimum RequiredGold
-            if (balance < orderedRows.First().RequiredGold * balance.Currency)
+            // throw Exception when balance < minimum RequiredGold
+            var minimumRequired = orderedRows.First().RequiredGold * balance.Currency;
+            if (balance < minimumRequired)
             {
-                return orderedRows.First().Level;
+                var msg = $"The account {agentAddress}'s balance of {balance.Currency} is insufficient to " +
+                          $"staked minimum amount: {balance} < {minimumRequired}.";
+                throw new InsufficientBalanceException(agentAddress, balance, msg);
             }
             for (int i = 0; i < orderedRows.Count - 1; ++i)
             {
