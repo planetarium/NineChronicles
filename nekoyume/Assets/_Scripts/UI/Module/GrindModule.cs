@@ -96,6 +96,7 @@ namespace Nekoyume.UI.Module
         private static readonly int FirstRegister = Animator.StringToHash("FirstRegister");
         private static readonly int StartGrind = Animator.StringToHash("StartGrind");
         private static readonly int EmptySlot = Animator.StringToHash("EmptySlot");
+        private static readonly int ShowAnimationHash = Animator.StringToHash("Show");
 
         private bool CanGrind => _selectedItemsForGrind.Any() &&
                                  _selectedItemsForGrind.All(item => !item.Equipped.Value);
@@ -103,6 +104,10 @@ namespace Nekoyume.UI.Module
         public void Show(bool reverseInventoryOrder = true)
         {
             gameObject.SetActive(true);
+            if (animator)
+            {
+                animator.Play(ShowAnimationHash);
+            }
 
             Initialize();
             Subscribe();
