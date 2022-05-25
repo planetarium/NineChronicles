@@ -69,7 +69,6 @@ namespace Nekoyume.Action
             // Stake if it doesn't exist yet.
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
-                var sheet = states.GetSheet<StakeAchievementRewardSheet>();
                 stakeState = new StakeState(stakeStateAddress, context.BlockIndex);
                 return states
                     .SetState(
