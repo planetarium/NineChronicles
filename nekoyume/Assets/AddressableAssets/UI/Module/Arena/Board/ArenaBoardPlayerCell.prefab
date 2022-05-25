@@ -987,9 +987,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8700826853826352304}
   - component: {fileID: 4178482879041537418}
-  - component: {fileID: 4382762034631275653}
   m_Layer: 5
-  m_Name: ArenaChoiceRankCell_List
+  m_Name: ArenaBoardPlayerCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1034,32 +1033,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &4382762034631275653
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5773881229359566665}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27c0cc51d0d042a68f60e46f846bb986, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  backgroundImage: {fileID: 2068091614319558202}
-  controlBackgroundImage: 0
-  rankImageContainer: {fileID: 4405504630770143376}
-  rankImage: {fileID: 8275281152053513665}
-  rankTextContainer: {fileID: 1971819857439392836}
-  rankText: {fileID: 2583316994446040918}
-  characterView: {fileID: 8585630210565637522}
-  nameText: {fileID: 5113335764272237336}
-  scoreText: {fileID: 2468895205858989245}
-  cpText: {fileID: 1991182203086928886}
-  challengeCountTextContainer: {fileID: 0}
-  challengeCountText: {fileID: 0}
-  avatarInfoButton: {fileID: 0}
-  challengeButton: {fileID: 0}
 --- !u!1 &6022805100448495617
 GameObject:
   m_ObjectHideFlags: 0
@@ -2049,18 +2022,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3434149810320252398}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8585630210565637522 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6381253495353088124, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
-    type: 3}
-  m_PrefabInstance: {fileID: 3434149810320252398}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83dea009cd77cb4458a680b9441a3335, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &8748939134921485278
 PrefabInstance:
   m_ObjectHideFlags: 0

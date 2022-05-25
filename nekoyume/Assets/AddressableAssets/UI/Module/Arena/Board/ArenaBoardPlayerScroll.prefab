@@ -9,10 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7228783620708839766}
-  - component: {fileID: 5205902641221231614}
   - component: {fileID: 3788006549011443088}
   m_Layer: 5
-  m_Name: ArenaChoiceRankScroll_List
+  m_Name: ArenaBoardPlayerScroll
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38,25 +37,6 @@ RectTransform:
   m_AnchoredPosition: {x: 60, y: 0}
   m_SizeDelta: {x: 1, y: 0}
   m_Pivot: {x: 0, y: 0.5}
---- !u!114 &5205902641221231614
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5324934003889234099}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41f44922a31a4f8f8c12d3ad67ef1f0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cellInterval: 0.18
-  scrollOffset: 0.5
-  loop: 0
-  cellContainer: {fileID: 4896767909927298875}
-  _scroller: {fileID: 3788006549011443088}
-  _cellPrefab: {fileID: 5773881229359566665, guid: e3317e468f09d4bbe9247c11112beefa,
-    type: 3}
 --- !u!114 &3788006549011443088
 MonoBehaviour:
   m_ObjectHideFlags: 0

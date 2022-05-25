@@ -359,8 +359,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 4654288741096669430}
-  _name: {fileID: 0}
-  _image: {fileID: 3743776120240599512}
   _button: {fileID: 7264563247444016662}
 --- !u!1 &1898484314625114610
 GameObject:
@@ -480,8 +478,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 9089675732954117068}
-  _name: {fileID: 0}
-  _image: {fileID: 6464112887641158051}
   _button: {fileID: 8249941278696467207}
 --- !u!1 &2624255574343171346
 GameObject:
@@ -1019,10 +1015,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8700826853826352304}
-  - component: {fileID: 2035982747206519438}
   - component: {fileID: 4178482879041537418}
   m_Layer: 5
-  m_Name: ArenaChoiceRankCell
+  m_Name: ArenaBoardRankCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1051,23 +1046,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2035982747206519438
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5773881229359566665}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b94d003832b4379ba6640044cbc95b6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _animator: {fileID: 4178482879041537418}
-  _offseason: {fileID: 8994969645100537246}
-  _season: {fileID: 0}
-  _championship: {fileID: 0}
-  _currentPosition: 0
 --- !u!95 &4178482879041537418
 Animator:
   serializedVersion: 3
@@ -1639,8 +1617,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 688751713087542710}
-  _name: {fileID: 0}
-  _image: {fileID: 2142820581995338655}
   _button: {fileID: 8854048965205883145}
 --- !u!1 &9056538155418364516
 GameObject:
@@ -1759,8 +1735,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 3195352229321113284}
-  _name: {fileID: 0}
-  _image: {fileID: 3731943020645677532}
   _button: {fileID: 306547865857630683}
 --- !u!1 &9163040650328605278
 GameObject:
