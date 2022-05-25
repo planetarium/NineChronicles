@@ -35,13 +35,6 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
 
-        public readonly Dictionary<ArenaType, (int, int)> ScoreLimits =
-            new Dictionary<ArenaType, (int, int)>()
-            {
-                { ArenaType.Season, (50, -25) },
-                { ArenaType.Championship, (30, -25) }
-            };
-
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
             {
@@ -208,7 +201,7 @@ namespace Nekoyume.Action
                     $" - ChampionshipId({roundData.Id}) - round({roundData.Round})");
             }
 
-            if (!ArenaHelper.ValidateScoreDifference(ScoreLimits, roundData.ArenaType,
+            if (!ArenaHelper.ValidateScoreDifference(ArenaHelper.ScoreLimits, roundData.ArenaType,
                     myArenaScore.Score, enemyArenaScore.Score))
             {
                 var scoreDiff = enemyArenaScore.Score - myArenaScore.Score;
@@ -290,7 +283,8 @@ namespace Nekoyume.Action
             }
 
             // add medal
-            if (roundData.ArenaType != ArenaType.OffSeason)
+            if (roundData.ArenaType != ArenaType.OffSeason &&
+                winCount > 0)
             {
                 var materialSheet = sheets.GetSheet<MaterialItemSheet>();
                 var medal = ArenaHelper.GetMedal(roundData.Id, roundData.Round, materialSheet);
