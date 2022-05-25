@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.TableData;
 
@@ -189,6 +191,28 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
                 sheets.GetSheet<WeeklyArenaRewardSheet>()
             );
+        }
+
+        public static int FindLevelByStakedAmount(this IStakeRewardSheet sheet, FungibleAssetValue balance)
+        {
+            List<IStakeRewardRow> orderedRows =
+                sheet.OrderedRows.OrderBy(row => row.RequiredGold).ToList();
+            // Return minimum level when balance < minimum RequiredGold
+            if (balance < orderedRows.First().RequiredGold * balance.Currency)
+            {
+                return orderedRows.First().Level;
+            }
+            for (int i = 0; i < orderedRows.Count - 1; ++i)
+            {
+                if (balance.Currency * orderedRows[i].RequiredGold <= balance &&
+                    balance < balance.Currency * orderedRows[i + 1].RequiredGold)
+                {
+                    return orderedRows[i].Level;
+                }
+            }
+
+            // Return maximum level when balance > maximum RequiredGold
+            return orderedRows.Last().Level;
         }
     }
 }
