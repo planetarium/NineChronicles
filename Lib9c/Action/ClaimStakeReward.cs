@@ -53,7 +53,7 @@ namespace Nekoyume.Action
             }
 
             var avatarState = states.GetAvatarStateV2(AvatarAddress);
-            int level = stakeRegularRewardSheet.FindLevelByStakedAmount(stakedAmount);
+            int level = stakeRegularRewardSheet.FindLevelByStakedAmount(context.Signer, stakedAmount);
             var rewards = stakeRegularRewardSheet[level].Rewards;
             ItemSheet itemSheet = sheets.GetItemSheet();
             var accumulatedRewards = stakeState.CalculateAccumulatedRewards(context.BlockIndex);
