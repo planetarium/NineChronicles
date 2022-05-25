@@ -152,7 +152,6 @@ namespace Lib9c
         public const string TradableIdKey = "ti";
         public const string OrderReceiptListKey = "orl";
         public const string BuyerAgentAddressKey = "bga";
-        public const string HackAndSlashBuffStateKey = "has_buff";
 
         // QuestList
         public const string QuestsKeyDeprecated = "quests";

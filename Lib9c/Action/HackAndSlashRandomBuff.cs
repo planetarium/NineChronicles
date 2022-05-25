@@ -20,14 +20,6 @@ namespace Nekoyume.Action
     [ActionType("hack_and_slash_random_buff")]
     public class HackAndSlashRandomBuff : GameAction
     {
-        public enum BuffRank
-        {
-            SS = 1,
-            S = 2,
-            A = 3,
-            B = 4,
-        }
-
         public const int MinimumGachaCount = 5;
         public const int MaximumGachaCount = 10;
 
@@ -49,7 +41,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
-            var gachaStateAddress = AvatarAddress.Derive(Lib9c.SerializeKeys.HackAndSlashBuffStateKey);
+            var gachaStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(AvatarAddress);
 
             // Invalid Avatar address, or does not have GachaState.
             if (!states.TryGetState(gachaStateAddress, out List rawGachaState))
@@ -100,8 +92,10 @@ namespace Nekoyume.Action
             if (needPitySystem)
             {
                 var newBuffSelector = new WeightedSelector<int>(context.Random);
-                var minimumRank = GachaCount == MinimumGachaCount ? BuffRank.A : BuffRank.S;
-                foreach (var buffRow in buffSheet.Values.Where(row => row.Rank <= (int) minimumRank))
+                var minimumRank = GachaCount == MinimumGachaCount
+                    ? CrystalRandomBuffSheet.Row.BuffRank.A
+                    : CrystalRandomBuffSheet.Row.BuffRank.S;
+                foreach (var buffRow in buffSheet.Values.Where(row => row.Rank <= minimumRank))
                 {
                     newBuffSelector.Add(buffRow.Key, buffRow.Ratio);
                 }
@@ -124,9 +118,9 @@ namespace Nekoyume.Action
             switch (gachaCount)
             {
                 case MinimumGachaCount:
-                    return buffIds.All(i => sheet[i].Rank > (int) BuffRank.A);
+                    return buffIds.All(i => sheet[i].Rank > CrystalRandomBuffSheet.Row.BuffRank.A);
                 case MaximumGachaCount:
-                    return buffIds.All(i => sheet[i].Rank > (int) BuffRank.S);
+                    return buffIds.All(i => sheet[i].Rank > CrystalRandomBuffSheet.Row.BuffRank.S);
             }
 
             return false;

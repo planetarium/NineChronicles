@@ -14,6 +14,7 @@
     using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Nekoyume.TableData.Crystal;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
@@ -116,7 +117,7 @@
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), stageId),
                 level = 400,
             };
-            var gachaStateAddress = _avatarAddress.Derive(HackAndSlashBuffStateKey);
+            var gachaStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(_avatarAddress);
             var gachaState = new HackAndSlashBuffState(gachaStateAddress, stageId);
             states = states
                 .SetState(_avatarAddress, avatarState.SerializeV2())
@@ -169,9 +170,9 @@
         }
 
         [Theory]
-        [InlineData(5, HackAndSlashRandomBuff.BuffRank.A)]
-        [InlineData(10, HackAndSlashRandomBuff.BuffRank.S)]
-        public void ContainMinimumBuffRank(int count, HackAndSlashRandomBuff.BuffRank minimumRank)
+        [InlineData(5, CrystalRandomBuffSheet.Row.BuffRank.A)]
+        [InlineData(10, CrystalRandomBuffSheet.Row.BuffRank.S)]
+        public void ContainMinimumBuffRank(int count, CrystalRandomBuffSheet.Row.BuffRank minimumRank)
         {
             var states = _initialState.MintAsset(_agentAddress, 100_000_000 * _currency);
             var gameConfigState = _initialState.GetGameConfigState();
@@ -187,7 +188,7 @@
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 1),
                 level = 400,
             };
-            var gachaStateAddress = _avatarAddress.Derive(HackAndSlashBuffStateKey);
+            var gachaStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(_avatarAddress);
             var gachaState = new HackAndSlashBuffState(gachaStateAddress, 1);
             states = states
                 .SetState(_avatarAddress, avatarState.SerializeV2())
@@ -223,7 +224,7 @@
                     (List)nextState.GetState(gachaStateAddress));
                 Assert.Contains(
                     newGachaState.BuffIds.Select(id => randomBuffSheet[id].Rank),
-                    rank => rank <= (int)minimumRank);
+                    rank => rank <= minimumRank);
             }
         }
     }
