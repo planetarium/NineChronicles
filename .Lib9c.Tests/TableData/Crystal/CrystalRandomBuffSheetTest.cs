@@ -19,14 +19,14 @@
         {
             var sheet = new CrystalRandomBuffSheet();
             sheet.Set(@"buff_id,rank,ratio
-1,1,0.11");
+1,SS,0.11");
 
             Assert.Single(sheet.Values);
 
             var row = sheet.Values.First();
 
             Assert.Equal(1, row.BuffId);
-            Assert.Equal(1, row.Rank);
+            Assert.Equal(CrystalRandomBuffSheet.Row.BuffRank.SS, row.Rank);
             Assert.Equal(0.11m, row.Ratio);
         }
     }
