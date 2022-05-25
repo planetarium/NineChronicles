@@ -10,7 +10,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class StakeRegularRewardSheet : Sheet<int, StakeRegularRewardSheet.Row>
+    public class StakeRegularRewardSheet : Sheet<int, StakeRegularRewardSheet.Row>, IStakeRewardSheet
     {
         [Serializable]
         public class RewardInfo
@@ -65,7 +65,7 @@ namespace Nekoyume.TableData
         }
 
         [Serializable]
-        public class Row : SheetRow<int>
+        public class Row : SheetRow<int>, IStakeRewardRow
         {
             public override int Key => Level;
 
@@ -119,5 +119,6 @@ namespace Nekoyume.TableData
 
             return orderedRows.Last().Level;
         }
+        public IReadOnlyList<IStakeRewardRow> OrderedRows => OrderedList;
     }
 }

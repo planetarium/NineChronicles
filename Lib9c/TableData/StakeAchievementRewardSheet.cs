@@ -10,7 +10,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class StakeAchievementRewardSheet : Sheet<int, StakeAchievementRewardSheet.Row>
+    public class StakeAchievementRewardSheet : Sheet<int, StakeAchievementRewardSheet.Row>, IStakeRewardSheet
     {
         [Serializable]
         public class RewardInfo
@@ -79,11 +79,12 @@ namespace Nekoyume.TableData
         }
 
         [Serializable]
-        public class Row : SheetRow<int>
+        public class Row : SheetRow<int>, IStakeRewardRow
         {
             public override int Key => Level;
             public int Level { get; private set; }
             public List<Step> Steps { get; private set; }
+            public long RequiredGold => Steps[0].RequiredGold;
             public override void Set(IReadOnlyList<string> fields)
             {
                 Level = ParseInt(fields[0]);
@@ -160,5 +161,7 @@ namespace Nekoyume.TableData
 
             return step;
         }
+
+        public IReadOnlyList<IStakeRewardRow> OrderedRows => OrderedList;
     }
 }
