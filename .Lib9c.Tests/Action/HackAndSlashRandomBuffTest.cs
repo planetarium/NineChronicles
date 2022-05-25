@@ -98,7 +98,7 @@
         [Theory]
         [InlineData(10, 5, 10_000, 10_000, null)]
         [InlineData(20, 10, 10_000, 10_000, null)]
-        [InlineData(20, 10, 10_000, 0, typeof(NotEnoughGatheredStarException))]
+        [InlineData(20, 10, 10_000, 0, typeof(NotEnoughStarException))]
         [InlineData(20, 1, 10_000, 10_000, typeof(InvalidGachaCountException))]
         [InlineData(20, 5, 1, 10_000, typeof(NotEnoughFungibleAssetValueException))]
         public void Execute(int stageId, int gachaCount, int balance, int gatheredStar, Type excType)

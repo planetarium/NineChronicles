@@ -56,7 +56,7 @@ namespace Nekoyume.Action
             // Insufficient gathered star.
             if (gachaState.StarCount < stageBuffSheet[gachaState.StageId].MaxStar)
             {
-                throw new NotEnoughGatheredStarException(
+                throw new NotEnoughStarException(
                     $"Not enough gathered stars. Need : {stageBuffSheet[gachaState.StageId].MaxStar}, own : {gachaState.StarCount}");
             }
 
@@ -88,7 +88,7 @@ namespace Nekoyume.Action
             }
 
             var buffIds = buffSelector.Select(GachaCount - 1).ToList();
-            var needPitySystem = IsNeedPitySystem(buffIds, GachaCount, buffSheet);
+            var needPitySystem = IsPitySystemNeeded(buffIds, GachaCount, buffSheet);
             if (needPitySystem)
             {
                 var newBuffSelector = new WeightedSelector<int>(context.Random);
@@ -110,10 +110,10 @@ namespace Nekoyume.Action
 
             return states
                 .SetState(gachaStateAddress, gachaState.Serialize())
-                .TransferAsset(context.Signer, Addresses.HasRandomBuffGacha, cost);
+                .TransferAsset(context.Signer, Addresses.StageRandomBuff, cost);
         }
 
-        private static bool IsNeedPitySystem(IEnumerable<int> buffIds, int gachaCount, CrystalRandomBuffSheet sheet)
+        private static bool IsPitySystemNeeded(IEnumerable<int> buffIds, int gachaCount, CrystalRandomBuffSheet sheet)
         {
             switch (gachaCount)
             {
