@@ -145,15 +145,14 @@ MonoBehaviour:
   m_text: "\uBE44\uC6A9 \uD569\uACC4"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
-  m_sharedMaterial: {fileID: 7349983812062843314, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 0dd5ff07d6b414a099a10f9e2c6f9c2a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4287405812
-  m_fontColor: {r: 0.95686275, g: 0.61960787, b: 0.54901963, a: 1}
+    rgba: 4286944470
+  m_fontColor: {r: 0.8392157, g: 0.5803922, b: 0.52156866, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -229,7 +228,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 33
+  fontMaterialType: 1
   l10nKey: UI_PROCEED_DISCORD
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
