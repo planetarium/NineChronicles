@@ -3,7 +3,7 @@ using Nekoyume.UI.Module.Arena.Emblems;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
 
-namespace Nekoyume.UI.Module.Arena
+namespace Nekoyume.UI.Module.Arena.Join
 {
     [Serializable]
     public enum ArenaJoinSeasonType

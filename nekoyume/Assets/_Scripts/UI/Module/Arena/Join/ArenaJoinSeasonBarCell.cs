@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 
-namespace Nekoyume.UI.Module.Arena
+namespace Nekoyume.UI.Module.Arena.Join
 {
     [Serializable]
     public class ArenaJoinSeasonBarItemData

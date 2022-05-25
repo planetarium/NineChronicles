@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Nekoyume.UI.Module.Arena
+namespace Nekoyume.UI.Module.Arena.Join
 {
     [CreateAssetMenu(
         fileName = "ArenaJoinSO",

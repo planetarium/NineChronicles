@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI.Extensions;
 using UnityEngine.UI.Extensions.EasingCore;
 
-namespace Nekoyume.UI.Module.Arena
+namespace Nekoyume.UI.Module.Arena.Join
 {
     using UniRx;
 

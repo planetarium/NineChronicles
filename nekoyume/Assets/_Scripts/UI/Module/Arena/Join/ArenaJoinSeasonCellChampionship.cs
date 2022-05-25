@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume.UI.Module.Arena
+namespace Nekoyume.UI.Module.Arena.Join
 {
     public class ArenaJoinSeasonCellChampionship : MonoBehaviour
     {

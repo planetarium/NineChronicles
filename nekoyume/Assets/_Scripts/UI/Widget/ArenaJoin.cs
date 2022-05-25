@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Module.Arena;
+using Nekoyume.UI.Module.Arena.Join;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
 {

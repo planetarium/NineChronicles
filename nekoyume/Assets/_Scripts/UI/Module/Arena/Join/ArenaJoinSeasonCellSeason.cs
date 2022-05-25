@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume.UI.Module.Arena
+namespace Nekoyume.UI.Module.Arena.Join
 {
-    public class ArenaJoinSeasonCellOffseason : MonoBehaviour
+    public class ArenaJoinSeasonCellSeason : MonoBehaviour
     {
         [SerializeField]
         private Animator _animator;
@@ -12,6 +13,9 @@ namespace Nekoyume.UI.Module.Arena
 
         [SerializeField]
         private Button _button;
+
+        [SerializeField]
+        private TextMeshProUGUI _seasonNumber;
 
         public event System.Action OnClick = delegate { };
 
@@ -22,6 +26,7 @@ namespace Nekoyume.UI.Module.Arena
 
         public void Show(ArenaJoinSeasonItemData itemData, bool selected)
         {
+            _seasonNumber.text = itemData.text;
             gameObject.SetActive(true);
         }
 
