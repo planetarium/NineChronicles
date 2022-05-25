@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.State;
+using Nekoyume.ValueControlComponents.Shader;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,13 +20,14 @@ namespace Nekoyume.UI.Module.Arena
             Medal = 1,
             NCG = 2,
             Food = 4,
+            Costume = 8,
         }
 
         [SerializeField]
         private TextMeshProUGUI _titleText;
 
         [SerializeField]
-        private Slider _seasonProgressSlider;
+        private ShaderPropertySlider _seasonProgressSlider;
 
         [SerializeField]
         private TextMeshProUGUI _seasonProgressSliderFillText;
@@ -34,7 +36,7 @@ namespace Nekoyume.UI.Module.Arena
         private GameObject _conditionsContainer;
 
         [SerializeField]
-        private Slider _conditionsSlider;
+        private Image _conditionsSliderFillArea;
 
         [SerializeField]
         private TextMeshProUGUI _conditionsSliderFillText;
@@ -50,9 +52,12 @@ namespace Nekoyume.UI.Module.Arena
 
         [SerializeField]
         private GameObject _foodReward;
-        
+
         [SerializeField]
-        private List<Image> _medalImages;
+        private GameObject _costumeReward;
+
+        [SerializeField]
+        private List<Image> _currentRoundMedalImages;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -94,8 +99,8 @@ namespace Nekoyume.UI.Module.Arena
             var (beginning, end, progress) = tuple;
             var range = end - beginning;
             var sliderNormalizedValue = (float)progress / range;
-            _seasonProgressSlider.normalizedValue = sliderNormalizedValue;
-            _seasonProgressSliderFillText.text = Util.GetBlockToTime(progress);
+            _seasonProgressSlider.NormalizedValue = sliderNormalizedValue;
+            _seasonProgressSliderFillText.text = Util.GetBlockToTime(range - progress);
         }
 
         private void UpdateConditions((int max, int current)? conditions)
@@ -107,7 +112,7 @@ namespace Nekoyume.UI.Module.Arena
             }
 
             var (max, current) = conditions.Value;
-            _conditionsSlider.normalizedValue = (float)current / max;
+            _conditionsSliderFillArea.fillAmount = (float)current / max;
             _conditionsSliderFillText.text =
                 string.Format(_conditionsSliderFillTextFormat, current, max);
             _conditionsContainer.SetActive(true);
@@ -115,6 +120,7 @@ namespace Nekoyume.UI.Module.Arena
 
         private void UpdateRewards(RewardType rewardType)
         {
+            _costumeReward.SetActive(false);
             _medalReward.SetActive(false);
             _ncgReward.SetActive(false);
             _foodReward.SetActive(false);
@@ -128,21 +134,26 @@ namespace Nekoyume.UI.Module.Arena
             {
                 _medalReward.SetActive(true);
             }
-            
+
             if ((rewardType & RewardType.NCG) == RewardType.NCG)
             {
                 _ncgReward.SetActive(true);
             }
-            
+
             if ((rewardType & RewardType.Food) == RewardType.Food)
             {
                 _foodReward.SetActive(true);
+            }
+
+            if ((rewardType & RewardType.Costume) == RewardType.Costume)
+            {
+                _costumeReward.SetActive(true);
             }
         }
 
         private void UpdateMedalImages(Sprite medalSprite)
         {
-            foreach (var medalImage in _medalImages)
+            foreach (var medalImage in _currentRoundMedalImages)
             {
                 medalImage.overrideSprite = medalSprite;
             }

@@ -12,13 +12,10 @@ namespace Nekoyume.UI.Module.Arena
         public Animator Animator => _animator;
 
         [SerializeField]
-        private TextMeshProUGUI _name;
-
-        [SerializeField]
-        private Image _image;
-
-        [SerializeField]
         private Button _button;
+
+        [SerializeField]
+        private TextMeshProUGUI _seasonNumber;
 
         public event System.Action OnClick = delegate { };
 
@@ -29,7 +26,7 @@ namespace Nekoyume.UI.Module.Arena
 
         public void Show(ArenaJoinSeasonItemData itemData, bool selected)
         {
-            _name.text = itemData.name;
+            _seasonNumber.text = itemData.text;
             gameObject.SetActive(true);
         }
 

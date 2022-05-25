@@ -316,7 +316,7 @@ RectTransform:
   - {fileID: 1070182635260900589}
   - {fileID: 5063739587032404547}
   m_Father: {fileID: 1574489342133667355}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -511,7 +511,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5390508035106322379}
   m_Layer: 5
-  m_Name: ItemDummy
+  m_Name: ArenaSeasonEmblem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1670,7 +1670,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3731981056210161995}
-  - component: {fileID: 5195334364938206817}
   m_Layer: 5
   m_Name: SeasonProgressSlider
   m_TagString: Untagged
@@ -1694,32 +1693,13 @@ RectTransform:
   - {fileID: 9154004183822306799}
   - {fileID: 3906155724580810796}
   m_Father: {fileID: 1574489342133667355}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -70}
   m_SizeDelta: {x: -20, y: 1}
   m_Pivot: {x: 0.5, y: 1}
---- !u!95 &5195334364938206817
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2551098269546615519}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 43fd6b64a74874715a65a700e99e38aa, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2560992271807429777
 GameObject:
   m_ObjectHideFlags: 0
@@ -1755,9 +1735,9 @@ RectTransform:
   m_Father: {fileID: 1408010721390548303}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 336.5, y: -10}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7753504192446021037
@@ -2082,9 +2062,9 @@ RectTransform:
   m_Father: {fileID: 1408010721390548303}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 467.5, y: -10}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2290540693653298631
@@ -2275,7 +2255,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1408010721390548303
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4166,41 +4146,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &8336220257558723532
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6790130507845131041}
-  m_Layer: 5
-  m_Name: ProgressContainer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &6790130507845131041
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8336220257558723532}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1574489342133667355}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -70}
-  m_SizeDelta: {x: -20, y: 1}
-  m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &8370428632359787305
 GameObject:
   m_ObjectHideFlags: 0
@@ -4447,9 +4392,9 @@ RectTransform:
   m_Father: {fileID: 1408010721390548303}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 205.5, y: -10}
   m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &271204754159028377
@@ -4501,7 +4446,7 @@ GameObject:
   - component: {fileID: 5716675445860947519}
   - component: {fileID: 6111005380805054497}
   - component: {fileID: 7098360950441975110}
-  - component: {fileID: 8181276832047256477}
+  - component: {fileID: 6772403724807335520}
   m_Layer: 5
   m_Name: Fill
   m_TagString: Untagged
@@ -4566,7 +4511,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8181276832047256477
+--- !u!114 &6772403724807335520
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4575,12 +4520,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 8760517602681780192}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b226653caf372400c89971af3b878962, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d43a67ea9614845a54031966e583247, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _min: 1.2
+  _max: -1.18
+  _normalizedValue: 0.317
+  resultValue: 0.44554
   _graphic: {fileID: 7098360950441975110}
   _propertyName: PositionUV_X_1
-  _value: 0.64
 --- !u!1 &8870756036581559017
 GameObject:
   m_ObjectHideFlags: 0
@@ -4611,7 +4559,6 @@ RectTransform:
   m_Children:
   - {fileID: 6182696640738109215}
   - {fileID: 4970500927464037006}
-  - {fileID: 6790130507845131041}
   - {fileID: 3731981056210161995}
   - {fileID: 3743767839490387962}
   m_Father: {fileID: 0}
@@ -4635,17 +4582,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _titleText: {fileID: 4033095617742123911}
-  _seasonProgressSlider: {fileID: 0}
+  _seasonProgressSlider: {fileID: 6772403724807335520}
   _seasonProgressSliderFillText: {fileID: 7212967428115358874}
   _conditionsContainer: {fileID: 2638994196627530985}
-  _conditionsSlider: {fileID: 0}
+  _conditionsSliderFillArea: {fileID: 7582025454250180076}
   _conditionsSliderFillText: {fileID: 2500821720404013137}
   _conditionsSliderFillTextFormat: '{0}<size=20 >/{1}</size>'
   _medalReward: {fileID: 5784216393692141174}
   _ncgReward: {fileID: 6108124527619647679}
   _foodReward: {fileID: 1880856030751401958}
-  _medalImages:
-  - {fileID: 0}
+  _costumeReward: {fileID: 1178287466418951079}
+  _currentRoundMedalImages:
   - {fileID: 2186114825340549839}
 --- !u!1 &8909199848842716913
 GameObject:

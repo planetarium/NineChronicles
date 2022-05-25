@@ -1,5 +1,4 @@
-﻿using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.Arena
@@ -10,12 +9,6 @@ namespace Nekoyume.UI.Module.Arena
         private Animator _animator;
 
         public Animator Animator => _animator;
-
-        [SerializeField]
-        private TextMeshProUGUI _name;
-
-        [SerializeField]
-        private Image _image;
 
         [SerializeField]
         private Button _button;
@@ -29,7 +22,6 @@ namespace Nekoyume.UI.Module.Arena
 
         public void Show(ArenaJoinSeasonItemData itemData, bool selected)
         {
-            _name.text = itemData.name;
             gameObject.SetActive(true);
         }
 

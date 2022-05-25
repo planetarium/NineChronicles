@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.Controller;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena;
 using Unity.Mathematics;
 using UnityEngine;
@@ -56,7 +58,12 @@ namespace Nekoyume.UI
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             }).AddTo(gameObject);
-            _joinButton.onClick.AsObservable().Subscribe().AddTo(gameObject);
+            _joinButton.onClick.AsObservable().Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                // Find<ArenaBoard>().Show();
+                Close();
+            }).AddTo(gameObject);
             _paymentButton.onClick.AsObservable().Subscribe().AddTo(gameObject);
             _earlyPaymentButton.onClick.AsObservable().Subscribe().AddTo(gameObject);
 
@@ -69,6 +76,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
             InitializeScrolls(_disposables);
             UpdateInfo();
             UpdateButtons();
@@ -86,7 +94,7 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
             if (_useSo && _so)
             {
-                return _so.ScrollData;
+                return _so.ArenaDataList.Select(data => data.ItemData).ToList();
             }
 #endif
 
@@ -96,7 +104,7 @@ namespace Nekoyume.UI
         private void InitializeScrolls(IList<IDisposable> disposables)
         {
             var scrollData = GetScrollData();
-            var selectedIndex = Random.Range(0, 2);
+            var selectedIndex = 0;
             _scroll.SetData(scrollData, selectedIndex);
             var barIndexOffset = (int)math.ceil(_barPointCount / 2f) - 1;
             _barScroll.SetData(
@@ -141,11 +149,19 @@ namespace Nekoyume.UI
 
         private void UpdateInfo()
         {
+            string getText(ArenaJoinSeasonItemData data) => data.type switch
+            {
+                ArenaJoinSeasonType.Offseason => "off-season",
+                ArenaJoinSeasonType.Season => $"season #{data.text}",
+                ArenaJoinSeasonType.Championship => $"championship #{data.text}",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
             _info.SetData(
-                _scroll.SelectedItemData.name,
+                getText(_scroll.SelectedItemData),
                 GetMedalId(),
                 GetConditions(),
-                GetRewardType());
+                GetRewardType(_scroll.SelectedItemData));
         }
 
         private void UpdateButtons()
@@ -179,12 +195,15 @@ namespace Nekoyume.UI
             return (100, 0);
         }
 
-        private ArenaJoinSeasonInfo.RewardType GetRewardType()
+        private ArenaJoinSeasonInfo.RewardType GetRewardType(ArenaJoinSeasonItemData data)
         {
 #if UNITY_EDITOR
             if (_useSo && _so)
             {
-                return _so.RewardType;
+                var soData = _so.ArenaDataList.FirstOrDefault(soData => soData.ItemData.Equals(data));
+                return soData is null
+                    ? ArenaJoinSeasonInfo.RewardType.None
+                    : soData.RewardType;
             }
 #endif
 

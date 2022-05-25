@@ -139,8 +139,8 @@ MonoBehaviour:
   _barScroll: {fileID: 2374795209658091307}
   _barPointCount: 8
   _info: {fileID: 2898975863204621241}
-  _joinButton: {fileID: 0}
-  _paymentButton: {fileID: 0}
+  _joinButton: {fileID: 253468874605110165}
+  _paymentButton: {fileID: 8129093412365192765}
   _earlyPaymentButton: {fileID: 3751603690216505974}
   _backButton: {fileID: 5201403983621810755}
 --- !u!1 &648160265478679257
@@ -30993,6 +30993,30 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1949669664321912626}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &253468874605110165 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1768259492936916135, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1949669664321912626}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8129093412365192765 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7772871392566833423, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1949669664321912626}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3751603690216505974 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3395364024276581700, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,

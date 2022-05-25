@@ -11,16 +11,23 @@ namespace Nekoyume.UI.Module.Arena
     [Serializable]
     public class ArenaJoinSO : ScriptableObject
     {
-        [SerializeField]
-        private List<ArenaJoinSeasonItemData> _scrollData;
+        [Serializable]
+        public class ArenaData
+        {
+            public ArenaJoinSeasonItemData ItemData;
+            public ArenaJoinSeasonInfo.RewardType RewardType;
+        }
 
-        public IList<ArenaJoinSeasonItemData> ScrollData => _scrollData;
+        [SerializeField]
+        private List<ArenaData> _arenaDataList;
+
+        public IList<ArenaData> ArenaDataList => _arenaDataList;
 
         [SerializeField]
         private int _medalId;
 
         public int MedalId => _medalId;
-        
+
         [SerializeField]
         private int _conditionMax;
 
@@ -29,41 +36,96 @@ namespace Nekoyume.UI.Module.Arena
 
         public (int max, int current) Conditions => (_conditionMax, _conditionCurrent);
 
-        [SerializeField]
-        private ArenaJoinSeasonInfo.RewardType _rewardType;
-
-        public ArenaJoinSeasonInfo.RewardType RewardType => _rewardType;
-
         public ArenaJoinSO()
         {
-            _scrollData = new List<ArenaJoinSeasonItemData>
+            _arenaDataList = new List<ArenaData>
             {
-                new ArenaJoinSeasonItemData
+                new ArenaData
                 {
-                    type = ArenaJoinSeasonType.Offseason,
-                    name = "Offseason #1"
+                    ItemData = new ArenaJoinSeasonItemData
+                    {
+                        type = ArenaJoinSeasonType.Offseason,
+                        text = string.Empty,
+                    },
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food,
                 },
-                new ArenaJoinSeasonItemData
+                new ArenaData
                 {
-                    type = ArenaJoinSeasonType.Season,
-                    name = "Season #1"
+                    ItemData = new ArenaJoinSeasonItemData
+                    {
+                        type = ArenaJoinSeasonType.Season,
+                        text = "1",
+                    },
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food |
+                                 ArenaJoinSeasonInfo.RewardType.Medal |
+                                 ArenaJoinSeasonInfo.RewardType.NCG,
                 },
-                new ArenaJoinSeasonItemData
+                new ArenaData
                 {
-                    type = ArenaJoinSeasonType.Offseason,
-                    name = "Offseason #2"
+                    ItemData = new ArenaJoinSeasonItemData
+                    {
+                        type = ArenaJoinSeasonType.Offseason,
+                        text = string.Empty,
+                    },
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food,
                 },
-                new ArenaJoinSeasonItemData
+                new ArenaData
                 {
-                    type = ArenaJoinSeasonType.Championship,
-                    name = "Championship #1"
+                    ItemData = new ArenaJoinSeasonItemData
+                    {
+                        type = ArenaJoinSeasonType.Season,
+                        text = "2",
+                    },
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food |
+                                 ArenaJoinSeasonInfo.RewardType.Medal |
+                                 ArenaJoinSeasonInfo.RewardType.NCG,
+                },
+                new ArenaData
+                {
+                    ItemData = new ArenaJoinSeasonItemData
+                    {
+                        type = ArenaJoinSeasonType.Offseason,
+                        text = string.Empty,
+                    },
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food,
+                },
+                new ArenaData
+                {
+                    ItemData = new ArenaJoinSeasonItemData
+                    {
+                        type = ArenaJoinSeasonType.Season,
+                        text = "3",
+                    },
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food |
+                                 ArenaJoinSeasonInfo.RewardType.Medal |
+                                 ArenaJoinSeasonInfo.RewardType.NCG,
+                },
+                new ArenaData
+                {
+                    ItemData = new ArenaJoinSeasonItemData
+                    {
+                        type = ArenaJoinSeasonType.Offseason,
+                        text = string.Empty,
+                    },
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food,
+                },
+                new ArenaData
+                {
+                    ItemData = new ArenaJoinSeasonItemData
+                    {
+                        type = ArenaJoinSeasonType.Championship,
+                        text = "1",
+                    },
+                    RewardType = ArenaJoinSeasonInfo.RewardType.Food |
+                                 ArenaJoinSeasonInfo.RewardType.Medal |
+                                 ArenaJoinSeasonInfo.RewardType.NCG |
+                                 ArenaJoinSeasonInfo.RewardType.Costume,
                 },
             };
 
             _medalId = 700000;
             _conditionMax = 100;
             _conditionCurrent = 0;
-            _rewardType = ArenaJoinSeasonInfo.RewardType.Medal;
         }
     }
 }
