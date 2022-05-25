@@ -146,7 +146,8 @@ namespace Nekoyume.Action
                     $"championshipId({roundData.Id}) - round({roundData.Round})");
             }
 
-            var arenaParticipantsAdr = ArenaParticipants.DeriveAddress(roundData.Id, roundData.Round);
+            var arenaParticipantsAdr =
+                ArenaParticipants.DeriveAddress(roundData.Id, roundData.Round);
             if (!states.TryGetArenaParticipants(arenaParticipantsAdr, out var arenaParticipants))
             {
                 throw new ArenaParticipantsNotFoundException(
@@ -198,7 +199,8 @@ namespace Nekoyume.Action
                     $" - ChampionshipId({roundData.Id}) - round({roundData.Round})");
             }
 
-            var arenaInformationAdr = ArenaInformation.DeriveAddress(myAvatarAddress, roundData.Id, roundData.Round);
+            var arenaInformationAdr =
+                ArenaInformation.DeriveAddress(myAvatarAddress, roundData.Id, roundData.Round);
             if (!states.TryGetArenaInformation(arenaInformationAdr, out var arenaInformation))
             {
                 throw new ArenaInformationNotFoundException(
@@ -215,63 +217,6 @@ namespace Nekoyume.Action
                     $"enemyScore({enemyArenaScore.Score}) - myScore({myArenaScore.Score}) = diff({scoreDiff})");
             }
 
-            // update arena avatar state
-            myArenaAvatarState.UpdateEquipment(equipments);
-            myArenaAvatarState.UpdateCostumes(costumes);
-
-            // simulate
-            var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
-            var myDigest = new ArenaPlayerDigest(avatarState, myArenaAvatarState);
-            var enemyDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
-            var arenaSheets = sheets.GetArenaSimulatorSheets();
-            var winCount = 0;
-            var defeatCount = 0;
-            var rewards = new List<ItemBase>();
-
-            for (var i = 0; i < ticket; i++)
-            {
-                var simulator = new ArenaSimulator(context.Random, myDigest, enemyDigest, arenaSheets);
-                simulator.Simulate();
-
-                if (simulator.Result.Equals(BattleLog.Result.Win))
-                {
-                    winCount++;
-                }
-                else
-                {
-                    defeatCount++;
-                }
-
-                var reward = RewardSelector.Select(
-                    context.Random,
-                    sheets.GetSheet<WeeklyArenaRewardSheet>(),
-                    sheets.GetSheet<MaterialItemSheet>(),
-                    myDigest.Level,
-                    maxCount:GetRewardCount(myArenaScore.Score));
-                rewards.AddRange(reward);
-            }
-
-            // add reward
-            foreach (var itemBase in rewards.OrderBy(x => x.Id))
-            {
-                avatarState.inventory.AddItem(itemBase);
-            }
-
-            // add medal
-            if (roundData.ArenaType != ArenaType.OffSeason)
-            {
-                var materialSheet = sheets.GetSheet<MaterialItemSheet>();
-                var medal = ArenaHelper.GetMedal(roundData.Id, roundData.Round, materialSheet);
-                avatarState.inventory.AddItem(medal, count: winCount);
-            }
-
-            // update arena score
-            var (myWinScore, myDefeatScore, enemyWinScore) = GetScores(myArenaScore.Score, enemyArenaScore.Score);
-            var myScore = (myWinScore * winCount) + (myDefeatScore * defeatCount);
-            myArenaScore.AddScore(myScore);
-            enemyArenaScore.AddScore(enemyWinScore * winCount);
-
-            // update arena information
             var gameConfigState = states.GetGameConfigState();
             var interval = gameConfigState.DailyArenaInterval;
             var currentTicketResetCount = ArenaHelper.GetCurrentTicketResetCount(
@@ -300,6 +245,64 @@ namespace Nekoyume.Action
 
             var freeTicket = ticket - buyTicket;
             arenaInformation.UseTicket(freeTicket);
+
+            // update arena avatar state
+            myArenaAvatarState.UpdateEquipment(equipments);
+            myArenaAvatarState.UpdateCostumes(costumes);
+
+            // simulate
+            var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
+            var myDigest = new ArenaPlayerDigest(avatarState, myArenaAvatarState);
+            var enemyDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+            var arenaSheets = sheets.GetArenaSimulatorSheets();
+            var winCount = 0;
+            var defeatCount = 0;
+            var rewards = new List<ItemBase>();
+
+            for (var i = 0; i < ticket; i++)
+            {
+                var simulator =
+                    new ArenaSimulator(context.Random, myDigest, enemyDigest, arenaSheets);
+                simulator.Simulate();
+
+                if (simulator.Result.Equals(BattleLog.Result.Win))
+                {
+                    winCount++;
+                }
+                else
+                {
+                    defeatCount++;
+                }
+
+                var reward = RewardSelector.Select(
+                    context.Random,
+                    sheets.GetSheet<WeeklyArenaRewardSheet>(),
+                    sheets.GetSheet<MaterialItemSheet>(),
+                    myDigest.Level,
+                    maxCount: ArenaHelper.GetRewardCount(myArenaScore.Score));
+                rewards.AddRange(reward);
+            }
+
+            // add reward
+            foreach (var itemBase in rewards.OrderBy(x => x.Id))
+            {
+                avatarState.inventory.AddItem(itemBase);
+            }
+
+            // add medal
+            if (roundData.ArenaType != ArenaType.OffSeason)
+            {
+                var materialSheet = sheets.GetSheet<MaterialItemSheet>();
+                var medal = ArenaHelper.GetMedal(roundData.Id, roundData.Round, materialSheet);
+                avatarState.inventory.AddItem(medal, count: winCount);
+            }
+
+            // update record
+            var (myWinScore, myDefeatScore, enemyWinScore) =
+                ArenaHelper.GetScores(myArenaScore.Score, enemyArenaScore.Score);
+            var myScore = (myWinScore * winCount) + (myDefeatScore * defeatCount);
+            myArenaScore.AddScore(myScore);
+            enemyArenaScore.AddScore(enemyWinScore * winCount);
             arenaInformation.UpdateRecord(winCount, defeatCount);
 
             var inventoryAddress = myAvatarAddress.Derive(LegacyInventoryKey);
@@ -313,47 +316,6 @@ namespace Nekoyume.Action
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(myAvatarAddress, avatarState.SerializeV2());
-        }
-
-        public static (int, int, int) GetScores(int myScore, int enemyScore)
-        {
-            var (myWinScore, enemyWinScore) = ArenaScoreHelper.GetScore(
-                myScore, enemyScore, BattleLog.Result.Win);
-
-            var (myDefeatScore, _) = ArenaScoreHelper.GetScore(
-                myScore, enemyScore, BattleLog.Result.Lose);
-
-            return (myWinScore, myDefeatScore, enemyWinScore);
-        }
-
-        public static int GetRewardCount(int score)
-        {
-            if (score >= 1800)
-            {
-                return 6;
-            }
-
-            if (score >= 1400)
-            {
-                return 5;
-            }
-
-            if (score >= 1200)
-            {
-                return 4;
-            }
-
-            if (score >= 1100)
-            {
-                return 3;
-            }
-
-            if (score >= 1001)
-            {
-                return 2;
-            }
-
-            return 1;
         }
     }
 }

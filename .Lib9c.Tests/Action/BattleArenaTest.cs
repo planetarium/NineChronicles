@@ -295,7 +295,7 @@ namespace Lib9c.Tests.Action
             }
 
             var (myWinScore, myDefeatScore, enemyWinScore) =
-                BattleArena.GetScores(beforeMyScore.Score, beforeEnemyScore.Score);
+                ArenaHelper.GetScores(beforeMyScore.Score, beforeEnemyScore.Score);
 
             var addMyScore = (afterInfo.Win * myWinScore) + (afterInfo.Lose * myDefeatScore);
             var addEnemyScore = afterInfo.Win * enemyWinScore;
@@ -325,7 +325,7 @@ namespace Lib9c.Tests.Action
             }
 
             var materialCount = avatarState.inventory.Materials.Count();
-            var high = (BattleArena.GetRewardCount(beforeMyScore.Score) * ticket) + medalCount;
+            var high = (ArenaHelper.GetRewardCount(beforeMyScore.Score) * ticket) + medalCount;
             Assert.InRange(materialCount, 0, high);
         }
 

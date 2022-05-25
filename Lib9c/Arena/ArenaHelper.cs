@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Battle;
 using Nekoyume.Helper;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -84,6 +86,47 @@ namespace Nekoyume.Arena
         {
             var blockDiff = currentBlockIndex - roundStartBlockIndex;
             return interval > 0 ? (int)(blockDiff / interval) : 0;
+        }
+
+        public static (int, int, int) GetScores(int myScore, int enemyScore)
+        {
+            var (myWinScore, enemyWinScore) = ArenaScoreHelper.GetScore(
+                myScore, enemyScore, BattleLog.Result.Win);
+
+            var (myDefeatScore, _) = ArenaScoreHelper.GetScore(
+                myScore, enemyScore, BattleLog.Result.Lose);
+
+            return (myWinScore, myDefeatScore, enemyWinScore);
+        }
+
+        public static int GetRewardCount(int score)
+        {
+            if (score >= 1800)
+            {
+                return 6;
+            }
+
+            if (score >= 1400)
+            {
+                return 5;
+            }
+
+            if (score >= 1200)
+            {
+                return 4;
+            }
+
+            if (score >= 1100)
+            {
+                return 3;
+            }
+
+            if (score >= 1001)
+            {
+                return 2;
+            }
+
+            return 1;
         }
     }
 }
