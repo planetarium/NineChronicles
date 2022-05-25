@@ -116,7 +116,7 @@ namespace Lib9c.Tests.Action
             var achievements = stakeState.Achievements;
             Assert.False(achievements.Check(0, 0));
             Assert.False(achievements.Check(0, 1));
-            Assert.True(achievements.Check(1, 0));
+            Assert.False(achievements.Check(1, 0));
 
             var cancelAction = new Stake(0);
             states = cancelAction.Execute(new ActionContext

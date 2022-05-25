@@ -71,7 +71,6 @@ namespace Nekoyume.Action
             {
                 var sheet = states.GetSheet<StakeAchievementRewardSheet>();
                 stakeState = new StakeState(stakeStateAddress, context.BlockIndex);
-                stakeState.Achievements.Achieve(sheet.FindLevelByStakedAmount(currentBalance), 0);
                 return states
                     .SetState(
                         stakeStateAddress,
