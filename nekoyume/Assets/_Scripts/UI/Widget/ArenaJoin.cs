@@ -203,7 +203,7 @@ namespace Nekoyume.UI
             {
                 ArenaType.OffSeason => "off-season",
                 ArenaType.Season => $"season #{data.SeasonNumber}",
-                ArenaType.Championship => $"championship #{data.RoundData.ChampionshipNumber}",
+                ArenaType.Championship => $"championship #{data.ChampionshipNumber}",
                 _ => throw new ArgumentOutOfRangeException()
             };
 

@@ -12,6 +12,7 @@ namespace Nekoyume.UI.Module.Arena.Join
     {
         public ArenaSheet.RoundData RoundData;
         public int? SeasonNumber;
+        public int? ChampionshipNumber => RoundData?.ChampionshipNumber;
     }
 
     public class ArenaJoinSeasonScrollContext
