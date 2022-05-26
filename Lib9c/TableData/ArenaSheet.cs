@@ -14,6 +14,9 @@ namespace Nekoyume.TableData
         [Serializable]
         public class RoundData
         {
+            /// <summary>
+            /// Equals with ArenaSheet.Id
+            /// </summary>
             public int Id { get; }
             public int Round { get; }
             public ArenaType ArenaType { get; }
@@ -24,6 +27,12 @@ namespace Nekoyume.TableData
             public long DiscountedEntranceFee { get; }
             public long TicketPrice { get; }
             public long AdditionalTicketPrice { get; }
+
+            /// <summary>
+            /// Championship number equals with Id always because
+            /// the Id equals with ArenaSheet.Id
+            /// </summary>
+            public int ChampionshipNumber => Id;
 
             public RoundData(int id, int round, ArenaType arenaType,
                 long startBlockIndex, long endBlockIndex,
@@ -53,8 +62,18 @@ namespace Nekoyume.TableData
         public class Row : SheetRow<int>
         {
             public override int Key => Id;
+
             public int Id { get; private set; }
+            
+            /// <summary>
+            /// The [`Round`] contains 8 elements always
+            /// </summary>
             public List<RoundData> Round { get; private set; }
+
+            /// <summary>
+            /// Championship number equals with Id always
+            /// </summary>
+            public int ChampionshipNumber => Id;
 
             public override void Set(IReadOnlyList<string> fields)
             {
