@@ -1144,6 +1144,7 @@ namespace Nekoyume.BlockChain
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
                 {
+                    // FIXME: Use ArenaInfo or other instead of RankingBoard
                     Widget.Find<RankingBoard>().GoToStage(simulator.Log);
                 }
             }

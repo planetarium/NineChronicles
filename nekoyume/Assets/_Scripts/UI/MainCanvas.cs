@@ -232,7 +232,9 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
-            secondWidgets.Add(Widget.Create<RankingBoard>());
+            secondWidgets.Add(Widget.Create<ArenaJoin>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ArenaBoard>());
             yield return null;
             secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
