@@ -184,11 +184,16 @@ namespace Lib9c.Tests.Action.Scenario
         }
 
         [Theory]
-        [InlineData(1, 10, 5)]
-        [InlineData(2, 10, 9)]
-        public void Execute(int seed, int user, int ticket)
+        [InlineData(1, 10, 5, 3, 2)]
+        [InlineData(1, 10, 5, 3, 3)]
+        [InlineData(2, 10, 1, 10, 2)]
+        public void Execute(int seed, int user, int ticket, int repeatCount,  int arenaInterval)
         {
             var arenaSheet = _state.GetSheet<ArenaSheet>();
+
+            var gameConfigState = SetArenaInterval(arenaInterval);
+            _state = _state.SetState(GameConfigState.Address, gameConfigState.Serialize());
+
             foreach (var value in arenaSheet.Values)
             {
                 if (!arenaSheet.TryGetValue(value.Id, out var row))
@@ -199,7 +204,7 @@ namespace Lib9c.Tests.Action.Scenario
 
                 var rand = new TestRandom(seed);
                 var championshipData = row.Round.OrderByDescending(x => x.Round).First();
-                Log.Debug($"[RequiredMedalCount] {championshipData.RequiredMedalCount}");
+                // Log.Debug($"[RequiredMedalCount] {championshipData.RequiredMedalCount}");
                 var seasonParticipants = new List<Address>();
                 foreach (var data in row.Round)
                 {
@@ -241,66 +246,71 @@ namespace Lib9c.Tests.Action.Scenario
                         }
                     }
 
-                    _state.TryGetArenaParticipants(apAdr, out var afterAp);
-                    foreach (var adr in afterAp.AvatarAddresses)
+                    if (_state.TryGetArenaParticipants(apAdr, out var afterAp))
                     {
-                        var aiAdr = ArenaInformation.DeriveAddress(adr, data.Id, data.Round);
-                        var avatarState = _state.GetAvatarStateV2(adr);
-
-                        for (var i = 0; i < championshipData.RequiredMedalCount; i++)
+                        foreach (var adr in afterAp.AvatarAddresses)
                         {
+                            var aiAdr = ArenaInformation.DeriveAddress(adr, data.Id, data.Round);
+                            var avatarState = _state.GetAvatarStateV2(adr);
+                            var playCount = Math.Max(championshipData.RequiredMedalCount + 5, repeatCount);
+
+                            for (var i = 0; i < playCount; i++)
+                            {
+                                if (!_state.TryGetArenaInformation(aiAdr, out var ai))
+                                {
+                                    throw new ArenaInformationNotFoundException($"ai : {aiAdr}");
+                                }
+
+                                var buyTicket = Math.Max(0, ticket - ai.Ticket);
+                                var currency = buyTicket * data.TicketPrice * _ncg;
+                                _state = _state.MintAsset(avatarState.agentAddress, currency);
+
+                                var myScore = GetScore(adr, data);
+
+                                var targets = afterAp.AvatarAddresses
+                                    .Where(x => x != adr)
+                                    .OrderBy(x => Guid.NewGuid()).ToList();
+
+                                if (TryGetTarget(targets, data, myScore, out var targetAddress))
+                                {
+                                    var addBlockIndex = Math.Min(data.StartBlockIndex + i, data.EndBlockIndex);
+                                    _state = BattleArena(
+                                        rand,
+                                        avatarState.agentAddress,
+                                        adr,
+                                        targetAddress,
+                                        data,
+                                        ticket,
+                                        addBlockIndex);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Log.Debug($"Arena Participants is nobody : {data.Id} / {data.Round}");
+                    }
+
+                    if (data.ArenaType == ArenaType.Championship && afterAp != null)
+                    {
+                        foreach (var adr in afterAp.AvatarAddresses)
+                        {
+                            var aiAdr = ArenaInformation.DeriveAddress(adr, data.Id, data.Round);
                             if (!_state.TryGetArenaInformation(aiAdr, out var ai))
                             {
                                 throw new ArenaInformationNotFoundException($"ai : {aiAdr}");
                             }
 
-                            var buyTicket = Math.Max(0, ticket - ai.Ticket);
-                            var currency = buyTicket * data.TicketPrice * _ncg;
-                            _state = _state.MintAsset(avatarState.agentAddress, currency);
-
-                            var myScore = GetScore(adr, data);
-
-                            var targets = afterAp.AvatarAddresses
-                                .Where(x => x != adr)
-                                .OrderBy(x => Guid.NewGuid()).ToList();
-
-                            if (TryGetTarget(targets, data, myScore, out var targetAddress))
+                            var sAdr = ArenaScore.DeriveAddress(adr, data.Id, data.Round);
+                            if (!_state.TryGetArenaScore(sAdr, out var score))
                             {
-                                var addBlockIndex = Math.Min(data.StartBlockIndex + i, data.EndBlockIndex);
-                                _state = BattleArena(
-                                    rand,
-                                    avatarState.agentAddress,
-                                    adr,
-                                    targetAddress,
-                                    data,
-                                    ticket,
-                                    addBlockIndex);
+                                throw new ArenaScoreNotFoundException($"score : {score}");
                             }
-                        }
-                    }
 
-                    foreach (var adr in afterAp.AvatarAddresses)
-                    {
-                        var aiAdr = ArenaInformation.DeriveAddress(adr, data.Id, data.Round);
-                        if (!_state.TryGetArenaInformation(aiAdr, out var ai))
-                        {
-                            throw new ArenaInformationNotFoundException($"ai : {aiAdr}");
+                            var avatarState = _state.GetAvatarStateV2(adr);
+                            var medalCount = ArenaHelper.GetMedalTotalCount(row, avatarState);
+                            // Log.Debug(ShowLog(adr, data, score, ai, medalCount));
                         }
-
-                        var sAdr = ArenaScore.DeriveAddress(adr, data.Id, data.Round);
-                        if (!_state.TryGetArenaScore(sAdr, out var score))
-                        {
-                            throw new ArenaScoreNotFoundException($"score : {score}");
-                        }
-
-                        if (data.ArenaType == ArenaType.OffSeason)
-                        {
-                            continue;
-                        }
-
-                        var avatarState = _state.GetAvatarStateV2(adr);
-                        var medalCount = ArenaHelper.GetMedalTotalCount(row, avatarState);
-                        // Log.Debug(ShowLog(adr, data, score, ai, medalCount));
                     }
                 }
 
@@ -359,6 +369,27 @@ namespace Lib9c.Tests.Action.Scenario
             }
 
             return score.Score;
+        }
+
+        private GameConfigState SetArenaInterval(int interval)
+        {
+            var gameConfigState = _state.GetGameConfigState();
+            var sheet = _tableSheets.GameConfigSheet;
+            foreach (var value in sheet.Values)
+            {
+                if (value.Key.Equals("daily_arena_interval"))
+                {
+                    IReadOnlyList<string> field = new[]
+                    {
+                        value.Key,
+                        interval.ToString(),
+                    };
+                    value.Set(field);
+                }
+            }
+
+            gameConfigState.Set(sheet);
+            return gameConfigState;
         }
     }
 }

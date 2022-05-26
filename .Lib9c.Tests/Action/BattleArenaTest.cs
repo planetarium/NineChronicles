@@ -198,17 +198,17 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1, 1, 3)]
-        [InlineData(1, 1, 1, 1, 4)]
-        [InlineData(1, 1, 1, 5, 0)]
-        [InlineData(1, 1, 1, 5, 1)]
-        [InlineData(1, 1, 1, 8, 0)]
-        [InlineData(1, 1, 1, 8, 1)]
-        [InlineData(1, 1, 1, 12, 0)]
-        [InlineData(1, 1, 1, 12, 1)]
-        [InlineData(1, 1, 2, 5, 0)]
-        [InlineData(1, 1, 2, 5, 1)]
-        public void Execute(long nextBlockIndex, int championshipId, int round, int ticket, int randomSeed)
+        [InlineData(1, 1, 1, 1, 2, 3)]
+        [InlineData(1, 1, 1, 1, 2, 4)]
+        [InlineData(1, 1, 1, 5, 2, 0)]
+        [InlineData(1, 1, 1, 5, 2, 1)]
+        [InlineData(1, 1, 1, 8, 2, 0)]
+        [InlineData(1, 1, 1, 8, 2, 1)]
+        [InlineData(1, 1, 1, 12, 2, 0)]
+        [InlineData(1, 1, 1, 12, 2, 1)]
+        [InlineData(1, 1, 2, 5, 2, 0)]
+        [InlineData(1, 1, 2, 5, 2, 1)]
+        public void Execute(long nextBlockIndex, int championshipId, int round, int ticket, int arenaInterval, int randomSeed)
         {
             var arenaSheet = _state.GetSheet<ArenaSheet>();
             if (!arenaSheet.TryGetValue(championshipId, out var row))
@@ -269,6 +269,9 @@ namespace Lib9c.Tests.Action
 
             Assert.Empty(_avatar1.inventory.Materials);
 
+            var gameConfigState = SetArenaInterval(arenaInterval);
+            _state = _state.SetState(GameConfigState.Address, gameConfigState.Serialize());
+
             var blockIndex = roundData.StartBlockIndex + nextBlockIndex;
             _state = action.Execute(new ActionContext
             {
@@ -327,6 +330,27 @@ namespace Lib9c.Tests.Action
             var materialCount = avatarState.inventory.Materials.Count();
             var high = (ArenaHelper.GetRewardCount(beforeMyScore.Score) * ticket) + medalCount;
             Assert.InRange(materialCount, 0, high);
+        }
+
+        public GameConfigState SetArenaInterval(int interval)
+        {
+            var gameConfigState = _state.GetGameConfigState();
+            var sheet = _tableSheets.GameConfigSheet;
+            foreach (var value in sheet.Values)
+            {
+                if (value.Key.Equals("daily_arena_interval"))
+                {
+                    IReadOnlyList<string> field = new[]
+                    {
+                        value.Key,
+                        interval.ToString(),
+                    };
+                    value.Set(field);
+                }
+            }
+
+            gameConfigState.Set(sheet);
+            return gameConfigState;
         }
 
         [Fact]
