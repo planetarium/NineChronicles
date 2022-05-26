@@ -754,20 +754,16 @@
             An interface of protocol to discover peers from the distributed network.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Protocols.IProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.IProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <summary>
             Conducts peer discovery for given <paramref name="bootstrapPeers"/>.
             </summary>
             <param name="bootstrapPeers">A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Net.Peer"/>s
             to bootstrap.</param>
-            <param name="pingSeedTimeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
-            message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
+            <param name="dialTimeout">The timeout used when waiting a reply for either
+            <see cref="T:Libplanet.Net.Messages.Ping"/> or <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.
             If <c>null</c> is given, the task never halts by itself
             even no any response was given from the the target seed.</param>
-            <param name="findNeighborsTimeout">A timeout of waiting for the reply of
-            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
-            If <c>null</c> is given, task never halts by itself
-            even the target seed gives no any response.</param>
             <param name="depth">Recursive operation depth to search peers from network.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
@@ -901,7 +897,7 @@
             If it's omitted or <c>null</c> is given, will automatically be set to 5 seconds.
             </param>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
@@ -1466,13 +1462,12 @@
             <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
             not <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <summary>
             Join to the peer-to-peer network using seed peers.
             </summary>
             <param name="seedPeers">List of seed peers.</param>
-            <param name="pingSeedTimeout">Timeout for connecting to seed peers.</param>
-            <param name="findNeighborsTimeout">Timeout for requesting neighbors.</param>
+            <param name="dialTimeout">Timeout for connecting to peers.</param>
             <param name="depth">Depth to find neighbors of current <see cref="T:Libplanet.Net.Peer"/>
             from seed peers.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
@@ -1662,12 +1657,6 @@
         <member name="F:Libplanet.Net.SwarmOptions.TransportType.TcpTransport">
             <summary>
             TCP based transport.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.SwarmOptions.BlockDownloadTimeout">
-            <summary>
-            The overall timeout used when downloading <see cref="N:Libplanet.Blocks"/> during
-            a preloading stage.
             </summary>
         </member>
         <member name="P:Libplanet.Net.SwarmOptions.BlockDemandLifespan">

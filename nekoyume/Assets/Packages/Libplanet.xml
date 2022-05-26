@@ -4456,8 +4456,6 @@
             than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
             not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when any tx signer is not derived
-            from its its public key.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
             a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
             Note that this validates only a block's intrinsic integrity between its transactions,
@@ -4602,8 +4600,6 @@
             than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
             not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when any tx signer is not derived
-            from its its public key.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
             a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
             Note that this validates only a block's intrinsic integrity between its transactions,
@@ -4634,8 +4630,6 @@
             than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
             not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when any tx signer is not derived
-            from its its public key.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
             a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
             Note that this validates only a block's intrinsic integrity between its transactions,
@@ -4668,8 +4662,6 @@
             than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
             not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when any tx signer is not derived
-            from its its public key.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
             a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
             Note that this validates only a block's intrinsic integrity between its transactions,
@@ -4695,8 +4687,6 @@
             together.</para></remarks>
             <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
             not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when any tx signer is not derived
-            from its its public key.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
             a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
             Note that this validates only a block's intrinsic integrity between its transactions,
@@ -4769,8 +4759,6 @@
             than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
             not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when any tx signer is not derived
-            from its its public key.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
             a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
             Note that this validates only a block's intrinsic integrity between its transactions,
@@ -5700,8 +5688,6 @@
             than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
             not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when any tx signer is not derived
-            from its its public key.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
             a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
             Note that this validates only a block's intrinsic integrity between its transactions,
@@ -5746,8 +5732,6 @@
             than its <see cref="P:Libplanet.Blocks.IBlockMetadata.Difficulty"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when any tx signature is invalid or
             not signed by its signer.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when any tx signer is not derived
-            from its its public key.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
             a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
             Note that this validates only a block's intrinsic integrity between its transactions,
@@ -6223,8 +6207,6 @@
             </param>
             <returns>A hexadecimal string which encodes the given
             <paramref name="bytes"/>.</returns>
-            <exception cref="T:System.ArgumentNullException">Thrown when the given
-            <paramref name="bytes"/> is <c>null</c>.</exception>
         </member>
         <member name="M:Libplanet.ByteUtil.CalculateHashCode(System.Byte[])">
             <summary>
@@ -9611,23 +9593,6 @@
             The actual <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>, which is improper.
             </summary>
         </member>
-        <member name="T:Libplanet.Tx.InvalidTxPublicKeyException">
-            <summary>
-            The exception that is thrown when a <see cref="T:Libplanet.Tx.Transaction`1"/>'s
-            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> is not derived from its
-            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Tx.InvalidTxPublicKeyException.#ctor(Libplanet.Tx.TxId,System.String)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Tx.InvalidTxPublicKeyException"/> object.
-            </summary>
-            <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
-            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
-            the <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
-            </param>
-        </member>
         <member name="T:Libplanet.Tx.InvalidTxSignatureException">
             <summary>
             The exception that is thrown when a <see cref="T:Libplanet.Tx.Transaction`1"/>'s
@@ -9644,6 +9609,64 @@
             <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
             </param>
         </member>
+        <member name="T:Libplanet.Tx.ITxExcerpt">
+            <summary>
+            Similar to <see cref="T:Libplanet.Tx.ITxMetadata"/> except that it has <see cref="T:Libplanet.Tx.TxId"/> as well.
+            Note that this does not contain actions or signature.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.ITxExcerpt.Id">
+            <summary>
+            The unique identifier derived from this transaction's content including actions and
+            signature.
+            </summary>
+            <seealso cref="T:Libplanet.Tx.TxId"/>
+        </member>
+        <member name="T:Libplanet.Tx.ITxMetadata">
+            <summary>
+            A common interface for transactions that do not have any proofs nor actions.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.ITxMetadata.Nonce">
+            <summary>
+            The number of previous <see cref="T:Libplanet.Tx.Transaction`1"/>s committed by
+            the <see cref="P:Libplanet.Tx.ITxMetadata.Signer"/> of this transaction.  This nonce is used for preventing
+            replay attack.
+            </summary>
+            <remarks>Don't confuse this with <see cref="P:Libplanet.Blocks.Block`1.Nonce"/> for proof-of-work.
+            </remarks>
+        </member>
+        <member name="P:Libplanet.Tx.ITxMetadata.Signer">
+            <summary>
+            A <see cref="P:Libplanet.Tx.ITxMetadata.PublicKey"/> of the account who signs this transaction.
+            This is derived from the <see cref="P:Libplanet.Tx.ITxMetadata.PublicKey"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.ITxMetadata.UpdatedAddresses">
+            <summary>
+            An approximated list of addresses whose states would be affected by actions in this
+            transaction.  However, it could be wrong.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.ITxMetadata.Timestamp">
+            <summary>
+            The time this transaction is created and signed.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.ITxMetadata.PublicKey">
+            <summary>
+            A <see cref="P:Libplanet.Tx.ITxMetadata.PublicKey"/> of the account who signs this transaction.
+            The <see cref="P:Libplanet.Tx.ITxMetadata.Signer"/> address is always corresponding to this
+            for each transaction.  This cannot be <see langword="null"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.ITxMetadata.GenesisHash">
+            <summary>
+            A <see cref="T:Libplanet.HashDigest`1"/> value of the genesis which this transaction is made
+            from.  This can be <see langword="null"/> iff the transaction is contained in
+            the genesis block.
+            </summary>
+        </member>
         <member name="T:Libplanet.Tx.Transaction`1">
             <summary>
             Consists of <see cref="T:Libplanet.Action.IAction"/> and is signed to be included in
@@ -9658,6 +9681,22 @@
             </typeparam>
             <seealso cref="T:Libplanet.Action.IAction"/>
             <seealso cref="T:Libplanet.Action.PolymorphicAction`1"/>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.#ctor(Libplanet.Tx.ITxMetadata,System.Collections.Generic.IEnumerable{`0},System.Byte[])">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> instance by copying data from a specified
+            transaction <paramref name="metadata"/>.
+            </summary>
+            <param name="metadata">The transaction metadata that contains data to copy.</param>
+            <param name="actions">A list of <see cref="T:Libplanet.Action.IAction"/>s to include.  This can be empty,
+            but cannot be <see langword="null"/>.  This goes to the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> property.
+            </param>
+            <param name="signature">A digital signature of the content of this
+            <see cref="T:Libplanet.Tx.Transaction`1"/>.  This has to be signed by <paramref name="metadata"/>'s
+            <see cref="P:Libplanet.Tx.ITxMetadata.PublicKey"/>. This is copied and then assigned to
+            the <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> property.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when <see langword="null"/>
+            is passed to <paramref name="signature"/> or <paramref name="actions"/>.</exception>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.#ctor(System.Int64,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Nullable{Libplanet.Blocks.BlockHash},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])">
             <summary>
@@ -9674,15 +9713,12 @@
             <see cref="T:Libplanet.Tx.Transaction`1"/>s committed by the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>
             of this transaction.  This goes to the
             <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> property.</param>
-            <param name="signer">An <see cref="T:Libplanet.Address"/> of the account
-            who signs this transaction.  If this is not derived from <paramref
-            name="publicKey"/> <see cref="T:Libplanet.Tx.InvalidTxPublicKeyException"/> is
-            thrown.  This goes to the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> property.</param>
-            <param name="publicKey">A <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> of the account
-            who signs this transaction.  If this does not match to <paramref
-            name="signer"/> address <see cref="T:Libplanet.Tx.InvalidTxPublicKeyException"/>
-            is thrown.  This cannot be <c>null</c>.  This goes to
-            the <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> property.</param>
+            <param name="signer">Ignored.  Left only for backward compatibility.  It will be
+            completely gone in the future.  See also <paramref name="publicKey"/> parameter's
+            description.</param>
+            <param name="publicKey">A <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> used for signing this transaction.
+            This cannot be <see langword="null"/>.  This goes to the <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>
+            property, and <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> property is also derived from this value.</param>
             <param name="genesisHash">A <see cref="T:Libplanet.HashDigest`1"/> value
             of the genesis which this <see cref="T:Libplanet.Tx.Transaction`1"/> is made from.
             This can be <c>null</c> iff the transaction is contained
@@ -9703,10 +9739,8 @@
             or it will throw <see cref="T:Libplanet.Tx.InvalidTxSignatureException"/>.
             This is copied and then assigned to the <see cref="P:Libplanet.Tx.Transaction`1.Signature"/>
             property.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c>
-            is passed to <paramref name="signature"/>,
-            <paramref name="actions"/>, or <paramref name="publicKey"/>.
-            </exception>
+            <exception cref="T:System.ArgumentNullException">Thrown when <see langword="null"/>
+            is passed to <paramref name="signature"/> or <paramref name="actions"/>.</exception>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.#ctor(Bencodex.Types.Dictionary)">
             <summary>
@@ -9725,22 +9759,13 @@
             <seealso cref="T:Libplanet.Tx.TxId"/>
         </member>
         <member name="P:Libplanet.Tx.Transaction`1.Nonce">
-            <summary>
-            The number of previous <see cref="T:Libplanet.Tx.Transaction`1"/>s committed by
-            the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> of this transaction.
-            </summary>
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.Nonce"/>
         </member>
         <member name="P:Libplanet.Tx.Transaction`1.Signer">
-            <summary>
-            A <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> of the account who signs this transaction.
-            This is derived from the <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.
-            </summary>
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.Signer"/>
         </member>
         <member name="P:Libplanet.Tx.Transaction`1.UpdatedAddresses">
-            <summary>
-            <see cref="T:Libplanet.Address"/>es whose states affected by
-            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
-            </summary>
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.UpdatedAddresses"/>
         </member>
         <member name="P:Libplanet.Tx.Transaction`1.Signature">
             <summary>
@@ -9760,25 +9785,13 @@
             </summary>
         </member>
         <member name="P:Libplanet.Tx.Transaction`1.Timestamp">
-            <summary>
-            The time this <see cref="T:Libplanet.Tx.Transaction`1"/> is created and signed.
-            </summary>
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.Timestamp"/>
         </member>
         <member name="P:Libplanet.Tx.Transaction`1.PublicKey">
-            <summary>
-            A <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> of the account who signs this
-            <see cref="T:Libplanet.Tx.Transaction`1"/>.
-            The <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> address is always corresponding to this
-            for each transaction.  This cannot be <c>null</c>.
-            </summary>
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.PublicKey"/>
         </member>
         <member name="P:Libplanet.Tx.Transaction`1.GenesisHash">
-            <summary>
-            A <see cref="T:Libplanet.HashDigest`1"/> value of the genesis which this
-            <see cref="T:Libplanet.Tx.Transaction`1"/> is made from.
-            This can be <c>null</c> iff the transaction is contained
-            in the genesis block.
-            </summary>
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.GenesisHash"/>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Deserialize(System.Byte[],System.Boolean)">
             <summary>
@@ -9793,9 +9806,6 @@
             <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid or not signed by
             the account who corresponds to <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.
             </exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when its
-            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> is not derived from its
-            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.</exception>
             <seealso cref="M:Libplanet.Tx.Transaction`1.Serialize(System.Boolean)"/>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.Blocks.BlockHash},System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
@@ -10004,9 +10014,6 @@
             <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid or not signed by
             the account who corresponds to its <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.
             </exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when its
-            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> is not derived from its
-            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.</exception>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Equals(Libplanet.Tx.Transaction{`0})">
             <inheritdoc />
@@ -10016,6 +10023,28 @@
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.GetHashCode">
             <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Tx.TxExcerptExtensions">
+            <summary>
+            Useful extension methods for <see cref="T:Libplanet.Tx.ITxExcerpt"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.TxExcerptExtensions.ValidateTxNonces``1(System.Collections.Generic.IEnumerable{``0},System.Int64)">
+            <summary>
+            Validates if <paramref name="transactions"/> has valid nonces.
+            It assumes all given <paramref name="transactions"/> belong to a block together.
+            </summary>
+            <param name="transactions">A list of transactions.  Their order does not matter.</param>
+            <param name="blockIndex">The index of the block that transactions will belong to.
+            It's only used for exception messages.</param>
+            <typeparam name="T">A transaction type.</typeparam>
+            <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the same tx nonce is used by
+            a signer twice or more, or a tx nonce is used without its previous nonce by a signer.
+            Note that this validates only a block's intrinsic integrity between its transactions,
+            but does not guarantee integrity between blocks.  Such validation needs to be conducted
+            by <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxGenesisHashException">Thrown when transactions to set have
+            inconsistent genesis hashes.</exception>
         </member>
         <member name="T:Libplanet.Tx.TxExecution">
             <summary>
@@ -10124,6 +10153,22 @@
             <see cref="M:Libplanet.Tx.TxId.ToByteArray"/> method instead.</remarks>
             <seealso cref="M:Libplanet.Tx.TxId.ToByteArray"/>
         </member>
+        <member name="M:Libplanet.Tx.TxId.FromHex(System.String)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Tx.TxId"/> value from a <paramref name="hex"/> string.
+            </summary>
+            <param name="hex">A hexadecimal string which encodes a <see cref="T:Libplanet.Tx.TxId"/>.
+            This has to contain 64 hexadecimal digits and must not be <see langword="null"/>
+            This is usually made by <see cref="M:Libplanet.Tx.TxId.ToHex"/> method.</param>
+            <returns>A corresponding <see cref="T:Libplanet.Tx.TxId"/> value.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given <paramref name="hex"/>
+            string is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="hex"/> is shorter or longer than 64 characters.</exception>
+            <exception cref="T:System.FormatException">Thrown when the given <paramref name="hex"/> string is
+            not a valid hexadecimal string.</exception>
+            <seealso cref="M:Libplanet.Tx.TxId.ToHex"/>
+        </member>
         <member name="M:Libplanet.Tx.TxId.ToByteArray">
             <summary>
             Gets a bare mutable <see cref="T:System.Byte"/> array of
@@ -10158,6 +10203,73 @@
         </member>
         <member name="M:Libplanet.Tx.TxId.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Tx.TxMetadata">
+            <summary>
+            A concrete class implementing <see cref="T:Libplanet.Tx.ITxMetadata"/>.  It's used to represent drafts
+            of unsigned <see cref="T:Libplanet.Tx.Transaction`1"/>s.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.TxMetadata.#ctor(Libplanet.Crypto.PublicKey)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Tx.TxMetadata"/> instance with a <paramref name="publicKey"/>.
+            Other fields can be set using property setters.
+            </summary>
+            <param name="publicKey">Configures <see cref="P:Libplanet.Tx.TxMetadata.PublicKey"/> and <see cref="P:Libplanet.Tx.TxMetadata.Signer"/>.
+            </param>
+        </member>
+        <member name="M:Libplanet.Tx.TxMetadata.#ctor(Libplanet.Tx.ITxMetadata)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Tx.TxMetadata"/> instance by copying fields from the specified
+            <paramref name="metadata"/>.
+            </summary>
+            <param name="metadata">The transaction metadata whose data to copy.</param>
+            <remarks><see cref="P:Libplanet.Tx.ITxMetadata.Signer"/> from the specified <paramref name="metadata"/>
+            is ignored.  <see cref="P:Libplanet.Tx.TxMetadata.Signer"/> field is automatically derived from
+            <see cref="P:Libplanet.Tx.TxMetadata.PublicKey"/> instead.</remarks>
+        </member>
+        <member name="M:Libplanet.Tx.TxMetadata.#ctor(Bencodex.Types.Dictionary)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Tx.TxMetadata"/> from a Bencodex <paramref name="dictionary"/>.
+            </summary>
+            <param name="dictionary">A Bencodex dictionary made using
+            <see cref="M:Libplanet.Tx.TxMetadata.ToBencodex(System.Collections.Generic.IEnumerable{Bencodex.Types.IValue},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})"/> method.</param>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when the given
+            <paramref name="dictionary"/> lacks some fields.</exception>
+            <exception cref="T:System.InvalidCastException">Thrown when the given
+            <paramref name="dictionary"/> has some invalid values.</exception>
+        </member>
+        <member name="P:Libplanet.Tx.TxMetadata.Nonce">
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.Nonce"/>
+        </member>
+        <member name="P:Libplanet.Tx.TxMetadata.Signer">
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.Signer"/>
+            <remarks>This is automatically derived from <see cref="P:Libplanet.Tx.TxMetadata.PublicKey"/>.</remarks>
+        </member>
+        <member name="P:Libplanet.Tx.TxMetadata.UpdatedAddresses">
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.UpdatedAddresses"/>
+        </member>
+        <member name="P:Libplanet.Tx.TxMetadata.Timestamp">
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.Timestamp"/>
+        </member>
+        <member name="P:Libplanet.Tx.TxMetadata.PublicKey">
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.PublicKey"/>
+        </member>
+        <member name="P:Libplanet.Tx.TxMetadata.GenesisHash">
+            <inheritdoc cref="P:Libplanet.Tx.ITxMetadata.GenesisHash"/>
+        </member>
+        <member name="M:Libplanet.Tx.TxMetadata.ToBencodex(System.Collections.Generic.IEnumerable{Bencodex.Types.IValue},System.Nullable{System.Collections.Immutable.ImmutableArray{System.Byte}})">
+            <summary>
+            Builds a Bencodex dictionary used for signing and calculating <see cref="T:Libplanet.Tx.TxId"/>.
+            </summary>
+            <param name="actions">A list of <see cref="P:Libplanet.Action.IAction.PlainValue"/>s to include.</param>
+            <param name="signature">Optionally specifies the transaction signature.  It should be
+            <see langword="null"/> (which is the default) when you make a signature, and should be
+            present when you make a <see cref="T:Libplanet.Tx.TxId"/>.</param>
+            <returns>A Bencodex dictionary that the transaction turns into.</returns>
+        </member>
+        <member name="M:Libplanet.Tx.TxMetadata.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
         </member>
         <member name="T:Libplanet.Tx.TxPolicyViolationException">
             <summary>
