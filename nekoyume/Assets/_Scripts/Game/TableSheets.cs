@@ -144,6 +144,8 @@ namespace Nekoyume.Game
         public CrystalMaterialCostSheet CrystalMaterialCostSheet { get; private set; }
 
         public SweepRequiredCPSheet SweepRequiredCPSheet { get; private set; }
+        
+        public ArenaSheet ArenaSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
