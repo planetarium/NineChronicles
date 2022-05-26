@@ -27,8 +27,6 @@ namespace Nekoyume.UI.Module
         [Serializable]
         private struct CrystalAnimationData
         {
-            public RectTransform crystalAnimationStartRect;
-            public RectTransform crystalAnimationTargetRect;
             public int maximum;
             public int middle;
             public int minimum;
@@ -432,6 +430,7 @@ namespace Nekoyume.UI.Module
             loadingScreen.SetCurrency(
                 (int)_cachedGrindingRewardNCG.MajorUnit,
                 (int)_cachedGrindingRewardCrystal.MajorUnit);
+            loadingScreen.CrystalAnimationCount = GetCrystalMoveAnimationCount(rewardCrystal);
             canvasGroup.interactable = false;
 
             yield return null;
@@ -442,25 +441,6 @@ namespace Nekoyume.UI.Module
 
             var quote = L10nManager.Localize("UI_GRIND_NPC_QUOTE");
             loadingScreen.AnimateNPC(quote);
-            loadingScreen.SetCloseAction(() =>
-            {
-                var crystalAnimationStartPosition = animationData.crystalAnimationStartRect != null
-                    ? (Vector3) animationData.crystalAnimationStartRect
-                        .GetWorldPositionOfCenter()
-                    : crystalRewardText.transform.position;
-                var crystalAnimationTargetPosition =
-                    animationData.crystalAnimationTargetRect != null
-                        ? (Vector3) animationData.crystalAnimationTargetRect
-                            .GetWorldPositionOfCenter()
-                        : Widget.Find<HeaderMenuStatic>().Crystal.IconPosition +
-                          CrystalMovePositionOffset;
-                var animationCount = GetCrystalMoveAnimationCount(rewardCrystal);
-                StartCoroutine(ItemMoveAnimationFactory.CoItemMoveAnimation(
-                    ItemMoveAnimationFactory.AnimationItemType.Crystal,
-                    crystalAnimationStartPosition,
-                    crystalAnimationTargetPosition,
-                    animationCount));
-            });
         }
 
         private void OnNPCDisappear()

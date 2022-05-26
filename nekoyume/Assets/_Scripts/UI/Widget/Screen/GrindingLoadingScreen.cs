@@ -4,10 +4,12 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
+using Nekoyume.Game.Factory;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Spine;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
@@ -41,12 +43,14 @@ namespace Nekoyume.UI
         [SerializeField]
         private SkeletonGraphic npcSkeletonGraphic;
 
+        public RectTransform crystalAnimationStartRect;
+        public RectTransform crystalAnimationTargetRect;
+
         private Coroutine _npcAppearCoroutine = null;
         private readonly WaitForSeconds _waitForOneSec = new WaitForSeconds(1f);
 
-        private CombinationSparkVFX _sparkVFX = null;
-
         public System.Action OnDisappear { get; set; }
+        public int CrystalAnimationCount { get; set; }
 
         private const int ContinueTime = 5;
         private System.Action _closeAction;
@@ -73,17 +77,6 @@ namespace Nekoyume.UI
             continueText.text = string.Format(format, ContinueTime);
             npcSkeletonGraphic.gameObject.SetActive(false);
             base.Show(ignoreShowAnimation);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            if (_sparkVFX)
-            {
-                _sparkVFX.Stop();
-                _sparkVFX = null;
-            }
-
-            base.Close(ignoreCloseAnimation);
         }
 
         private void HideButton()
@@ -115,10 +108,10 @@ namespace Nekoyume.UI
         private IEnumerator CoAnimateNPC(string quote = null)
         {
             var pos = ActionCamera.instance.Cam.transform.position;
-            _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
             npcSkeletonGraphic.gameObject.SetActive(true);
             npcSkeletonGraphic.AnimationState.SetAnimation(0,
                 NPCAnimation.Type.Emotion_02.ToString(), false);
+            npcSkeletonGraphic.AnimationState.Complete += AnimateCrystalMoving;
             npcSkeletonGraphic.AnimationState.AddAnimation(0,
                 NPCAnimation.Type.Emotion_03.ToString(), true, 0f);
 
@@ -174,16 +167,30 @@ namespace Nekoyume.UI
             //     NPCAnimation.Type.Disappear_02.ToString(), false);
             //npcSkeletonGraphic.AnimationState.Complete += OnComplete;
             HideButton();
-
-            if (_sparkVFX)
-            {
-                _sparkVFX.LazyStop();
-            }
-
-            OnComplete();
+            OnComplete(null);
         }
 
-        private void OnComplete()
+        private void AnimateCrystalMoving(TrackEntry trackEntry)
+        {
+            var crystalAnimationStartPosition = crystalAnimationStartRect != null
+                ? (Vector3) crystalAnimationStartRect
+                    .GetWorldPositionOfCenter()
+                : speechBubble.transform.position;
+            var crystalAnimationTargetPosition =
+                crystalAnimationTargetRect != null
+                    ? (Vector3) crystalAnimationTargetRect
+                        .GetWorldPositionOfCenter()
+                    : Find<HeaderMenuStatic>().Crystal.IconPosition +
+                      GrindModule.CrystalMovePositionOffset;
+            StartCoroutine(ItemMoveAnimationFactory.CoItemMoveAnimation(
+                ItemMoveAnimationFactory.AnimationItemType.Crystal,
+                crystalAnimationStartPosition,
+                crystalAnimationTargetPosition,
+                CrystalAnimationCount));
+            npcSkeletonGraphic.AnimationState.Complete -= AnimateCrystalMoving;
+        }
+
+        private void OnComplete(TrackEntry trackEntry)
         {
             npcSkeletonGraphic.gameObject.SetActive(false);
             speechBubble.Hide();
