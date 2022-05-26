@@ -47,11 +47,33 @@ namespace Lib9c.Tests.TableData
         }
 
         [Theory]
+        [InlineData(-1, false, default(int), default(int))]
+        [InlineData(0, true, 1, 8)]
+        [InlineData(20000, true, 1, 8)]
+        [InlineData(20001, false, default(int), default(int))]
+        public void TryGetRowByBlockIndexTest(
+            long blockIndex,
+            bool expectedExist,
+            int expectedId,
+            int expectedRoundCount)
+        {
+            if (expectedExist)
+            {
+                Assert.True(_arenaSheet.TryGetRowByBlockIndex(blockIndex, out var row));
+                Assert.Equal(expectedId, row.Id);
+                Assert.Equal(expectedRoundCount, row.Round.Count);
+                return;
+            }
+
+            Assert.False(_arenaSheet.TryGetRoundByBlockIndex(blockIndex, out _));
+        }
+
+        [Theory]
+        [InlineData(-1, false, default(int), default(int), default(ArenaType))]
         [InlineData(0, true, 1, 1, ArenaType.OffSeason)]
         [InlineData(21, true, 1, 4, ArenaType.Season)]
         [InlineData(61, true, 1, 8, ArenaType.Championship)]
-        [InlineData(-1, false, default(int), default(int), default(ArenaType))]
-        [InlineData(200001, false, default(int), default(int), default(ArenaType))]
+        [InlineData(20001, false, default(int), default(int), default(ArenaType))]
         public void TryGetRoundByBlockIndexTest(
             long blockIndex,
             bool expectedExist,
