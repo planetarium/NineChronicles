@@ -108,5 +108,15 @@ namespace Nekoyume.TableData
 
             row.Round.Add(value.Round[0]);
         }
+
+        public bool TryGetRoundByBlockIndex(long blockIndex, out RoundData roundData)
+        {
+            roundData = OrderedList
+                .SelectMany(row => row.Round)
+                .FirstOrDefault(e =>
+                    e.StartBlockIndex <= blockIndex &&
+                    e.EndBlockIndex >= blockIndex);
+            return roundData != null;
+        }
     }
 }
