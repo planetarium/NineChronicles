@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -74,11 +75,11 @@ namespace Nekoyume.Helper
         public static FungibleAssetValue CalculateMaterialCost(
             int materialId,
             int materialCount,
-            CrystalMaterialCostSheet crystalMaterialCostsheet)
+            CrystalMaterialCostSheet crystalMaterialCostSheet)
         {
-            if (!crystalMaterialCostsheet.TryGetValue(materialId, out var costRow))
+            if (!crystalMaterialCostSheet.TryGetValue(materialId, out var costRow))
             {
-                throw new ArgumentException($"This material is not replacable with crystal. id : {materialId}");
+                throw new ArgumentException($"This material is not replaceable with crystal. id : {materialId}");
             }
 
             return costRow.CRYSTAL * materialCount * CRYSTAL;
