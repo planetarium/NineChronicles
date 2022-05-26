@@ -12,6 +12,7 @@ namespace Nekoyume.Action
     /// <see cref="MonsterCollectionState"/> into <see cref="StakeState"/> without cancellation, to
     /// keep its staked period.
     /// </summary>
+    [ActionType("migrate_monster_collection")]
     public class MigrateMonsterCollection : ActionBase
     {
         public Address AvatarAddress { get; private set; }
