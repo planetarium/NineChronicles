@@ -1,4 +1,6 @@
 ﻿using System;
+using Nekoyume.Model.EnumType;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module.Arena.Emblems;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
@@ -6,25 +8,16 @@ using UnityEngine.UI.Extensions;
 namespace Nekoyume.UI.Module.Arena.Join
 {
     [Serializable]
-    public enum ArenaJoinSeasonType
-    {
-        Offseason = 0,
-        Season,
-        Championship,
-    }
-
-    [Serializable]
     public class ArenaJoinSeasonItemData
     {
-        public ArenaJoinSeasonType type;
-
-        public string text;
+        public ArenaSheet.RoundData RoundData;
+        public int? SeasonNumber;
     }
 
     public class ArenaJoinSeasonScrollContext
     {
-        public int selectedIndex = -1;
-        public Action<int> onCellClicked;
+        public int SelectedIndex = -1;
+        public Action<int> OnCellClicked;
     }
 
     public class ArenaJoinSeasonCell :
@@ -70,9 +63,9 @@ namespace Nekoyume.UI.Module.Arena.Join
         public override void Initialize()
         {
             base.Initialize();
-            _offseason.OnClick += () => Context.onCellClicked?.Invoke(Index);
-            _season.OnClick += () => Context.onCellClicked?.Invoke(Index);
-            _championship.OnClick += () => Context.onCellClicked?.Invoke(Index);
+            _offseason.OnClick += () => Context.OnCellClicked?.Invoke(Index);
+            _season.OnClick += () => Context.OnCellClicked?.Invoke(Index);
+            _championship.OnClick += () => Context.OnCellClicked?.Invoke(Index);
         }
 
         public override void UpdateContent(ArenaJoinSeasonItemData itemData)
@@ -80,22 +73,22 @@ namespace Nekoyume.UI.Module.Arena.Join
             _currentData = itemData;
             _medalCountObject.SetActive(false);
             _seasonCountObject.SetActive(false);
-            switch (_currentData.type)
+            switch (_currentData.RoundData.ArenaType)
             {
-                case ArenaJoinSeasonType.Offseason:
-                    _offseason.Show(_currentData, Index == Context.selectedIndex);
+                case ArenaType.OffSeason:
+                    _offseason.Show(_currentData, Index == Context.SelectedIndex);
                     _season.Hide();
                     _championship.Hide();
                     break;
-                case ArenaJoinSeasonType.Season:
+                case ArenaType.Season:
                     _offseason.Hide();
-                    _season.Show(_currentData, Index == Context.selectedIndex);
+                    _season.Show(_currentData, Index == Context.SelectedIndex);
                     _championship.Hide();
                     break;
-                case ArenaJoinSeasonType.Championship:
+                case ArenaType.Championship:
                     _offseason.Hide();
                     _season.Hide();
-                    _championship.Show(_currentData, Index == Context.selectedIndex);
+                    _championship.Show(_currentData, Index == Context.SelectedIndex);
 
                     var hasSeasons = true;
                     if (hasSeasons)
@@ -116,19 +109,19 @@ namespace Nekoyume.UI.Module.Arena.Join
             _currentPosition = position;
             PlayAnimation(_animator, _currentPosition);
 
-            switch (_currentData?.type)
+            switch (_currentData?.RoundData.ArenaType)
             {
-                case ArenaJoinSeasonType.Offseason:
+                case ArenaType.OffSeason:
                     PlayAnimation(_offseason.Animator, _currentPosition);
                     break;
-                case ArenaJoinSeasonType.Season:
+                case ArenaType.Season:
                     PlayAnimation(_season.Animator, _currentPosition);
                     break;
-                case ArenaJoinSeasonType.Championship:
+                case ArenaType.Championship:
                     PlayAnimation(_championship.Animator, _currentPosition);
                     break;
                 default:
-                    var value = _currentData?.type.ToString() ?? "null";
+                    var value = _currentData?.RoundData.ArenaType.ToString() ?? "null";
                     Debug.Log($"{nameof(ArenaJoinSeasonCell)} type: {value}");
                     break;
             }

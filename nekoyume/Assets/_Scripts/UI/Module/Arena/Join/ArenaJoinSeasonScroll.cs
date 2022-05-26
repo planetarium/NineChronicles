@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         private IList<ArenaJoinSeasonItemData> _data;
 
-        public ArenaJoinSeasonItemData SelectedItemData => _data[Context.selectedIndex];
+        public ArenaJoinSeasonItemData SelectedItemData => _data[Context.SelectedIndex];
 
         private readonly Subject<int> _onSelectionChanged = new Subject<int>();
         public IObservable<int> OnSelectionChanged => _onSelectionChanged;
@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         {
             if (index < 0 ||
                 index >= ItemsSource.Count ||
-                index == Context.selectedIndex)
+                index == Context.SelectedIndex)
             {
                 return;
             }
@@ -62,24 +62,24 @@ namespace Nekoyume.UI.Module.Arena.Join
         {
             base.Initialize();
 
-            Context.onCellClicked = index => SelectCell(index, true);
+            Context.OnCellClicked = index => SelectCell(index, true);
             _scroller.OnValueChanged(UpdatePosition);
             _scroller.OnSelectionChanged(index => UpdateSelection(index, true));
         }
 
         private void UpdateSelection(int index, bool invokeEvents)
         {
-            if (index == Context.selectedIndex)
+            if (index == Context.SelectedIndex)
             {
                 return;
             }
 
-            Context.selectedIndex = index;
+            Context.SelectedIndex = index;
             Refresh();
 
             if (invokeEvents)
             {
-                _onSelectionChanged.OnNext(Context.selectedIndex);   
+                _onSelectionChanged.OnNext(Context.SelectedIndex);   
             }
         }
     }
