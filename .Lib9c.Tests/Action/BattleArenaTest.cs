@@ -555,5 +555,48 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
             }));
         }
+
+        [Fact]
+        public void Execute_NotEnoughFungibleAssetValueException()
+        {
+            var championshipId = 1;
+            var round = 2;
+            var arenaSheet = _state.GetSheet<ArenaSheet>();
+            if (!arenaSheet.TryGetValue(championshipId, out var row))
+            {
+                throw new SheetRowNotFoundException(
+                    nameof(ArenaSheet), $"championship Id : {championshipId}");
+            }
+
+            if (!row.TryGetRound(round, out var roundData))
+            {
+                throw new RoundNotFoundException(
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.Id}) - round({round})");
+            }
+
+            var random = new TestRandom();
+            _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
+            _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
+
+            var action = new BattleArena()
+            {
+                myAvatarAddress = _avatar1Address,
+                enemyAvatarAddress = _avatar2Address,
+                championshipId = championshipId,
+                round = round,
+                ticket = 100,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+            };
+
+            var blockIndex = roundData.StartBlockIndex + 1;
+            Assert.Throws<NotEnoughFungibleAssetValueException>(() => action.Execute(new ActionContext()
+            {
+                BlockIndex = blockIndex,
+                PreviousStates = _state,
+                Signer = _agent1Address,
+                Random = new TestRandom(),
+            }));
+        }
     }
 }
