@@ -5,11 +5,12 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Bencodex.Types;
-using JetBrains.Annotations;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using LruCacheNet;
+using Nekoyume.Model.Arena;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -513,6 +514,7 @@ namespace Nekoyume.Action
             bool containQuestSheet = false,
             bool containStageSimulatorSheets = false,
             bool containRankingSimulatorSheets = false,
+            bool containArenaSimulatorSheets = false,
             IEnumerable<Type> sheetTypes = null)
         {
             var sheetTypeList = sheetTypes?.ToList() ?? new List<Type>();
@@ -574,6 +576,19 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
+            }
+
+            if (containArenaSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(BuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
+                sheetTypeList.Add(typeof(CostumeStatSheet));
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());
@@ -763,7 +778,7 @@ namespace Nekoyume.Action
 
             return new ShopState((Dictionary)value);
         }
-        
+
         public static (Address arenaInfoAddress, ArenaInfo arenaInfo, bool isNewArenaInfo) GetArenaInfo(
             this IAccountStateDelta states,
             Address weeklyArenaAddress,
@@ -797,6 +812,130 @@ namespace Nekoyume.Action
 
             stakeState = null;
             return false;
+        }
+
+        public static ArenaParticipants GetArenaParticipants(this IAccountStateDelta states,
+            Address arenaParticipantsAddress, int id, int round)
+        {
+            return states.TryGetState(arenaParticipantsAddress, out List list)
+                ? new ArenaParticipants(list)
+                : new ArenaParticipants(id, round);
+        }
+
+        public static ArenaAvatarState GetArenaAvatarState(this IAccountStateDelta states,
+            Address arenaAvatarStateAddress, AvatarState avatarState)
+        {
+            return states.TryGetState(arenaAvatarStateAddress, out List list)
+                ? new ArenaAvatarState(list)
+                : new ArenaAvatarState(avatarState);
+        }
+
+        public static bool TryGetArenaParticipants(this IAccountStateDelta states,
+            Address arenaParticipantsAddress, out ArenaParticipants arenaParticipants)
+        {
+            if (states.TryGetState(arenaParticipantsAddress, out List list))
+            {
+                arenaParticipants = new ArenaParticipants(list);
+                return true;
+            }
+
+            arenaParticipants = null;
+            return false;
+        }
+
+        public static bool TryGetArenaAvatarState(this IAccountStateDelta states,
+            Address arenaAvatarStateAddress, out ArenaAvatarState arenaAvatarState)
+        {
+            if (states.TryGetState(arenaAvatarStateAddress, out List list))
+            {
+                arenaAvatarState = new ArenaAvatarState(list);
+                return true;
+            }
+
+            arenaAvatarState = null;
+            return false;
+        }
+
+        public static bool TryGetArenaScore(this IAccountStateDelta states,
+            Address arenaScoreAddress, out ArenaScore arenaScore)
+        {
+            if (states.TryGetState(arenaScoreAddress, out List list))
+            {
+                arenaScore = new ArenaScore(list);
+                return true;
+            }
+
+            arenaScore = null;
+            return false;
+        }
+
+        public static bool TryGetArenaInformation(this IAccountStateDelta states,
+            Address arenaInformationAddress, out ArenaInformation arenaInformation)
+        {
+            if (states.TryGetState(arenaInformationAddress, out List list))
+            {
+                arenaInformation = new ArenaInformation(list);
+                return true;
+            }
+
+            arenaInformation = null;
+            return false;
+        }
+
+        public static AvatarState GetEnemyAvatarState(this IAccountStateDelta states, Address avatarAddress)
+        {
+            AvatarState enemyAvatarState;
+            try
+            {
+                enemyAvatarState = states.GetAvatarStateV2(avatarAddress);
+            }
+            // BackWard compatible.
+            catch (FailedLoadStateException)
+            {
+                enemyAvatarState = states.GetAvatarState(avatarAddress);
+            }
+
+            if (enemyAvatarState is null)
+            {
+                throw new FailedLoadStateException(
+                    $"Aborted as the avatar state of the opponent ({avatarAddress}) was failed to load.");
+            }
+
+            return enemyAvatarState;
+        }
+
+        public static CrystalCostState GetCrystalCostState(this IAccountStateDelta states,
+            Address address)
+        {
+            return states.TryGetState(address, out List rawState)
+                ? new CrystalCostState(address, rawState)
+                : new CrystalCostState(address, 0 * CrystalCalculator.CRYSTAL);
+        }
+
+        public static (
+            CrystalCostState DailyCostState,
+            CrystalCostState WeeklyCostState,
+            CrystalCostState PrevWeeklyCostState,
+            CrystalCostState BeforePrevWeeklyCostState
+            ) GetCrystalCostStates(this IAccountStateDelta states, long blockIndex)
+        {
+            int dailyCostIndex = (int) (blockIndex / CrystalCostState.DailyIntervalIndex);
+            int weeklyCostIndex = (int) (blockIndex / CrystalCostState.WeeklyIntervalIndex);
+            Address dailyCostAddress = Addresses.GetDailyCrystalCostAddress(dailyCostIndex);
+            CrystalCostState dailyCostState = states.GetCrystalCostState(dailyCostAddress);
+            Address weeklyCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyCostIndex);
+            CrystalCostState weeklyCostState = states.GetCrystalCostState(weeklyCostAddress);
+            CrystalCostState prevWeeklyCostState = null;
+            CrystalCostState beforePrevWeeklyCostState = null;
+            if (weeklyCostIndex > 1)
+            {
+                Address prevWeeklyCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyCostIndex - 1);
+                prevWeeklyCostState = states.GetCrystalCostState(prevWeeklyCostAddress);
+                Address beforePrevWeeklyCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyCostIndex - 2);
+                beforePrevWeeklyCostState = states.GetCrystalCostState(beforePrevWeeklyCostAddress);
+            }
+
+            return (dailyCostState, weeklyCostState, prevWeeklyCostState, beforePrevWeeklyCostState);
         }
     }
 }

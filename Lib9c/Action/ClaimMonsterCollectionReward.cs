@@ -19,6 +19,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("claim_monster_collection_reward3")]
+    // FIXME: This action should be obsoleted.
     public class ClaimMonsterCollectionReward : GameAction
     {
         public Address avatarAddress;

@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Nekoyume.TableData.Crystal;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class GrindingTest
     {
@@ -66,13 +66,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, 0, 100, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, 0, 200, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 0, 200, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 0, false, true, 3, 130, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 4, 280, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, 0, 200, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, 0, 500, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 0, 500, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, true, 3, 260, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 4, 700, 1, null)]
         // Charge AP.
-        [InlineData(true, true, 0, true, true, true, 1, 0, false, false, 0, 100, 1, null)]
+        [InlineData(true, true, 0, true, true, true, 1, 0, false, false, 0, 200, 1, null)]
         // Invalid equipment count.
         [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 4, 280, 0, typeof(InvalidItemCountException))]
         [InlineData(true, true, 120, false, false, true, 1, 2, false, true, 4, 280, 11, typeof(InvalidItemCountException))]

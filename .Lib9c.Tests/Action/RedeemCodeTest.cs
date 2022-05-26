@@ -12,8 +12,8 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
+    using static Lib9c.SerializeKeys;
     using static Nekoyume.Model.State.RedeemCodeState;
-    using static SerializeKeys;
 
     public class RedeemCodeTest
     {

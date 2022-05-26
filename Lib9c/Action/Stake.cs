@@ -3,12 +3,14 @@ using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet.Action;
+using Nekoyume.Extensions;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    [ActionType("stake")]
     public class Stake : ActionBase
     {
         internal BigInteger Amount { get; set; }
@@ -67,24 +69,7 @@ namespace Nekoyume.Action
             // Stake if it doesn't exist yet.
             if (!states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
-                var sheet = states.GetSheet<StakeAchievementRewardSheet>();
                 stakeState = new StakeState(stakeStateAddress, context.BlockIndex);
-                var orderedRows = sheet.Values.OrderBy(row => row.Steps[0].RequiredGold).ToList();
-                int FindLevel()
-                {
-                    for (int i = 0; i < orderedRows.Count - 1; ++i)
-                    {
-                        if (currentBalance > currency * orderedRows[i].Steps[0].RequiredGold &&
-                            currentBalance < currency * orderedRows[i + 1].Steps[0].RequiredGold)
-                        {
-                            return orderedRows[i].Level;
-                        }
-                    }
-
-                    return orderedRows.Last().Level;
-                }
-
-                stakeState.Achievements.Achieve(FindLevel(), 0);
                 return states
                     .SetState(
                         stakeStateAddress,
@@ -92,7 +77,7 @@ namespace Nekoyume.Action
                     .TransferAsset(context.Signer, stakeStateAddress, targetStakeBalance);
             }
 
-            if (!stakeState.IsCancellable(context.BlockIndex))
+            if (!stakeState.IsCancellable(context.BlockIndex) && targetStakeBalance < stakedBalance)
             {
                 throw new RequiredBlockIndexException();
             }

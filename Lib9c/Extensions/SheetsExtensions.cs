@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet;
+using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.TableData;
 
@@ -190,5 +193,47 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<WeeklyArenaRewardSheet>()
             );
         }
+
+        public static ArenaSimulatorSheets GetArenaSimulatorSheets(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new ArenaSimulatorSheets(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<BuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<CostumeStatSheet>(),
+                sheets.GetSheet<WeeklyArenaRewardSheet>()
+            );
+        }
+        public static int FindLevelByStakedAmount(this IStakeRewardSheet sheet, Address agentAddress,
+            FungibleAssetValue balance)
+        {
+            List<IStakeRewardRow> orderedRows =
+                sheet.OrderedRows.OrderBy(row => row.RequiredGold).ToList();
+            // throw Exception when balance < minimum RequiredGold
+            var minimumRequired = orderedRows.First().RequiredGold * balance.Currency;
+            if (balance < minimumRequired)
+            {
+                var msg = $"The account {agentAddress}'s balance of {balance.Currency} is insufficient to " +
+                          $"staked minimum amount: {balance} < {minimumRequired}.";
+                throw new InsufficientBalanceException(agentAddress, balance, msg);
+            }
+            for (int i = 0; i < orderedRows.Count - 1; ++i)
+            {
+                if (balance.Currency * orderedRows[i].RequiredGold <= balance &&
+                    balance < balance.Currency * orderedRows[i + 1].RequiredGold)
+                {
+                    return orderedRows[i].Level;
+                }
+            }
+
+            // Return maximum level when balance > maximum RequiredGold
+            return orderedRows.Last().Level;
+        }
+
     }
 }

@@ -12,7 +12,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class ClaimStakeRewardTest
     {
@@ -35,8 +35,13 @@ namespace Lib9c.Tests.Action
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
+                var sheet = key switch
+                {
+                    nameof(StakeRegularRewardSheet) => TableSheets.MockedStakeRegularRewardSheet,
+                    _ => value,
+                };
                 _initialState = _initialState
-                    .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+                    .SetState(Addresses.TableSheet.Derive(key), sheet.Serialize());
             }
 
             _tableSheets = new TableSheets(sheets);
@@ -90,20 +95,13 @@ namespace Lib9c.Tests.Action
             });
 
             AvatarState avatarState = states.GetAvatarStateV2(_avatarAddress);
-            // regular (100 / 50) + achieve (80 + 80)
-            Assert.Equal(162, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
-            // regular (100 / 50) + achieve (1 + 1)
-            Assert.Equal(4, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
+            // regular (100 / 8) * 4
+            Assert.Equal(48, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
+            // regular (100 / 200) * 4
+            Assert.Equal(0, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
 
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
-            const int level = 1;  // Expect requiredGold = 100. Assertions for synchronization with the table data.
-            Assert.Equal(100, _tableSheets.StakeAchievementRewardSheet[level].Steps[0].RequiredGold);
-            Assert.Equal(
-                StakeState.RewardInterval,
-                _tableSheets.StakeAchievementRewardSheet[level].Steps[0].RequiredBlockIndex);
-
             Assert.Equal(StakeState.LockupInterval, stakeState.ReceivedBlockIndex);
-            Assert.True(stakeState.Achievements.Check(level, 1));
         }
 
         [Fact]
@@ -113,15 +111,6 @@ namespace Lib9c.Tests.Action
             var deserialized = new ClaimStakeReward();
             deserialized.LoadPlainValue(action.PlainValue);
             Assert.Equal(action.AvatarAddress, deserialized.AvatarAddress);
-        }
-
-        [Fact]
-        public void CannotBePolymorphicAction()
-        {
-            Assert.Throws<MissingActionTypeException>(() =>
-            {
-                PolymorphicAction<ActionBase> action = new ClaimStakeReward(_avatarAddress);
-            });
         }
     }
 }

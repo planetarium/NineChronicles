@@ -36,6 +36,11 @@ namespace Nekoyume.TableData
         {
         }
 
+        public SheetRowNotFoundException(string sheetName, long longKey)
+            : this(sheetName, longKey.ToString(CultureInfo.InvariantCulture))
+        {
+        }
+
         public SheetRowNotFoundException(string sheetName, string key) : this(sheetName, "Key", key)
         {
         }
@@ -44,7 +49,7 @@ namespace Nekoyume.TableData
             base($"{sheetName}: {condition} - {value}")
         {
         }
-        
+
         public SheetRowNotFoundException(string addressesHex, string sheetName, int intKey)
             : base($"{addressesHex}{sheetName}: Key - {intKey.ToString(CultureInfo.InvariantCulture)}")
         {

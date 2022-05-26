@@ -19,8 +19,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/840
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/991
+    /// Updated at https://github.com/planetarium/lib9c/pull/991
     /// </summary>
     [Serializable]
     [ActionType("combination_equipment11")]
@@ -296,10 +296,28 @@ namespace Nekoyume.Action
                 }
             }
             // ~Remove Required Materials
-            var crystalBalance = states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
-            if (costCrystal > crystalBalance)
+            if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
             {
-                throw new NotEnoughFungibleAssetValueException($"required {costCrystal}, but balance is {crystalBalance}");
+                var (dailyCostState, weeklyCostState, prevWeeklyCostState, beforePrevWeeklyCostState) = states.GetCrystalCostStates(context.BlockIndex);
+                costCrystal = CrystalCalculator.CalculateCombinationCost(costCrystal,
+                    prevWeeklyCostState, beforePrevWeeklyCostState);
+                // Update Daily Formula.
+                dailyCostState.Count++;
+                dailyCostState.CRYSTAL += costCrystal;
+                // Update Weekly Formula.
+                weeklyCostState.Count++;
+                weeklyCostState.CRYSTAL += costCrystal;
+
+                var crystalBalance = states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
+                if (costCrystal > crystalBalance)
+                {
+                    throw new NotEnoughFungibleAssetValueException($"required {costCrystal}, but balance is {crystalBalance}");
+                }
+
+                states = states
+                    .SetState(dailyCostState.Address, dailyCostState.Serialize())
+                    .SetState(weeklyCostState.Address, weeklyCostState.Serialize())
+                    .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
             }
 
             // Subtract Required ActionPoint
@@ -381,11 +399,6 @@ namespace Nekoyume.Action
                 endBlockIndex);
             avatarState.Update(mail);
             // ~Create Mail
-
-            if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
-            {
-                states = states.TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
-            }
 
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())

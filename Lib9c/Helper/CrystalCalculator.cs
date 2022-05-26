@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Libplanet.Assets;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
 
@@ -31,6 +31,15 @@ namespace Nekoyume.Helper
                 .Aggregate(cost, (current, row) => current + row.CRYSTAL * CRYSTAL);
         }
 
+        public static FungibleAssetValue CalculateBuffGachaCost(int stageId,
+            int count,
+            CrystalStageBuffGachaSheet stageBuffGachaSheet)
+        {
+            var cost = CRYSTAL * stageBuffGachaSheet[stageId].CRYSTAL;
+
+            return count == 5 ? cost : cost * 3;
+        }
+
         public static FungibleAssetValue CalculateCrystal(
             IEnumerable<Equipment> equipmentList,
             CrystalEquipmentGrindingSheet crystalEquipmentGrindingSheet,
@@ -43,8 +52,10 @@ namespace Nekoyume.Helper
             foreach (var equipment in equipmentList)
             {
                 CrystalEquipmentGrindingSheet.Row grindingRow = crystalEquipmentGrindingSheet[equipment.Id];
-                int level = Math.Max(0, equipment.level - 1);
-                crystal += BigInteger.Pow(2, level) * grindingRow.CRYSTAL * CRYSTAL;
+                crystal += grindingRow.CRYSTAL * CRYSTAL;
+                crystal += (BigInteger.Pow(2, equipment.level) - 1) *
+                           crystalEquipmentGrindingSheet[grindingRow.EnchantBaseId].CRYSTAL *
+                           CRYSTAL;
             }
 
             // Divide Reward when itemEnhancement failed.
@@ -59,6 +70,7 @@ namespace Nekoyume.Helper
             return crystal + extra;
         }
 
+
         public static FungibleAssetValue CalculateMaterialCost(
             int materialId,
             int materialCount,
@@ -70,6 +82,22 @@ namespace Nekoyume.Helper
             }
 
             return costRow.CRYSTAL * materialCount * CRYSTAL;
+        }
+
+        public static FungibleAssetValue CalculateCombinationCost(
+            FungibleAssetValue crystal,
+            CrystalCostState prevWeeklyCostState = null,
+            CrystalCostState beforePrevWeeklyCostState = null
+        )
+        {
+            if (!(prevWeeklyCostState is null) && !(beforePrevWeeklyCostState is null))
+            {
+                var multiplier = prevWeeklyCostState.CRYSTAL.RawValue * 100 /
+                                 beforePrevWeeklyCostState.CRYSTAL.RawValue;
+                crystal = crystal.DivRem(100, out _) * multiplier;
+            }
+
+            return crystal;
         }
     }
 }

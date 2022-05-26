@@ -1,6 +1,8 @@
 using System;
+using System.Globalization;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume
@@ -24,11 +26,22 @@ namespace Nekoyume
         public static readonly Address UnlockWorld           = new Address("000000000000000000000000000000000000000e");
         public static readonly Address UnlockEquipmentRecipe = new Address("000000000000000000000000000000000000000f");
         public static readonly Address MaterialCost          = new Address("0000000000000000000000000000000000000010");
+        public static readonly Address Arena                 = new Address("0000000000000000000000000000000000000011");
 
         public static Address GetSheetAddress<T>() where T : ISheet => GetSheetAddress(typeof(T).Name);
         
         public static Address GetSheetAddress(string sheetName) => TableSheet.Derive(sheetName);
 
         public static Address GetItemAddress(Guid itemId) => Blacksmith.Derive(itemId.ToString());
+
+        public static Address GetDailyCrystalCostAddress(int index)
+        {
+            return MaterialCost.Derive($"daily_{index.ToString(CultureInfo.InvariantCulture)}");
+        }
+
+        public static Address GetWeeklyCrystalCostAddress(int index)
+        {
+            return MaterialCost.Derive($"weekly_{index.ToString(CultureInfo.InvariantCulture)}");
+        }
     }
 }

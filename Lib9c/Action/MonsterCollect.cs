@@ -17,6 +17,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("monster_collect3")]
+    // FIXME: This action should be obsoleted.
     public class MonsterCollect : GameAction
     {
         public int level;

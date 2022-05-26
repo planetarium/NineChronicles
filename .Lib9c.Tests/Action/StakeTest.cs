@@ -8,6 +8,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
@@ -32,8 +33,13 @@ namespace Lib9c.Tests.Action
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
+                var sheet = key switch
+                {
+                    nameof(StakeRegularRewardSheet) => TableSheets.MockedStakeRegularRewardSheet,
+                    _ => value,
+                };
                 _initialState = _initialState
-                    .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+                    .SetState(Addresses.TableSheet.Derive(key), sheet.Serialize());
             }
 
             _tableSheets = new TableSheets(sheets);
@@ -88,15 +94,6 @@ namespace Lib9c.Tests.Action
                 Signer = _signerAddress,
                 BlockIndex = 1,
             }));
-
-            // More
-            updateAction = new Stake(100);
-            Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
-            {
-                PreviousStates = states,
-                Signer = _signerAddress,
-                BlockIndex = 1,
-            }));
         }
 
         [Fact]
@@ -125,7 +122,7 @@ namespace Lib9c.Tests.Action
             var achievements = stakeState.Achievements;
             Assert.False(achievements.Check(0, 0));
             Assert.False(achievements.Check(0, 1));
-            Assert.True(achievements.Check(1, 0));
+            Assert.False(achievements.Check(1, 0));
 
             var cancelAction = new Stake(0);
             states = cancelAction.Execute(new ActionContext
@@ -141,6 +138,40 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Update()
+        {
+            var action = new Stake(50);
+            var states = action.Execute(new ActionContext
+            {
+                PreviousStates = _initialState,
+                Signer = _signerAddress,
+                BlockIndex = 0,
+            });
+
+            states.TryGetStakeState(_signerAddress, out StakeState stakeState);
+            Assert.Equal(0, stakeState.StartedBlockIndex);
+            Assert.Equal(0 + StakeState.LockupInterval, stakeState.CancellableBlockIndex);
+            Assert.Equal(0, stakeState.ReceivedBlockIndex);
+            Assert.Equal(_currency * 50, states.GetBalance(stakeState.address, _currency));
+            Assert.Equal(_currency * 50, states.GetBalance(_signerAddress, _currency));
+
+            var updateAction = new Stake(100);
+            states = updateAction.Execute(new ActionContext
+            {
+                PreviousStates = states,
+                Signer = _signerAddress,
+                BlockIndex = 1,
+            });
+
+            states.TryGetStakeState(_signerAddress, out stakeState);
+            Assert.Equal(1, stakeState.StartedBlockIndex);
+            Assert.Equal(1 + StakeState.LockupInterval, stakeState.CancellableBlockIndex);
+            Assert.Equal(0, stakeState.ReceivedBlockIndex);
+            Assert.Equal(_currency * 100, states.GetBalance(stakeState.address, _currency));
+            Assert.Equal(_currency * 0, states.GetBalance(_signerAddress, _currency));
+        }
+
+        [Fact]
         public void Serialization()
         {
             var action = new Stake(100);
@@ -148,15 +179,6 @@ namespace Lib9c.Tests.Action
             deserialized.LoadPlainValue(action.PlainValue);
 
             Assert.Equal(action.Amount, deserialized.Amount);
-        }
-
-        [Fact]
-        public void CannotBePolymorphicAction()
-        {
-            Assert.Throws<MissingActionTypeException>(() =>
-            {
-                PolymorphicAction<ActionBase> action = new Stake(100);
-            });
         }
     }
 }

@@ -877,7 +877,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(Buy.ErrorCodeInvalidPrice, purchaseResult.errorCode);
         }
 
-        private (AvatarState avatarState, AgentState agentState) CreateAvatarState(
+        private (AvatarState AvatarState, AgentState AgentState) CreateAvatarState(
             Address agentAddress, Address avatarAddress)
         {
             var agentState = new AgentState(agentAddress);
