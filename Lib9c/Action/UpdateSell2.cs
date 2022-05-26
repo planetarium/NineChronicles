@@ -26,6 +26,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100220ObsoleteIndex)]
     [ActionType("update_sell2")]
     public class UpdateSell2 : GameAction
     {

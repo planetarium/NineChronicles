@@ -23,6 +23,7 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/620
     /// Updated at https://github.com/planetarium/lib9c/pull/861
     /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1022
     /// Updated at https://github.com/planetarium/lib9c/pull/1022
     /// </summary>
     [Serializable]
@@ -31,8 +32,8 @@ namespace Nekoyume.Action
     {
         public Address sellerAvatarAddress;
         public IEnumerable<UpdateSellInfo> updateSellInfos;
-        public List<(Guid orderId, ShopErrorType errorType)> errors =
-            new List<(Guid orderId, ShopErrorType errorType)>();
+        public List<(Guid orderId, ShopErrorType errorType, string address)> errors =
+            new List<(Guid orderId, ShopErrorType errorType, string address)>();
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -81,8 +82,10 @@ namespace Nekoyume.Action
             if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
             {
                 avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(addressesHex,
-                    GameConfig.RequireClearedStageLevel.ActionsInShop, current);
+                throw new NotEnoughClearedStageLevelException(
+                    addressesHex,
+                    GameConfig.RequireClearedStageLevel.ActionsInShop,
+                    current);
             }
             sw.Stop();
             Log.Verbose("{AddressesHex} UpdateSell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
@@ -96,13 +99,15 @@ namespace Nekoyume.Action
             {
                 if (!states.TryGetState(digestListAddress, out Dictionary rawList))
                 {
-                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_FAILED_LOADING_STATE));
+                    errors.Add((updateSellInfo.orderId,
+                        ShopErrorType.ERROR_CODE_FAILED_LOADING_STATE,
+                        digestListAddress.ToHex()));
                     continue;
                 }
 
                 if (updateSellInfo.price.Sign < 0)
                 {
-                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_PRICE));
+                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_PRICE, ""));
                     continue;
                 }
 
@@ -113,7 +118,7 @@ namespace Nekoyume.Action
                 var digestList = new OrderDigestListState(rawList);
 
                 // migration method
-                avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress); 
+                avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress);
                 avatarState.inventory.ReconfigureFungibleItem(digestList, updateSellInfo.tradableId);
                 avatarState.inventory.LockByReferringToDigestList(digestList, updateSellInfo.tradableId,
                     context.BlockIndex);
@@ -122,7 +127,9 @@ namespace Nekoyume.Action
                 sw.Restart();
                 if (!states.TryGetState(shopAddress, out BxDictionary shopStateDict))
                 {
-                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_FAILED_LOADING_STATE));
+                    errors.Add((updateSellInfo.orderId,
+                        ShopErrorType.ERROR_CODE_FAILED_LOADING_STATE,
+                        shopAddress.ToHex()));
                     continue;
                 }
 
@@ -131,7 +138,9 @@ namespace Nekoyume.Action
                 sw.Restart();
                 if (!states.TryGetState(Order.DeriveAddress(updateSellInfo.orderId), out Dictionary orderDict))
                 {
-                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_FAILED_LOADING_STATE));
+                    errors.Add((updateSellInfo.orderId,
+                        ShopErrorType.ERROR_CODE_FAILED_LOADING_STATE,
+                        Order.DeriveAddress(updateSellInfo.orderId).ToHex()));
                     continue;
                 }
 
