@@ -44,16 +44,13 @@ namespace Nekoyume.UI.Module.Arena.Board
         [SerializeField]
         private ConditionalButton _choiceButton;
 
-        [SerializeField]
-        private float _tempOffsetX;
-
         private ArenaBoardPlayerItemData _currentData;
 
 #if UNITY_EDITOR
         [ReadOnly]
-        public float _currentPosition;
+        public float _normalizedPosition;
 #else
-        private float _currentPosition;
+        private float _normalizedPosition;
 #endif
 
         private void Awake()
@@ -72,16 +69,18 @@ namespace Nekoyume.UI.Module.Arena.Board
             _plusRatingText.text = _currentData.plusRating;
         }
 
-        public override void UpdatePosition(float position)
-        {
-            _currentPosition = position;
-        }
-
+        // [SerializeField]
+        // private float _tempOffsetY;
+        //
+        // [SerializeField]
+        // private float _tempOffsetX;
+        //
         protected override void UpdatePosition(float normalizedPosition, float localPosition)
         {
-            base.UpdatePosition(normalizedPosition, localPosition);
-            var offsetX = math.sin(_tempOffsetX);
-            transform.localPosition += Vector3.right * offsetX;
+            _normalizedPosition = normalizedPosition;
+            base.UpdatePosition(_normalizedPosition, localPosition);
+            // var offsetX = math.sin(_normalizedPosition + _tempOffsetY) * _tempOffsetX;
+            // transform.localPosition += Vector3.right * offsetX;
         }
     }
 }

@@ -33,9 +33,14 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         public void SetData(IList<ArenaBoardPlayerItemData> data, int? index = null)
         {
+            if (!initialized)
+            {
+                Initialize();
+                initialized = true;
+            }
+
             _data = data;
             UpdateContents(_data);
-            _scroller.SetTotalCount(_data.Count);
 
             if (index.HasValue)
             {
@@ -68,7 +73,6 @@ namespace Nekoyume.UI.Module.Arena.Board
             base.Initialize();
 
             Context.onCellClicked = index => SelectCell(index, true);
-            _scroller.OnValueChanged(UpdatePosition);
             _scroller.OnSelectionChanged(index => UpdateSelection(index, true));
         }
 
