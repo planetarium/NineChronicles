@@ -134,15 +134,6 @@ namespace Lib9c.Tests.Action
             Assert.Equal(action.PlainValue, deserialized.PlainValue);
         }
 
-        [Fact]
-        public void CannotBePolymorphicAction()
-        {
-            Assert.Throws<MissingActionTypeException>(() =>
-            {
-                PolymorphicAction<ActionBase> action = new MigrateMonsterCollection();
-            });
-        }
-
         private class ExecuteFixture : IEnumerable<object[]>
         {
             private readonly List<object[]> _data = new List<object[]>
