@@ -11,6 +11,7 @@ namespace Nekoyume.TableData
     [Serializable]
     public class ArenaSheet : Sheet<int, ArenaSheet.Row>
     {
+        [Serializable]
         public class RoundData
         {
             public int Id { get; }
