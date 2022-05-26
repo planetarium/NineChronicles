@@ -16,11 +16,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    /// <summary>
+    /// <summary>0
     /// Introduced at https://github.com/planetarium/lib9c/pull/1017
     /// </summary>
-    [ActionType("hack_and_slash_sweep4")]
-    public class HackAndSlashSweep : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex)]
+    [ActionType("hack_and_slash_sweep3")]
+    public class HackAndSlashSweep3 : GameAction
     {
         public const int UsableApStoneCount = 10;
 
@@ -70,6 +71,8 @@ namespace Nekoyume.Action
                     .SetState(context.Signer, MarkChanged);
             }
 
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (apStoneCount > UsableApStoneCount)
@@ -78,7 +81,7 @@ namespace Nekoyume.Action
                                                     $"apStoneCount : {apStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
             }
 
-            if (worldId >= GameConfig.MimisbrunnrWorldId)
+            if (worldId == GameConfig.MimisbrunnrWorldId)
             {
                 throw new InvalidWorldException(
                     $"{addressesHex} [{worldId}] can't execute HackAndSlashSweep action.");
@@ -130,19 +133,19 @@ namespace Nekoyume.Action
             var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
-                // NOTE: Add new World from WorldSheet
-                worldInformation.AddAndUnlockNewWorld(worldRow, context.BlockIndex, worldSheet);
-                if (!worldInformation.TryGetWorld(worldId, out world))
-                {
-                    // Do nothing.
-                }
+                throw new SheetRowColumnException($"{addressesHex}world is not contains in world information: {worldId}");
             }
 
-            if (!world.IsPlayable(stageId))
+            if (!world.IsStageCleared)
+            {
+                throw new StageNotClearedException($"{addressesHex}There is no stage cleared in that world (worldId:{worldId})");
+            }
+
+            if (stageId > world.StageClearedId)
             {
                 throw new InvalidStageException(
-                    $"{addressesHex}Aborted as the stage isn't playable;" +
-                    $"StageClearedId: {world.StageClearedId}"
+                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
+                    $"cleared stage: {world.StageClearedId}"
                 );
             }
 
