@@ -87,6 +87,25 @@ namespace Nekoyume.TableData
                 roundData = Round.FirstOrDefault(x => x.ArenaType.Equals(ArenaType.Championship));
                 return !(roundData is null);
             }
+
+            public bool TryGetSeasonNumber(int round, out int seasonNumber)
+            {
+                seasonNumber = 0;
+                foreach (var roundData in Round)
+                {
+                    if (roundData.ArenaType == ArenaType.Season)
+                    {
+                        seasonNumber++;
+                    }
+
+                    if (roundData.Round == round)
+                    {
+                        return roundData.ArenaType == ArenaType.Season;
+                    }
+                }
+
+                return false;
+            }
         }
 
         public ArenaSheet() : base(nameof(ArenaSheet))
