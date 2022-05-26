@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
+using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -81,6 +83,7 @@ namespace Nekoyume
                 case ItemEnhanceMail itemEnhanceMail:
                 {
                     string formatKey;
+                    bool failAndGainCrystal = false;
                     switch (itemEnhanceMail.attachment)
                     {
                         case ItemEnhancement.ResultModel result:
@@ -93,7 +96,15 @@ namespace Nekoyume
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                                     break;
                                 case ItemEnhancement.EnhancementResult.Fail:
-                                    formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
+                                    if (result.CRYSTAL.MajorUnit > 0)
+                                    {
+                                        failAndGainCrystal = true;
+                                        formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_CRYSTALFAIL";
+                                    }
+                                    else
+                                    {
+                                        formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
+                                    }
                                     break;
                                 default:
                                     Debug.LogError($"Unexpected result.enhancementResult: {result.enhancementResult}");
@@ -111,8 +122,14 @@ namespace Nekoyume
                             break;
                     }
 
-                    return string.Format(
-                        L10nManager.Localize(formatKey),
+                    if (failAndGainCrystal)
+                    {
+                        return L10nManager.Localize(formatKey,
+                            GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable),
+                            ((ItemEnhancement.ResultModel) itemEnhanceMail.attachment).CRYSTAL);
+                    }
+
+                    return L10nManager.Localize(formatKey,
                         GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable));
                 }
 
@@ -169,6 +186,8 @@ namespace Nekoyume
                     return L10nManager.Localize("UI_DAILY_REWARD_MAIL_FORMAT");
                 case MonsterCollectionMail _:
                     return L10nManager.Localize("UI_MONSTER_COLLECTION_MAIL_FORMAT");
+                case GrindingMail grindingMail:
+                    return L10nManager.Localize("UI_GRINDING_CRYSTALMAIL_FORMAT", grindingMail.Asset.ToString());
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method.");
@@ -521,6 +540,37 @@ namespace Nekoyume
         {
             var subTypeText = GetLocalizedItemSubTypeText(itemBase.ItemSubType);
             return subTypeText;
+        }
+
+        public static string GetPaymentFormatText(this FungibleAssetValue asset,
+            string usageMessage,
+            BigInteger cost)
+        {
+            // NCG
+            if (asset.Currency.Equals(
+                    Game.Game.instance.States.GoldBalanceState.Gold.Currency))
+            {
+                var ncgText = L10nManager.Localize("UI_NCG");
+                return L10nManager.Localize(
+                    "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
+                    cost,
+                    ncgText,
+                    usageMessage);
+            }
+
+            // CRYSTAL
+            if (asset.Currency.Equals(CrystalCalculator.CRYSTAL))
+            {
+                var crystalText = L10nManager.Localize("UI_CRYSTAL");
+                return L10nManager.Localize(
+                    "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT",
+                    cost,
+                    crystalText,
+                    usageMessage);
+            }
+
+            Debug.LogWarning($"This Currency is not defined in 9c! {asset.Currency.ToString()}");
+            return string.Empty;
         }
     }
 }

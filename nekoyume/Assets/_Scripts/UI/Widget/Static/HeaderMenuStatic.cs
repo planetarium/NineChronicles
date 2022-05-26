@@ -54,6 +54,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private List<ToggleInfo> toggles = new List<ToggleInfo>();
         [SerializeField] private GameObject ncg;
         [SerializeField] private ActionPoint actionPoint;
+        [SerializeField] private Crystal crystal;
         [SerializeField] private GameObject dailyBonus;
         [SerializeField] private GameObject hourglass;
         [SerializeField] private GameObject arenaTickets;
@@ -95,6 +96,8 @@ namespace Nekoyume.UI.Module
         public Image ActionPointImage => actionPointImage;
 
         public bool ChargingAP => actionPoint.NowCharging;
+
+        public Crystal Crystal => crystal;
 
         public override bool CanHandleInputEvent => false;
 

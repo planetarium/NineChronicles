@@ -287,6 +287,11 @@ namespace Nekoyume.UI
             LocalLayerModifier.RemoveNewMail(avatarAddress, orderSellerMail.id);
         }
 
+        public void Read(GrindingMail grindingMail)
+        {
+            Debug.Log($"[{nameof(GrindingMail)}] ItemCount: {grindingMail.ItemCount}, Asset: {grindingMail.Asset}");
+        }
+
         public async void Read(OrderExpirationMail orderExpirationMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -332,6 +337,11 @@ namespace Nekoyume.UI
             // LocalLayer
             UniTask.Run(async () =>
             {
+                if (itemEnhanceMail.attachment is ItemEnhancement.ResultModel result)
+                {
+                    LocalLayerModifier.ModifyAgentCrystal(States.Instance.AgentState.address, result.CRYSTAL.MajorUnit);
+                }
+
                 LocalLayerModifier.AddItem(
                     avatarAddress,
                     itemUsable.TradableId,

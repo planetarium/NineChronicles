@@ -18,7 +18,7 @@ namespace Nekoyume.Game.Controller
         {
             base.Awake();
 
-            _pool = FindObjectOfType<ObjectPool>();
+            _pool = Game.instance.Stage.objectPool;
             if (ReferenceEquals(_pool, null))
             {
                 throw new NotFoundComponentException<ObjectPool>();

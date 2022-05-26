@@ -341,7 +341,7 @@ namespace Nekoyume.UI
             var diff = state.UnlockBlockIndex - currentBlockIndex;
             var cost =
                 RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
-            rapidCombinationButton.SetCost(ConditionalCostButton.CostType.Hourglass, cost);
+            rapidCombinationButton.SetCost(CostType.Hourglass, cost);
         }
 
         private void UpdateItemInformation(ItemUsable item)

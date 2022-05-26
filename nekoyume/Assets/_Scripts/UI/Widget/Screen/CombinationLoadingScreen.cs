@@ -103,6 +103,11 @@ namespace Nekoyume.UI
             speechBubble.SetItemMaterial(item, isConsumable);
         }
 
+        public void SetCurrency(int ncg, int crystal)
+        {
+            speechBubble.SetCurrency(ncg, crystal);
+        }
+
         public void SetCloseAction(System.Action closeAction)
         {
             _closeAction = closeAction;
@@ -156,7 +161,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoWorkshopItemMove()
         {
-            var item = speechBubble.item;
+            var item = speechBubble.Item;
             var target = Find<HeaderMenuStatic>()
                 .GetToggle(HeaderMenuStatic.ToggleType.CombinationSlots);
             var targetPosition = target ? target.position : Vector3.zero;
@@ -181,7 +186,11 @@ namespace Nekoyume.UI
                 NPCAnimation.Type.Disappear_02.ToString(), false);
             npcSkeletonGraphic.AnimationState.Complete += OnComplete;
             HideButton();
-            StartCoroutine(CoWorkshopItemMove());
+            if (speechBubble.Item != null)
+            {
+                StartCoroutine(CoWorkshopItemMove());
+            }
+
             if (_sparkVFX)
             {
                 _sparkVFX.LazyStop();

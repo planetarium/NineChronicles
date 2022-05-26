@@ -3,18 +3,18 @@ using UnityEngine.UI;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.TableData;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.State;
 using TMPro;
 using System;
 using Nekoyume.Model.Mail;
+using Nekoyume.EnumType;
+using Nekoyume.L10n;
+using Nekoyume.UI.Scroller;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI.Module
 {
-    using Nekoyume.L10n;
-    using Nekoyume.UI.Scroller;
-    using System.Collections.Generic;
     using UniRx;
 
     public class RecipeCell : MonoBehaviour
@@ -23,20 +23,25 @@ namespace Nekoyume.UI.Module
         [SerializeField] private RecipeViewData recipeViewData = null;
         [SerializeField] private RecipeView equipmentView = null;
         [SerializeField] private RecipeView consumableView = null;
+        [SerializeField] private RecipeView loadingView = null;
         [SerializeField] private GameObject selectedObject = null;
+        [SerializeField] private GameObject unlockObject = null;
         [SerializeField] private GameObject lockObject = null;
         [SerializeField] private GameObject lockVFXObject = null;
         [SerializeField] private GameObject lockOpenVFXObject = null;
-        [SerializeField] private GameObject indicatorObject = null;
+        [SerializeField] private GameObject notificationObject = null;
         [SerializeField] private TextMeshProUGUI unlockConditionText = null;
+        [SerializeField] private TextMeshProUGUI unlockPriceText = null;
         [SerializeField] private Button button = null;
         [SerializeField] private bool selectable = true;
 
         private SheetRow<int> _recipeRow = null;
         private bool _unlockable = false;
-        private int _recipeIdToUnlock;
+        private bool _isWaitingForUnlock = false;
 
         private readonly List<IDisposable> _disposablesForOnDisable = new List<IDisposable>();
+
+        public int RecipeId => _recipeRow.Key;
 
         private bool IsLocked {
             get => lockObject.activeSelf;
@@ -52,14 +57,10 @@ namespace Nekoyume.UI.Module
             {
                 button.onClick.AddListener(() =>
                 {
-                    if (!IsLocked)
+                    if (!IsLocked || _unlockable)
                     {
                         AudioController.PlayClick();
                         Craft.SharedModel.SelectedRow.Value = _recipeRow;
-                    }
-                    else if (_unlockable)
-                    {
-                        Unlock();
                     }
                     else
                     {
@@ -94,17 +95,14 @@ namespace Nekoyume.UI.Module
 
         public void Show(SheetRow<int> recipeRow, bool checkLocked = true)
         {
-            _unlockable = false;
             _recipeRow = recipeRow;
-
             var tableSheets = Game.Game.instance.TableSheets;
 
+            loadingView.Hide();
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
-                var resultItem = equipmentRow.GetResultEquipmentItemRow();
-                var viewData = recipeViewData.GetData(resultItem.Grade);
-                equipmentView.Show(viewData, resultItem);
                 consumableView.Hide();
+                IsLocked = true;
                 if (checkLocked)
                 {
                     UpdateLocked(equipmentRow);
@@ -112,6 +110,7 @@ namespace Nekoyume.UI.Module
                 else
                 {
                     IsLocked = false;
+                    SetEquipmentView(equipmentRow);
                 }
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
@@ -135,13 +134,21 @@ namespace Nekoyume.UI.Module
             {
                 var selected = Craft.SharedModel.SelectedRow;
                 var notified = Craft.SharedModel.NotifiedRow;
+                var unlocked = Craft.SharedModel.UnlockedRecipes;
+                var unlockable = Craft.SharedModel.UnlockableRecipes;
 
-                if(!IsLocked) SetSelected(selected.Value);
+                if (!IsLocked) SetSelected(selected.Value);
                 selected.Subscribe(SetSelected)
                     .AddTo(_disposablesForOnDisable);
 
                 SetNotified(notified.Value);
                 notified.Subscribe(SetNotified)
+                    .AddTo(_disposablesForOnDisable);
+
+                unlocked.Subscribe(SetUnlocked)
+                    .AddTo(_disposablesForOnDisable);
+
+                unlockable.Subscribe(SetUnlockable)
                     .AddTo(_disposablesForOnDisable);
             }
         }
@@ -153,15 +160,21 @@ namespace Nekoyume.UI.Module
 
         public void UpdateLocked(EquipmentItemRecipeSheet.Row equipmentRow)
         {
+            animator.Rebind();
             lockVFXObject.SetActive(false);
             unlockConditionText.enabled = false;
-            var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
-
+            unlockObject.SetActive(false);
+            _unlockable = false;
+            _isWaitingForUnlock = false;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var worldInformation = avatarState.worldInformation;
+            
             var unlockStage = equipmentRow.UnlockStage;
             var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId) ?
                 stageId : 0;
             var diff = unlockStage - clearedStage;
 
+            var sharedModel = Craft.SharedModel;
             if (diff > 0)
             {
                 unlockConditionText.text = unlockStage != 999
@@ -174,50 +187,126 @@ namespace Nekoyume.UI.Module
                 IsLocked = true;
                 return;
             }
-            else if (!Craft.SharedModel.RecipeVFXSkipList.Contains(equipmentRow.Id))
+            else if (sharedModel.DummyLockedRecipes.Contains(equipmentRow.Id))
             {
-                _recipeIdToUnlock = equipmentRow.Id;
                 lockVFXObject.SetActive(true);
                 equipmentView.Hide();
                 IsLocked = true;
                 _unlockable = true;
                 return;
             }
+            else if (sharedModel.UnlockedRecipes is null)
+            {
+                unlockConditionText.text = L10nManager.Localize("ERROR_FAILED_LOAD_STATE");
+                unlockConditionText.enabled = true;
+                equipmentView.Hide();
+                IsLocked = true;
+                return;
+            }
+            else if (sharedModel.UnlockingRecipes.Contains(equipmentRow.Id))
+            {
+                _isWaitingForUnlock = true;
+                SetLoadingView(equipmentRow);
+                IsLocked = false;
+                return;
+            }
+            else if (!sharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id))
+            {
+                var unlockable = sharedModel.UnlockableRecipes.Value.Contains(equipmentRow.Id) &&
+                    sharedModel.UnlockableRecipesOpenCost <= States.Instance.CrystalBalance.MajorUnit;
+                lockVFXObject.SetActive(unlockable);
+                equipmentView.Hide();
+                unlockObject.SetActive(true);
+                unlockPriceText.text = equipmentRow.CRYSTAL.ToString();
+                unlockPriceText.color = unlockable ?
+                    Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.ButtonDisabled);
+                IsLocked = true;
+                _unlockable = true;
+                return;
+            }
 
+            SetEquipmentView(equipmentRow);
             IsLocked = false;
+        }
+
+        private void SetEquipmentView(EquipmentItemRecipeSheet.Row row)
+        {
+            var resultItem = row.GetResultEquipmentItemRow();
+            var viewData = recipeViewData.GetData(resultItem.Grade);
+            equipmentView.Show(viewData, resultItem);
+            consumableView.Hide();
+            loadingView.Hide();
+        }
+
+        private void SetLoadingView(EquipmentItemRecipeSheet.Row row)
+        {
+            var resultItem = row.GetResultEquipmentItemRow();
+            var viewData = recipeViewData.GetData(resultItem.Grade);
+            equipmentView.Hide();
+            consumableView.Hide();
+            loadingView.Show(viewData, resultItem);
         }
 
         public void Unlock()
         {
+            _isWaitingForUnlock = true;
             AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
             lockOpenVFXObject.SetActive(true);
-            Craft.SharedModel.RecipeVFXSkipList.Add(_recipeIdToUnlock);
-            Craft.SharedModel.SaveRecipeVFXSkipList();
 
-            equipmentView.gameObject.SetActive(true);
-            IsLocked = false;
-            _unlockable = false;
+            lockObject.SetActive(false);
+            SetLoadingView(_recipeRow as EquipmentItemRecipeSheet.Row);
         }
 
-        public void SetSelected(SheetRow<int> row)
+        public void UnlockDummyLocked()
+        {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
+            lockOpenVFXObject.SetActive(true);
+            lockObject.SetActive(false);
+            Craft.SharedModel.DummyLockedRecipes.Remove(RecipeId);
+            SetEquipmentView(_recipeRow as EquipmentItemRecipeSheet.Row);
+        }
+
+        private void SetSelected(SheetRow<int> row)
         {
             var equals = ReferenceEquals(row, _recipeRow);
             selectedObject.SetActive(equals);
-            if (equals)
+            if (!_isWaitingForUnlock)
             {
-                Craft.SharedModel.SelectedRecipeCell = this;
-                animator.SetTrigger("Clicked");
-            }
-            else
-            {
-                animator.SetTrigger("Normal");
+                if (equals)
+                {
+                    animator.Rebind();
+                    animator.SetTrigger("Clicked");
+                    Craft.SharedModel.SelectedRecipeCell = this;
+                }
+                else
+                {
+                    animator.Rebind();
+                    animator.SetTrigger("Normal");
+                }
             }
         }
 
-        public void SetNotified(SheetRow<int> row)
+        private void SetNotified(SheetRow<int> row)
         {
             var equals = ReferenceEquals(row, _recipeRow);
-            indicatorObject.SetActive(equals);
+            notificationObject.SetActive(equals);
+        }
+
+        private void SetUnlocked(List<int> recipeIds)
+        {
+            if (_recipeRow is EquipmentItemRecipeSheet.Row row)
+            {
+                UpdateLocked(row);
+            }
+        }
+
+        private void SetUnlockable(List<int> recipeIds)
+        {
+            var unlockable = recipeIds.Contains(_recipeRow.Key) &&
+                Craft.SharedModel.UnlockableRecipesOpenCost <= States.Instance.CrystalBalance.MajorUnit;
+            lockVFXObject.SetActive(unlockable);
+            unlockPriceText.color = unlockable ?
+                Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.ButtonDisabled);
         }
     }
 }

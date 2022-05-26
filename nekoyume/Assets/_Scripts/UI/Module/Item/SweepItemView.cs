@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Module
             baseItemView.FocusObject.SetActive(false);
             baseItemView.ExpiredObject.SetActive(false);
             baseItemView.TradableObject.SetActive(false);
-            baseItemView.ElementalDisableObject.SetActive(false);
+            baseItemView.DimObject.SetActive(false);
             baseItemView.LevelLimitObject.SetActive(false);
             baseItemView.SelectObject.SetActive(false);
             baseItemView.SelectBaseItemObject.SetActive(false);

@@ -17,6 +17,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Material = Nekoyume.Model.Item.Material;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -51,6 +52,18 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button closeButton;
+
+        [SerializeField]
+        private Toggle grindModeToggle;
+
+        [SerializeField]
+        private GrindModule grindModule;
+
+        [SerializeField]
+        private GameObject statusObject;
+
+        [SerializeField]
+        private GameObject equipmentSlotObject;
 
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
@@ -90,10 +103,28 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
+
+            grindModeToggle.onValueChanged.AddListener(toggledOn =>
+            {
+                if (toggledOn)
+                {
+                    statusObject.SetActive(false);
+                    equipmentSlotObject.SetActive(false);
+                    grindModule.Show();
+                }
+                else
+                {
+                    statusObject.SetActive(true);
+                    equipmentSlotObject.SetActive(true);
+                    grindModule.gameObject.SetActive(false);
+                    UpdateInventory();
+                }
+            });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            grindModeToggle.isOn = false;
             IsTweenEnd.Value = false;
             Destroy(_cachedCharacterTitle);
 
@@ -439,7 +470,7 @@ namespace Nekoyume.UI
                         : L10nManager.Localize("UI_EQUIP");
                     if (!Game.Game.instance.Stage.IsInStage)
                     {
-                        if (model.ElementalTypeDisabled.Value)
+                        if (model.DimObjectEnabled.Value)
                         {
                             interactable = model.Equipped.Value;
                         }

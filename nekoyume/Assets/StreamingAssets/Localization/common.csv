@@ -177,7 +177,7 @@ Grand succès!! J'ai fini la fabrication de {0}","<color=#FFA78B>[Практик
 巨大的成功！！ 我已经完成了{0}的制作工作。","<color=#FFA78B>[Műhelymunka]</color>
 Nagy siker!! Végeztem ravaszkodó {0}"
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop dverg]</color>
-Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 ]</color>
+Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 미안하네, {0} 강화를 실패했다네.","<color=#FFA78B>[Gato de oficina]</color>
 Desculpe, não consegui atualizar {0}","<color=#FFA78B>[Gato de oficina]</color>
 Desculpe, não consegui atualizar {0}","<color=#FFA78B>[ワークショップ猫]</color>
@@ -903,8 +903,8 @@ UI_LEVEL,Level,레벨,Nível,,レベル,Niveau,Nivel,ชั้น,Poziom,lygis,N
 UI_RANK,Rank,순위,Classificação,,順位,Rang,Rango,ยศ,Ranga,rangas,Rang,Pangkat,Rang,Классифицировать,ហ,,秩,
 UI_INFO,Info,정보,informações,,インフォ,Die Info,información,ข้อมูล,Info,Informacija,info,Info,Info,Информация,info,,信息,
 UI_RATING,Rating,레이팅,Avaliação,,格付け,Wertung,Clasificación,อันดับ,Ocena,Įvertinimas,Beoordeling,penilaian,Notation,Рейтинг,ការផ្តល់ចំណាត់ថ្នាក់,,评分,
-UI_MONSTER_COLLECTION_MAIL_FORMAT,You got the monster collection reward!,몬스터 모으기 보상을 받았어!,Você tem as recompensas de coleta monstro!,,あなたはモンスターコレクションの報酬を得ました！,Sie haben die Monster Sammlung Belohnungen!,Tienes las recompensas de colección de monstruos!,คุณได้รับรางวัลคอลเลกชันมอนสเตอร์!,Masz nagrody Monster kolekcji!,Jūs turite Monster surinkimo prizą!,Je hebt het monster collectie beloningen!,Anda mendapat imbalan koleksi rakasa!,Vous avez obtenu la récompense de collection de monstres!,Вы получили награду коллекции монстра!,អ្នកបានទទួលរង្វាន់ការប្រមូលបិសាច!,,你有怪物收集奖励！,
-UI_MONSTER_COLLECTION_REWARDS_POPUP_TITLE,Monster Collection Rewards,몬스터 모으기 보상,Recompensas Coleção do monstro,,モンスターコレクション報酬,Monster Collection Belohnungen,Monster Collection recompensas,มอนสเตอร์ของรางวัลคอลเลกชัน,Kolekcja Potworów i nagrody,Monster kolekcija Apdovanojimai,Monster Collection Beloningen,Rakasa Hadiah Koleksi,Récompenses Collection de Monstre,Монстр Коллекция Rewards,ការប្រមូលរង្វាន់បិសាច,,怪物收集奖励,
+UI_MONSTER_COLLECTION_MAIL_FORMAT,You got the monster collection reward!,몬스터 콜렉션 보상을 받았어!,Você tem as recompensas de coleta monstro!,,あなたはモンスターコレクションの報酬を得ました！,Sie haben die Monster Sammlung Belohnungen!,Tienes las recompensas de colección de monstruos!,คุณได้รับรางวัลคอลเลกชันมอนสเตอร์!,Masz nagrody Monster kolekcji!,Jūs turite Monster surinkimo prizą!,Je hebt het monster collectie beloningen!,Anda mendapat imbalan koleksi rakasa!,Vous avez obtenu la récompense de collection de monstres!,Вы получили награду коллекции монстра!,អ្នកបានទទួលរង្វាន់ការប្រមូលបិសាច!,,你有怪物收集奖励！,
+UI_MONSTER_COLLECTION_REWARDS_POPUP_TITLE,Monster Collection Rewards,몬스터 콜렉션 보상,Recompensas Coleção do monstro,,モンスターコレクション報酬,Monster Collection Belohnungen,Monster Collection recompensas,มอนสเตอร์ของรางวัลคอลเลกชัน,Kolekcja Potworów i nagrody,Monster kolekcija Apdovanojimai,Monster Collection Beloningen,Rakasa Hadiah Koleksi,Récompenses Collection de Monstre,Монстр Коллекция Rewards,ការប្រមូលរង្វាន់បិសាច,,怪物收集奖励,
 UI_SETTINGS_SCREEN_RESOLUTION,Screen Resolution,화면 해상도,Resolução da tela,,画面の解像度,Bildschirmauflösung,Resolución de la pantalla,ความละเอียดหน้าจอ,Rozdzielczość ekranu,Ekrano skiriamoji geba,Schermresolutie,Resolusi layar,Résolution d'écran,Разрешение экрана,គុណភាពបង្ហាញអេក្រង់,,屏幕分辨率,
 UI_SETTINGS_WINDOWED,Windowed,윈도우,Windowed,,ウィンドウ表示,windowed,de ventana,หน้าต่าง,okienkowy,Langų,windowed,berjendela,fenêtré,Оконный,ប្រព័ន្ធប្រតិបត្តិការ Windows,,窗,
 UI_MARKET_MAINTENANCE,"The market is temporarily closed to inspect the market state.
@@ -1058,6 +1058,38 @@ UI_ACQUISITION_PLACE,Acquisition Place,획득 장소,Lugar de aquisição,,獲�
 UI_PLACE_STAKING,Monster Collection,몬스터콜렉션,Coleção monstro.,,モンスターコレクション,Monster Kollektion.,Colección Monster,คอลเลกชันมอนสเตอร์,Kolekcja Monster.,Monster Collection.,Monstercollectie,Koleksi Monster,Collection de monstres,Коллекция монстра,ការប្រមូលបិសាច,,怪物集合,Szörnyeteggyűjtemény
 UI_EAR_REVOMON,Revomon Limited Ears,레보몬 한정판 귀,Orelhas Limitadas da Revomon,,Revomon Limited Ears.,RevoMon Begrenzte Ohren,Orejas limitadas de Revomon,หู Revomon จำกัด,Revomon Limited Ears.,Revomon Limited Ears.,RevoMon Limited Ears,Revomon Limited Ears.,Revomon limitée oreilles,RevoMon Limited уши,ត្រចៀកមានកំណត់វ៉ារ៉ូម,,Revomon有限的耳朵,Revomon korlátozott fülek
 UI_TAIL_REVOMON,Revomon Limited Tails,레보몬 한정판 꼬리,Revomon Limited Tails.,,Revomon Limited Tails,RevoMon Limited Tails.,Revomon Limited Tails,Revomon Limited Tails,Ogony z Revomon.,Revomon ribotos uodegos,RevoMon Limited Tails,Revomon Limited Tails.,Revomon Limitée Tails,RevoMon Limited хвосты,កន្ទុយលីនុចមានកំណត់,,Revomon有限的尾巴,Revomon korlátozott farok
+UI_NCG,NCG,,,,,,,,,,,,,,,,,
+UI_CRYSTAL,Crystal,크리스탈,,,,,,,,,,,,,,,,
+UI_UNLOCK_RECIPE,Unlock recipe,레시피 해금,,,,,,,,,,,,,,,,
+UI_UNLOCK_RECIPES,Unlock recipes,레시피 일괄 해금,,,,,,,,,,,,,,,,
+UI_UNLOCK_RECIPES_FORMAT,Unlock {0} recipes,레시피 {0}개를 해금,,,,,,,,,,,,,,,,
+UI_UNLOCK_WORLD,Unlock world,월드 해금,,,,,,,,,,,,,,,,
+UI_CRYSTAL_REPLACE_MATERIAL,Replace insufficient material,부족한 재료를 대체,,,,,,,,,,,,,,,,
+UI_UNLOCK_WORLD_FORMAT,Unlock world {0},{0} 월드를 해금,,,,,,,,,,,,,,,,
+CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT,"After World 1, additional world exploration is possible using crystals.
+Would you like to explore additional worlds using {0} crystals?","1월드 이후에는 크리스탈을 사용하여 추가 월드 탐험이 가능합니다.
+{0} 크리스탈을 사용하여 추가 월드들을 탐험하시겠습니까?",,,,,,,,,,,,,,,,
+UI_NOT_ENOUGH_CRYSTAL,Insufficient Crystal. You can earn crystal from grinding equipment.,크리스탈이 부족합니다. 크리스탈은 장비 분해를 통해 획득할 수 있습니다.,,,,,,,,,,,,,,,,
+UI_TOTAL_COST,Total cost,비용 합계,,,,,,,,,,,,,,,,
+UI_CONFIRM_PAYMENT_CURRENCY_FORMAT,Are you sure to pay {0} {1} to {2}?,{0} {1}을(를) 소비하여 {2}하시겠습니까?,,,,,,,,,,,,,,,,
+UI_INFORM_UNLOCK_RECIPE,Unlock recipes first.,레시피 해금이 필요합니다.,,,,,,,,,,,,,,,,
+UI_INFORM_UNLOCK_PREVIOUS_RECIPE,Unlock previous recipes first.,이전 레시피 해금이 필요합니다.,,,,,,,,,,,,,,,,
+UI_TOOLTIP_UNLOCK_RECIPES,Recipes are unlocked as much as your crystal balance.,레시피는 크리스탈 잔액에 따라 가능한 한 해금됩니다.,,,,,,,,,,,,,,,,
+GRIND_UI_SLOTNOTICE,Select item to Grind.,분해할 아이템을 선택해 주세요.,,,,,,,,,,,,,,,,
+GRIND_GAINNOTICE,Reward of Grinding,분해 보상,,,,,,,,,,,,,,,,
+GRIND_UI_BUTTON,Grind,분해,,,,,,,,,,,,,,,,
+UI_GRINDING_CONFIRM,Items that are reinforced or have skills are included in the grinding target. Are you sure you want to proceed?,강화 되어있거나 혹은 스킬을 보유한 아이템이 분해 대상에 포함되어 있습니다. 정말로 진행하시겠습니까?,,,,,,,,,,,,,,,,
+UI_GRINDING_NOTIFY,Grinding is complete.,분해가 완료됐어요.,,,,,,,,,,,,,,,,
+UI_GRINDING_CRYSTALMAIL_FORMAT,I’ve finished grinding euqipment items & earned {0}.,분해를 마치고 {0}을 얻었습니다.,,,,,,,,,,,,,,,,
+UI_GRINDING_NCGCRYSTALMAIL_FORMAT,I’ve finished grinding equipment items & earned {0}, {1}.,분해를 마치고 {0}, {1}을 얻었습니다.,,,,,,,,,,,,,,,,
+UI_MONSTERCOLLECTION_UPDATED,Monster collection state has updated.,몬스터 콜렉션 정보가 갱신되었습니다.,,,,,,,,,,,,,,,,
+UI_GRIND_NPC_QUOTE,Start grinding,분해 시작,,,,,,,,,,,,,,,,
+UI_APREFILL_GUIDE_FORMAT,"Not enough action points.
+Do you want to recharge your action points by AP Potion and do {0}?
+(Count of AP Potion : {1})","AP가 부족합니다.
+AP 포션을 사용하여 AP를 채우고 {0}을(를) 진행하시겠습니까?
+(AP 포션 보유량 : {1})",,,,,,,,,,,,,,,,
+UI_WARNING,Warning,경고,,,,,,,,,,,,,,,,
 UI_RETRYING_RPC_CONNECTION_FORMAT,Retrying RPC connection... (Attempt : {0}/{1}),RPC 연결 재시도중... (시도 횟수 : {0}/{1}),Repetindo a conexão RPC ... (tentativa: {0} / {1}),,RPC接続の再試行...（試行：{0} / {1}）,RPC-Verbindung wiederholen ... (Versuch: {0} / {1}),Reintentar la conexión RPC ... (intento: {0} / {1}),ลองการเชื่อมต่อ RPC อีกครั้ง ... (พยายาม: {0} / {1}),Retrywanie połączenia RPC ... (próba: {0} / {1}),Pakartokite RPC ryšį ... (bandymas: {0} / {1}),Herhaling RPC-verbinding ... (poging: {0} / {1}),Coba lagi Koneksi RPC ... (Upaya: {0} / {1}),Réessayer la connexion RPC ... (tentative: {0} / {1}),Стройное соединение RPC ... (попытка: {0} / {1}),ព្យាយាមតភ្ជាប់ RPC ឡើងវិញ ... (ការប៉ុនប៉ង: {0} / {1}),,重试RPC连接...（尝试：{0} / {1}）,RPC kapcsolat újraindítása ... (kísérlet: {0} / {1})))
 UI_AP,Action point,행동력,Ponto de ação,,アクションポイント,Aktionspunkt,Punto de accion,จุดดำเนินการ,Punkt akcji,Veiksmo taškas,Actiepunt,Titik aksi,Point d'action,Точка действия,ចំណុចសកម្មភាព,,,
 UI_AP_POTION,AP Potion,AP 포션,Poção AP,,APポーション,AP Trank,Poción,AP POTION,Mikstura AP,Ap Potion,AP Potion,Ramuan AP,Ap potion,AP Potion,app potion,,,
@@ -1069,7 +1101,11 @@ UI_SWEEP,SWEEP SETTINGS,SWEEP 셋팅,Configurações de varredura,,スイープ�
 UI_HOLDING,Holding,대기,Contenção,,ホールディング,Holding,Tenencia,การยึดครอง,Trzymać,Laikymasis,Vasthouden,Memegang,En portant,Держа,កាន់,,,
 UI_LOADING_SWEEP_RESULT,Loading acquisition items...,획득 아이템을 확인중입니다.,Carregando itens de aquisição ...,,取得アイテムの読み込み...,Erfassungselemente laden ...,Cargando elementos de adquisición ...,กำลังโหลดรายการที่ได้มา ...,Ładowanie elementów akwizycji ...,Įkeliant įsigijimo elementus ...,Acquisitie -items laden ...,Memuat item akuisisi ...,Chargement des articles d'acquisition ...,Загрузка элементов приобретения ...,ផ្ទុករបស់របរទិញយក ...,,,
 UI_LOADING_SWEEP,,SWEEP 진행중,Varrer em andamento ...,,進行中のスイープ...,In Arbeit fegen ...,Barrer en progreso ...,กวาดกำลังดำเนินการ ...,Wymiat w toku ...,Vyksta ...,Vweeg in uitvoering ...,Sapu sedang berlangsung ...,Balayage en cours ...,Развернуть в процессе ...,បោសវឌ្ឍនភាព ...,,,
-NO_LONGER_AVAILABLE,No longer available,더 이상 사용할 수 없음,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available
+NO_LONGER_AVAILABLE,No longer available,더 이상 사용할 수 없음,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer available,No longer Available
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_CRYSTALFAIL,"<color=#FFA78B>[Workshop dverg]</color>
+Sorry, I failed to upgrade {0}. I gave {1}...","<color=#FFA78B>[대장장이 드베르그]</color>
+{0} 강화 실패 보상으로 {1} 을(를) 획득했습니다.",,,,,,,,,,,,,,,,
+UI_FAIL_REWARD,Fail reward,실패 보상,,,,,,,,,,,,,,,,
 UI_ACHEIVE_EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP,Acheive EXP
 UI_NOT_POSSESSED,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed,Not possessed
 UI_AP_TO_USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE,AP TO USE

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Tx;
 using mixpanel;
@@ -279,14 +278,33 @@ namespace Nekoyume.BlockChain
             int slotIndex)
         {
             var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
-            foreach (var (material, count) in recipeInfo.Materials)
+            foreach (var pair in recipeInfo.Materials)
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
+                {
+                    if (!avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items))
+                    {
+                        count = 0;
+                    }
+
+                    count = items.Sum(x => x.count);
+                }
+
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
             }
 
             Analyzer.Instance.Track("Unity/Create CombinationConsumable", new Value
@@ -631,7 +649,8 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
             SubRecipeView.RecipeInfo recipeInfo,
-            int slotIndex)
+            int slotIndex,
+            bool payByCrystal)
         {
             Analyzer.Instance.Track("Unity/Create CombinationEquipment", new Value
             {
@@ -639,14 +658,33 @@ namespace Nekoyume.BlockChain
             });
 
             var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
-            foreach (var (material, count) in recipeInfo.Materials)
+            foreach (var pair in recipeInfo.Materials)
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
+                {
+                    if (!avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items))
+                    {
+                        count = 0;
+                    }
+
+                    count = items.Sum(x => x.count);
+                }
+
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
             }
 
             var action = new CombinationEquipment
@@ -655,6 +693,7 @@ namespace Nekoyume.BlockChain
                 slotIndex = slotIndex,
                 recipeId = recipeInfo.RecipeId,
                 subRecipeId = recipeInfo.SubRecipeId,
+                payByCrystal = payByCrystal,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -741,6 +780,91 @@ namespace Nekoyume.BlockChain
                 NotificationCell.NotificationType.Information);
 
             return _agent.ActionRenderer.EveryRender<ChargeActionPoint>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(List<Equipment> equipmentList, bool chargeAp)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            equipmentList.ForEach(equipment =>
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, equipment.TradableId,
+                    equipment.RequiredBlockIndex, 1);
+            });
+
+            if (chargeAp)
+            {
+                var row = TableSheets.Instance.MaterialItemSheet
+                    .OrderedList
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
+                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
+
+                var address = States.Instance.CurrentAvatarState.address;
+                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+                {
+                    GameConfigStateSubject.ActionPointState.Remove(address);
+                }
+
+                GameConfigStateSubject.ActionPointState.Add(address, true);
+            }
+
+            var action = new Grinding
+            {
+                AvatarAddress = avatarAddress,
+                EquipmentIds = equipmentList.Select(i => i.ItemId).ToList(),
+                ChargeAp = chargeAp
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<Grinding>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(
+            List<int> recipeIdList,
+            BigInteger openCost)
+        {
+            LocalLayerModifier.ModifyAgentCrystal(
+                States.Instance.AgentState.address, -openCost);
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = new UnlockEquipmentRecipe
+            {
+                AvatarAddress = avatarAddress,
+                RecipeIds = recipeIdList
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<UnlockEquipmentRecipe>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
+
+        public IObservable<ActionBase.ActionEvaluation<UnlockWorld>> UnlockWorld(List<int> worldIdList)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            var action = new UnlockWorld
+            {
+                AvatarAddress = avatarAddress,
+                WorldIds = worldIdList,
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<UnlockWorld>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()

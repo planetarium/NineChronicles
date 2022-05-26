@@ -223,7 +223,6 @@ namespace Nekoyume.UI
             Close();
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             AudioController.PlayClick();
         }
 
@@ -470,13 +469,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // Temporarily lock tutorial recipe.
-            var skipMap = Craft.SharedModel.RecipeVFXSkipList;
-            if (skipMap.Contains(firstRecipeRow.Id))
-            {
-                skipMap.Remove(firstRecipeRow.Id);
-            }
-            Craft.SharedModel.SaveRecipeVFXSkipList();
+            Craft.SharedModel.DummyLockedRecipes.Add(firstRecipeRow.Id);
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
