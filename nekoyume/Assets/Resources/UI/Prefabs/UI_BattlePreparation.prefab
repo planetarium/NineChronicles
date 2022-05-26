@@ -110,7 +110,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 2}
+  m_AnchoredPosition: {x: 0, y: 5}
   m_SizeDelta: {x: 49, y: 49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1077942544950759988
@@ -1725,7 +1725,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 4.6}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!198 &1740890658266105040
@@ -6714,7 +6714,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 144, y: 162}
-  m_SizeDelta: {x: 80, y: 80}
+  m_SizeDelta: {x: 86, y: 89}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2805154180751614834
 CanvasRenderer:
@@ -6746,28 +6746,7 @@ MonoBehaviour:
   disabledText: {fileID: 0}
   effectOverlay: {fileID: 0}
   conditionInfoKey: 
-  showCostAlert: 1
-  costObjects:
-  - type: 1
-    costTexts:
-    - parent: {fileID: 0}
-      text: {fileID: 3239103489821082652}
-    - parent: {fileID: 0}
-      text: {fileID: 0}
-    - parent: {fileID: 0}
-      text: {fileID: 0}
-  - type: 4
-    costTexts:
-    - parent: {fileID: 0}
-      text: {fileID: 0}
-    - parent: {fileID: 0}
-      text: {fileID: 0}
-    - parent: {fileID: 0}
-      text: {fileID: 0}
-  costParents:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  costTexts: []
 --- !u!114 &950029497117030740
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7947,7 +7926,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 76, y: 79}
+  m_SizeDelta: {x: 86, y: 89}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7326734197144162379
 CanvasRenderer:
@@ -10213,20 +10192,20 @@ ParticleSystem:
         - serializedVersion: 3
           time: 0
           value: 0.19653893
-          inSlope: 1.8191528
-          outSlope: 1.8191528
+          inSlope: 1.5875072
+          outSlope: 1.5875072
           tangentMode: 0
           weightedMode: 0
           inWeight: 0
-          outWeight: 0.09586117
+          outWeight: 0.077902615
         - serializedVersion: 3
           time: 1
           value: 0.19946289
-          inSlope: -1.7494557
-          outSlope: -1.7494557
+          inSlope: -1.7696486
+          outSlope: -1.7696486
           tangentMode: 0
           weightedMode: 0
-          inWeight: 0.08976549
+          inWeight: 0.07490641
           outWeight: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
@@ -14368,7 +14347,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 6.199951, y: 9.100006}
+  m_AnchoredPosition: {x: 6.199951, y: 18}
   m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &148020543494615747
