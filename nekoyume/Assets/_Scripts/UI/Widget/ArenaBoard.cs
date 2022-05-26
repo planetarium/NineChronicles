@@ -31,6 +31,11 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
+            _playerScroll.OnClickChoice.Subscribe(index =>
+            {
+                Debug.Log($"{index} choose!");
+            }).AddTo(gameObject);
+
             _backButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
@@ -50,6 +55,19 @@ namespace Nekoyume.UI
 
         private void UpdateBillboard()
         {
+#if UNITY_EDITOR
+            if (_useSo && _so)
+            {
+                _billboard.SetData(
+                    _so.SeasonText,
+                    _so.Rank.ToString(),
+                    $"{_so.WinCount}/{_so.LoseCount}",
+                    _so.CP.ToString(),
+                    _so.Rating.ToString());
+                return;
+            }
+#endif
+
             _billboard.SetData(
                 "season",
                 "rank",

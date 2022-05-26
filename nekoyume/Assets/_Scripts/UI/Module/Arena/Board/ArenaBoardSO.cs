@@ -18,6 +18,11 @@ namespace Nekoyume.UI.Module.Arena.Board
             _arenaBoardPlayerScrollData;
 
         [SerializeField]
+        private string _seasonText;
+
+        public string SeasonText => _seasonText;
+        
+        [SerializeField]
         private int _rank;
 
         public int Rank => _rank;
@@ -97,6 +102,7 @@ namespace Nekoyume.UI.Module.Arena.Board
                 },
             };
 
+            _seasonText = "offseason";
             _rank = 999_999;
             _winCount = 999;
             _loseCount = 999;

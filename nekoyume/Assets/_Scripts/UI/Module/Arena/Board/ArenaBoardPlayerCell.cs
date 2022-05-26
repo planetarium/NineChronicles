@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Module.Arena.Board
     public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
     {
         public int selectedIndex = -1;
-        public Action<int> onCellClicked;
+        public Action<int> onClickChoice;
     }
 
     public class ArenaBoardPlayerCell
@@ -56,7 +56,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         private void Awake()
         {
             _choiceButton.OnClickSubject
-                .Subscribe(_ => Context.onCellClicked?.Invoke(Index))
+                .Subscribe(_ => Context.onClickChoice?.Invoke(Index))
                 .AddTo(gameObject);
         }
 

@@ -29,7 +29,12 @@ namespace Nekoyume.UI.Module.Arena.Board
         public ArenaBoardPlayerItemData SelectedItemData => _data[Context.selectedIndex];
 
         private readonly Subject<int> _onSelectionChanged = new Subject<int>();
+
         public IObservable<int> OnSelectionChanged => _onSelectionChanged;
+
+        private readonly Subject<int> _onClickChoice = new Subject<int>();
+
+        public IObservable<int> OnClickChoice => _onClickChoice;
 
         public void SetData(IList<ArenaBoardPlayerItemData> data, int? index = null)
         {
@@ -65,14 +70,13 @@ namespace Nekoyume.UI.Module.Arena.Board
             }
 
             UpdateSelection(index, invokeEvents);
-            _scroller.ScrollTo(index, 0.35f, Ease.OutCubic);
         }
 
         protected override void Initialize()
         {
             base.Initialize();
 
-            Context.onCellClicked = index => SelectCell(index, true);
+            Context.onClickChoice = _onClickChoice.OnNext;
             _scroller.OnSelectionChanged(index => UpdateSelection(index, true));
         }
 
