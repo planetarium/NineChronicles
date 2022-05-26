@@ -427,7 +427,7 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator CoCombineNPCAnimation(BigInteger rewardCrystal)
         {
-            var loadingScreen = Widget.Find<CombinationLoadingScreen>();
+            var loadingScreen = Widget.Find<GrindingLoadingScreen>();
             loadingScreen.OnDisappear = OnNPCDisappear;
             loadingScreen.Show();
             canvasGroup.interactable = false;
@@ -437,7 +437,7 @@ namespace Nekoyume.UI.Module
             yield return new WaitForSeconds(.5f);
 
             var quote = L10nManager.Localize("UI_GRIND_NPC_QUOTE");
-            loadingScreen.AnimateNPC(ItemType.Equipment, quote);
+            loadingScreen.AnimateNPC(quote);
             loadingScreen.SetCloseAction(() =>
             {
                 var crystalAnimationStartPosition = animationData.crystalAnimationStartRect != null

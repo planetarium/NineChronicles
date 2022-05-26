@@ -310,6 +310,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
             yield return null;
+            secondWidgets.Add(Widget.Create<GrindingLoadingScreen>());
+            yield return null;
             secondWidgets.Add(Widget.Create<ConfirmPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CelebratesPopup>());
