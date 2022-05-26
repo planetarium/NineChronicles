@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action
         // Not enough material.
         [InlineData(typeof(NotEnoughMaterialException), true, true, true, true, false, 3, 0, true, 0L, 1, null, false, false, false, false, false)]
         // Purchase CRYSTAL failed by Mimisbrunnr material.
-        [InlineData(typeof(NotEnoughMaterialException), true, true, true, true, false, 11, 0, true, 0L, 2, 3, false, false, true, true, false)]
+        [InlineData(typeof(ArgumentException), true, true, true, true, false, 11, 0, true, 0L, 2, 3, false, false, true, true, false)]
         // Insufficient NCG.
         [InlineData(typeof(InsufficientBalanceException), true, true, true, true, false, 11, 0, true, 0L, 2, 3, true, false, true, false, false)]
         public void Execute(

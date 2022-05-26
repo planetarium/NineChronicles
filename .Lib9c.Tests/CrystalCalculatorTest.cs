@@ -1,11 +1,14 @@
 namespace Lib9c.Tests
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Numerics;
     using Nekoyume.Helper;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Nekoyume.TableData.Crystal;
     using Xunit;
 
     public class CrystalCalculatorTest
@@ -13,12 +16,14 @@ namespace Lib9c.Tests
         private readonly TableSheets _tableSheets;
         private readonly EquipmentItemRecipeSheet _equipmentItemRecipeSheet;
         private readonly WorldUnlockSheet _worldUnlockSheet;
+        private readonly CrystalMaterialCostSheet _crystalMaterialCostSheet;
 
         public CrystalCalculatorTest()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _equipmentItemRecipeSheet = _tableSheets.EquipmentItemRecipeSheet;
             _worldUnlockSheet = _tableSheets.WorldUnlockSheet;
+            _crystalMaterialCostSheet = _tableSheets.CrystalMaterialCostSheet;
         }
 
         [Theory]
@@ -88,6 +93,23 @@ namespace Lib9c.Tests
                 Assert.Equal(
                     expectedCost * 3,
                     CrystalCalculator.CalculateBuffGachaCost(row.StageId, 10, stageBuffGachaSheet));
+            }
+        }
+
+        [Theory]
+        [InlineData(302000, 1, 100, null)]
+        [InlineData(302003, 2, 200, null)]
+        [InlineData(306068, 1, 100, typeof(ArgumentException))]
+        public void CalculateMaterialCost(int materialId, int materialCount, int expected, Type exc)
+        {
+            if (_crystalMaterialCostSheet.ContainsKey(materialId))
+            {
+                var cost = CrystalCalculator.CalculateMaterialCost(materialId, materialCount, _crystalMaterialCostSheet);
+                Assert.Equal(expected * CrystalCalculator.CRYSTAL, cost);
+            }
+            else
+            {
+                Assert.Throws(exc, () => CrystalCalculator.CalculateMaterialCost(materialId, materialCount, _crystalMaterialCostSheet));
             }
         }
 

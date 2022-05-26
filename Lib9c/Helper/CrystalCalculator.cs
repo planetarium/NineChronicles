@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -68,6 +69,20 @@ namespace Nekoyume.Helper
                 crystalMonsterCollectionMultiplierSheet[monsterCollectionLevel];
             var extra = crystal.DivRem(100, out _) * multiplierRow.Multiplier;
             return crystal + extra;
+        }
+
+
+        public static FungibleAssetValue CalculateMaterialCost(
+            int materialId,
+            int materialCount,
+            CrystalMaterialCostSheet crystalMaterialCostSheet)
+        {
+            if (!crystalMaterialCostSheet.TryGetValue(materialId, out var costRow))
+            {
+                throw new ArgumentException($"This material is not replaceable with crystal. id : {materialId}");
+            }
+
+            return costRow.CRYSTAL * materialCount * CRYSTAL;
         }
 
         public static FungibleAssetValue CalculateCombinationCost(
