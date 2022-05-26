@@ -429,11 +429,15 @@ namespace Nekoyume.UI.Module
         {
             var loadingScreen = Widget.Find<GrindingLoadingScreen>();
             loadingScreen.OnDisappear = OnNPCDisappear;
-            loadingScreen.Show();
-            canvasGroup.interactable = false;
             loadingScreen.SetCurrency(
                 (int)_cachedGrindingRewardNCG.MajorUnit,
                 (int)_cachedGrindingRewardCrystal.MajorUnit);
+            canvasGroup.interactable = false;
+
+            yield return null;
+            yield return new WaitUntil(() =>
+                animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+            loadingScreen.Show();
             yield return new WaitForSeconds(.5f);
 
             var quote = L10nManager.Localize("UI_GRIND_NPC_QUOTE");
