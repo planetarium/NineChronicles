@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 7228783620708839766}
   - component: {fileID: 5205902641221231614}
   - component: {fileID: 3788006549011443088}
+  - component: {fileID: 3215807660972384144}
   m_Layer: 5
   m_Name: ArenaJoinSeasonScroll
   m_TagString: Untagged
@@ -159,6 +160,18 @@ MonoBehaviour:
     Easing: 24
   draggable: 1
   scrollbar: {fileID: 0}
+--- !u!225 &3215807660972384144
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5324934003889234099}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5836890677920887409
 GameObject:
   m_ObjectHideFlags: 0
