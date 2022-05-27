@@ -1854,10 +1854,30 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1440356395068062622, guid: a96d732584e7f8840a5610703f7683a7,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1440356395068062622, guid: a96d732584e7f8840a5610703f7683a7,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4389808634366690083, guid: a96d732584e7f8840a5610703f7683a7,
         type: 3}
       propertyPath: m_Name
       value: ArenaTicketProgressBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 4389808634366690083, guid: a96d732584e7f8840a5610703f7683a7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8109721699596327619, guid: a96d732584e7f8840a5610703f7683a7,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 0.39215687
       objectReference: {fileID: 0}
     - target: {fileID: 8604577289874423480, guid: a96d732584e7f8840a5610703f7683a7,
         type: 3}
