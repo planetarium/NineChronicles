@@ -164,14 +164,7 @@ namespace Nekoyume.UI
 #endif
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            if (!TableSheets.Instance.ArenaSheet.TryGetRowByBlockIndex(
-                    blockIndex,
-                    out var row))
-            {
-                Debug.LogError($"Failed to get arena row data by block index: {blockIndex}");
-                return new List<ArenaJoinSeasonItemData>();
-            }
-
+            var row = TableSheets.Instance.ArenaSheet.GetRowByBlockIndex(blockIndex);
             return row.Round
                 .Select(roundData => new ArenaJoinSeasonItemData
                 {
@@ -231,6 +224,7 @@ namespace Nekoyume.UI
             }
 #endif
 
+            
             return 700000;
         }
 
