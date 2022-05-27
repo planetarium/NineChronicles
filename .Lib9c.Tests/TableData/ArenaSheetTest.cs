@@ -131,7 +131,7 @@ namespace Lib9c.Tests.TableData
         [InlineData(0, true, 1, 8)]
         [InlineData(20000, true, 1, 8)]
         [InlineData(20001, false, default(int), default(int))]
-        public void TryGetRowByBlockIndexTest(
+        public void GetRowByBlockIndexTest(
             long blockIndex,
             bool expectedExist,
             int expectedChampionshipId,
@@ -139,13 +139,15 @@ namespace Lib9c.Tests.TableData
         {
             if (expectedExist)
             {
-                Assert.True(_arenaSheet.TryGetRowByBlockIndex(blockIndex, out var row));
+                var row = _arenaSheet.GetRowByBlockIndex(blockIndex);
+                Assert.NotNull(row);
                 Assert.Equal(expectedChampionshipId, row.ChampionshipId);
                 Assert.Equal(expectedRoundCount, row.Round.Count);
                 return;
             }
 
-            Assert.False(_arenaSheet.TryGetRoundByBlockIndex(blockIndex, out _));
+            Assert.Throws<InvalidOperationException>(() =>
+                _arenaSheet.GetRowByBlockIndex(blockIndex));
         }
 
         [Theory]
@@ -154,7 +156,7 @@ namespace Lib9c.Tests.TableData
         [InlineData(21, true, 1, 4, ArenaType.Season)]
         [InlineData(61, true, 1, 8, ArenaType.Championship)]
         [InlineData(20001, false, default(int), default(int), default(ArenaType))]
-        public void TryGetRoundByBlockIndexTest(
+        public void GetRoundByBlockIndexTest(
             long blockIndex,
             bool expectedExist,
             int expectedId,
@@ -163,14 +165,16 @@ namespace Lib9c.Tests.TableData
         {
             if (expectedExist)
             {
-                Assert.True(_arenaSheet.TryGetRoundByBlockIndex(blockIndex, out var roundData));
+                var roundData = _arenaSheet.GetRoundByBlockIndex(blockIndex);
+                Assert.NotNull(roundData);
                 Assert.Equal(expectedId, roundData.ChampionshipId);
                 Assert.Equal(expectedRound, roundData.Round);
                 Assert.Equal(expectedArenaType, roundData.ArenaType);
                 return;
             }
 
-            Assert.False(_arenaSheet.TryGetRoundByBlockIndex(blockIndex, out _));
+            Assert.Throws<InvalidOperationException>(() =>
+                _arenaSheet.GetRoundByBlockIndex(blockIndex));
         }
 
         [Fact]

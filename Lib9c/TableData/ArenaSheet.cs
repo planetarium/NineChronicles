@@ -131,21 +131,11 @@ namespace Nekoyume.TableData
             row.Round.Add(value.Round[0]);
         }
 
-        public bool TryGetRowByBlockIndex(long blockIndex, out Row row)
-        {
-            row = OrderedList
-                .FirstOrDefault(e =>
-                    e.Round.Any(roundData =>
-                        roundData.IsTheRoundOpened(blockIndex)));
-            return row != null;
-        }
+        public Row GetRowByBlockIndex(long blockIndex) => OrderedList.First(e =>
+            e.Round.Any(roundData => roundData.IsTheRoundOpened(blockIndex)));
 
-        public bool TryGetRoundByBlockIndex(long blockIndex, out RoundData roundData)
-        {
-            roundData = OrderedList
-                .SelectMany(row => row.Round)
-                .FirstOrDefault(e => e.IsTheRoundOpened(blockIndex));
-            return roundData != null;
-        }
+        public RoundData GetRoundByBlockIndex(long blockIndex) => OrderedList
+            .SelectMany(row => row.Round)
+            .First(e => e.IsTheRoundOpened(blockIndex));
     }
 }
