@@ -16,7 +16,9 @@ namespace Nekoyume.Battle
         public const int GetHitStep3CorrectionMin = 10;
         public const int GetHitStep3CorrectionMax = 90;
 
-        public static bool IsHit(int attackerLevel, int attackerHit, int defenderLevel, int defenderHit,
+        public static bool IsHit(
+            int attackerLevel, int attackerHit,
+            int defenderLevel, int defenderHit,
             int lowLimitChance)
         {
             var correction = GetHitStep1(attackerLevel, defenderLevel);
