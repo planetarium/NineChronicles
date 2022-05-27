@@ -93,7 +93,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1999566513998602895
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10029,10 +10029,10 @@ RectTransform:
   m_Father: {fileID: 1999566513998602895}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 13.333333, y: -10}
-  m_SizeDelta: {x: 26.666666, y: 20}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1228588067767605768
 GameObject:
@@ -10350,10 +10350,10 @@ RectTransform:
   m_Father: {fileID: 1999566513998602895}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 40, y: -10}
-  m_SizeDelta: {x: 26.666666, y: 20}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1889498533879878198
 GameObject:
@@ -16583,7 +16583,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _animator: {fileID: 2083834351083474514}
   _button: {fileID: 1525151451237926353}
-  _championshipNumber: {fileID: 2263156883718908646}
+  _championshipId: {fileID: 2263156883718908646}
+  _seasonEmblems:
+  - {fileID: 3344803692338708206}
+  - {fileID: 4508756761379808635}
+  - {fileID: 3741642125020693651}
 --- !u!1 &6715639464066086454
 GameObject:
   m_ObjectHideFlags: 0
@@ -31178,10 +31182,10 @@ RectTransform:
   m_Father: {fileID: 1999566513998602895}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 66.666664, y: -10}
-  m_SizeDelta: {x: 26.666666, y: 20}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &9163040650328605278
 GameObject:
@@ -31650,12 +31654,27 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 629744569030352328, guid: 4a16df19fdf3d468a984221ea701b9fc,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316751858358580273, guid: 4a16df19fdf3d468a984221ea701b9fc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4455377409873070402, guid: 4a16df19fdf3d468a984221ea701b9fc,
         type: 3}
       propertyPath: m_Name
       value: SeasonArenaEmblem
       objectReference: {fileID: 0}
     - target: {fileID: 4455377409873070402, guid: 4a16df19fdf3d468a984221ea701b9fc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9104831834616347389, guid: 4a16df19fdf3d468a984221ea701b9fc,
         type: 3}
       propertyPath: m_IsActive
       value: 1

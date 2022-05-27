@@ -125,7 +125,6 @@ namespace Nekoyume.Game
             States = new States();
             LocalLayer = new LocalLayer();
             LocalLayerActions = new LocalLayerActions();
-            RxProps.Start(Agent, States);
             MainCanvas.instance.InitializeIntro();
         }
 
@@ -188,6 +187,7 @@ namespace Nekoyume.Game
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
             Debug.Log("[Game] Start() TableSheets synchronized");
+            RxProps.Start(Agent, States, TableSheets);
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.

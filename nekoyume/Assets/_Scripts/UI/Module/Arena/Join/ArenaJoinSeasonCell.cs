@@ -1,7 +1,6 @@
 ﻿using System;
 using Nekoyume.Model.EnumType;
 using Nekoyume.TableData;
-using Nekoyume.UI.Module.Arena.Emblems;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
 
@@ -20,7 +19,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             ArenaType.OffSeason => "off-season",
             ArenaType.Season => $"season #{SeasonNumber}",
             ArenaType.Championship => $"championship #{ChampionshipId}",
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(),
         };
     }
 
@@ -56,9 +55,6 @@ namespace Nekoyume.UI.Module.Arena.Join
         [SerializeField]
         private GameObject _seasonCountObject;
 
-        [SerializeField]
-        private SeasonArenaEmblem[] _seasonArenaEmblems;
-        
         private ArenaJoinSeasonItemData _currentData;
 
 #if UNITY_EDITOR
@@ -82,34 +78,25 @@ namespace Nekoyume.UI.Module.Arena.Join
         {
             _currentData = itemData;
             _medalCountObject.SetActive(false);
-            _seasonCountObject.SetActive(false);
             switch (_currentData.RoundData.ArenaType)
             {
                 case ArenaType.OffSeason:
                     _offseason.Show(_currentData, Index == Context.SelectedIndex);
                     _season.Hide();
                     _championship.Hide();
+                    _seasonCountObject.SetActive(false);
                     break;
                 case ArenaType.Season:
                     _offseason.Hide();
                     _season.Show(_currentData, Index == Context.SelectedIndex);
                     _championship.Hide();
+                    _seasonCountObject.SetActive(false);
                     break;
                 case ArenaType.Championship:
                     _offseason.Hide();
                     _season.Hide();
                     _championship.Show(_currentData, Index == Context.SelectedIndex);
-
-                    var hasSeasons = true;
-                    if (hasSeasons)
-                    {
-                        foreach (var seasonArenaEmblem in _seasonArenaEmblems)
-                        {
-                            seasonArenaEmblem.SetData(1, true);
-                        }
-
-                        _seasonCountObject.SetActive(true);
-                    }
+                    _seasonCountObject.SetActive(true);
                     break;
             }
         }

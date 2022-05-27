@@ -768,7 +768,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3906155724580810796
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4594,7 +4594,7 @@ MonoBehaviour:
   _min: 1.15
   _max: -1.17
   _normalizedValue: 0
-  _value: 0
+  _value: 1.15
   _graphic: {fileID: 7098360950441975110}
   _propertyName: PositionUV_X_1
 --- !u!1 &8870756036581559017
@@ -4652,6 +4652,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _titleText: {fileID: 4033095617742123911}
   _seasonProgressSlider: {fileID: 6772403724807335520}
+  _seasonProgressFillImage: {fileID: 7098360950441975110}
   _seasonProgressSliderFillText: {fileID: 7212967428115358874}
   _conditionsContainer: {fileID: 2638994196627530985}
   _conditionsSliderFillArea: {fileID: 7582025454250180076}
