@@ -130,7 +130,7 @@ namespace Lib9c.Tests.Action
                     continue;
                 }
 
-                var itemId = ArenaHelper.GetMedalItemId(data.Id, data.Round);
+                var itemId = ArenaHelper.GetMedalItemId(data.ChampionshipId, data.Round);
                 var material = ItemFactory.CreateMaterial(materialSheet, itemId);
                 avatarState.inventory.AddItem(material);
             }
@@ -228,7 +228,7 @@ namespace Lib9c.Tests.Action
 
             if (!row.TryGetRound(round, out var roundData))
             {
-                throw new RoundNotFoundException($"{nameof(JoinArena)} : {row.Id} / {round}");
+                throw new RoundNotFoundException($"{nameof(JoinArena)} : {row.ChampionshipId} / {round}");
             }
 
             if (roundData.IsTheRoundOpened(blockIndex))

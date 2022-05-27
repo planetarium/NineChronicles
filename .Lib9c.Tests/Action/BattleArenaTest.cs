@@ -220,7 +220,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.Id}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom(randomSeed);
@@ -503,7 +503,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.Id}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
@@ -547,14 +547,14 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.Id}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();
             _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
             _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
 
-            var arenaScoreAdr = ArenaScore.DeriveAddress(isSigner ? _avatar1Address : _avatar2Address, roundData.Id, roundData.Round);
+            var arenaScoreAdr = ArenaScore.DeriveAddress(isSigner ? _avatar1Address : _avatar2Address, roundData.ChampionshipId, roundData.Round);
             _state.TryGetArenaScore(arenaScoreAdr, out var arenaScore);
             arenaScore.AddScore(900);
             _state = _state.SetState(arenaScoreAdr, arenaScore.Serialize());
@@ -595,7 +595,7 @@ namespace Lib9c.Tests.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.Id}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             var random = new TestRandom();

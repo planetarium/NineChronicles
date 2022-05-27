@@ -100,7 +100,7 @@ namespace Lib9c.Tests.Action.Scenario
 
             var action = new JoinArena()
             {
-                championshipId = roundData.Id,
+                championshipId = roundData.ChampionshipId,
                 round = roundData.Round,
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -131,7 +131,7 @@ namespace Lib9c.Tests.Action.Scenario
             {
                 myAvatarAddress = myAvatarAddress,
                 enemyAvatarAddress = enemyAvatarAddress,
-                championshipId = roundData.Id,
+                championshipId = roundData.ChampionshipId,
                 round = roundData.Round,
                 ticket = ticket,
                 costumes = new List<Guid>(),
@@ -196,10 +196,9 @@ namespace Lib9c.Tests.Action.Scenario
 
             foreach (var value in arenaSheet.Values)
             {
-                if (!arenaSheet.TryGetValue(value.Id, out var row))
+                if (!arenaSheet.TryGetValue(value.Key, out var row))
                 {
-                    throw new SheetRowNotFoundException(
-                        nameof(ArenaSheet), $"championship Id : {value.Id}");
+                    throw new SheetRowNotFoundException(nameof(ArenaSheet), value.Key);
                 }
 
                 var rand = new TestRandom(seed);
@@ -208,7 +207,7 @@ namespace Lib9c.Tests.Action.Scenario
                 var seasonParticipants = new List<Address>();
                 foreach (var data in row.Round)
                 {
-                    var apAdr = ArenaParticipants.DeriveAddress(data.Id, data.Round);
+                    var apAdr = ArenaParticipants.DeriveAddress(data.ChampionshipId, data.Round);
 
                     if (data.ArenaType.Equals(ArenaType.Championship))
                     {
@@ -219,7 +218,8 @@ namespace Lib9c.Tests.Action.Scenario
                                continue;
                             }
 
-                            var innerApAdr = ArenaParticipants.DeriveAddress(innerData.Id, innerData.Round);
+                            var innerApAdr =
+                                ArenaParticipants.DeriveAddress(innerData.ChampionshipId, innerData.Round);
                             if (_state.TryGetArenaParticipants(innerApAdr, out var innerAp))
                             {
                                 seasonParticipants.AddRange(innerAp.AvatarAddresses);
@@ -250,7 +250,7 @@ namespace Lib9c.Tests.Action.Scenario
                     {
                         foreach (var adr in afterAp.AvatarAddresses)
                         {
-                            var aiAdr = ArenaInformation.DeriveAddress(adr, data.Id, data.Round);
+                            var aiAdr = ArenaInformation.DeriveAddress(adr, data.ChampionshipId, data.Round);
                             var avatarState = _state.GetAvatarStateV2(adr);
                             var playCount = Math.Max(championshipData.RequiredMedalCount + 5, repeatCount);
 
@@ -288,20 +288,23 @@ namespace Lib9c.Tests.Action.Scenario
                     }
                     else
                     {
-                        Log.Debug($"Arena Participants is nobody : {data.Id} / {data.Round}");
+                        Log.Debug(
+                            "Arena Participants is nobody : {ChampionshipId} / {Round}",
+                            data.ChampionshipId,
+                            data.Round);
                     }
 
                     if (data.ArenaType == ArenaType.Championship && afterAp != null)
                     {
                         foreach (var adr in afterAp.AvatarAddresses)
                         {
-                            var aiAdr = ArenaInformation.DeriveAddress(adr, data.Id, data.Round);
+                            var aiAdr = ArenaInformation.DeriveAddress(adr, data.ChampionshipId, data.Round);
                             if (!_state.TryGetArenaInformation(aiAdr, out var ai))
                             {
                                 throw new ArenaInformationNotFoundException($"ai : {aiAdr}");
                             }
 
-                            var sAdr = ArenaScore.DeriveAddress(adr, data.Id, data.Round);
+                            var sAdr = ArenaScore.DeriveAddress(adr, data.ChampionshipId, data.Round);
                             if (!_state.TryGetArenaScore(sAdr, out var score))
                             {
                                 throw new ArenaScoreNotFoundException($"score : {score}");
@@ -325,7 +328,8 @@ namespace Lib9c.Tests.Action.Scenario
                     }
                 }
 
-                var chAdr = ArenaParticipants.DeriveAddress(championshipData.Id, championshipData.Round);
+                var chAdr =
+                    ArenaParticipants.DeriveAddress(championshipData.ChampionshipId, championshipData.Round);
                 _state.TryGetArenaParticipants(chAdr, out var chAp);
                 Assert.Equal(expectedUser, chAp.AvatarAddresses.Count);
             }
@@ -362,7 +366,7 @@ namespace Lib9c.Tests.Action.Scenario
 
         private int GetScore(Address avatarAddress, ArenaSheet.RoundData data)
         {
-            var sAdr = ArenaScore.DeriveAddress(avatarAddress, data.Id, data.Round);
+            var sAdr = ArenaScore.DeriveAddress(avatarAddress, data.ChampionshipId, data.Round);
             if (!_state.TryGetArenaScore(sAdr, out var score))
             {
                 throw new ArenaScoreNotFoundException($"score : {score}");

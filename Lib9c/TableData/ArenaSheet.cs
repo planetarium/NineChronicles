@@ -11,9 +11,10 @@ namespace Nekoyume.TableData
     [Serializable]
     public class ArenaSheet : Sheet<int, ArenaSheet.Row>
     {
+        [Serializable]
         public class RoundData
         {
-            public int Id { get; }
+            public int ChampionshipId { get; }
             public int Round { get; }
             public ArenaType ArenaType { get; }
             public long StartBlockIndex { get; }
@@ -24,13 +25,13 @@ namespace Nekoyume.TableData
             public long TicketPrice { get; }
             public long AdditionalTicketPrice { get; }
 
-            public RoundData(int id, int round, ArenaType arenaType,
+            public RoundData(int championshipId, int round, ArenaType arenaType,
                 long startBlockIndex, long endBlockIndex,
                 int requiredMedalCount,
                 long entranceFee, long discountedEntranceFee,
                 long ticketPrice, long additionalTicketPrice)
             {
-                Id = id;
+                ChampionshipId = championshipId;
                 Round = round;
                 ArenaType = arenaType;
                 StartBlockIndex = startBlockIndex;
@@ -51,13 +52,15 @@ namespace Nekoyume.TableData
         [Serializable]
         public class Row : SheetRow<int>
         {
-            public override int Key => Id;
-            public int Id { get; private set; }
+            public override int Key => ChampionshipId;
+
+            public int ChampionshipId { get; private set; }
+
             public List<RoundData> Round { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = ParseInt(fields[0]);
+                ChampionshipId = ParseInt(fields[0]);
                 var round = ParseInt(fields[1]);
                 var arenaType = (ArenaType)Enum.Parse(typeof(ArenaType), fields[2]);
                 var startIndex = ParseLong(fields[3]);
@@ -69,7 +72,7 @@ namespace Nekoyume.TableData
                 var additionalTicketPrice = ParseLong(fields[9]);
                 Round = new List<RoundData>
                 {
-                    new RoundData(Id, round, arenaType, startIndex, endIndex,
+                    new RoundData(ChampionshipId, round, arenaType, startIndex, endIndex,
                         requiredWins, entranceFee, discountedEntranceFee,
                         ticketPrice, additionalTicketPrice)
                 };
@@ -108,5 +111,12 @@ namespace Nekoyume.TableData
 
             row.Round.Add(value.Round[0]);
         }
+
+        public Row GetRowByBlockIndex(long blockIndex) => OrderedList.First(e =>
+            e.Round.Any(roundData => roundData.IsTheRoundOpened(blockIndex)));
+
+        public RoundData GetRoundByBlockIndex(long blockIndex) => OrderedList
+            .SelectMany(row => row.Round)
+            .First(e => e.IsTheRoundOpened(blockIndex));
     }
 }
