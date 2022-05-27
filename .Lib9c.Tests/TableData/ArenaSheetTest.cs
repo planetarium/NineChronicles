@@ -127,22 +127,22 @@ namespace Lib9c.Tests.TableData
         }
 
         [Theory]
-        [InlineData(-1, false, default(int), default(int))]
-        [InlineData(0, true, 1, 8)]
-        [InlineData(20000, true, 1, 8)]
-        [InlineData(20001, false, default(int), default(int))]
+        [InlineData(-1, false, default(int))]
+        [InlineData(0, true, 1)]
+        [InlineData(99, true, 1)]
+        [InlineData(100, true, 2)]
+        [InlineData(20000, true, 2)]
+        [InlineData(20001, false, default(int))]
         public void GetRowByBlockIndexTest(
             long blockIndex,
             bool expectedExist,
-            int expectedChampionshipId,
-            int expectedRoundCount)
+            int expectedChampionshipId)
         {
             if (expectedExist)
             {
                 var row = _arenaSheet.GetRowByBlockIndex(blockIndex);
                 Assert.NotNull(row);
                 Assert.Equal(expectedChampionshipId, row.ChampionshipId);
-                Assert.Equal(expectedRoundCount, row.Round.Count);
                 return;
             }
 
@@ -155,6 +155,9 @@ namespace Lib9c.Tests.TableData
         [InlineData(0, true, 1, 1, ArenaType.OffSeason)]
         [InlineData(21, true, 1, 4, ArenaType.Season)]
         [InlineData(61, true, 1, 8, ArenaType.Championship)]
+        [InlineData(100, true, 2, 1, ArenaType.OffSeason)]
+        [InlineData(121, true, 2, 4, ArenaType.Season)]
+        [InlineData(161, true, 2, 8, ArenaType.Championship)]
         [InlineData(20001, false, default(int), default(int), default(ArenaType))]
         public void GetRoundByBlockIndexTest(
             long blockIndex,
