@@ -451,7 +451,7 @@ namespace Nekoyume.BlockChain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
-                var weeklyArenaState = await ArenaHelper.GetThisWeekStateAsync(BlockIndex);
+                var weeklyArenaState = await ArenaHelperOld.GetThisWeekStateAsync(BlockIndex);
                 if (weeklyArenaState is null)
                 {
                     throw new FailedToInstantiateStateException<WeeklyArenaState>();

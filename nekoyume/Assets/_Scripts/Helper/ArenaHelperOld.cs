@@ -8,7 +8,10 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    public static class ArenaHelper
+    /// <summary>
+    /// This class will be removed after the beginning of the new arena system. 
+    /// </summary>
+    public static class ArenaHelperOld
     {
         public static bool TryGetThisWeekAddress(out Address weeklyArenaAddress)
         {
@@ -33,7 +36,7 @@ namespace Nekoyume
             if (blockIndex != Game.Game.instance.Agent.BlockIndex)
             {
                 Debug.LogError(
-                    $"[{nameof(ArenaHelper)}.{nameof(GetThisWeekStateAsync)}] `{nameof(blockIndex)}`({blockIndex}) not equals with `Game.Game.instance.Agent.BlockIndex`({Game.Game.instance.Agent.BlockIndex})");
+                    $"[{nameof(ArenaHelperOld)}.{nameof(GetThisWeekStateAsync)}] `{nameof(blockIndex)}`({blockIndex}) not equals with `Game.Game.instance.Agent.BlockIndex`({Game.Game.instance.Agent.BlockIndex})");
                 return null;
             }
 

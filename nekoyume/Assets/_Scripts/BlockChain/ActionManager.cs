@@ -586,7 +586,7 @@ namespace Nekoyume.BlockChain
             List<Guid> equipmentIds
         )
         {
-            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+            if (!ArenaHelperOld.TryGetThisWeekAddress(out var weeklyArenaAddress))
             {
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
