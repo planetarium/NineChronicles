@@ -20,6 +20,13 @@ namespace Nekoyume.Arena
         public static Address DeriveArenaAddress(int championshipId, int round) =>
             Addresses.Arena.Derive($"_{championshipId}_{round}");
 
+        public static readonly IReadOnlyDictionary<ArenaType, (int, int)> ScoreLimits =
+            new Dictionary<ArenaType, (int, int)>()
+        {
+            { ArenaType.Season, (50, -25) },
+            { ArenaType.Championship, (30, -25) }
+        };
+
         public static int GetMedalItemId(int championshipId, int round) =>
             700_000 + (championshipId * 100) + round;
 

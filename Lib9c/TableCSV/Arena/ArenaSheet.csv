@@ -6,4 +6,12 @@ id,round,arena_type,start_block_index,end_block_index,required_medal_count,entra
 1,5,OffSeason,31,40,0,0,0,5,2
 1,6,Season,41,50,0,100,50,5,2
 1,7,OffSeason,51,60,0,0,0,5,2
-1,8,Championship,61,20000,3,1000,500,5,2
+1,8,Championship,61,99,3,1000,500,5,2
+2,1,OffSeason,100,105,0,0,0,10,2
+2,2,Season,106,110,0,100,50,10,2
+2,3,OffSeason,111,120,0,0,0,10,2
+2,4,Season,121,130,0,100,50,10,2
+2,5,OffSeason,131,140,0,0,0,10,2
+2,6,Season,141,150,0,100,50,10,2
+2,7,OffSeason,151,160,0,0,0,10,2
+2,8,Championship,161,20000,10,1000,500,10,2
