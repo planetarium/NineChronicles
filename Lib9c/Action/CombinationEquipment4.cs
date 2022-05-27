@@ -23,7 +23,7 @@ namespace Nekoyume.Action
     [ActionType("combination_equipment4")]
     public class CombinationEquipment4 : GameAction
     {
-        public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
+        public static readonly Address BlacksmithAddress = ItemEnhancement9.BlacksmithAddress;
 
         public Address AvatarAddress;
         public int RecipeId;

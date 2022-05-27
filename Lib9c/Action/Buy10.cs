@@ -17,15 +17,11 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    /// <summary>
-    /// Updated at https://github.com/planetarium/lib9c/pull/1069
-    /// </summary>
     [Serializable]
-    [ActionType("buy11")]
-    public class Buy : GameAction, IBuy5
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100220ObsoleteIndex)]
+    [ActionType("buy10")]
+    public class Buy10 : GameAction, IBuy5
     {
-        public static Address GetFeeStoreAddress() => Addresses.Shop.Derive("_0_0");
-
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
         public const int ErrorCodeItemDoesNotExist = 2;
@@ -89,7 +85,7 @@ namespace Nekoyume.Action
                             GoldCurrencyMock,
                             ctx.Signer,
                             purchaseInfo.SellerAgentAddress,
-                            GetFeeStoreAddress());
+                            GoldCurrencyState.Address);
                 }
 
                 return states
@@ -99,6 +95,8 @@ namespace Nekoyume.Action
                     .SetState(buyerQuestListAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100220ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress);
 
@@ -283,7 +281,7 @@ namespace Nekoyume.Action
                 // Transfer tax.
                 states = states.TransferAsset(
                     context.Signer,
-                    GetFeeStoreAddress(),
+                    GoldCurrencyState.Address,
                     tax);
 
                 // Transfer seller.
