@@ -249,6 +249,7 @@ namespace Nekoyume.Action
             // update arena avatar state
             myArenaAvatarState.UpdateEquipment(equipments);
             myArenaAvatarState.UpdateCostumes(costumes);
+            myArenaAvatarState.UpdateLevel(avatarState.level);
 
             // simulate
             var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
