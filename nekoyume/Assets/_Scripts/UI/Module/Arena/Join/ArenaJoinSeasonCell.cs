@@ -12,7 +12,16 @@ namespace Nekoyume.UI.Module.Arena.Join
     {
         public ArenaSheet.RoundData RoundData;
         public int? SeasonNumber;
-        public int? ChampionshipNumber => RoundData?.ChampionshipId;
+        public int? ChampionshipId => RoundData?.ChampionshipId;
+        public int[] ChampionshipSeasonIds;
+        
+        public string GetRoundName() => RoundData.ArenaType switch
+        {
+            ArenaType.OffSeason => "off-season",
+            ArenaType.Season => $"season #{SeasonNumber}",
+            ArenaType.Championship => $"championship #{ChampionshipId}",
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 
     public class ArenaJoinSeasonScrollContext
