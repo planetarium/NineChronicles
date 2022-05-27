@@ -176,22 +176,5 @@ namespace Lib9c.Tests.TableData
             Assert.Throws<InvalidOperationException>(() =>
                 _arenaSheet.GetRoundByBlockIndex(blockIndex));
         }
-
-        [Fact]
-        public void TryGetSeasonNumberTest()
-        {
-            Assert.True(_arenaSheet.TryGetValue(1, out var row));
-            Assert.False(row.TryGetSeasonNumber(1, out var seasonNumber));
-            Assert.True(row.TryGetSeasonNumber(2, out seasonNumber));
-            Assert.Equal(1, seasonNumber);
-            Assert.False(row.TryGetSeasonNumber(3, out seasonNumber));
-            Assert.True(row.TryGetSeasonNumber(4, out seasonNumber));
-            Assert.Equal(2, seasonNumber);
-            Assert.False(row.TryGetSeasonNumber(5, out seasonNumber));
-            Assert.True(row.TryGetSeasonNumber(6, out seasonNumber));
-            Assert.Equal(3, seasonNumber);
-            Assert.False(row.TryGetSeasonNumber(7, out seasonNumber));
-            Assert.False(row.TryGetSeasonNumber(8, out seasonNumber));
-        }
     }
 }
