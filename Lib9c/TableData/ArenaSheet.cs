@@ -151,9 +151,9 @@ namespace Nekoyume.TableData
         public bool TryGetRowByBlockIndex(long blockIndex, out Row row)
         {
             row = OrderedList
-                .FirstOrDefault(e => e.Round.Any(roundData =>
-                    roundData.StartBlockIndex <= blockIndex &&
-                    roundData.EndBlockIndex >= blockIndex));
+                .FirstOrDefault(e =>
+                    e.Round.Any(roundData =>
+                        roundData.IsTheRoundOpened(blockIndex)));
             return row != null;
         }
 
@@ -161,9 +161,7 @@ namespace Nekoyume.TableData
         {
             roundData = OrderedList
                 .SelectMany(row => row.Round)
-                .FirstOrDefault(e =>
-                    e.StartBlockIndex <= blockIndex &&
-                    e.EndBlockIndex >= blockIndex);
+                .FirstOrDefault(e => e.IsTheRoundOpened(blockIndex));
             return roundData != null;
         }
     }
