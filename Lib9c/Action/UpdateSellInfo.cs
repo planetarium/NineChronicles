@@ -34,28 +34,28 @@ namespace Nekoyume.Action
             this.count = count;
         }
 
-        public UpdateSellInfo(Dictionary serialized)
+        public UpdateSellInfo(List serialized)
         {
-            orderId = serialized[OrderIdKey].ToGuid();
-            updateSellOrderId = serialized[updateSellOrderIdKey].ToGuid();
-            tradableId = serialized[ItemIdKey].ToGuid();
-            itemSubType = serialized[ItemSubTypeKey].ToEnum<ItemSubType>();
-            price = serialized[PriceKey].ToFungibleAssetValue();
-            count = serialized[ItemCountKey].ToInteger();
+            orderId = serialized[0].ToGuid();
+            updateSellOrderId = serialized[1].ToGuid();
+            tradableId = serialized[2].ToGuid();
+            itemSubType = serialized[3].ToEnum<ItemSubType>();
+            price = serialized[4].ToFungibleAssetValue();
+            count = serialized[5].ToInteger();
         }
 
         public IValue Serialize()
         {
-            var dictionary = new Dictionary<IKey, IValue>
-            {
-                [(Text) OrderIdKey] = orderId.Serialize(),
-                [(Text) updateSellOrderIdKey] = updateSellOrderId.Serialize(),
-                [(Text) ItemIdKey] = tradableId.Serialize(),
-                [(Text) ItemSubTypeKey] = itemSubType.Serialize(),
-                [(Text) PriceKey] = price.Serialize(),
-                [(Text) ItemCountKey] = count.Serialize()
-            };
-            return new Dictionary(dictionary);
+            var list = List.Empty;
+
+            list.Add(orderId.Serialize())
+                .Add(updateSellOrderId.Serialize())
+                .Add(tradableId.Serialize())
+                .Add(itemSubType.Serialize())
+                .Add(price.Serialize())
+                .Add(count.Serialize());
+
+            return list;
         }
     }
 }

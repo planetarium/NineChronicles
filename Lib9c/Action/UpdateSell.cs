@@ -45,7 +45,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             sellerAvatarAddress = plainValue[SellerAvatarAddressKey].ToAddress();
-            updateSellInfos = plainValue[UpdateSellInfoKey].ToList(info => new UpdateSellInfo((Dictionary) info));
+            updateSellInfos = plainValue[UpdateSellInfoKey].ToList(info => new UpdateSellInfo((List) info));
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
