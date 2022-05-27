@@ -46,16 +46,13 @@ namespace Nekoyume.Action
 
         public IValue Serialize()
         {
-            var list = List.Empty;
-
-            list.Add(orderId.Serialize())
+            return List.Empty
+                .Add(orderId.Serialize())
                 .Add(updateSellOrderId.Serialize())
                 .Add(tradableId.Serialize())
                 .Add(itemSubType.Serialize())
                 .Add(price.Serialize())
                 .Add(count.Serialize());
-
-            return list;
         }
     }
 }
