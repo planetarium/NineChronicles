@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.EnumType;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Join;
 using Unity.Mathematics;
@@ -129,11 +131,48 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
             if (_useSo && _so)
             {
-                return _so.ArenaDataList.Select(data => data.ItemData).ToList();
+                int? GetSeasonNumber(
+                    IList<ArenaJoinSO.ArenaData> list,
+                    ArenaJoinSO.RoundDataBridge data)
+                {
+                    var seasonNumber = 0;
+                    foreach (var arenaData in list)
+                    {
+                        if (arenaData.RoundDataBridge.ArenaType == ArenaType.Season)
+                        {
+                            seasonNumber++;
+                        }
+
+                        if (arenaData.RoundDataBridge.Round == data.Round)
+                        {
+                            return arenaData.RoundDataBridge.ArenaType == ArenaType.Season
+                                ? seasonNumber
+                                : (int?)null;
+                        }
+                    }
+
+                    return null;
+                }
+
+                return _so.ArenaDataList
+                    .Select(data => new ArenaJoinSeasonItemData
+                    {
+                        RoundData = data.RoundDataBridge.ToRoundData(),
+                        SeasonNumber = GetSeasonNumber(_so.ArenaDataList, data.RoundDataBridge),
+                    }).ToList();
             }
 #endif
 
-            return new List<ArenaJoinSeasonItemData>();
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var row = TableSheets.Instance.ArenaSheet.GetRowByBlockIndex(blockIndex);
+            return row.Round
+                .Select(roundData => new ArenaJoinSeasonItemData
+                {
+                    RoundData = roundData,
+                    SeasonNumber = row.TryGetSeasonNumber(roundData.Round, out var seasonNumber)
+                        ? seasonNumber
+                        : (int?)null,
+                }).ToList();
         }
 
         private IList<ArenaJoinSeasonBarItemData> GetBarScrollData(
@@ -153,11 +192,11 @@ namespace Nekoyume.UI
 
         private void UpdateInfo()
         {
-            string getText(ArenaJoinSeasonItemData data) => data.type switch
+            string getText(ArenaJoinSeasonItemData data) => data.RoundData.ArenaType switch
             {
-                ArenaJoinSeasonType.Offseason => "off-season",
-                ArenaJoinSeasonType.Season => $"season #{data.text}",
-                ArenaJoinSeasonType.Championship => $"championship #{data.text}",
+                ArenaType.OffSeason => "off-season",
+                ArenaType.Season => $"season #{data.SeasonNumber}",
+                ArenaType.Championship => $"championship #{data.ChampionshipNumber}",
                 _ => throw new ArgumentOutOfRangeException()
             };
 
@@ -170,6 +209,7 @@ namespace Nekoyume.UI
 
         private void UpdateButtons()
         {
+            // TODO: 아레나 라운드 정보에 따라 버튼 상태를 갱신한다.
             _joinButton.gameObject.SetActive(true);
             _paymentButton.gameObject.SetActive(false);
             _earlyPaymentButton.gameObject.SetActive(false);
@@ -184,6 +224,7 @@ namespace Nekoyume.UI
             }
 #endif
 
+            
             return 700000;
         }
 
@@ -204,7 +245,8 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
             if (_useSo && _so)
             {
-                var soData = _so.ArenaDataList.FirstOrDefault(soData => soData.ItemData.Equals(data));
+                var soData = _so.ArenaDataList.FirstOrDefault(soData =>
+                    soData.RoundDataBridge.Equals(data.RoundData));
                 return soData is null
                     ? ArenaJoinSeasonInfo.RewardType.None
                     : soData.RewardType;

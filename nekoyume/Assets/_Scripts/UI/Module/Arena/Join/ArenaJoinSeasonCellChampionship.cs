@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         public void Show(ArenaJoinSeasonItemData itemData, bool selected)
         {
-            _championshipNumber.text = itemData.text;
+            _championshipNumber.text = itemData.ChampionshipNumber.ToString();
             gameObject.SetActive(true);
         }
 

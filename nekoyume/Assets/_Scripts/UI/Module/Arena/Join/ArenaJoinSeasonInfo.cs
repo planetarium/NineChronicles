@@ -84,14 +84,16 @@ namespace Nekoyume.UI.Module.Arena.Join
         /// </param>
         public void SetData(
             string title,
-            int medalId,
+            int? medalId,
             (int max, int current)? conditions,
             RewardType rewardType)
         {
             _titleText.text = title;
             UpdateConditions(conditions);
             UpdateRewards(rewardType);
-            UpdateMedalImages(SpriteHelper.GetItemIcon(medalId));
+            UpdateMedalImages(medalId.HasValue
+                ? SpriteHelper.GetItemIcon(medalId.Value)
+                : null);
         }
 
         private void UpdateSliderAndText((long beginning, long end, long progress) tuple)
@@ -153,9 +155,20 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         private void UpdateMedalImages(Sprite medalSprite)
         {
+            if (medalSprite is null)
+            {
+                foreach (var medalImage in _currentRoundMedalImages)
+                {
+                    medalImage.enabled = false;
+                }
+
+                return;
+            }
+
             foreach (var medalImage in _currentRoundMedalImages)
             {
                 medalImage.overrideSprite = medalSprite;
+                medalImage.enabled = true;
             }
         }
     }
