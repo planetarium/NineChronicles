@@ -94,7 +94,7 @@ namespace Nekoyume.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(JoinArena)}] ChampionshipId({row.Id}) - round({round})");
+                    $"[{nameof(JoinArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             // check fee
@@ -108,7 +108,7 @@ namespace Nekoyume.Action
                         $"required {costCrystal}, but balance is {crystalBalance}");
                 }
 
-                var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.Id, roundData.Round);
+                var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
                 states = states.TransferAsset(context.Signer, arenaAdr, costCrystal);
             }
 
@@ -125,30 +125,30 @@ namespace Nekoyume.Action
 
             // create ArenaScore
             var arenaScoreAdr =
-                ArenaScore.DeriveAddress(avatarAddress, roundData.Id, roundData.Round);
+                ArenaScore.DeriveAddress(avatarAddress, roundData.ChampionshipId, roundData.Round);
             if (states.TryGetState(arenaScoreAdr, out List _))
             {
                 throw new ArenaScoreAlreadyContainsException(
-                    $"[{nameof(JoinArena)}] id({roundData.Id}) / round({roundData.Round})");
+                    $"[{nameof(JoinArena)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
             }
 
-            var arenaScore = new ArenaScore(avatarAddress, roundData.Id, roundData.Round);
+            var arenaScore = new ArenaScore(avatarAddress, roundData.ChampionshipId, roundData.Round);
 
             // create ArenaInformation
             var arenaInformationAdr =
-                ArenaInformation.DeriveAddress(avatarAddress, roundData.Id, roundData.Round);
+                ArenaInformation.DeriveAddress(avatarAddress, roundData.ChampionshipId, roundData.Round);
             if (states.TryGetState(arenaInformationAdr, out List _))
             {
                 throw new ArenaInformationAlreadyContainsException(
-                    $"[{nameof(JoinArena)}] id({roundData.Id}) / round({roundData.Round})");
+                    $"[{nameof(JoinArena)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
             }
 
             var arenaInformation =
-                new ArenaInformation(avatarAddress, roundData.Id, roundData.Round);
+                new ArenaInformation(avatarAddress, roundData.ChampionshipId, roundData.Round);
 
             // update ArenaParticipants
-            var arenaParticipantsAdr = ArenaParticipants.DeriveAddress(roundData.Id, roundData.Round);
-            var arenaParticipants = states.GetArenaParticipants(arenaParticipantsAdr, roundData.Id, roundData.Round);
+            var arenaParticipantsAdr = ArenaParticipants.DeriveAddress(roundData.ChampionshipId, roundData.Round);
+            var arenaParticipants = states.GetArenaParticipants(arenaParticipantsAdr, roundData.ChampionshipId, roundData.Round);
             arenaParticipants.Add(avatarAddress);
 
             // update ArenaAvatarState

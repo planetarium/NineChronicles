@@ -43,7 +43,7 @@ namespace Nekoyume.Arena
                     continue;
                 }
 
-                var itemId = GetMedalItemId(data.Id, data.Round);
+                var itemId = GetMedalItemId(data.ChampionshipId, data.Round);
                 if (avatarState.inventory.TryGetItem(itemId, out var item))
                 {
                     count += item.count;

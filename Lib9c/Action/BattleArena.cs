@@ -136,22 +136,22 @@ namespace Nekoyume.Action
             if (!arenaRow.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({arenaRow.Id}) - round({round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({arenaRow.ChampionshipId}) - round({round})");
             }
 
             if (!roundData.IsTheRoundOpened(context.BlockIndex))
             {
                 throw new ThisArenaIsClosedException(
                     $"{nameof(BattleArena)} : block index({context.BlockIndex}) - " +
-                    $"championshipId({roundData.Id}) - round({roundData.Round})");
+                    $"championshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
             var arenaParticipantsAdr =
-                ArenaParticipants.DeriveAddress(roundData.Id, roundData.Round);
+                ArenaParticipants.DeriveAddress(roundData.ChampionshipId, roundData.Round);
             if (!states.TryGetArenaParticipants(arenaParticipantsAdr, out var arenaParticipants))
             {
                 throw new ArenaParticipantsNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({roundData.Id}) - round({roundData.Round})");
+                    $"[{nameof(BattleArena)}] ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
             if (!arenaParticipants.AvatarAddresses.Contains(myAvatarAddress))
@@ -182,30 +182,30 @@ namespace Nekoyume.Action
             }
 
             var myArenaScoreAdr =
-                ArenaScore.DeriveAddress(myAvatarAddress, roundData.Id, roundData.Round);
+                ArenaScore.DeriveAddress(myAvatarAddress, roundData.ChampionshipId, roundData.Round);
             if (!states.TryGetArenaScore(myArenaScoreAdr, out var myArenaScore))
             {
                 throw new ArenaScoreNotFoundException(
                     $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}" +
-                    $" - ChampionshipId({roundData.Id}) - round({roundData.Round})");
+                    $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
             var enemyArenaScoreAdr =
-                ArenaScore.DeriveAddress(enemyAvatarAddress, roundData.Id, roundData.Round);
+                ArenaScore.DeriveAddress(enemyAvatarAddress, roundData.ChampionshipId, roundData.Round);
             if (!states.TryGetArenaScore(enemyArenaScoreAdr, out var enemyArenaScore))
             {
                 throw new ArenaScoreNotFoundException(
                     $"[{nameof(BattleArena)}] enemy avatar address : {enemyAvatarAddress}" +
-                    $" - ChampionshipId({roundData.Id}) - round({roundData.Round})");
+                    $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
             var arenaInformationAdr =
-                ArenaInformation.DeriveAddress(myAvatarAddress, roundData.Id, roundData.Round);
+                ArenaInformation.DeriveAddress(myAvatarAddress, roundData.ChampionshipId, roundData.Round);
             if (!states.TryGetArenaInformation(arenaInformationAdr, out var arenaInformation))
             {
                 throw new ArenaInformationNotFoundException(
                     $"[{nameof(BattleArena)}] my avatar address : {myAvatarAddress}" +
-                    $" - ChampionshipId({roundData.Id}) - round({roundData.Round})");
+                    $" - ChampionshipId({roundData.ChampionshipId}) - round({roundData.Round})");
             }
 
             if (!ArenaHelper.ValidateScoreDifference(ScoreLimits, roundData.ArenaType,
@@ -239,7 +239,7 @@ namespace Nekoyume.Action
                         context.Signer.ToHex(), ticketBalance.RawValue, balance.RawValue);
                 }
 
-                var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.Id, roundData.Round);
+                var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
                 states = states.TransferAsset(context.Signer, arenaAdr, ticketBalance);
             }
 
@@ -293,7 +293,7 @@ namespace Nekoyume.Action
             if (roundData.ArenaType != ArenaType.OffSeason)
             {
                 var materialSheet = sheets.GetSheet<MaterialItemSheet>();
-                var medal = ArenaHelper.GetMedal(roundData.Id, roundData.Round, materialSheet);
+                var medal = ArenaHelper.GetMedal(roundData.ChampionshipId, roundData.Round, materialSheet);
                 avatarState.inventory.AddItem(medal, count: winCount);
             }
 

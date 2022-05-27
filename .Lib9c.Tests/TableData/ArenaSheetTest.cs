@@ -35,7 +35,7 @@ namespace Lib9c.Tests.TableData
             Assert.Single(sheet);
             Assert.NotNull(sheet.First);
             Assert.Equal(3, sheet.First.Round.Count);
-            Assert.Equal(1, sheet.First.Round.First().Id);
+            Assert.Equal(1, sheet.First.Round.First().ChampionshipId);
             Assert.Equal(1, sheet.First.Round.First().Round);
             Assert.Equal(ArenaType.OffSeason, sheet.First.Round.First().ArenaType);
             Assert.Equal(0, sheet.First.Round.First().StartBlockIndex);
@@ -134,13 +134,13 @@ namespace Lib9c.Tests.TableData
         public void TryGetRowByBlockIndexTest(
             long blockIndex,
             bool expectedExist,
-            int expectedId,
+            int expectedChampionshipId,
             int expectedRoundCount)
         {
             if (expectedExist)
             {
                 Assert.True(_arenaSheet.TryGetRowByBlockIndex(blockIndex, out var row));
-                Assert.Equal(expectedId, row.Id);
+                Assert.Equal(expectedChampionshipId, row.ChampionshipId);
                 Assert.Equal(expectedRoundCount, row.Round.Count);
                 return;
             }
@@ -164,7 +164,7 @@ namespace Lib9c.Tests.TableData
             if (expectedExist)
             {
                 Assert.True(_arenaSheet.TryGetRoundByBlockIndex(blockIndex, out var roundData));
-                Assert.Equal(expectedId, roundData.Id);
+                Assert.Equal(expectedId, roundData.ChampionshipId);
                 Assert.Equal(expectedRound, roundData.Round);
                 Assert.Equal(expectedArenaType, roundData.ArenaType);
                 return;
