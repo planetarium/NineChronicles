@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         [Serializable]
         public class RoundDataBridge
         {
-            public int Id;
+            public int ChampionshipId;
             public int Round;
             public ArenaType ArenaType;
             public long StartBlockIndex;
@@ -34,13 +34,13 @@ namespace Nekoyume.UI.Module.Arena.Join
             public long TicketPrice;
             public long AdditionalTicketPrice;
 
-            public RoundDataBridge(int id, int round, ArenaType arenaType,
+            public RoundDataBridge(int championshipId, int round, ArenaType arenaType,
                 long startBlockIndex, long endBlockIndex,
                 int requiredMedalCount,
                 long entranceFee, long discountedEntranceFee,
                 long ticketPrice, long additionalTicketPrice)
             {
-                Id = id;
+                ChampionshipId = championshipId;
                 Round = round;
                 ArenaType = arenaType;
                 StartBlockIndex = startBlockIndex;
@@ -53,7 +53,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             }
 
             public ArenaSheet.RoundData ToRoundData() => new ArenaSheet.RoundData(
-                Id,
+                ChampionshipId,
                 Round,
                 ArenaType,
                 StartBlockIndex,
@@ -69,11 +69,6 @@ namespace Nekoyume.UI.Module.Arena.Join
         private List<ArenaData> _arenaDataList;
 
         public IList<ArenaData> ArenaDataList => _arenaDataList;
-
-        [SerializeField]
-        private int _medalId;
-
-        public int MedalId => _medalId;
 
         [SerializeField]
         private int _conditionMax;
@@ -218,7 +213,6 @@ namespace Nekoyume.UI.Module.Arena.Join
                 },
             };
 
-            _medalId = 700000;
             _conditionMax = 100;
             _conditionCurrent = 0;
         }

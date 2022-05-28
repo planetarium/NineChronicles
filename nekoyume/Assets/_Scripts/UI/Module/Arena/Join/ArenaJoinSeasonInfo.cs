@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.ValueControlComponents.Shader;
 using TMPro;
 using UnityEngine;
@@ -28,6 +30,9 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         [SerializeField]
         private ShaderPropertySlider _seasonProgressSlider;
+
+        [SerializeField]
+        private Image _seasonProgressFillImage;
 
         [SerializeField]
         private TextMeshProUGUI _seasonProgressSliderFillText;
@@ -61,51 +66,61 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private void OnEnable()
-        {
-            UpdateSliderAndText(RxProps.ArenaProgress.Value);
-            RxProps.ArenaProgress
-                .SubscribeOnMainThread()
-                .Subscribe(UpdateSliderAndText)
-                .AddTo(_disposables);
-        }
-
         private void OnDisable()
         {
             _disposables.DisposeAllAndClear();
         }
 
         /// <param name="title">Season Name</param>
-        /// <param name="medalId">Season Medal Id on ItemSheet</param>
+        /// <param name="seasonProgress"></param>
         /// <param name="conditions">Season Conditions</param>
         /// <param name="rewardType">
         ///   Reward types.
         ///   (e.g., RewardType.None or RewardType.Medal | RewardType.NCG)
         /// </param>
+        /// <param name="medalItemId">Season Medal ItemId on ItemSheet</param>
         public void SetData(
             string title,
-            int? medalId,
+            (long beginning, long end, long current) seasonProgress,
             (int max, int current)? conditions,
-            RewardType rewardType)
+            RewardType rewardType,
+            int? medalItemId)
         {
+            _disposables.DisposeAllAndClear();
             _titleText.text = title;
-            UpdateConditions(conditions);
-            UpdateRewards(rewardType);
-            UpdateMedalImages(medalId.HasValue
-                ? SpriteHelper.GetItemIcon(medalId.Value)
-                : null);
+            SetSliderAndText(seasonProgress);
+            SetConditions(conditions);
+            SetRewards(rewardType);
+            SetMedalImages(medalItemId);
         }
 
-        private void UpdateSliderAndText((long beginning, long end, long progress) tuple)
+        public void SetSliderAndText((long beginning, long end, long current) tuple)
         {
-            var (beginning, end, progress) = tuple;
+            var (beginning, end, current) = tuple;
+            if (current < beginning)
+            {
+                _seasonProgressFillImage.enabled = false;
+                _seasonProgressSliderFillText.enabled = false;
+                return;
+            }
+
+            if (current > end)
+            {
+                _seasonProgressFillImage.enabled = false;
+                _seasonProgressSliderFillText.enabled = false;
+                return;
+            }
+
             var range = end - beginning;
+            var progress = current - beginning;
             var sliderNormalizedValue = (float)progress / range;
             _seasonProgressSlider.NormalizedValue = sliderNormalizedValue;
+            _seasonProgressFillImage.enabled = true;
             _seasonProgressSliderFillText.text = Util.GetBlockToTime(range - progress);
+            _seasonProgressSliderFillText.enabled = true;
         }
 
-        private void UpdateConditions((int max, int current)? conditions)
+        private void SetConditions((int max, int current)? conditions)
         {
             if (!conditions.HasValue)
             {
@@ -120,7 +135,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             _conditionsContainer.SetActive(true);
         }
 
-        private void UpdateRewards(RewardType rewardType)
+        private void SetRewards(RewardType rewardType)
         {
             _costumeReward.SetActive(false);
             _medalReward.SetActive(false);
@@ -153,13 +168,15 @@ namespace Nekoyume.UI.Module.Arena.Join
             }
         }
 
-        private void UpdateMedalImages(Sprite medalSprite)
+        private void SetMedalImages(int? medalItemId)
         {
-            if (medalSprite is null)
+            if (medalItemId.HasValue)
             {
+                var medalSprite = SpriteHelper.GetItemIcon(medalItemId.Value);
                 foreach (var medalImage in _currentRoundMedalImages)
                 {
-                    medalImage.enabled = false;
+                    medalImage.overrideSprite = medalSprite;
+                    medalImage.enabled = true;
                 }
 
                 return;
@@ -167,8 +184,7 @@ namespace Nekoyume.UI.Module.Arena.Join
 
             foreach (var medalImage in _currentRoundMedalImages)
             {
-                medalImage.overrideSprite = medalSprite;
-                medalImage.enabled = true;
+                medalImage.enabled = false;
             }
         }
     }

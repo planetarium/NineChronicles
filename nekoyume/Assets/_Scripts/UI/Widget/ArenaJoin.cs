@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Arena;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
+using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Join;
 using Unity.Mathematics;
@@ -37,10 +42,10 @@ namespace Nekoyume.UI
         private ArenaJoinSeasonInfo _info;
 
         [SerializeField]
-        private Button _joinButton;
+        private ConditionalButton _joinButton;
 
         [SerializeField]
-        private Button _paymentButton;
+        private ConditionalCostButton _paymentButton;
 
         [SerializeField]
         private Button _earlyPaymentButton;
@@ -59,16 +64,20 @@ namespace Nekoyume.UI
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             }).AddTo(gameObject);
-            _joinButton.onClick.AsObservable().Subscribe(_ =>
+            _joinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Find<ArenaBoard>().Show();
+                Find<ArenaBoard>()
+                    .ShowAsync(_scroll.SelectedItemData.RoundData)
+                    .Forget();
                 Close();
             }).AddTo(gameObject);
-            _paymentButton.onClick.AsObservable().Subscribe(_ =>
+            _paymentButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Find<ArenaBoard>().Show();
+                Find<ArenaBoard>()
+                    .ShowAsync(_scroll.SelectedItemData.RoundData)
+                    .Forget();
                 Close();
             }).AddTo(gameObject);
             _earlyPaymentButton.onClick.AsObservable().Subscribe().AddTo(gameObject);
@@ -154,25 +163,42 @@ namespace Nekoyume.UI
                     return null;
                 }
 
+                var championshipSeasonIds = _so.ArenaDataList
+                    .Where(e => e.RoundDataBridge.ArenaType == ArenaType.Season)
+                    .Select(e => e.RoundDataBridge.Round)
+                    .ToArray();
                 return _so.ArenaDataList
                     .Select(data => new ArenaJoinSeasonItemData
                     {
                         RoundData = data.RoundDataBridge.ToRoundData(),
-                        SeasonNumber = GetSeasonNumber(_so.ArenaDataList, data.RoundDataBridge),
+                        SeasonNumber =
+                            GetSeasonNumber(_so.ArenaDataList, data.RoundDataBridge),
+                        ChampionshipSeasonIds =
+                            data.RoundDataBridge.ArenaType == ArenaType.Championship
+                                ? championshipSeasonIds
+                                : Array.Empty<int>(),
                     }).ToList();
             }
 #endif
-
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var row = TableSheets.Instance.ArenaSheet.GetRowByBlockIndex(blockIndex);
-            return row.Round
-                .Select(roundData => new ArenaJoinSeasonItemData
-                {
-                    RoundData = roundData,
-                    SeasonNumber = row.TryGetSeasonNumber(roundData.Round, out var seasonNumber)
-                        ? seasonNumber
-                        : (int?)null,
-                }).ToList();
+            {
+                var blockIndex = Game.Game.instance.Agent.BlockIndex;
+                var row = TableSheets.Instance.ArenaSheet.GetRowByBlockIndex(blockIndex);
+                var championshipSeasonIds = row.Round
+                    .Where(e => e.ArenaType == ArenaType.Season)
+                    .Select(e => e.Round)
+                    .ToArray();
+                return row.Round
+                    .Select(roundData => new ArenaJoinSeasonItemData
+                    {
+                        RoundData = roundData,
+                        SeasonNumber = row.TryGetSeasonNumber(roundData.Round, out var seasonNumber)
+                            ? seasonNumber
+                            : (int?)null,
+                        ChampionshipSeasonIds = roundData.ArenaType == ArenaType.Championship
+                            ? championshipSeasonIds
+                            : Array.Empty<int>(),
+                    }).ToList();
+            }
         }
 
         private IList<ArenaJoinSeasonBarItemData> GetBarScrollData(
@@ -192,19 +218,15 @@ namespace Nekoyume.UI
 
         private void UpdateInfo()
         {
-            string getText(ArenaJoinSeasonItemData data) => data.RoundData.ArenaType switch
-            {
-                ArenaType.OffSeason => "off-season",
-                ArenaType.Season => $"season #{data.SeasonNumber}",
-                ArenaType.Championship => $"championship #{data.ChampionshipNumber}",
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
+            var selectedRoundData = _scroll.SelectedItemData.RoundData;
             _info.SetData(
-                getText(_scroll.SelectedItemData),
-                GetMedalId(),
+                _scroll.SelectedItemData.GetRoundName(),
+                GetSeasonProgress(selectedRoundData),
                 GetConditions(),
-                GetRewardType(_scroll.SelectedItemData));
+                GetRewardType(_scroll.SelectedItemData),
+                selectedRoundData.TryGetMedalItemId(out var medalItemId)
+                    ? medalItemId
+                    : (int?)null);
         }
 
         private void UpdateButtons()
@@ -215,17 +237,14 @@ namespace Nekoyume.UI
             _earlyPaymentButton.gameObject.SetActive(false);
         }
 
-        private int GetMedalId()
+        private static (long beginning, long end, long current) GetSeasonProgress(
+            ArenaSheet.RoundData selectedRoundData)
         {
-#if UNITY_EDITOR
-            if (_useSo && _so)
-            {
-                return _so.MedalId;
-            }
-#endif
-
-            
-            return 700000;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            return (
+                selectedRoundData.StartBlockIndex,
+                selectedRoundData.EndBlockIndex,
+                blockIndex);
         }
 
         private (int max, int current) GetConditions()
@@ -237,7 +256,11 @@ namespace Nekoyume.UI
             }
 #endif
 
-            return (100, 0);
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var row = TableSheets.Instance.ArenaSheet.GetRowByBlockIndex(blockIndex);
+            var avatarState = States.Instance.CurrentAvatarState;
+            var medalTotalCount = ArenaHelper.GetMedalTotalCount(row, avatarState);
+            return (row.Round[7].RequiredMedalCount, medalTotalCount);
         }
 
         private ArenaJoinSeasonInfo.RewardType GetRewardType(ArenaJoinSeasonItemData data)
@@ -246,14 +269,44 @@ namespace Nekoyume.UI
             if (_useSo && _so)
             {
                 var soData = _so.ArenaDataList.FirstOrDefault(soData =>
-                    soData.RoundDataBridge.Equals(data.RoundData));
+                    soData.RoundDataBridge.ChampionshipId == data.RoundData.ChampionshipId &&
+                    soData.RoundDataBridge.Round == data.RoundData.Round);
                 return soData is null
                     ? ArenaJoinSeasonInfo.RewardType.None
                     : soData.RewardType;
             }
 #endif
 
-            return ArenaJoinSeasonInfo.RewardType.Medal;
+            // 체인에 있는 WeeklyArenaRewardSheet 전부를 순회하면서..
+            // 코스튬이나 NCG 같은 특수 지급 아이템은 어떻게 표현하나..
+            // 보상 중에 레벨 제한이 걸리면 어떻게 표시하나..
+            // Season은 무조건 메달이 있고, 나머지는 없는가..
+            var rewardSheet = TableSheets.Instance.WeeklyArenaRewardSheet;
+            var itemSheet = TableSheets.Instance.ItemSheet;
+            var rewardType = data.RoundData.ArenaType == ArenaType.Season
+                ? ArenaJoinSeasonInfo.RewardType.Medal |
+                  ArenaJoinSeasonInfo.RewardType.NCG
+                : ArenaJoinSeasonInfo.RewardType.None;
+            foreach (var row in rewardSheet.OrderedList)
+            {
+                if (!itemSheet.TryGetValue(row.Reward.ItemId, out var itemRow) ||
+                    itemRow.ItemSubType != ItemSubType.Food)
+                {
+                    continue;
+                }
+
+                rewardType |= ArenaJoinSeasonInfo.RewardType.Food;
+                break;
+            }
+
+            if (data.RoundData.ArenaType == ArenaType.Championship)
+            {
+                rewardType |=
+                    ArenaJoinSeasonInfo.RewardType.NCG |
+                    ArenaJoinSeasonInfo.RewardType.Costume;
+            }
+
+            return rewardType;
         }
     }
 }

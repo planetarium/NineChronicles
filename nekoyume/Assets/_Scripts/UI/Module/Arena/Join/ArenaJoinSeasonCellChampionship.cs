@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using Nekoyume.UI.Module.Arena.Emblems;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +16,10 @@ namespace Nekoyume.UI.Module.Arena.Join
         private Button _button;
 
         [SerializeField]
-        private TextMeshProUGUI _championshipNumber;
+        private TextMeshProUGUI _championshipId;
+
+        [SerializeField]
+        private SeasonArenaEmblem[] _seasonEmblems;
 
         public event System.Action OnClick = delegate { };
 
@@ -26,7 +30,21 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         public void Show(ArenaJoinSeasonItemData itemData, bool selected)
         {
-            _championshipNumber.text = itemData.ChampionshipNumber.ToString();
+            _championshipId.text = itemData.ChampionshipId.ToString();
+            for (var i = 0; i < _seasonEmblems.Length; i++)
+            {
+                var _seasonEmblem = _seasonEmblems[i];
+                if (itemData.ChampionshipSeasonIds.Length > i)
+                {
+                    _seasonEmblem.SetData(itemData.ChampionshipSeasonIds[i], true);
+                    _seasonEmblem.transform.parent.gameObject.SetActive(true);
+                }
+                else
+                {
+                    _seasonEmblem.transform.parent.gameObject.SetActive(false);
+                }
+            }
+
             gameObject.SetActive(true);
         }
 

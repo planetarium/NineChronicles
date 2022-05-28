@@ -4,7 +4,9 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.State
@@ -14,12 +16,6 @@ namespace Nekoyume.State
     public static class RxProps
     {
         #region Arena
-
-        private static readonly ReactiveProperty<(long bedinning, long end, long progress)>
-            _arenaProgress = new ReactiveProperty<(long bedinning, long end, long progress)>();
-
-        public static IReadOnlyReactiveProperty<(long bedinning, long end, long progress)>
-            ArenaProgress => _arenaProgress;
 
         private static readonly ReactiveProperty<(long bedinning, long end, long progress)>
             _arenaTicketProgress = new ReactiveProperty<(long bedinning, long end, long progress)>();
@@ -39,14 +35,31 @@ namespace Nekoyume.State
 
         private static IAgent _agent;
         private static States _states;
+        private static TableSheets _tableSheets;
 
         private static readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public static void Start(IAgent agent, States states)
+        public static void Start(IAgent agent, States states, TableSheets tableSheets)
         {
+            if (agent is null)
+            {
+                throw new ArgumentNullException(nameof(agent));
+            }
+            
+            if (states is null)
+            {
+                throw new ArgumentNullException(nameof(states));
+            }
+            
+            if (tableSheets is null)
+            {
+                throw new ArgumentNullException(nameof(tableSheets));
+            }
+
             Debug.Log($"{nameof(RxProps)} start");
             _agent = agent;
             _states = states;
+            _tableSheets = tableSheets;
             _disposables.DisposeAllAndClear();
             _agent.BlockIndexSubject
                 .ObserveOnMainThread()
@@ -62,45 +75,16 @@ namespace Nekoyume.State
 
         private static void OnBlockIndex(long blockIndex)
         {
-            var gcs = _states.GameConfigState;
-            var was = _states.WeeklyArenaState;
-            UpdateArenaProgress(blockIndex, gcs, was);
-            UpdateArenaTicketProgress(blockIndex, gcs, was);
+            UpdateArenaTicketProgress(blockIndex);
 
             _arenaInfo.UpdateAsync().Forget();
         }
 
-        private static void UpdateArenaProgress(
-            long blockIndex,
-            GameConfigState gcs,
-            WeeklyArenaState was)
-        {
-            if (gcs is null || was is null)
-            {
-                return;
-            }
-
-            var beginningBlockIndex = blockIndex - blockIndex % gcs.WeeklyArenaInterval;
-            var endBlockIndex = beginningBlockIndex + gcs.WeeklyArenaInterval;
-            var progressBlockIndex = blockIndex - beginningBlockIndex;
-            _arenaProgress.SetValueAndForceNotify((
-                beginningBlockIndex,
-                endBlockIndex,
-                progressBlockIndex));
-        }
-
         private static void UpdateArenaTicketProgress(
-            long blockIndex,
-            GameConfigState gcs,
-            WeeklyArenaState was)
+            long blockIndex)
         {
-            if (gcs is null || was is null)
-            {
-                return;
-            }
-
-            var beginningBlockIndex = was.ResetIndex;
-            var endBlockIndex = beginningBlockIndex + gcs.DailyArenaInterval;
+            var beginningBlockIndex = _states.WeeklyArenaState.ResetIndex;
+            var endBlockIndex = beginningBlockIndex + _states.GameConfigState.DailyArenaInterval;
             var progressBlockIndex = blockIndex - beginningBlockIndex;
             _arenaTicketProgress.SetValueAndForceNotify((
                 beginningBlockIndex,

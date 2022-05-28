@@ -13,38 +13,101 @@ MonoBehaviour:
   m_Name: ArenaJoinSO
   m_EditorClassIdentifier: 
   _arenaDataList:
-  - ItemData:
-      type: 0
-      text: 
+  - RoundDataBridge:
+      ChampionshipId: 1
+      Round: 1
+      ArenaType: 0
+      StartBlockIndex: 0
+      EndBlockIndex: 100
+      RequiredMedalCount: 0
+      EntranceFee: 0
+      DiscountedEntranceFee: 0
+      TicketPrice: 5
+      AdditionalTicketPrice: 2
     RewardType: 4
-  - ItemData:
-      type: 1
-      text: 1
+  - RoundDataBridge:
+      ChampionshipId: 1
+      Round: 2
+      ArenaType: 1
+      StartBlockIndex: 101
+      EndBlockIndex: 200
+      RequiredMedalCount: 0
+      EntranceFee: 100
+      DiscountedEntranceFee: 50
+      TicketPrice: 5
+      AdditionalTicketPrice: 2
     RewardType: 7
-  - ItemData:
-      type: 0
-      text: 
+  - RoundDataBridge:
+      ChampionshipId: 1
+      Round: 3
+      ArenaType: 0
+      StartBlockIndex: 201
+      EndBlockIndex: 300
+      RequiredMedalCount: 0
+      EntranceFee: 0
+      DiscountedEntranceFee: 0
+      TicketPrice: 5
+      AdditionalTicketPrice: 2
     RewardType: 4
-  - ItemData:
-      type: 1
-      text: 2
+  - RoundDataBridge:
+      ChampionshipId: 1
+      Round: 4
+      ArenaType: 1
+      StartBlockIndex: 301
+      EndBlockIndex: 400
+      RequiredMedalCount: 0
+      EntranceFee: 100
+      DiscountedEntranceFee: 50
+      TicketPrice: 5
+      AdditionalTicketPrice: 2
     RewardType: 7
-  - ItemData:
-      type: 0
-      text: 
+  - RoundDataBridge:
+      ChampionshipId: 1
+      Round: 5
+      ArenaType: 0
+      StartBlockIndex: 401
+      EndBlockIndex: 500
+      RequiredMedalCount: 0
+      EntranceFee: 0
+      DiscountedEntranceFee: 0
+      TicketPrice: 5
+      AdditionalTicketPrice: 2
     RewardType: 4
-  - ItemData:
-      type: 1
-      text: 3
+  - RoundDataBridge:
+      ChampionshipId: 1
+      Round: 6
+      ArenaType: 1
+      StartBlockIndex: 501
+      EndBlockIndex: 600
+      RequiredMedalCount: 0
+      EntranceFee: 100
+      DiscountedEntranceFee: 50
+      TicketPrice: 5
+      AdditionalTicketPrice: 2
     RewardType: 7
-  - ItemData:
-      type: 0
-      text: 
+  - RoundDataBridge:
+      ChampionshipId: 1
+      Round: 7
+      ArenaType: 0
+      StartBlockIndex: 601
+      EndBlockIndex: 700
+      RequiredMedalCount: 0
+      EntranceFee: 0
+      DiscountedEntranceFee: 0
+      TicketPrice: 5
+      AdditionalTicketPrice: 2
     RewardType: 4
-  - ItemData:
-      type: 2
-      text: 1
+  - RoundDataBridge:
+      ChampionshipId: 1
+      Round: 8
+      ArenaType: 2
+      StartBlockIndex: 701
+      EndBlockIndex: 800
+      RequiredMedalCount: 8
+      EntranceFee: 1000
+      DiscountedEntranceFee: 500
+      TicketPrice: 5
+      AdditionalTicketPrice: 2
     RewardType: 15
-  _medalId: 700000
   _conditionMax: 100
-  _conditionCurrent: 0
+  _conditionCurrent: 50

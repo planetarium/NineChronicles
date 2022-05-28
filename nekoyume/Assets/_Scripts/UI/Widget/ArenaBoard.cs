@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
+using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Board;
 using UniRx;
@@ -31,10 +35,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            _playerScroll.OnClickChoice.Subscribe(index =>
-            {
-                Debug.Log($"{index} choose!");
-            }).AddTo(gameObject);
+            _playerScroll.OnClickChoice.Subscribe(index => { Debug.Log($"{index} choose!"); }).AddTo(gameObject);
 
             _backButton.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -45,7 +46,9 @@ namespace Nekoyume.UI
                 }).AddTo(gameObject);
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        public async UniTaskVoid ShowAsync(
+            ArenaSheet.RoundData roundData,
+            bool ignoreShowAnimation = false)
         {
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
@@ -91,6 +94,22 @@ namespace Nekoyume.UI
 #endif
 
             return new List<ArenaBoardPlayerItemData>();
+        }
+
+        private void BattleArena()
+        {
+            var currentAvatarInventory = States.Instance.CurrentAvatarState.inventory;
+
+            // Game.Game.instance.ActionManager.RankingBattle(
+            //     arenaRankCell.ArenaInfo.AvatarAddress,
+            //     currentAvatarInventory.Costumes
+            //         .Where(i => i.equipped)
+            //         .Select(i => i.ItemId).ToList(),
+            //     currentAvatarInventory.Equipments
+            //         .Where(i => i.equipped)
+            //         .Select(i => i.ItemId).ToList()
+            // ).Subscribe();
+            // Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
         }
     }
 }
