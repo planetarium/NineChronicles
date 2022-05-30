@@ -277,32 +277,19 @@ namespace Nekoyume.UI
             }
 #endif
 
-            var rewardSheet = TableSheets.Instance.WeeklyArenaRewardSheet;
-            var itemSheet = TableSheets.Instance.ItemSheet;
-            var rewardType = data.RoundData.ArenaType == ArenaType.Season
-                ? ArenaJoinSeasonInfo.RewardType.Medal |
-                  ArenaJoinSeasonInfo.RewardType.NCG
-                : ArenaJoinSeasonInfo.RewardType.None;
-            foreach (var row in rewardSheet.OrderedList)
+            return data.RoundData.ArenaType switch
             {
-                if (!itemSheet.TryGetValue(row.Reward.ItemId, out var itemRow) ||
-                    itemRow.ItemSubType != ItemSubType.Food)
-                {
-                    continue;
-                }
-
-                rewardType |= ArenaJoinSeasonInfo.RewardType.Food;
-                break;
-            }
-
-            if (data.RoundData.ArenaType == ArenaType.Championship)
-            {
-                rewardType |=
+                ArenaType.OffSeason => ArenaJoinSeasonInfo.RewardType.Food,
+                ArenaType.Season =>
+                    ArenaJoinSeasonInfo.RewardType.Food |
+                    ArenaJoinSeasonInfo.RewardType.Medal |
+                    ArenaJoinSeasonInfo.RewardType.NCG,
+                ArenaType.Championship =>
+                    ArenaJoinSeasonInfo.RewardType.Food |
                     ArenaJoinSeasonInfo.RewardType.NCG |
-                    ArenaJoinSeasonInfo.RewardType.Costume;
-            }
-
-            return rewardType;
+                    ArenaJoinSeasonInfo.RewardType.Costume,
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
 }
