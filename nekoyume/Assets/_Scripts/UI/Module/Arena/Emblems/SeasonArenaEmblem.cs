@@ -14,6 +14,17 @@ namespace Nekoyume.UI.Module.Arena.Emblems
         [SerializeField]
         private TextMeshProUGUI[] _seasonNumbers;
 
+        public void Show(int seasonNumber, bool isNormal)
+        {
+            SetData(seasonNumber, isNormal);
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
         public void SetData(int seasonNumber, bool isNormal)
         {
             if (_normal)
