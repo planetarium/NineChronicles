@@ -16364,10 +16364,6 @@ MonoBehaviour:
   _championship: {fileID: 2162686502432753746}
   _medalCountObject: {fileID: 6281055257323399339}
   _seasonCountObject: {fileID: 363946212792243152}
-  _seasonArenaEmblems:
-  - {fileID: 3344803692338708206}
-  - {fileID: 4508756761379808635}
-  - {fileID: 3741642125020693651}
   _currentPosition: 0
 --- !u!95 &4178482879041537418
 Animator:
@@ -31380,6 +31376,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SeasonArenaEmblem
       objectReference: {fileID: 0}
+    - target: {fileID: 7727979238949390217, guid: 4a16df19fdf3d468a984221ea701b9fc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a16df19fdf3d468a984221ea701b9fc, type: 3}
 --- !u!224 &4773725912630942520 stripped
@@ -31521,6 +31522,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727979238949390217, guid: 4a16df19fdf3d468a984221ea701b9fc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a16df19fdf3d468a984221ea701b9fc, type: 3}
@@ -31673,6 +31679,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7727979238949390217, guid: 4a16df19fdf3d468a984221ea701b9fc,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9104831834616347389, guid: 4a16df19fdf3d468a984221ea701b9fc,
         type: 3}
