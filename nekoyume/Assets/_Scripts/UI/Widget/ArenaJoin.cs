@@ -173,7 +173,7 @@ namespace Nekoyume.UI
                         RoundData = data.RoundDataBridge.ToRoundData(),
                         SeasonNumber =
                             GetSeasonNumber(_so.ArenaDataList, data.RoundDataBridge),
-                        ChampionshipSeasonIds =
+                        ChampionshipSeasonNumbers =
                             data.RoundDataBridge.ArenaType == ArenaType.Championship
                                 ? championshipSeasonIds
                                 : Array.Empty<int>(),
@@ -194,7 +194,7 @@ namespace Nekoyume.UI
                         SeasonNumber = row.TryGetSeasonNumber(roundData.Round, out var seasonNumber)
                             ? seasonNumber
                             : (int?)null,
-                        ChampionshipSeasonIds = roundData.ArenaType == ArenaType.Championship
+                        ChampionshipSeasonNumbers = roundData.ArenaType == ArenaType.Championship
                             ? championshipSeasonIds
                             : Array.Empty<int>(),
                     }).ToList();

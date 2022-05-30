@@ -12,7 +12,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         public ArenaSheet.RoundData RoundData;
         public int? SeasonNumber;
         public int? ChampionshipId => RoundData?.ChampionshipId;
-        public int[] ChampionshipSeasonIds;
+        public int[] ChampionshipSeasonNumbers;
         
         public string GetRoundName() => RoundData.ArenaType switch
         {

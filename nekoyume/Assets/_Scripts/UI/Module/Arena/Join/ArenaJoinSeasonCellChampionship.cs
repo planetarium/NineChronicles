@@ -34,9 +34,9 @@ namespace Nekoyume.UI.Module.Arena.Join
             for (var i = 0; i < _seasonEmblems.Length; i++)
             {
                 var _seasonEmblem = _seasonEmblems[i];
-                if (itemData.ChampionshipSeasonIds.Length > i)
+                if (itemData.ChampionshipSeasonNumbers.Length > i)
                 {
-                    _seasonEmblem.SetData(itemData.ChampionshipSeasonIds[i], true);
+                    _seasonEmblem.SetData(itemData.ChampionshipSeasonNumbers[i], true);
                     _seasonEmblem.transform.parent.gameObject.SetActive(true);
                 }
                 else
