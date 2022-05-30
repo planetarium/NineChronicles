@@ -668,8 +668,6 @@ namespace Nekoyume.BlockChain
                     {
                         await _swarm.BootstrapAsync(
                             seedPeers: _seedPeers,
-                            pingSeedTimeout: 5000,
-                            findPeerTimeout: 5000,
                             depth: 1,
                             cancellationToken: _cancellationTokenSource.Token
                         );
@@ -747,7 +745,7 @@ namespace Nekoyume.BlockChain
             {
                 try
                 {
-                    await _swarm.StartAsync(millisecondsBroadcastTxInterval: 15000);
+                    await _swarm.StartAsync();
                 }
                 catch (TaskCanceledException)
                 {
