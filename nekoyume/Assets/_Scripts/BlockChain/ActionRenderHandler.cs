@@ -124,6 +124,9 @@ namespace Nekoyume.BlockChain
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
 #endif
+
+            // Arena
+            InitializeArenaActions();
         }
 
         public void Stop()
@@ -351,6 +354,23 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void InitializeArenaActions()
+        {
+            _actionRenderer.EveryRender<JoinArena>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseJoinArena)
+                .AddTo(_disposables);
+            
+            _actionRenderer.EveryRender<BattleArena>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseBattleArena)
+                .AddTo(_disposables);
+        }
+
+
+
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
         {
             if (eval.Exception is null)
@@ -358,7 +378,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slotState = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (RapidCombination5.ResultModel) slotState.Result;
+                var result = (RapidCombination5.ResultModel)slotState.Result;
                 foreach (var pair in result.cost)
                 {
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -440,6 +460,7 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
             }
+
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
@@ -451,7 +472,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (CombinationConsumable5.ResultModel) slot.Result;
+                var result = (CombinationConsumable5.ResultModel)slot.Result;
 
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
                 {
@@ -465,7 +486,8 @@ namespace Nekoyume.BlockChain
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId, result.itemUsable.RequiredBlockIndex, 1);
+                LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId,
+                    result.itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 var gameInstance = Game.Game.instance;
@@ -534,6 +556,7 @@ namespace Nekoyume.BlockChain
                     result.itemUsable.TradableId);
                 // ~Notify
             }
+
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
@@ -545,7 +568,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (CombinationConsumable5.ResultModel) slot.Result;
+                var result = (CombinationConsumable5.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
                 {
@@ -576,6 +599,7 @@ namespace Nekoyume.BlockChain
                     result.itemUsable.TradableId);
                 // ~Notify
             }
+
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
@@ -587,7 +611,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (ItemEnhancement.ResultModel) slot.Result;
+                var result = (ItemEnhancement.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
                 {
@@ -600,7 +624,7 @@ namespace Nekoyume.BlockChain
                 foreach (var tradableId in result.materialItemIdList)
                 {
                     if (avatarState.inventory.TryGetNonFungibleItem(tradableId,
-                        out ItemUsable materialItem))
+                            out ItemUsable materialItem))
                     {
                         LocalLayerModifier.AddItem(avatarAddress, tradableId, materialItem.RequiredBlockIndex, 1);
                     }
@@ -704,6 +728,7 @@ namespace Nekoyume.BlockChain
             {
                 message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE"), itemName);
             }
+
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -731,6 +756,7 @@ namespace Nekoyume.BlockChain
             {
                 message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
             }
+
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval).Forget();
             ReactiveShopState.UpdateSellDigests();
@@ -747,7 +773,7 @@ namespace Nekoyume.BlockChain
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
-                out var avatarState, out _))
+                    out var avatarState, out _))
             {
                 return;
             }
@@ -772,7 +798,7 @@ namespace Nekoyume.BlockChain
                         var (orderId, errorCode) =
                             errors.FirstOrDefault(tuple => tuple.orderId == purchaseInfo.OrderId);
 
-                        var errorType = ((ShopErrorType) errorCode).ToString();
+                        var errorType = ((ShopErrorType)errorCode).ToString();
                         LocalLayerModifier.ModifyAgentGold(agentAddress, price);
 
                         string message;
@@ -786,6 +812,7 @@ namespace Nekoyume.BlockChain
                             message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
                                 itemName, L10nManager.Localize(errorType), price);
                         }
+
                         OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Alert);
                     }
                     else
@@ -805,6 +832,7 @@ namespace Nekoyume.BlockChain
                             message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE"),
                                 itemName, price);
                         }
+
                         OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Notification);
                     }
                 }
@@ -819,10 +847,11 @@ namespace Nekoyume.BlockChain
                         Debug.LogError("buyerAvatarStateValue is null.");
                         return;
                     }
+
                     const string nameWithHashFormat = "{0} <size=80%><color=#A68F7E>#{1}</color></size>";
                     var buyerNameWithHash = string.Format(
                         nameWithHashFormat,
-                        ((Text) ((Dictionary) buyerAvatarStateValue)["name"]).Value,
+                        ((Text)((Dictionary)buyerAvatarStateValue)["name"]).Value,
                         eval.Action.buyerAvatarAddress.ToHex().Substring(0, 4)
                     );
 
@@ -845,6 +874,7 @@ namespace Nekoyume.BlockChain
                         message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
                             buyerNameWithHash, itemName);
                     }
+
                     OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Notification);
                 }
             }
@@ -1092,11 +1122,11 @@ namespace Nekoyume.BlockChain
                 EnemyPlayerDigest previousEnemyPlayerDigest;
                 if (eval.Extra is { })
                 {
-                    var aid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.PreviousArenaInfo)];
+                    var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.PreviousArenaInfo)];
                     previousArenaInfo = new ArenaInfo(aid);
-                    var eid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.PreviousEnemyArenaInfo)];
+                    var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.PreviousEnemyArenaInfo)];
                     previousEnemyArenaInfo = new ArenaInfo(eid);
-                    var epd = (List) eval.Extra[nameof(Action.RankingBattle.PreviousEnemyPlayerDigest)];
+                    var epd = (List)eval.Extra[nameof(Action.RankingBattle.PreviousEnemyPlayerDigest)];
                     previousEnemyPlayerDigest = new EnemyPlayerDigest(epd);
                 }
                 else
@@ -1183,6 +1213,7 @@ namespace Nekoyume.BlockChain
                 {
                     key = "UI_REDEEM_CODE_ALREADY_USE";
                 }
+
                 var msg = L10nManager.Localize(key);
                 UI.NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Alert);
             }
@@ -1193,7 +1224,8 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var avatarAddress = eval.Action.avatarAddress;
-                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
+                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                    -States.Instance.GameConfigState.ActionPointMax);
                 var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
@@ -1229,7 +1261,8 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseClaimMonsterCollectionReward(ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
+        private void ResponseClaimMonsterCollectionReward(
+            ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -1244,7 +1277,7 @@ namespace Nekoyume.BlockChain
             }
 
             var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
-            if (!(mail is MonsterCollectionMail {attachment: MonsterCollectionResult monsterCollectionResult}))
+            if (!(mail is MonsterCollectionMail { attachment: MonsterCollectionResult monsterCollectionResult }))
             {
                 return;
             }
@@ -1255,15 +1288,15 @@ namespace Nekoyume.BlockChain
             {
                 var rewardInfo = rewardInfos[i];
                 if (!rewardInfo.ItemId.TryParseAsTradableId(
-                    Game.Game.instance.TableSheets.ItemSheet,
-                    out var tradableId))
+                        Game.Game.instance.TableSheets.ItemSheet,
+                        out var tradableId))
                 {
                     continue;
                 }
 
                 if (!rewardInfo.ItemId.TryGetFungibleId(
-                    Game.Game.instance.TableSheets.ItemSheet,
-                    out var fungibleId))
+                        Game.Game.instance.TableSheets.ItemSheet,
+                        out var fungibleId))
                 {
                     continue;
                 }
@@ -1273,9 +1306,9 @@ namespace Nekoyume.BlockChain
                 if (item != null && item is ITradableItem tradableItem)
                 {
                     LocalLayerModifier.RemoveItem(avatarAddress,
-                                                  tradableId,
-                                                  tradableItem.RequiredBlockIndex,
-                                                  rewardInfo.Quantity);
+                        tradableId,
+                        tradableItem.RequiredBlockIndex,
+                        rewardInfo.Quantity);
                 }
             }
 
@@ -1329,6 +1362,7 @@ namespace Nekoyume.BlockChain
                         NotificationCell.NotificationType.Notification);
                 }
             }
+
             UpdateAgentStateAsync(eval);
         }
 
@@ -1367,7 +1401,8 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval);
         }
 
-        private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
+        private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
+            ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
         {
             var sharedModel = Craft.SharedModel;
             var recipeIds = eval.Action.RecipeIds;
@@ -1377,6 +1412,7 @@ namespace Nekoyume.BlockChain
                 {
                     sharedModel.UnlockingRecipes.Remove(id);
                 }
+
                 sharedModel.SetUnlockedRecipes(sharedModel.UnlockedRecipes.Value);
                 sharedModel.UpdateUnlockableRecipes();
                 return;
@@ -1394,6 +1430,7 @@ namespace Nekoyume.BlockChain
             {
                 sharedModel.UnlockingRecipes.Remove(id);
             }
+
             sharedModel.SetUnlockedRecipes(recipeIds);
             sharedModel.UpdateUnlockableRecipes();
         }
@@ -1489,5 +1526,129 @@ namespace Nekoyume.BlockChain
             }
         }
 #endif
+
+        private void ResponseJoinArena(ActionBase.ActionEvaluation<JoinArena> eval)
+        {
+            if (eval.Exception != null ||
+                eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                return;
+            }
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            NotificationSystem.Push(
+                MailType.System,
+                "Congratulations! Now you registered the next season!",
+                NotificationCell.NotificationType.Notification);
+        }
+
+        private void ResponseBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
+        {
+            // if (eval.Exception is null)
+            // {
+            //     if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+            //     {
+            //         return;
+            //     }
+            //
+            //     _disposableForBattleEnd?.Dispose();
+            //     _disposableForBattleEnd =
+            //         Game.Game.instance.Stage.onEnterToStageEnd
+            //             .First()
+            //             .Subscribe(_ =>
+            //             {
+            //                 var task = UniTask.Run(() =>
+            //                 {
+            //                     UpdateAgentStateAsync(eval).Forget();
+            //                     UpdateCurrentAvatarStateAsync().Forget();
+            //                     UpdateWeeklyArenaState(eval);
+            //                     _disposableForBattleEnd = null;
+            //                     Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+            //                 });
+            //                 task.ToObservable()
+            //                     .First()
+            //                     // ReSharper disable once ConvertClosureToMethodGroup
+            //                     .DoOnError(e => Debug.LogException(e));
+            //             });
+            //
+            //     var tableSheets = Game.Game.instance.TableSheets;
+            //     ArenaInfo previousArenaInfo;
+            //     ArenaInfo previousEnemyArenaInfo;
+            //     EnemyPlayerDigest previousEnemyPlayerDigest;
+            //     if (eval.Extra is { })
+            //     {
+            //         var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.PreviousArenaInfo)];
+            //         previousArenaInfo = new ArenaInfo(aid);
+            //         var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.PreviousEnemyArenaInfo)];
+            //         previousEnemyArenaInfo = new ArenaInfo(eid);
+            //         var epd = (List)eval.Extra[nameof(Action.RankingBattle.PreviousEnemyPlayerDigest)];
+            //         previousEnemyPlayerDigest = new EnemyPlayerDigest(epd);
+            //     }
+            //     else
+            //     {
+            //         var previousAvatarState = eval.PreviousStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
+            //         var tuple = eval.PreviousStates.GetArenaInfo(
+            //             eval.Action.weeklyArenaAddress,
+            //             previousAvatarState,
+            //             tableSheets.CharacterSheet,
+            //             tableSheets.CostumeStatSheet);
+            //         previousArenaInfo = tuple.arenaInfo;
+            //         var previousEnemyAvatarState = eval.PreviousStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
+            //         var enemyTuple = eval.PreviousStates.GetArenaInfo(
+            //             eval.Action.weeklyArenaAddress,
+            //             previousEnemyAvatarState,
+            //             tableSheets.CharacterSheet,
+            //             tableSheets.CostumeStatSheet);
+            //         previousEnemyArenaInfo = enemyTuple.arenaInfo;
+            //         previousEnemyPlayerDigest = new EnemyPlayerDigest(previousEnemyAvatarState);
+            //     }
+            //
+            //     var rankingSimulatorSheets = tableSheets.GetRankingSimulatorSheets();
+            //     var player = new Player(States.Instance.CurrentAvatarState, rankingSimulatorSheets);
+            //     var simulator = new RankingSimulator(
+            //         new LocalRandom(eval.RandomSeed),
+            //         player,
+            //         previousEnemyPlayerDigest,
+            //         new List<Guid>(),
+            //         rankingSimulatorSheets,
+            //         Action.RankingBattle.StageId,
+            //         tableSheets.CostumeStatSheet
+            //     );
+            //     simulator.Simulate();
+            //     var challengerScoreDelta = previousArenaInfo.Update(
+            //         previousEnemyArenaInfo,
+            //         simulator.Result,
+            //         ArenaScoreHelper.GetScore);
+            //     var rewards = RewardSelector.Select(
+            //         simulator.Random,
+            //         tableSheets.WeeklyArenaRewardSheet,
+            //         tableSheets.MaterialItemSheet,
+            //         player.Level,
+            //         previousArenaInfo.GetRewardCount());
+            //     simulator.PostSimulate(rewards, challengerScoreDelta, previousArenaInfo.Score);
+            //
+            //     if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            //     {
+            //         // FIXME: Use ArenaInfo or other instead of RankingBoard
+            //         Widget.Find<RankingBoard>().GoToStage(simulator.Log);
+            //     }
+            // }
+            // else
+            // {
+            //     var showLoadingScreen = false;
+            //     if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            //     {
+            //         Widget.Find<ArenaBattleLoadingScreen>().Close();
+            //     }
+            //
+            //     if (Widget.Find<RankingBattleResultPopup>().IsActive())
+            //     {
+            //         showLoadingScreen = true;
+            //         Widget.Find<RankingBattleResultPopup>().Close();
+            //     }
+            //
+            //     Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
+            // }
+        }
     }
 }
