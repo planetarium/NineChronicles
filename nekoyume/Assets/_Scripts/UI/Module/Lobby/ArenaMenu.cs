@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nekoyume.Model.Arena;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Arena;
 using TMPro;
@@ -30,12 +31,12 @@ namespace Nekoyume.UI.Module.Lobby
 
             _progressBar.ResumeOrShow();
             _ticketCount.text = string.Empty;
-            RxProps.ArenaInfo
-                .SubscribeOnMainThreadWithUpdateOnce(info =>
+            RxProps.ArenaInfoTuple
+                .SubscribeOnMainThreadWithUpdateOnce(tuple =>
                 {
-                    Debug.Log("ArenaMenu Ticket Count Update");
-                    _ticketCount.text = info?.DailyChallengeCount.ToString()
-                                        ?? string.Empty;
+                    var (current, _) = tuple;
+                    _ticketCount.text = current?.Ticket.ToString()
+                                        ?? ArenaInformation.MaxTicketCount.ToString();
                 })
                 .AddTo(_disposables);
         }

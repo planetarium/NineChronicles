@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nekoyume.Helper;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using TMPro;
@@ -32,8 +33,8 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            UpdateSliderAndFillText(RxProps.ArenaInfo.Value);
-            RxProps.ArenaInfo
+            UpdateSliderAndFillText(RxProps.ArenaInfoTuple.Value);
+            RxProps.ArenaInfoTuple
                 .SubscribeOnMainThreadWithUpdateOnce(UpdateSliderAndFillText)
                 .AddTo(_disposables);
 
@@ -49,22 +50,26 @@ namespace Nekoyume.UI.Module
             _disposables.DisposeAllAndClear();
         }
 
-        private void UpdateSliderAndFillText(ArenaInfo info)
+        private void UpdateSliderAndFillText((ArenaInformation current, ArenaInformation next) tuple)
         {
-            if (info is null)
+            const int max = ArenaInformation.MaxTicketCount;
+            var (current, _) = tuple;
+            if (current is null)
             {
+                _slider.normalizedValue = 1f;
+                _fillText.text = $"{max}/{max}";
                 return;
             }
 
-            var progress = (float)info.DailyChallengeCount / GameConfig.ArenaChallengeCountMax;
+            var progress = (float)current.Ticket / max;
             _slider.normalizedValue = progress;
-            _fillText.text = $"{info.DailyChallengeCount}/{GameConfig.ArenaChallengeCountMax}";
+            _fillText.text = $"{current.Ticket}/{max}";
         }
 
-        private void UpdateTimespanText((long bedinning, long end, long progress) tuple)
+        private void UpdateTimespanText((long beginning, long end, long progress) tuple)
         {
-            var (_, _, progress) = tuple;
-            _timespanText.text = Util.GetBlockToTime(progress);
+            var (bedinning, end, progress) = tuple;
+            _timespanText.text = Util.GetBlockToTime(end - bedinning - progress);
         }
     }
 }

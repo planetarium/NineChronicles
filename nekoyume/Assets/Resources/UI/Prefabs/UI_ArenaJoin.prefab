@@ -135,7 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  _useSo: 1
+  _useSo: 0
   _so: {fileID: 11400000, guid: 41ea502f5144ad84ea5ef6e120dbc361, type: 2}
   _scroll: {fileID: 5165245784992467617}
   _barScroll: {fileID: 2374795209658091307}
@@ -143,7 +143,7 @@ MonoBehaviour:
   _info: {fileID: 2898975863204621241}
   _joinButton: {fileID: 3978652346562661286}
   _paymentButton: {fileID: 46208906117760654}
-  _earlyPaymentButton: {fileID: 3751603690216505974}
+  _earlyPaymentButton: {fileID: 6387982989034671266}
   _backButton: {fileID: 5201403983621810755}
 --- !u!95 &6643079804338421610
 Animator:
@@ -2562,16 +2562,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c22add615a659c84aa7fcb639b695a00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3751603690216505974 stripped
+--- !u!114 &6387982989034671266 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3395364024276581700, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
+  m_CorrespondingSourceObject: {fileID: 4875202208534459280, guid: 7dc9d2a9ae8b3d94e8d28a82da8b2c8a,
     type: 3}
   m_PrefabInstance: {fileID: 1949669664321912626}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 1ce0b0a2131f4428b89582faa0f98f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &2480115621665930780

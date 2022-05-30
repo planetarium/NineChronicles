@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
+using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using Nekoyume.Model.EnumType;
+using Nekoyume.State;
 using Nekoyume.UI.Module.Arena.Emblems;
 using TMPro;
 using UnityEngine;
@@ -9,6 +13,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.Arena.Join
 {
+    using UniRx;
+
     public class ArenaJoinEarlyRegisterButton : MonoBehaviour
     {
         [SerializeField]
@@ -29,31 +35,64 @@ namespace Nekoyume.UI.Module.Arena.Join
         [SerializeField]
         private Button _button;
 
-        public event UnityAction onClickPaymentButton;
+        private int _championshipId;
+        private int _round;
+        private long _cost;
 
         private void Awake()
         {
-            _button.onClick.AddListener(onClickPaymentButton);
+            _button.onClick.AddListener(() =>
+            {
+                var costFav =
+                    _cost * States.Instance.CrystalBalance.Currency;
+                // if (States.Instance.CrystalBalance < costFav)
+                // {
+                //     // TODO: 크리스탈 부족 팝업.
+                //     return;
+                // }
+
+                var inventory = States.Instance.CurrentAvatarState.inventory;
+                ActionManager.Instance.JoinArena(
+                        inventory.Costumes.Select(e => e.NonFungibleId).ToList(),
+                        inventory.Equipments.Select(e => e.NonFungibleId).ToList(),
+                        _championshipId,
+                        _round)
+                    .DoOnSubscribe(() => Widget.Find<LoadingScreen>().Show())
+                    .DoOnCompleted(() => Widget.Find<LoadingScreen>().Close())
+                    .Subscribe();
+            });
         }
 
         public void Show(
             ArenaType arenaType,
-            int seasonNumberOrChampionshipId,
+            int championshipId,
+            int round,
             bool isRegistered,
-            int cost = 0)
+            long cost = 0,
+            bool hasCost = false)
         {
+            _championshipId = championshipId;
+            _round = round;
+            _cost = cost;
+
             switch (arenaType)
             {
                 case ArenaType.OffSeason:
                     Hide();
                     return;
                 case ArenaType.Season:
-                    _seasonArenaEmblem.Show(seasonNumberOrChampionshipId, !isRegistered);
+                    var seasonNumber = TableSheets.Instance.ArenaSheet.TryGetSeasonNumber(
+                        Game.Game.instance.Agent.BlockIndex,
+                        round,
+                        out var outSeasonNumber)
+                        ? outSeasonNumber
+                        : throw new Exception($"Failed to get season number: {championshipId}, {round}");
+                    _seasonArenaEmblem.Show(seasonNumber, !isRegistered);
                     _championshipArenaEmblem.Hide();
                     break;
                 case ArenaType.Championship:
                     _seasonArenaEmblem.Hide();
-                    _championshipArenaEmblem.Show(seasonNumberOrChampionshipId, !isRegistered);
+                    _championshipArenaEmblem.Show(championshipId, !isRegistered);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(arenaType));
@@ -66,7 +105,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                 return;
             }
 
-            _costText.text = cost.ToString("N0", CultureInfo.CurrentCulture);
+            _costText.text = _cost.ToString("N0", CultureInfo.CurrentCulture);
             _paymentObject.SetActive(true);
             _completedObject.SetActive(false);
             gameObject.SetActive(true);
