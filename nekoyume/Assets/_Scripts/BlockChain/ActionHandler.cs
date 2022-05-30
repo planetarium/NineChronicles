@@ -39,7 +39,8 @@ namespace Nekoyume.BlockChain
         protected static bool ValidateEvaluationForCurrentAgent<T>(ActionBase.ActionEvaluation<T> evaluation)
             where T : ActionBase
         {
-            return !(States.Instance.AgentState is null) && evaluation.Signer.Equals(States.Instance.AgentState.address);
+            return !(States.Instance.AgentState is null) &&
+                   evaluation.Signer.Equals(States.Instance.AgentState.address);
         }
 
         protected static AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -48,7 +49,8 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.GetAgentState(agentAddress);
         }
 
-        protected GoldBalanceState GetGoldBalanceState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        protected GoldBalanceState GetGoldBalanceState<T>(ActionBase.ActionEvaluation<T> evaluation)
+            where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
             return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
@@ -94,7 +96,8 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        protected static async UniTask UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
+        protected static async UniTask UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index)
+            where T : ActionBase
         {
             Debug.LogFormat("Called UpdateAvatarState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
@@ -112,7 +115,8 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        protected async UniTask UpdateCurrentAvatarStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        protected async UniTask UpdateCurrentAvatarStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation)
+            where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -125,7 +129,7 @@ namespace Nekoyume.BlockChain
                 Debug.LogError($"Failed to get AvatarState: {agentAddress}, {avatarAddress}");
             }
         }
-        
+
         protected async UniTask UpdateCurrentAvatarStateAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -144,7 +148,7 @@ namespace Nekoyume.BlockChain
         protected static void UpdateWeeklyArenaState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var gameConfigState = States.Instance.GameConfigState;
-            var index = (int) evaluation.BlockIndex / gameConfigState.WeeklyArenaInterval;
+            var index = (int)evaluation.BlockIndex / gameConfigState.WeeklyArenaInterval;
             var weeklyArenaState = evaluation.OutputStates.GetWeeklyArenaState(WeeklyArenaState.DeriveAddress(index));
             States.Instance.SetWeeklyArenaState(weeklyArenaState);
         }
@@ -163,10 +167,10 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private static UniTask UpdateAgentStateAsync(AgentState state)
+        private static async UniTask UpdateAgentStateAsync(AgentState state)
         {
             UpdateCache(state);
-            return States.Instance.SetAgentStateAsync(state);
+            await States.Instance.SetAgentStateAsync(state);
         }
 
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)

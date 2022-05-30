@@ -43,12 +43,10 @@ namespace Nekoyume.UI.Module
 
         public int RecipeId => _recipeRow.Key;
 
-        private bool IsLocked {
+        private bool IsLocked
+        {
             get => lockObject.activeSelf;
-            set
-            {
-                lockObject.SetActive(value);
-            }
+            set { lockObject.SetActive(value); }
         }
 
         private void Awake()
@@ -168,10 +166,9 @@ namespace Nekoyume.UI.Module
             _isWaitingForUnlock = false;
             var avatarState = States.Instance.CurrentAvatarState;
             var worldInformation = avatarState.worldInformation;
-            
+
             var unlockStage = equipmentRow.UnlockStage;
-            var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId) ?
-                stageId : 0;
+            var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId) ? stageId : 0;
             var diff = unlockStage - clearedStage;
 
             var sharedModel = Craft.SharedModel;
@@ -213,13 +210,14 @@ namespace Nekoyume.UI.Module
             else if (!sharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id))
             {
                 var unlockable = sharedModel.UnlockableRecipes.Value.Contains(equipmentRow.Id) &&
-                    sharedModel.UnlockableRecipesOpenCost <= States.Instance.CrystalBalance.MajorUnit;
+                                 sharedModel.UnlockableRecipesOpenCost <= States.Instance.CrystalBalance.MajorUnit;
                 lockVFXObject.SetActive(unlockable);
                 equipmentView.Hide();
                 unlockObject.SetActive(true);
                 unlockPriceText.text = equipmentRow.CRYSTAL.ToString();
-                unlockPriceText.color = unlockable ?
-                    Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.ButtonDisabled);
+                unlockPriceText.color = unlockable
+                    ? Palette.GetColor(ColorType.ButtonEnabled)
+                    : Palette.GetColor(ColorType.ButtonDisabled);
                 IsLocked = true;
                 _unlockable = true;
                 return;
@@ -303,10 +301,11 @@ namespace Nekoyume.UI.Module
         private void SetUnlockable(List<int> recipeIds)
         {
             var unlockable = recipeIds.Contains(_recipeRow.Key) &&
-                Craft.SharedModel.UnlockableRecipesOpenCost <= States.Instance.CrystalBalance.MajorUnit;
+                             Craft.SharedModel.UnlockableRecipesOpenCost <= States.Instance.CrystalBalance.MajorUnit;
             lockVFXObject.SetActive(unlockable);
-            unlockPriceText.color = unlockable ?
-                Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.ButtonDisabled);
+            unlockPriceText.color = unlockable
+                ? Palette.GetColor(ColorType.ButtonEnabled)
+                : Palette.GetColor(ColorType.TextDenial);
         }
     }
 }
