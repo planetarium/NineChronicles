@@ -93,7 +93,8 @@ namespace Lib9c.Tests.Action
             // regular (100 / 8) * 4
             Assert.Equal(48, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
             // regular (100 / 200) * 4
-            Assert.Equal(0, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
+            // It must be never added into the inventory if the amount is 0.
+            Assert.Null(avatarState.inventory.Items.FirstOrDefault(x => x.item.Id == 500000));
 
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
             Assert.Equal(StakeState.LockupInterval, stakeState.ReceivedBlockIndex);
