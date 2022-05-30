@@ -83,16 +83,16 @@ namespace Nekoyume
                     string formatKey;
                     switch (itemEnhanceMail.attachment)
                     {
-                        case ItemEnhancement.ResultModel result:
+                        case ItemEnhancement9.ResultModel result:
                             switch (result.enhancementResult)
                             {
-                                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                                case ItemEnhancement9.EnhancementResult.GreatSuccess:
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER";
                                     break;
-                                case ItemEnhancement.EnhancementResult.Success:
+                                case ItemEnhancement9.EnhancementResult.Success:
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                                     break;
-                                case ItemEnhancement.EnhancementResult.Fail:
+                                case ItemEnhancement9.EnhancementResult.Fail:
                                     formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
                                     break;
                                 default:

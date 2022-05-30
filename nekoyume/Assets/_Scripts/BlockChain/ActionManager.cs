@@ -510,7 +510,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(
+        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement9>> ItemEnhancement(
             Equipment baseEquipment,
             Equipment materialEquipment,
             int slotIndex,
@@ -532,18 +532,18 @@ namespace Nekoyume.BlockChain
 
             Analyzer.Instance.Track("Unity/Item Enhancement");
 
-            var action = new ItemEnhancement
+            var action = new ItemEnhancement9
             {
                 itemId = baseEquipment.NonFungibleId,
                 materialId = materialEquipment.NonFungibleId,
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
             };
-            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
-            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            // action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            // LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
-            return _agent.ActionRenderer.EveryRender<ItemEnhancement>()
+            return _agent.ActionRenderer.EveryRender<ItemEnhancement9>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
@@ -558,7 +558,6 @@ namespace Nekoyume.BlockChain
                     {
                         Game.Game.BackToMain(false, inner).Forget();
                     }
-
                 });
         }
 
@@ -629,7 +628,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
+        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment10>> CombinationEquipment(
             SubRecipeView.RecipeInfo recipeInfo,
             int slotIndex)
         {
@@ -649,18 +648,18 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, material, count);
             }
 
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment10
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex,
                 recipeId = recipeInfo.RecipeId,
                 subRecipeId = recipeInfo.SubRecipeId,
             };
-            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
-            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            // action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            // LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);
 
-            return _agent.ActionRenderer.EveryRender<CombinationEquipment>()
+            return _agent.ActionRenderer.EveryRender<CombinationEquipment10>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()

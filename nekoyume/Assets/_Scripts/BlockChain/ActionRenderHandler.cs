@@ -213,7 +213,7 @@ namespace Nekoyume.BlockChain
 
         private void ItemEnhancement()
         {
-            _actionRenderer.EveryRender<ItemEnhancement>()
+            _actionRenderer.EveryRender<ItemEnhancement9>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement)
@@ -240,7 +240,7 @@ namespace Nekoyume.BlockChain
 
         private void CombinationEquipment()
         {
-            _actionRenderer.EveryRender<CombinationEquipment>()
+            _actionRenderer.EveryRender<CombinationEquipment10>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment)
@@ -401,7 +401,7 @@ namespace Nekoyume.BlockChain
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
-        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
+        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment10> eval)
         {
             if (eval.Exception is null)
             {
@@ -537,7 +537,7 @@ namespace Nekoyume.BlockChain
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement9> eval)
         {
             if (eval.Exception is null)
             {
@@ -545,7 +545,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (ItemEnhancement.ResultModel) slot.Result;
+                var result = (ItemEnhancement9.ResultModel) slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
                 {
@@ -575,13 +575,13 @@ namespace Nekoyume.BlockChain
                 string formatKey;
                 switch (result.enhancementResult)
                 {
-                    case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                    case ItemEnhancement9.EnhancementResult.GreatSuccess:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
                         break;
-                    case Action.ItemEnhancement.EnhancementResult.Success:
+                    case ItemEnhancement9.EnhancementResult.Success:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
-                    case Action.ItemEnhancement.EnhancementResult.Fail:
+                    case ItemEnhancement9.EnhancementResult.Fail:
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                         break;
                     default:
@@ -915,7 +915,7 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 Widget.Find<SweepResultPopup>().OnActionRender(new LocalRandom(eval.RandomSeed));
-                
+
                 if (eval.Action.apStoneCount > 0)
                 {
                     var avatarAddress = eval.Action.avatarAddress;
