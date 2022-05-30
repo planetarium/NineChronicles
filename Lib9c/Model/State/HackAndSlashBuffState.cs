@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Bencodex.Types;
-using Libplanet;
 using Nekoyume.TableData.Crystal;
 using System.Linq;
+using Libplanet;
 
 namespace Nekoyume.Model.State
 {
