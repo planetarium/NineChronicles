@@ -277,10 +277,6 @@ namespace Nekoyume.UI
             }
 #endif
 
-            // 체인에 있는 WeeklyArenaRewardSheet 전부를 순회하면서..
-            // 코스튬이나 NCG 같은 특수 지급 아이템은 어떻게 표현하나..
-            // 보상 중에 레벨 제한이 걸리면 어떻게 표시하나..
-            // Season은 무조건 메달이 있고, 나머지는 없는가..
             var rewardSheet = TableSheets.Instance.WeeklyArenaRewardSheet;
             var itemSheet = TableSheets.Instance.ItemSheet;
             var rewardType = data.RoundData.ArenaType == ArenaType.Season
