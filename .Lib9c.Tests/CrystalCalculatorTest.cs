@@ -3,6 +3,7 @@ namespace Lib9c.Tests
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using Libplanet.Assets;
     using Nekoyume.Helper;
     using Nekoyume.Model.Item;
@@ -74,14 +75,19 @@ namespace Lib9c.Tests
 
         [Theory]
         [InlineData(2, 1, 200)]
-        [InlineData(1, 2, 50)]
+        [InlineData(9, 10, 90)]
+        // Minimum
+        [InlineData(1, 2, 80)]
+        // Maximum
+        [InlineData(3, 1, 200)]
         public void CalculateCombinationCost(int psCount, int bpsCount, int expected)
         {
             var crystal = 100 * CrystalCalculator.CRYSTAL;
             var ps = new CrystalCostState(default, crystal * psCount);
             var bps = new CrystalCostState(default, crystal * bpsCount);
-
-            Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateCombinationCost(crystal, ps, bps));
+            var row = _tableSheets.CrystalFluctuationSheet.Values.First(r =>
+                r.Type == CrystalFluctuationSheet.ServiceType.Combination);
+            Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateCombinationCost(crystal, row, prevWeeklyCostState: ps, beforePrevWeeklyCostState: bps));
         }
 
         [Fact]

@@ -91,16 +91,16 @@ namespace Nekoyume.Helper
             return costRow.CRYSTAL * materialCount * CRYSTAL;
         }
 
-        public static FungibleAssetValue CalculateCombinationCost(
-            FungibleAssetValue crystal,
+        public static FungibleAssetValue CalculateCombinationCost(FungibleAssetValue crystal,
+            CrystalFluctuationSheet.Row row,
             CrystalCostState prevWeeklyCostState = null,
-            CrystalCostState beforePrevWeeklyCostState = null
-        )
+            CrystalCostState beforePrevWeeklyCostState = null)
         {
             if (!(prevWeeklyCostState is null) && !(beforePrevWeeklyCostState is null))
             {
-                var multiplier = prevWeeklyCostState.CRYSTAL.RawValue * 100 /
-                                 beforePrevWeeklyCostState.CRYSTAL.RawValue;
+                int multiplier = (int) (prevWeeklyCostState.CRYSTAL.RawValue * 100 /
+                                        beforePrevWeeklyCostState.CRYSTAL.RawValue);
+                multiplier = Math.Min(row.MaximumRate, Math.Max(row.MinimumRate, multiplier));
                 crystal = crystal.DivRem(100, out _) * multiplier;
             }
 
