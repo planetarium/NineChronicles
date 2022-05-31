@@ -24,7 +24,7 @@ namespace Nekoyume.Game
                 }
 
                 var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
-                var iSheet = (ISheet) sheetObject;
+                var iSheet = (ISheet)sheetObject;
                 if (iSheet is null)
                 {
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
@@ -140,6 +140,10 @@ namespace Nekoyume.Game
         public CrystalEquipmentGrindingSheet CrystalEquipmentGrindingSheet { get; private set; }
 
         public CrystalMonsterCollectionMultiplierSheet CrystalMonsterCollectionMultiplierSheet { get; private set; }
+
+        public CrystalStageBuffGachaSheet CrystalStageBuffGachaSheet { get; private set; }
+
+        public CrystalRandomBuffSheet CrystalRandomBuffSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

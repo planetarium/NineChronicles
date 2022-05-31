@@ -29,6 +29,7 @@ using Material = Nekoyume.Model.Item.Material;
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
 #endif
+
 namespace Nekoyume.BlockChain
 {
     using Nekoyume.UI.Scroller;
@@ -358,7 +359,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slotState = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (RapidCombination5.ResultModel) slotState.Result;
+                var result = (RapidCombination5.ResultModel)slotState.Result;
                 foreach (var pair in result.cost)
                 {
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
@@ -440,6 +441,7 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
             }
+
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
@@ -451,7 +453,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (CombinationConsumable5.ResultModel) slot.Result;
+                var result = (CombinationConsumable5.ResultModel)slot.Result;
 
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
                 {
@@ -465,7 +467,8 @@ namespace Nekoyume.BlockChain
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId, result.itemUsable.RequiredBlockIndex, 1);
+                LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId,
+                    result.itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 var gameInstance = Game.Game.instance;
@@ -534,6 +537,7 @@ namespace Nekoyume.BlockChain
                     result.itemUsable.TradableId);
                 // ~Notify
             }
+
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
@@ -545,7 +549,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (CombinationConsumable5.ResultModel) slot.Result;
+                var result = (CombinationConsumable5.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
                 {
@@ -576,6 +580,7 @@ namespace Nekoyume.BlockChain
                     result.itemUsable.TradableId);
                 // ~Notify
             }
+
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
 
@@ -587,7 +592,7 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (ItemEnhancement.ResultModel) slot.Result;
+                var result = (ItemEnhancement.ResultModel)slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
                 {
@@ -600,7 +605,7 @@ namespace Nekoyume.BlockChain
                 foreach (var tradableId in result.materialItemIdList)
                 {
                     if (avatarState.inventory.TryGetNonFungibleItem(tradableId,
-                        out ItemUsable materialItem))
+                            out ItemUsable materialItem))
                     {
                         LocalLayerModifier.AddItem(avatarAddress, tradableId, materialItem.RequiredBlockIndex, 1);
                     }
@@ -704,6 +709,7 @@ namespace Nekoyume.BlockChain
             {
                 message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE"), itemName);
             }
+
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
@@ -731,6 +737,7 @@ namespace Nekoyume.BlockChain
             {
                 message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
             }
+
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval).Forget();
             ReactiveShopState.UpdateSellDigests();
@@ -747,7 +754,7 @@ namespace Nekoyume.BlockChain
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
-                out var avatarState, out _))
+                    out var avatarState, out _))
             {
                 return;
             }
@@ -772,7 +779,7 @@ namespace Nekoyume.BlockChain
                         var (orderId, errorCode) =
                             errors.FirstOrDefault(tuple => tuple.orderId == purchaseInfo.OrderId);
 
-                        var errorType = ((ShopErrorType) errorCode).ToString();
+                        var errorType = ((ShopErrorType)errorCode).ToString();
                         LocalLayerModifier.ModifyAgentGold(agentAddress, price);
 
                         string message;
@@ -786,6 +793,7 @@ namespace Nekoyume.BlockChain
                             message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
                                 itemName, L10nManager.Localize(errorType), price);
                         }
+
                         OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Alert);
                     }
                     else
@@ -805,6 +813,7 @@ namespace Nekoyume.BlockChain
                             message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE"),
                                 itemName, price);
                         }
+
                         OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Notification);
                     }
                 }
@@ -819,10 +828,11 @@ namespace Nekoyume.BlockChain
                         Debug.LogError("buyerAvatarStateValue is null.");
                         return;
                     }
+
                     const string nameWithHashFormat = "{0} <size=80%><color=#A68F7E>#{1}</color></size>";
                     var buyerNameWithHash = string.Format(
                         nameWithHashFormat,
-                        ((Text) ((Dictionary) buyerAvatarStateValue)["name"]).Value,
+                        ((Text)((Dictionary)buyerAvatarStateValue)["name"]).Value,
                         eval.Action.buyerAvatarAddress.ToHex().Substring(0, 4)
                     );
 
@@ -845,6 +855,7 @@ namespace Nekoyume.BlockChain
                         message = string.Format(L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
                             buyerNameWithHash, itemName);
                     }
+
                     OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Notification);
                 }
             }
@@ -905,14 +916,17 @@ namespace Nekoyume.BlockChain
                                 .DoOnError(e => Debug.LogException(e));
                         });
 
+                var tableSheets = Game.Game.instance.TableSheets;
+                var buffRow = tableSheets.CrystalRandomBuffSheet[eval.Action.stageBuffId.Value];
+                var skillRow = tableSheets.SkillSheet[buffRow.SkillId];
+                var skill = new Model.Skill.BuffSkill(skillRow, 0, 100);
+                var skillsOnWaveStart = new List<Model.Skill.BuffSkill>() { skill };
 
-                var skillRow = new Model.Skill.BuffSkill(Game.Game.instance.TableSheets.SkillSheet[400000], 0, 100);
-                var buffSkillsOnWaveStart = new List<Model.Skill.BuffSkill>() { skillRow };
                 var simulator = new StageSimulator(
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
                     eval.Action.foods,
-                    buffSkillsOnWaveStart,
+                    skillsOnWaveStart,
                     eval.Action.worldId,
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
@@ -1013,14 +1027,10 @@ namespace Nekoyume.BlockChain
                                 .DoOnError(e => Debug.LogException(e));
                         });
 
-
-                var skillRow = new Model.Skill.BuffSkill(Game.Game.instance.TableSheets.SkillSheet[400000], 0, 100);
-                var buffSkillsOnWaveStart = new List<Model.Skill.BuffSkill>() { skillRow };
                 var simulator = new StageSimulator(
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
                     eval.Action.foods,
-                    buffSkillsOnWaveStart,
                     eval.Action.worldId,
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
@@ -1102,11 +1112,11 @@ namespace Nekoyume.BlockChain
                 EnemyPlayerDigest previousEnemyPlayerDigest;
                 if (eval.Extra is { })
                 {
-                    var aid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.PreviousArenaInfo)];
+                    var aid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.PreviousArenaInfo)];
                     previousArenaInfo = new ArenaInfo(aid);
-                    var eid = (Dictionary) eval.Extra[nameof(Action.RankingBattle.PreviousEnemyArenaInfo)];
+                    var eid = (Dictionary)eval.Extra[nameof(Action.RankingBattle.PreviousEnemyArenaInfo)];
                     previousEnemyArenaInfo = new ArenaInfo(eid);
-                    var epd = (List) eval.Extra[nameof(Action.RankingBattle.PreviousEnemyPlayerDigest)];
+                    var epd = (List)eval.Extra[nameof(Action.RankingBattle.PreviousEnemyPlayerDigest)];
                     previousEnemyPlayerDigest = new EnemyPlayerDigest(epd);
                 }
                 else
@@ -1192,6 +1202,7 @@ namespace Nekoyume.BlockChain
                 {
                     key = "UI_REDEEM_CODE_ALREADY_USE";
                 }
+
                 var msg = L10nManager.Localize(key);
                 UI.NotificationSystem.Push(MailType.System, msg, NotificationCell.NotificationType.Alert);
             }
@@ -1202,7 +1213,8 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var avatarAddress = eval.Action.avatarAddress;
-                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
+                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                    -States.Instance.GameConfigState.ActionPointMax);
                 var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
@@ -1238,7 +1250,8 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseClaimMonsterCollectionReward(ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
+        private void ResponseClaimMonsterCollectionReward(
+            ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -1253,7 +1266,7 @@ namespace Nekoyume.BlockChain
             }
 
             var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
-            if (!(mail is MonsterCollectionMail {attachment: MonsterCollectionResult monsterCollectionResult}))
+            if (!(mail is MonsterCollectionMail { attachment: MonsterCollectionResult monsterCollectionResult }))
             {
                 return;
             }
@@ -1264,15 +1277,15 @@ namespace Nekoyume.BlockChain
             {
                 var rewardInfo = rewardInfos[i];
                 if (!rewardInfo.ItemId.TryParseAsTradableId(
-                    Game.Game.instance.TableSheets.ItemSheet,
-                    out var tradableId))
+                        Game.Game.instance.TableSheets.ItemSheet,
+                        out var tradableId))
                 {
                     continue;
                 }
 
                 if (!rewardInfo.ItemId.TryGetFungibleId(
-                    Game.Game.instance.TableSheets.ItemSheet,
-                    out var fungibleId))
+                        Game.Game.instance.TableSheets.ItemSheet,
+                        out var fungibleId))
                 {
                     continue;
                 }
@@ -1282,9 +1295,9 @@ namespace Nekoyume.BlockChain
                 if (item != null && item is ITradableItem tradableItem)
                 {
                     LocalLayerModifier.RemoveItem(avatarAddress,
-                                                  tradableId,
-                                                  tradableItem.RequiredBlockIndex,
-                                                  rewardInfo.Quantity);
+                        tradableId,
+                        tradableItem.RequiredBlockIndex,
+                        rewardInfo.Quantity);
                 }
             }
 
@@ -1338,6 +1351,7 @@ namespace Nekoyume.BlockChain
                         NotificationCell.NotificationType.Notification);
                 }
             }
+
             UpdateAgentStateAsync(eval);
         }
 
@@ -1376,7 +1390,8 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval);
         }
 
-        private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
+        private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
+            ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
         {
             var sharedModel = Craft.SharedModel;
             var recipeIds = eval.Action.RecipeIds;
@@ -1386,6 +1401,7 @@ namespace Nekoyume.BlockChain
                 {
                     sharedModel.UnlockingRecipes.Remove(id);
                 }
+
                 sharedModel.SetUnlockedRecipes(sharedModel.UnlockedRecipes.Value);
                 sharedModel.UpdateUnlockableRecipes();
                 return;
@@ -1403,6 +1419,7 @@ namespace Nekoyume.BlockChain
             {
                 sharedModel.UnlockingRecipes.Remove(id);
             }
+
             sharedModel.SetUnlockedRecipes(recipeIds);
             sharedModel.UpdateUnlockableRecipes();
         }
