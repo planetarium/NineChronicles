@@ -13,6 +13,7 @@ using Nekoyume.Model.Arena;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Crystal;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
@@ -917,10 +918,10 @@ namespace Nekoyume.Action
             CrystalCostState WeeklyCostState,
             CrystalCostState PrevWeeklyCostState,
             CrystalCostState BeforePrevWeeklyCostState
-            ) GetCrystalCostStates(this IAccountStateDelta states, long blockIndex)
+            ) GetCrystalCostStates(this IAccountStateDelta states, long blockIndex, long interval)
         {
             int dailyCostIndex = (int) (blockIndex / CrystalCostState.DailyIntervalIndex);
-            int weeklyCostIndex = (int) (blockIndex / CrystalCostState.WeeklyIntervalIndex);
+            int weeklyCostIndex = (int) (blockIndex / interval);
             Address dailyCostAddress = Addresses.GetDailyCrystalCostAddress(dailyCostIndex);
             CrystalCostState dailyCostState = states.GetCrystalCostState(dailyCostAddress);
             Address weeklyCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyCostIndex);

@@ -15,6 +15,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Helper;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Nekoyume.TableData.Crystal;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
@@ -24,6 +25,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly AgentState _agentState;
         private readonly AvatarState _avatarState;
+        private readonly TableSheets _tableSheets;
 
         public AccountStateDeltaExtensionsTest()
         {
@@ -31,12 +33,12 @@ namespace Lib9c.Tests.Action
             _avatarAddress = _agentAddress.Derive(string.Format(CultureInfo.InvariantCulture, CreateAvatar2.DeriveFormat, 0));
             _agentState = new AgentState(_agentAddress);
             _agentState.avatarAddresses[0] = _avatarAddress;
-            var sheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
-                sheets.GetAvatarSheets(),
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
                 default
             );
@@ -262,7 +264,8 @@ namespace Lib9c.Tests.Action
         [InlineData(151_200L, true)]
         public void GetCrystalCostStates(long blockIndex, bool previousWeeklyExist)
         {
-            var weeklyIndex = (int)(blockIndex / CrystalCostState.WeeklyIntervalIndex);
+            long interval = _tableSheets.CrystalFluctuationSheet.Values.First(r => r.Type == CrystalFluctuationSheet.ServiceType.Combination).BlockInterval;
+            var weeklyIndex = (int)(blockIndex / interval);
             Address dailyCostAddress =
                 Addresses.GetDailyCrystalCostAddress((int)(blockIndex / CrystalCostState.DailyIntervalIndex));
             Address weeklyCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex);
@@ -273,9 +276,10 @@ namespace Lib9c.Tests.Action
                 .SetState(dailyCostAddress, crystalCostState.Serialize())
                 .SetState(weeklyCostAddress, crystalCostState.Serialize())
                 .SetState(previousCostAddress, crystalCostState.Serialize())
+                .SetState(Addresses.GetSheetAddress<CrystalFluctuationSheet>(), _tableSheets.CrystalFluctuationSheet.Serialize())
                 .SetState(beforePreviousCostAddress, crystalCostState.Serialize());
             var (daily, weekly, previousWeekly, beforePreviousWeekly) =
-                state.GetCrystalCostStates(blockIndex);
+                state.GetCrystalCostStates(blockIndex, interval);
 
             Assert.NotNull(daily);
             Assert.NotNull(weekly);

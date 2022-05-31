@@ -166,6 +166,8 @@ namespace Lib9c.Tests
 
         public ArenaSheet ArenaSheet { get; private set; }
 
+        public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();

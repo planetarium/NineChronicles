@@ -153,6 +153,7 @@ namespace Nekoyume.Action
                 typeof(EquipmentItemOptionSheet),
                 typeof(SkillSheet),
                 typeof(CrystalMaterialCostSheet),
+                typeof(CrystalFluctuationSheet),
             });
 
             // Validate RecipeId
@@ -298,9 +299,11 @@ namespace Nekoyume.Action
             // ~Remove Required Materials
             if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
             {
-                var (dailyCostState, weeklyCostState, prevWeeklyCostState, beforePrevWeeklyCostState) = states.GetCrystalCostStates(context.BlockIndex);
-                costCrystal = CrystalCalculator.CalculateCombinationCost(costCrystal,
-                    prevWeeklyCostState, beforePrevWeeklyCostState);
+                var crystalFluctuationSheet = sheets.GetSheet<CrystalFluctuationSheet>();
+                var row = crystalFluctuationSheet.Values
+                    .First(r => r.Type == CrystalFluctuationSheet.ServiceType.Combination);
+                var (dailyCostState, weeklyCostState, prevWeeklyCostState, beforePrevWeeklyCostState) = states.GetCrystalCostStates(context.BlockIndex, row.BlockInterval);
+                costCrystal = CrystalCalculator.CalculateCombinationCost(costCrystal, row: row, prevWeeklyCostState: prevWeeklyCostState, beforePrevWeeklyCostState: beforePrevWeeklyCostState);
                 // Update Daily Formula.
                 dailyCostState.Count++;
                 dailyCostState.CRYSTAL += costCrystal;

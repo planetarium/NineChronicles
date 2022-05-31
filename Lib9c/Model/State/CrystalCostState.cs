@@ -10,7 +10,6 @@ namespace Nekoyume.Model.State
     public class CrystalCostState : IState
     {
         public const long DailyIntervalIndex = 7200L;
-        public const long WeeklyIntervalIndex = 7200L * 7;
         public Address Address;
         public FungibleAssetValue CRYSTAL;
         public int Count;
