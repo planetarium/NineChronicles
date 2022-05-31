@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
-using Nekoyume.Action;
+using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
-using Nekoyume.Model.State;
-using Nekoyume.TableData;
+using Nekoyume.Model.Arena;
 using UnityEngine;
 
 namespace Nekoyume.State
@@ -17,19 +16,31 @@ namespace Nekoyume.State
     {
         #region Arena
 
-        private static readonly ReactiveProperty<(long bedinning, long end, long progress)>
-            _arenaTicketProgress = new ReactiveProperty<(long bedinning, long end, long progress)>();
+        private static readonly ReactiveProperty<(long beginning, long end, long progress)>
+            _arenaTicketProgress = new ReactiveProperty<(long beginning, long end, long progress)>();
 
-        public static IReadOnlyReactiveProperty<(long bedinning, long end, long progress)>
+        public static IReadOnlyReactiveProperty<(long beginning, long end, long progress)>
             ArenaTicketProgress => _arenaTicketProgress;
 
-        private static readonly AsyncUpdatableRxProp<ArenaInfo>
-            _arenaInfo = new AsyncUpdatableRxProp<ArenaInfo>(UpdateArenaTicketCountAsync);
+        private static readonly AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
+            _arenaInfoTuple =
+                new AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>(
+                    UpdateArenaInformationAsync);
 
-        private static long _arenaInfoUpdatedBlockIndex;
+        private static long _arenaInformationUpdatedBlockIndex;
 
-        public static IReadOnlyAsyncUpdatableRxProp<ArenaInfo>
-            ArenaInfo => _arenaInfo;
+        public static IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
+            ArenaInfoTuple => _arenaInfoTuple;
+        
+        private static readonly AsyncUpdatableRxProp<(Address avatarAddress, int score)[]>
+            _arenaParticipantsOrderedWithScore = new AsyncUpdatableRxProp<(Address avatarAddress, int score)[]>(
+                Array.Empty<(Address avatarAddress, int score)>(),
+                UpdateArenaParticipantsOrderedWithScoreAsync);
+
+        private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
+
+        public static IReadOnlyAsyncUpdatableRxProp<(Address avatarAddress, int score)[]>
+            ArenaParticipantsOrderedWithScore => _arenaParticipantsOrderedWithScore;
 
         #endregion
 
@@ -45,12 +56,12 @@ namespace Nekoyume.State
             {
                 throw new ArgumentNullException(nameof(agent));
             }
-            
+
             if (states is null)
             {
                 throw new ArgumentNullException(nameof(states));
             }
-            
+
             if (tableSheets is null)
             {
                 throw new ArgumentNullException(nameof(tableSheets));
@@ -77,7 +88,7 @@ namespace Nekoyume.State
         {
             UpdateArenaTicketProgress(blockIndex);
 
-            _arenaInfo.UpdateAsync().Forget();
+            _arenaInfoTuple.UpdateAsync().Forget();
         }
 
         private static void UpdateArenaTicketProgress(
@@ -92,32 +103,85 @@ namespace Nekoyume.State
                 progressBlockIndex));
         }
 
-        private static async UniTask<ArenaInfo> UpdateArenaTicketCountAsync(
-            ArenaInfo previous)
+        private static async UniTask<(ArenaInformation current, ArenaInformation next)>
+            UpdateArenaInformationAsync((ArenaInformation current, ArenaInformation next) previous)
         {
-            if (_arenaInfoUpdatedBlockIndex == _agent.BlockIndex)
+            if (_arenaInformationUpdatedBlockIndex == _agent.BlockIndex)
             {
                 return previous;
             }
 
-            _arenaInfoUpdatedBlockIndex = _agent.BlockIndex;
+            _arenaInformationUpdatedBlockIndex = _agent.BlockIndex;
 
-            var currentAddress = States.Instance.CurrentAvatarState?.address;
-            if (!currentAddress.HasValue)
+            var avatarAddress = States.Instance.CurrentAvatarState?.address;
+            if (!avatarAddress.HasValue)
             {
-                return null;
+                return previous;
             }
 
-            var avatarAddress = currentAddress.Value;
-            var infoAddress = States.Instance.WeeklyArenaState.address.Derive(avatarAddress.ToByteArray());
-            var rawInfo = await UniTask.Run(async () =>
-                await Game.Game.instance.Agent.GetStateAsync(infoAddress));
-            if (!(rawInfo is Dictionary dictionary))
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var sheet = _tableSheets.ArenaSheet;
+            if (!sheet.TryGetCurrentRound(blockIndex, out var currentRoundData))
             {
-                return null;
+                Debug.Log($"Failed to get current round data. block index({blockIndex})");
+                return previous;
             }
 
-            return new ArenaInfo(dictionary);
+            var currentArenaInfoAddress = ArenaInformation.DeriveAddress(
+                avatarAddress.Value,
+                currentRoundData.ChampionshipId,
+                currentRoundData.Round);
+            var nextArenaInfoAddress = sheet.TryGetNextRound(blockIndex, out var nextRoundData)
+                ? ArenaInformation.DeriveAddress(
+                    avatarAddress.Value,
+                    nextRoundData.ChampionshipId,
+                    nextRoundData.Round)
+                : default;
+            var dict = await Game.Game.instance.Agent.GetStateBulk(
+                new[]
+                {
+                    currentArenaInfoAddress,
+                    nextArenaInfoAddress
+                }
+            );
+            var currentArenaInfo =
+                dict.TryGetValue(currentArenaInfoAddress, out var currentValue) &&
+                currentValue is List currentList
+                    ? new ArenaInformation(currentList)
+                    : null;
+            var nextArenaInfo =
+                dict.TryGetValue(nextArenaInfoAddress, out var nextValue) &&
+                nextValue is List nextList
+                    ? new ArenaInformation(nextList)
+                    : null;
+            return (currentArenaInfo, nextArenaInfo);
+        }
+
+        private static async UniTask<(Address avatarAddress, int score)[]>
+            UpdateArenaParticipantsOrderedWithScoreAsync((Address avatarAddress, int score)[] previous)
+        {
+            if (_arenaParticipantsOrderedWithScoreUpdatedBlockIndex == _agent.BlockIndex)
+            {
+                return previous;
+            }
+            
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            var address = ArenaParticipants.DeriveAddress(
+                currentRoundData.ChampionshipId,
+                currentRoundData.Round);
+            var participants = await _agent.GetStateAsync(address);
+            if (!(participants is List list))
+            {
+                Debug.Log($"Failed to get {nameof(ArenaParticipants)} with {address.ToHex()}");
+                return previous;
+            }
+            
+            
+            
+            return previous;
+            
+            
         }
     }
 }

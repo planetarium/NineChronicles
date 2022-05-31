@@ -210,7 +210,7 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
-        protected void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        public static void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var crystal = evaluation.OutputStates.GetBalance(evaluation.Signer, CrystalCalculator.CRYSTAL);
             var agentState = States.Instance.AgentState;

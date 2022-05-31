@@ -627,6 +627,89 @@ namespace Nekoyume.BlockChain
                 });
         }
 
+        public IObservable<ActionBase.ActionEvaluation<JoinArena>> JoinArena(
+            List<Guid> costumes,
+            List<Guid> equipments,
+            int championshipId,
+            int round
+        )
+        {
+            var action = new JoinArena
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                costumes = costumes,
+                equipments = equipments,
+                championshipId = championshipId,
+                round = round,
+            };
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<JoinArena>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    try
+                    {
+                        HandleException(action.Id, e);
+                    }
+                    catch (Exception e2)
+                    {
+                        Game.Game.BackToMain(false, e2).Forget();
+                    }
+                });
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<BattleArena>> BattleArena(
+            Address enemyAvatarAddress,
+            List<Guid> costumes,
+            List<Guid> equipments,
+            int championshipId,
+            int round,
+            int ticket
+        )
+        {
+            var action = new BattleArena
+            {
+                myAvatarAddress = States.Instance.CurrentAvatarState.address,
+                enemyAvatarAddress = enemyAvatarAddress,
+                costumes = costumes,
+                equipments = equipments,
+                championshipId = championshipId,
+                round = round,
+                ticket = ticket,
+            };
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<BattleArena>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    if (_lastBattleActionId == action.Id)
+                    {
+                        _lastBattleActionId = null;
+                    }
+
+                    try
+                    {
+                        HandleException(action.Id, e);
+                    }
+                    catch (Exception e2)
+                    {
+                        Game.Game.BackToMain(false, e2).Forget();
+                    }
+                });
+        }
+
         public IObservable<ActionBase.ActionEvaluation<PatchTableSheet>> PatchTableSheet(
             string tableName,
             string tableCsv)

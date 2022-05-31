@@ -151,6 +151,7 @@ namespace Nekoyume.BlockChain
                     code = "29";
                     key = "ERROR_NOT_ENOUGH_AVATAR_LEVEL";
                     break;
+                // TODO!!!! 아레나 예외 처리.
             }
 
             Analyzer.Instance.Track(
