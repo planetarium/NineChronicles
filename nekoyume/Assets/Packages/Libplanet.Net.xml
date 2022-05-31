@@ -155,7 +155,7 @@
             tip of this round.</param>
             <returns><see cref="T:Libplanet.Blocks.Block`1"/>s by <paramref name="thisRoundTip"/>.</returns>
         </member>
-        <member name="M:Libplanet.Net.BlockCompletion`2.Complete(System.Collections.Generic.IReadOnlyList{`0},Libplanet.Net.BlockCompletion{`0,`1}.BlockFetcher,System.TimeSpan,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.BlockCompletion`2.Complete(System.Collections.Generic.IReadOnlyList{`0},Libplanet.Net.BlockCompletion{`0,`1}.BlockFetcher,System.Threading.CancellationToken)">
             <summary>
             Downloads blocks from <paramref name="peers"/> in parallel,
             using the given <paramref name="blockFetcher"/> function.
@@ -163,26 +163,6 @@
             <param name="peers">A list of peers to download blocks.</param>
             <param name="blockFetcher">A function to take demands and a peer, and then
             download corresponding blocks.</param>
-            <param name="singleSessionTimeout">A maximum time to wait each single call of
-            <paramref name="blockFetcher"/>.  If a call is timed out unsatisfied demands
-            are automatically retried to fetch from other peers.</param>
-            <param name="cancellationToken">A cancellation token to observe while waiting
-            for the task to complete.</param>
-            <returns>An async enumerable that yields pairs of a fetched block and its source
-            peer.  It terminates when all demands are satisfied.</returns>
-        </member>
-        <member name="M:Libplanet.Net.BlockCompletion`2.Complete(System.Collections.Generic.IReadOnlyList{`0},Libplanet.Net.BlockCompletion{`0,`1}.BlockFetcher,System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Downloads blocks from <paramref name="peers"/> in parallel,
-            using the given <paramref name="blockFetcher"/> function.
-            </summary>
-            <param name="peers">A list of peers to download blocks.</param>
-            <param name="blockFetcher">A function to take demands and a peer, and then
-            download corresponding blocks.</param>
-            <param name="millisecondsSingleSessionTimeout">A maximum time in milliseconds to wait
-            each single call of <paramref name="blockFetcher"/>.  If a call is timed out unsatisfied
-            demands are automatically retried to fetch from other peers.  10 seconds by default.
-            </param>
             <param name="cancellationToken">A cancellation token to observe while waiting
             for the task to complete.</param>
             <returns>An async enumerable that yields pairs of a fetched block and its source
@@ -774,20 +754,16 @@
             An interface of protocol to discover peers from the distributed network.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Protocols.IProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.IProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <summary>
             Conducts peer discovery for given <paramref name="bootstrapPeers"/>.
             </summary>
             <param name="bootstrapPeers">A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Net.Peer"/>s
             to bootstrap.</param>
-            <param name="pingSeedTimeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
-            message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
+            <param name="dialTimeout">The timeout used when waiting a reply for either
+            <see cref="T:Libplanet.Net.Messages.Ping"/> or <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.
             If <c>null</c> is given, the task never halts by itself
             even no any response was given from the the target seed.</param>
-            <param name="findNeighborsTimeout">A timeout of waiting for the reply of
-            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
-            If <c>null</c> is given, task never halts by itself
-            even the target seed gives no any response.</param>
             <param name="depth">Recursive operation depth to search peers from network.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
@@ -921,7 +897,7 @@
             If it's omitted or <c>null</c> is given, will automatically be set to 5 seconds.
             </param>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
@@ -1424,19 +1400,10 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.ITransport.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.Int32,System.Int32,System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.Threading.CancellationToken)">
             <summary>
             Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
             </summary>
-            <param name="millisecondsDialTimeout">
-            When the <see cref="T:Libplanet.Net.Swarm`1"/> tries to dial each peer in <see cref="P:Libplanet.Net.Swarm`1.Peers"/>,
-            the dial-up is cancelled after this timeout, and it tries another peer.
-            If <c>null</c> is given it never gives up dial-ups.
-            </param>
-            <param name="millisecondsBroadcastBlockInterval">Time interval between each broadcast
-            of chain tip.</param>
-            <param name="millisecondsBroadcastTxInterval">Time interval between each broadcast
-            of staged transactions.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -1449,7 +1416,9 @@
             this tries to render <em>all</em> actions in the behind blocks so that there are
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
-            these actions in the behind blocks use <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)"/> method too.</remarks>
+            these actions in the behind blocks use
+            <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)"/>
+            method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
@@ -1476,15 +1445,29 @@
             this tries to render <em>all</em> actions in the behind blocks so that there are
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
-            these actions in the behind blocks use <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)"/> method too.</remarks>
+            these actions in the behind blocks use
+            <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)"/>
+            method too.</remarks>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Int32,System.Threading.CancellationToken)">
             <summary>
             Join to the peer-to-peer network using seed peers.
             </summary>
             <param name="seedPeers">List of seed peers.</param>
-            <param name="pingSeedTimeout">Timeout for connecting to seed peers.</param>
-            <param name="findNeighborsTimeout">Timeout for requesting neighbors.</param>
+            <param name="depth">Depth to find neighbors of current <see cref="T:Libplanet.Net.Peer"/>
+            from seed peers.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
+            not <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Join to the peer-to-peer network using seed peers.
+            </summary>
+            <param name="seedPeers">List of seed peers.</param>
+            <param name="dialTimeout">Timeout for connecting to peers.</param>
             <param name="depth">Depth to find neighbors of current <see cref="T:Libplanet.Net.Peer"/>
             from seed peers.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
@@ -1519,7 +1502,33 @@
             </param>
             <returns><see cref="T:Libplanet.Net.PeerChainState"/> of the connected <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)">
+            <summary>
+            Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
+            </summary>
+            <param name="progress">
+            An instance that receives progress updates for block downloads.
+            </param>
+            <param name="render">
+            The value indicates whether to render blocks and actions while preloading.</param>
+            <param name="tipDeltaThreshold">The threshold of the difference between the topmost tip
+            among peers and the local tip.  If the local tip is still behind the topmost tip among
+            peers by more than this threshold after a preloading is once done, the preloading
+            is repeated.  25 by default.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.
+            </param>
+            <returns>
+            A task without value.
+            You only can <c>await</c> until the method is completed.
+            </returns>
+            <remarks>This does not render downloaded <see cref="T:Libplanet.Action.IAction"/>s, but fills states only.
+            </remarks>
+            <exception cref="T:System.AggregateException">Thrown when the given the block downloading is
+            failed.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.TimeSpan,System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
@@ -1650,31 +1659,6 @@
             TCP based transport.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.SwarmOptions.MaxTimeout">
-            <summary>
-            The maximum timeout used in <see cref="T:Libplanet.Net.Swarm`1"/>.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.SwarmOptions.BlockHashRecvTimeout">
-            <summary>
-            The base timeout used to receive the block hashes from other peers.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.SwarmOptions.BlockRecvTimeout">
-            <summary>
-            The base timeout used to receive <see cref="T:Libplanet.Blocks.Block`1"/> from other peers.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.SwarmOptions.TxRecvTimeout">
-            <summary>
-            The base timeout used to receive <see cref="T:Libplanet.Tx.Transaction`1"/> from other peers.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.SwarmOptions.BlockDownloadTimeout">
-            <summary>
-            The timeout used to block download in preloading.
-            </summary>
-        </member>
         <member name="P:Libplanet.Net.SwarmOptions.BlockDemandLifespan">
             <summary>
             The lifespan of block demand.
@@ -1723,6 +1707,26 @@
             It is 10 by default.
             </summary>
         </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BlockBroadcastInterval">
+            <summary>
+            Determines how often <see cref="T:Libplanet.Net.Swarm`1"/> braodcasts <see cref="T:Libplanet.Net.Messages.BlockHeaderMessage"/>
+            to its peers.
+            </summary>
+            <remarks>
+            Broadcasts are also made whenever <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> changes in addition
+            to regular broadcasts determined by this option.
+            </remarks>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.TxBroadcastInterval">
+            <summary>
+            Determines how often <see cref="T:Libplanet.Net.Swarm`1"/> braodcasts <see cref="T:Libplanet.Net.Messages.TxIds"/>
+            to its peers.
+            </summary>
+            <remarks>
+            Broadcasts are also made whenever <see cref="T:Libplanet.Tx.Transaction`1"/> is staged in addition
+            to regular broadcasts determined by this option.
+            </remarks>
+        </member>
         <member name="P:Libplanet.Net.SwarmOptions.TableSize">
             <summary>
             The number of buckets of the Kademlia based routing table.
@@ -1734,11 +1738,6 @@
             The size of each bucket of the Kademlia based routing table.
             </summary>
             <seealso cref="T:Libplanet.Net.Protocols.RoutingTable"/>
-        </member>
-        <member name="P:Libplanet.Net.SwarmOptions.PollInterval">
-            <summary>
-            The interval between block polling.
-            </summary>
         </member>
         <member name="P:Libplanet.Net.SwarmOptions.MaximumPollPeers">
             <summary>
@@ -1756,6 +1755,96 @@
             <summary>
             The type of <see cref="T:Libplanet.Net.Transports.ITransport"/> used in <see cref="T:Libplanet.Net.Swarm`1"/>.
             </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.TimeoutOptions">
+            <summary>
+            Various timeout options for sending and receiving <see cref="T:Libplanet.Net.Messages.Message"/>s through
+            an <see cref="T:Libplanet.Net.Transports.ITransport"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.TimeoutOptions">
+            <summary>
+            Various timeout options for sending and receiving <see cref="T:Libplanet.Net.Messages.Message"/>s through
+            an <see cref="T:Libplanet.Net.Transports.ITransport"/>. Each timeout determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/>
+            should wait for all expected responses to arrive before giving up after sending
+            a <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.TimeoutOptions.MaxTimeout">
+            <summary>
+            The maximum timeout used in <see cref="T:Libplanet.Net.Swarm`1"/>. This is a hard limit for
+            all <see cref="T:Libplanet.Net.Messages.Message"/>s.  Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultMaxTimeout"/> seconds
+            by default.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.TimeoutOptions.BootstrapDialTimeout">
+            <summary>
+            Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timimg out
+            when dialing peers for either <see cref="T:Libplanet.Net.Messages.Pong"/>, <see cref="T:Libplanet.Net.Messages.Neighbors"/>,
+            or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> during a bootstrapping phase.  Generally, a more relaxed
+            <see cref="T:System.TimeSpan"/> is used compared to <see cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>.
+            Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultBootstrapDialTimeout"/> seconds by default.
+            </summary>
+            <seealso cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>
+        </member>
+        <member name="P:Libplanet.Net.TimeoutOptions.PreloadDialTimeout">
+            <summary>
+            Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timimg out
+            when dialing peers for either <see cref="T:Libplanet.Net.Messages.Pong"/>, <see cref="T:Libplanet.Net.Messages.Neighbors"/>,
+            or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> during a preloading phase.  Generally, a more relaxed
+            <see cref="T:System.TimeSpan"/> is used compared to <see cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>.
+            Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultPreloadDialTimeout"/> seconds by default.
+            </summary>
+            <seealso cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>
+        </member>
+        <member name="P:Libplanet.Net.TimeoutOptions.DialTimeout">
+            <summary>
+            Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timing out
+            when dialing peers for either <see cref="T:Libplanet.Net.Messages.Pong"/>, <see cref="T:Libplanet.Net.Messages.Neighbors"/>,
+            or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> for a long running process.
+            Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultDialTimeout"/> seconds by default.
+            </summary>
+            <seealso cref="P:Libplanet.Net.TimeoutOptions.BootstrapDialTimeout"/>
+            <seealso cref="P:Libplanet.Net.TimeoutOptions.PreloadDialTimeout"/>
+        </member>
+        <member name="P:Libplanet.Net.TimeoutOptions.GetBlockHashesTimeout">
+            <summary>
+            The timeout used when sending a request with <see cref="T:Libplanet.Net.Messages.GetBlockHashes"/>
+            to receive a <see cref="T:Libplanet.Net.Messages.BlockHashes"/> message.
+            Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultGetBlockHashesTimeout"/> seconds by default.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.TimeoutOptions.GetBlocksBaseTimeout">
+            <summary>
+            The base timeout used when sending a request with <see cref="T:Libplanet.Net.Messages.GetBlocks"/>
+            to receive <see cref="N:Libplanet.Blocks"/> messages.
+            Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultGetBlocksBaseTimeout"/> seconds by default.
+            </summary>
+            <seealso cref="P:Libplanet.Net.TimeoutOptions.GetBlocksPerBlockHashTimeout"/>
+        </member>
+        <member name="P:Libplanet.Net.TimeoutOptions.GetBlocksPerBlockHashTimeout">
+            <summary>
+            The additional amount to wait for each <see cref="T:Libplanet.Blocks.BlockHash"/> in
+            <see cref="T:Libplanet.Net.Messages.GetBlocks"/> to receive <see cref="N:Libplanet.Blocks"/> messages.
+            Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultGetBlocksPerBlockHashTimeout"/> seconds by default.
+            </summary>
+            <seealso cref="P:Libplanet.Net.TimeoutOptions.GetBlocksBaseTimeout"/>
+        </member>
+        <member name="P:Libplanet.Net.TimeoutOptions.GetTxsBaseTimeout">
+            <summary>
+            The base timeout used when sending a request with <see cref="T:Libplanet.Net.Messages.GetTxs"/>
+            to receive <see cref="N:Libplanet.Tx"/> messages.
+            Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultGetTxsBaseTimeout"/> seconds by default.
+            </summary>
+            <seealso cref="P:Libplanet.Net.TimeoutOptions.GetTxsPerTxIdTimeout"/>
+        </member>
+        <member name="P:Libplanet.Net.TimeoutOptions.GetTxsPerTxIdTimeout">
+            <summary>
+            The additional amount to wait for each <see cref="T:Libplanet.Tx.TxId"/> in <see cref="T:Libplanet.Net.Messages.GetTxs"/>
+            to receive <see cref="N:Libplanet.Tx"/> messages.
+            Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultGetTxsPerTxIdTimeout"/> seconds by default.
+            </summary>
+            <seealso cref="P:Libplanet.Net.TimeoutOptions.GetTxsBaseTimeout"/>
         </member>
         <member name="T:Libplanet.Net.Transports.BoundPeerExtensions">
             <summary>
