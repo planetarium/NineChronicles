@@ -143,20 +143,6 @@ namespace Nekoyume.Action
                         Order.DeriveAddress(updateSellInfo.orderId).ToHex()));
                     continue;
                 }
-
-                var orderOnSale = OrderFactory.Deserialize(orderDict);
-                orderOnSale.ValidateCancelOrder(avatarState, updateSellInfo.tradableId);
-                var itemOnSale = orderOnSale.Cancel(avatarState, context.BlockIndex);
-                if (context.BlockIndex < orderOnSale.ExpiredBlockIndex)
-                {
-                    var shardedShopState = new ShardedShopStateV2(shopStateDict);
-                    shardedShopState.Remove(orderOnSale, context.BlockIndex);
-                    states = states.SetState(shopAddress, shardedShopState.Serialize());
-                }
-
-                digestList.Remove(orderOnSale.OrderId);
-                states = states.SetState(itemAddress, itemOnSale.Serialize())
-                    .SetState(digestListAddress, digestList.Serialize());
                 sw.Stop();
 
                 var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
@@ -176,7 +162,34 @@ namespace Nekoyume.Action
                 var newOrder = OrderFactory.Create(context.Signer, sellerAvatarAddress,
                     updateSellInfo.updateSellOrderId, updateSellInfo.price,
                     updateSellInfo.tradableId, context.BlockIndex, updateSellInfo.itemSubType, updateSellInfo.count);
-                newOrder.Validate(avatarState, updateSellInfo.count);
+                try
+                {
+                    newOrder.Validate(avatarState, updateSellInfo.count);
+                }
+                catch (InvalidAddressException)
+                {
+                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_ADDRESS, ""));
+                    continue;
+                }
+                catch (InvalidItemCountException)
+                {
+                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_ADDRESS, ""));
+                    continue;
+                }
+
+                var orderOnSale = OrderFactory.Deserialize(orderDict);
+                orderOnSale.ValidateCancelOrder(avatarState, updateSellInfo.tradableId);
+                var itemOnSale = orderOnSale.Cancel(avatarState, context.BlockIndex);
+                if (context.BlockIndex < orderOnSale.ExpiredBlockIndex)
+                {
+                    var shardedShopState = new ShardedShopStateV2(shopStateDict);
+                    shardedShopState.Remove(orderOnSale, context.BlockIndex);
+                    states = states.SetState(shopAddress, shardedShopState.Serialize());
+                }
+
+                digestList.Remove(orderOnSale.OrderId);
+                states = states.SetState(itemAddress, itemOnSale.Serialize())
+                    .SetState(digestListAddress, digestList.Serialize());
 
                 var tradableItem = newOrder.Sell(avatarState);
                 var orderDigest = newOrder.Digest(avatarState, costumeStatSheet);
