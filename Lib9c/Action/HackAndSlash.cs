@@ -247,7 +247,7 @@ namespace Nekoyume.Action
             var crystalRandomBuffSheet = sheets.GetSheet<CrystalRandomBuffSheet>();
             var skillSheet = sheets.GetSheet<SkillSheet>();
             if (stageBuffId.HasValue &&
-                worldInformation.IsStageCleared(stageId))
+                !worldInformation.IsStageCleared(stageId))
             {
                 if (states.TryGetState<List>(buffStateAddress, out var serialized))
                 {
