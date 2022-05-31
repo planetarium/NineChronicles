@@ -115,13 +115,34 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1, true)]
-        [InlineData(1, 1, 1, false)]
-        [InlineData(2, 1, 2, true)]
-        [InlineData(2, 1, 2, false)]
-        public void Execute(int apStoneCount, int worldId, int stageId, bool backward)
+        [InlineData(1, 1, 1, false, true)]
+        [InlineData(1, 1, 1, false, false)]
+        [InlineData(2, 1, 2, false, true)]
+        [InlineData(2, 1, 2, false, false)]
+        [InlineData(2, 2, 51, false, true)]
+        [InlineData(2, 2, 51, false, false)]
+        [InlineData(2, 2, 52, false, true)]
+        [InlineData(2, 2, 52, false, false)]
+        [InlineData(2, 1, 1, true, true)]
+        [InlineData(2, 1, 1, true, false)]
+        [InlineData(2, 1, 2, true, true)]
+        [InlineData(2, 1, 2, true, false)]
+        [InlineData(2, 2, 51, true, true)]
+        [InlineData(2, 2, 51, true, false)]
+        [InlineData(2, 2, 52, true, true)]
+        [InlineData(2, 2, 52, true, false)]
+        public void Execute(int apStoneCount, int worldId, int stageId, bool challenge, bool backward)
         {
             var gameConfigState = _initialState.GetGameConfigState();
+            var prevStageId = stageId - 1;
+            var worldInformation = new WorldInformation(
+                    0, _initialState.GetSheet<WorldSheet>(), challenge ? prevStageId : stageId);
+
+            if (challenge)
+            {
+                worldInformation.UnlockWorld(worldId, 0,  _tableSheets.WorldSheet);
+            }
+
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
@@ -130,8 +151,7 @@ namespace Lib9c.Tests.Action
                 gameConfigState,
                 _rankingMapAddress)
             {
-                worldInformation =
-                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), stageId),
+                worldInformation = worldInformation,
                 level = 400,
             };
 
@@ -263,6 +283,7 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(1, 999)]
+        [InlineData(2, 50)]
         public void Execute_SheetRowColumnException(int worldId, int stageId)
         {
             var action = new HackAndSlashSweep
@@ -281,41 +302,24 @@ namespace Lib9c.Tests.Action
             }));
         }
 
-        [Fact]
-        public void Execute_StageClearedException()
-        {
-            var action = new HackAndSlashSweep
-            {
-                apStoneCount = 1,
-                avatarAddress = _avatarAddress,
-                worldId = 1,
-                stageId = 50,
-            };
-
-            Assert.Throws<StageClearedException>(() => action.Execute(new ActionContext()
-            {
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-            }));
-        }
-
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute_InvalidStageException(bool backward)
+        [InlineData(1, 48, 1, 50, true)]
+        [InlineData(1, 48, 1, 50, false)]
+        [InlineData(1, 49, 2, 51, true)]
+        [InlineData(1, 49, 2, 51, false)]
+        public void Execute_InvalidStageException(int clearedWorldId, int clearedStageId, int worldId, int stageId, bool backward)
         {
             var action = new HackAndSlashSweep
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
-                worldId = 1,
-                stageId = 50,
+                worldId = worldId,
+                stageId = stageId,
             };
             var worldSheet = _initialState.GetSheet<WorldSheet>();
             var worldUnlockSheet = _initialState.GetSheet<WorldUnlockSheet>();
 
-            _avatarState.worldInformation.ClearStage(1, 2, 1, worldSheet, worldUnlockSheet);
+            _avatarState.worldInformation.ClearStage(clearedWorldId, clearedStageId, 1, worldSheet, worldUnlockSheet);
 
             var state = _initialState;
             if (backward)

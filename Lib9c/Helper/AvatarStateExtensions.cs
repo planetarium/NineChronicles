@@ -60,7 +60,47 @@ namespace Nekoyume.Helper
                 var maxExp = row.Exp + row.ExpNeed;
                 var remainExp = maxExp - currentExp;
                 var stageExp = StageRewardExpHelper.GetExp(currentLevel, stageId);
-                var requiredCount = (int)Math.Ceiling(remainExp / (double)stageExp);
+                if (stageExp == 0)
+                {
+                    break;
+                }
+
+                var requiredCount = (int)DecimalMath.DecimalEx.Ceiling(remainExp / (decimal)stageExp);
+                if (remainCount - requiredCount >= 0) // level up
+                {
+                    currentExp += stageExp * requiredCount;
+                    remainCount -= requiredCount;
+                    currentLevel += 1;
+                }
+                else
+                {
+                    currentExp += stageExp * remainCount;
+                    break;
+                }
+            }
+
+            return (currentLevel, currentExp);
+        }
+
+        [Obsolete("Use GetLevelAndExp")]
+        public static (int, long) GetLevelAndExpV1(this AvatarState avatarState,
+            CharacterLevelSheet characterLevelSheet, int stageId, int repeatCount)
+        {
+            var remainCount = repeatCount;
+            var currentLevel = avatarState.level;
+            var currentExp = avatarState.exp;
+            while (remainCount > 0)
+            {
+                characterLevelSheet.TryGetValue(currentLevel, out var row, true);
+                var maxExp = row.Exp + row.ExpNeed;
+                var remainExp = maxExp - currentExp;
+                var stageExp = StageRewardExpHelper.GetExp(currentLevel, stageId);
+                if (stageExp == 0)
+                {
+                    break;
+                }
+
+                var requiredCount = (int)DecimalMath.DecimalEx.Ceiling(remainExp / (decimal)stageExp);
                 if (remainCount - requiredCount > 0) // level up
                 {
                     currentExp += stageExp * requiredCount;

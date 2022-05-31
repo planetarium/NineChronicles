@@ -3,17 +3,17 @@ using System.Runtime.Serialization;
 
 namespace Nekoyume.Action
 {
-    public class StageClearedException : Exception
+    public class StageNotClearedException : Exception
     {
-        public StageClearedException()
+        public StageNotClearedException()
         {
         }
 
-        public StageClearedException(string msg) : base(msg)
+        public StageNotClearedException(string msg) : base(msg)
         {
         }
 
-        protected StageClearedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected StageNotClearedException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }
