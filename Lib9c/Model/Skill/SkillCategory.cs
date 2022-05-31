@@ -17,5 +17,6 @@ namespace Nekoyume.Model.Skill
         HitBuff,
         SpeedBuff,
         Buff,
+        Debuff,
     }
 }

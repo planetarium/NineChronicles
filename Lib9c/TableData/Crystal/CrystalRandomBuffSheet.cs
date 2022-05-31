@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Nekoyume.Model.Buff;
 using static Nekoyume.TableData.TableExtensions;
@@ -18,15 +18,18 @@ namespace Nekoyume.TableData.Crystal
                 B = 4,
             }
 
-            public override int Key => BuffId;
-            public int BuffId;
+            public override int Key => Id;
+            public int Id;
+            public int SkillId;
             public BuffRank Rank;
             public decimal Ratio;
+
             public override void Set(IReadOnlyList<string> fields)
             {
-                BuffId = ParseInt(fields[0]);
+                Id = ParseInt(fields[0]);
                 Rank = (BuffRank) Enum.Parse(typeof(BuffRank), fields[1]);
-                Ratio = ParseDecimal(fields[2]);
+                SkillId = ParseInt(fields[2]);
+                Ratio = ParseDecimal(fields[3]);
             }
         }
 

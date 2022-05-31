@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -10,6 +10,7 @@ using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Crystal;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
@@ -28,6 +29,7 @@ namespace Nekoyume.Action
         public List<Guid> foods;
         public int worldId;
         public int stageId;
+        public int? stageBuffId;
         public Address avatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -38,6 +40,7 @@ namespace Nekoyume.Action
                 ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
+                ["stageBuffId"] = stageBuffId.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
@@ -49,6 +52,7 @@ namespace Nekoyume.Action
             foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
+            stageBuffId = plainValue["stageBuffId"].ToNullableInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
@@ -125,6 +129,8 @@ namespace Nekoyume.Action
                     typeof(EquipmentItemRecipeSheet),
                     typeof(EquipmentItemSubRecipeSheetV2),
                     typeof(EquipmentItemOptionSheet),
+                    typeof(CrystalStageBuffGachaSheet),
+                    typeof(CrystalRandomBuffSheet),
                 });
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
@@ -235,8 +241,59 @@ namespace Nekoyume.Action
 
             sw.Restart();
 
-            var skillRow = new Model.Skill.BuffSkill(sheets.GetSheet<SkillSheet>()[400000], 0, 100);
-            var buffSkillsOnWaveStart = new List<Model.Skill.BuffSkill>() { skillRow }; 
+            var buffStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(avatarAddress);
+            HackAndSlashBuffState buffState;
+            var buffSkillsOnWaveStart = new List<Model.Skill.BuffSkill>();
+            var crystalRandomBuffSheet = sheets.GetSheet<CrystalRandomBuffSheet>();
+            var skillSheet = sheets.GetSheet<SkillSheet>();
+            if (stageBuffId.HasValue &&
+                worldInformation.IsStageCleared(stageId))
+            {
+                if (states.TryGetState<List>(buffStateAddress, out var serialized))
+                {
+                    var newBuffState = new HackAndSlashBuffState(buffStateAddress, serialized);
+                    buffState = newBuffState.StageId == stageId
+                        ? newBuffState
+                        : new HackAndSlashBuffState(buffStateAddress, stageId);
+                }
+                else
+                {
+                    buffState = new HackAndSlashBuffState(buffStateAddress, stageId);
+                }
+
+                if (buffState.BuffIds.Any())
+                {
+                    if (!buffState.BuffIds.Contains(stageBuffId.Value))
+                    {
+                        stageBuffId = buffState.BuffIds
+                            .OrderBy(id => crystalRandomBuffSheet[id].Rank)
+                            .ThenBy(id => id)
+                            .First();
+                    }
+
+                    if (!crystalRandomBuffSheet.TryGetValue(stageBuffId.Value, out var row))
+                    {
+                        throw new SheetRowNotFoundException(addressesHex, nameof(CrystalRandomBuffSheet), stageBuffId.Value);
+                    }
+
+                    if (!skillSheet.TryGetValue(row.SkillId, out var skillRow))
+                    {
+                        throw new SheetRowNotFoundException(addressesHex, nameof(SkillSheet), row.SkillId);
+                    }
+
+                    var skill = new Model.Skill.BuffSkill(skillRow, 0, 100);
+                    buffSkillsOnWaveStart.Add(skill);
+                }
+            }
+            else
+            {
+                buffState = null;
+            }
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Get BuffState : {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
 
             var simulator = new StageSimulator(
                 ctx.Random,
@@ -281,6 +338,15 @@ namespace Nekoyume.Action
                 );
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
+            }
+            else
+            {
+                if (buffState != null)
+                {
+                    buffState.Update(simulator.Log.clearedWaveNumber,
+                        sheets.GetSheet<CrystalStageBuffGachaSheet>());
+                    states = states.SetState(buffStateAddress, buffState.Serialize());
+                }
             }
 
             sw.Restart();

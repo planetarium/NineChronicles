@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -84,7 +84,7 @@ namespace Nekoyume.Action
             var buffSheet = states.GetSheet<CrystalRandomBuffSheet>();
             foreach (var buffRow in buffSheet.Values)
             {
-                buffSelector.Add(buffRow.BuffId, buffRow.Ratio);
+                buffSelector.Add(buffRow.SkillId, buffRow.Ratio);
             }
 
             var buffIds = buffSelector.Select(GachaCount - 1).ToList();
