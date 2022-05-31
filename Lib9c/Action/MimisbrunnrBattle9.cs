@@ -16,12 +16,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1085
-    /// Updated at https://github.com/planetarium/lib9c/pull/1085
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/884
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("mimisbrunnr_battle10")]
-    public class MimisbrunnrBattle : GameAction
+    [ActionType("mimisbrunnr_battle9")]
+    public class MimisbrunnrBattle9 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -229,7 +229,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.Simulate(playCount);
+            simulator.SimulateV6(playCount);
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
