@@ -31,6 +31,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
+using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -431,14 +432,27 @@ namespace Nekoyume.BlockChain
                     await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
-                var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
-                    Address,
-                    States.Instance.AgentState.MonsterCollectionRound
-                );
-                if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
+                if (await GetStateAsync(StakeState.DeriveAddress(States.Instance.AgentState.address)) is Dictionary stakeDict)
                 {
-                    var monsterCollectionState = new MonsterCollectionState(mcDict);
-                    States.Instance.SetMonsterCollectionState(monsterCollectionState);
+                    var stakingState = new StakeState(stakeDict);
+                    var level =
+                        Game.TableSheets.Instance.StakeRegularRewardSheet
+                            .FindLevelByStakedAmount(
+                                Address,
+                                await GetBalanceAsync(stakingState.address, CrystalCalculator.CRYSTAL));
+                    States.Instance.SetStakeState(stakingState, level);
+                }
+                else
+                {
+                    var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
+                        Address,
+                        States.Instance.AgentState.MonsterCollectionRound
+                    );
+                    if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
+                    {
+                        var monsterCollectionState = new MonsterCollectionState(mcDict);
+                        States.Instance.SetMonsterCollectionState(monsterCollectionState);
+                    }
                 }
 
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;

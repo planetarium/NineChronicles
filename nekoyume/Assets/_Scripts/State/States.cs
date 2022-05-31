@@ -35,6 +35,8 @@ namespace Nekoyume.State
 
         public MonsterCollectionState MonsterCollectionState { get; private set; }
 
+        public StakeState StakeState { get; private set; }
+
         private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
@@ -46,6 +48,8 @@ namespace Nekoyume.State
         public GameConfigState GameConfigState { get; private set; }
 
         public FungibleAssetValue CrystalBalance { get; private set; }
+
+        public int StakingLevel { get; private set; }
 
         private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
             new Dictionary<int, CombinationSlotState>();
@@ -136,6 +140,19 @@ namespace Nekoyume.State
 
             MonsterCollectionState = monsterCollectionState;
             MonsterCollectionStateSubject.OnNextLevel(monsterCollectionState.Level);
+        }
+
+        public void SetStakeState(StakeState stakeState, int stakingLevel)
+        {
+            if (stakeState is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetStakeState)}] {nameof(stakeState)} is null.");
+                return;
+            }
+
+            StakeState = stakeState;
+            StakingLevel = stakingLevel;
+            MonsterCollectionStateSubject.OnNextLevel(stakingLevel);
         }
 
         public async UniTask<AvatarState> AddOrReplaceAvatarStateAsync(
