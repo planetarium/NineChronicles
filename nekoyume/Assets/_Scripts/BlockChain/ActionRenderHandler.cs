@@ -1454,6 +1454,20 @@ namespace Nekoyume.BlockChain
             UpdateAgentStateAsync(eval).Forget();
         }
 
+        public void RenderStake(ActionBase.ActionEvaluation<Stake> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var (state, level) = GetStakeState(eval);
+            if (state != null)
+            {
+                UpdateStakeState(state, level);
+            }
+        }
+
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
         {
             if (avatarAddress != States.Instance.CurrentAvatarState.address)

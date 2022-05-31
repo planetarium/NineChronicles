@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -70,6 +71,26 @@ namespace Nekoyume.BlockChain
             return null;
         }
 
+        protected static (StakeState,int) GetStakeState<T>(
+            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var agentAddress = States.Instance.AgentState.address;
+            if (evaluation.OutputStates.GetState(
+                    StakeState.DeriveAddress(agentAddress)) is
+                Bencodex.Types.Dictionary serialized)
+            {
+                var state = new StakeState(serialized);
+                var balance = evaluation.OutputStates.GetBalance(state.address, CrystalCalculator.CRYSTAL);
+                return (
+                    state,
+                    Game.TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
+                        agentAddress,
+                        balance));
+            }
+
+            return (null, 0);
+        }
+
         protected async UniTask UpdateAgentStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
@@ -125,7 +146,7 @@ namespace Nekoyume.BlockChain
                 Debug.LogError($"Failed to get AvatarState: {agentAddress}, {avatarAddress}");
             }
         }
-        
+
         protected async UniTask UpdateCurrentAvatarStateAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -160,6 +181,15 @@ namespace Nekoyume.BlockChain
             if (mcState is { })
             {
                 States.Instance.SetMonsterCollectionState(mcState);
+            }
+        }
+
+
+        protected static void UpdateStakeState(StakeState state, int level)
+        {
+            if (state is { })
+            {
+                States.Instance.SetStakeState(state, level);
             }
         }
 
