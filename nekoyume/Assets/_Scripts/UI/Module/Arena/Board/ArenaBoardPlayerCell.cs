@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
@@ -12,9 +13,13 @@ namespace Nekoyume.UI.Module.Arena.Board
     public class ArenaBoardPlayerItemData
     {
         public string name;
-        public string cp;
-        public string rating;
-        public string plusRating;
+        public int level;
+        public int armorId;
+        public int? titleId;
+        public int cp;
+        public int score;
+        public int expectWinDeltaScore;
+        public bool interactableChoiceButton;
     }
 
     public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
@@ -63,10 +68,13 @@ namespace Nekoyume.UI.Module.Arena.Board
         public override void UpdateContent(ArenaBoardPlayerItemData itemData)
         {
             _currentData = itemData;
+            _characterView.SetByArmorId(_currentData.armorId, _currentData.titleId, _currentData.level);
             _nameText.text = _currentData.name;
-            _cpText.text = _currentData.cp;
-            _ratingText.text = _currentData.rating;
-            _plusRatingText.text = _currentData.plusRating;
+            _cpText.text = _currentData.cp.ToString("N0", CultureInfo.CurrentCulture);
+            _ratingText.text = _currentData.score.ToString("N0", CultureInfo.CurrentCulture);
+            _plusRatingText.text
+                = _currentData.expectWinDeltaScore.ToString("N0", CultureInfo.CurrentCulture);
+            _choiceButton.Interactable = _currentData.interactableChoiceButton;
         }
 
         // [SerializeField]
