@@ -176,7 +176,20 @@ namespace Nekoyume.Action
                 var newOrder = OrderFactory.Create(context.Signer, sellerAvatarAddress,
                     updateSellInfo.updateSellOrderId, updateSellInfo.price,
                     updateSellInfo.tradableId, context.BlockIndex, updateSellInfo.itemSubType, updateSellInfo.count);
-                newOrder.Validate(avatarState, updateSellInfo.count);
+                try
+                {
+                    newOrder.Validate(avatarState, updateSellInfo.count);
+                }
+                catch (InvalidAddressException)
+                {
+                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_ADDRESS, ""));
+                    continue;
+                }
+                catch (InvalidItemCountException)
+                {
+                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_ADDRESS, ""));
+                    continue;
+                }
 
                 var tradableItem = newOrder.Sell(avatarState);
                 var orderDigest = newOrder.Digest(avatarState, costumeStatSheet);
