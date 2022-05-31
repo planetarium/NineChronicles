@@ -1,21 +1,25 @@
-using Libplanet.Assets;
-using Nekoyume.Helper;
 using Nekoyume.L10n;
 using System.Numerics;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class PaymentPopup : ConfirmPopup
     {
         [SerializeField]
+        private CostIconDataScriptableObject costIconData;
+
+        [SerializeField]
+        private Image costIcon;
+
+        [SerializeField]
         private TextMeshProUGUI costText;
 
-        public const string ConfirmPaymentCurrencyFormat = "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT";
-
         public void Show(
-            FungibleAssetValue asset,
+            CostType costType,
+            BigInteger balance,
             BigInteger cost,
             string enoughMessage,
             string insufficientMessage,
@@ -23,8 +27,10 @@ namespace Nekoyume.UI
             System.Action onAttract)
         {
             var popupTitle = L10nManager.Localize("UI_TOTAL_COST");
-            var enoughBalance = asset.MajorUnit >= cost;
+            var enoughBalance = balance >= cost;
             costText.text = cost.ToString();
+            costIcon.overrideSprite = costIconData.GetIcon(costType);
+
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
             CloseCallback = result =>
@@ -37,7 +43,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        ShowAttract(cost, popupTitle, insufficientMessage, onAttract);
+                        ShowAttract(cost, insufficientMessage, onAttract);
                     }
                 }
             };
@@ -46,10 +52,10 @@ namespace Nekoyume.UI
 
         public void ShowAttract(
             BigInteger cost,
-            string title,
             string message,
             System.Action onAttract)
         {
+            var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost.ToString();
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");

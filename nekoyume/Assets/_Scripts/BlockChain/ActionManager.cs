@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Tx;
 using mixpanel;
@@ -18,7 +17,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
-using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Scroller;
 using UnityEngine;
@@ -282,14 +280,33 @@ namespace Nekoyume.BlockChain
             int slotIndex)
         {
             var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
-            foreach (var (material, count) in recipeInfo.Materials)
+            foreach (var pair in recipeInfo.Materials)
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
+                {
+                    if (!avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items))
+                    {
+                        count = 0;
+                    }
+
+                    count = items.Sum(x => x.count);
+                }
+
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
             }
 
             Analyzer.Instance.Track("Unity/Create CombinationConsumable", new Value
@@ -316,20 +333,25 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
+            List<Guid> costumes,
+            List<Guid> equipments,
             int apStoneCount,
+            int actionPoint,
             int worldId,
-            int stageId,
-            int costAP)
+            int stageId)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = new HackAndSlashSweep
             {
+                costumes = costumes,
+                equipments = equipments,
                 avatarAddress = avatarAddress,
                 apStoneCount = apStoneCount,
+                actionPoint = actionPoint,
                 worldId = worldId,
                 stageId = stageId,
             };
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -costAP);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -actionPoint);
             var apStoneRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
             LocalLayerModifier.RemoveItem(avatarAddress, apStoneRow.ItemId, apStoneCount);
@@ -565,7 +587,7 @@ namespace Nekoyume.BlockChain
             List<Guid> equipmentIds
         )
         {
-            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+            if (!ArenaHelperOld.TryGetThisWeekAddress(out var weeklyArenaAddress))
             {
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
@@ -628,7 +650,8 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
             SubRecipeView.RecipeInfo recipeInfo,
-            int slotIndex)
+            int slotIndex,
+            bool payByCrystal)
         {
             Analyzer.Instance.Track("Unity/Create CombinationEquipment", new Value
             {
@@ -636,14 +659,33 @@ namespace Nekoyume.BlockChain
             });
 
             var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
-            foreach (var (material, count) in recipeInfo.Materials)
+            foreach (var pair in recipeInfo.Materials)
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
+                {
+                    if (!avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items))
+                    {
+                        count = 0;
+                    }
+
+                    count = items.Sum(x => x.count);
+                }
+
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
             }
 
             var action = new CombinationEquipment
@@ -652,6 +694,7 @@ namespace Nekoyume.BlockChain
                 slotIndex = slotIndex,
                 recipeId = recipeInfo.RecipeId,
                 subRecipeId = recipeInfo.SubRecipeId,
+                payByCrystal = payByCrystal,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);

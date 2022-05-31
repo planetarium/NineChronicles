@@ -187,8 +187,8 @@ namespace Nekoyume.UI
 
             var data = SharedModel.ItemCountableAndPricePopup.Value;
             var currency = States.Instance.GoldBalanceState.Gold.Currency;
-            data.TotalPrice.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
             data.Price.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
+            data.UnitPrice.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
             data.Count.Value = 1;
             data.IsSell.Value = true;
 
@@ -209,17 +209,17 @@ namespace Nekoyume.UI
 
             if (decimal.TryParse(model.OrderDigest.Price.GetQuantityString(),
                     NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
-                    out var totalPrice))
+                    out var price))
             {
-                var price = totalPrice / model.OrderDigest.ItemCount;
-                var majorUnit = (int)price;
-                var minorUnit = (int)((price - majorUnit) * 100);
+                var unitPrice = price / model.OrderDigest.ItemCount;
+                var majorUnit = (int)unitPrice;
+                var minorUnit = (int)((unitPrice - majorUnit) * 100);
                 var currency = States.Instance.GoldBalanceState.Gold.Currency;
-                data.Price.Value = new FungibleAssetValue(currency, majorUnit, minorUnit);
+                data.UnitPrice.Value = new FungibleAssetValue(currency, majorUnit, minorUnit);
             }
 
-            data.PreTotalPrice.Value = model.OrderDigest.Price;
-            data.TotalPrice.Value = model.OrderDigest.Price;
+            data.PrePrice.Value = model.OrderDigest.Price;
+            data.Price.Value = model.OrderDigest.Price;
             data.Count.Value = model.OrderDigest.ItemCount;
             data.IsSell.Value = false;
 
@@ -270,7 +270,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.TotalPrice.Value.MinorUnit > 0)
+            if (data.Price.Value.MinorUnit > 0)
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -279,13 +279,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit <
+            if (data.Price.Value.Sign * data.Price.Value.MajorUnit <
                 Model.Shop.MinimumPrice)
             {
                 throw new InvalidSellingPriceException(data);
             }
 
-            var totalPrice = data.TotalPrice.Value;
+            var totalPrice = data.Price.Value;
             var count = data.Count.Value;
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
             Game.Game.instance.ActionManager.Sell(tradableItem, count, totalPrice, itemSubType)
@@ -301,7 +301,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.TotalPrice.Value.MinorUnit > 0)
+            if (data.Price.Value.MinorUnit > 0)
             {
                 OneLineSystem.Push(
                     MailType.System,
@@ -310,14 +310,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit < Shop.MinimumPrice)
+            if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Shop.MinimumPrice)
             {
                 throw new InvalidSellingPriceException(data);
             }
 
             var requiredBlockIndex = tradableItem.RequiredBlockIndex;
-            var totalPrice = data.TotalPrice.Value;
-            var preTotalPrice = data.PreTotalPrice.Value;
+            var totalPrice = data.Price.Value;
+            var preTotalPrice = data.PrePrice.Value;
             var count = data.Count.Value;
             var digest =
                 ReactiveShopState.GetSellDigest(tradableItem.TradableId, requiredBlockIndex,
@@ -347,22 +347,37 @@ namespace Nekoyume.UI
         private void SubscribeSellPopupCount(int count)
         {
             SharedModel.ItemCountableAndPricePopup.Value.Count.Value = count;
-            UpdateTotalPrice(PriorityType.Count);
+            UpdateUnitPrice();
         }
 
         private void SubscribeSellPopupPrice(decimal price)
         {
-            var majorUnit = (int)price;
-            var minorUnit = (int)((Math.Truncate((price - majorUnit) * 100) / 100) * 100);
             var model = SharedModel.ItemCountableAndPricePopup.Value;
-            model.Price.SetValueAndForceNotify(new FungibleAssetValue(model.Price.Value.Currency,
-                majorUnit, minorUnit));
-            UpdateTotalPrice(PriorityType.Price);
+
+            if (price > LimitPrice)
+            {
+                price = LimitPrice;
+
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"),
+                    NotificationCell.NotificationType.Alert);
+                Debug.LogError(L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"));
+            }
+
+            var currency = model.Price.Value.Currency;
+            var major = (int)price;
+            var minor = (int)((Math.Truncate((price - major) * 100) / 100) * 100);
+
+            var fungibleAsset = new FungibleAssetValue(currency, major, minor);
+            model.Price.SetValueAndForceNotify(fungibleAsset);
+            UpdateUnitPrice();
         }
 
-        private void UpdateTotalPrice(PriorityType priorityType)
+        private void UpdateUnitPrice()
         {
             var model = SharedModel.ItemCountableAndPricePopup.Value;
+
             decimal price = 0;
             if (decimal.TryParse(model.Price.Value.GetQuantityString(),
                     NumberStyles.AllowDecimalPoint,
@@ -372,37 +387,14 @@ namespace Nekoyume.UI
             }
 
             var count = model.Count.Value;
-            var totalPrice = price * count;
+            var unitPrice = price / count;
 
-            if (totalPrice > LimitPrice)
-            {
-                switch (priorityType)
-                {
-                    case PriorityType.Price:
-                        price = LimitPrice / model.Count.Value;
-                        var majorUnit = (int)price;
-                        var minorUnit = (int)((price - majorUnit) * 100);
-                        model.Price.Value = new FungibleAssetValue(model.Price.Value.Currency,
-                            majorUnit, minorUnit);
-                        break;
-                    case PriorityType.Count:
-                        count = LimitPrice / (int)price;
-                        model.Count.Value = count;
-                        break;
-                }
+            var currency = model.UnitPrice.Value.Currency;
+            var major = (int)unitPrice;
+            var minor = (int)((Math.Truncate((unitPrice - major) * 100) / 100) * 100);
 
-                OneLineSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"),
-                    NotificationCell.NotificationType.Alert);
-            }
-
-            var currency = model.TotalPrice.Value.Currency;
-            var sum = price * count;
-            var major = (int)sum;
-            var minor = (int)((sum - (int)sum) * 100);
             var fungibleAsset = new FungibleAssetValue(currency, major, minor);
-            model.TotalPrice.SetValueAndForceNotify(fungibleAsset);
+            model.UnitPrice.SetValueAndForceNotify(fungibleAsset);
         }
 
         // sell cancellation

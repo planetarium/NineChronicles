@@ -158,7 +158,6 @@ MonoBehaviour:
   content: {fileID: 7557805128358749758}
   labelOK: {fileID: 5721415182012187769}
   titleBorder: {fileID: 8320478685167020487}
-  blur: {fileID: 0}
   bgImageButton: {fileID: 6243592092851575047}
 --- !u!1 &5622576995224546375
 GameObject:
@@ -442,6 +441,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4292146175
+      objectReference: {fileID: 0}
+    - target: {fileID: 8403830291261484695, guid: 5bcf368b3e0fac54b8a77bc20075a229,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 640
+      objectReference: {fileID: 0}
+    - target: {fileID: 8644702060668481867, guid: 5bcf368b3e0fac54b8a77bc20075a229,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8644702060668481867, guid: 5bcf368b3e0fac54b8a77bc20075a229,
+        type: 3}
+      propertyPath: m_fontSizeMax
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 8644702060668481867, guid: 5bcf368b3e0fac54b8a77bc20075a229,
+        type: 3}
+      propertyPath: m_fontSizeMin
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 9025400986075387530, guid: 5bcf368b3e0fac54b8a77bc20075a229,
         type: 3}

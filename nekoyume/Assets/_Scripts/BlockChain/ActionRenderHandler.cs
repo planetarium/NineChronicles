@@ -980,8 +980,7 @@ namespace Nekoyume.BlockChain
                 if (eval.Action.apStoneCount > 0)
                 {
                     var avatarAddress = eval.Action.avatarAddress;
-                    var costAP = Widget.Find<SweepPopup>().CostAP;
-                    LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, costAP);
+                    LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, eval.Action.actionPoint);
                     var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                         r.ItemSubType == ItemSubType.ApStone);
                     LocalLayerModifier.AddItem(avatarAddress, row.ItemId, eval.Action.apStoneCount);
@@ -1164,6 +1163,7 @@ namespace Nekoyume.BlockChain
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
                 {
+                    // FIXME: Use ArenaInfo or other instead of RankingBoard
                     Widget.Find<RankingBoard>().GoToStage(simulator.Log);
                 }
             }
@@ -1441,6 +1441,20 @@ namespace Nekoyume.BlockChain
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
+        }
+
+        public void RenderStake(ActionBase.ActionEvaluation<Stake> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var (state, level) = GetStakeState(eval);
+            if (state != null)
+            {
+                UpdateStakeState(state, level);
+            }
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
@@ -14,6 +15,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 namespace Nekoyume.UI.Module
 {
@@ -22,6 +24,16 @@ namespace Nekoyume.UI.Module
     using UniRx;
     public class GrindModule : MonoBehaviour
     {
+        [Serializable]
+        private struct CrystalAnimationData
+        {
+            public RectTransform crystalAnimationStartRect;
+            public RectTransform crystalAnimationTargetRect;
+            public int maximum;
+            public int middle;
+            public int minimum;
+        }
+
         [SerializeField]
         private Inventory grindInventory;
 
@@ -50,6 +62,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Animator animator;
 
+        [SerializeField]
+        private CrystalAnimationData animationData;
+
         private bool _isInitialized;
 
         private int _inventoryApStoneCount;
@@ -74,10 +89,13 @@ namespace Nekoyume.UI.Module
                 };
 
         private const int LimitGrindingCount = 10;
+        private static readonly BigInteger MaximumCrystal = 100_000;
+        private static readonly BigInteger MiddleCrystal = 1_000;
 
         public static readonly Vector3 CrystalMovePositionOffset = new Vector3(0.05f, 0.05f);
         private static readonly int FirstRegister = Animator.StringToHash("FirstRegister");
         private static readonly int StartGrind = Animator.StringToHash("StartGrind");
+        private static readonly int EmptySlot = Animator.StringToHash("EmptySlot");
 
         private bool CanGrind => _selectedItemsForGrind.Any() &&
                                  _selectedItemsForGrind.All(item => !item.Equipped.Value);
@@ -111,7 +129,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            grindButton.SetCost(ConditionalCostButton.CostType.ActionPoint, 5);
+            grindButton.SetCost(CostType.ActionPoint, 5);
             grindButton.SetCondition(() => CanGrind);
             stakingBonus.SetBonusTextFunc(level =>
             {
@@ -185,6 +203,11 @@ namespace Nekoyume.UI.Module
                     }
                 }
                 item.Value.GrindingCount.SetValueAndForceNotify(0);
+
+                if (_selectedItemsForGrind.Count == 0)
+                {
+                    animator.SetTrigger(EmptySlot);
+                }
             }).AddTo(_disposables);
             _selectedItemsForGrind.ObserveReset().Subscribe(_ =>
             {
@@ -302,11 +325,13 @@ namespace Nekoyume.UI.Module
         private void UpdateCrystalReward()
         {
             _cachedGrindingRewardCrystal = CrystalCalculator.CalculateCrystal(
-                    _selectedItemsForGrind.Select(item => (Equipment)item.ItemBase),
-                    TableSheets.Instance.CrystalEquipmentGrindingSheet,
-                    States.Instance.MonsterCollectionState?.Level ?? 0,
-                    TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
-                    false);
+                States.Instance.AgentState.address,
+                _selectedItemsForGrind.Select(item => (Equipment) item.ItemBase),
+                States.Instance.GoldBalanceState.Gold,
+                false,
+                TableSheets.Instance.CrystalEquipmentGrindingSheet,
+                TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
+                TableSheets.Instance.StakeRegularRewardSheet);
             crystalRewardText.text = _cachedGrindingRewardCrystal.MajorUnit > 0 ?
                 _cachedGrindingRewardCrystal.GetQuantityString() :
                 string.Empty;
@@ -387,7 +412,7 @@ namespace Nekoyume.UI.Module
 
         private void PushAction(List<Equipment> equipments, bool chargeAp)
         {
-            StartCoroutine(CoCombineNPCAnimation());
+            StartCoroutine(CoCombineNPCAnimation(_cachedGrindingRewardCrystal.MajorUnit));
             ActionManager.Instance.Grinding(equipments, chargeAp).Subscribe();
             _selectedItemsForGrind.Clear();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
@@ -397,7 +422,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private IEnumerator CoCombineNPCAnimation()
+        private IEnumerator CoCombineNPCAnimation(BigInteger rewardCrystal)
         {
             var loadingScreen = Widget.Find<CombinationLoadingScreen>();
             loadingScreen.OnDisappear = OnNPCDisappear;
@@ -412,18 +437,43 @@ namespace Nekoyume.UI.Module
             loadingScreen.AnimateNPC(ItemType.Equipment, quote);
             loadingScreen.SetCloseAction(() =>
             {
+                var crystalAnimationStartPosition = animationData.crystalAnimationStartRect != null
+                    ? (Vector3) animationData.crystalAnimationStartRect
+                        .GetWorldPositionOfCenter()
+                    : crystalRewardText.transform.position;
+                var crystalAnimationTargetPosition =
+                    animationData.crystalAnimationTargetRect != null
+                        ? (Vector3) animationData.crystalAnimationTargetRect
+                            .GetWorldPositionOfCenter()
+                        : Widget.Find<HeaderMenuStatic>().Crystal.IconPosition +
+                          CrystalMovePositionOffset;
+                var animationCount = GetCrystalMoveAnimationCount(rewardCrystal);
                 StartCoroutine(ItemMoveAnimationFactory.CoItemMoveAnimation(
                     ItemMoveAnimationFactory.AnimationItemType.Crystal,
-                    crystalRewardText.transform.position,
-                    Widget.Find<HeaderMenuStatic>().Crystal.IconPosition +
-                    CrystalMovePositionOffset,
-                    30));
+                    crystalAnimationStartPosition,
+                    crystalAnimationTargetPosition,
+                    animationCount));
             });
         }
 
         private void OnNPCDisappear()
         {
             canvasGroup.interactable = true;
+        }
+
+        private int GetCrystalMoveAnimationCount(BigInteger crystal)
+        {
+            if (crystal > MaximumCrystal)
+            {
+                return animationData.maximum;
+            }
+
+            if (crystal > MiddleCrystal)
+            {
+                return animationData.middle;
+            }
+
+            return animationData.minimum;
         }
     }
 }

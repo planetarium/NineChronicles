@@ -302,7 +302,7 @@ namespace Nekoyume.UI
                         CloseWithOtherWidgets();
                         Find<HeaderMenuStatic>()
                             .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-                        Find<RankingBoard>().Show();
+                        Find<ArenaJoin>().Show();
                     },
                     L10nManager.Localize("UI_MAIN_MENU_RANKING"), itemBase),
                 AcquisitionPlaceButton.PlaceType.Shop => new AcquisitionPlaceButton.Model(

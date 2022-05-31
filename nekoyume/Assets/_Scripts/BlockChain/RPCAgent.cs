@@ -354,7 +354,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 // FIXME: BlockIndex may not initialized.
-                var weeklyArenaState = await ArenaHelper.GetThisWeekStateAsync(BlockIndex);
+                var weeklyArenaState = await ArenaHelperOld.GetThisWeekStateAsync(BlockIndex);
                 if (weeklyArenaState is null)
                 {
                     throw new FailedToInstantiateStateException<WeeklyArenaState>();

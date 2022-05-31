@@ -258,7 +258,8 @@ namespace Nekoyume.UI
                 "UI_UNLOCK_WORLD_FORMAT",
                 L10nManager.LocalizeWorldName(worldId));
             Find<PaymentPopup>().Show(
-                balance,
+                CostType.Crystal,
+                balance.MajorUnit,
                 cost,
                 balance.GetPaymentFormatText(usageMessage, cost),
                 L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
@@ -286,7 +287,9 @@ namespace Nekoyume.UI
                     var paymentPopup = Find<PaymentPopup>();
                     var cost = CrystalCalculator.CalculateWorldUnlockCost(worldIdListForUnlock,
                         tableSheets.WorldUnlockSheet).MajorUnit;
-                    paymentPopup.Show(States.Instance.CrystalBalance,
+                    paymentPopup.Show(
+                        CostType.Crystal,
+                        States.Instance.CrystalBalance.MajorUnit,
                         cost,
                         L10nManager.Localize(
                             "CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
