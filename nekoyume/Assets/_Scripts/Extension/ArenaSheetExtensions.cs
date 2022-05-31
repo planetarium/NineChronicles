@@ -97,5 +97,12 @@ namespace Nekoyume
             medalItemId = ArenaHelper.GetMedalItemId(roundData.ChampionshipId, roundData.Round);
             return true;
         }
+
+        public static (long beginning, long end, long current) GetSeasonProgress(
+            this ArenaSheet.RoundData roundData,
+            long blockIndex) => (
+            roundData?.StartBlockIndex ?? 0,
+            roundData?.EndBlockIndex ?? 0,
+            blockIndex);
     }
 }

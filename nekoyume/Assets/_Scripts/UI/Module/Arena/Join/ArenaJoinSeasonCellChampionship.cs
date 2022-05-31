@@ -18,9 +18,6 @@ namespace Nekoyume.UI.Module.Arena.Join
         [SerializeField]
         private TextMeshProUGUI _championshipId;
 
-        [SerializeField]
-        private SeasonArenaEmblem[] _seasonEmblems;
-
         public event System.Action OnClick = delegate { };
 
         private void Awake()
@@ -31,20 +28,6 @@ namespace Nekoyume.UI.Module.Arena.Join
         public void Show(ArenaJoinSeasonItemData itemData, bool selected)
         {
             _championshipId.text = itemData.RoundData.ChampionshipId.ToString();
-            for (var i = 0; i < _seasonEmblems.Length; i++)
-            {
-                var _seasonEmblem = _seasonEmblems[i];
-                if (itemData.ChampionshipSeasonNumbers.Length > i)
-                {
-                    _seasonEmblem.SetData(itemData.ChampionshipSeasonNumbers[i], true);
-                    _seasonEmblem.transform.parent.gameObject.SetActive(true);
-                }
-                else
-                {
-                    _seasonEmblem.transform.parent.gameObject.SetActive(false);
-                }
-            }
-
             gameObject.SetActive(true);
         }
 

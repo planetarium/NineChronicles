@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using TMPro;
 using UnityEngine;
@@ -61,9 +61,15 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var progress = (float)current.Ticket / max;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var currentRoundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            var ticket = current.GetTicketCount(
+                blockIndex,
+                currentRoundData.StartBlockIndex,
+                States.Instance.GameConfigState.DailyArenaInterval);
+            var progress = (float)ticket / max;
             _slider.normalizedValue = progress;
-            _fillText.text = $"{current.Ticket}/{max}";
+            _fillText.text = $"{ticket}/{max}";
         }
 
         private void UpdateTimespanText((long beginning, long end, long progress) tuple)

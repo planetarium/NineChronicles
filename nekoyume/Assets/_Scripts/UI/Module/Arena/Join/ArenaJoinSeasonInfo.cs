@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.State;
@@ -66,13 +67,23 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
+        private ArenaSheet.RoundData _roundData;
+        
+        private void OnEnable()
+        {
+            Game.Game.instance.Agent.BlockIndexSubject
+                .Subscribe(blockIndex =>
+                    SetSliderAndText(_roundData.GetSeasonProgress(blockIndex)))
+                .AddTo(gameObject);
+        }
+
         private void OnDisable()
         {
             _disposables.DisposeAllAndClear();
         }
 
         /// <param name="title">Season Name</param>
-        /// <param name="seasonProgress"></param>
+        /// <param name="roundData"></param>
         /// <param name="conditions">Season Conditions</param>
         /// <param name="rewardType">
         ///   Reward types.
@@ -81,20 +92,23 @@ namespace Nekoyume.UI.Module.Arena.Join
         /// <param name="medalItemId">Season Medal ItemId on ItemSheet</param>
         public void SetData(
             string title,
-            (long beginning, long end, long current) seasonProgress,
+            ArenaSheet.RoundData roundData,
             (int max, int current)? conditions,
             RewardType rewardType,
             int? medalItemId)
         {
             _disposables.DisposeAllAndClear();
             _titleText.text = title;
-            SetSliderAndText(seasonProgress);
+            _roundData = roundData;
+
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            SetSliderAndText(_roundData.GetSeasonProgress(blockIndex));
             SetConditions(conditions);
             SetRewards(rewardType);
             SetMedalImages(medalItemId);
         }
 
-        public void SetSliderAndText((long beginning, long end, long current) tuple)
+        private void SetSliderAndText((long beginning, long end, long current) tuple)
         {
             var (beginning, end, current) = tuple;
             if (current < beginning)

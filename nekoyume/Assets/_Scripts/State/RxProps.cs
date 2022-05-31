@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
-using Nekoyume.Action;
+using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
-using Nekoyume.Model.State;
-using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.State
@@ -19,18 +16,31 @@ namespace Nekoyume.State
     {
         #region Arena
 
-        private static readonly ReactiveProperty<(long beginning, long end, long progress)> _arenaTicketProgress = new ReactiveProperty<(long beginning, long end, long progress)>();
+        private static readonly ReactiveProperty<(long beginning, long end, long progress)>
+            _arenaTicketProgress = new ReactiveProperty<(long beginning, long end, long progress)>();
 
-        public static IReadOnlyReactiveProperty<(long beginning, long end, long progress)> ArenaTicketProgress => _arenaTicketProgress;
+        public static IReadOnlyReactiveProperty<(long beginning, long end, long progress)>
+            ArenaTicketProgress => _arenaTicketProgress;
 
         private static readonly AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
-            _arenaInfoTuple = new AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>(
-                UpdateArenaInformationAsync);
+            _arenaInfoTuple =
+                new AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>(
+                    UpdateArenaInformationAsync);
 
         private static long _arenaInformationUpdatedBlockIndex;
 
         public static IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
             ArenaInfoTuple => _arenaInfoTuple;
+        
+        private static readonly AsyncUpdatableRxProp<(Address avatarAddress, int score)[]>
+            _arenaParticipantsOrderedWithScore = new AsyncUpdatableRxProp<(Address avatarAddress, int score)[]>(
+                Array.Empty<(Address avatarAddress, int score)>(),
+                UpdateArenaParticipantsOrderedWithScoreAsync);
+
+        private static long _arenaParticipantsOrderedWithScoreUpdatedBlockIndex;
+
+        public static IReadOnlyAsyncUpdatableRxProp<(Address avatarAddress, int score)[]>
+            ArenaParticipantsOrderedWithScore => _arenaParticipantsOrderedWithScore;
 
         #endregion
 
@@ -110,25 +120,23 @@ namespace Nekoyume.State
             }
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var arenaRow = _tableSheets.ArenaSheet.GetRowByBlockIndex(blockIndex);
-            var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            var sheet = _tableSheets.ArenaSheet;
+            if (!sheet.TryGetCurrentRound(blockIndex, out var currentRoundData))
+            {
+                Debug.Log($"Failed to get current round data. block index({blockIndex})");
+                return previous;
+            }
+
             var currentArenaInfoAddress = ArenaInformation.DeriveAddress(
                 avatarAddress.Value,
                 currentRoundData.ChampionshipId,
                 currentRoundData.Round);
-
-            var nextRoundData = arenaRow.TryGetRound(
-                currentRoundData.Round + 1,
-                out var outNextRoundData)
-                ? outNextRoundData
-                : null;
-            var nextArenaInfoAddress = nextRoundData is null
-                ? default
-                : ArenaInformation.DeriveAddress(
+            var nextArenaInfoAddress = sheet.TryGetNextRound(blockIndex, out var nextRoundData)
+                ? ArenaInformation.DeriveAddress(
                     avatarAddress.Value,
-                    currentRoundData.ChampionshipId,
-                    currentRoundData.Round);
-
+                    nextRoundData.ChampionshipId,
+                    nextRoundData.Round)
+                : default;
             var dict = await Game.Game.instance.Agent.GetStateBulk(
                 new[]
                 {
@@ -142,11 +150,38 @@ namespace Nekoyume.State
                     ? new ArenaInformation(currentList)
                     : null;
             var nextArenaInfo =
-                dict.TryGetValue(currentArenaInfoAddress, out var nextValue) &&
+                dict.TryGetValue(nextArenaInfoAddress, out var nextValue) &&
                 nextValue is List nextList
                     ? new ArenaInformation(nextList)
                     : null;
             return (currentArenaInfo, nextArenaInfo);
+        }
+
+        private static async UniTask<(Address avatarAddress, int score)[]>
+            UpdateArenaParticipantsOrderedWithScoreAsync((Address avatarAddress, int score)[] previous)
+        {
+            if (_arenaParticipantsOrderedWithScoreUpdatedBlockIndex == _agent.BlockIndex)
+            {
+                return previous;
+            }
+            
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            var address = ArenaParticipants.DeriveAddress(
+                currentRoundData.ChampionshipId,
+                currentRoundData.Round);
+            var participants = await _agent.GetStateAsync(address);
+            if (!(participants is List list))
+            {
+                Debug.Log($"Failed to get {nameof(ArenaParticipants)} with {address.ToHex()}");
+                return previous;
+            }
+            
+            
+            
+            return previous;
+            
+            
         }
     }
 }

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Join;
+using Nekoyume.UI.Scroller;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,6 +22,9 @@ namespace Nekoyume.UI
 
     public class ArenaJoin : Widget
     {
+        private const int BarScrollCellCount = 8;
+        private static readonly int BarScrollIndexOffset = (int)math.ceil(BarScrollCellCount / 2f) - 1;
+        
 #if UNITY_EDITOR
         [SerializeField]
         private bool _useSo;
@@ -34,9 +38,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private ArenaJoinSeasonBarScroll _barScroll;
-
-        [SerializeField]
-        private int _barPointCount;
 
         [SerializeField]
         private ArenaJoinSeasonInfo _info;
@@ -59,6 +60,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
+            InitializeScrolls();
             InitializeBottomButtons();
 
             _backButton.OnClickAsObservable().Subscribe(_ =>
@@ -77,28 +79,10 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
-            UpdateScrolls(_disposablesForShow);
+            UpdateScrolls();
             UpdateInfo();
-            UpdateBottomButtons();
 
-            _scroll.OnSelectionChanged
-                .Select(ReverseScrollIndex)
-                .Subscribe(reversedIndex =>
-                {
-                    _barScroll.SelectCell(reversedIndex, false);
-                    UpdateInfo();
-                    UpdateBottomButtons();
-                })
-                .AddTo(_disposablesForShow);
-            _barScroll.OnSelectionChanged
-                .Select(ReverseScrollIndex)
-                .Subscribe(reversedIndex =>
-                {
-                    _scroll.SelectCell(reversedIndex, false);
-                    UpdateInfo();
-                    UpdateBottomButtons();
-                })
-                .AddTo(_disposablesForShow);
+            // NOTE: RxProp invoke on next callback when subscribe function invoked.
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())
                 .AddTo(_disposablesForShow);
@@ -111,7 +95,32 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        private void UpdateScrolls(IList<IDisposable> disposables)
+        /// <summary>
+        /// Used from Awake() function once.
+        /// </summary>
+        private void InitializeScrolls()
+        {
+            _scroll.OnSelectionChanged
+                .Select(ReverseScrollIndex)
+                .Subscribe(reversedIndex =>
+                {
+                    _barScroll.SelectCell(reversedIndex, false);
+                    UpdateInfo();
+                    UpdateBottomButtons();
+                })
+                .AddTo(gameObject);
+            _barScroll.OnSelectionChanged
+                .Select(ReverseScrollIndex)
+                .Subscribe(reversedIndex =>
+                {
+                    _scroll.SelectCell(reversedIndex, false);
+                    UpdateInfo();
+                    UpdateBottomButtons();
+                })
+                .AddTo(gameObject);
+        }
+
+        private void UpdateScrolls()
         {
             var scrollData = GetScrollData();
             var selectedRoundData = TableSheets.Instance.ArenaSheet.TryGetCurrentRound(
@@ -121,9 +130,8 @@ namespace Nekoyume.UI
                 : null;
             var selectedIndex = selectedRoundData?.Round - 1 ?? 0;
             _scroll.SetData(scrollData, selectedIndex);
-            var barIndexOffset = (int)math.ceil(_barPointCount / 2f) - 1;
             _barScroll.SetData(
-                GetBarScrollData(barIndexOffset),
+                GetBarScrollData(BarScrollIndexOffset),
                 ReverseScrollIndex(selectedIndex));
         }
 
@@ -147,20 +155,12 @@ namespace Nekoyume.UI
                         out var seasonNumber)
                         ? seasonNumber
                         : (int?)null,
-                    ChampionshipSeasonNumbers =
-                        data.ArenaType == ArenaType.Championship
-                            ? championshipSeasonIds
-                            : Array.Empty<int>(),
                 }).ToList();
             }
 #endif
             {
                 var blockIndex = Game.Game.instance.Agent.BlockIndex;
                 var row = TableSheets.Instance.ArenaSheet.GetRowByBlockIndex(blockIndex);
-                var championshipSeasonIds = row.Round
-                    .Where(e => e.ArenaType == ArenaType.Season)
-                    .Select(e => e.Round)
-                    .ToArray();
                 return row.Round
                     .Select(roundData => new ArenaJoinSeasonItemData
                     {
@@ -168,18 +168,14 @@ namespace Nekoyume.UI
                         SeasonNumber = row.TryGetSeasonNumber(roundData.Round, out var seasonNumber)
                             ? seasonNumber
                             : (int?)null,
-                        ChampionshipSeasonNumbers = roundData.ArenaType == ArenaType.Championship
-                            ? championshipSeasonIds
-                            : Array.Empty<int>(),
                     }).ToList();
             }
         }
 
-        private IList<ArenaJoinSeasonBarItemData> GetBarScrollData(
+        private static IList<ArenaJoinSeasonBarItemData> GetBarScrollData(
             int barIndexOffset)
         {
-            var cellCount = _barPointCount;
-            return Enumerable.Range(0, cellCount)
+            return Enumerable.Range(0, BarScrollCellCount)
                 .Select(index => new ArenaJoinSeasonBarItemData
                 {
                     visible = index == barIndexOffset,
@@ -187,15 +183,16 @@ namespace Nekoyume.UI
                 .ToList();
         }
 
-        private int ReverseScrollIndex(int scrollIndex) =>
-            _barPointCount - scrollIndex - 1;
+        private static int ReverseScrollIndex(int scrollIndex) =>
+            BarScrollCellCount - scrollIndex - 1;
 
         private void UpdateInfo()
         {
             var selectedRoundData = _scroll.SelectedItemData.RoundData;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             _info.SetData(
                 _scroll.SelectedItemData.GetRoundName(),
-                GetSeasonProgress(selectedRoundData),
+                selectedRoundData,
                 GetConditions(),
                 GetRewardType(_scroll.SelectedItemData),
                 selectedRoundData.TryGetMedalItemId(out var medalItemId)
@@ -203,6 +200,9 @@ namespace Nekoyume.UI
                     : (int?)null);
         }
 
+        /// <summary>
+        /// Used from Awake() function once.
+        /// </summary>
         private void InitializeBottomButtons()
         {
             _joinButton.SetState(ConditionalButton.State.Normal);
@@ -219,10 +219,37 @@ namespace Nekoyume.UI
             _paymentButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Find<ArenaBoard>()
-                    .ShowAsync(_scroll.SelectedItemData.RoundData)
-                    .Forget();
-                Close();
+                var inventory = States.Instance.CurrentAvatarState.inventory;
+                var selectedRoundData = _scroll.SelectedItemData.RoundData;
+                ActionManager.Instance.JoinArena(
+                        inventory.Costumes
+                            .Where(e => e.Equipped)
+                            .Select(e => e.NonFungibleId)
+                            .ToList(),
+                        inventory.Equipments
+                            .Where(e => e.Equipped)
+                            .Select(e => e.NonFungibleId)
+                            .ToList(),
+                        selectedRoundData.ChampionshipId,
+                        selectedRoundData.Round)
+                    .DoOnSubscribe(() => Find<LoadingScreen>().Show())
+                    .DoOnError(e =>
+                    {
+                        Find<LoadingScreen>().Close();
+                        NotificationSystem.Push(
+                            MailType.System,
+                            $"Failed to payment. {e}",
+                            NotificationCell.NotificationType.Notification);
+                    })
+                    .DoOnCompleted(() =>
+                    {
+                        Find<LoadingScreen>().Close();
+                        Close();
+                        Find<ArenaBoard>()
+                            .ShowAsync(_scroll.SelectedItemData.RoundData)
+                            .Forget();
+                    })
+                    .Subscribe();
             }).AddTo(gameObject);
         }
         
@@ -268,15 +295,10 @@ namespace Nekoyume.UI
                         if (RxProps.ArenaInfoTuple.Value.current is null)
                         {
                             _joinButton.gameObject.SetActive(false);
-                            var cost = (int)selectedRoundData.EntranceFee;
-                            _paymentButton.SetCondition(() =>
-                                States.Instance.CrystalBalance >=
-                                cost * States.Instance.CrystalBalance.Currency);
-                            _paymentButton.SetCost(CostType.Crystal, cost);
+                            _paymentButton.SetCondition(CheckChampionshipConditions);
+                            _paymentButton.SetCost(CostType.Crystal, (int)selectedRoundData.EntranceFee);
                             _paymentButton.UpdateObjects();
-                            _paymentButton.Interactable =
-                                States.Instance.CrystalBalance >=
-                                cost * States.Instance.CrystalBalance.Currency;
+                            _paymentButton.Interactable = CheckChampionshipConditions();
                             _paymentButton.gameObject.SetActive(true);
                         }
                         else
@@ -299,14 +321,21 @@ namespace Nekoyume.UI
             }
         }
 
-        private static (long beginning, long end, long current) GetSeasonProgress(
-            ArenaSheet.RoundData selectedRoundData)
+        private bool CheckChampionshipConditions()
         {
+            var selectedRoundData = _scroll.SelectedItemData.RoundData;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            return (
-                selectedRoundData.StartBlockIndex,
-                selectedRoundData.EndBlockIndex,
+            var row = TableSheets.Instance.ArenaSheet.GetRowByBlockIndex(blockIndex);
+            var medalTotalCount = ArenaHelper.GetMedalTotalCount(
+                row,
+                States.Instance.CurrentAvatarState);
+            var completeCondition = medalTotalCount >=
+                                    selectedRoundData.RequiredMedalCount;
+            var cost = ArenaHelper.GetEntranceFee(
+                selectedRoundData,
                 blockIndex);
+            var hasCost = States.Instance.CrystalBalance >= cost;
+            return completeCondition && hasCost;
         }
 
         private (int max, int current) GetConditions()

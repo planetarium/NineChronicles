@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Arena;
@@ -35,8 +36,19 @@ namespace Nekoyume.UI.Module.Lobby
                 .SubscribeOnMainThreadWithUpdateOnce(tuple =>
                 {
                     var (current, _) = tuple;
-                    _ticketCount.text = current?.Ticket.ToString()
-                                        ?? ArenaInformation.MaxTicketCount.ToString();
+                    if (current is null)
+                    {
+                        _ticketCount.text = ArenaInformation.MaxTicketCount.ToString();
+                        return;
+                    }
+
+                    var blockIndex = Game.Game.instance.Agent.BlockIndex;
+                    var currentRoundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+                    var ticket = current.GetTicketCount(
+                        blockIndex,
+                        currentRoundData.StartBlockIndex,
+                        States.Instance.GameConfigState.DailyArenaInterval);
+                    _ticketCount.text = ticket.ToString();
                 })
                 .AddTo(_disposables);
         }

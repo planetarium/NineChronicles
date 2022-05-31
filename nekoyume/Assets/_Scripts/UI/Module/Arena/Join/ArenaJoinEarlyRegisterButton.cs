@@ -4,11 +4,12 @@ using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Arena.Emblems;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.Arena.Join
@@ -45,20 +46,41 @@ namespace Nekoyume.UI.Module.Arena.Join
             {
                 var costFav =
                     _cost * States.Instance.CrystalBalance.Currency;
-                // if (States.Instance.CrystalBalance < costFav)
-                // {
-                //     // TODO: 크리스탈 부족 팝업.
-                //     return;
-                // }
+                if (States.Instance.CrystalBalance < costFav)
+                {
+                    NotificationSystem.Push(
+                        MailType.System,
+                        "Not enough crystal.",
+                        NotificationCell.NotificationType.Information);
+                    return;
+                }
 
                 var inventory = States.Instance.CurrentAvatarState.inventory;
                 ActionManager.Instance.JoinArena(
-                        inventory.Costumes.Select(e => e.NonFungibleId).ToList(),
-                        inventory.Equipments.Select(e => e.NonFungibleId).ToList(),
+                        inventory.Costumes
+                            .Where(e => e.Equipped)
+                            .Select(e => e.NonFungibleId)
+                            .ToList(),
+                        inventory.Equipments
+                            .Where(e => e.Equipped)
+                            .Select(e => e.NonFungibleId)
+                            .ToList(),
                         _championshipId,
                         _round)
                     .DoOnSubscribe(() => Widget.Find<LoadingScreen>().Show())
-                    .DoOnCompleted(() => Widget.Find<LoadingScreen>().Close())
+                    .DoOnError(e =>
+                    {
+                        Widget.Find<LoadingScreen>().Close();
+                        NotificationSystem.Push(
+                            MailType.System,
+                            "Failed to early register to next round.",
+                            NotificationCell.NotificationType.Alert);
+                    })
+                    .DoOnCompleted(() =>
+                    {
+                        Hide();
+                        Widget.Find<LoadingScreen>().Close();
+                    })
                     .Subscribe();
             });
         }
@@ -68,8 +90,7 @@ namespace Nekoyume.UI.Module.Arena.Join
             int championshipId,
             int round,
             bool isRegistered,
-            long cost = 0,
-            bool hasCost = false)
+            long cost = 0)
         {
             _championshipId = championshipId;
             _round = round;
@@ -83,16 +104,16 @@ namespace Nekoyume.UI.Module.Arena.Join
                 case ArenaType.Season:
                     var seasonNumber = TableSheets.Instance.ArenaSheet.TryGetSeasonNumber(
                         Game.Game.instance.Agent.BlockIndex,
-                        round,
+                        _round,
                         out var outSeasonNumber)
                         ? outSeasonNumber
-                        : throw new Exception($"Failed to get season number: {championshipId}, {round}");
+                        : throw new Exception($"Failed to get season number: {_championshipId}, {round}");
                     _seasonArenaEmblem.Show(seasonNumber, !isRegistered);
                     _championshipArenaEmblem.Hide();
                     break;
                 case ArenaType.Championship:
                     _seasonArenaEmblem.Hide();
-                    _championshipArenaEmblem.Show(championshipId, !isRegistered);
+                    _championshipArenaEmblem.Show(_championshipId, !isRegistered);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(arenaType));
@@ -102,12 +123,14 @@ namespace Nekoyume.UI.Module.Arena.Join
             {
                 _paymentObject.SetActive(false);
                 _completedObject.SetActive(true);
+                _button.interactable = false;
                 return;
             }
 
             _costText.text = _cost.ToString("N0", CultureInfo.CurrentCulture);
             _paymentObject.SetActive(true);
             _completedObject.SetActive(false);
+            _button.interactable = true;
             gameObject.SetActive(true);
         }
 

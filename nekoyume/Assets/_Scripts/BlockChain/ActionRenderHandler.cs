@@ -1527,7 +1527,7 @@ namespace Nekoyume.BlockChain
         }
 #endif
 
-        private void ResponseJoinArena(ActionBase.ActionEvaluation<JoinArena> eval)
+        private static void ResponseJoinArena(ActionBase.ActionEvaluation<JoinArena> eval)
         {
             if (eval.Exception != null ||
                 eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
@@ -1535,7 +1535,8 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateCrystalBalance(eval);
+            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
             NotificationSystem.Push(
                 MailType.System,
                 "Congratulations! Now you registered the next season!",
