@@ -69,14 +69,22 @@ namespace Nekoyume.Action
             {
                 typeof(CrystalEquipmentGrindingSheet),
                 typeof(CrystalMonsterCollectionMultiplierSheet),
-                typeof(MaterialItemSheet)
+                typeof(MaterialItemSheet),
+                typeof(StakeRegularRewardSheet)
             });
 
-            int monsterCollectionLevel = 0;
-            if (states.TryGetState(monsterCollectionAddress, out Dictionary mcDict))
+            Currency currency = states.GetGoldCurrency();
+            FungibleAssetValue stakedAmount = 0 * currency;
+            if (states.TryGetStakeState(context.Signer, out StakeState stakeState))
             {
-                var monsterCollectionState = new MonsterCollectionState(mcDict);
-                monsterCollectionLevel = monsterCollectionState.Level;
+                 stakedAmount = states.GetBalance(stakeState.address, currency);
+            }
+            else
+            {
+                if (states.TryGetState(monsterCollectionAddress, out Dictionary _))
+                {
+                    stakedAmount = states.GetBalance(monsterCollectionAddress, currency);
+                }
             }
 
             if (avatarState.actionPoint < CostAp)
@@ -131,9 +139,15 @@ namespace Nekoyume.Action
                 equipmentList.Add(equipment);
             }
 
-            FungibleAssetValue crystal = CrystalCalculator.CalculateCrystal(equipmentList,
-                sheets.GetSheet<CrystalEquipmentGrindingSheet>(), monsterCollectionLevel,
-                sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>(), false);
+            FungibleAssetValue crystal = CrystalCalculator.CalculateCrystal(
+                context.Signer,
+                equipmentList,
+                stakedAmount,
+                false,
+                sheets.GetSheet<CrystalEquipmentGrindingSheet>(),
+                sheets.GetSheet<CrystalMonsterCollectionMultiplierSheet>(),
+                sheets.GetSheet<StakeRegularRewardSheet>()
+            );
 
             var mail = new GrindingMail(
                 ctx.BlockIndex,

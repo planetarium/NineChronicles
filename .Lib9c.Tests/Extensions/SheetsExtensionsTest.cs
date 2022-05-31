@@ -59,7 +59,7 @@
             out Dictionary<string, string> sheetNameAndFiles,
             out Dictionary<Address, IValue> sheetsAddressAndValues,
             out Type[] sheetTypes,
-            out Dictionary<Type, (Address, ISheet)> stateSheets)
+            out Dictionary<Type, (Address Address, ISheet Sheet)> stateSheets)
         {
             sheetNameAndFiles = TableSheetsImporter.ImportSheets();
             sheetsAddressAndValues = sheetNameAndFiles.ToDictionary(

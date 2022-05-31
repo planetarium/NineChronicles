@@ -72,12 +72,27 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0)]
-        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0)]
-        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 3250)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 3575)]
-        public void Execute(int level, int expectedGold, bool backward, int randomSeed, int expectedLevel, ItemEnhancement.EnhancementResult expected, int monsterCollectLevel, int expectedCrystal)
+        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0, false)]
+        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0, false)]
+        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0, false)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 3250, false)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 3575, false)]
+        [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0, true)]
+        [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0, true)]
+        [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0, true)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 3250, true)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 3575, true)]
+        public void Execute(
+            int level,
+            int expectedGold,
+            bool backward,
+            int randomSeed,
+            int expectedLevel,
+            ItemEnhancement.EnhancementResult expected,
+            int monsterCollectLevel,
+            int expectedCrystal,
+            bool stake
+        )
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
@@ -126,11 +141,26 @@ namespace Lib9c.Tests.Action
 
             if (monsterCollectLevel > 0)
             {
-                var mcAddress = MonsterCollectionState.DeriveAddress(_agentAddress, 0);
-                _initialState = _initialState.SetState(
-                    mcAddress,
-                    new MonsterCollectionState(mcAddress, monsterCollectLevel, 0).Serialize()
-                );
+                var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
+                    .First(r => r.Level == monsterCollectLevel).RequiredGold;
+                if (stake)
+                {
+                    // StakeState;
+                    var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
+                    var stakeState = new StakeState(stakeStateAddress, 1);
+                    _initialState = _initialState
+                            .SetState(stakeStateAddress, stakeState.SerializeV2())
+                            .MintAsset(stakeStateAddress, requiredGold * _currency);
+                }
+                else
+                {
+                    var mcAddress = MonsterCollectionState.DeriveAddress(_agentAddress, 0);
+                    _initialState = _initialState.SetState(
+                        mcAddress,
+                        new MonsterCollectionState(mcAddress, monsterCollectLevel, 0).Serialize()
+                    )
+                        .MintAsset(mcAddress, requiredGold * _currency);
+                }
             }
 
             var action = new ItemEnhancement()
