@@ -139,7 +139,8 @@ namespace Nekoyume.State
             }
 
             MonsterCollectionState = monsterCollectionState;
-            MonsterCollectionStateSubject.OnNextLevel(monsterCollectionState.Level);
+            StakingLevel = monsterCollectionState.Level;
+            MonsterCollectionStateSubject.OnNextLevel(StakingLevel);
         }
 
         public void SetStakeState(StakeState stakeState, int stakingLevel)
