@@ -148,6 +148,8 @@ namespace Nekoyume.Game
         public ArenaSheet ArenaSheet { get; private set; }
 
         public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
+        
+        public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
