@@ -35,6 +35,9 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
 
+        public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
+        public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
+        
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
             {
@@ -246,8 +249,8 @@ namespace Nekoyume.Action
 
             // simulate
             var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
-            var myDigest = new ArenaPlayerDigest(avatarState, myArenaAvatarState);
-            var enemyDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+            ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(avatarState, myArenaAvatarState);
+            ExtraEnemyArenaPlayerDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             var arenaSheets = sheets.GetArenaSimulatorSheets();
             var winCount = 0;
             var defeatCount = 0;
@@ -255,8 +258,11 @@ namespace Nekoyume.Action
 
             for (var i = 0; i < ticket; i++)
             {
-                var simulator =
-                    new ArenaSimulator(context.Random, myDigest, enemyDigest, arenaSheets);
+                var simulator = new ArenaSimulator(
+                    context.Random,
+                    ExtraMyArenaPlayerDigest,
+                    ExtraEnemyArenaPlayerDigest,
+                    arenaSheets);
                 simulator.Simulate();
 
                 if (simulator.Result.Equals(BattleLog.Result.Win))
@@ -272,7 +278,7 @@ namespace Nekoyume.Action
                     context.Random,
                     sheets.GetSheet<WeeklyArenaRewardSheet>(),
                     sheets.GetSheet<MaterialItemSheet>(),
-                    myDigest.Level,
+                    ExtraMyArenaPlayerDigest.Level,
                     maxCount: ArenaHelper.GetRewardCount(myArenaScore.Score));
                 rewards.AddRange(reward);
             }
