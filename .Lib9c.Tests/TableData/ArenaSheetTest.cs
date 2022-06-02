@@ -2,6 +2,7 @@ namespace Lib9c.Tests.TableData
 {
     using System;
     using System.Linq;
+    using Lib9c.Tests.Action;
     using Nekoyume.Model.EnumType;
     using Nekoyume.TableData;
     using Xunit;
@@ -126,56 +127,48 @@ namespace Lib9c.Tests.TableData
             }
         }
 
-        [Theory]
-        [InlineData(-1, false, default(int))]
-        [InlineData(0, true, 1)]
-        [InlineData(99, true, 1)]
-        [InlineData(100, true, 2)]
-        [InlineData(20000, true, 2)]
-        [InlineData(20001, false, default(int))]
-        public void GetRowByBlockIndexTest(
-            long blockIndex,
-            bool expectedExist,
-            int expectedChampionshipId)
+        [Fact]
+        public void GetRowByBlockIndexTest()
         {
-            if (expectedExist)
-            {
-                var row = _arenaSheet.GetRowByBlockIndex(blockIndex);
-                Assert.NotNull(row);
-                Assert.Equal(expectedChampionshipId, row.ChampionshipId);
-                return;
-            }
+            var random = new TestRandom();
+            var expectRow = _arenaSheet.OrderedList[random.Next(0, _arenaSheet.Count)];
+            var expectRound = expectRow.Round[random.Next(0, 8)];
+            var blockIndex = expectRound.StartBlockIndex;
+            var testRow = _arenaSheet.GetRowByBlockIndex(blockIndex);
+            Assert.NotNull(testRow);
+            Assert.Equal(expectRow.ChampionshipId, testRow.ChampionshipId);
+            blockIndex = expectRound.EndBlockIndex;
+            testRow = _arenaSheet.GetRowByBlockIndex(blockIndex);
+            Assert.NotNull(testRow);
+            Assert.Equal(expectRow.ChampionshipId, testRow.ChampionshipId);
 
+            var lastRound = expectRow.Round[7];
+            blockIndex = lastRound.EndBlockIndex + 1;
             Assert.Throws<InvalidOperationException>(() =>
                 _arenaSheet.GetRowByBlockIndex(blockIndex));
         }
 
-        [Theory]
-        [InlineData(-1, false, default(int), default(int), default(ArenaType))]
-        [InlineData(0, true, 1, 1, ArenaType.OffSeason)]
-        [InlineData(21, true, 1, 4, ArenaType.Season)]
-        [InlineData(61, true, 1, 8, ArenaType.Championship)]
-        [InlineData(100, true, 2, 1, ArenaType.OffSeason)]
-        [InlineData(121, true, 2, 4, ArenaType.Season)]
-        [InlineData(161, true, 2, 8, ArenaType.Championship)]
-        [InlineData(20001, false, default(int), default(int), default(ArenaType))]
-        public void GetRoundByBlockIndexTest(
-            long blockIndex,
-            bool expectedExist,
-            int expectedId,
-            int expectedRound,
-            ArenaType expectedArenaType)
+        [Fact]
+        public void GetRoundByBlockIndexTest()
         {
-            if (expectedExist)
-            {
-                var roundData = _arenaSheet.GetRoundByBlockIndex(blockIndex);
-                Assert.NotNull(roundData);
-                Assert.Equal(expectedId, roundData.ChampionshipId);
-                Assert.Equal(expectedRound, roundData.Round);
-                Assert.Equal(expectedArenaType, roundData.ArenaType);
-                return;
-            }
+            var random = new TestRandom();
+            var expectRow = _arenaSheet.OrderedList[random.Next(0, _arenaSheet.Count)];
+            var expectRound = expectRow.Round[random.Next(0, 8)];
+            var blockIndex = expectRound.StartBlockIndex;
+            var testRound = _arenaSheet.GetRoundByBlockIndex(blockIndex);
+            Assert.NotNull(testRound);
+            Assert.Equal(expectRound.ChampionshipId, testRound.ChampionshipId);
+            Assert.Equal(expectRound.Round, testRound.Round);
+            Assert.Equal(expectRound.ArenaType, testRound.ArenaType);
+            blockIndex = expectRound.EndBlockIndex;
+            testRound = _arenaSheet.GetRoundByBlockIndex(blockIndex);
+            Assert.NotNull(testRound);
+            Assert.Equal(expectRound.ChampionshipId, testRound.ChampionshipId);
+            Assert.Equal(expectRound.Round, testRound.Round);
+            Assert.Equal(expectRound.ArenaType, testRound.ArenaType);
 
+            var lastRound = expectRow.Round[7];
+            blockIndex = lastRound.EndBlockIndex + 1;
             Assert.Throws<InvalidOperationException>(() =>
                 _arenaSheet.GetRoundByBlockIndex(blockIndex));
         }
