@@ -140,9 +140,9 @@ namespace Nekoyume.UI.Model
             var unlockedRecipeIdsAddress = address.Derive("recipe_ids");
             var task = Game.Game.instance.Agent.GetStateAsync(unlockedRecipeIdsAddress);
             await task;
-            var result = task.Result != null ?
+            var result = !(task.Result is Null) ?
                 task.Result.ToList(StateExtensions.ToInteger) :
-                new List<int>() { 1 };
+                new List<int> { 1 };
             SetUnlockedRecipes(result);
         }
 
