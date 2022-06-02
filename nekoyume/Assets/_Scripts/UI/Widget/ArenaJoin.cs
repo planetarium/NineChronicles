@@ -81,6 +81,7 @@ namespace Nekoyume.UI
             UpdateScrolls();
             UpdateInfo();
 
+            // TODO!!!! 크리스탈 업데이트 확인해서 하단 버튼들을 업데이트 한다.
             // NOTE: RxProp invoke on next callback when subscribe function invoked.
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())

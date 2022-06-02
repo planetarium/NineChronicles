@@ -487,7 +487,7 @@ namespace Nekoyume.Game
 #endif
             waveCount = log.waveCount;
             waveTurn = 1;
-            stageId = log.stageId;
+            stageId = 999999;
             if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
                 yield break;
 
@@ -756,7 +756,9 @@ namespace Nekoyume.Game
 
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
-                ActionRenderHandler.Instance.UpdateCurrentAvatarStateAsync(AvatarState);
+                ActionRenderHandler.Instance
+                    .UpdateCurrentAvatarStateAsync(AvatarState)
+                    .Forget();
             }
 
             yield return null;
