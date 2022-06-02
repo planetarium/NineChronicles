@@ -13,7 +13,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Item;
-using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.Model.State;
@@ -27,14 +26,13 @@ using mixpanel;
 using Nekoyume.Arena;
 using Nekoyume.Model.Arena;
 using Unity.Mathematics;
-using Material = Nekoyume.Model.Item.Material;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
 #endif
 namespace Nekoyume.BlockChain
 {
-    using Nekoyume.UI.Scroller;
+    using UI.Scroller;
     using UniRx;
 
     /// <summary>
@@ -353,7 +351,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<Stake>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(RenderStake)
+                .Subscribe(ResponseStake)
                 .AddTo(_disposables);
         }
 
@@ -504,6 +502,18 @@ namespace Nekoyume.BlockChain
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
 
+                if (eval.Action.payByCrystal)
+                {
+                    try
+                    {
+                        UpdateCrystalBalance(eval);
+                    }
+                    catch (BalanceDoesNotExistsException e)
+                    {
+                        Debug.LogError("Failed to update crystal balance : " + e);
+                    }
+                }
+
                 if (!(nextQuest is null))
                 {
                     var isRecipeMatch = nextQuest.RecipeId == eval.Action.recipeId;
@@ -638,6 +648,17 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                if (result.CRYSTAL.MajorUnit > 0)
+                {
+                    try
+                    {
+                        UpdateCrystalBalance(eval);
+                    }
+                    catch (BalanceDoesNotExistsException e)
+                    {
+                        Debug.LogError("Failed to update crystal balance : " + e);
+                    }
+                }
 
                 // Notify
                 string formatKey;
@@ -1255,7 +1276,7 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            UpdateAgentStateAsync(eval);
+            UpdateAgentStateAsync(eval).Forget();
         }
 
         private void ResponseGrinding(ActionBase.ActionEvaluation<Grinding> eval)
@@ -1289,8 +1310,16 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Grinding,
                 L10nManager.Localize("UI_GRINDING_NOTIFY"),
                 NotificationCell.NotificationType.Information);
-            UpdateCurrentAvatarStateAsync(eval);
-            UpdateAgentStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval).Forget();
+            try
+            {
+                UpdateCrystalBalance(eval);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
+            }
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
@@ -1317,6 +1346,14 @@ namespace Nekoyume.BlockChain
 
             await UpdateCurrentAvatarStateAsync(eval);
             await UpdateAgentStateAsync(eval);
+            try
+            {
+                UpdateCrystalBalance(eval);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
+            }
 
             foreach (var id in recipeIds)
             {
@@ -1344,9 +1381,17 @@ namespace Nekoyume.BlockChain
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
+            try
+            {
+                UpdateCrystalBalance(eval);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
+            }
         }
 
-        public void RenderStake(ActionBase.ActionEvaluation<Stake> eval)
+        private void ResponseStake(ActionBase.ActionEvaluation<Stake> eval)
         {
             if (!(eval.Exception is null))
             {
