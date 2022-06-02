@@ -84,7 +84,7 @@ namespace Nekoyume.Action
             var buffSheet = states.GetSheet<CrystalRandomBuffSheet>();
             foreach (var buffRow in buffSheet.Values)
             {
-                buffSelector.Add(buffRow.SkillId, buffRow.Ratio);
+                buffSelector.Add(buffRow.Id, buffRow.Ratio);
             }
 
             var buffIds = buffSelector.Select(GachaCount - 1).ToList();
