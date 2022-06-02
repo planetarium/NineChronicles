@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System.Globalization;
+using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module.Arena.Board
@@ -22,16 +23,21 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         public void SetData(
             string season,
-            string rank,
-            string winLose,
-            string cp,
-            string rating)
+            int rank,
+            int winCount,
+            int loseCount,
+            int cp,
+            int score)
         {
             _seasonText.text = season;
-            _rankValueText.text = rank;
-            _winLoseValueText.text = winLose;
-            _cpValueText.text = cp;
-            _ratingValueText.text = rating;
+            _rankValueText.text = rank.ToString("N0", CultureInfo.CurrentCulture);
+            _winLoseValueText.text = string.Format(
+                CultureInfo.CurrentCulture,
+                "{0:N0}/{1:N0}",
+                winCount,
+                loseCount);
+            _cpValueText.text = cp.ToString("N0", CultureInfo.CurrentCulture);
+            _ratingValueText.text = score.ToString("N0", CultureInfo.CurrentCulture);
         }
     }
 }

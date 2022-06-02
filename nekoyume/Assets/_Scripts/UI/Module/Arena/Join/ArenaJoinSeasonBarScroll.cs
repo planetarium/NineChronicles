@@ -27,6 +27,10 @@ namespace Nekoyume.UI.Module.Arena.Join
             cellInterval = 1f / data.Count;
             UpdateContents(data);
             _scroller.SetTotalCount(data.Count);
+            if (data.Count == 0)
+            {
+                return;
+            }
 
             if (index.HasValue)
             {

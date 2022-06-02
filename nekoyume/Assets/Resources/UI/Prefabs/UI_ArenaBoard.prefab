@@ -133,7 +133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  _useSo: 1
+  _useSo: 0
   _so: {fileID: 11400000, guid: 6bb011dd152142e47b91fd4bf3771df9, type: 2}
   _billboard: {fileID: 7409581391063198166}
   _playerScroll: {fileID: 766793720063942166}
@@ -32758,7 +32758,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 3ee94329f18d5487d922ab9df732b256, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 326339100410660077, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -32899,7 +32899,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 3ee94329f18d5487d922ab9df732b256, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 4777322490056538085, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
         type: 3}
       propertyPath: m_Pivot.x
@@ -33120,7 +33120,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 3ee94329f18d5487d922ab9df732b256, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 8638284562056449631, guid: 3d1e9fca699d13b4eb24d6d759d0d4ef,
         type: 3}
       propertyPath: m_AnchorMax.y

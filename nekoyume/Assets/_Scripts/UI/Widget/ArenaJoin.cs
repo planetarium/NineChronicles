@@ -8,7 +8,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Join;
 using Nekoyume.UI.Scroller;
@@ -211,10 +210,10 @@ namespace Nekoyume.UI
             _joinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
+                Close();
                 Find<ArenaBoard>()
                     .ShowAsync(_scroll.SelectedItemData.RoundData)
                     .Forget();
-                Close();
             }).AddTo(gameObject);
             _paymentButton.OnClickSubject.Subscribe(_ =>
             {
@@ -236,6 +235,8 @@ namespace Nekoyume.UI
                     .DoOnError(e =>
                     {
                         Find<LoadingScreen>().Close();
+                        Find<HeaderMenuStatic>()
+                            .Show(HeaderMenuStatic.AssetVisibleState.Arena);
                         NotificationSystem.Push(
                             MailType.System,
                             $"Failed to payment. {e}",

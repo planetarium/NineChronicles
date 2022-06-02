@@ -24,7 +24,9 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         protected override float CellSize => _cellSize;
 
-        private IList<ArenaBoardPlayerItemData> _data;
+        private List<ArenaBoardPlayerItemData> _data;
+
+        public IReadOnlyList<ArenaBoardPlayerItemData> Data => _data;
 
         public ArenaBoardPlayerItemData SelectedItemData => _data[Context.selectedIndex];
 
@@ -36,7 +38,7 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         public IObservable<int> OnClickChoice => _onClickChoice;
 
-        public void SetData(IList<ArenaBoardPlayerItemData> data, int? index = null)
+        public void SetData(List<ArenaBoardPlayerItemData> data, int? index = null)
         {
             if (!initialized)
             {
@@ -46,6 +48,10 @@ namespace Nekoyume.UI.Module.Arena.Board
 
             _data = data;
             UpdateContents(_data);
+            if (_data.Count == 0)
+            {
+                return;
+            }
 
             if (index.HasValue)
             {

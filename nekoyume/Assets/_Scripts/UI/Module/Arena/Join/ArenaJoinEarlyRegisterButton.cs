@@ -71,6 +71,8 @@ namespace Nekoyume.UI.Module.Arena.Join
                     .DoOnError(e =>
                     {
                         Widget.Find<LoadingScreen>().Close();
+                        Widget.Find<HeaderMenuStatic>()
+                            .Show(HeaderMenuStatic.AssetVisibleState.Arena);
                         NotificationSystem.Push(
                             MailType.System,
                             "Failed to early register to next round.",

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -377,6 +378,11 @@ namespace Nekoyume.UI
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
+
+            // Update once when show this menu UI.
+            // Because the current avatar has been selected in this context.
+            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
+            RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
