@@ -216,10 +216,7 @@ namespace Nekoyume.State
                 return Array.Empty<ArenaParticipant>();
             }
 
-            // TODO!!!! 1 -> 10
-            // Update if not updated in last 10 blocks.
-            if (_arenaParticipantsOrderedWithScoreUpdatedBlockIndex + 10
-                >= _agent.BlockIndex)
+            if (_arenaParticipantsOrderedWithScoreUpdatedBlockIndex == _agent.BlockIndex)
             {
                 return previous;
             }

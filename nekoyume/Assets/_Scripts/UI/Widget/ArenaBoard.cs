@@ -152,6 +152,7 @@ namespace Nekoyume.UI
                             1)
                         .DoOnSubscribe(() =>
                         {
+                            ActionRenderHandler.Instance.Pending = true;
                             var avatarState = data.AvatarState;
                             Find<ArenaBattleLoadingScreen>().Show(
                                 avatarState.NameWithHash,
