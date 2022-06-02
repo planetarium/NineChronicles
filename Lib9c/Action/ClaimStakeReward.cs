@@ -60,6 +60,12 @@ namespace Nekoyume.Action
             foreach (var reward in rewards)
             {
                 var (quantity, _) = stakedAmount.DivRem(currency * reward.Rate);
+                if (quantity < 1)
+                {
+                    // If the quantity is zero, it doesn't add the item into inventory.
+                    continue;
+                }
+
                 ItemSheet.Row row = itemSheet[reward.ItemId];
                 ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
