@@ -20,7 +20,7 @@ namespace Lib9c.Tests.TableData.Crystal
             var row = _sheet.First().Value;
 
             Assert.Equal(10100000, row.ItemId);
-            Assert.Equal(100, row.CRYSTAL);
+            Assert.Equal(1000, row.CRYSTAL);
         }
     }
 }

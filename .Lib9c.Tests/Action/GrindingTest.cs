@@ -72,16 +72,16 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, false, 0, 200, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, false, 0, 500, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, false, 0, 10, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, false, 0, 40, 1, null)]
         // Multiply by StakeState.
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, false, 0, 500, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 0, false, true, false, 1, 220, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, true, false, 0, 40, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, true, false, 1, 12, 1, null)]
         // Multiply by legacy MonsterCollectionState.
-        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 500, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, true, 1, 220, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 40, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, true, 1, 12, 1, null)]
         // Charge AP.
-        [InlineData(true, true, 0, true, true, true, 1, 0, false, false, false, 0, 200, 1, null)]
+        [InlineData(true, true, 0, true, true, true, 1, 0, false, false, false, 0, 10, 1, null)]
         // Invalid equipment count.
         [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 200, 0, typeof(InvalidItemCountException))]
         [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 200, 11, typeof(InvalidItemCountException))]

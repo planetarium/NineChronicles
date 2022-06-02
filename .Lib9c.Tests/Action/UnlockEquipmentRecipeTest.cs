@@ -56,14 +56,14 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(new[] { 2, 3 }, true, false, false, true, 200, null)]
-        [InlineData(new[] { 2 }, true, false, false, true, 100, null)]
+        [InlineData(new[] { 2, 3 }, true, false, false, true, 38, null)]
+        [InlineData(new[] { 2 }, true, false, false, true, 19, null)]
         // Unlock Belt without Armor unlock.
-        [InlineData(new[] { 83 }, true, false, false, true, 100, null)]
+        [InlineData(new[] { 83 }, true, false, false, true, 10, null)]
         // Unlock Weapon & Ring
-        [InlineData(new[] { 2, 133 }, true, false, false, true, 200, null)]
+        [InlineData(new[] { 2, 133 }, true, false, false, true, 29, null)]
         // AvatarState migration.
-        [InlineData(new[] { 2 }, true, true, false, true, 100, null)]
+        [InlineData(new[] { 2 }, true, true, false, true, 19, null)]
         // Invalid recipe id.
         [InlineData(new[] { -1 }, true, false, false, false, 100, typeof(InvalidRecipeIdException))]
         [InlineData(new[] { 1 }, true, false, false, true, 100, typeof(InvalidRecipeIdException))]
@@ -78,7 +78,7 @@ namespace Lib9c.Tests.Action
         // Stage not cleared.
         [InlineData(new[] { 2 }, true, false, false, false, 100, typeof(NotEnoughClearedStageLevelException))]
         // Insufficient CRYSTAL.
-        [InlineData(new[] { 2 }, true, false, false, true, 50, typeof(NotEnoughFungibleAssetValueException))]
+        [InlineData(new[] { 2 }, true, false, false, true, 1, typeof(NotEnoughFungibleAssetValueException))]
         public void Execute(
             IEnumerable<int> ids,
             bool stateExist,

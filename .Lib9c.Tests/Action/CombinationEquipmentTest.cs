@@ -250,9 +250,9 @@ namespace Lib9c.Tests.Action
 
                 if (previousCostStateExist)
                 {
-                    var previousCostAddress = Addresses.GetWeeklyCrystalCostAddress(1);
+                    var previousCostAddress = Addresses.GetWeeklyCrystalCostAddress(6);
                     var previousCostState = new CrystalCostState(previousCostAddress, crystalBalance * CrystalCalculator.CRYSTAL * 2);
-                    var beforePreviousCostAddress = Addresses.GetWeeklyCrystalCostAddress(0);
+                    var beforePreviousCostAddress = Addresses.GetWeeklyCrystalCostAddress(5);
                     var beforePreviousCostState = new CrystalCostState(beforePreviousCostAddress, crystalBalance * CrystalCalculator.CRYSTAL);
 
                     state = state

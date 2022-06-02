@@ -75,13 +75,13 @@ namespace Lib9c.Tests.Action
         [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0, false)]
         [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0, false)]
         [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0, false)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 3250, false)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 3575, false)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 320, false)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 384, false)]
         [InlineData(0, 1000, true, 0, 1, ItemEnhancement.EnhancementResult.Success, 0, 0, true)]
         [InlineData(6, 980, true, 0, 7, ItemEnhancement.EnhancementResult.Success, 0, 0, true)]
         [InlineData(0, 1000, false, 1, 1, ItemEnhancement.EnhancementResult.GreatSuccess, 0, 0, true)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 3250, true)]
-        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 3575, true)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 0, 320, true)]
+        [InlineData(6, 980, false, 10, 6, ItemEnhancement.EnhancementResult.Fail, 1, 384, true)]
         public void Execute(
             int level,
             int expectedGold,
