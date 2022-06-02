@@ -95,6 +95,7 @@ namespace Nekoyume.BlockChain
             CreateAvatar();
             TransferAsset();
             MonsterCollect();
+            Stake();
 
             // Battle
             HackAndSlash();
@@ -347,6 +348,15 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void Stake()
+        {
+            _actionRenderer.EveryRender<Stake>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(RenderStake)
+                .AddTo(_disposables);
+        }
+
         private void InitializeArenaActions()
         {
             _actionRenderer.EveryRender<JoinArena>()
@@ -354,15 +364,13 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseJoinArena)
                 .AddTo(_disposables);
-            
+
             _actionRenderer.EveryRender<BattleArena>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBattleArena)
                 .AddTo(_disposables);
         }
-
-
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
         {
@@ -1350,6 +1358,8 @@ namespace Nekoyume.BlockChain
             {
                 UpdateStakeState(state, level);
             }
+
+            UpdateAgentStateAsync(eval).Forget();
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

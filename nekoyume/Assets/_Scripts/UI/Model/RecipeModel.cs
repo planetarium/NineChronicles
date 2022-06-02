@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Model
     {
         public readonly Dictionary<string, RecipeRow.Model> EquipmentRecipeMap
                 = new Dictionary<string, RecipeRow.Model>();
-        
+
         public readonly Dictionary<int, RecipeRow.Model> ConsumableRecipeMap
                 = new Dictionary<int, RecipeRow.Model>();
 
@@ -38,7 +38,6 @@ namespace Nekoyume.UI.Model
 
         public int UnlockableRecipesOpenCost { get; private set; }
         public ItemSubType DisplayingItemSubtype { get; set; }
-
 
         public readonly List<int> UnlockingRecipes = new List<int>();
         public readonly List<int> DummyLockedRecipes = new List<int>();
@@ -142,7 +141,7 @@ namespace Nekoyume.UI.Model
             var task = Game.Game.instance.Agent.GetStateAsync(unlockedRecipeIdsAddress);
             await task;
             var result = task.Result != null ?
-                ((List)task.Result).ToList(StateExtensions.ToInteger) :
+                task.Result.ToList(StateExtensions.ToInteger) :
                 new List<int>() { 1 };
             SetUnlockedRecipes(result);
         }
