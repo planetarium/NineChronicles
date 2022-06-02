@@ -186,7 +186,7 @@ namespace Lib9c.Tests.Action.Scenario
         [Theory]
         [InlineData(1, 10, 5, 3, 2)]
         [InlineData(1, 10, 5, 3, 3)]
-        [InlineData(2, 10, 1, 10, 2)]
+        [InlineData(2, 10, 5, 10, 2)]
         public void Execute(int seed, int user, int ticket, int repeatCount,  int arenaInterval)
         {
             var arenaSheet = _state.GetSheet<ArenaSheet>();
