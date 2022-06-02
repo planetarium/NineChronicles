@@ -113,7 +113,7 @@ namespace Nekoyume.UI.Module
                 DimConditionPredicateList,
                 reverseInventoryOrder);
             grindButton.Interactable = false;
-            UpdateStakingBonusObject(States.Instance.MonsterCollectionState?.Level ?? 0);
+            UpdateStakingBonusObject(States.Instance.StakingLevel);
             crystalRewardText.text = string.Empty;
         }
 
