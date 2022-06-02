@@ -55,9 +55,9 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(new[] { 2 }, true, false, false, true, 500, null)]
+        [InlineData(new[] { 2 }, true, false, false, true, 250, null)]
         // Migration AvatarState.
-        [InlineData(new[] { 2, 3, 4, 5 }, true, true, false, true, 2000, null)]
+        [InlineData(new[] { 2, 3, 4, 5 }, true, true, false, true, 193950, null)]
         // Try open Yggdrasil.
         [InlineData(new[] { 1 }, false, true, false, true, 0, typeof(InvalidWorldException))]
         // Try open Mimisbrunnr.

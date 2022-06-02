@@ -259,7 +259,7 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(0L, false)]
-        [InlineData(50_400L, false)]
+        [InlineData(14_400L, false)]
         [InlineData(100_800L, true)]
         [InlineData(151_200L, true)]
         public void GetCrystalCostStates(long blockIndex, bool previousWeeklyExist)
