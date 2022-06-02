@@ -327,8 +327,8 @@ namespace Nekoyume.State
                     ? new AvatarState(avatarDict)
                     : null;
                 var inventory
-                    = stateBulk[avatarAddr.Derive(LegacyInventoryKey)] is List list3
-                        ? new Model.Item.Inventory(list3)
+                    = stateBulk[avatarAddr.Derive(LegacyInventoryKey)] is List list2
+                        ? new Model.Item.Inventory(list2)
                         : null;
                 if (avatar is { })
                 {
@@ -348,10 +348,8 @@ namespace Nekoyume.State
                 );
             }).ToArray();
 
-            var playerArenaInfo = stateBulk.TryGetValue(
-                playerArenaInfoAddr,
-                out var aiValue)
-                ? new ArenaInformation((List)aiValue)
+            var playerArenaInfo = stateBulk[playerArenaInfoAddr] is List list3
+                ? new ArenaInformation(list3)
                 : null;
             if (playersArenaParticipant is null)
             {

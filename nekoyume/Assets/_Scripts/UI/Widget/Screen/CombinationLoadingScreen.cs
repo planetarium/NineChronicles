@@ -103,7 +103,7 @@ namespace Nekoyume.UI
             speechBubble.SetItemMaterial(item, isConsumable);
         }
 
-        public void SetCurrency(int ncg, int crystal)
+        public void SetCurrency(long ncg, long crystal)
         {
             speechBubble.SetCurrency(ncg, crystal);
         }

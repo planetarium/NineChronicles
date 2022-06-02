@@ -41,7 +41,7 @@ namespace Nekoyume.UI
             _showCrystalView = false;
         }
 
-        public void SetCurrency(int ncg, int crystal)
+        public void SetCurrency(long ncg, long crystal)
         {
             Item = null;
             var hasNCG = ncg > 0;
