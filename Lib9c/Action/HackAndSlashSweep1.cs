@@ -167,7 +167,7 @@ namespace Nekoyume.Action
             avatarState.UpdateInventory(rewardItems);
 
             var levelSheet = sheets.GetSheet<CharacterLevelSheet>();
-            var (level, exp) = avatarState.GetLevelAndExp(levelSheet, stageId, playCount);
+            var (level, exp) = avatarState.GetLevelAndExpV1(levelSheet, stageId, playCount);
             avatarState.UpdateExp(level, exp);
 
             return states
