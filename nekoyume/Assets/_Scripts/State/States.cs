@@ -313,10 +313,10 @@ namespace Nekoyume.State
             UpdateCurrentAvatarState(avatarState, initializeReactiveState);
             var agent = Game.Game.instance.Agent;
             var worldIds =
-                (List) await agent.GetStateAsync(avatarState.address.Derive("world_ids"));
-            var unlockedIds = worldIds != null ?
+                await agent.GetStateAsync(avatarState.address.Derive("world_ids"));
+            var unlockedIds = !(worldIds is Null) ?
                  worldIds.ToList(StateExtensions.ToInteger)
-                : new List<int>
+                 : new List<int>
                 {
                     1,
                     GameConfig.MimisbrunnrWorldId,
