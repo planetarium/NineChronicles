@@ -483,6 +483,7 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
+                BlockIndex = 1,
             }));
         }
 
@@ -527,6 +528,7 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
+                BlockIndex = 1,
             }));
         }
 
