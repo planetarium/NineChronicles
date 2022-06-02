@@ -27,8 +27,6 @@ namespace Nekoyume.UI.Module
         [Serializable]
         private struct CrystalAnimationData
         {
-            public RectTransform crystalAnimationStartRect;
-            public RectTransform crystalAnimationTargetRect;
             public int maximum;
             public int middle;
             public int minimum;
@@ -96,6 +94,7 @@ namespace Nekoyume.UI.Module
         private static readonly int FirstRegister = Animator.StringToHash("FirstRegister");
         private static readonly int StartGrind = Animator.StringToHash("StartGrind");
         private static readonly int EmptySlot = Animator.StringToHash("EmptySlot");
+        private static readonly int ShowAnimationHash = Animator.StringToHash("Show");
 
         private bool CanGrind => _selectedItemsForGrind.Any() &&
                                  _selectedItemsForGrind.All(item => !item.Equipped.Value);
@@ -103,6 +102,10 @@ namespace Nekoyume.UI.Module
         public void Show(bool reverseInventoryOrder = true)
         {
             gameObject.SetActive(true);
+            if (animator)
+            {
+                animator.Play(ShowAnimationHash);
+            }
 
             Initialize();
             Subscribe();
@@ -424,36 +427,22 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator CoCombineNPCAnimation(BigInteger rewardCrystal)
         {
-            var loadingScreen = Widget.Find<CombinationLoadingScreen>();
+            var loadingScreen = Widget.Find<GrindingLoadingScreen>();
             loadingScreen.OnDisappear = OnNPCDisappear;
-            loadingScreen.Show();
-            canvasGroup.interactable = false;
             loadingScreen.SetCurrency(
                 (int)_cachedGrindingRewardNCG.MajorUnit,
                 (int)_cachedGrindingRewardCrystal.MajorUnit);
+            loadingScreen.CrystalAnimationCount = GetCrystalMoveAnimationCount(rewardCrystal);
+            canvasGroup.interactable = false;
+
+            yield return null;
+            yield return new WaitUntil(() =>
+                animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+            loadingScreen.Show();
             yield return new WaitForSeconds(.5f);
 
             var quote = L10nManager.Localize("UI_GRIND_NPC_QUOTE");
-            loadingScreen.AnimateNPC(ItemType.Equipment, quote);
-            loadingScreen.SetCloseAction(() =>
-            {
-                var crystalAnimationStartPosition = animationData.crystalAnimationStartRect != null
-                    ? (Vector3) animationData.crystalAnimationStartRect
-                        .GetWorldPositionOfCenter()
-                    : crystalRewardText.transform.position;
-                var crystalAnimationTargetPosition =
-                    animationData.crystalAnimationTargetRect != null
-                        ? (Vector3) animationData.crystalAnimationTargetRect
-                            .GetWorldPositionOfCenter()
-                        : Widget.Find<HeaderMenuStatic>().Crystal.IconPosition +
-                          CrystalMovePositionOffset;
-                var animationCount = GetCrystalMoveAnimationCount(rewardCrystal);
-                StartCoroutine(ItemMoveAnimationFactory.CoItemMoveAnimation(
-                    ItemMoveAnimationFactory.AnimationItemType.Crystal,
-                    crystalAnimationStartPosition,
-                    crystalAnimationTargetPosition,
-                    animationCount));
-            });
+            loadingScreen.AnimateNPC(quote);
         }
 
         private void OnNPCDisappear()
