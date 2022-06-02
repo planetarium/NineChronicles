@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Nekoyume.Game.Item;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Item;
 using UniRx;
 using UnityEngine.Events;
 using Enemy = Nekoyume.Game.Character.Enemy;
@@ -23,7 +25,10 @@ namespace Nekoyume.Game
         public static readonly UnityEvent<int> OnLoginDetail = new UnityEvent<int>();
 
         public static readonly UnityEvent<BattleLog> OnStageStart = new UnityEvent<BattleLog>();
-        public static readonly UnityEvent<BattleLog> OnRankingBattleStart = new UnityEvent<BattleLog>();
+
+        public static readonly UnityEvent<(BattleLog battleLog, List<ItemBase> rewards)>
+            OnRankingBattleStart
+                = new UnityEvent<(BattleLog battleLog, List<ItemBase> rewards)>();
 
         public static readonly UnityEvent<int> OnWaveStart = new UnityEvent<int>();
 

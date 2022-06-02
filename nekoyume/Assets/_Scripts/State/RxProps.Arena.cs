@@ -218,7 +218,7 @@ namespace Nekoyume.State
 
             // TODO!!!! 1 -> 10
             // Update if not updated in last 10 blocks.
-            if (_arenaParticipantsOrderedWithScoreUpdatedBlockIndex + 1
+            if (_arenaParticipantsOrderedWithScoreUpdatedBlockIndex + 10
                 >= _agent.BlockIndex)
             {
                 return previous;
@@ -239,7 +239,7 @@ namespace Nekoyume.State
             if (participants is null)
             {
                 Debug.Log($"Failed to get {nameof(ArenaParticipants)} with {participantsAddr.ToHex()}");
-                
+
                 // TODO!!!! [`_playersArenaParticipant`]를 이 문맥이 아닌 곳에서
                 // 따로 처리합니다.
                 _playersArenaParticipant.SetValueAndForceNotify(new PlayerArenaParticipant(
@@ -331,18 +331,20 @@ namespace Nekoyume.State
                     : null;
                 var inventory
                     = stateBulk[avatarAddr.Derive(LegacyInventoryKey)] is List list3
-                    ? new Model.Item.Inventory(list3)
-                    : null;
+                        ? new Model.Item.Inventory(list3)
+                        : null;
                 if (avatar is { })
                 {
-                    avatar.inventory = inventory;    
+                    avatar.inventory = inventory;
                 }
 
                 var (win, lose, _) =
                     ArenaHelper.GetScores(playerScore, score);
                 return new ArenaParticipant(
                     avatarAddr,
-                    score,
+                    avatarAddr.Equals(currentAvatarAddr)
+                        ? playerScore
+                        : score,
                     rank,
                     avatar,
                     (win, lose)

@@ -210,10 +210,10 @@ namespace Nekoyume.UI
             _joinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
+                Close();
                 Find<ArenaBoard>()
                     .ShowAsync(_scroll.SelectedItemData.RoundData)
                     .Forget();
-                Close();
             }).AddTo(gameObject);
             _paymentButton.OnClickSubject.Subscribe(_ =>
             {

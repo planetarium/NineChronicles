@@ -31,6 +31,10 @@ namespace Nekoyume.UI.Module.Arena.Join
             _data = data;
             UpdateContents(_data);
             _scroller.SetTotalCount(_data.Count);
+            if (_data.Count == 0)
+            {
+                return;
+            }
 
             if (index.HasValue)
             {

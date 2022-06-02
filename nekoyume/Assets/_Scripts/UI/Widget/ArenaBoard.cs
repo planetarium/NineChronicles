@@ -6,6 +6,7 @@ using Libplanet;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -61,14 +62,36 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid ShowAsync(
             ArenaSheet.RoundData roundData,
+            bool ignoreShowAnimation = false) =>
+            Show(
+                roundData,
+                await RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync(),
+                ignoreShowAnimation);
+
+        public void Show(
+            RxProps.ArenaParticipant[] arenaParticipants,
+            bool ignoreShowAnimation = false) =>
+            Show(_roundData,
+                arenaParticipants,
+                ignoreShowAnimation);
+
+        public void Show(
+            ArenaSheet.RoundData roundData,
+            RxProps.ArenaParticipant[] arenaParticipants,
             bool ignoreShowAnimation = false)
         {
             _roundData = roundData;
-            _boundedData = await RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync();
+            _boundedData = arenaParticipants;
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
             UpdateScrolls();
             base.Show(ignoreShowAnimation);
+        }
+
+        public void GoToStage(BattleLog battleLog, List<ItemBase> rewards)
+        {
+            Close();
+            Game.Event.OnRankingBattleStart.Invoke((battleLog, rewards));
         }
 
         private void UpdateBillboard()
