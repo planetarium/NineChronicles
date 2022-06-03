@@ -139,7 +139,8 @@ namespace Nekoyume.State
             }
 
             MonsterCollectionState = monsterCollectionState;
-            MonsterCollectionStateSubject.OnNextLevel(monsterCollectionState.Level);
+            StakingLevel = monsterCollectionState.Level;
+            MonsterCollectionStateSubject.OnNextLevel(StakingLevel);
         }
 
         public void SetStakeState(StakeState stakeState, int stakingLevel)
@@ -312,9 +313,9 @@ namespace Nekoyume.State
             UpdateCurrentAvatarState(avatarState, initializeReactiveState);
             var agent = Game.Game.instance.Agent;
             var worldIds =
-                (List) await agent.GetStateAsync(avatarState.address.Derive("world_ids"));
-            var unlockedIds = worldIds != null ?
-                 worldIds.ToList(StateExtensions.ToInteger)
+                await agent.GetStateAsync(avatarState.address.Derive("world_ids"));
+            var unlockedIds = worldIds != null && !(worldIds is Null)
+                ? worldIds.ToList(StateExtensions.ToInteger)
                 : new List<int>
                 {
                     1,

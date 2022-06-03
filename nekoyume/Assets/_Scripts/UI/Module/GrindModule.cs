@@ -113,7 +113,7 @@ namespace Nekoyume.UI.Module
                 DimConditionPredicateList,
                 reverseInventoryOrder);
             grindButton.Interactable = false;
-            UpdateStakingBonusObject(States.Instance.MonsterCollectionState?.Level ?? 0);
+            UpdateStakingBonusObject(States.Instance.StakingLevel);
             crystalRewardText.text = string.Empty;
         }
 
@@ -429,8 +429,8 @@ namespace Nekoyume.UI.Module
             loadingScreen.Show();
             canvasGroup.interactable = false;
             loadingScreen.SetCurrency(
-                (int)_cachedGrindingRewardNCG.MajorUnit,
-                (int)_cachedGrindingRewardCrystal.MajorUnit);
+                (long)_cachedGrindingRewardNCG.MajorUnit,
+                (long)_cachedGrindingRewardCrystal.MajorUnit);
             yield return new WaitForSeconds(.5f);
 
             var quote = L10nManager.Localize("UI_GRIND_NPC_QUOTE");

@@ -4,6 +4,7 @@ using Libplanet.Action;
 using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.L10n;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using UnityEngine;
@@ -150,6 +151,50 @@ namespace Nekoyume.BlockChain
                 case NotEnoughAvatarLevelException _:
                     code = "29";
                     key = "ERROR_NOT_ENOUGH_AVATAR_LEVEL";
+                    break;
+                case RoundNotFoundException _:
+                    code = "30";
+                    key = "ERROR_ROUND_NOT_FOUND_EXCEPTION";
+                    break;
+                case ArenaScoreAlreadyContainsException _:
+                    code = "31";
+                    key = "ARENA_SCORE_ALREADY_CONTAINS_EXCEPTION";
+                    break;
+                case ArenaInformationAlreadyContainsException _:
+                    code = "31";
+                    key = "ARENA_INFORMATION_ALREADY_CONTAINS_EXCEPTION";
+                    break;
+                case ArenaParticipantsNotFoundException _:
+                    code = "32";
+                    key = "ARENA_PARTICIPANTS_NOT_FOUND_EXCEPTION";
+                    break;
+                case ArenaAvatarStateNotFoundException _:
+                    code = "33";
+                    key = "ARENA_AVATAR_STATE_NOT_FOUND_EXCEPTION";
+                    break;
+                case ArenaScoreNotFoundException _:
+                    code = "34";
+                    key = "ARENA_SCORE_NOT_FOUND_EXCEPTION";
+                    break;
+                case ArenaInformationNotFoundException _:
+                    code = "35";
+                    key = "ARENA_INFORMATION_NOT_FOUND_EXCEPTION";
+                    break;
+                case AddressNotFoundInArenaParticipantsException _:
+                    code = "36";
+                    key = "ADDRESS_NOT_FOUND_IN_ARENA_PARTICIPANTS_EXCEPTION";
+                    break;
+                case NotEnoughTicketException _:
+                    code = "37";
+                    key = "NOT_ENOUGH_TICKET_EXCEPTION";
+                    break;
+                case ValidateScoreDifferenceException _:
+                    code = "38";
+                    key = "VALIDATE_SCORE_DIFFERENCE_EXCEPTION";
+                    break;
+                case ThisArenaIsClosedException _:
+                    code = "39";
+                    key = "THIS_ARENA_IS_CLOSED_EXCEPTION";
                     break;
             }
 

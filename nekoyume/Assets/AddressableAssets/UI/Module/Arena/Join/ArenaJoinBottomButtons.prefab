@@ -223,6 +223,7 @@ GameObject:
   - component: {fileID: 2564834076527674283}
   - component: {fileID: 4448699945781667611}
   - component: {fileID: 3395364024276581700}
+  - component: {fileID: 4875202208534459280}
   m_Layer: 5
   m_Name: EarlyPaymentButton
   m_TagString: Untagged
@@ -333,6 +334,24 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4875202208534459280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 636891835536024419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ce0b0a2131f4428b89582faa0f98f2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _seasonArenaEmblem: {fileID: 5297978014700005113}
+  _championshipArenaEmblem: {fileID: 6298017484560001934}
+  _paymentObject: {fileID: 2140256607549221124}
+  _costText: {fileID: 1226889250261644624}
+  _completedObject: {fileID: 5170331514472173537}
+  _button: {fileID: 3395364024276581700}
 --- !u!1 &1612746275600359943
 GameObject:
   m_ObjectHideFlags: 0
@@ -1421,7 +1440,7 @@ PrefabInstance:
     - target: {fileID: 4455377409873070402, guid: 4a16df19fdf3d468a984221ea701b9fc,
         type: 3}
       propertyPath: m_Name
-      value: item_Season
+      value: SeasonArenaEmblem
       objectReference: {fileID: 0}
     - target: {fileID: 4455377409873070402, guid: 4a16df19fdf3d468a984221ea701b9fc,
         type: 3}
@@ -1435,6 +1454,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4a16df19fdf3d468a984221ea701b9fc, type: 3}
+--- !u!114 &5297978014700005113 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8325139729977740903, guid: 4a16df19fdf3d468a984221ea701b9fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 4183532440743405726}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 883baa071eb2468db1fc14584b5ff227, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4059264110788557138 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 169874156754457036, guid: 4a16df19fdf3d468a984221ea701b9fc,
@@ -1662,6 +1693,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1856527894406669635, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1856527894406669635, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1856527894406669635, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1856527894406669635, guid: 9067b4811aa0241b7a96a2cc09536ced,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2067808371825279385, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -1966,7 +2017,7 @@ PrefabInstance:
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 48
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -1976,7 +2027,7 @@ PrefabInstance:
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8136804997809114372, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
@@ -2021,7 +2072,7 @@ PrefabInstance:
     - target: {fileID: 9093920311051570104, guid: 9067b4811aa0241b7a96a2cc09536ced,
         type: 3}
       propertyPath: m_fontSize
-      value: 18.85
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9067b4811aa0241b7a96a2cc09536ced, type: 3}
@@ -2263,6 +2314,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5423cf792096944a3884ee1f4b0d4183, type: 3}
+--- !u!224 &8779072571326362725 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1925281264920820847, guid: 5423cf792096944a3884ee1f4b0d4183,
+    type: 3}
+  m_PrefabInstance: {fileID: 7161425863766542346}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4316380444449356964 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6378403036447978670, guid: 5423cf792096944a3884ee1f4b0d4183,
@@ -2275,12 +2332,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &8779072571326362725 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1925281264920820847, guid: 5423cf792096944a3884ee1f4b0d4183,
-    type: 3}
-  m_PrefabInstance: {fileID: 7161425863766542346}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8164005257822175375
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2396,7 +2447,7 @@ PrefabInstance:
     - target: {fileID: 4695445832341356582, guid: a63a9199bac6f43f9a768faf68641f7d,
         type: 3}
       propertyPath: m_Name
-      value: itme_Championship
+      value: ChampionshipArenaEmblem
       objectReference: {fileID: 0}
     - target: {fileID: 4695445832341356582, guid: a63a9199bac6f43f9a768faf68641f7d,
         type: 3}
@@ -2405,6 +2456,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a63a9199bac6f43f9a768faf68641f7d, type: 3}
+--- !u!114 &6298017484560001934 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2750382218941328129, guid: a63a9199bac6f43f9a768faf68641f7d,
+    type: 3}
+  m_PrefabInstance: {fileID: 8164005257822175375}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecf00bfe8c634539b6d6636f1cf7fdb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &8865414878653348873 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 739743015978007686, guid: a63a9199bac6f43f9a768faf68641f7d,

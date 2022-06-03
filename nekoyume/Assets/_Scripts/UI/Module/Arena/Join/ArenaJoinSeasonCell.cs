@@ -11,14 +11,12 @@ namespace Nekoyume.UI.Module.Arena.Join
     {
         public ArenaSheet.RoundData RoundData;
         public int? SeasonNumber;
-        public int? ChampionshipId => RoundData?.ChampionshipId;
-        public int[] ChampionshipSeasonIds;
         
         public string GetRoundName() => RoundData.ArenaType switch
         {
             ArenaType.OffSeason => "off-season",
             ArenaType.Season => $"season #{SeasonNumber}",
-            ArenaType.Championship => $"championship #{ChampionshipId}",
+            ArenaType.Championship => $"championship #{RoundData.ChampionshipId}",
             _ => throw new ArgumentOutOfRangeException(),
         };
     }

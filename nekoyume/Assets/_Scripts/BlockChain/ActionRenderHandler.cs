@@ -13,7 +13,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Item;
-using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.Model.State;
@@ -24,7 +23,9 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using mixpanel;
-using Material = Nekoyume.Model.Item.Material;
+using Nekoyume.Arena;
+using Nekoyume.Model.Arena;
+using Unity.Mathematics;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -32,7 +33,7 @@ using Lib9c.DevExtensions.Action;
 
 namespace Nekoyume.BlockChain
 {
-    using Nekoyume.UI.Scroller;
+    using UI.Scroller;
     using UniRx;
 
     /// <summary>
@@ -93,10 +94,10 @@ namespace Nekoyume.BlockChain
             CreateAvatar();
             TransferAsset();
             MonsterCollect();
+            Stake();
 
             // Battle
             HackAndSlash();
-            RankingBattle();
             MimisbrunnrBattle();
             HackAndSlashSweep();
 
@@ -125,6 +126,9 @@ namespace Nekoyume.BlockChain
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
             Testbed();
 #endif
+
+            // Arena
+            InitializeArenaActions();
         }
 
         public void Stop()
@@ -236,15 +240,6 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void RankingBattle()
-        {
-            _actionRenderer.EveryRender<RankingBattle>()
-                .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseRankingBattle)
-                .AddTo(_disposables);
-        }
-
         private void CombinationEquipment()
         {
             _actionRenderer.EveryRender<CombinationEquipment>()
@@ -349,6 +344,30 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlashSweep)
+                .AddTo(_disposables);
+        }
+
+        private void Stake()
+        {
+            _actionRenderer.EveryRender<Stake>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseStake)
+                .AddTo(_disposables);
+        }
+
+        private void InitializeArenaActions()
+        {
+            _actionRenderer.EveryRender<JoinArena>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseJoinArena)
+                .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<BattleArena>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseBattleArena)
                 .AddTo(_disposables);
         }
 
@@ -484,6 +503,18 @@ namespace Nekoyume.BlockChain
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
 
+                if (eval.Action.payByCrystal)
+                {
+                    try
+                    {
+                        UpdateCrystalBalance(eval);
+                    }
+                    catch (BalanceDoesNotExistsException e)
+                    {
+                        Debug.LogError("Failed to update crystal balance : " + e);
+                    }
+                }
+
                 if (!(nextQuest is null))
                 {
                     var isRecipeMatch = nextQuest.RecipeId == eval.Action.recipeId;
@@ -618,6 +649,17 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                if (result.CRYSTAL.MajorUnit > 0)
+                {
+                    try
+                    {
+                        UpdateCrystalBalance(eval);
+                    }
+                    catch (BalanceDoesNotExistsException e)
+                    {
+                        Debug.LogError("Failed to update crystal balance : " + e);
+                    }
+                }
 
                 // Notify
                 string formatKey;
@@ -1352,7 +1394,7 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            UpdateAgentStateAsync(eval);
+            UpdateAgentStateAsync(eval).Forget();
         }
 
         private void ResponseGrinding(ActionBase.ActionEvaluation<Grinding> eval)
@@ -1386,8 +1428,16 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Grinding,
                 L10nManager.Localize("UI_GRINDING_NOTIFY"),
                 NotificationCell.NotificationType.Information);
-            UpdateCurrentAvatarStateAsync(eval);
-            UpdateAgentStateAsync(eval);
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval).Forget();
+            try
+            {
+                UpdateCrystalBalance(eval);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
+            }
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
@@ -1414,6 +1464,14 @@ namespace Nekoyume.BlockChain
 
             await UpdateCurrentAvatarStateAsync(eval);
             await UpdateAgentStateAsync(eval);
+            try
+            {
+                UpdateCrystalBalance(eval);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
+            }
 
             foreach (var id in recipeIds)
             {
@@ -1441,9 +1499,17 @@ namespace Nekoyume.BlockChain
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
+            try
+            {
+                UpdateCrystalBalance(eval);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
+            }
         }
 
-        public void RenderStake(ActionBase.ActionEvaluation<Stake> eval)
+        private void ResponseStake(ActionBase.ActionEvaluation<Stake> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -1455,6 +1521,8 @@ namespace Nekoyume.BlockChain
             {
                 UpdateStakeState(state, level);
             }
+
+            UpdateAgentStateAsync(eval).Forget();
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
@@ -1529,5 +1597,162 @@ namespace Nekoyume.BlockChain
             }
         }
 #endif
+
+        private static void ResponseJoinArena(ActionBase.ActionEvaluation<JoinArena> eval)
+        {
+            if (eval.Exception != null ||
+                eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                return;
+            }
+
+            UpdateCrystalBalance(eval);
+            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
+            NotificationSystem.Push(
+                MailType.System,
+                "Congratulations! Now you registered the next season!",
+                NotificationCell.NotificationType.Notification);
+        }
+
+        private void ResponseBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
+        {
+            if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
+                eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                return;
+            }
+
+            if (eval.Exception != null)
+            {
+                var showLoadingScreen = false;
+                if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+                {
+                    Widget.Find<ArenaBattleLoadingScreen>().Close();
+                }
+
+                if (Widget.Find<RankingBattleResultPopup>().IsActive())
+                {
+                    showLoadingScreen = true;
+                    Widget.Find<RankingBattleResultPopup>().Close();
+                }
+
+                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
+                return;
+            }
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd = Game.Game.instance.Stage.onEnterToStageEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    UniTask.Run(() =>
+                        {
+                            UpdateAgentStateAsync(eval).Forget();
+                            UpdateCurrentAvatarStateAsync().Forget();
+                            // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
+                            // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
+                            _disposableForBattleEnd = null;
+                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                        }).ToObservable()
+                        .First()
+                        // ReSharper disable once ConvertClosureToMethodGroup
+                        .DoOnError(e => Debug.LogException(e));
+                });
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            ArenaPlayerDigest myDigest;
+            ArenaPlayerDigest enemyDigest;
+            if (eval.Extra is { })
+            {
+                var myDigestList
+                    = (List)eval.Extra[nameof(BattleArena.ExtraMyArenaPlayerDigest)];
+                myDigest = new ArenaPlayerDigest(myDigestList);
+                var enemyDigestList
+                    = (List)eval.Extra[nameof(BattleArena.ExtraEnemyArenaPlayerDigest)];
+                enemyDigest = new ArenaPlayerDigest(enemyDigestList);
+            }
+            else
+            {
+                var previousMyAvatarState
+                    = eval.PreviousStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
+                if (!eval.PreviousStates.TryGetArenaAvatarState(
+                        ArenaAvatarState.DeriveAddress(eval.Action.myAvatarAddress),
+                        out var previousMyArenaAvatarState))
+                {
+                    Debug.LogError("Failed to get previous ArenaAvatarState of mine");
+                }
+
+                myDigest
+                    = new ArenaPlayerDigest(previousMyAvatarState, previousMyArenaAvatarState);
+
+                var previousEnemyAvatarState
+                    = eval.PreviousStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
+                if (!eval.PreviousStates.TryGetArenaAvatarState(
+                        ArenaAvatarState.DeriveAddress(eval.Action.enemyAvatarAddress),
+                        out var previousEnemyArenaAvatarState))
+                {
+                    Debug.LogError("Failed to get previous ArenaAvatarState of enemy");
+                }
+
+                enemyDigest
+                    = new ArenaPlayerDigest(previousEnemyAvatarState, previousEnemyArenaAvatarState);
+            }
+
+            var random = new LocalRandom(eval.RandomSeed);
+            // TODO!!!! ticket 수 만큼 돌려서 마지막 전투 결과를 띄운다.
+            // eval.Action.ticket
+            var simulator = new ArenaSimulator(
+                random,
+                myDigest,
+                enemyDigest,
+                tableSheets.GetArenaSimulatorSheets());
+            simulator.Simulate();
+            var scoreAddrList = new[]
+            {
+                ArenaScore.DeriveAddress(
+                    eval.Action.myAvatarAddress,
+                    eval.Action.championshipId,
+                    eval.Action.round),
+                ArenaScore.DeriveAddress(
+                    eval.Action.enemyAvatarAddress,
+                    eval.Action.championshipId,
+                    eval.Action.round),
+            };
+            var previousScores = eval.PreviousStates
+                .GetStates(scoreAddrList)
+                .Select(scoreValue => scoreValue is List list
+                    ? new ArenaScore(list)
+                    : null)
+                .ToArray();
+            var previousMyScore = previousScores[0].Score;
+            var previousEnemyScore = previousScores[1].Score;
+            var rewards = RewardSelector.Select(
+                random,
+                tableSheets.WeeklyArenaRewardSheet,
+                tableSheets.MaterialItemSheet,
+                myDigest.Level,
+                maxCount: ArenaHelper.GetRewardCount(previousMyScore));
+            var (myWinPoint, myDefeatPoint, _) =
+                ArenaHelper.GetScores(previousMyScore, previousEnemyScore);
+            var currentMyScore = simulator.Log.result switch
+            {
+                BattleLog.Result.Win =>
+                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore + myWinPoint),
+                BattleLog.Result.Lose =>
+                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore + myDefeatPoint),
+                BattleLog.Result.TimeOver => previousMyScore,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            simulator.Log.score = currentMyScore;
+
+            if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            {
+                Widget.Find<ArenaBoard>().GoToStage(simulator.Log, rewards);
+            }
+
+            // TODO!!!! 전투 보여주는 동안 뒤에서는 최신 목록 가져오기.
+            // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
+            RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
+        }
     }
 }

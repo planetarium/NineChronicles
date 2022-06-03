@@ -70,6 +70,7 @@ namespace Nekoyume.Game
 
         private Camera _camera;
         private BattleLog _battleLog;
+        private List<ItemBase> _rewards;
         private BattleResultPopup.Model _battleResultModel;
         private bool _rankingBattle;
         private Coroutine _battleCoroutine;
@@ -161,7 +162,7 @@ namespace Nekoyume.Game
             }
         }
 
-        private void OnRankingBattleStart(BattleLog log)
+        private void OnRankingBattleStart((BattleLog battleLog, List<ItemBase> rewards) tuple)
         {
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(OnRankingBattleStart)}() enter");
@@ -175,7 +176,8 @@ namespace Nekoyume.Game
                     _battleCoroutine = null;
                     objectPool.ReleaseAll();
                 }
-                _battleLog = log;
+                _battleLog = tuple.battleLog;
+                _rewards = tuple.rewards;
                 PlayRankingBattle(_battleLog);
             }
             else
@@ -485,7 +487,7 @@ namespace Nekoyume.Game
 #endif
             waveCount = log.waveCount;
             waveTurn = 1;
-            stageId = log.stageId;
+            stageId = 999999;
             if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
                 yield break;
 
@@ -693,8 +695,9 @@ namespace Nekoyume.Game
             playerCharacter.ShowSpeech("PLAYER_WIN");
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().Close();
-
-            Widget.Find<RankingBattleResultPopup>().Show(log, _battleResultModel.Rewards);
+            Widget.Find<RankingBattleResultPopup>().Show(
+                log,
+                _rewards.Select(e => new CountableItem(e, 1)).ToList());
             yield return null;
         }
 
@@ -753,7 +756,9 @@ namespace Nekoyume.Game
 
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
-                ActionRenderHandler.Instance.UpdateCurrentAvatarStateAsync(AvatarState);
+                ActionRenderHandler.Instance
+                    .UpdateCurrentAvatarStateAsync(AvatarState)
+                    .Forget();
             }
 
             yield return null;

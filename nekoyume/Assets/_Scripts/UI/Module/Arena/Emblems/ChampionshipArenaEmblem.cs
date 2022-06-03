@@ -14,7 +14,18 @@ namespace Nekoyume.UI.Module.Arena.Emblems
         [SerializeField]
         private TextMeshProUGUI[] _championshipNumbers;
 
-        public void SetData(int championshipNumber, bool isNormal)
+        public void Show(int championshipId, bool isNormal)
+        {
+            SetData(championshipId, isNormal);
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
+        public void SetData(int championshipId, bool isNormal)
         {
             if (_normal)
             {
@@ -28,7 +39,7 @@ namespace Nekoyume.UI.Module.Arena.Emblems
 
             foreach (var text in _championshipNumbers)
             {
-                text.text = championshipNumber.ToString();
+                text.text = championshipId.ToString();
             }
         }
     }

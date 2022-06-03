@@ -152,6 +152,8 @@ namespace Nekoyume.Game
         public ArenaSheet ArenaSheet { get; private set; }
 
         public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
+        
+        public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
@@ -217,6 +219,21 @@ namespace Nekoyume.Game
                 QuestItemRewardSheet,
                 EquipmentItemRecipeSheet,
                 EquipmentItemSubRecipeSheet
+            );
+        }
+
+        public ArenaSimulatorSheets GetArenaSimulatorSheets()
+        {
+            return new ArenaSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                CostumeStatSheet,
+                WeeklyArenaRewardSheet
             );
         }
     }
