@@ -81,207 +81,207 @@ namespace Lib9c.Tests.Action.Scenario
         public static IEnumerable<object[]> StakeAndClaimStakeRewardTestCases()
         {
             // 일반적인 보상수령 확인
-            // 1단계 수준(10~99NCG)의 deposit save 완료
+            // 1단계 수준(50~499NCG)의 deposit save 완료
             //      → 최초 보상 시점 (50,400블록 이후) 도달
             //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            // (보상내용: 1 hourglass / 10 NCG, 1 ap portion / 200 NCG 소수점 버림, 기존 deposit 유지 확인)
+            // (보상내용: 1 hourglass / 10 NCG, 1 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
             yield return new object[]
             {
-                10,
+                50,
                 new[]
                 {
-                    (400000, 1),
-                    (500000, 0),
-                },
-                50400,
-            };
-            yield return new object[]
-            {
-                99,
-                new[]
-                {
-                    (400000, 9),
-                    (500000, 0),
-                },
-                50400,
-            };
-
-            // 2단계 수준(100~999NCG)의 deposit save 완료
-            //      → 최초 보상 시점 (50,400블록 이후) 도달
-            //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            // (보상내용: 1 hourglass / 8 NCG, 1 ap portion / 200 NCG 소수점 버림, 기존 deposit 유지 확인)
-            yield return new object[]
-            {
-                100,
-                new[]
-                {
-                    (400000, 12),
-                    (500000, 0),
-                },
-                50400,
-            };
-            yield return new object[]
-            {
-                200,
-                new[]
-                {
-                    (400000, 25),
+                    (400000, 5),
                     (500000, 1),
                 },
                 50400,
             };
             yield return new object[]
             {
-                999,
+                499,
                 new[]
                 {
-                    (400000, 124),
-                    (500000, 4),
+                    (400000, 49),
+                    (500000, 1),
                 },
                 50400,
             };
 
-            // 3단계 수준(1,000~9,999NCG)의 deposit save 완료
+            // 2단계 수준(500~4,999NCG)의 deposit save 완료
             //      → 최초 보상 시점 (50,400블록 이후) 도달
             //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            // (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 180 NCG 소수점 버림, 기존 deposit 유지 확인)
+            // (보상내용: 1 hourglass / 8 NCG, 1 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
             yield return new object[]
             {
-                1000,
+                500,
                 new[]
                 {
-                    (400000, 200),
-                    (500000, 5),
+                    (400000, 62),
+                    (500000, 2),
                 },
                 50400,
             };
             yield return new object[]
             {
-                9999,
+                799,
                 new[]
                 {
-                    (400000, 1999),
-                    (500000, 55),
+                    (400000, 99),
+                    (500000, 2),
+                },
+                50400,
+            };
+            yield return new object[]
+            {
+                4999,
+                new[]
+                {
+                    (400000, 624),
+                    (500000, 8),
                 },
                 50400,
             };
 
-            // 4단계 수준(10,000~99,999NCG)의 deposit save 완료
+            // 3단계 수준(5,000~49,999NCG)의 deposit save 완료
             //      → 최초 보상 시점 (50,400블록 이후) 도달
             //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            // (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 180 NCG 소수점 버림, 기존 deposit 유지 확인)
+            // (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
             yield return new object[]
             {
-                10000,
+                5000,
                 new[]
                 {
-                    (400000, 2000),
-                    (500000, 55),
+                    (400000, 1000),
+                    (500000, 8),
                 },
                 50400,
             };
             yield return new object[]
             {
-                99999,
+                49999,
                 new[]
                 {
-                    (400000, 19999),
-                    (500000, 555),
+                    (400000, 9999),
+                    (500000, 64),
                 },
                 50400,
             };
 
-            // 5단계 수준(100,000~100,000,000NCG)의 deposit save 완료
+            // 4단계 수준(50,000~499,999NCG)의 deposit save 완료
             //      → 최초 보상 시점 (50,400블록 이후) 도달
             //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            // (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 160 NCG 소수점 버림, 기존 deposit 유지 확인)
+            // (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
             yield return new object[]
             {
-                100000,
+                50000,
                 new[]
                 {
-                    (400000, 20000),
-                    (500000, 625),
+                    (400000, 10000),
+                    (500000, 64),
                 },
                 50400,
             };
             yield return new object[]
             {
-                999999,
+                499999,
                 new[]
                 {
-                    (400000, 199999),
-                    (500000, 6249),
+                    (400000, 99999),
+                    (500000, 626),
+                },
+                50400,
+            };
+
+            // 5단계 수준(500,000~100,000,000NCG)의 deposit save 완료
+            //      → 최초 보상 시점 (50,400블록 이후) 도달
+            //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
+            // (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
+            yield return new object[]
+            {
+                500000,
+                new[]
+                {
+                    (400000, 100000),
+                    (500000, 627),
+                },
+                50400,
+            };
+            yield return new object[]
+            {
+                99999999,
+                new[]
+                {
+                    (400000, 19999999),
+                    (500000, 125001),
                 },
                 50400,
             };
 
             // 지연된 보상수령 확인
-            // 1단계 수준(10~99NCG)의 deposit save 완료
+            // 1단계 수준(50~499NCG)의 deposit save 완료
             //      → 최초 보상 시점 (50,400블록 이후) 도달
             //      → 보상을 수령하지 않음
             //      → 2번째 보상 시점 (100,800블록 이후) 도달
             //      → 이하 보상의 수령이 가능해야 한다.
-            // (보상내용: 2 hourglass / 10 NCG, 소수점 버림, 기존 deposit 유지 확인)
+            // (보상내용: 2 hourglass / 50 NCG, 소수점 버림, 기존 deposit 유지 확인)
             yield return new object[]
             {
-                10,
+                50,
                 new[]
                 {
                     (400000, 2),
                     (500000, 0),
                 },
-                100800,
+                500800,
             };
             yield return new object[]
             {
-                99,
+                499,
                 new[]
                 {
                     (400000, 18),
                     (500000, 0),
                 },
-                100800,
+                500800,
             };
 
-            // 2단계 수준(100~999NCG)의 deposit save 완료
+            // 2단계 수준(500~4,999NCG)의 deposit save 완료
             //      → 최초 보상 시점 (50,400블록 이후) 도달
             //      → 보상을 수령하지 않음
             //      → 2번째 보상 시점 (100,800블록 이후) 도달
             //      → 이하 보상의 수령이 가능해야 한다.
-            // (보상내용: 2 hourglass / 8 NCG, 2 ap portion / 200 NCG 소수점 버림, 기존 deposit 유지 확인)
+            // (보상내용: 2 hourglass / 8 NCG, 2 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
             yield return new object[]
             {
-                100,
+                500,
                 new[]
                 {
                     (400000, 24),
                     (500000, 0),
                 },
-                100800,
+                500800,
             };
             yield return new object[]
             {
-                200,
+                799,
                 new[]
                 {
                     (400000, 50),
                     (500000, 2),
                 },
-                100800,
+                500800,
             };
             yield return new object[]
             {
-                999,
+                4999,
                 new[]
                 {
                     (400000, 248),
                     (500000, 8),
                 },
-                100800,
+                500800,
             };
 
-            // 3단계 수준(1,000~9,999NCG)의 deposit save 완료
+            // 3단계 수준(5,000~49,999NCG)의 deposit save 완료
             //      → 최초 보상 시점 (50,400블록 이후) 도달
             //      → 보상을 수령하지 않음
             //      → 2번째 보상 시점 (100,800블록 이후) 도달
@@ -289,26 +289,26 @@ namespace Lib9c.Tests.Action.Scenario
             // (보상내용: 2 hourglass / 5 NCG, 2 ap portion / 180 NCG 소수점 버림, 기존 deposit 유지 확인)
             yield return new object[]
             {
-                1000,
+                5000,
                 new[]
                 {
-                    (400000, 400),
-                    (500000, 10),
+                    (400000, 1000),
+                    (500000, 6),
                 },
-                100800,
+                500800,
             };
             yield return new object[]
             {
-                9999,
+                49999,
                 new[]
                 {
-                    (400000, 3998),
-                    (500000, 110),
+                    (400000, 9999),
+                    (500000, 62),
                 },
-                100800,
+                500800,
             };
 
-            // 4단계 수준(10,000~99,999NCG)의 deposit save 완료
+            // 4단계 수준(50,000~499,999NCG)의 deposit save 완료
             //      → 최초 보상 시점 (50,400블록 이후) 도달
             //      → 보상을 수령하지 않음
             //      → 2번째 보상 시점 (100,800블록 이후) 도달
@@ -316,30 +316,30 @@ namespace Lib9c.Tests.Action.Scenario
             // (보상내용: 2 hourglass / 5 NCG, 2 ap portion / 180 NCG 소수점 버림, 기존 deposit 유지 확인)
             yield return new object[]
             {
-                10000,
+                50000,
                 new[]
                 {
-                    (400000, 4000),
-                    (500000, 110),
+                    (400000, 10000),
+                    (500000, 62),
                 },
-                100800,
+                500800,
             };
             yield return new object[]
             {
-                99999,
+                499999,
                 new[]
                 {
-                    (400000, 39998),
-                    (500000, 1110),
+                    (400000, 99999),
+                    (500000, 626),
                 },
-                100800,
+                500800,
             };
 
-            // 5단계 수준(100,000~100,000,000NCG)의 deposit save 완료
+            // 5단계 수준(500,000~4,999,999NCG)의 deposit save 완료
             //      → 최초 보상 시점 (50,400블록 이후) 도달
             //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
             // (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 160 NCG 소수점 버림, 기존 deposit 유지 확인)
-            // 5단계 수준(100,000~100,000,000NCG)의 deposit save 완료
+            // 5단계 수준(500,000~500,000,000NCG)의 deposit save 완료
             //      → 최초 보상 시점 (50,400블록 이후) 도달
             //      → 보상을 수령하지 않음
             //      → 2번째 보상 시점 (100,800블록 이후) 도달
@@ -347,23 +347,23 @@ namespace Lib9c.Tests.Action.Scenario
             // (보상내용: 2 hourglass / 5 NCG, 2 ap portion / 160 NCG 소수점 버림, 기존 deposit 유지 확인)
             yield return new object[]
             {
-                100000,
+                500000,
                 new[]
                 {
-                    (400000, 40000),
-                    (500000, 1250),
+                    (400000, 100000),
+                    (500000, 627),
                 },
-                100800,
+                500800,
             };
             yield return new object[]
             {
-                999999,
+                4999999,
                 new[]
                 {
-                    (400000, 399998),
-                    (500000, 12498),
+                    (400000, 999999),
+                    (500000, 6251),
                 },
-                100800,
+                500800,
             };
         }
 
@@ -372,6 +372,7 @@ namespace Lib9c.Tests.Action.Scenario
             (long ClaimBlockIndex, (int ItemId, int Amount)[])[] BuildEvents(
                 int hourglassRate,
                 int apPotionRate,
+                int apPotionBonus,
                 long stakeAmount)
             {
                 const int hourglassItemId = 400000, apPotionItemId = 500000;
@@ -380,31 +381,31 @@ namespace Lib9c.Tests.Action.Scenario
                     (StakeState.RewardInterval, new[]
                     {
                         (hourglassItemId, (int)(stakeAmount / hourglassRate)),
-                        (apPotionItemId, (int)(stakeAmount / apPotionRate)),
+                        (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
                     }),
                     (StakeState.RewardInterval * 2, new[]
                     {
                         (hourglassItemId, (int)(stakeAmount / hourglassRate)),
-                        (apPotionItemId, (int)(stakeAmount / apPotionRate)),
+                        (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
                     }),
                     (StakeState.RewardInterval * 3, new[]
                     {
                         (hourglassItemId, (int)(stakeAmount / hourglassRate)),
-                        (apPotionItemId, (int)(stakeAmount / apPotionRate)),
+                        (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
                     }),
                     (StakeState.RewardInterval * 4, new[]
                     {
                         (hourglassItemId, (int)(stakeAmount / hourglassRate)),
-                        (apPotionItemId, (int)(stakeAmount / apPotionRate)),
+                        (apPotionItemId, (int)(stakeAmount / apPotionRate + apPotionBonus)),
                     }),
                 };
             }
 
-            // 1단계 수준(10~99NCG)의 deposit save 완료
+            // 1단계 수준(50~499NCG)의 deposit save 완료
             //      → 1~3회까지 모든 보상을 수령함
             //      → 201,600 블록 도달 이후
             //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            //        (보상내용: 1 hourglass / 10 NCG, 1 ap portion / 200 NCG 소수점 버림, 기존 deposit 유지 확인)
+            //        (보상내용: 1 hourglass / 50 NCG, 1 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
             //      → 기존 deposit보다 낮은 금액으로 edit save 한다.
             //      → 보상 타이머 리셋 확인
             //      → (기존 deposit - 현재 deposit 만큼의 ncg 인출 상태 확인)
@@ -412,41 +413,41 @@ namespace Lib9c.Tests.Action.Scenario
             //      → (현재 deposit 묶인 상태 확인)
             yield return new object[]
             {
-                10,
-                10,
+                50,
+                50,
                 9,
-                BuildEvents(10, 200, 10),
+                BuildEvents(10, 800, 1, 50),
             };
             yield return new object[]
             {
-                99,
-                99,
-                10,
-                BuildEvents(10, 200, 99),
+                499,
+                499,
+                50,
+                BuildEvents(10, 800, 1, 499),
             };
 
             // 현재의 스테이킹된 NCG의 전액 인출을 시도한다(deposit NCG 인출 상태 확인)
             //      → 스테이킹 완전 소멸 확인
             yield return new object[]
             {
-                10,
-                10,
+                50,
+                50,
                 0,
-                BuildEvents(10, 200, 10),
+                BuildEvents(10, 800, 1, 50),
             };
             yield return new object[]
             {
-                99,
-                99,
+                499,
+                499,
                 0,
-                BuildEvents(10, 200, 99),
+                BuildEvents(10, 800, 1, 499),
             };
 
-            // 2단계 수준(100~999NCG)의 deposit save 완료
+            // 2단계 수준(500~4,999NCG)의 deposit save 완료
             //      → 1~3회까지 모든 보상을 수령함
             //      → 201,600 블록 도달 이후
             //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            //        (보상내용: 1 hourglass / 8 NCG, 1 ap portion / 200 NCG 소수점 버림, 기존 deposit 유지 확인)
+            //        (보상내용: 1 hourglass / 8 NCG, 1 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
             //      → 기존 deposit보다 낮은 금액으로 edit save 한다.
             //      → 보상 타이머 리셋 확인
             //      → (기존 deposit - 현재 deposit 만큼의 ncg 인출 상태 확인)
@@ -454,41 +455,41 @@ namespace Lib9c.Tests.Action.Scenario
             //      → (현재 deposit 묶인 상태 확인)
             yield return new object[]
             {
-                100,
-                100,
-                99,
-                BuildEvents(8, 200, 100),
+                500,
+                500,
+                499,
+                BuildEvents(8, 800, 2, 500),
             };
             yield return new object[]
             {
-                999,
-                999,
-                100,
-                BuildEvents(8, 200, 999),
+                4999,
+                4999,
+                500,
+                BuildEvents(8, 800, 2, 4999),
             };
 
             // 현재의 스테이킹된 NCG의 전액 인출을 시도한다(deposit NCG 인출 상태 확인)
             //      → 스테이킹 완전 소멸 확인
             yield return new object[]
             {
-                100,
-                100,
+                500,
+                500,
                 0,
-                BuildEvents(8, 200, 100),
+                BuildEvents(8, 800, 2, 500),
             };
             yield return new object[]
             {
-                999,
-                999,
+                4999,
+                4999,
                 0,
-                BuildEvents(8, 200, 999),
+                BuildEvents(8, 800, 2, 4999),
             };
 
-            // 3단계 수준(1,000~9,999NCG)의 deposit save 완료
+            // 3단계 수준(5,000~49,999NCG)의 deposit save 완료
             //      → 1~3회까지 모든 보상을 수령함
             //      → 201,600 블록 도달 이후
             //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            //        (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 180 NCG 소수점 버림, 기존 deposit 유지 확인)
+            //        (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
             //      → 기존 deposit보다 낮은 금액으로 edit save 한다.
             //      → 보상 타이머 리셋 확인
             //      → (기존 deposit - 현재 deposit 만큼의 ncg 인출 상태 확인)
@@ -496,41 +497,41 @@ namespace Lib9c.Tests.Action.Scenario
             //      → (현재 deposit 묶인 상태 확인)
             yield return new object[]
             {
-                1000,
-                1000,
-                999,
-                BuildEvents(5, 180, 1000),
+                5000,
+                5000,
+                4999,
+                BuildEvents(5, 800, 2, 5000),
             };
             yield return new object[]
             {
-                9999,
-                9999,
-                1000,
-                BuildEvents(5, 180, 9999),
+                49999,
+                49999,
+                5000,
+                BuildEvents(5, 800, 2, 49999),
             };
 
             // 현재의 스테이킹된 NCG의 전액 인출을 시도한다(deposit NCG 인출 상태 확인)
             //      → 스테이킹 완전 소멸 확인
             yield return new object[]
             {
-                1000,
-                1000,
+                5000,
+                5000,
                 0,
-                BuildEvents(5, 180, 1000),
+                BuildEvents(5, 800, 2, 5000),
             };
             yield return new object[]
             {
-                9999,
-                9999,
+                49999,
+                49999,
                 0,
-                BuildEvents(5, 180, 9999),
+                BuildEvents(5, 800, 2, 49999),
             };
 
-            // 4단계 수준(10,000~99,999NCG)의 deposit save 완료
+            // 4단계 수준(50,000~499,999NCG)의 deposit save 완료
             //      → 1~3회까지 모든 보상을 수령함
             //      → 201,600 블록 도달 이후
             //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            //        (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 180 NCG 소수점 버림, 기존 deposit 유지 확인)
+            //        (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
             //      → 기존 deposit보다 낮은 금액으로 edit save 한다.
             //      → 보상 타이머 리셋 확인
             //      → (기존 deposit - 현재 deposit 만큼의 ncg 인출 상태 확인)
@@ -538,41 +539,41 @@ namespace Lib9c.Tests.Action.Scenario
             //      → (현재 deposit 묶인 상태 확인)
             yield return new object[]
             {
-                10000,
-                10000,
-                9999,
-                BuildEvents(5, 180, 10000),
+                50000,
+                50000,
+                49999,
+                BuildEvents(5, 800, 2, 50000),
             };
             yield return new object[]
             {
-                99999,
-                99999,
-                10000,
-                BuildEvents(5, 180, 99999),
+                499999,
+                499999,
+                50000,
+                BuildEvents(5, 800, 2, 499999),
             };
 
             // 현재의 스테이킹된 NCG의 전액 인출을 시도한다(deposit NCG 인출 상태 확인)
             //      → 스테이킹 완전 소멸 확인
             yield return new object[]
             {
-                10000,
-                10000,
+                50000,
+                50000,
                 0,
-                BuildEvents(5, 180, 10000),
+                BuildEvents(5, 800, 2, 50000),
             };
             yield return new object[]
             {
-                99999,
-                99999,
+                499999,
+                499999,
                 0,
-                BuildEvents(5, 180, 99999),
+                BuildEvents(5, 800, 2, 499999),
             };
 
-            // 5단계 수준(100,000~100,000,000NCG)의 deposit save 완료
+            // 5단계 수준(500,000~100,000,000NCG)의 deposit save 완료
             //      → 1~3회까지 모든 보상을 수령함
             //      → 201,600 블록 도달 이후
             //      → 지정된 캐릭터 앞으로 이하 보상의 수령이 가능해야 한다.
-            //        (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 160 NCG 소수점 버림, 기존 deposit 유지 확인)
+            //        (보상내용: 1 hourglass / 5 NCG, 1 ap portion / 800 NCG 소수점 버림, 기존 deposit 유지 확인)
             //      → 기존 deposit보다 낮은 금액으로 edit save 한다.
             //      → 보상 타이머 리셋 확인
             //      → (기존 deposit - 현재 deposit 만큼의 ncg 인출 상태 확인)
@@ -580,34 +581,34 @@ namespace Lib9c.Tests.Action.Scenario
             //      → (현재 deposit 묶인 상태 확인)
             yield return new object[]
             {
-                100000,
-                100000,
-                99999,
-                BuildEvents(5, 160, 100000),
+                500000,
+                500000,
+                499999,
+                BuildEvents(5, 800, 2, 500000),
             };
             yield return new object[]
             {
-                100000000,
-                100000000,
-                100000,
-                BuildEvents(5, 160, 100000000),
+                500000000,
+                500000000,
+                500000,
+                BuildEvents(5, 800, 2, 500000000),
             };
 
             // 현재의 스테이킹된 NCG의 전액 인출을 시도한다(deposit NCG 인출 상태 확인)
             //      → 스테이킹 완전 소멸 확인
             yield return new object[]
             {
-                100000,
-                100000,
+                500000,
+                500000,
                 0,
-                BuildEvents(5, 160, 100000),
+                BuildEvents(5, 800, 2, 500000),
             };
             yield return new object[]
             {
-                100000000,
-                100000000,
+                500000000,
+                500000000,
                 0,
-                BuildEvents(5, 160, 100000000),
+                BuildEvents(5, 800, 2, 500000000),
             };
         }
 
@@ -650,15 +651,15 @@ namespace Lib9c.Tests.Action.Scenario
         }
 
         [Theory]
-        [InlineData(100, 10, 99, StakeState.LockupInterval - 10)]
-        [InlineData(100, 99, 100, StakeState.LockupInterval - 1000)]
-        [InlineData(1000, 100, 999, StakeState.LockupInterval - 10000)]
-        [InlineData(1000, 999, 1000, StakeState.LockupInterval - 10000)]
-        [InlineData(10000, 1000, 9999, StakeState.LockupInterval - 10000)]
-        [InlineData(10000, 9999, 10000, StakeState.LockupInterval - 10000)]
-        [InlineData(100000, 10000, 99999, StakeState.LockupInterval - 10000)]
-        [InlineData(100000, 99999, 100000, StakeState.LockupInterval - 10000)]
-        [InlineData(100000000, 100000, 100000000, StakeState.LockupInterval - 10000)]
+        [InlineData(500, 50, 499, StakeState.LockupInterval - 50)]
+        [InlineData(500, 499, 500, StakeState.LockupInterval - 5000)]
+        [InlineData(5000, 500, 4999, StakeState.LockupInterval - 50000)]
+        [InlineData(5000, 4999, 5000, StakeState.LockupInterval - 50000)]
+        [InlineData(50000, 5000, 49999, StakeState.LockupInterval - 50000)]
+        [InlineData(50000, 49999, 50000, StakeState.LockupInterval - 50000)]
+        [InlineData(500000, 50000, 499999, StakeState.LockupInterval - 50000)]
+        [InlineData(500000, 499999, 500000, StakeState.LockupInterval - 50000)]
+        [InlineData(500000000, 500000, 500000000, StakeState.LockupInterval - 50000)]
         public void StakeAndStakeMore(long initialBalance, long stakeAmount, long newStakeAmount, long newStakeBlockIndex)
         {
             // Validate testcases
@@ -712,21 +713,18 @@ namespace Lib9c.Tests.Action.Scenario
         }
 
         [Theory]
-        [InlineData(100, 10, 1)]
-        [InlineData(100, 99, 10)]
-        [InlineData(1000, 100, 99)]
-        [InlineData(1000, 100, 10)]
-        [InlineData(1000, 999, 100)]
-        [InlineData(1000, 999, 500)]
-        [InlineData(10000, 1000, 999)]
-        [InlineData(10000, 9999, 1000)]
-        [InlineData(10000, 9999, 5000)]
-        [InlineData(100000, 10000, 9999)]
-        [InlineData(100000, 99999, 10000)]
-        [InlineData(100000, 99999, 50000)]
-        [InlineData(100000000, 100000, 9999)]
-        [InlineData(100000000, 100000000, 0)]
-        [InlineData(100000000, 100000000, 99999999)]
+        [InlineData(500, 50, 1)]
+        [InlineData(500, 499, 50)]
+        [InlineData(5000, 500, 499)]
+        [InlineData(5000, 500, 50)]
+        [InlineData(5000, 4999, 500)]
+        [InlineData(50000, 5000, 4999)]
+        [InlineData(50000, 49999, 5000)]
+        [InlineData(500000, 50000, 49999)]
+        [InlineData(500000, 499999, 50000)]
+        [InlineData(500000000, 500000, 99999)]
+        [InlineData(500000000, 500000000, 0)]
+        [InlineData(500000000, 500000000, 99999999)]
         public void StakeAndStakeLess(long initialBalance, long stakeAmount, long newStakeAmount)
         {
             // Validate testcases
@@ -874,8 +872,8 @@ namespace Lib9c.Tests.Action.Scenario
         [Fact]
         public void StakeAndClaimStakeRewardBeforeRewardInterval()
         {
-            var states = _initialState.MintAsset(_signerAddress, _currency * 100);
-            IAction action = new Stake(100);
+            var states = _initialState.MintAsset(_signerAddress, _currency * 500);
+            IAction action = new Stake(500);
             states = action.Execute(new ActionContext
             {
                 PreviousStates = states,

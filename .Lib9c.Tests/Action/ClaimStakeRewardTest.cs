@@ -90,11 +90,11 @@ namespace Lib9c.Tests.Action
             });
 
             AvatarState avatarState = states.GetAvatarStateV2(_avatarAddress);
-            // regular (100 / 8) * 4
-            Assert.Equal(48, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
-            // regular (100 / 200) * 4
+            // regular (100 / 10) * 4
+            Assert.Equal(40, avatarState.inventory.Items.First(x => x.item.Id == 400000).count);
+            // regular ((100 / 800) + 1) * 4
             // It must be never added into the inventory if the amount is 0.
-            Assert.Null(avatarState.inventory.Items.FirstOrDefault(x => x.item.Id == 500000));
+            Assert.Equal(4, avatarState.inventory.Items.First(x => x.item.Id == 500000).count);
 
             Assert.True(states.TryGetStakeState(_signerAddress, out StakeState stakeState));
             Assert.Equal(StakeState.LockupInterval, stakeState.ReceivedBlockIndex);
