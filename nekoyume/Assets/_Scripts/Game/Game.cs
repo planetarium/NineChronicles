@@ -179,14 +179,13 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
-            Analyzer = _options.RpcClient
-                ? new Analyzer(Agent.Address.ToString(), _options.RpcServerHost)
-                : new Analyzer(Agent.Address.ToString());
+            InitializeAnalyzer();
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
             Debug.Log("[Game] Start() TableSheets synchronized");
+            RxProps.Start(Agent, States, TableSheets);
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
@@ -855,6 +854,37 @@ namespace Nekoyume.Game
         public void ResumeTimeline()
         {
             _activeDirector.playableGraph.GetRootPlayable(0).SetSpeed(1);
+        }
+
+        private void InitializeAnalyzer()
+        {
+            var uniqueId = Agent.Address.ToString();
+            var rpcServerHost = _options.RpcClient
+                ? _options.RpcServerHost
+                : null;
+            
+#if UNITY_EDITOR
+            Debug.Log("This is editor mode.");
+            Analyzer = new Analyzer(uniqueId, rpcServerHost);
+            return;
+#endif
+            var isTrackable = true;
+            if (!Debug.isDebugBuild)
+            {
+                Debug.Log("This is debug build.");
+                isTrackable = false;
+            }
+
+            if (_options.Development)
+            {
+                Debug.Log("This is development mode.");
+                isTrackable = false;
+            }
+
+            Analyzer = new Analyzer(
+                uniqueId,
+                rpcServerHost,
+                isTrackable);
         }
     }
 }

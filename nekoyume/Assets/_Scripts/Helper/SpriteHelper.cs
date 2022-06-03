@@ -2,6 +2,7 @@ using System;
 using Nekoyume.Data;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -109,15 +110,14 @@ namespace Nekoyume.Helper
             Sprite result = null;
             switch (menuName)
             {
-                case nameof(RankingBoard):
+                case nameof(ArenaJoin):
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_ranking"));
                     break;
-                case "Shop":
+                case nameof(Shop):
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_shop"));
                     break;
-
                 case "Mimisbrunnr":
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_mimisbrunnr"));
@@ -143,6 +143,10 @@ namespace Nekoyume.Helper
                 case MailType.System:
                     result = Resources.Load<Sprite>(
                         string.Format(MailIconPathFormat, "icon_mail_system"));
+                    break;
+                case MailType.Grinding:
+                    result = Resources.Load<Sprite>(
+                        string.Format(MailIconPathFormat, "icon_mail_grind"));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mailType), mailType, null);

@@ -74,7 +74,7 @@ namespace Nekoyume.UI
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
             Close();
-            Find<RankingBoard>().Show(States.Instance.WeeklyArenaState);
+            Find<ArenaBoard>().Show(RxProps.ArenaParticipantsOrderedWithScore.Value);
         }
     }
 }

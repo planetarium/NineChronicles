@@ -169,6 +169,8 @@ namespace Nekoyume.UI
                 Widget.Create<DimmedLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
                 Widget.Create<DataLoadingScreen>(),
+                Widget.Create<WorldMapLoadingScreen>(),
+                Widget.Create<UnlockWorldLoadingScreen>(),
                 Widget.Create<PreloadingScreen>(),
 
                 // 팝업 영역.
@@ -230,7 +232,9 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
-            secondWidgets.Add(Widget.Create<RankingBoard>());
+            secondWidgets.Add(Widget.Create<ArenaJoin>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ArenaBoard>());
             yield return null;
             secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
@@ -249,6 +253,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<Craft>());
             yield return null;
             secondWidgets.Add(Widget.Create<Enhancement>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<Grind>());
             yield return null;
 
             // header menu
@@ -313,6 +319,10 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<PaymentPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ReplaceMaterialPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<SweepPopup>());
             yield return null;

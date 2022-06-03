@@ -13,6 +13,9 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Debug = UnityEngine.Debug;
 using static Lib9c.SerializeKeys;
+using StateExtensions = Nekoyume.Model.State.StateExtensions;
+using Libplanet.Assets;
+using Nekoyume.Helper;
 
 namespace Nekoyume.State
 {
@@ -30,6 +33,10 @@ namespace Nekoyume.State
 
         public GoldBalanceState GoldBalanceState { get; private set; }
 
+        public MonsterCollectionState MonsterCollectionState { get; private set; }
+
+        public StakeState StakeState { get; private set; }
+
         private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
@@ -39,6 +46,10 @@ namespace Nekoyume.State
         public AvatarState CurrentAvatarState { get; private set; }
 
         public GameConfigState GameConfigState { get; private set; }
+
+        public FungibleAssetValue CrystalBalance { get; private set; }
+
+        public int StakingLevel { get; private set; }
 
         private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
             new Dictionary<int, CombinationSlotState>();
@@ -105,6 +116,44 @@ namespace Nekoyume.State
 
             GoldBalanceState = LocalLayer.Instance.Modify(goldBalanceState);
             AgentStateSubject.OnNextGold(GoldBalanceState.Gold);
+        }
+
+        public void SetCrystalBalance(FungibleAssetValue fav)
+        {
+            if (!fav.Currency.Equals(CrystalCalculator.CRYSTAL))
+            {
+                Debug.LogWarning($"Currency not matches. {fav.Currency}");
+                return;
+            }
+
+            CrystalBalance = LocalLayer.Instance.ModifyCrystal(fav);
+            AgentStateSubject.OnNextCrystal(CrystalBalance);
+        }
+
+        public void SetMonsterCollectionState(MonsterCollectionState monsterCollectionState)
+        {
+            if (monsterCollectionState is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetMonsterCollectionState)}] {nameof(monsterCollectionState)} is null.");
+                return;
+            }
+
+            MonsterCollectionState = monsterCollectionState;
+            StakingLevel = monsterCollectionState.Level;
+            MonsterCollectionStateSubject.OnNextLevel(StakingLevel);
+        }
+
+        public void SetStakeState(StakeState stakeState, int stakingLevel)
+        {
+            if (stakeState is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetStakeState)}] {nameof(stakeState)} is null.");
+                return;
+            }
+
+            StakeState = stakeState;
+            StakingLevel = stakingLevel;
+            MonsterCollectionStateSubject.OnNextLevel(stakingLevel);
         }
 
         public async UniTask<AvatarState> AddOrReplaceAvatarStateAsync(
@@ -262,6 +311,17 @@ namespace Nekoyume.State
             var avatarState = _avatarStates[CurrentAvatarKey];
             LocalLayer.Instance.InitializeCurrentAvatarState(avatarState);
             UpdateCurrentAvatarState(avatarState, initializeReactiveState);
+            var agent = Game.Game.instance.Agent;
+            var worldIds =
+                await agent.GetStateAsync(avatarState.address.Derive("world_ids"));
+            var unlockedIds = !(worldIds is Null) ?
+                 worldIds.ToList(StateExtensions.ToInteger)
+                 : new List<int>
+                {
+                    1,
+                    GameConfig.MimisbrunnrWorldId,
+                };
+            UI.Widget.Find<UI.WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
 
             if (isNew)
             {

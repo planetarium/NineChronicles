@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b843a91a262d4d498fcbf7065468603b, type: 3}
+  m_Name: ArenaBoardSO
+  m_EditorClassIdentifier: 
+  _arenaBoardPlayerScrollData:
+  - name: Alpha
+    cp: 999,999
+    rating: 999,999
+    plusRating: 999
+  - name: Bravo
+    cp: 999,998
+    rating: 999,998
+    plusRating: 998
+  - name: Charlie
+    cp: 999,997
+    rating: 999,997
+    plusRating: 997
+  - name: Delta
+    cp: 999,996
+    rating: 999,996
+    plusRating: 996
+  - name: Echo
+    cp: 999,995
+    rating: 999,995
+    plusRating: 995
+  - name: Foxtrot
+    cp: 999,994
+    rating: 999,994
+    plusRating: 994
+  - name: Golf
+    cp: 999,993
+    rating: 999,993
+    plusRating: 993
+  _rank: 999999
+  _winCount: 999
+  _loseCount: 999
+  _cp: 999999
+  _rating: 999999

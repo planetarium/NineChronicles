@@ -1,26 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
-using Nekoyume.UI.Module;
 using Nekoyume.Model.BattleStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Lobby;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.UI.Scroller;
+    using Scroller;
     using UniRx;
     public class Menu : Widget
     {
@@ -56,9 +56,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject combinationExclamationMark = null;
-
-        [SerializeField]
-        private GameObject rankingExclamationMark = null;
 
         [SerializeField]
         private GameObject questExclamationMark = null;
@@ -185,23 +182,6 @@ namespace Nekoyume.UI
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
 
-            var currentAddress = States.Instance.CurrentAvatarState?.address;
-            if (currentAddress.HasValue)
-            {
-                ArenaInfo arenaInfo = null;
-                var avatarAddress = currentAddress.Value;
-                var infoAddress = States.Instance.WeeklyArenaState.address.Derive(avatarAddress.ToByteArray());
-                var rawInfo = await Game.Game.instance.Agent.GetStateAsync(infoAddress);
-                if (rawInfo is Dictionary dictionary)
-                {
-                    arenaInfo = new ArenaInfo(dictionary);
-                }
-
-                rankingExclamationMark.gameObject.SetActive(
-                    btnRanking.IsUnlocked &&
-                    (arenaInfo == null || arenaInfo.DailyChallengeCount > 0));
-            }
-
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
             var hasNotificationInWorldMap = worldMap.HasNotification;
@@ -244,7 +224,6 @@ namespace Nekoyume.UI
             Close();
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             AudioController.PlayClick();
         }
 
@@ -308,7 +287,7 @@ namespace Nekoyume.UI
             }
 
             Close(true);
-            Find<RankingBoard>().Show();
+            Find<ArenaJoin>().Show();
             Analyzer.Instance.Track("Unity/Enter arena page");
             AudioController.PlayClick();
         }
@@ -399,6 +378,11 @@ namespace Nekoyume.UI
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
+
+            // Update once when show this menu UI.
+            // Because the current avatar has been selected in this context.
+            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
+            RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -491,13 +475,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // Temporarily lock tutorial recipe.
-            var skipMap = Craft.SharedModel.RecipeVFXSkipList;
-            if (skipMap.Contains(firstRecipeRow.Id))
-            {
-                skipMap.Remove(firstRecipeRow.Id);
-            }
-            Craft.SharedModel.SaveRecipeVFXSkipList();
+            Craft.SharedModel.DummyLockedRecipes.Add(firstRecipeRow.Id);
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.L10n;
@@ -305,7 +305,7 @@ namespace Nekoyume.UI
 
                 ClearInformation();
                 _costNcg = row.Cost;
-                upgradeButton.SetCost(ConditionalCostButton.CostType.NCG, (int)row.Cost);
+                upgradeButton.SetCost(CostType.NCG, (int)row.Cost);
                 var slots = Find<CombinationSlotsPopup>();
                 upgradeButton.Interactable = slots.TryGetEmptyCombinationSlot(out var _);
 

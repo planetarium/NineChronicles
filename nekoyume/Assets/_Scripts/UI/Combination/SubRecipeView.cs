@@ -11,18 +11,14 @@ using System;
 using System.Globalization;
 using Nekoyume.State;
 using System.Numerics;
-using UnityEngine.UI;
-using Nekoyume.Model.Item;
-using Libplanet;
-using System.Security.Cryptography;
 using Nekoyume.Extensions;
-using Toggle = Nekoyume.UI.Module.Toggle;
+using Nekoyume.Model.Mail;
+using Nekoyume.UI.Scroller;
 using Nekoyume.L10n;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Model.Mail;
-    using Nekoyume.UI.Scroller;
     using UniRx;
 
     public class SubRecipeView : MonoBehaviour
@@ -33,7 +29,8 @@ namespace Nekoyume.UI
             public int? SubRecipeId;
             public BigInteger CostNCG;
             public int CostAP;
-            public List<(HashDigest<SHA256>, int count)> Materials;
+            public Dictionary<int, int> Materials;
+            public Dictionary<int, int> ReplacedMaterials;
         }
 
         [Serializable]
@@ -60,7 +57,8 @@ namespace Nekoyume.UI
         [SerializeField] private RequiredItemRecipeView requiredItemRecipeView = null;
 
         [SerializeField] private ConditionalCostButton button = null;
-        [SerializeField] private Button combineButton = null;
+        [SerializeField] private GameObject lockedObject = null;
+        [SerializeField] private TextMeshProUGUI lockedText = null;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
@@ -71,6 +69,7 @@ namespace Nekoyume.UI
 
         private const string StatTextFormat = "{0} {1}";
         private const int MimisbrunnrRecipeIndex = 2;
+        private IDisposable _disposableForOnDisable;
 
         private void Awake()
         {
@@ -86,20 +85,9 @@ namespace Nekoyume.UI
                 });
             }
 
-            combineButton.onClick.AddListener(() =>
-            {
-                AudioController.PlayClick();
-                CombineCurrentRecipe();
-            });
-
             button.OnClickSubject
                 .Subscribe(state =>
                 {
-                    if (state == ConditionalButton.State.Disabled)
-                    {
-                        return;
-                    }
-
                     CombineCurrentRecipe();
                 })
                 .AddTo(gameObject);
@@ -115,14 +103,25 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
+        private void OnDisable()
+        {
+            if (_disposableForOnDisable != null)
+            {
+                _disposableForOnDisable.Dispose();
+                _disposableForOnDisable = null;
+            }
+        }
+
         public void SetData(SheetRow<int> recipeRow, List<int> subrecipeIds)
         {
             _recipeRow = recipeRow;
             _subrecipeIds = subrecipeIds;
 
             string title = null;
+            var isEquipment = false;
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
+                isEquipment = true;
                 var resultItem = equipmentRow.GetResultEquipmentItemRow();
                 title = resultItem.GetLocalizedName(true, false);
 
@@ -132,7 +131,6 @@ namespace Nekoyume.UI
                     : stat.ValueAsInt.ToString();
                 statText.text = string.Format(StatTextFormat, stat.Type, statValueText);
                 recipeCell.Show(equipmentRow, false);
-
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
             {
@@ -165,6 +163,24 @@ namespace Nekoyume.UI
             {
                 ChangeTab(0);
             }
+
+            if (_disposableForOnDisable != null)
+            {
+                _disposableForOnDisable.Dispose();
+                _disposableForOnDisable = null;
+            }
+
+            if (isEquipment)
+            {
+                _disposableForOnDisable = Craft.SharedModel.UnlockedRecipes.Subscribe(_ =>
+                {
+                    if (Craft.SharedModel.UnlockedRecipes.HasValue &&
+                        gameObject.activeSelf)
+                    {
+                        UpdateButton();
+                    }
+                });
+            }
         }
 
         public void ResetSelectedIndex()
@@ -191,8 +207,7 @@ namespace Nekoyume.UI
             int costAP = 0;
             int recipeId = 0;
             int? subRecipeId = null;
-            List<(HashDigest<SHA256> material, int count)> materialList
-                = new List<(HashDigest<SHA256> material, int count)>();
+            Dictionary<int, int> materialMap = new Dictionary<int, int>();
 
             var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
             var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
@@ -205,8 +220,10 @@ namespace Nekoyume.UI
                 skillView.ParentObject.SetActive(false);
             }
 
+            var isLocked = false;
             if (equipmentRow != null)
             {
+                isLocked = !Craft.SharedModel.UnlockedRecipes.Value.Contains(_recipeRow.Key);
                 var baseMaterialInfo = new EquipmentItemSubRecipeSheet.MaterialInfo(
                     equipmentRow.MaterialId,
                     equipmentRow.MaterialCount);
@@ -214,8 +231,9 @@ namespace Nekoyume.UI
                 costNCG = equipmentRow.RequiredGold;
                 costAP = equipmentRow.RequiredActionPoint;
                 recipeId = equipmentRow.Id;
-                var baseMaterial = CreateMaterial(equipmentRow.MaterialId, equipmentRow.MaterialCount);
-                materialList.Add(baseMaterial);
+
+                // Add base material
+                materialMap.Add(equipmentRow.MaterialId, equipmentRow.MaterialCount);
 
                 if (_subrecipeIds != null &&
                     _subrecipeIds.Any())
@@ -255,18 +273,20 @@ namespace Nekoyume.UI
                     requiredItemRecipeView.SetData(
                         baseMaterialInfo,
                         subRecipe.Materials,
-                        true);
+                        true,
+                        isLocked);
 
                     costNCG += subRecipe.RequiredGold;
 
-                    var subMaterials = subRecipe.Materials
-                        .Select(x => CreateMaterial(x.Id, x.Count));
-                    materialList.AddRange(subMaterials);
+                    foreach (var material in subRecipe.Materials)
+                    {
+                        materialMap.Add(material.Id, material.Count);
+                    }
                 }
                 else
                 {
                     toggleParent.SetActive(false);
-                    requiredItemRecipeView.SetData(baseMaterialInfo, null, true);
+                    requiredItemRecipeView.SetData(baseMaterialInfo, null, true, isLocked);
                 }
             }
             else if (consumableRow != null)
@@ -295,14 +315,14 @@ namespace Nekoyume.UI
                     levelText.enabled = true;
                 }
 
-                var materials = consumableRow.Materials
-                    .Select(x => CreateMaterial(x.Id, x.Count));
-                materialList.AddRange(materials);
+                foreach (var material in consumableRow.Materials)
+                {
+                    materialMap.Add(material.Id, material.Count);
+                }
             }
 
             blockIndexText.text = blockIndex.ToString();
-            greatSuccessRateText.text = greatSuccessRate == 0m ?
-                "-" : greatSuccessRate.ToString("0.0%");
+            greatSuccessRateText.text = greatSuccessRate == 0m ? "-" : greatSuccessRate.ToString("0.0%");
 
             var recipeInfo = new RecipeInfo
             {
@@ -310,13 +330,99 @@ namespace Nekoyume.UI
                 CostAP = costAP,
                 RecipeId = recipeId,
                 SubRecipeId = subRecipeId,
-                Materials = materialList
+                Materials = materialMap,
+                ReplacedMaterials = GetReplacedMaterials(materialMap),
             };
             _selectedRecipeInfo = recipeInfo;
 
-            var submittable = CheckMaterialAndSlot();
-            button.SetCost(ConditionalCostButton.CostType.NCG, (int) _selectedRecipeInfo.CostNCG);
-            button.Interactable = submittable;
+            if (equipmentRow != null)
+            {
+                UpdateButton();
+            }
+            else if (consumableRow != null)
+            {
+                var submittable = CheckNCGAndSlotIsEnough();
+                var cost = new ConditionalCostButton.CostParam(
+                    CostType.NCG,
+                    (int)_selectedRecipeInfo.CostNCG);
+                button.SetCost(cost);
+                button.Interactable = submittable;
+                button.gameObject.SetActive(true);
+                lockedObject.SetActive(false);
+            }
+        }
+
+        private Dictionary<int, int> GetReplacedMaterials(Dictionary<int, int> required)
+        {
+            var replacedMaterialMap = new Dictionary<int, int>();
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+
+            foreach (var pair in required)
+            {
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
+                            ? outFungibleItems.Sum(e => e.count)
+                            : 0;
+
+                if (count > itemCount)
+                {
+                    replacedMaterialMap.Add(row.Id, count - itemCount);
+                }
+            }
+
+            return replacedMaterialMap;
+        }
+
+        private void UpdateButton()
+        {
+            button.Interactable = false;
+            if (_selectedRecipeInfo.Equals(default))
+            {
+                return;
+            }
+
+            if (Craft.SharedModel.UnlockedRecipes.Value.Contains(_selectedRecipeInfo.RecipeId))
+            {
+                var submittable = CheckNCGAndSlotIsEnough();
+                var costNCG = new ConditionalCostButton.CostParam(
+                    CostType.NCG,
+                    (int)_selectedRecipeInfo.CostNCG);
+                var sheet = Game.Game.instance.TableSheets.CrystalMaterialCostSheet;
+                
+                var crystalCost = 0 * CrystalCalculator.CRYSTAL;
+                foreach (var pair in _selectedRecipeInfo.ReplacedMaterials)
+                {
+                    crystalCost += CrystalCalculator.CalculateMaterialCost(pair.Key, pair.Value, sheet);
+                }
+
+                var costCrystal = new ConditionalCostButton.CostParam(
+                    CostType.Crystal,
+                    (int) crystalCost.MajorUnit);
+
+                button.SetCost(costNCG, costCrystal);
+                button.Interactable = submittable;
+                button.gameObject.SetActive(true);
+                lockedObject.SetActive(false);
+            }
+            else if (Craft.SharedModel.UnlockingRecipes.Contains(_selectedRecipeInfo.RecipeId))
+            {
+                button.gameObject.SetActive(false);
+                lockedObject.SetActive(true);
+                lockedText.text = L10nManager.Localize("UI_LOADING_STATES");
+            }
+            else
+            {
+                button.gameObject.SetActive(false);
+                lockedObject.SetActive(true);
+                lockedText.text = L10nManager.Localize("UI_INFORM_UNLOCK_RECIPE");
+            }
         }
 
         private void SetOptions(
@@ -354,6 +460,7 @@ namespace Nekoyume.UI
                 else
                 {
                     var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
+
                     var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
                         skillRow.GetLocalizedName() : string.Empty;
                     skillView.OptionText.text = description;
@@ -377,9 +484,9 @@ namespace Nekoyume.UI
             CombinationActionSubject.OnNext(_selectedRecipeInfo);
         }
 
-        private bool CheckMaterialAndSlot()
+        private bool CheckNCGAndSlotIsEnough()
         {
-            if (!CheckMaterial(_selectedRecipeInfo.Materials))
+            if (_selectedRecipeInfo.CostNCG > States.Instance.GoldBalanceState.Gold.MajorUnit)
             {
                 return false;
             }
@@ -420,12 +527,6 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            if (!CheckMaterial(_selectedRecipeInfo.Materials))
-            {
-                errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_MATERIALS");
-                return false;
-            }
-
             var slots = Widget.Find<CombinationSlotsPopup>();
             if (!slots.TryGetEmptyCombinationSlot(out slotIndex))
             {
@@ -436,32 +537,6 @@ namespace Nekoyume.UI
 
             errorMessage = null;
             return true;
-        }
-
-        private bool CheckMaterial(List<(HashDigest<SHA256> material, int count)> materials)
-        {
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-
-            foreach (var material in materials)
-            {
-                var itemCount = inventory.TryGetFungibleItems(material.material, out var outFungibleItems)
-                            ? outFungibleItems.Sum(e => e.count)
-                            : 0;
-
-                if (material.count > itemCount)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private (HashDigest<SHA256>, int) CreateMaterial(int id, int count)
-        {
-            var row = Game.Game.instance.TableSheets.MaterialItemSheet[id];
-            var material = ItemFactory.CreateMaterial(row);
-            return (material.FungibleId, count);
         }
     }
 }

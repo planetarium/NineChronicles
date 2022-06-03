@@ -31,6 +31,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
+using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -429,6 +430,30 @@ namespace Nekoyume.BlockChain
                         : new AgentState(Address));
                 States.Instance.SetGoldBalanceState(new GoldBalanceState(Address,
                     await GetBalanceAsync(Address, goldCurrency)));
+                States.Instance.SetCrystalBalance(
+                    await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
+                if (await GetStateAsync(StakeState.DeriveAddress(States.Instance.AgentState.address)) is Dictionary stakeDict)
+                {
+                    var stakingState = new StakeState(stakeDict);
+                    var level =
+                        Game.TableSheets.Instance.StakeRegularRewardSheet
+                            .FindLevelByStakedAmount(
+                                Address,
+                                await GetBalanceAsync(stakingState.address, CrystalCalculator.CRYSTAL));
+                    States.Instance.SetStakeState(stakingState, level);
+                }
+                else
+                {
+                    var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
+                        Address,
+                        States.Instance.AgentState.MonsterCollectionRound
+                    );
+                    if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
+                    {
+                        var monsterCollectionState = new MonsterCollectionState(mcDict);
+                        States.Instance.SetMonsterCollectionState(monsterCollectionState);
+                    }
+                }
 
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
                 if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
@@ -440,7 +465,7 @@ namespace Nekoyume.BlockChain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
-                var weeklyArenaState = await ArenaHelper.GetThisWeekStateAsync(BlockIndex);
+                var weeklyArenaState = await ArenaHelperOld.GetThisWeekStateAsync(BlockIndex);
                 if (weeklyArenaState is null)
                 {
                     throw new FailedToInstantiateStateException<WeeklyArenaState>();
@@ -668,8 +693,6 @@ namespace Nekoyume.BlockChain
                     {
                         await _swarm.BootstrapAsync(
                             seedPeers: _seedPeers,
-                            pingSeedTimeout: 5000,
-                            findPeerTimeout: 5000,
                             depth: 1,
                             cancellationToken: _cancellationTokenSource.Token
                         );
@@ -747,7 +770,7 @@ namespace Nekoyume.BlockChain
             {
                 try
                 {
-                    await _swarm.StartAsync(millisecondsBroadcastTxInterval: 15000);
+                    await _swarm.StartAsync();
                 }
                 catch (TaskCanceledException)
                 {

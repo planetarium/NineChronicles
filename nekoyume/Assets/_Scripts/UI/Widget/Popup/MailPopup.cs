@@ -289,7 +289,7 @@ namespace Nekoyume.UI
 
         public void Read(GrindingMail grindingMail)
         {
-            // Do not anything.
+            Debug.Log($"[{nameof(GrindingMail)}] ItemCount: {grindingMail.ItemCount}, Asset: {grindingMail.Asset}");
         }
 
         public async void Read(OrderExpirationMail orderExpirationMail)
@@ -337,6 +337,11 @@ namespace Nekoyume.UI
             // LocalLayer
             UniTask.Run(async () =>
             {
+                if (itemEnhanceMail.attachment is ItemEnhancement.ResultModel result)
+                {
+                    LocalLayerModifier.ModifyAgentCrystal(States.Instance.AgentState.address, result.CRYSTAL.MajorUnit);
+                }
+
                 LocalLayerModifier.AddItem(
                     avatarAddress,
                     itemUsable.TradableId,
