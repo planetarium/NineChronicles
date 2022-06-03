@@ -42,9 +42,19 @@ jobs:
 
       - name: inject mixpanel client data
         run: |
+          target_network = "unknown"
+          if [ ${{ github.ref == 'refs/heads/main' }} ]; then
+            $target_network = "mainnet"
+          elif [ ${{ startsWith(github.ref, 'refs/heads/rc-') }} ] then
+            $target_network = "internal"
+          elif [ ${{ startsWith(github.ref, 'refs/heads/previewnet') }} ] then
+            $target_network = "previewnet"
+          fi
+
           chmod +x .github/bin/inject-mixpanel-client-data.sh
           .github/bin/inject-mixpanel-client-data.sh \
-          "$GITHUB_SHA"
+          "$GITHUB_SHA" \
+          "$target_network"
 
       - name: Build Unity Player using docker
         run: |
