@@ -37,13 +37,8 @@ namespace Lib9c.Tests.Action.Scenario
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
-                var sheet = key switch
-                {
-                    nameof(StakeRegularRewardSheet) => TableSheets.MockedStakeRegularRewardSheet,
-                    _ => value,
-                };
                 _initialState = _initialState
-                    .SetState(Addresses.TableSheet.Derive(key), sheet.Serialize());
+                    .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
             _tableSheets = new TableSheets(sheets);
