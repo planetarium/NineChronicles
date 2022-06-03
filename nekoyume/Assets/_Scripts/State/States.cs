@@ -314,9 +314,9 @@ namespace Nekoyume.State
             var agent = Game.Game.instance.Agent;
             var worldIds =
                 await agent.GetStateAsync(avatarState.address.Derive("world_ids"));
-            var unlockedIds = !(worldIds is Null) ?
-                 worldIds.ToList(StateExtensions.ToInteger)
-                 : new List<int>
+            var unlockedIds = worldIds != null && !(worldIds is Null)
+                ? worldIds.ToList(StateExtensions.ToInteger)
+                : new List<int>
                 {
                     1,
                     GameConfig.MimisbrunnrWorldId,
