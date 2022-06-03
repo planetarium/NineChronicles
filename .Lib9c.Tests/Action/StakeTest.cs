@@ -8,6 +8,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
@@ -32,8 +33,13 @@ namespace Lib9c.Tests.Action
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
+                var sheet = key switch
+                {
+                    nameof(StakeRegularRewardSheet) => TableSheets.MockedStakeRegularRewardSheet,
+                    _ => value,
+                };
                 _initialState = _initialState
-                    .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+                    .SetState(Addresses.TableSheet.Derive(key), sheet.Serialize());
             }
 
             _tableSheets = new TableSheets(sheets);
@@ -116,7 +122,7 @@ namespace Lib9c.Tests.Action
             var achievements = stakeState.Achievements;
             Assert.False(achievements.Check(0, 0));
             Assert.False(achievements.Check(0, 1));
-            Assert.True(achievements.Check(1, 0));
+            Assert.False(achievements.Check(1, 0));
 
             var cancelAction = new Stake(0);
             states = cancelAction.Execute(new ActionContext

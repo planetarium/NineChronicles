@@ -1,6 +1,8 @@
 namespace Lib9c.Tests.TableData
 {
+    using Libplanet.Action;
     using Libplanet.Assets;
+    using Nekoyume.Extensions;
     using Nekoyume.TableData;
     using Xunit;
 
@@ -67,9 +69,19 @@ namespace Lib9c.Tests.TableData
         [InlineData(10, 0)]
         [InlineData(90, 0)]
         [InlineData(100, 1)]
-        public void FindLevel(int balance, int expectedLevel)
+        public void FindLevelByStakedAmount(int balance, int expectedLevel)
         {
-            Assert.Equal(expectedLevel, _sheet.FindLevel(balance * _currency));
+            Assert.Equal(
+                expectedLevel,
+                _sheet.FindLevelByStakedAmount(default, balance * _currency)
+            );
+        }
+
+        [Fact]
+        public void FindLevelByStakedAmount_Throw_InsufficientBalanceException()
+        {
+            Assert.Throws<InsufficientBalanceException>(
+                () => _sheet.FindLevelByStakedAmount(default, 0 * _currency));
         }
     }
 }

@@ -10,7 +10,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class StakeAchievementRewardSheet : Sheet<int, StakeAchievementRewardSheet.Row>
+    public class StakeAchievementRewardSheet : Sheet<int, StakeAchievementRewardSheet.Row>, IStakeRewardSheet
     {
         [Serializable]
         public class RewardInfo
@@ -79,11 +79,12 @@ namespace Nekoyume.TableData
         }
 
         [Serializable]
-        public class Row : SheetRow<int>
+        public class Row : SheetRow<int>, IStakeRewardRow
         {
             public override int Key => Level;
             public int Level { get; private set; }
             public List<Step> Steps { get; private set; }
+            public long RequiredGold => Steps[0].RequiredGold;
             public override void Set(IReadOnlyList<string> fields)
             {
                 Level = ParseInt(fields[0]);
@@ -131,21 +132,6 @@ namespace Nekoyume.TableData
             step.Rewards.Add(value.Steps[0].Rewards[0]);
         }
 
-        public int FindLevel(FungibleAssetValue balance)
-        {
-            var orderedRows = Values.OrderBy(row => row.Steps[0].RequiredGold).ToList();
-            for (int i = 0; i < orderedRows.Count - 1; ++i)
-            {
-                if (balance.Currency * orderedRows[i].Steps[0].RequiredGold <= balance &&
-                    balance < balance.Currency * orderedRows[i + 1].Steps[0].RequiredGold)
-                {
-                    return orderedRows[i].Level;
-                }
-            }
-
-            return orderedRows.Last().Level;
-        }
-
         public int FindStep(int level, long stakedBlockPeriod)
         {
             var steps = this[level].Steps;
@@ -160,5 +146,7 @@ namespace Nekoyume.TableData
 
             return step;
         }
+
+        public IReadOnlyList<IStakeRewardRow> OrderedRows => OrderedList;
     }
 }
