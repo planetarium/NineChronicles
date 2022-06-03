@@ -138,11 +138,10 @@ namespace Nekoyume.UI.Model
         public async void UpdateUnlockedRecipesAsync(Address address)
         {
             var unlockedRecipeIdsAddress = address.Derive("recipe_ids");
-            var task = Game.Game.instance.Agent.GetStateAsync(unlockedRecipeIdsAddress);
-            await task;
-            var result = !(task.Result is Null) ?
-                task.Result.ToList(StateExtensions.ToInteger) :
-                new List<int> { 1 };
+            var recipeState = await Game.Game.instance.Agent.GetStateAsync(unlockedRecipeIdsAddress);
+            var result = recipeState != null && !(recipeState is Null)
+                ? recipeState.ToList(StateExtensions.ToInteger)
+                : new List<int> {1};
             SetUnlockedRecipes(result);
         }
 
