@@ -13,6 +13,9 @@ namespace Nekoyume.UI
         private Button upgradeButton = null;
 
         [SerializeField]
+        private Button grindButton;
+
+        [SerializeField]
         private Button closeButton = null;
 
         [SerializeField]
@@ -36,6 +39,13 @@ namespace Nekoyume.UI
             {
                 Close(true);
                 Find<Enhancement>().Show();
+                AudioController.PlayClick();
+            });
+
+            grindButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<Grind>().Show();
                 AudioController.PlayClick();
             });
 

@@ -24,7 +24,7 @@ namespace Nekoyume.UI
         [SerializeField]
         protected GameObject acquisitionGroup;
 
-        private const string StakingDescriptionUrl =
+        public const string StakingDescriptionUrl =
             "https://ninechronicles.medium.com/monster-collection-muspelheim-the-realm-of-fire-part-2-b5c36e089b81";
 
         public override void Show(
@@ -260,29 +260,6 @@ namespace Nekoyume.UI
             }
         }
 
-        private void CloseOtherWidgets()
-        {
-            var deletableWidgets = FindWidgets().Where(widget =>
-                !(widget is SystemWidget) &&
-                !(widget is MessageCatTooltip) &&
-                !(widget is HeaderMenuStatic) &&
-                !(widget is MaterialTooltip) &&
-                !(widget is ShopBuy) &&
-                !(widget is ShopSell) &&
-                widget.IsActive());
-            foreach (var widget in deletableWidgets)
-            {
-                widget.Close(true);
-            }
-
-            Find<Menu>().Close(true);
-            Find<ShopBuy>().Close(true, true);
-            Find<ShopSell>().Close(true, true);
-            Find<EventBanner>().Close(true);
-            Find<Status>().Close(true);
-            Close(true);
-        }
-
         private AcquisitionPlaceButton.Model MakeAcquisitionPlaceModelByType(
             AcquisitionPlaceButton.PlaceType type,
             ItemBase itemBase,
@@ -297,7 +274,7 @@ namespace Nekoyume.UI
                         AcquisitionPlaceButton.PlaceType.Stage,
                         () =>
                         {
-                            CloseOtherWidgets();
+                            CloseWithOtherWidgets();
                             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
                             var worldMap = Find<WorldMap>();
@@ -322,16 +299,16 @@ namespace Nekoyume.UI
                 AcquisitionPlaceButton.PlaceType.Arena => new AcquisitionPlaceButton.Model(
                     AcquisitionPlaceButton.PlaceType.Arena, () =>
                     {
-                        CloseOtherWidgets();
+                        CloseWithOtherWidgets();
                         Find<HeaderMenuStatic>()
                             .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-                        Find<RankingBoard>().Show();
+                        Find<ArenaJoin>().Show();
                     },
                     L10nManager.Localize("UI_MAIN_MENU_RANKING"), itemBase),
                 AcquisitionPlaceButton.PlaceType.Shop => new AcquisitionPlaceButton.Model(
                     AcquisitionPlaceButton.PlaceType.Shop, () =>
                     {
-                        CloseOtherWidgets();
+                        CloseWithOtherWidgets();
                         Find<HeaderMenuStatic>()
                             .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
                         var shopBuy = Find<ShopBuy>();

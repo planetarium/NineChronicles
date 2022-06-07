@@ -12,10 +12,13 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> LevelLimited;
         public readonly ReactiveProperty<bool> Equipped;
         public readonly ReactiveProperty<bool> Tradable;
-        public readonly ReactiveProperty<bool> ElementalTypeDisabled;
+        public readonly ReactiveProperty<bool> DimObjectEnabled;
         public readonly ReactiveProperty<bool> Selected;
         public readonly ReactiveProperty<bool> Focused;
         public readonly ReactiveProperty<bool> HasNotification;
+        public readonly ReactiveProperty<int> GrindingCount;
+        public readonly ReactiveProperty<bool> Disabled;
+        public readonly Subject<bool> GrindingCountEnabled;
 
         public RectTransform View { get; set; }
 
@@ -26,10 +29,13 @@ namespace Nekoyume.UI.Model
             Equipped = new ReactiveProperty<bool>(equipped);
             LevelLimited = new ReactiveProperty<bool>(limited);
             Tradable = new ReactiveProperty<bool>(tradable);
-            ElementalTypeDisabled = new ReactiveProperty<bool>(false);
+            DimObjectEnabled = new ReactiveProperty<bool>(false);
             Selected = new ReactiveProperty<bool>(false);
             Focused = new ReactiveProperty<bool>(false);
             HasNotification = new ReactiveProperty<bool>(false);
+            GrindingCount = new ReactiveProperty<int>(0);
+            Disabled = new ReactiveProperty<bool>(false);
+            GrindingCountEnabled = new Subject<bool>();
         }
     }
 }

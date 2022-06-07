@@ -1,4 +1,5 @@
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Model;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
@@ -15,50 +16,42 @@ namespace Nekoyume.State
     /// </summary>
     public static class ReactiveAvatarState
     {
-        private static readonly ReactiveProperty<Address> _address;
-        public static IObservable<Address> Address;
+        private static readonly ReactiveProperty<Address> _address
+            = new ReactiveProperty<Address>();
 
-        private static readonly ReactiveProperty<Inventory> _inventory;
-        public static IObservable<Inventory> Inventory;
+        public static IObservable<Address> Address => _address.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<MailBox> _mailBox;
-        public static readonly IObservable<MailBox> MailBox;
+        private static readonly ReactiveProperty<Inventory> _inventory
+            = new ReactiveProperty<Inventory>();
 
-        private static readonly ReactiveProperty<WorldInformation> _worldInformation;
-        public static readonly IObservable<WorldInformation> WorldInformation;
+        public static IObservable<Inventory> Inventory => _inventory.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<int> _actionPoint;
-        public static readonly IObservable<int> ActionPoint;
+        private static readonly ReactiveProperty<MailBox> _mailBox
+            = new ReactiveProperty<MailBox>();
 
-        private static readonly ReactiveProperty<long> _dailyRewardReceivedIndex;
-        public static readonly IObservable<long> DailyRewardReceivedIndex;
+        public static IObservable<MailBox> MailBox => _mailBox.ObserveOnMainThread();
 
-        private static readonly ReactiveProperty<QuestList> _questList;
-        public static readonly IObservable<QuestList> QuestList;
+        private static readonly ReactiveProperty<WorldInformation> _worldInformation
+            = new ReactiveProperty<WorldInformation>();
 
-        static ReactiveAvatarState()
-        {
-            _address = new ReactiveProperty<Address>();
-            Address = _address.ObserveOnMainThread();
+        public static IObservable<WorldInformation> WorldInformation
+            => _worldInformation.ObserveOnMainThread();
 
-            _inventory = new ReactiveProperty<Inventory>();
-            Inventory = _inventory.ObserveOnMainThread();
+        private static readonly ReactiveProperty<int> _actionPoint
+            = new ReactiveProperty<int>();
 
-            _mailBox = new ReactiveProperty<MailBox>();
-            MailBox = _mailBox.ObserveOnMainThread();
+        public static IObservable<int> ActionPoint => _actionPoint.ObserveOnMainThread();
 
-            _worldInformation = new ReactiveProperty<WorldInformation>();
-            WorldInformation = _worldInformation.ObserveOnMainThread();
+        private static readonly ReactiveProperty<long> _dailyRewardReceivedIndex
+            = new ReactiveProperty<long>();
 
-            _actionPoint = new ReactiveProperty<int>();
-            ActionPoint = _actionPoint.ObserveOnMainThread();
+        public static IObservable<long> DailyRewardReceivedIndex
+            => _dailyRewardReceivedIndex.ObserveOnMainThread();
 
-            _dailyRewardReceivedIndex = new ReactiveProperty<long>();
-            DailyRewardReceivedIndex = _dailyRewardReceivedIndex.ObserveOnMainThread();
+        private static readonly ReactiveProperty<QuestList> _questList
+            = new ReactiveProperty<QuestList>();
 
-            _questList = new ReactiveProperty<QuestList>();
-            QuestList = _questList.ObserveOnMainThread();
-        }
+        public static IObservable<QuestList> QuestList => _questList.ObserveOnMainThread();
 
         public static void Initialize(AvatarState state)
         {

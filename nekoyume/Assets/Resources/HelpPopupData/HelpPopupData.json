@@ -823,6 +823,42 @@
           ]
         }
       ]
+    },
+    {
+      "id": 100022,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100022_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_22_Grind",
+              "anchoredPosition": {
+                "x": 0,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100022_PAGE_00_TEXT_00",
+              "fontSize": 16,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -538,7 +538,7 @@ namespace Nekoyume.UI
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-                    if (model.ElementalTypeDisabled.Value)
+                    if (model.DimObjectEnabled.Value)
                     {
                         interactable = model.Equipped.Value;
                     }
@@ -618,7 +618,7 @@ namespace Nekoyume.UI
             if (stage is null)
                 return;
             _requiredCost = stage.CostAP;
-            startButton.SetCost(ConditionalCostButton.CostType.ActionPoint, _requiredCost);
+            startButton.SetCost(CostType.ActionPoint, _requiredCost);
         }
 
         private void OnClickBattle(bool repeat)

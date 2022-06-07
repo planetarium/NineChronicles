@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using JetBrains.Annotations;
-using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
@@ -132,7 +131,9 @@ namespace Nekoyume.UI.Module
 
         private void OnSliderChange()
         {
-            text.text = $"{(int) sliderAnimator.Value} / {(int) sliderAnimator.MaxValue}";
+            var current = ((int)sliderAnimator.Value).ToString("N0", CultureInfo.CurrentCulture);
+            var max = ((int)sliderAnimator.MaxValue).ToString("N0", CultureInfo.CurrentCulture);
+            text.text = $"{current}/{max}";
 
             _isFull = sliderAnimator.IsFull;
             foreach (var additiveImage in additiveImages)
