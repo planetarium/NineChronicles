@@ -68,6 +68,20 @@ namespace Nekoyume.Model.State
             Achievements = new StakeAchievements();
         }
 
+        public StakeState(
+            Address address,
+            long startedBlockIndex,
+            long receivedBlockIndex,
+            long cancellableBlockIndex,
+            StakeAchievements achievements
+        ) : base(address)
+        {
+            StartedBlockIndex = startedBlockIndex;
+            ReceivedBlockIndex = receivedBlockIndex;
+            CancellableBlockIndex = cancellableBlockIndex;
+            Achievements = achievements;
+        }
+
         public StakeState(Dictionary serialized) : base(serialized)
         {
             CancellableBlockIndex = (long)serialized[CancellableBlockIndexKey].ToBigInteger();
