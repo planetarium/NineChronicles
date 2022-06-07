@@ -22,6 +22,7 @@ namespace Nekoyume.UI.Module
     using Libplanet.Assets;
     using System.Collections;
     using UniRx;
+
     public class GrindModule : MonoBehaviour
     {
         [Serializable]
@@ -34,36 +35,26 @@ namespace Nekoyume.UI.Module
             public int minimum;
         }
 
-        [SerializeField]
-        private Inventory grindInventory;
+        [SerializeField] private Inventory grindInventory;
 
-        [SerializeField]
-        private ConditionalCostButton grindButton;
+        [SerializeField] private ConditionalCostButton grindButton;
 
-        [SerializeField]
-        private StakingBonus stakingBonus;
+        [SerializeField] private StakingBonus stakingBonus;
 
-        [SerializeField]
-        private List<GrindingItemSlot> itemSlots;
+        [SerializeField] private List<GrindingItemSlot> itemSlots;
 
         // TODO: It is used when NCG can be obtained through grinding later.
-        [SerializeField]
-        private GameObject ncgRewardObject;
+        [SerializeField] private GameObject ncgRewardObject;
 
-        [SerializeField]
-        private TMP_Text ncgRewardText;
+        [SerializeField] private TMP_Text ncgRewardText;
 
-        [SerializeField]
-        private TMP_Text crystalRewardText;
+        [SerializeField] private TMP_Text crystalRewardText;
 
-        [SerializeField]
-        private CanvasGroup canvasGroup;
+        [SerializeField] private CanvasGroup canvasGroup;
 
-        [SerializeField]
-        private Animator animator;
+        [SerializeField] private Animator animator;
 
-        [SerializeField]
-        private CrystalAnimationData animationData;
+        [SerializeField] private CrystalAnimationData animationData;
 
         private bool _isInitialized;
 
@@ -163,11 +154,11 @@ namespace Nekoyume.UI.Module
                 {
                     case ConditionalButton.State.Normal:
                         Action(_selectedItemsForGrind.Select(inventoryItem =>
-                            (Equipment) inventoryItem.ItemBase).ToList());
+                            (Equipment)inventoryItem.ItemBase).ToList());
                         break;
                     case ConditionalButton.State.Conditional:
                         Action(_selectedItemsForGrind.Select(inventoryItem =>
-                            (Equipment) inventoryItem.ItemBase).ToList());
+                            (Equipment)inventoryItem.ItemBase).ToList());
                         break;
                     case ConditionalButton.State.Disabled:
                         break;
@@ -202,6 +193,7 @@ namespace Nekoyume.UI.Module
                         itemSlots[i].UpdateSlot();
                     }
                 }
+
                 item.Value.GrindingCount.SetValueAndForceNotify(0);
 
                 if (_selectedItemsForGrind.Count == 0)
@@ -209,10 +201,8 @@ namespace Nekoyume.UI.Module
                     animator.SetTrigger(EmptySlot);
                 }
             }).AddTo(_disposables);
-            _selectedItemsForGrind.ObserveReset().Subscribe(_ =>
-            {
-                itemSlots.ForEach(slot => slot.UpdateSlot());
-            }).AddTo(_disposables);
+            _selectedItemsForGrind.ObserveReset().Subscribe(_ => { itemSlots.ForEach(slot => slot.UpdateSlot()); })
+                .AddTo(_disposables);
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(count =>
             {
                 grindButton.Interactable = CanGrind;
@@ -227,10 +217,8 @@ namespace Nekoyume.UI.Module
                 .Subscribe(UpdateStakingBonusObject)
                 .AddTo(_disposables);
 
-            itemSlots.ForEach(slot => slot.OnClick.Subscribe(_ =>
-            {
-                _selectedItemsForGrind.Remove(slot.AssignedItem);
-            }).AddTo(_disposables));
+            itemSlots.ForEach(slot =>
+                slot.OnClick.Subscribe(_ => { _selectedItemsForGrind.Remove(slot.AssignedItem); }).AddTo(_disposables));
         }
 
         private void ShowItemTooltip(InventoryItem model, RectTransform target)
@@ -273,10 +261,11 @@ namespace Nekoyume.UI.Module
                     itemSlots[i].UpdateSlot(_selectedItemsForGrind[i]);
                 }
             }
+
             grindButton.Interactable = CanGrind;
 
             _inventoryApStoneCount = 0;
-            foreach (var item in inventoryModel.Items.Where(x=> x.item.ItemSubType == ItemSubType.ApStone))
+            foreach (var item in inventoryModel.Items.Where(x => x.item.ItemSubType == ItemSubType.ApStone))
             {
                 if (item.Locked)
                 {
@@ -325,14 +314,14 @@ namespace Nekoyume.UI.Module
         private void UpdateCrystalReward()
         {
             _cachedGrindingRewardCrystal = CrystalCalculator.CalculateCrystal(
-                _selectedItemsForGrind.Select(item => (Equipment) item.ItemBase),
+                _selectedItemsForGrind.Select(item => (Equipment)item.ItemBase),
                 false,
                 TableSheets.Instance.CrystalEquipmentGrindingSheet,
                 TableSheets.Instance.CrystalMonsterCollectionMultiplierSheet,
                 States.Instance.StakingLevel);
-            crystalRewardText.text = _cachedGrindingRewardCrystal.MajorUnit > 0 ?
-                _cachedGrindingRewardCrystal.GetQuantityString() :
-                string.Empty;
+            crystalRewardText.text = _cachedGrindingRewardCrystal.MajorUnit > 0
+                ? _cachedGrindingRewardCrystal.GetQuantityString()
+                : string.Empty;
         }
 
         /// <summary>
@@ -359,10 +348,7 @@ namespace Nekoyume.UI.Module
                 var system = Widget.Find<IconAndButtonSystem>();
                 system.ShowWithTwoButton("UI_WARNING",
                     "UI_GRINDING_CONFIRM");
-                system.ConfirmCallback = () =>
-                {
-                    CheckUseApPotionForAction(equipments);
-                };
+                system.ConfirmCallback = () => { CheckUseApPotionForAction(equipments); };
             }
             else
             {
@@ -380,7 +366,8 @@ namespace Nekoyume.UI.Module
                     {
                         var confirm = Widget.Find<IconAndButtonSystem>();
                         confirm.ShowWithTwoButton(L10nManager.Localize("UI_CONFIRM"),
-                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT", L10nManager.Localize("GRIND_UI_BUTTON"), _inventoryApStoneCount),
+                            L10nManager.Localize("UI_APREFILL_GUIDE_FORMAT", L10nManager.Localize("GRIND_UI_BUTTON"),
+                                _inventoryApStoneCount),
                             L10nManager.Localize("UI_OK"),
                             L10nManager.Localize("UI_CANCEL"),
                             false, IconAndButtonSystem.SystemType.Information);
@@ -436,12 +423,12 @@ namespace Nekoyume.UI.Module
             loadingScreen.SetCloseAction(() =>
             {
                 var crystalAnimationStartPosition = animationData.crystalAnimationStartRect != null
-                    ? (Vector3) animationData.crystalAnimationStartRect
+                    ? (Vector3)animationData.crystalAnimationStartRect
                         .GetWorldPositionOfCenter()
                     : crystalRewardText.transform.position;
                 var crystalAnimationTargetPosition =
                     animationData.crystalAnimationTargetRect != null
-                        ? (Vector3) animationData.crystalAnimationTargetRect
+                        ? (Vector3)animationData.crystalAnimationTargetRect
                             .GetWorldPositionOfCenter()
                         : Widget.Find<HeaderMenuStatic>().Crystal.IconPosition +
                           CrystalMovePositionOffset;

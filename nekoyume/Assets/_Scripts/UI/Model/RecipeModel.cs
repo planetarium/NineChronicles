@@ -19,10 +19,10 @@ namespace Nekoyume.UI.Model
     public class RecipeModel
     {
         public readonly Dictionary<string, RecipeRow.Model> EquipmentRecipeMap
-                = new Dictionary<string, RecipeRow.Model>();
+            = new Dictionary<string, RecipeRow.Model>();
 
         public readonly Dictionary<int, RecipeRow.Model> ConsumableRecipeMap
-                = new Dictionary<int, RecipeRow.Model>();
+            = new Dictionary<int, RecipeRow.Model>();
 
         public readonly ReactiveProperty<SheetRow<int>> SelectedRow
             = new ReactiveProperty<SheetRow<int>>();
@@ -121,6 +121,7 @@ namespace Nekoyume.UI.Model
                 {
                     continue;
                 }
+
                 model.StatType = firstRecipe.GetUniqueStat().StatType;
 
                 foreach (var recipeId in group.RecipeIds)
@@ -141,7 +142,7 @@ namespace Nekoyume.UI.Model
             var recipeState = await Game.Game.instance.Agent.GetStateAsync(unlockedRecipeIdsAddress);
             var result = recipeState != null && !(recipeState is Null)
                 ? recipeState.ToList(StateExtensions.ToInteger)
-                : new List<int> {1};
+                : new List<int> { 1 };
             SetUnlockedRecipes(result);
         }
 
@@ -152,7 +153,8 @@ namespace Nekoyume.UI.Model
 
         public void UpdateUnlockableRecipes()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId))
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var lastClearedStageId))
             {
                 return;
             }

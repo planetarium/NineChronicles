@@ -23,7 +23,7 @@ namespace Nekoyume.UI
     {
         private const int BarScrollCellCount = 8;
         private static readonly int BarScrollIndexOffset = (int)math.ceil(BarScrollCellCount / 2f) - 1;
-        
+
 #if UNITY_EDITOR
         [SerializeField]
         private bool _useSo;
@@ -32,26 +32,19 @@ namespace Nekoyume.UI
         private ArenaJoinSO _so;
 #endif
 
-        [SerializeField]
-        private ArenaJoinSeasonScroll _scroll;
+        [SerializeField] private ArenaJoinSeasonScroll _scroll;
 
-        [SerializeField]
-        private ArenaJoinSeasonBarScroll _barScroll;
+        [SerializeField] private ArenaJoinSeasonBarScroll _barScroll;
 
-        [SerializeField]
-        private ArenaJoinSeasonInfo _info;
+        [SerializeField] private ArenaJoinSeasonInfo _info;
 
-        [SerializeField]
-        private ConditionalButton _joinButton;
+        [SerializeField] private ConditionalButton _joinButton;
 
-        [SerializeField]
-        private ConditionalCostButton _paymentButton;
+        [SerializeField] private ConditionalCostButton _paymentButton;
 
-        [SerializeField]
-        private ArenaJoinEarlyRegisterButton _earlyPaymentButton;
+        [SerializeField] private ArenaJoinEarlyRegisterButton _earlyPaymentButton;
 
-        [SerializeField]
-        private Button _backButton;
+        [SerializeField] private Button _backButton;
 
         private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
 
@@ -254,7 +247,7 @@ namespace Nekoyume.UI
                     .Subscribe();
             }).AddTo(gameObject);
         }
-        
+
         private void UpdateBottomButtons()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -264,7 +257,7 @@ namespace Nekoyume.UI
             {
                 case ArenaType.OffSeason:
                 {
-                    if (isOpened&&
+                    if (isOpened &&
                         TableSheets.Instance.ArenaSheet.TryGetNextRound(
                             blockIndex,
                             out var next))
@@ -291,7 +284,7 @@ namespace Nekoyume.UI
                 case ArenaType.Championship:
                 {
                     _earlyPaymentButton.Hide();
-                    
+
                     if (isOpened)
                     {
                         if (RxProps.ArenaInfoTuple.Value.current is null)
@@ -316,6 +309,7 @@ namespace Nekoyume.UI
                         _joinButton.gameObject.SetActive(true);
                         _paymentButton.gameObject.SetActive(false);
                     }
+
                     break;
                 }
                 default:

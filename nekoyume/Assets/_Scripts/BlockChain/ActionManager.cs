@@ -211,7 +211,8 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(Player player, int worldId, int stageId) => HackAndSlash(
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(Player player, int worldId,
+            int stageId) => HackAndSlash(
             player.Costumes,
             player.Equipments,
             null,
@@ -576,7 +577,6 @@ namespace Nekoyume.BlockChain
                     {
                         Game.Game.BackToMain(false, inner).Forget();
                     }
-
                 });
         }
 
@@ -885,7 +885,8 @@ namespace Nekoyume.BlockChain
                     .OrderedList
                     .First(r => r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
-                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
+                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                    States.Instance.GameConfigState.ActionPointMax);
 
                 var address = States.Instance.CurrentAvatarState.address;
                 if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
@@ -982,6 +983,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 #endif
+
         #endregion
 
         public void Dispose()

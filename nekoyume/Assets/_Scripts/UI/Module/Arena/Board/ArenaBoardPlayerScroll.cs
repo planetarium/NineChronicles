@@ -11,16 +11,13 @@ namespace Nekoyume.UI.Module.Arena.Board
     public class ArenaBoardPlayerScroll
         : FancyScrollRect<ArenaBoardPlayerItemData, ArenaBoardPlayerScrollContext>
     {
-        [SerializeField]
-        private UnityEngine.UI.Extensions.Scroller _scroller;
+        [SerializeField] private UnityEngine.UI.Extensions.Scroller _scroller;
 
-        [SerializeField]
-        private GameObject _cellPrefab;
+        [SerializeField] private GameObject _cellPrefab;
 
         protected override GameObject CellPrefab => _cellPrefab;
 
-        [SerializeField]
-        private float _cellSize;
+        [SerializeField] private float _cellSize;
 
         protected override float CellSize => _cellSize;
 

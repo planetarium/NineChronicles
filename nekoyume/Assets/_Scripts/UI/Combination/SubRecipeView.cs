@@ -86,10 +86,7 @@ namespace Nekoyume.UI
             }
 
             button.OnClickSubject
-                .Subscribe(state =>
-                {
-                    CombineCurrentRecipe();
-                })
+                .Subscribe(state => { CombineCurrentRecipe(); })
                 .AddTo(gameObject);
 
             button.OnClickDisabledSubject
@@ -215,6 +212,7 @@ namespace Nekoyume.UI
             {
                 optionView.ParentObject.SetActive(false);
             }
+
             foreach (var skillView in skillViews)
             {
                 skillView.ParentObject.SetActive(false);
@@ -263,9 +261,9 @@ namespace Nekoyume.UI
                         var level = index == MimisbrunnrRecipeIndex ? row.MimisLevel : row.Level;
                         levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", level);
                         var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= level;
-                        levelText.color = hasEnoughLevel ?
-                            Palette.GetColor(EnumType.ColorType.ButtonEnabled) :
-                            Palette.GetColor(EnumType.ColorType.TextDenial);
+                        levelText.color = hasEnoughLevel
+                            ? Palette.GetColor(EnumType.ColorType.ButtonEnabled)
+                            : Palette.GetColor(EnumType.ColorType.TextDenial);
 
                         levelText.enabled = true;
                     }
@@ -308,9 +306,9 @@ namespace Nekoyume.UI
                 {
                     levelText.text = L10nManager.Localize("UI_REQUIRED_LEVEL", row.Level);
                     var hasEnoughLevel = States.Instance.CurrentAvatarState.level >= row.Level;
-                    levelText.color = hasEnoughLevel ?
-                        Palette.GetColor(EnumType.ColorType.ButtonEnabled) :
-                        Palette.GetColor(EnumType.ColorType.TextDenial);
+                    levelText.color = hasEnoughLevel
+                        ? Palette.GetColor(EnumType.ColorType.ButtonEnabled)
+                        : Palette.GetColor(EnumType.ColorType.TextDenial);
 
                     levelText.enabled = true;
                 }
@@ -368,8 +366,8 @@ namespace Nekoyume.UI
                 }
 
                 var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
-                            ? outFungibleItems.Sum(e => e.count)
-                            : 0;
+                    ? outFungibleItems.Sum(e => e.count)
+                    : 0;
 
                 if (count > itemCount)
                 {
@@ -395,16 +393,24 @@ namespace Nekoyume.UI
                     CostType.NCG,
                     (int)_selectedRecipeInfo.CostNCG);
                 var sheet = Game.Game.instance.TableSheets.CrystalMaterialCostSheet;
-                
+
                 var crystalCost = 0 * CrystalCalculator.CRYSTAL;
                 foreach (var pair in _selectedRecipeInfo.ReplacedMaterials)
                 {
-                    crystalCost += CrystalCalculator.CalculateMaterialCost(pair.Key, pair.Value, sheet);
+                    try
+                    {
+                        crystalCost += CrystalCalculator.CalculateMaterialCost(pair.Key, pair.Value, sheet);
+                    }
+                    catch (ArgumentException)
+                    {
+                        submittable = false;
+                        continue;
+                    }
                 }
 
                 var costCrystal = new ConditionalCostButton.CostParam(
                     CostType.Crystal,
-                    (int) crystalCost.MajorUnit);
+                    (int)crystalCost.MajorUnit);
 
                 button.SetCost(costNCG, costCrystal);
                 button.Interactable = submittable;
@@ -461,8 +467,9 @@ namespace Nekoyume.UI
                 {
                     var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
 
-                    var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
-                        skillRow.GetLocalizedName() : string.Empty;
+                    var description = skillSheet.TryGetValue(option.SkillId, out var skillRow)
+                        ? skillRow.GetLocalizedName()
+                        : string.Empty;
                     skillView.OptionText.text = description;
                     skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("0%");
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
@@ -503,6 +510,30 @@ namespace Nekoyume.UI
         public bool CheckSubmittable(out string errorMessage, out int slotIndex)
         {
             slotIndex = -1;
+
+
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            foreach (var material in _selectedRecipeInfo.Materials)
+            {
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(material.Key, out var row))
+                {
+                    continue;
+                }
+
+                var itemCount = inventory.TryGetFungibleItems(row.ItemId, out var outFungibleItems)
+                    ? outFungibleItems.Sum(e => e.count)
+                    : 0;
+
+                // when a material is unreplaceable.
+                if (material.Value > itemCount &&
+                    !Game.Game.instance.TableSheets.CrystalMaterialCostSheet.ContainsKey(material.Key))
+                {
+                    var message = L10nManager.Localize("UI_UPREPLACEABLE_MATERIAL_FORMAT", row.GetLocalizedName());
+                    errorMessage = message;
+                    return false;
+                }
+            }
+
             if (States.Instance.AgentState is null)
             {
                 errorMessage = L10nManager.Localize("FAILED_TO_GET_AGENTSTATE");

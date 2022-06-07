@@ -33,14 +33,11 @@ namespace Nekoyume.UI
         private ArenaBoardSO _so;
 #endif
 
-        [SerializeField]
-        private ArenaBoardBillboard _billboard;
+        [SerializeField] private ArenaBoardBillboard _billboard;
 
-        [SerializeField]
-        private ArenaBoardPlayerScroll _playerScroll;
+        [SerializeField] private ArenaBoardPlayerScroll _playerScroll;
 
-        [SerializeField]
-        private Button _backButton;
+        [SerializeField] private Button _backButton;
 
         private ArenaSheet.RoundData _roundData;
 

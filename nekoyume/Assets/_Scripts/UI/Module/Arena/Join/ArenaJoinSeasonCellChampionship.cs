@@ -7,16 +7,13 @@ namespace Nekoyume.UI.Module.Arena.Join
 {
     public class ArenaJoinSeasonCellChampionship : MonoBehaviour
     {
-        [SerializeField]
-        private Animator _animator;
+        [SerializeField] private Animator _animator;
 
         public Animator Animator => _animator;
 
-        [SerializeField]
-        private Button _button;
+        [SerializeField] private Button _button;
 
-        [SerializeField]
-        private TextMeshProUGUI _championshipId;
+        [SerializeField] private TextMeshProUGUI _championshipId;
 
         public event System.Action OnClick = delegate { };
 
