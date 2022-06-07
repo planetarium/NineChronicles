@@ -340,6 +340,7 @@ namespace Nekoyume.UI
                     {
                         var slots = Find<CombinationSlotsPopup>();
                         slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
+                        Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
                         Game.Game.instance.ActionManager
                             .CombinationEquipment(recipeInfo, slotIndex, true).Subscribe();
                         StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
@@ -349,7 +350,6 @@ namespace Nekoyume.UI
             {
                 var slots = Find<CombinationSlotsPopup>();
                 slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
-                Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
                 Game.Game.instance.ActionManager.CombinationEquipment(recipeInfo, slotIndex, false)
                     .Subscribe();
                 StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));

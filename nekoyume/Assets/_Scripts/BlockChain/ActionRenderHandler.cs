@@ -466,7 +466,11 @@ namespace Nekoyume.BlockChain
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
         {
-            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+            if (eval.Action.payByCrystal)
+            {
+                Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+            }
+
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
