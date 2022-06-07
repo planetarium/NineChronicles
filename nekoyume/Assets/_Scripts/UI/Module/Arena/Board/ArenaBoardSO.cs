@@ -11,39 +11,32 @@ namespace Nekoyume.UI.Module.Arena.Board
     [Serializable]
     public class ArenaBoardSO : ScriptableObject
     {
-        [SerializeField]
-        private List<ArenaBoardPlayerItemData> _arenaBoardPlayerScrollData;
+        [SerializeField] private List<ArenaBoardPlayerItemData> _arenaBoardPlayerScrollData;
 
         public List<ArenaBoardPlayerItemData> ArenaBoardPlayerScrollData =>
             _arenaBoardPlayerScrollData;
 
-        [SerializeField]
-        private string _seasonText;
+        [SerializeField] private string _seasonText;
 
         public string SeasonText => _seasonText;
-        
-        [SerializeField]
-        private int _rank;
+
+        [SerializeField] private int _rank;
 
         public int Rank => _rank;
 
-        [SerializeField]
-        private int _winCount;
+        [SerializeField] private int _winCount;
 
         public int WinCount => _winCount;
 
-        [SerializeField]
-        private int _loseCount;
+        [SerializeField] private int _loseCount;
 
         public int LoseCount => _loseCount;
 
-        [SerializeField]
-        private int _cp;
+        [SerializeField] private int _cp;
 
         public int CP => _cp;
 
-        [SerializeField]
-        private int _rating;
+        [SerializeField] private int _rating;
 
         public int Rating => _rating;
 

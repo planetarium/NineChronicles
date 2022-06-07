@@ -27,7 +27,7 @@ namespace Nekoyume
                 return false;
             }
         }
-        
+
         public static bool TryGetNextRound(
             this ArenaSheet sheet,
             long blockIndex,

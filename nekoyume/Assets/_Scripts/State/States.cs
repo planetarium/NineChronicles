@@ -110,7 +110,8 @@ namespace Nekoyume.State
         {
             if (goldBalanceState is null)
             {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetGoldBalanceState)}] {nameof(goldBalanceState)} is null.");
+                Debug.LogWarning(
+                    $"[{nameof(States)}.{nameof(SetGoldBalanceState)}] {nameof(goldBalanceState)} is null.");
                 return;
             }
 
@@ -134,7 +135,8 @@ namespace Nekoyume.State
         {
             if (monsterCollectionState is null)
             {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetMonsterCollectionState)}] {nameof(monsterCollectionState)} is null.");
+                Debug.LogWarning(
+                    $"[{nameof(States)}.{nameof(SetMonsterCollectionState)}] {nameof(monsterCollectionState)} is null.");
                 return;
             }
 
@@ -170,7 +172,8 @@ namespace Nekoyume.State
             return null;
         }
 
-        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address, bool allowBrokenState = false)
+        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address,
+            bool allowBrokenState = false)
         {
             AvatarState avatarState = null;
             bool exist = false;
@@ -242,7 +245,8 @@ namespace Nekoyume.State
         /// <param name="state"></param>
         /// <param name="index"></param>
         /// <param name="initializeReactiveState"></param>
-        public async UniTask<AvatarState> AddOrReplaceAvatarStateAsync(AvatarState state, int index, bool initializeReactiveState = true)
+        public async UniTask<AvatarState> AddOrReplaceAvatarStateAsync(AvatarState state, int index,
+            bool initializeReactiveState = true)
         {
             if (state is null)
             {
@@ -340,6 +344,7 @@ namespace Nekoyume.State
                     await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
                 });
             }
+
             return CurrentAvatarState;
         }
 
@@ -372,7 +377,7 @@ namespace Nekoyume.State
                     )
                 );
                 var stateValue = await Game.Game.instance.Agent.GetStateAsync(slotAddress);
-                var state = new CombinationSlotState((Dictionary) stateValue);
+                var state = new CombinationSlotState((Dictionary)stateValue);
                 UpdateCombinationSlotState(i, state);
             }
         }

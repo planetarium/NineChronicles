@@ -26,49 +26,36 @@ namespace Nekoyume.UI.Module.Arena.Join
             Costume = 8,
         }
 
-        [SerializeField]
-        private TextMeshProUGUI _titleText;
+        [SerializeField] private TextMeshProUGUI _titleText;
 
-        [SerializeField]
-        private ShaderPropertySlider _seasonProgressSlider;
+        [SerializeField] private ShaderPropertySlider _seasonProgressSlider;
 
-        [SerializeField]
-        private Image _seasonProgressFillImage;
+        [SerializeField] private Image _seasonProgressFillImage;
 
-        [SerializeField]
-        private TextMeshProUGUI _seasonProgressSliderFillText;
+        [SerializeField] private TextMeshProUGUI _seasonProgressSliderFillText;
 
-        [SerializeField]
-        private GameObject _conditionsContainer;
+        [SerializeField] private GameObject _conditionsContainer;
 
-        [SerializeField]
-        private Image _conditionsSliderFillArea;
+        [SerializeField] private Image _conditionsSliderFillArea;
 
-        [SerializeField]
-        private TextMeshProUGUI _conditionsSliderFillText;
+        [SerializeField] private TextMeshProUGUI _conditionsSliderFillText;
 
-        [SerializeField]
-        private string _conditionsSliderFillTextFormat;
+        [SerializeField] private string _conditionsSliderFillTextFormat;
 
-        [SerializeField]
-        private GameObject _medalReward;
+        [SerializeField] private GameObject _medalReward;
 
-        [SerializeField]
-        private GameObject _ncgReward;
+        [SerializeField] private GameObject _ncgReward;
 
-        [SerializeField]
-        private GameObject _foodReward;
+        [SerializeField] private GameObject _foodReward;
 
-        [SerializeField]
-        private GameObject _costumeReward;
+        [SerializeField] private GameObject _costumeReward;
 
-        [SerializeField]
-        private List<Image> _currentRoundMedalImages;
+        [SerializeField] private List<Image> _currentRoundMedalImages;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private ArenaSheet.RoundData _roundData;
-        
+
         private void OnEnable()
         {
             Game.Game.instance.Agent.BlockIndexSubject

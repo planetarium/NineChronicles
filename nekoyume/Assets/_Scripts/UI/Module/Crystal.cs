@@ -13,14 +13,11 @@ namespace Nekoyume.UI.Module
 
     public class Crystal : AlphaAnimateModule
     {
-        [SerializeField]
-        private TextMeshProUGUI text = null;
+        [SerializeField] private TextMeshProUGUI text = null;
 
-        [SerializeField]
-        private GameObject loadingObject;
+        [SerializeField] private GameObject loadingObject;
 
-        [SerializeField]
-        private Transform iconTransform;
+        [SerializeField] private Transform iconTransform;
 
         public bool NowCharging => loadingObject.activeSelf;
 

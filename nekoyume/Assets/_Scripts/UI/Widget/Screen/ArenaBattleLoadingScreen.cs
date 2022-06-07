@@ -11,14 +11,11 @@ namespace Nekoyume.UI
 {
     public class ArenaBattleLoadingScreen : ScreenWidget
     {
-        [SerializeField]
-        private CharacterProfile playerProfile = null;
+        [SerializeField] private CharacterProfile playerProfile = null;
 
-        [SerializeField]
-        private CharacterProfile enemyProfile = null;
+        [SerializeField] private CharacterProfile enemyProfile = null;
 
-        [SerializeField]
-        private TextMeshProUGUI loadingText = null;
+        [SerializeField] private TextMeshProUGUI loadingText = null;
 
         private Player player;
         private static readonly int Close1 = Animator.StringToHash("Close");
