@@ -95,11 +95,15 @@ namespace Nekoyume.UI
         private void OnInsufficientCost(BigInteger cost)
         {
             var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-            Find<PaymentPopup>().ShowAttract(cost, message, () =>
-            {
-                Find<Craft>().Close(true);
-                Find<Grind>().Show();
-            });
+            Find<PaymentPopup>().ShowAttract(
+                cost,
+                message,
+                L10nManager.Localize("UI_GO_GRINDING"),
+                () =>
+                {
+                    Find<Craft>().Close(true);
+                    Find<Grind>().Show();
+                });
         }
     }
 }
