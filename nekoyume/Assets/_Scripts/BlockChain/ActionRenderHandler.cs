@@ -466,6 +466,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
         {
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
@@ -617,6 +618,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
         {
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
@@ -1282,12 +1284,12 @@ namespace Nekoyume.BlockChain
 
         private void ResponseGrinding(ActionBase.ActionEvaluation<Grinding> eval)
         {
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             if (!(eval.Exception is null))
             {
                 return;
             }
 
-            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             var avatarAddress = eval.Action.AvatarAddress;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
             var mail = avatarState.mailBox.OfType<GrindingMail>().FirstOrDefault(m => m.id.Equals(eval.Action.Id));
@@ -1326,6 +1328,7 @@ namespace Nekoyume.BlockChain
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
             ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
         {
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             var sharedModel = Craft.SharedModel;
             var recipeIds = eval.Action.RecipeIds;
             if (!(eval.Exception is null))

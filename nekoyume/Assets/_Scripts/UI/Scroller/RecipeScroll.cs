@@ -42,32 +42,23 @@ namespace Nekoyume.UI.Scroller
             public StatType Type;
         }
 
-        [SerializeField]
-        private List<EquipmentCategoryToggle> equipmentCategoryToggles = null;
+        [SerializeField] private List<EquipmentCategoryToggle> equipmentCategoryToggles = null;
 
-        [SerializeField]
-        private List<ConsumableCategoryToggle> consumableCategoryToggles = null;
+        [SerializeField] private List<ConsumableCategoryToggle> consumableCategoryToggles = null;
 
-        [SerializeField]
-        private GameObject equipmentTab = null;
+        [SerializeField] private GameObject equipmentTab = null;
 
-        [SerializeField]
-        private GameObject consumableTab = null;
+        [SerializeField] private GameObject consumableTab = null;
 
-        [SerializeField]
-        private GameObject emptyObject = null;
+        [SerializeField] private GameObject emptyObject = null;
 
-        [SerializeField]
-        private GameObject openAllRecipeArea = null;
+        [SerializeField] private GameObject openAllRecipeArea = null;
 
-        [SerializeField]
-        private Button openAllRecipeButton = null;
+        [SerializeField] private Button openAllRecipeButton = null;
 
-        [SerializeField]
-        private TextMeshProUGUI openAllRecipeCostText = null;
+        [SerializeField] private TextMeshProUGUI openAllRecipeCostText = null;
 
-        [SerializeField]
-        private float animationInterval = 0.3f;
+        [SerializeField] private float animationInterval = 0.3f;
 
         private Coroutine _animationCoroutine = null;
 
@@ -152,6 +143,7 @@ namespace Nekoyume.UI.Scroller
                 }
             }
 
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockableRecipeIds, _openCost)
                 .Subscribe();
@@ -173,13 +165,14 @@ namespace Nekoyume.UI.Scroller
                     ShowAsEquipment(type);
                     return;
                 }
+
                 toggle.Toggle.isOn = true;
                 return;
             }
 
             var items = Craft.SharedModel.EquipmentRecipeMap.Values
-                .Where(x => x.ItemSubType == type)
-                ?? Enumerable.Empty<RecipeRow.Model>();
+                            .Where(x => x.ItemSubType == type)
+                        ?? Enumerable.Empty<RecipeRow.Model>();
 
             emptyObject.SetActive(!items.Any());
             Show(items, true);
@@ -211,13 +204,14 @@ namespace Nekoyume.UI.Scroller
                     ShowAsFood(type);
                     return;
                 }
+
                 toggle.Toggle.isOn = true;
                 return;
             }
 
             var items = Craft.SharedModel.ConsumableRecipeMap.Values
-                .Where(x => x.StatType == type)
-                ?? Enumerable.Empty<RecipeRow.Model>();
+                            .Where(x => x.StatType == type)
+                        ?? Enumerable.Empty<RecipeRow.Model>();
 
             emptyObject.SetActive(!items.Any());
             Show(items, true);
@@ -242,9 +236,9 @@ namespace Nekoyume.UI.Scroller
                 openAllRecipeCostText.text = _openCost.ToString();
 
                 var hasEnoughBalance = States.Instance.CrystalBalance.MajorUnit >= _openCost;
-                openAllRecipeCostText.color = hasEnoughBalance ?
-                    Palette.GetColor(ColorType.ButtonEnabled) :
-                    Palette.GetColor(ColorType.ButtonDisabled);
+                openAllRecipeCostText.color = hasEnoughBalance
+                    ? Palette.GetColor(ColorType.ButtonEnabled)
+                    : Palette.GetColor(ColorType.ButtonDisabled);
             }
         }
 
@@ -277,6 +271,7 @@ namespace Nekoyume.UI.Scroller
                 row.ShowAnimation();
                 yield return wait;
             }
+
             Scroller.Draggable = true;
 
             _animationCoroutine = null;
@@ -305,7 +300,7 @@ namespace Nekoyume.UI.Scroller
         public void GoToRecipeGroup(string equipmentRecipeGroup)
         {
             if (!Craft.SharedModel.EquipmentRecipeMap
-                .TryGetValue(equipmentRecipeGroup, out var model))
+                    .TryGetValue(equipmentRecipeGroup, out var model))
             {
                 return;
             }
