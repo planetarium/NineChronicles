@@ -1,11 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bencodex.Types;
-using Libplanet.Assets;
-using Nekoyume.Model.State;
 using static Nekoyume.TableData.TableExtensions;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.TableData
 {
@@ -49,18 +45,6 @@ namespace Nekoyume.TableData
             {
                 ItemId = itemId;
                 Rate = rate;
-            }
-
-            public RewardInfo(Dictionary dictionary)
-            {
-                ItemId = dictionary[IdKey].ToInteger();
-                Rate = dictionary[RateKey].ToInteger();
-            }
-            public IValue Serialize()
-            {
-                return Dictionary.Empty
-                    .Add(IdKey, ItemId.Serialize())
-                    .Add(RateKey, Rate.Serialize());
             }
         }
 
