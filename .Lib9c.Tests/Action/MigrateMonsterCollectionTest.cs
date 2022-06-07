@@ -112,7 +112,8 @@ namespace Lib9c.Tests.Action
                 0 * currency,
                 states.GetBalance(monsterCollectionState.address, currency));
             Assert.Equal(stakedAmount * currency, states.GetBalance(stakeState.address, currency));
-            Assert.Equal(monsterCollectionState.ReceivedBlockIndex, stakeState.ReceivedBlockIndex);
+            Assert.Equal(claimBlockIndex, stakeState.ReceivedBlockIndex);
+            Assert.Equal(monsterCollectionState.StartedBlockIndex, stakeState.StartedBlockIndex);
             Assert.True(
                 states.TryGetAvatarStateV2(
                     _signer,
