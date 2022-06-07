@@ -74,20 +74,34 @@ namespace Lib9c.Tests
         }
 
         [Theory]
-        [InlineData(2, 1, 200)]
-        [InlineData(9, 10, 90)]
+        [InlineData(200, 100, 200, true, true)]
+        [InlineData(900, 1000, 90, true, true)]
         // Minimum
-        [InlineData(1, 2, 50)]
+        [InlineData(100, 200, 50, true, true)]
         // Maximum
-        [InlineData(3, 1, 300)]
-        public void CalculateCombinationCost(int psCount, int bpsCount, int expected)
+        [InlineData(300, 100, 300, true, true)]
+        // Avoid DivideByZeroException
+        [InlineData(0, 100, 100, true, true)]
+        [InlineData(100, 0, 100, true, true)]
+        [InlineData(0, 0, 100, true, true)]
+        [InlineData(100, 0, 100, true, false)]
+        [InlineData(0, 0, 100, false, true)]
+        [InlineData(0, 0, 100, false, false)]
+        public void CalculateCombinationCost(int psCrystal, int bpsCrystal, int expected, bool psExist, bool bpsExist)
         {
             var crystal = 100 * CrystalCalculator.CRYSTAL;
-            var ps = new CrystalCostState(default, crystal * psCount);
-            var bps = new CrystalCostState(default, crystal * bpsCount);
+            var ps = psExist
+                ? new CrystalCostState(default, psCrystal * CrystalCalculator.CRYSTAL)
+                : null;
+            var bps = bpsExist
+                ? new CrystalCostState(default, bpsCrystal * CrystalCalculator.CRYSTAL)
+                : null;
             var row = _tableSheets.CrystalFluctuationSheet.Values.First(r =>
                 r.Type == CrystalFluctuationSheet.ServiceType.Combination);
-            Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateCombinationCost(crystal, row, prevWeeklyCostState: ps, beforePrevWeeklyCostState: bps));
+            Assert.Equal(
+                expected * CrystalCalculator.CRYSTAL,
+                CrystalCalculator.CalculateCombinationCost(crystal, row, prevWeeklyCostState: ps, bps)
+            );
         }
 
         [Fact]

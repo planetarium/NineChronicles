@@ -110,7 +110,7 @@ namespace Nekoyume.Helper
             CrystalCostState prevWeeklyCostState = null,
             CrystalCostState beforePrevWeeklyCostState = null)
         {
-            if (!(prevWeeklyCostState is null) && !(beforePrevWeeklyCostState is null))
+            if (prevWeeklyCostState?.CRYSTAL > 0 * CRYSTAL && beforePrevWeeklyCostState?.CRYSTAL > 0 * CRYSTAL)
             {
                 int multiplier = (int) (prevWeeklyCostState.CRYSTAL.RawValue * 100 /
                                         beforePrevWeeklyCostState.CRYSTAL.RawValue);
