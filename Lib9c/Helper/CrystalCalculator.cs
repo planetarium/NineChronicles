@@ -53,6 +53,23 @@ namespace Nekoyume.Helper
             StakeRegularRewardSheet stakeRegularRewardSheet
         )
         {
+            var monsterCollectionLevel = stakeRegularRewardSheet.FindLevelByStakedAmount(agentAddress, balance);
+            return CalculateCrystal(
+                equipmentList,
+                enhancementFailed,
+                crystalEquipmentGrindingSheet,
+                crystalMonsterCollectionMultiplierSheet,
+                monsterCollectionLevel);
+        }
+
+        public static FungibleAssetValue CalculateCrystal(
+            IEnumerable<Equipment> equipmentList,
+            bool enhancementFailed,
+            CrystalEquipmentGrindingSheet crystalEquipmentGrindingSheet,
+            CrystalMonsterCollectionMultiplierSheet crystalMonsterCollectionMultiplierSheet,
+            int stakingLevel
+        )
+        {
             FungibleAssetValue crystal = 0 * CRYSTAL;
             foreach (var equipment in equipmentList)
             {
@@ -69,14 +86,11 @@ namespace Nekoyume.Helper
                 crystal = crystal.DivRem(2, out _);
             }
 
-            int monsterCollectionLevel = stakeRegularRewardSheet.FindLevelByStakedAmount(agentAddress, balance);
-
             CrystalMonsterCollectionMultiplierSheet.Row multiplierRow =
-                crystalMonsterCollectionMultiplierSheet[monsterCollectionLevel];
+                crystalMonsterCollectionMultiplierSheet[stakingLevel];
             var extra = crystal.DivRem(100, out _) * multiplierRow.Multiplier;
             return crystal + extra;
         }
-
 
         public static FungibleAssetValue CalculateMaterialCost(
             int materialId,
