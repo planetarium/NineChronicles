@@ -7,19 +7,13 @@ namespace Nekoyume.UI.Module.Arena.Join
 {
     public class ArenaJoinSeasonCellChampionship : MonoBehaviour
     {
-        [SerializeField]
-        private Animator _animator;
+        [SerializeField] private Animator _animator;
 
         public Animator Animator => _animator;
 
-        [SerializeField]
-        private Button _button;
+        [SerializeField] private Button _button;
 
-        [SerializeField]
-        private TextMeshProUGUI _championshipId;
-
-        [SerializeField]
-        private SeasonArenaEmblem[] _seasonEmblems;
+        [SerializeField] private TextMeshProUGUI _championshipId;
 
         public event System.Action OnClick = delegate { };
 
@@ -30,21 +24,7 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         public void Show(ArenaJoinSeasonItemData itemData, bool selected)
         {
-            _championshipId.text = itemData.ChampionshipId.ToString();
-            for (var i = 0; i < _seasonEmblems.Length; i++)
-            {
-                var _seasonEmblem = _seasonEmblems[i];
-                if (itemData.ChampionshipSeasonIds.Length > i)
-                {
-                    _seasonEmblem.SetData(itemData.ChampionshipSeasonIds[i], true);
-                    _seasonEmblem.transform.parent.gameObject.SetActive(true);
-                }
-                else
-                {
-                    _seasonEmblem.transform.parent.gameObject.SetActive(false);
-                }
-            }
-
+            _championshipId.text = itemData.RoundData.ChampionshipId.ToString();
             gameObject.SetActive(true);
         }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Libplanet.Assets;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Common;
@@ -12,14 +13,11 @@ namespace Nekoyume.UI.Module
 
     public class Crystal : AlphaAnimateModule
     {
-        [SerializeField]
-        private TextMeshProUGUI text = null;
+        [SerializeField] private TextMeshProUGUI text = null;
 
-        [SerializeField]
-        private GameObject loadingObject;
+        [SerializeField] private GameObject loadingObject;
 
-        [SerializeField]
-        private Transform iconTransform;
+        [SerializeField] private Transform iconTransform;
 
         public bool NowCharging => loadingObject.activeSelf;
 
@@ -58,7 +56,18 @@ namespace Nekoyume.UI.Module
 
         private void SetCrystal(FungibleAssetValue crystal)
         {
-            text.text = crystal.GetQuantityString();
+            var quantityString = crystal.GetQuantityString();
+            if (double.TryParse(quantityString, out var quantity))
+            {
+                text.text = string.Format(
+                    CultureInfo.CurrentCulture,
+                    "{0:N0}",
+                    quantity);
+            }
+            else
+            {
+                text.text = quantityString;
+            }
         }
     }
 }

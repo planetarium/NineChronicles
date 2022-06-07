@@ -38,17 +38,13 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        [SerializeField]
-        private Stage stage = null;
+        [SerializeField] private Stage stage = null;
 
-        [SerializeField]
-        private bool useSystemLanguage = true;
+        [SerializeField] private bool useSystemLanguage = true;
 
-        [SerializeField]
-        private LanguageTypeReactiveProperty languageType = default;
+        [SerializeField] private LanguageTypeReactiveProperty languageType = default;
 
-        [SerializeField]
-        private Prologue prologue = null;
+        [SerializeField] private Prologue prologue = null;
 
         public States States { get; private set; }
 
@@ -179,9 +175,7 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
-            Analyzer = _options.RpcClient
-                ? new Analyzer(Agent.Address.ToString(), _options.RpcServerHost)
-                : new Analyzer(Agent.Address.ToString());
+            InitializeAnalyzer();
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
@@ -271,7 +265,7 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentRetryEnded(RPCAgent rpcAgent)
         {
-            var widget = (Widget) Widget.Find<DimmedLoadingScreen>();
+            var widget = (Widget)Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -291,7 +285,7 @@ namespace Nekoyume.Game
 
             var needToBackToMain = false;
             var showLoadingScreen = false;
-            var widget = (Widget) Widget.Find<DimmedLoadingScreen>();
+            var widget = (Widget)Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -339,6 +333,7 @@ namespace Nekoyume.Game
 
             BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
         }
+
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
             if (Widget.Find<IntroScreen>().IsActive() ||
@@ -352,7 +347,7 @@ namespace Nekoyume.Game
 
             var needToBackToMain = false;
             var showLoadingScreen = false;
-            var widget = (Widget) Widget.Find<DimmedLoadingScreen>();
+            var widget = (Widget)Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -437,7 +432,8 @@ namespace Nekoyume.Game
             if (rpcAgent.Connected)
             {
                 // 무슨 상황이지?
-                Debug.Log($"{nameof(QuitWithAgentConnectionError)}() called. But {nameof(RPCAgent)}.Connected is {rpcAgent.Connected}.");
+                Debug.Log(
+                    $"{nameof(QuitWithAgentConnectionError)}() called. But {nameof(RPCAgent)}.Connected is {rpcAgent.Connected}.");
                 return;
             }
 
@@ -465,6 +461,7 @@ namespace Nekoyume.Game
             {
                 csv[asset.name] = asset.text;
             }
+
             TableSheets = new TableSheets(csv);
         }
 
@@ -486,10 +483,7 @@ namespace Nekoyume.Game
                 List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
                 var map = new ConcurrentDictionary<Address, string>();
                 var csv = new ConcurrentDictionary<string, string>();
-                Parallel.ForEach(csvAssets, asset =>
-                {
-                    map[Addresses.TableSheet.Derive(asset.name)] = asset.name;
-                });
+                Parallel.ForEach(csvAssets, asset => { map[Addresses.TableSheet.Derive(asset.name)] = asset.name; });
                 var values = Agent.GetStateBulk(map.Keys).Result;
                 Parallel.ForEach(values, kv =>
                 {
@@ -598,6 +592,7 @@ namespace Nekoyume.Game
             {
                 widget.Close(true);
             }
+
             Widget.Find<Login>().Show();
         }
 
@@ -815,11 +810,12 @@ namespace Nekoyume.Game
                     Message = msg,
                     Timestamp = DateTime.UtcNow
                 };
-                var request = new PutLogEventsRequest(groupName, streamName, new List<InputLogEvent> {ie});
+                var request = new PutLogEventsRequest(groupName, streamName, new List<InputLogEvent> { ie });
                 if (!string.IsNullOrEmpty(token))
                 {
                     request.SequenceToken = token;
                 }
+
                 await _logsClient.PutLogEventsAsync(request);
             }
             catch (Exception)
@@ -856,6 +852,37 @@ namespace Nekoyume.Game
         public void ResumeTimeline()
         {
             _activeDirector.playableGraph.GetRootPlayable(0).SetSpeed(1);
+        }
+
+        private void InitializeAnalyzer()
+        {
+            var uniqueId = Agent.Address.ToString();
+            var rpcServerHost = _options.RpcClient
+                ? _options.RpcServerHost
+                : null;
+
+#if UNITY_EDITOR
+            Debug.Log("This is editor mode.");
+            Analyzer = new Analyzer(uniqueId, rpcServerHost);
+            return;
+#endif
+            var isTrackable = true;
+            if (!Debug.isDebugBuild)
+            {
+                Debug.Log("This is debug build.");
+                isTrackable = false;
+            }
+
+            if (_options.Development)
+            {
+                Debug.Log("This is development mode.");
+                isTrackable = false;
+            }
+
+            Analyzer = new Analyzer(
+                uniqueId,
+                rpcServerHost,
+                isTrackable);
         }
     }
 }

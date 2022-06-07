@@ -18,29 +18,21 @@ namespace Nekoyume.UI
 {
     public class CombinationLoadingScreen : ScreenWidget
     {
-        [SerializeField]
-        private Button button = null;
+        [SerializeField] private Button button = null;
 
-        [SerializeField]
-        private CanvasGroup _buttonCanvasGroup = null;
+        [SerializeField] private CanvasGroup _buttonCanvasGroup = null;
 
-        [SerializeField]
-        private CanvasGroup _bgCanvasGroup = null;
+        [SerializeField] private CanvasGroup _bgCanvasGroup = null;
 
-        [SerializeField]
-        private DOTweenGroupAlpha _buttonAlphaTweener = null;
+        [SerializeField] private DOTweenGroupAlpha _buttonAlphaTweener = null;
 
-        [SerializeField]
-        private DOTweenGroupAlpha _bgAlphaTweener = null;
+        [SerializeField] private DOTweenGroupAlpha _bgAlphaTweener = null;
 
-        [SerializeField]
-        private TextMeshProUGUI continueText = null;
+        [SerializeField] private TextMeshProUGUI continueText = null;
 
-        [SerializeField]
-        private SpeechBubbleWithItem speechBubble = null;
+        [SerializeField] private SpeechBubbleWithItem speechBubble = null;
 
-        [SerializeField]
-        private SkeletonGraphic npcSkeletonGraphic;
+        [SerializeField] private SkeletonGraphic npcSkeletonGraphic;
 
         private Coroutine _npcAppearCoroutine = null;
         private readonly WaitForSeconds _waitForOneSec = new WaitForSeconds(1f);
@@ -103,7 +95,7 @@ namespace Nekoyume.UI
             speechBubble.SetItemMaterial(item, isConsumable);
         }
 
-        public void SetCurrency(int ncg, int crystal)
+        public void SetCurrency(long ncg, long crystal)
         {
             speechBubble.SetCurrency(ncg, crystal);
         }

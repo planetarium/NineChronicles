@@ -11,14 +11,12 @@ namespace Nekoyume.UI.Module.Arena.Join
     {
         public ArenaSheet.RoundData RoundData;
         public int? SeasonNumber;
-        public int? ChampionshipId => RoundData?.ChampionshipId;
-        public int[] ChampionshipSeasonIds;
-        
+
         public string GetRoundName() => RoundData.ArenaType switch
         {
             ArenaType.OffSeason => "off-season",
             ArenaType.Season => $"season #{SeasonNumber}",
-            ArenaType.Championship => $"championship #{ChampionshipId}",
+            ArenaType.Championship => $"championship #{RoundData.ChampionshipId}",
             _ => throw new ArgumentOutOfRangeException(),
         };
     }
@@ -37,23 +35,17 @@ namespace Nekoyume.UI.Module.Arena.Join
             public static readonly int Scroll = Animator.StringToHash("Scroll");
         }
 
-        [SerializeField]
-        private Animator _animator;
+        [SerializeField] private Animator _animator;
 
-        [SerializeField]
-        private ArenaJoinSeasonCellOffseason _offseason;
+        [SerializeField] private ArenaJoinSeasonCellOffseason _offseason;
 
-        [SerializeField]
-        private ArenaJoinSeasonCellSeason _season;
+        [SerializeField] private ArenaJoinSeasonCellSeason _season;
 
-        [SerializeField]
-        private ArenaJoinSeasonCellChampionship _championship;
+        [SerializeField] private ArenaJoinSeasonCellChampionship _championship;
 
-        [SerializeField]
-        private GameObject _medalCountObject;
+        [SerializeField] private GameObject _medalCountObject;
 
-        [SerializeField]
-        private GameObject _seasonCountObject;
+        [SerializeField] private GameObject _seasonCountObject;
 
         private ArenaJoinSeasonItemData _currentData;
 

@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -72,6 +73,26 @@ namespace Nekoyume.BlockChain
             return null;
         }
 
+        protected static (StakeState, int) GetStakeState<T>(
+            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var agentAddress = States.Instance.AgentState.address;
+            if (evaluation.OutputStates.GetState(
+                    StakeState.DeriveAddress(agentAddress)) is
+                Bencodex.Types.Dictionary serialized)
+            {
+                var state = new StakeState(serialized);
+                var balance = evaluation.OutputStates.GetBalance(state.address, CrystalCalculator.CRYSTAL);
+                return (
+                    state,
+                    Game.TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
+                        agentAddress,
+                        balance));
+            }
+
+            return (null, 0);
+        }
+
         protected async UniTask UpdateAgentStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
@@ -84,15 +105,6 @@ namespace Nekoyume.BlockChain
             catch (BalanceDoesNotExistsException)
             {
                 UpdateGoldBalanceState(null);
-            }
-
-            try
-            {
-                UpdateCrystalBalance(evaluation);
-            }
-            catch (BalanceDoesNotExistsException e)
-            {
-                Debug.LogError("Failed to update crystal balance : " + e);
             }
         }
 
@@ -167,10 +179,18 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private static async UniTask UpdateAgentStateAsync(AgentState state)
+        protected static void UpdateStakeState(StakeState state, int level)
+        {
+            if (state is { })
+            {
+                States.Instance.SetStakeState(state, level);
+            }
+        }
+
+        private static UniTask UpdateAgentStateAsync(AgentState state)
         {
             UpdateCache(state);
-            await States.Instance.SetAgentStateAsync(state);
+            return States.Instance.SetAgentStateAsync(state);
         }
 
         private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
@@ -184,7 +204,7 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
-        protected void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        public static void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var crystal = evaluation.OutputStates.GetBalance(evaluation.Signer, CrystalCalculator.CRYSTAL);
             var agentState = States.Instance.AgentState;

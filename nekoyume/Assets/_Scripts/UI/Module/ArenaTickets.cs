@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Helper;
-using Nekoyume.Model.State;
+using Nekoyume.Model.Arena;
 using Nekoyume.State;
 using TMPro;
 using UnityEngine;
@@ -13,14 +14,11 @@ namespace Nekoyume.UI.Module
 
     public class ArenaTickets : MonoBehaviour
     {
-        [SerializeField]
-        private Slider _slider;
+        [SerializeField] private Slider _slider;
 
-        [SerializeField]
-        private TextMeshProUGUI _fillText;
+        [SerializeField] private TextMeshProUGUI _fillText;
 
-        [SerializeField]
-        private TextMeshProUGUI _timespanText;
+        [SerializeField] private TextMeshProUGUI _timespanText;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -32,8 +30,8 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            UpdateSliderAndFillText(RxProps.ArenaInfo.Value);
-            RxProps.ArenaInfo
+            UpdateSliderAndFillText(RxProps.ArenaInfoTuple.Value);
+            RxProps.ArenaInfoTuple
                 .SubscribeOnMainThreadWithUpdateOnce(UpdateSliderAndFillText)
                 .AddTo(_disposables);
 
@@ -49,22 +47,32 @@ namespace Nekoyume.UI.Module
             _disposables.DisposeAllAndClear();
         }
 
-        private void UpdateSliderAndFillText(ArenaInfo info)
+        private void UpdateSliderAndFillText((ArenaInformation current, ArenaInformation next) tuple)
         {
-            if (info is null)
+            const int max = ArenaInformation.MaxTicketCount;
+            var (current, _) = tuple;
+            if (current is null)
             {
+                _slider.normalizedValue = 1f;
+                _fillText.text = $"{max}/{max}";
                 return;
             }
 
-            var progress = (float)info.DailyChallengeCount / GameConfig.ArenaChallengeCountMax;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var currentRoundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            var ticket = current.GetTicketCount(
+                blockIndex,
+                currentRoundData.StartBlockIndex,
+                States.Instance.GameConfigState.DailyArenaInterval);
+            var progress = (float)ticket / max;
             _slider.normalizedValue = progress;
-            _fillText.text = $"{info.DailyChallengeCount}/{GameConfig.ArenaChallengeCountMax}";
+            _fillText.text = $"{ticket}/{max}";
         }
 
-        private void UpdateTimespanText((long bedinning, long end, long progress) tuple)
+        private void UpdateTimespanText((long beginning, long end, long progress) tuple)
         {
-            var (_, _, progress) = tuple;
-            _timespanText.text = Util.GetBlockToTime(progress);
+            var (bedinning, end, progress) = tuple;
+            _timespanText.text = Util.GetBlockToTime(end - bedinning - progress);
         }
     }
 }

@@ -5,16 +5,24 @@ namespace Nekoyume.UI.Module.Arena.Emblems
 {
     public class ChampionshipArenaEmblem : MonoBehaviour
     {
-        [SerializeField]
-        private GameObject _normal;
+        [SerializeField] private GameObject _normal;
 
-        [SerializeField]
-        private GameObject _disable;
+        [SerializeField] private GameObject _disable;
 
-        [SerializeField]
-        private TextMeshProUGUI[] _championshipNumbers;
+        [SerializeField] private TextMeshProUGUI[] _championshipNumbers;
 
-        public void SetData(int championshipNumber, bool isNormal)
+        public void Show(int championshipId, bool isNormal)
+        {
+            SetData(championshipId, isNormal);
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
+        public void SetData(int championshipId, bool isNormal)
         {
             if (_normal)
             {
@@ -28,7 +36,7 @@ namespace Nekoyume.UI.Module.Arena.Emblems
 
             foreach (var text in _championshipNumbers)
             {
-                text.text = championshipNumber.ToString();
+                text.text = championshipId.ToString();
             }
         }
     }

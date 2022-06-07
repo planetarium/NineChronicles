@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nekoyume.Game;
+using Nekoyume.Model.Arena;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Arena;
 using TMPro;
@@ -11,11 +13,9 @@ namespace Nekoyume.UI.Module.Lobby
 
     public class ArenaMenu : MainMenu
     {
-        [SerializeField]
-        private ArenaTicketProgressBar _progressBar;
+        [SerializeField] private ArenaTicketProgressBar _progressBar;
 
-        [SerializeField]
-        private TextMeshProUGUI _ticketCount;
+        [SerializeField] private TextMeshProUGUI _ticketCount;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -30,12 +30,23 @@ namespace Nekoyume.UI.Module.Lobby
 
             _progressBar.ResumeOrShow();
             _ticketCount.text = string.Empty;
-            RxProps.ArenaInfo
-                .SubscribeOnMainThreadWithUpdateOnce(info =>
+            RxProps.ArenaInfoTuple
+                .SubscribeOnMainThreadWithUpdateOnce(tuple =>
                 {
-                    Debug.Log("ArenaMenu Ticket Count Update");
-                    _ticketCount.text = info?.DailyChallengeCount.ToString()
-                                        ?? string.Empty;
+                    var (current, _) = tuple;
+                    if (current is null)
+                    {
+                        _ticketCount.text = ArenaInformation.MaxTicketCount.ToString();
+                        return;
+                    }
+
+                    var blockIndex = Game.Game.instance.Agent.BlockIndex;
+                    var currentRoundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+                    var ticket = current.GetTicketCount(
+                        blockIndex,
+                        currentRoundData.StartBlockIndex,
+                        States.Instance.GameConfigState.DailyArenaInterval);
+                    _ticketCount.text = ticket.ToString();
                 })
                 .AddTo(_disposables);
         }

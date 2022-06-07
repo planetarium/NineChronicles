@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.State;
@@ -25,46 +26,43 @@ namespace Nekoyume.UI.Module.Arena.Join
             Costume = 8,
         }
 
-        [SerializeField]
-        private TextMeshProUGUI _titleText;
+        [SerializeField] private TextMeshProUGUI _titleText;
 
-        [SerializeField]
-        private ShaderPropertySlider _seasonProgressSlider;
+        [SerializeField] private ShaderPropertySlider _seasonProgressSlider;
 
-        [SerializeField]
-        private Image _seasonProgressFillImage;
+        [SerializeField] private Image _seasonProgressFillImage;
 
-        [SerializeField]
-        private TextMeshProUGUI _seasonProgressSliderFillText;
+        [SerializeField] private TextMeshProUGUI _seasonProgressSliderFillText;
 
-        [SerializeField]
-        private GameObject _conditionsContainer;
+        [SerializeField] private GameObject _conditionsContainer;
 
-        [SerializeField]
-        private Image _conditionsSliderFillArea;
+        [SerializeField] private Image _conditionsSliderFillArea;
 
-        [SerializeField]
-        private TextMeshProUGUI _conditionsSliderFillText;
+        [SerializeField] private TextMeshProUGUI _conditionsSliderFillText;
 
-        [SerializeField]
-        private string _conditionsSliderFillTextFormat;
+        [SerializeField] private string _conditionsSliderFillTextFormat;
 
-        [SerializeField]
-        private GameObject _medalReward;
+        [SerializeField] private GameObject _medalReward;
 
-        [SerializeField]
-        private GameObject _ncgReward;
+        [SerializeField] private GameObject _ncgReward;
 
-        [SerializeField]
-        private GameObject _foodReward;
+        [SerializeField] private GameObject _foodReward;
 
-        [SerializeField]
-        private GameObject _costumeReward;
+        [SerializeField] private GameObject _costumeReward;
 
-        [SerializeField]
-        private List<Image> _currentRoundMedalImages;
+        [SerializeField] private List<Image> _currentRoundMedalImages;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
+        private ArenaSheet.RoundData _roundData;
+
+        private void OnEnable()
+        {
+            Game.Game.instance.Agent.BlockIndexSubject
+                .Subscribe(blockIndex =>
+                    SetSliderAndText(_roundData.GetSeasonProgress(blockIndex)))
+                .AddTo(gameObject);
+        }
 
         private void OnDisable()
         {
@@ -72,7 +70,7 @@ namespace Nekoyume.UI.Module.Arena.Join
         }
 
         /// <param name="title">Season Name</param>
-        /// <param name="seasonProgress"></param>
+        /// <param name="roundData"></param>
         /// <param name="conditions">Season Conditions</param>
         /// <param name="rewardType">
         ///   Reward types.
@@ -81,20 +79,23 @@ namespace Nekoyume.UI.Module.Arena.Join
         /// <param name="medalItemId">Season Medal ItemId on ItemSheet</param>
         public void SetData(
             string title,
-            (long beginning, long end, long current) seasonProgress,
+            ArenaSheet.RoundData roundData,
             (int max, int current)? conditions,
             RewardType rewardType,
             int? medalItemId)
         {
             _disposables.DisposeAllAndClear();
             _titleText.text = title;
-            SetSliderAndText(seasonProgress);
+            _roundData = roundData;
+
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            SetSliderAndText(_roundData.GetSeasonProgress(blockIndex));
             SetConditions(conditions);
             SetRewards(rewardType);
             SetMedalImages(medalItemId);
         }
 
-        public void SetSliderAndText((long beginning, long end, long current) tuple)
+        private void SetSliderAndText((long beginning, long end, long current) tuple)
         {
             var (beginning, end, current) = tuple;
             if (current < beginning)
