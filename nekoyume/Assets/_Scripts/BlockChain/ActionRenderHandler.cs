@@ -1361,6 +1361,7 @@ namespace Nekoyume.BlockChain
                 sharedModel.UnlockingRecipes.Remove(id);
             }
 
+            recipeIds.AddRange(sharedModel.UnlockedRecipes.Value);
             sharedModel.SetUnlockedRecipes(recipeIds);
             sharedModel.UpdateUnlockableRecipes();
         }
