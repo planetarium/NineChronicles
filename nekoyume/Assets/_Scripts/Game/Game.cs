@@ -394,7 +394,8 @@ namespace Nekoyume.Game
                 return;
             }
 
-            BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen);
+            BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen)
+                .Forget();
         }
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)

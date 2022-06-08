@@ -102,8 +102,7 @@ namespace Nekoyume.UI
         {
             if (eval.Exception is { })
             {
-                // NOTE: If eval has an exception then
-                // UIs will handled in other places.
+                Find<LoadingScreen>().Close();
                 return;
             }
 

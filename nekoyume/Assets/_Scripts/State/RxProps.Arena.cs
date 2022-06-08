@@ -129,7 +129,16 @@ namespace Nekoyume.State
         {
             // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
             // ReactiveAvatarState.Address
-            //     .Subscribe(_ => _playersArenaParticipant)
+            //     .Subscribe(addr =>
+            //     {
+            //         if (_playersArenaParticipant.HasValue &&
+            //             _playersArenaParticipant.Value.AvatarAddr == addr)
+            //         {
+            //             return;
+            //         }
+            //
+            //         _playersArenaParticipant.Value = null;
+            //     })
             //     .AddTo(_disposables);
         }
 

@@ -1521,10 +1521,18 @@ namespace Nekoyume.BlockChain
 
         private static async UniTaskVoid ResponseJoinArenaAsync(ActionBase.ActionEvaluation<JoinArena> eval)
         {
-            if (eval.Exception != null ||
-                eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
+            if (eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
             {
                 return;
+            }
+
+            var arenaJoin = Widget.Find<ArenaJoin>();
+            if (eval.Exception != null)
+            {
+                if (arenaJoin && arenaJoin.IsActive())
+                {
+                    arenaJoin.OnRenderJoinArena(eval);
+                }
             }
 
             UpdateCrystalBalance(eval);
@@ -1543,7 +1551,6 @@ namespace Nekoyume.BlockChain
                 await RxProps.ArenaInfoTuple.UpdateAsync();
             }
 
-            var arenaJoin = Widget.Find<ArenaJoin>();
             if (arenaJoin && arenaJoin.IsActive())
             {
                 arenaJoin.OnRenderJoinArena(eval);
@@ -1558,23 +1565,14 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var arenaBoard = Widget.Find<ArenaBoard>();
             if (eval.Exception != null)
             {
-                var showLoadingScreen = false;
-                Widget widget = Widget.Find<ArenaBattleLoadingScreen>();
-                if (widget.IsActive())
+                if (arenaBoard && arenaBoard.IsActive())
                 {
-                    widget.Close();
+                    arenaBoard.OnRenderBattleArena(eval, null, null);
                 }
 
-                widget = Widget.Find<RankingBattleResultPopup>();
-                if (widget.IsActive())
-                {
-                    showLoadingScreen = true;
-                    widget.Close();
-                }
-
-                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen).Forget();
                 return;
             }
 
@@ -1683,9 +1681,9 @@ namespace Nekoyume.BlockChain
             };
             simulator.Log.score = currentMyScore;
 
-            if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            if (arenaBoard && arenaBoard.IsActive())
             {
-                Widget.Find<ArenaBoard>().GoToStage(simulator.Log, rewards);
+                arenaBoard.OnRenderBattleArena(eval, simulator.Log, rewards);
             }
 
             // TODO!!!! 전투 보여주는 동안 뒤에서는 최신 목록 가져오기.
