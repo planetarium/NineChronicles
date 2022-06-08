@@ -960,7 +960,6 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e2)
                     {
-                        Game.Game.BackToMain(false, e2).Forget();
                     }
                 });
         }
