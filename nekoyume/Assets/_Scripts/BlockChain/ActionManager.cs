@@ -53,17 +53,18 @@ namespace Nekoyume.BlockChain
 
         public static bool IsLastBattleActionId(Guid actionId) => actionId == Instance._lastBattleActionId;
 
-        private void HandleException(Guid actionId, Exception e)
+        public Exception HandleException(Guid actionId, Exception e)
         {
             if (e is TimeoutException)
             {
                 var txId = _actionIdToTxIdBridge.ContainsKey(actionId)
                     ? (TxId?)_actionIdToTxIdBridge[actionId].txId
                     : null;
-                throw new ActionTimeoutException(e.Message, txId, actionId);
+                e = new ActionTimeoutException(e.Message, txId, actionId);
             }
 
-            throw e;
+            Debug.LogException(e);
+            return e;
         }
 
         public ActionManager(IAgent agent)
@@ -144,7 +145,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e =>
                 {
                     Game.Game.instance.BackToNest();
-                    HandleException(action.Id, e);
+                    throw HandleException(action.Id, e);
                 })
                 .Finally(() =>
                 {
@@ -200,14 +201,7 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -263,14 +257,7 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -328,7 +315,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
@@ -365,14 +352,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -413,7 +393,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
@@ -438,7 +418,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(
@@ -478,7 +458,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)
@@ -502,7 +482,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
@@ -526,7 +506,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(
@@ -569,14 +549,7 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception inner)
-                    {
-                        Game.Game.BackToMain(false, inner).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -616,14 +589,7 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -653,14 +619,7 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -699,14 +658,7 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -972,14 +924,7 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 #endif
