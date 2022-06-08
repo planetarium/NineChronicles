@@ -44,7 +44,11 @@ namespace Nekoyume.UI
 
         [SerializeField] private MainMenu btnMimisbrunnr = null;
 
-        [SerializeField] private SpeechBubble[] speechBubbles = null;
+        [SerializeField]
+        private MainMenu btnStaking = null;
+
+        [SerializeField]
+        private SpeechBubble[] speechBubbles = null;
 
         [SerializeField] private GameObject shopExclamationMark = null;
 
@@ -83,7 +87,8 @@ namespace Nekoyume.UI
                     btnMimisbrunnr.GetComponent<Button>(),
                     btnQuest.GetComponent<Button>(),
                     btnRanking.GetComponent<Button>(),
-                    btnShop.GetComponent<Button>()
+                    btnShop.GetComponent<Button>(),
+                    btnStaking.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
@@ -156,6 +161,7 @@ namespace Nekoyume.UI
             btnShop.Update();
             btnRanking.Update();
             btnMimisbrunnr.Update();
+            btnStaking.Update();
 
             var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHex);
@@ -188,6 +194,7 @@ namespace Nekoyume.UI
             btnShop.gameObject.SetActive(false);
             btnRanking.gameObject.SetActive(false);
             btnMimisbrunnr.gameObject.SetActive(false);
+            btnStaking.gameObject.SetActive(false);
         }
 
         public void ShowWorld()
@@ -349,6 +356,17 @@ namespace Nekoyume.UI
             Find<EventBanner>().Close(true);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             HelpTooltip.HelpMe(100019, true);
+        }
+
+        public void StakingClick()
+        {
+            if (!btnStaking.IsUnlocked)
+            {
+                btnStaking.JingleTheCat();
+                return;
+            }
+
+            Find<StakingPopup>().Show();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

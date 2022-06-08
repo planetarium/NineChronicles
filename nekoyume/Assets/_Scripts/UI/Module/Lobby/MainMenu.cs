@@ -14,6 +14,7 @@ namespace Nekoyume.UI.Module.Lobby
         Shop,
         Quest,
         Mimisbrunnr,
+        Staking
     }
 
     public class MainMenu : MonoBehaviour
@@ -64,6 +65,9 @@ namespace Nekoyume.UI.Module.Lobby
                     break;
                 case MenuType.Mimisbrunnr:
                     _requireStage = GameConfig.RequireClearedStageLevel.UIBottomMenuMimisbrunnr;
+                    break;
+                case MenuType.Staking:
+                    _requireStage = 3;  // Todo
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
