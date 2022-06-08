@@ -24,6 +24,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using mixpanel;
 using Nekoyume.Arena;
+using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Unity.Mathematics;
 
@@ -361,7 +362,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<JoinArena>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseJoinArena)
+                .Subscribe(ResponseJoinArenaAsync)
                 .AddTo(_disposables);
 
             _actionRenderer.EveryRender<BattleArena>()
@@ -466,6 +467,11 @@ namespace Nekoyume.BlockChain
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
         {
+            if (eval.Action.payByCrystal)
+            {
+                Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+            }
+
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
@@ -617,6 +623,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
         {
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
@@ -1002,7 +1009,7 @@ namespace Nekoyume.BlockChain
                     Widget.Find<BattleResultPopup>().Close();
                 }
 
-                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen).Forget();
             }
         }
 
@@ -1026,7 +1033,7 @@ namespace Nekoyume.BlockChain
             else
             {
                 Widget.Find<SweepResultPopup>().Close();
-                Game.Game.BackToMain(false, eval.Exception.InnerException).Forget();
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
             }
         }
 
@@ -1106,7 +1113,7 @@ namespace Nekoyume.BlockChain
                     Widget.Find<BattleResultPopup>().Close();
                 }
 
-                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen).Forget();
             }
         }
 
@@ -1287,7 +1294,6 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             var avatarAddress = eval.Action.AvatarAddress;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
             var mail = avatarState.mailBox.OfType<GrindingMail>().FirstOrDefault(m => m.id.Equals(eval.Action.Id));
@@ -1326,6 +1332,7 @@ namespace Nekoyume.BlockChain
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
             ActionBase.ActionEvaluation<UnlockEquipmentRecipe> eval)
         {
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             var sharedModel = Craft.SharedModel;
             var recipeIds = eval.Action.RecipeIds;
             if (!(eval.Exception is null))
@@ -1485,7 +1492,7 @@ namespace Nekoyume.BlockChain
         }
 #endif
 
-        private static void ResponseJoinArena(ActionBase.ActionEvaluation<JoinArena> eval)
+        private static async UniTaskVoid ResponseJoinArenaAsync(ActionBase.ActionEvaluation<JoinArena> eval)
         {
             if (eval.Exception != null ||
                 eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
@@ -1494,11 +1501,26 @@ namespace Nekoyume.BlockChain
             }
 
             UpdateCrystalBalance(eval);
-            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
-            NotificationSystem.Push(
-                MailType.System,
-                "Congratulations! Now you registered the next season!",
-                NotificationCell.NotificationType.Notification);
+
+            var currentRound = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(
+                Game.Game.instance.Agent.BlockIndex);
+            if (eval.Action.championshipId == currentRound.ChampionshipId &&
+                eval.Action.round == currentRound.Round)
+            {
+                await UniTask.WhenAll(
+                    RxProps.ArenaInfoTuple.UpdateAsync(),
+                    RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync());
+            }
+            else
+            {
+                await RxProps.ArenaInfoTuple.UpdateAsync();
+            }
+
+            var arenaJoin = Widget.Find<ArenaJoin>();
+            if (arenaJoin && arenaJoin.IsActive())
+            {
+                arenaJoin.OnRenderJoinArena();
+            }
         }
 
         private void ResponseBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
@@ -1512,18 +1534,20 @@ namespace Nekoyume.BlockChain
             if (eval.Exception != null)
             {
                 var showLoadingScreen = false;
-                if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+                Widget widget = Widget.Find<ArenaBattleLoadingScreen>();
+                if (widget.IsActive())
                 {
-                    Widget.Find<ArenaBattleLoadingScreen>().Close();
+                    widget.Close();
                 }
 
-                if (Widget.Find<RankingBattleResultPopup>().IsActive())
+                widget = Widget.Find<RankingBattleResultPopup>();
+                if (widget.IsActive())
                 {
                     showLoadingScreen = true;
-                    Widget.Find<RankingBattleResultPopup>().Close();
+                    widget.Close();
                 }
 
-                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen).Forget();
                 return;
             }
 

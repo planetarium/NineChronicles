@@ -211,7 +211,6 @@ namespace Nekoyume.State
             if (!avatarAddress.HasValue)
             {
                 // TODO!!!!
-                // 이 목록은 [`States.CurrentAvatarState`]가 `null`이어도 업데이트 한다.
                 // [`States.CurrentAvatarState`]가 바뀔 때, 목록에 추가 정보를 업데이트 한다.
                 return Array.Empty<ArenaParticipant>();
             }

@@ -336,7 +336,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
+            BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen);
         }
 
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
@@ -398,7 +398,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
+            BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen);
         }
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
@@ -565,7 +565,7 @@ namespace Nekoyume.Game
             }
         }
 
-        public static async UniTaskVoid BackToMain(bool showLoadingScreen, Exception exc)
+        public static async UniTaskVoid BackToMainAsync(Exception exc, bool showLoadingScreen = false)
         {
             Debug.LogException(exc);
 

@@ -82,7 +82,9 @@ namespace Nekoyume.BlockChain
                 Bencodex.Types.Dictionary serialized)
             {
                 var state = new StakeState(serialized);
-                var balance = evaluation.OutputStates.GetBalance(state.address, CrystalCalculator.CRYSTAL);
+                var balance = evaluation.OutputStates.GetBalance(
+                    state.address,
+                    ActionRenderHandler.Instance.GoldCurrency);
                 return (
                     state,
                     Game.TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
