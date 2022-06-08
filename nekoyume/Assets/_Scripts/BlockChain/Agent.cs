@@ -16,7 +16,6 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -426,22 +425,24 @@ namespace Nekoyume.BlockChain
                 Currency goldCurrency =
                     new GoldCurrencyState((Dictionary)await GetStateAsync(GoldCurrencyState.Address)).Currency;
                 await States.Instance.SetAgentStateAsync(
-                    await GetStateAsync(Address) is Bencodex.Types.Dictionary agentDict
+                    await GetStateAsync(Address) is Dictionary agentDict
                         ? new AgentState(agentDict)
                         : new AgentState(Address));
                 States.Instance.SetGoldBalanceState(new GoldBalanceState(Address,
                     await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
-                if (await GetStateAsync(StakeState.DeriveAddress(States.Instance.AgentState.address)) is Dictionary
-                    stakeDict)
+                if (await GetStateAsync(
+                        StakeState.DeriveAddress(States.Instance.AgentState.address))
+                    is Dictionary stakeDict)
                 {
                     var stakingState = new StakeState(stakeDict);
                     var level =
                         Game.TableSheets.Instance.StakeRegularRewardSheet
                             .FindLevelByStakedAmount(
                                 Address,
-                                await GetBalanceAsync(stakingState.address, CrystalCalculator.CRYSTAL));
+                                await GetBalanceAsync(stakingState.address,
+                                    goldCurrency));
                     States.Instance.SetStakeState(stakingState, level);
                 }
                 else
@@ -453,7 +454,13 @@ namespace Nekoyume.BlockChain
                     if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
                     {
                         var monsterCollectionState = new MonsterCollectionState(mcDict);
-                        States.Instance.SetMonsterCollectionState(monsterCollectionState);
+                        var level =
+                            Game.TableSheets.Instance.StakeRegularRewardSheet
+                                .FindLevelByStakedAmount(
+                                    Address,
+                                    await GetBalanceAsync(monsterCollectionAddress,
+                                        goldCurrency));
+                        States.Instance.SetMonsterCollectionState(monsterCollectionState, level);
                     }
                 }
 

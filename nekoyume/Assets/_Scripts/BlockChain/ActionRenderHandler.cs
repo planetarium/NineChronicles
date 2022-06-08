@@ -1163,7 +1163,6 @@ namespace Nekoyume.BlockChain
         {
             if (!(eval.Exception is null))
             {
-                Debug.LogException(eval.Exception);
                 return;
             }
 
@@ -1172,12 +1171,12 @@ namespace Nekoyume.BlockChain
                 L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
-            UpdateAgentStateAsync(eval);
-            UpdateCurrentAvatarStateAsync(eval);
-            var mcState = GetMonsterCollectionState(eval);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            var (mcState, level) = GetMonsterCollectionState(eval);
             if (mcState != null)
             {
-                UpdateMonsterCollectionState(mcState);
+                UpdateMonsterCollectionState(mcState, level);
             }
         }
 
@@ -1406,6 +1405,11 @@ namespace Nekoyume.BlockChain
             {
                 return;
             }
+
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
+                NotificationCell.NotificationType.Information);
 
             var (state, level) = GetStakeState(eval);
             if (state != null)

@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Debug = UnityEngine.Debug;
@@ -32,8 +29,6 @@ namespace Nekoyume.State
         public AgentState AgentState { get; private set; }
 
         public GoldBalanceState GoldBalanceState { get; private set; }
-
-        public MonsterCollectionState MonsterCollectionState { get; private set; }
 
         public StakeState StakeState { get; private set; }
 
@@ -131,7 +126,7 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextCrystal(CrystalBalance);
         }
 
-        public void SetMonsterCollectionState(MonsterCollectionState monsterCollectionState)
+        public void SetMonsterCollectionState(MonsterCollectionState monsterCollectionState, int level)
         {
             if (monsterCollectionState is null)
             {
@@ -140,8 +135,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            MonsterCollectionState = monsterCollectionState;
-            StakingLevel = monsterCollectionState.Level;
+            StakingLevel = level;
             MonsterCollectionStateSubject.OnNextLevel(StakingLevel);
         }
 
