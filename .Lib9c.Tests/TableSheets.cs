@@ -7,19 +7,6 @@ namespace Lib9c.Tests
 
     public class TableSheets
     {
-        public const string MockedStakeRegularRewardSheet = @"level,required_gold,item_id,rate
-0,0,0,0
-1,10,400000,10
-1,10,500000,200
-2,100,400000,8
-2,100,500000,200
-3,1000,400000,5
-3,1000,500000,180
-4,10000,400000,5
-4,10000,500000,180
-5,100000,400000,5
-5,100000,500000,160";
-
         public TableSheets(Dictionary<string, string> sheets)
         {
             foreach (var (key, value) in sheets)
