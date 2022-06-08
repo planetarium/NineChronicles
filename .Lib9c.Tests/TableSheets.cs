@@ -149,6 +149,8 @@ namespace Lib9c.Tests
 
         public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
 
+        public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
+
         public StakeAchievementRewardSheet StakeAchievementRewardSheet { get; private set; }
 
         public SweepRequiredCPSheet SweepRequiredCPSheet { get; private set; }
