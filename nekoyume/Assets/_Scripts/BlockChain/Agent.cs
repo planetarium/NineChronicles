@@ -437,13 +437,16 @@ namespace Nekoyume.BlockChain
                     is Dictionary stakeDict)
                 {
                     var stakingState = new StakeState(stakeDict);
+                    var balance = await GetBalanceAsync(stakingState.address,
+                        goldCurrency);
                     var level =
                         Game.TableSheets.Instance.StakeRegularRewardSheet
                             .FindLevelByStakedAmount(
                                 Address,
-                                await GetBalanceAsync(stakingState.address,
-                                    goldCurrency));
-                    States.Instance.SetStakeState(stakingState, level);
+                                balance);
+                    States.Instance.SetStakeState(stakingState,
+                        new GoldBalanceState(stakingState.address, balance),
+                        level);
                 }
                 else
                 {
@@ -454,13 +457,16 @@ namespace Nekoyume.BlockChain
                     if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
                     {
                         var monsterCollectionState = new MonsterCollectionState(mcDict);
+                        var balance = await GetBalanceAsync(monsterCollectionAddress,
+                            goldCurrency);
                         var level =
                             Game.TableSheets.Instance.StakeRegularRewardSheet
                                 .FindLevelByStakedAmount(
                                     Address,
-                                    await GetBalanceAsync(monsterCollectionAddress,
-                                        goldCurrency));
-                        States.Instance.SetMonsterCollectionState(monsterCollectionState, level);
+                                    balance);
+                        States.Instance.SetMonsterCollectionState(monsterCollectionState,
+                            new GoldBalanceState(monsterCollectionAddress, balance),
+                            level);
                     }
                 }
 

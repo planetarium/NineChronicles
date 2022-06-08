@@ -1173,10 +1173,12 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentStateAsync(eval).Forget();
             UpdateCurrentAvatarStateAsync(eval).Forget();
-            var (mcState, level) = GetMonsterCollectionState(eval);
+            var (mcState, level, balance) = GetMonsterCollectionState(eval);
             if (mcState != null)
             {
-                UpdateMonsterCollectionState(mcState, level);
+                UpdateMonsterCollectionState(mcState,
+                    new GoldBalanceState(mcState.address, balance),
+                    level);
             }
         }
 
@@ -1411,10 +1413,10 @@ namespace Nekoyume.BlockChain
                 L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
-            var (state, level) = GetStakeState(eval);
+            var (state, level, balance) = GetStakeState(eval);
             if (state != null)
             {
-                UpdateStakeState(state, level);
+                UpdateStakeState(state, new GoldBalanceState(state.address, balance), level);
             }
 
             UpdateAgentStateAsync(eval).Forget();

@@ -30,6 +30,8 @@ namespace Nekoyume.State
 
         public GoldBalanceState GoldBalanceState { get; private set; }
 
+        public GoldBalanceState StakedBalanceState { get; private set; }
+
         public StakeState StakeState { get; private set; }
 
         private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
@@ -126,7 +128,10 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextCrystal(CrystalBalance);
         }
 
-        public void SetMonsterCollectionState(MonsterCollectionState monsterCollectionState, int level)
+        public void SetMonsterCollectionState(
+            MonsterCollectionState monsterCollectionState,
+            GoldBalanceState stakedBalanceState,
+            int level)
         {
             if (monsterCollectionState is null)
             {
@@ -136,10 +141,11 @@ namespace Nekoyume.State
             }
 
             StakingLevel = level;
+            StakedBalanceState = stakedBalanceState;
             MonsterCollectionStateSubject.OnNextLevel(StakingLevel);
         }
 
-        public void SetStakeState(StakeState stakeState, int stakingLevel)
+        public void SetStakeState(StakeState stakeState, GoldBalanceState stakedBalanceState, int stakingLevel)
         {
             if (stakeState is null)
             {
@@ -148,6 +154,7 @@ namespace Nekoyume.State
             }
 
             StakeState = stakeState;
+            StakedBalanceState = stakedBalanceState;
             StakingLevel = stakingLevel;
             MonsterCollectionStateSubject.OnNextLevel(stakingLevel);
         }

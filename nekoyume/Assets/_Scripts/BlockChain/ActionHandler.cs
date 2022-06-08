@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
-        protected (MonsterCollectionState, int) GetMonsterCollectionState<T>(
+        protected (MonsterCollectionState, int, FungibleAssetValue) GetMonsterCollectionState<T>(
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -73,13 +73,13 @@ namespace Nekoyume.BlockChain
                 var level =
                     TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
                         agentAddress, balance);
-                return (new MonsterCollectionState(mcDict), level);
+                return (new MonsterCollectionState(mcDict), level, balance);
             }
 
-            return (null, 0);
+            return (null, 0, new FungibleAssetValue());
         }
 
-        protected (StakeState, int) GetStakeState<T>(
+        protected (StakeState, int, FungibleAssetValue) GetStakeState<T>(
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -95,10 +95,11 @@ namespace Nekoyume.BlockChain
                     state,
                     TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
                         agentAddress,
-                        balance));
+                        balance),
+                    balance);
             }
 
-            return (null, 0);
+            return (null, 0, new FungibleAssetValue());
         }
 
         protected async UniTask UpdateAgentStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -179,19 +180,25 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGameConfigState(state);
         }
 
-        protected static void UpdateMonsterCollectionState(MonsterCollectionState mcState, int level)
+        protected static void UpdateMonsterCollectionState(
+            MonsterCollectionState mcState,
+            GoldBalanceState stakedGoldBalance,
+            int level)
         {
             if (mcState is { })
             {
-                States.Instance.SetMonsterCollectionState(mcState, level);
+                States.Instance.SetMonsterCollectionState(mcState, stakedGoldBalance, level);
             }
         }
 
-        protected static void UpdateStakeState(StakeState state, int level)
+        protected static void UpdateStakeState(
+            StakeState state,
+            GoldBalanceState stakedBalanceState,
+            int level)
         {
             if (state is { })
             {
-                States.Instance.SetStakeState(state, level);
+                States.Instance.SetStakeState(state, stakedBalanceState, level);
             }
         }
 
