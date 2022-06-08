@@ -84,7 +84,7 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [ClassData(typeof(ExecuteFixture))]
-        public void Execute(int collectionLevel, long claimBlockIndex, long stakedAmount, (int ItemId, int Quantity)[] expectedItems)
+        public void Execute(int collectionLevel, long claimBlockIndex, long receivedBlockIndex, long stakedAmount, (int ItemId, int Quantity)[] expectedItems)
         {
             Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
             var monsterCollectionState = new MonsterCollectionState(collectionAddress, collectionLevel, 0);
@@ -112,7 +112,7 @@ namespace Lib9c.Tests.Action
                 0 * currency,
                 states.GetBalance(monsterCollectionState.address, currency));
             Assert.Equal(stakedAmount * currency, states.GetBalance(stakeState.address, currency));
-            Assert.Equal(claimBlockIndex, stakeState.ReceivedBlockIndex);
+            Assert.Equal(receivedBlockIndex, stakeState.ReceivedBlockIndex);
             Assert.Equal(monsterCollectionState.StartedBlockIndex, stakeState.StartedBlockIndex);
             Assert.True(
                 states.TryGetAvatarStateV2(
@@ -143,6 +143,7 @@ namespace Lib9c.Tests.Action
                 {
                     1,
                     MonsterCollectionState.RewardInterval,
+                    MonsterCollectionState.RewardInterval,
                     500,
                     new (int, int)[]
                     {
@@ -153,6 +154,7 @@ namespace Lib9c.Tests.Action
                 new object[]
                 {
                     2,
+                    MonsterCollectionState.RewardInterval,
                     MonsterCollectionState.RewardInterval,
                     2300,
                     new (int, int)[]
@@ -165,6 +167,7 @@ namespace Lib9c.Tests.Action
                 {
                     3,
                     MonsterCollectionState.RewardInterval,
+                    MonsterCollectionState.RewardInterval,
                     9500,
                     new (int, int)[]
                     {
@@ -175,6 +178,7 @@ namespace Lib9c.Tests.Action
                 new object[]
                 {
                     4,
+                    MonsterCollectionState.RewardInterval,
                     MonsterCollectionState.RewardInterval,
                     63500,
                     new (int, int)[]
@@ -187,6 +191,7 @@ namespace Lib9c.Tests.Action
                 {
                     5,
                     MonsterCollectionState.RewardInterval,
+                    MonsterCollectionState.RewardInterval,
                     333500,
                     new (int, int)[]
                     {
@@ -197,6 +202,7 @@ namespace Lib9c.Tests.Action
                 new object[]
                 {
                     6,
+                    MonsterCollectionState.RewardInterval,
                     MonsterCollectionState.RewardInterval,
                     813500,
                     new (int, int)[]
@@ -209,11 +215,24 @@ namespace Lib9c.Tests.Action
                 {
                     7,
                     MonsterCollectionState.RewardInterval,
+                    MonsterCollectionState.RewardInterval,
                     2313500,
                     new (int, int)[]
                     {
                         (400000, 350965),
                         (500000, 1121),
+                    },
+                },
+                new object[]
+                {
+                    7,
+                    MonsterCollectionState.RewardInterval - 1,
+                    0,  // Because it cannot claim rewards.
+                    2313500,
+                    new (int, int)[]
+                    {
+                        (400000, 0),
+                        (500000, 0),
                     },
                 },
             };
