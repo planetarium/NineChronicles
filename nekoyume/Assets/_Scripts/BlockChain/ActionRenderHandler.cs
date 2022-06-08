@@ -361,7 +361,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<JoinArena>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseJoinArena)
+                .Subscribe(ResponseJoinArenaAsync)
                 .AddTo(_disposables);
 
             _actionRenderer.EveryRender<BattleArena>()
@@ -1002,7 +1002,7 @@ namespace Nekoyume.BlockChain
                     Widget.Find<BattleResultPopup>().Close();
                 }
 
-                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen).Forget();
             }
         }
 
@@ -1026,7 +1026,7 @@ namespace Nekoyume.BlockChain
             else
             {
                 Widget.Find<SweepResultPopup>().Close();
-                Game.Game.BackToMain(false, eval.Exception.InnerException).Forget();
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
             }
         }
 
@@ -1106,7 +1106,7 @@ namespace Nekoyume.BlockChain
                     Widget.Find<BattleResultPopup>().Close();
                 }
 
-                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen).Forget();
             }
         }
 
@@ -1482,7 +1482,7 @@ namespace Nekoyume.BlockChain
         }
 #endif
 
-        private static void ResponseJoinArena(ActionBase.ActionEvaluation<JoinArena> eval)
+        private static async UniTaskVoid ResponseJoinArenaAsync(ActionBase.ActionEvaluation<JoinArena> eval)
         {
             if (eval.Exception != null ||
                 eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
@@ -1509,18 +1509,20 @@ namespace Nekoyume.BlockChain
             if (eval.Exception != null)
             {
                 var showLoadingScreen = false;
-                if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+                Widget widget = Widget.Find<ArenaBattleLoadingScreen>();
+                if (widget.IsActive())
                 {
-                    Widget.Find<ArenaBattleLoadingScreen>().Close();
+                    widget.Close();
                 }
 
-                if (Widget.Find<RankingBattleResultPopup>().IsActive())
+                widget = Widget.Find<RankingBattleResultPopup>();
+                if (widget.IsActive())
                 {
                     showLoadingScreen = true;
-                    Widget.Find<RankingBattleResultPopup>().Close();
+                    widget.Close();
                 }
 
-                Game.Game.BackToMain(showLoadingScreen, eval.Exception.InnerException).Forget();
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen).Forget();
                 return;
             }
 
