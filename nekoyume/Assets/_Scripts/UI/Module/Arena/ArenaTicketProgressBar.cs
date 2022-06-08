@@ -67,7 +67,7 @@ namespace Nekoyume.UI.Module.Arena
             _slider.normalizedValue = sliderNormalizedValue;
             _sliderText.text = L10nManager.Localize(
                 "UI_ABOUT",
-                Util.GetBlockToTime(progress),
+                Util.GetBlockToTime(range - progress),
                 progress,
                 range);
         }

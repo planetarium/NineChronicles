@@ -24,6 +24,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using mixpanel;
 using Nekoyume.Arena;
+using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Unity.Mathematics;
 
@@ -1491,11 +1492,26 @@ namespace Nekoyume.BlockChain
             }
 
             UpdateCrystalBalance(eval);
-            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
-            NotificationSystem.Push(
-                MailType.System,
-                "Congratulations! Now you registered the next season!",
-                NotificationCell.NotificationType.Notification);
+
+            var currentRound = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(
+                Game.Game.instance.Agent.BlockIndex);
+            if (eval.Action.championshipId == currentRound.ChampionshipId &&
+                eval.Action.round == currentRound.Round)
+            {
+                await UniTask.WhenAll(
+                    RxProps.ArenaInfoTuple.UpdateAsync(),
+                    RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync());
+            }
+            else
+            {
+                await RxProps.ArenaInfoTuple.UpdateAsync();
+            }
+
+            var arenaJoin = Widget.Find<ArenaJoin>();
+            if (arenaJoin && arenaJoin.IsActive())
+            {
+                arenaJoin.OnRenderJoinArena();
+            }
         }
 
         private void ResponseBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
