@@ -667,7 +667,7 @@
             Assert.Equal(action.PlainValue, deserialized.PlainValue);
         }
 
-        private (AvatarState avatarState, AgentState agentState) CreateAvatarState(
+        private (AvatarState AvatarState, AgentState AgentState) CreateAvatarState(
             Address agentAddress, Address avatarAddress)
         {
             var agentState = new AgentState(agentAddress);

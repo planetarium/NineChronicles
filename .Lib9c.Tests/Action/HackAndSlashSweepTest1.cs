@@ -13,7 +13,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class HackAndSlashSweepTest1
     {
@@ -146,7 +146,7 @@ namespace Lib9c.Tests.Action
                 var itemPlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
                     _tableSheets.CharacterLevelSheet,
                     stageId,
                     playCount);
@@ -432,7 +432,7 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * useApStoneCount;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
                     _tableSheets.CharacterLevelSheet,
                     25,
                     playCount);
@@ -501,7 +501,7 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * 1;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
                     _tableSheets.CharacterLevelSheet,
                     25,
                     playCount);

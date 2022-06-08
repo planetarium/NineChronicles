@@ -16,11 +16,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/921
-    /// Updated at https://github.com/planetarium/lib9c/pull/963
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/967
+    /// Updated at https://github.com/planetarium/lib9c/pull/992
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash13")]
+    [ActionType("hack_and_slash14")]
     public class HackAndSlash : GameAction
     {
         public List<Guid> costumes;
@@ -72,6 +72,28 @@ namespace Nekoyume.Action
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
+
+            if (worldId > 1)
+            {
+                if (worldId == GameConfig.MimisbrunnrWorldId)
+                {
+                    throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
+                }
+
+                var unlockedWorldIdsAddress = avatarAddress.Derive("world_ids");
+
+                // Unlock First.
+                if (!states.TryGetState(unlockedWorldIdsAddress, out List rawIds))
+                {
+                    throw new InvalidWorldException();
+                }
+
+                List<int> unlockedWorldIds = rawIds.ToList(StateExtensions.ToInteger);
+                if (!unlockedWorldIds.Contains(worldId))
+                {
+                    throw new InvalidWorldException();
+                }
+            }
 
             var sw = new Stopwatch();
             sw.Start();
@@ -155,11 +177,6 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
                     $"cleared stage: {world.StageClearedId}"
                 );
-            }
-
-            if (worldId == GameConfig.MimisbrunnrWorldId)
-            {
-                throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
             }
 
             sw.Stop();

@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class BuyTest
     {
@@ -933,7 +933,7 @@ namespace Lib9c.Tests.Action
             }
         }
 
-        private (AvatarState avatarState, AgentState agentState) CreateAvatarState(
+        private (AvatarState AvatarState, AgentState AgentState) CreateAvatarState(
             Address agentAddress, Address avatarAddress)
         {
             var agentState = new AgentState(agentAddress);

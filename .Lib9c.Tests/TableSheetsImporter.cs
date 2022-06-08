@@ -5,14 +5,10 @@ namespace Lib9c.Tests
 
     public static class TableSheetsImporter
     {
-        public static Dictionary<string, string> ImportSheets(string dir = null)
+        public static Dictionary<string, string> ImportSheets(string path = null)
         {
-            dir ??= Path
-                .GetFullPath($"..{Path.DirectorySeparatorChar}")
-                .Replace(
-                    $".Lib9c.Tests{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}",
-                    $"Lib9c{Path.DirectorySeparatorChar}TableCSV{Path.DirectorySeparatorChar}");
-            var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
+            path ??= GetDefaultPath();
+            var files = Directory.GetFiles(path, "*.csv", SearchOption.AllDirectories);
             var sheets = new Dictionary<string, string>();
             foreach (var filePath in files)
             {
@@ -27,5 +23,34 @@ namespace Lib9c.Tests
 
             return sheets;
         }
+
+        public static bool TryGetCsv(string sheetName, out string csv)
+        {
+            var path = GetDefaultPath();
+            var filePaths = Directory.GetFiles(path, "*.csv", SearchOption.AllDirectories);
+            foreach (var filePath in filePaths)
+            {
+                var fileName = Path.GetFileName(filePath);
+                if (fileName.EndsWith(".csv"))
+                {
+                    fileName = fileName.Split(".csv")[0];
+                }
+
+                if (fileName.Equals(sheetName))
+                {
+                    csv = File.ReadAllText(filePath);
+                    return true;
+                }
+            }
+
+            csv = string.Empty;
+            return false;
+        }
+
+        private static string GetDefaultPath() => Path
+            .GetFullPath($"..{Path.DirectorySeparatorChar}")
+            .Replace(
+                $".Lib9c.Tests{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}",
+                $"Lib9c{Path.DirectorySeparatorChar}TableCSV{Path.DirectorySeparatorChar}");
     }
 }
