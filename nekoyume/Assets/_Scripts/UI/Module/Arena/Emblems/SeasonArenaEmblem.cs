@@ -5,14 +5,11 @@ namespace Nekoyume.UI.Module.Arena.Emblems
 {
     public class SeasonArenaEmblem : MonoBehaviour
     {
-        [SerializeField]
-        private GameObject _normal;
+        [SerializeField] private GameObject _normal;
 
-        [SerializeField]
-        private GameObject _disable;
+        [SerializeField] private GameObject _disable;
 
-        [SerializeField]
-        private TextMeshProUGUI[] _seasonNumbers;
+        [SerializeField] private TextMeshProUGUI[] _seasonNumbers;
 
         public void Show(int seasonNumber, bool isNormal)
         {

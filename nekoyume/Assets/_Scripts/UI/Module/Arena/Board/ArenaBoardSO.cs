@@ -11,39 +11,32 @@ namespace Nekoyume.UI.Module.Arena.Board
     [Serializable]
     public class ArenaBoardSO : ScriptableObject
     {
-        [SerializeField]
-        private List<ArenaBoardPlayerItemData> _arenaBoardPlayerScrollData;
+        [SerializeField] private List<ArenaBoardPlayerItemData> _arenaBoardPlayerScrollData;
 
-        public IList<ArenaBoardPlayerItemData> ArenaBoardPlayerScrollData =>
+        public List<ArenaBoardPlayerItemData> ArenaBoardPlayerScrollData =>
             _arenaBoardPlayerScrollData;
 
-        [SerializeField]
-        private string _seasonText;
+        [SerializeField] private string _seasonText;
 
         public string SeasonText => _seasonText;
-        
-        [SerializeField]
-        private int _rank;
+
+        [SerializeField] private int _rank;
 
         public int Rank => _rank;
 
-        [SerializeField]
-        private int _winCount;
+        [SerializeField] private int _winCount;
 
         public int WinCount => _winCount;
 
-        [SerializeField]
-        private int _loseCount;
+        [SerializeField] private int _loseCount;
 
         public int LoseCount => _loseCount;
 
-        [SerializeField]
-        private int _cp;
+        [SerializeField] private int _cp;
 
         public int CP => _cp;
 
-        [SerializeField]
-        private int _rating;
+        [SerializeField] private int _rating;
 
         public int Rating => _rating;
 
@@ -54,51 +47,79 @@ namespace Nekoyume.UI.Module.Arena.Board
                 new ArenaBoardPlayerItemData
                 {
                     name = "Alpha",
-                    cp = "999,999",
-                    rating = "999,999",
-                    plusRating = "999",
+                    level = 99,
+                    armorId = GameConfig.DefaultAvatarArmorId,
+                    titleId = null,
+                    cp = 999_999,
+                    score = 999_999,
+                    expectWinDeltaScore = 999,
+                    interactableChoiceButton = true,
                 },
                 new ArenaBoardPlayerItemData
                 {
                     name = "Bravo",
-                    cp = "999,998",
-                    rating = "999,998",
-                    plusRating = "998",
+                    level = 99,
+                    armorId = GameConfig.DefaultAvatarArmorId,
+                    titleId = null,
+                    cp = 999_998,
+                    score = 999_998,
+                    expectWinDeltaScore = 998,
+                    interactableChoiceButton = true,
                 },
                 new ArenaBoardPlayerItemData
                 {
                     name = "Charlie",
-                    cp = "999,997",
-                    rating = "999,997",
-                    plusRating = "997",
+                    level = 99,
+                    armorId = GameConfig.DefaultAvatarArmorId,
+                    titleId = null,
+                    cp = 999_997,
+                    score = 999_997,
+                    expectWinDeltaScore = 997,
+                    interactableChoiceButton = true,
                 },
                 new ArenaBoardPlayerItemData
                 {
                     name = "Delta",
-                    cp = "999,996",
-                    rating = "999,996",
-                    plusRating = "996",
+                    level = 99,
+                    armorId = GameConfig.DefaultAvatarArmorId,
+                    titleId = null,
+                    cp = 999_996,
+                    score = 999_996,
+                    expectWinDeltaScore = 996,
+                    interactableChoiceButton = true,
                 },
                 new ArenaBoardPlayerItemData
                 {
                     name = "Echo",
-                    cp = "999,995",
-                    rating = "999,995",
-                    plusRating = "995",
+                    level = 99,
+                    armorId = GameConfig.DefaultAvatarArmorId,
+                    titleId = null,
+                    cp = 999_995,
+                    score = 999_995,
+                    expectWinDeltaScore = 995,
+                    interactableChoiceButton = true,
                 },
                 new ArenaBoardPlayerItemData
                 {
                     name = "Foxtrot",
-                    cp = "999,994",
-                    rating = "999,994",
-                    plusRating = "994",
+                    level = 99,
+                    armorId = GameConfig.DefaultAvatarArmorId,
+                    titleId = null,
+                    cp = 999_994,
+                    score = 999_994,
+                    expectWinDeltaScore = 994,
+                    interactableChoiceButton = true,
                 },
                 new ArenaBoardPlayerItemData
                 {
                     name = "Golf",
-                    cp = "999,993",
-                    rating = "999,993",
-                    plusRating = "993",
+                    level = 99,
+                    armorId = GameConfig.DefaultAvatarArmorId,
+                    titleId = null,
+                    cp = 999_993,
+                    score = 999_993,
+                    expectWinDeltaScore = 993,
+                    interactableChoiceButton = true,
                 },
             };
 

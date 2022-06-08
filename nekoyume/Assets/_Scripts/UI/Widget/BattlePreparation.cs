@@ -126,8 +126,7 @@ namespace Nekoyume.UI
         private bool EnoughToPlay =>
             States.Instance.CurrentAvatarState.actionPoint >= _requiredCost;
 
-        private bool IsStageCleared =>
-            States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value);
+        private bool IsFirstStage => _stageId.Value == 1;
 
         #region override
 
@@ -183,17 +182,8 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             sweepPopupButton.OnClickAsObservable()
-                .Where(_ => IsStageCleared)
+                .Where(_ => !IsFirstStage)
                 .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId.Value));
-
-            sweepPopupButton.OnClickAsObservable().Where(_ => !IsStageCleared)
-                .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ =>
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_SWEEP_UNLOCK_CONDITION"),
-                        NotificationCell.NotificationType.Alert))
-                .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
                 .Where(_ => EnoughToPlay && !_stage.IsInStage)
@@ -875,7 +865,7 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                     boostPopupButton.gameObject.SetActive(false);
-                    sweepPopupButton.gameObject.SetActive(avatarState.worldInformation.IsStageCleared(_stageId.Value));
+                    sweepPopupButton.gameObject.SetActive(!IsFirstStage);
                     break;
                 case StageType.Mimisbrunnr:
                     boostPopupButton.gameObject.SetActive(canBattle);

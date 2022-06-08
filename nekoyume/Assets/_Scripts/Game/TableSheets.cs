@@ -24,7 +24,7 @@ namespace Nekoyume.Game
                 }
 
                 var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
-                var iSheet = (ISheet) sheetObject;
+                var iSheet = (ISheet)sheetObject;
                 if (iSheet is null)
                 {
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
@@ -149,6 +149,8 @@ namespace Nekoyume.Game
 
         public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
 
+        public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
@@ -213,6 +215,21 @@ namespace Nekoyume.Game
                 QuestItemRewardSheet,
                 EquipmentItemRecipeSheet,
                 EquipmentItemSubRecipeSheet
+            );
+        }
+
+        public ArenaSimulatorSheets GetArenaSimulatorSheets()
+        {
+            return new ArenaSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                CostumeStatSheet,
+                WeeklyArenaRewardSheet
             );
         }
     }

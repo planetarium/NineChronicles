@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Amazon.CloudWatchLogs.Model;
 using Nekoyume.Arena;
 using Nekoyume.Model.EnumType;
@@ -27,7 +28,7 @@ namespace Nekoyume
                 return false;
             }
         }
-        
+
         public static bool TryGetNextRound(
             this ArenaSheet sheet,
             long blockIndex,
@@ -67,8 +68,26 @@ namespace Nekoyume
             int round,
             out int seasonNumber)
         {
-            seasonNumber = 0;
-            foreach (var roundData in roundDataEnumerable)
+            var roundDataArray = roundDataEnumerable as ArenaSheet.RoundData[]
+                                 ?? roundDataEnumerable.ToArray();
+            var firstRound = roundDataArray.FirstOrDefault();
+            if (firstRound is null)
+            {
+                seasonNumber = 0;
+                return false;
+            }
+
+            var championshipId = firstRound.ChampionshipId;
+            if (roundDataArray.Any(e => e.ChampionshipId != championshipId))
+            {
+                seasonNumber = 0;
+                return false;
+            }
+
+            // NOTE: The championship cycles once over four times.
+            // And each championship includes three seasons.
+            seasonNumber = (championshipId % 4 - 1) * 3;
+            foreach (var roundData in roundDataArray)
             {
                 if (roundData.ArenaType == ArenaType.Season)
                 {
@@ -84,7 +103,7 @@ namespace Nekoyume
             return false;
         }
 
-        public static bool TryGetMedalItemId(
+        public static bool TryGetMedalItemResourceId(
             this ArenaSheet.RoundData roundData,
             out int medalItemId)
         {
@@ -94,7 +113,9 @@ namespace Nekoyume
                 return false;
             }
 
-            medalItemId = ArenaHelper.GetMedalItemId(roundData.ChampionshipId, roundData.Round);
+            // NOTE: The name of the medal item resource is
+            // prepared only for championship id 1.
+            medalItemId = ArenaHelper.GetMedalItemId(1, roundData.Round);
             return true;
         }
 
@@ -104,5 +125,15 @@ namespace Nekoyume
             roundData?.StartBlockIndex ?? 0,
             roundData?.EndBlockIndex ?? 0,
             blockIndex);
+
+        public static int GetChampionshipYear(this ArenaSheet.Row row)
+        {
+            // row.ChampionshipId
+            // 1, 2: 2022
+            // 3, 4, 5, 6: 2023
+            // 7, 8, 9, 10: 2024
+            // ...
+            return (row.ChampionshipId - 1) / 4 + 2022;
+        }
     }
 }

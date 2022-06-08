@@ -18,23 +18,17 @@ namespace Nekoyume.UI.Module.Arena.Join
 
     public class ArenaJoinEarlyRegisterButton : MonoBehaviour
     {
-        [SerializeField]
-        private SeasonArenaEmblem _seasonArenaEmblem;
+        [SerializeField] private SeasonArenaEmblem _seasonArenaEmblem;
 
-        [SerializeField]
-        private ChampionshipArenaEmblem _championshipArenaEmblem;
+        [SerializeField] private ChampionshipArenaEmblem _championshipArenaEmblem;
 
-        [SerializeField]
-        private GameObject _paymentObject;
+        [SerializeField] private GameObject _paymentObject;
 
-        [SerializeField]
-        private TextMeshProUGUI _costText;
+        [SerializeField] private TextMeshProUGUI _costText;
 
-        [SerializeField]
-        private GameObject _completedObject;
+        [SerializeField] private GameObject _completedObject;
 
-        [SerializeField]
-        private Button _button;
+        [SerializeField] private Button _button;
 
         private int _championshipId;
         private int _round;
@@ -71,6 +65,8 @@ namespace Nekoyume.UI.Module.Arena.Join
                     .DoOnError(e =>
                     {
                         Widget.Find<LoadingScreen>().Close();
+                        Widget.Find<HeaderMenuStatic>()
+                            .Show(HeaderMenuStatic.AssetVisibleState.Arena);
                         NotificationSystem.Push(
                             MailType.System,
                             "Failed to early register to next round.",

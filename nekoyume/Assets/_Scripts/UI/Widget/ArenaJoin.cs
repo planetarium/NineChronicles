@@ -8,7 +8,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Join;
 using Nekoyume.UI.Scroller;
@@ -24,7 +23,7 @@ namespace Nekoyume.UI
     {
         private const int BarScrollCellCount = 8;
         private static readonly int BarScrollIndexOffset = (int)math.ceil(BarScrollCellCount / 2f) - 1;
-        
+
 #if UNITY_EDITOR
         [SerializeField]
         private bool _useSo;
@@ -33,26 +32,19 @@ namespace Nekoyume.UI
         private ArenaJoinSO _so;
 #endif
 
-        [SerializeField]
-        private ArenaJoinSeasonScroll _scroll;
+        [SerializeField] private ArenaJoinSeasonScroll _scroll;
 
-        [SerializeField]
-        private ArenaJoinSeasonBarScroll _barScroll;
+        [SerializeField] private ArenaJoinSeasonBarScroll _barScroll;
 
-        [SerializeField]
-        private ArenaJoinSeasonInfo _info;
+        [SerializeField] private ArenaJoinSeasonInfo _info;
 
-        [SerializeField]
-        private ConditionalButton _joinButton;
+        [SerializeField] private ConditionalButton _joinButton;
 
-        [SerializeField]
-        private ConditionalCostButton _paymentButton;
+        [SerializeField] private ConditionalCostButton _paymentButton;
 
-        [SerializeField]
-        private ArenaJoinEarlyRegisterButton _earlyPaymentButton;
+        [SerializeField] private ArenaJoinEarlyRegisterButton _earlyPaymentButton;
 
-        [SerializeField]
-        private Button _backButton;
+        [SerializeField] private Button _backButton;
 
         private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
 
@@ -82,6 +74,7 @@ namespace Nekoyume.UI
             UpdateScrolls();
             UpdateInfo();
 
+            // TODO!!!! 크리스탈 업데이트 확인해서 하단 버튼들을 업데이트 한다.
             // NOTE: RxProp invoke on next callback when subscribe function invoked.
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())
@@ -165,7 +158,9 @@ namespace Nekoyume.UI
                     .Select(roundData => new ArenaJoinSeasonItemData
                     {
                         RoundData = roundData,
-                        SeasonNumber = row.TryGetSeasonNumber(roundData.Round, out var seasonNumber)
+                        SeasonNumber = row.TryGetSeasonNumber(
+                            roundData.Round,
+                            out var seasonNumber)
                             ? seasonNumber
                             : (int?)null,
                     }).ToList();
@@ -195,7 +190,7 @@ namespace Nekoyume.UI
                 selectedRoundData,
                 GetConditions(),
                 GetRewardType(_scroll.SelectedItemData),
-                selectedRoundData.TryGetMedalItemId(out var medalItemId)
+                selectedRoundData.TryGetMedalItemResourceId(out var medalItemId)
                     ? medalItemId
                     : (int?)null);
         }
@@ -211,10 +206,10 @@ namespace Nekoyume.UI
             _joinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
+                Close();
                 Find<ArenaBoard>()
                     .ShowAsync(_scroll.SelectedItemData.RoundData)
                     .Forget();
-                Close();
             }).AddTo(gameObject);
             _paymentButton.OnClickSubject.Subscribe(_ =>
             {
@@ -236,6 +231,8 @@ namespace Nekoyume.UI
                     .DoOnError(e =>
                     {
                         Find<LoadingScreen>().Close();
+                        Find<HeaderMenuStatic>()
+                            .Show(HeaderMenuStatic.AssetVisibleState.Arena);
                         NotificationSystem.Push(
                             MailType.System,
                             $"Failed to payment. {e}",
@@ -252,7 +249,7 @@ namespace Nekoyume.UI
                     .Subscribe();
             }).AddTo(gameObject);
         }
-        
+
         private void UpdateBottomButtons()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -262,7 +259,7 @@ namespace Nekoyume.UI
             {
                 case ArenaType.OffSeason:
                 {
-                    if (isOpened&&
+                    if (isOpened &&
                         TableSheets.Instance.ArenaSheet.TryGetNextRound(
                             blockIndex,
                             out var next))
@@ -289,7 +286,7 @@ namespace Nekoyume.UI
                 case ArenaType.Championship:
                 {
                     _earlyPaymentButton.Hide();
-                    
+
                     if (isOpened)
                     {
                         if (RxProps.ArenaInfoTuple.Value.current is null)
@@ -314,6 +311,7 @@ namespace Nekoyume.UI
                         _joinButton.gameObject.SetActive(true);
                         _paymentButton.gameObject.SetActive(false);
                     }
+
                     break;
                 }
                 default:

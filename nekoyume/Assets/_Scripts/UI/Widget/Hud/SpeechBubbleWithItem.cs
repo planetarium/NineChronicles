@@ -15,14 +15,11 @@ namespace Nekoyume.UI
             public TMP_Text amountText;
         }
 
-        [SerializeField]
-        private SimpleItemView itemView = null;
+        [SerializeField] private SimpleItemView itemView = null;
 
-        [SerializeField]
-        private CurrencyView ncgView;
+        [SerializeField] private CurrencyView ncgView;
 
-        [SerializeField]
-        private CurrencyView crystalView;
+        [SerializeField] private CurrencyView crystalView;
 
         private bool _showItemView;
         private bool _showNCGView;
@@ -41,7 +38,7 @@ namespace Nekoyume.UI
             _showCrystalView = false;
         }
 
-        public void SetCurrency(int ncg, int crystal)
+        public void SetCurrency(long ncg, long crystal)
         {
             Item = null;
             var hasNCG = ncg > 0;
@@ -51,6 +48,7 @@ namespace Nekoyume.UI
             {
                 ncgView.amountText.text = ncg.ToString();
             }
+
             if (hasCrystal)
             {
                 crystalView.amountText.text = crystal.ToString();
@@ -78,6 +76,7 @@ namespace Nekoyume.UI
             {
                 itemView.Show();
             }
+
             ncgView.view.SetActive(_showNCGView);
             crystalView.view.SetActive(_showCrystalView);
         }

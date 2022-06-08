@@ -11,11 +11,9 @@ namespace Nekoyume.UI.Module.Arena.Join
     public class ArenaJoinSeasonScroll :
         FancyScrollView<ArenaJoinSeasonItemData, ArenaJoinSeasonScrollContext>
     {
-        [SerializeField]
-        private UnityEngine.UI.Extensions.Scroller _scroller;
+        [SerializeField] private UnityEngine.UI.Extensions.Scroller _scroller;
 
-        [SerializeField]
-        private GameObject _cellPrefab;
+        [SerializeField] private GameObject _cellPrefab;
 
         protected override GameObject CellPrefab => _cellPrefab;
 
@@ -31,6 +29,10 @@ namespace Nekoyume.UI.Module.Arena.Join
             _data = data;
             UpdateContents(_data);
             _scroller.SetTotalCount(_data.Count);
+            if (_data.Count == 0)
+            {
+                return;
+            }
 
             if (index.HasValue)
             {
@@ -79,7 +81,7 @@ namespace Nekoyume.UI.Module.Arena.Join
 
             if (invokeEvents)
             {
-                _onSelectionChanged.OnNext(Context.SelectedIndex);   
+                _onSelectionChanged.OnNext(Context.SelectedIndex);
             }
         }
     }
