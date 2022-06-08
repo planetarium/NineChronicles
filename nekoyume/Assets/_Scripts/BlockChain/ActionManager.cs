@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Tx;
@@ -117,8 +118,13 @@ namespace Nekoyume.BlockChain
 
         #region Actions
 
-        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(int index,
-            string nickName, int hair = 0, int lens = 0, int ear = 0, int tail = 0)
+        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(
+            int index,
+            string nickName,
+            int hair = 0,
+            int lens = 0,
+            int ear = 0,
+            int tail = 0)
         {
             if (States.Instance.AvatarStates.ContainsKey(index))
             {
@@ -146,18 +152,6 @@ namespace Nekoyume.BlockChain
                 {
                     Game.Game.instance.BackToNest();
                     throw HandleException(action.Id, e);
-                })
-                .Finally(() =>
-                {
-                    var agentAddress = States.Instance.AgentState.address;
-                    var avatarAddress = agentAddress.Derive(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            CreateAvatar2.DeriveFormat,
-                            index
-                        )
-                    );
-                    DialogPopup.DeleteDialogPlayerPrefs(avatarAddress);
                 });
         }
 
@@ -466,7 +460,9 @@ namespace Nekoyume.BlockChain
             var buyerAgentAddress = States.Instance.AgentState.address;
             foreach (var purchaseInfo in purchaseInfos)
             {
-                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -purchaseInfo.Price);
+                LocalLayerModifier
+                    .ModifyAgentGoldAsync(buyerAgentAddress, -purchaseInfo.Price)
+                    .Forget();
             }
 
             var action = new Buy
@@ -869,8 +865,11 @@ namespace Nekoyume.BlockChain
             List<int> recipeIdList,
             BigInteger openCost)
         {
-            LocalLayerModifier.ModifyAgentCrystal(
-                States.Instance.AgentState.address, -openCost);
+            LocalLayerModifier
+                .ModifyAgentCrystalAsync(
+                    States.Instance.AgentState.address,
+                    -openCost)
+                .Forget();
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = new UnlockEquipmentRecipe

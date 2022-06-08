@@ -331,7 +331,8 @@ namespace Nekoyume.Game
                 return;
             }
 
-            BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen);
+            BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen)
+                .Forget();
         }
 
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
