@@ -1288,7 +1288,6 @@ namespace Nekoyume.BlockChain
 
         private void ResponseGrinding(ActionBase.ActionEvaluation<Grinding> eval)
         {
-            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
             if (!(eval.Exception is null))
             {
                 return;

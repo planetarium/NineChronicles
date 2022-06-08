@@ -399,7 +399,9 @@ namespace Nekoyume.UI.Module
         {
             StartCoroutine(CoCombineNPCAnimation(_cachedGrindingRewardCrystal.MajorUnit));
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
-            ActionManager.Instance.Grinding(equipments, chargeAp).Subscribe();
+            ActionManager.Instance
+                .Grinding(equipments, chargeAp)
+                .Subscribe(_ => Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false));
             _selectedItemsForGrind.Clear();
             if (animator)
             {
