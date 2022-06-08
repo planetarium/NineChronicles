@@ -12,12 +12,15 @@ namespace Nekoyume.TableData.Crystal
             public override int Key => StageId;
             public int StageId;
             public int MaxStar;
-            public int CRYSTAL;
+            public int NormalCost;
+            public int AdvancedCost;
+
             public override void Set(IReadOnlyList<string> fields)
             {
                 StageId = ParseInt(fields[0]);
                 MaxStar = ParseInt(fields[1]);
-                CRYSTAL = ParseInt(fields[2]);
+                NormalCost = ParseInt(fields[2]);
+                AdvancedCost = ParseInt(fields[3]);
             }
         }
 
