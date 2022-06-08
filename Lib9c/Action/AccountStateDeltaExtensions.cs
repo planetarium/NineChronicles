@@ -508,6 +508,20 @@ namespace Nekoyume.Action
             }
         }
 
+        public static bool TryGetSheet<T>(this IAccountStateDelta states, out T sheet) where T : ISheet, new()
+        {
+            try
+            {
+                sheet = states.GetSheet<T>();
+                return true;
+            }
+            catch (Exception)
+            {
+                sheet = default;
+                return false;
+            }
+        }
+
         public static Dictionary<Type, (Address address, ISheet sheet)> GetSheets(
             this IAccountStateDelta states,
             bool containAvatarSheets = false,

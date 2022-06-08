@@ -209,6 +209,7 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<WeeklyArenaRewardSheet>()
             );
         }
+
         public static int FindLevelByStakedAmount(this IStakeRewardSheet sheet, Address agentAddress,
             FungibleAssetValue balance)
         {
@@ -234,6 +235,5 @@ namespace Nekoyume.Extensions
             // Return maximum level when balance > maximum RequiredGold
             return orderedRows.Last().Level;
         }
-
     }
 }
