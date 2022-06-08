@@ -62,6 +62,30 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Execute_Throws_WhenThereIsMonsterCollection()
+        {
+            Address monsterCollectionAddress =
+                MonsterCollectionState.DeriveAddress(_signerAddress, 0);
+            var agentState = new AgentState(_signerAddress)
+            {
+                avatarAddresses = { [0] = new PrivateKey().ToAddress(), },
+            };
+            var states = _initialState
+                .SetState(_signerAddress, agentState.Serialize())
+                .SetState(
+                    monsterCollectionAddress,
+                    new MonsterCollectionState(monsterCollectionAddress, 1, 0).SerializeV2());
+            var action = new Stake(200);
+            Assert.Throws<MonsterCollectionExistingException>(() =>
+                action.Execute(new ActionContext
+                {
+                    PreviousStates = states,
+                    Signer = _signerAddress,
+                    BlockIndex = 100,
+                }));
+        }
+
+        [Fact]
         public void Execute_Throws_WhenCancelOrUpdateWhileLockup()
         {
             var action = new Stake(50);

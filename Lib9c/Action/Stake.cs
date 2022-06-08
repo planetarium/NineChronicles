@@ -1,7 +1,9 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Model.State;
@@ -38,6 +40,15 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
+
+            // Restrict staking if there is a monster collection until now.
+            if (states.GetAgentState(context.Signer) is { } agentState &&
+                states.TryGetState(MonsterCollectionState.DeriveAddress(
+                    context.Signer,
+                    agentState.MonsterCollectionRound), out Dictionary _))
+            {
+                throw new MonsterCollectionExistingException();
+            }
 
             if (context.Rehearsal)
             {
