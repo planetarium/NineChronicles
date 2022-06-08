@@ -158,7 +158,9 @@ namespace Nekoyume.UI
                     .Select(roundData => new ArenaJoinSeasonItemData
                     {
                         RoundData = roundData,
-                        SeasonNumber = row.TryGetSeasonNumber(roundData.Round, out var seasonNumber)
+                        SeasonNumber = row.TryGetSeasonNumber(
+                            roundData.Round,
+                            out var seasonNumber)
                             ? seasonNumber
                             : (int?)null,
                     }).ToList();
@@ -188,7 +190,7 @@ namespace Nekoyume.UI
                 selectedRoundData,
                 GetConditions(),
                 GetRewardType(_scroll.SelectedItemData),
-                selectedRoundData.TryGetMedalItemId(out var medalItemId)
+                selectedRoundData.TryGetMedalItemResourceId(out var medalItemId)
                     ? medalItemId
                     : (int?)null);
         }
