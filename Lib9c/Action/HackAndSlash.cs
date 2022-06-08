@@ -246,8 +246,7 @@ namespace Nekoyume.Action
             var buffSkillsOnWaveStart = new List<Model.Skill.BuffSkill>();
             var crystalRandomBuffSheet = sheets.GetSheet<CrystalRandomBuffSheet>();
             var skillSheet = sheets.GetSheet<SkillSheet>();
-            if (stageBuffId.HasValue &&
-                !worldInformation.IsStageCleared(stageId))
+            if (!worldInformation.IsStageCleared(stageId))
             {
                 if (states.TryGetState<List>(buffStateAddress, out var serialized))
                 {
@@ -263,7 +262,7 @@ namespace Nekoyume.Action
 
                 if (buffState.BuffIds.Any())
                 {
-                    if (!buffState.BuffIds.Contains(stageBuffId.Value))
+                    if (!stageBuffId.HasValue || !buffState.BuffIds.Contains(stageBuffId.Value))
                     {
                         stageBuffId = buffState.BuffIds
                             .OrderBy(id => crystalRandomBuffSheet[id].Rank)
