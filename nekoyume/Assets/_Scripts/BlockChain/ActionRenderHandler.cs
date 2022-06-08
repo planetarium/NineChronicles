@@ -1546,7 +1546,7 @@ namespace Nekoyume.BlockChain
             var arenaJoin = Widget.Find<ArenaJoin>();
             if (arenaJoin && arenaJoin.IsActive())
             {
-                arenaJoin.OnRenderJoinArena();
+                arenaJoin.OnRenderJoinArena(eval);
             }
         }
 
