@@ -91,6 +91,21 @@ namespace Nekoyume.BlockChain
             return (null, 0);
         }
 
+        protected static HackAndSlashBuffState GetHackAndSlashBuffState<T>(
+            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var buffStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(avatarAddress);
+            if (evaluation.OutputStates.GetState(buffStateAddress) is
+                Bencodex.Types.List serialized)
+            {
+                var state = new HackAndSlashBuffState(buffStateAddress, serialized);
+                return state;
+            }
+
+            return null;
+        }
+
         protected async UniTask UpdateAgentStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
@@ -181,6 +196,17 @@ namespace Nekoyume.BlockChain
             if (state is { })
             {
                 States.Instance.SetStakeState(state, level);
+            }
+        }
+
+        protected static void UpdateHackAndSlashBuffState<T>(
+            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var state = GetHackAndSlashBuffState(evaluation);
+
+            if (state is { })
+            {
+                States.Instance.SetHackAndSlashBuffState(state);
             }
         }
 

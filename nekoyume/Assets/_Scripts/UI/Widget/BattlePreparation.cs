@@ -66,6 +66,9 @@ namespace Nekoyume.UI
         private ConditionalCostButton startButton;
 
         [SerializeField]
+        private RandomBuffButton randomBuffButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -258,6 +261,7 @@ namespace Nekoyume.UI
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
             ShowHelpTooltip(stageType);
+            randomBuffButton.SetData(States.Instance.HackAndSlashBuffState, stageId);
             ReactiveAvatarState.ActionPoint.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
             ReactiveAvatarState.Inventory.Subscribe(_ =>
             {

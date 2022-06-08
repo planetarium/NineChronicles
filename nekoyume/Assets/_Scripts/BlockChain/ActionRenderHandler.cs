@@ -946,6 +946,7 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
                                 UpdateWeeklyArenaState(eval);
+                                UpdateHackAndSlashBuffState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -959,10 +960,15 @@ namespace Nekoyume.BlockChain
                         });
 
                 var tableSheets = Game.Game.instance.TableSheets;
-                var buffRow = tableSheets.CrystalRandomBuffSheet[eval.Action.stageBuffId.Value];
-                var skillRow = tableSheets.SkillSheet[buffRow.SkillId];
-                var skill = new Model.Skill.BuffSkill(skillRow, 0, 100);
-                var skillsOnWaveStart = new List<Model.Skill.BuffSkill>() { skill };
+
+                var skillsOnWaveStart = new List<Model.Skill.BuffSkill>();
+                if (eval.Action.stageBuffId.HasValue)
+                {
+                    var buffRow = tableSheets.CrystalRandomBuffSheet[eval.Action.stageBuffId.Value];
+                    var skillRow = tableSheets.SkillSheet[buffRow.SkillId];
+                    var skill = new Model.Skill.BuffSkill(skillRow, 0, 100);
+                    skillsOnWaveStart.Add(skill);
+                }
 
                 var simulator = new StageSimulator(
                     new LocalRandom(eval.RandomSeed),

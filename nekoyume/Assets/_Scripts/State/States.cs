@@ -37,6 +37,8 @@ namespace Nekoyume.State
 
         public StakeState StakeState { get; private set; }
 
+        public HackAndSlashBuffState HackAndSlashBuffState { get; set; }
+
         private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
 
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
@@ -154,6 +156,17 @@ namespace Nekoyume.State
             StakeState = stakeState;
             StakingLevel = stakingLevel;
             MonsterCollectionStateSubject.OnNextLevel(stakingLevel);
+        }
+
+        public void SetHackAndSlashBuffState(HackAndSlashBuffState buffState)
+        {
+            if (buffState is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetHackAndSlashBuffState)}] {nameof(buffState)} is null.");
+                return;
+            }
+
+            HackAndSlashBuffState = buffState;
         }
 
         public async UniTask<AvatarState> AddOrReplaceAvatarStateAsync(
@@ -305,7 +318,7 @@ namespace Nekoyume.State
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
             }
 
-            var isNew = CurrentAvatarKey != index;
+            var isNewlySelected = CurrentAvatarKey != index;
 
             CurrentAvatarKey = index;
             var avatarState = _avatarStates[CurrentAvatarKey];
@@ -323,7 +336,7 @@ namespace Nekoyume.State
                 };
             UI.Widget.Find<UI.WorldMap>().SharedViewModel.UnlockedWorldIds = unlockedIds;
 
-            if (isNew)
+            if (isNewlySelected)
             {
                 // notee: commit c1b7f0dc2e8fd922556b83f0b9b2d2d2b2626603 에서 코드 수정이 생기면서
                 // SetCombinationSlotStatesAsync()가 호출이 안되는 이슈가 있어서 revert했습니다. 재수정 필요
@@ -334,6 +347,15 @@ namespace Nekoyume.State
                     if (!exist)
                     {
                         return;
+                    }
+
+                    var avatarAddress = CurrentAvatarState.address;
+                    var buffStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(avatarAddress);
+                    var buffStateIValue = await Game.Game.instance.Agent.GetStateAsync(buffStateAddress);
+                    if (buffStateIValue is List serialized)
+                    {
+                        var buffState = new HackAndSlashBuffState(buffStateAddress, serialized);
+                        SetHackAndSlashBuffState(buffState);
                     }
 
                     await SetCombinationSlotStatesAsync(curAvatarState);
