@@ -337,6 +337,12 @@ namespace Nekoyume.Action
                 );
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
+
+                if (buffState != null)
+                {
+                    buffState = new HackAndSlashBuffState(buffStateAddress, stageId + 1);
+                    states = states.SetState(buffStateAddress, buffState.Serialize());
+                }
             }
             else
             {
