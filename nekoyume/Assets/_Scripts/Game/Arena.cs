@@ -161,7 +161,7 @@ namespace Nekoyume.Game
         private void OnEnd()
         {
             background.gameObject.SetActive(false);
-            Game.instance.Stage.objectPool.ReleaseAll();
+            objectPool.ReleaseAll();
             Game.instance.IsInWorld = false;
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
