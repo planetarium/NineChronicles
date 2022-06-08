@@ -3,6 +3,7 @@ using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
+using Nekoyume.Model.Skill.Stage;
 using UniRx;
 using UnityEngine;
 

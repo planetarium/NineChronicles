@@ -1,10 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
-using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.State;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -26,6 +26,8 @@ namespace Nekoyume.UI
 
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, .25f, 10f);
 
+        private System.Action _onClose;
+
         protected override void Awake()
         {
             base.Awake();
@@ -34,7 +36,7 @@ namespace Nekoyume.UI
             submitButton.OnClick = BackToRanking;
         }
 
-        public void Show(BattleLog log, IReadOnlyList<CountableItem> reward)
+        public void Show(BattleLog log, IReadOnlyList<ItemBase> rewardItems, System.Action onClose)
         {
             base.Show();
 
@@ -50,26 +52,26 @@ namespace Nekoyume.UI
             }
 
             scoreText.text = $"{log.score}";
+
+            var items = rewardItems.Select(e => new CountableItem(e, 1)).ToList();
             for (var i = 0; i < rewards.Count; i++)
             {
                 var view = rewards[i];
                 view.gameObject.SetActive(false);
-                if (i < reward.Count)
+                if (i < items.Count)
                 {
-                    view.SetData(reward[i]);
+                    view.SetData(items[i]);
                     view.gameObject.SetActive(true);
                 }
             }
+
+            _onClose = onClose;
         }
 
         private void BackToRanking()
         {
-            Game.Game.instance.Stage.objectPool.ReleaseAll();
-            Game.Game.instance.Stage.IsInStage = false;
-            ActionCamera.instance.SetPosition(0f, 0f);
-            ActionCamera.instance.Idle();
             Close();
-            Find<ArenaBoard>().Show(RxProps.ArenaParticipantsOrderedWithScore.Value);
+            _onClose?.Invoke();
         }
     }
 }

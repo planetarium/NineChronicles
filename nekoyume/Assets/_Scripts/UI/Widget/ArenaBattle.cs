@@ -1,0 +1,77 @@
+﻿using System.Linq;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
+using Nekoyume.Model.Arena;
+using Nekoyume.Model.Item;
+using Nekoyume.UI.Module;
+using UnityEngine;
+
+namespace Nekoyume.UI
+{
+    public class ArenaBattle : Widget
+    {
+        [SerializeField]
+        private ArenaStatus myStatus;
+
+        [SerializeField]
+        private ArenaStatus enemyStatus;
+
+        [SerializeField]
+        private ComboText comboText;
+
+        public ArenaStatus MyStatus => myStatus;
+        public ArenaStatus EnemyStatus => enemyStatus;
+        public ComboText ComboText => comboText;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            Game.Event.OnGetItem.AddListener(_ =>
+            {
+                var headerMenu = Find<HeaderMenuStatic>();
+                if (!headerMenu)
+                {
+                    throw new WidgetNotFoundException<HeaderMenuStatic>();
+                }
+
+                var target = headerMenu.GetToggle(HeaderMenuStatic.ToggleType.AvatarInfo);
+                VFXController.instance.CreateAndChase<DropItemInventoryVFX>(target, Vector3.zero);
+            });
+            CloseWidget = null;
+        }
+
+        public void Show(
+            ArenaPlayerDigest myDigest,
+            ArenaPlayerDigest enemyDigest,
+            bool ignoreShowAnimation = false)
+        {
+            Find<HeaderMenuStatic>().Close(true);
+            SetStatus(myDigest);
+            SetStatus(enemyDigest);
+            comboText.Close();
+            base.Show(ignoreShowAnimation);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            enemyStatus.Close(ignoreCloseAnimation);
+            Find<HeaderMenuStatic>().Close();
+            base.Close(ignoreCloseAnimation);
+        }
+
+        public void ShowComboText(bool attacked)
+        {
+            comboText.StopAllCoroutines();
+            comboText.Show(attacked);
+        }
+
+        private void SetStatus(ArenaPlayerDigest digest)
+        {
+            var armor = digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            var sprite = SpriteHelper.GetItemIcon(armor?.Id ?? GameConfig.DefaultAvatarArmorId);
+            enemyStatus.Show(sprite, digest.NameWithHash, digest.Level);
+        }
+    }
+}

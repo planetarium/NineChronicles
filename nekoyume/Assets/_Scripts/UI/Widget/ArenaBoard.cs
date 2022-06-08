@@ -6,6 +6,7 @@ using Libplanet;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -83,12 +84,6 @@ namespace Nekoyume.UI
             UpdateBillboard();
             UpdateScrolls();
             base.Show(ignoreShowAnimation);
-        }
-
-        public void GoToStage(BattleLog battleLog, List<ItemBase> rewards)
-        {
-            Close();
-            Game.Event.OnRankingBattleStart.Invoke((battleLog, rewards));
         }
 
         private void UpdateBillboard()

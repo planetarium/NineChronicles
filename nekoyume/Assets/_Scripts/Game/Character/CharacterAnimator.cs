@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Character
         private Vector3 HUDPosition { get; set; }
         public Vector3 HealPosition { get; private set; }
 
-        protected CharacterAnimator(CharacterBase root) : base(root.gameObject)
+        protected CharacterAnimator(BaseCharacter root) : base(root.gameObject)
         {
         }
 

@@ -23,7 +23,7 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public T Get<T>(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skillInfo)
+        public T Get<T>(BaseCharacter target, Model.BattleStatus.Skill.SkillInfo skillInfo)
             where T : SkillVFX
         {
             if (target is null)
@@ -86,7 +86,7 @@ namespace Nekoyume.Game.VFX.Skill
             return GetEffect<SkillCastingVFX>(go);
         }
 
-        private static T GetEffect<T>(GameObject go, CharacterBase target = null)
+        private static T GetEffect<T>(GameObject go, BaseCharacter target = null)
             where T : SkillVFX
         {
             var effect = go.GetComponent<T>();

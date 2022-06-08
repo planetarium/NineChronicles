@@ -335,7 +335,7 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case SlotType.Empty:
-                    if (Game.Game.instance.Stage.IsInStage)
+                    if (Game.Game.instance.IsInWorld)
                     {
                         UI.NotificationSystem.Push(
                             Nekoyume.Model.Mail.MailType.System,
