@@ -62,6 +62,47 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Execute_Throws_WhenThereIsMonsterCollection()
+        {
+            Address monsterCollectionAddress =
+                MonsterCollectionState.DeriveAddress(_signerAddress, 0);
+            var agentState = new AgentState(_signerAddress)
+            {
+                avatarAddresses = { [0] = new PrivateKey().ToAddress(), },
+            };
+            var states = _initialState
+                .SetState(_signerAddress, agentState.Serialize())
+                .SetState(
+                    monsterCollectionAddress,
+                    new MonsterCollectionState(monsterCollectionAddress, 1, 0).SerializeV2());
+            var action = new Stake(200);
+            Assert.Throws<MonsterCollectionExistingException>(() =>
+                action.Execute(new ActionContext
+                {
+                    PreviousStates = states,
+                    Signer = _signerAddress,
+                    BlockIndex = 100,
+                }));
+        }
+
+        [Fact]
+        public void Execute_Throws_WhenClaimableExisting()
+        {
+            Address stakeStateAddress = StakeState.DeriveAddress(_signerAddress);
+            var states = _initialState
+                .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
+                .MintAsset(stakeStateAddress, _currency * 50);
+            var action = new Stake(100);
+            Assert.Throws<StakeExistingClaimableException>(() =>
+                action.Execute(new ActionContext
+                {
+                    PreviousStates = states,
+                    Signer = _signerAddress,
+                    BlockIndex = StakeState.RewardInterval,
+                }));
+        }
+
+        [Fact]
         public void Execute_Throws_WhenCancelOrUpdateWhileLockup()
         {
             var action = new Stake(50);
@@ -119,6 +160,14 @@ namespace Lib9c.Tests.Action
             Assert.False(achievements.Check(0, 1));
             Assert.False(achievements.Check(1, 0));
 
+            StakeState producedStakeState = new StakeState(
+                stakeState.address,
+                stakeState.StartedBlockIndex,
+                // Produce a situation that it already received rewards.
+                StakeState.LockupInterval - 1,
+                stakeState.CancellableBlockIndex,
+                stakeState.Achievements);
+            states = states.SetState(stakeState.address, producedStakeState.SerializeV2());
             var cancelAction = new Stake(0);
             states = cancelAction.Execute(new ActionContext
             {

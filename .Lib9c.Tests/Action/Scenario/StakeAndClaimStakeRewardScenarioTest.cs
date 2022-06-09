@@ -685,6 +685,14 @@ namespace Lib9c.Tests.Action.Scenario
                 _currency * stakeAmount,
                 states.GetBalance(stakeState.address, _currency));
 
+            action = new ClaimStakeReward(_avatarAddress);
+            states = action.Execute(new ActionContext
+            {
+                PreviousStates = states,
+                Signer = _signerAddress,
+                BlockIndex = newStakeBlockIndex,
+            });
+
             action = new Stake(newStakeAmount);
             // 스테이킹 추가는 가능
             // 락업기간 이전에 deposit을 추가해서 save 할 수 있는지
@@ -749,6 +757,14 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.Equal(
                 _currency * stakeAmount,
                 states.GetBalance(stakeState.address, _currency));
+
+            action = new ClaimStakeReward(_avatarAddress);
+            states = action.Execute(new ActionContext
+            {
+                PreviousStates = states,
+                Signer = _signerAddress,
+                BlockIndex = StakeState.LockupInterval - 1,
+            });
 
             action = new Stake(newStakeAmount);
             // 락업기간 이전에 deposit을 감소해서 save할때 락업되어 거부되는가
