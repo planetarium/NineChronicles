@@ -80,8 +80,6 @@ namespace Nekoyume.Game.Character
         protected Vector3 HealOffset => Animator.HealPosition;
         protected bool AttackEndCalled { get; set; }
 
-        private bool _forceQuit;
-
         protected virtual bool CanRun
         {
             get
@@ -548,10 +546,9 @@ namespace Nekoyume.Game.Character
             RunSpeed = 0.0f;
         }
 
-        private IEnumerator CoTimeOut()
+        private bool CheckAttackEnd()
         {
-            yield return Animator.IsIdle() ? null : AttackTimeOut;
-            _forceQuit = true;
+            return AttackEndCalled || Animator.IsIdle();
         }
 
         protected virtual void ShowCutscene()
@@ -573,13 +570,9 @@ namespace Nekoyume.Game.Character
                     Animator.Attack();
                 }
 
-                _forceQuit = false;
-                var coroutine = StartCoroutine(CoTimeOut());
-                yield return new WaitUntil(() =>
-                    AttackEndCalled ||
-                    _forceQuit);
-                StopCoroutine(coroutine);
-                if (_forceQuit)
+                yield return new WaitForEndOfFrame();
+                yield return new WaitUntil(CheckAttackEnd);
+                if (Animator.IsIdle())
                 {
                     continue;
                 }
@@ -603,13 +596,9 @@ namespace Nekoyume.Game.Character
                     Animator.CastAttack();
                 }
 
-                _forceQuit = false;
-                var coroutine = StartCoroutine(CoTimeOut());
-                yield return new WaitUntil(() =>
-                    AttackEndCalled ||
-                    _forceQuit);
-                StopCoroutine(coroutine);
-                if (_forceQuit)
+                yield return new WaitForEndOfFrame();
+                yield return new WaitUntil(CheckAttackEnd);
+                if (Animator.IsIdle())
                 {
                     continue;
                 }
