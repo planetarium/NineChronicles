@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.Model.Order;
@@ -153,11 +154,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<CreateAvatar>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(async eval =>
-                {
-                    await UpdateAgentStateAsync(eval);
-                    await UpdateAvatarState(eval, eval.Action.index);
-                })
+                .Subscribe(ResponseCreateAvatar)
                 .AddTo(_disposables);
         }
 
@@ -264,7 +261,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<UnlockEquipmentRecipe>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(e => ResponseUnlockEquipmentRecipeAsync(e).Forget())
+                .Subscribe(ResponseUnlockEquipmentRecipeAsync)
                 .AddTo(_disposables);
         }
 
@@ -370,6 +367,38 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBattleArena)
                 .AddTo(_disposables);
+        }
+
+        private async UniTaskVoid ResponseCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
+        {
+            if (eval.Exception != null)
+            {
+                return;
+            }
+
+            await UpdateAgentStateAsync(eval);
+            await UpdateAvatarState(eval, eval.Action.index);
+            var avatarState
+                = await States.Instance.SelectAvatarAsync(eval.Action.index);
+            RenderQuest(
+                avatarState.address,
+                avatarState.questList.completedQuestIds);
+
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = agentAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CreateAvatar2.DeriveFormat,
+                    eval.Action.index
+                )
+            );
+            DialogPopup.DeleteDialogPlayerPrefs(avatarAddress);
+
+            var loginDetail = Widget.Find<LoginDetail>();
+            if (loginDetail && loginDetail.IsActive())
+            {
+                loginDetail.OnRenderCreateAvatar(eval);
+            }
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
@@ -638,7 +667,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-                LocalLayerModifier.ModifyAgentCrystal(agentAddress, -result.CRYSTAL.MajorUnit);
+                LocalLayerModifier.ModifyAgentCrystalAsync(agentAddress, -result.CRYSTAL.MajorUnit).Forget();
                 LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
                 foreach (var tradableId in result.materialItemIdList)
                 {
@@ -730,7 +759,7 @@ namespace Nekoyume.BlockChain
                     NotificationCell.NotificationType.Information);
 
                 UpdateCurrentAvatarStateAsync(eval).Forget();
-                ReactiveShopState.UpdateSellDigests();
+                ReactiveShopState.UpdateSellDigestsAsync().Forget();
             }
         }
 
@@ -762,7 +791,7 @@ namespace Nekoyume.BlockChain
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
-            ReactiveShopState.UpdateSellDigests();
+            ReactiveShopState.UpdateSellDigestsAsync().Forget();
         }
 
         private async void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
@@ -789,7 +818,7 @@ namespace Nekoyume.BlockChain
 
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval).Forget();
-            ReactiveShopState.UpdateSellDigests();
+            ReactiveShopState.UpdateSellDigestsAsync().Forget();
         }
 
         private async void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
@@ -829,7 +858,7 @@ namespace Nekoyume.BlockChain
                             errors.FirstOrDefault(tuple => tuple.orderId == purchaseInfo.OrderId);
 
                         var errorType = ((ShopErrorType)errorCode).ToString();
-                        LocalLayerModifier.ModifyAgentGold(agentAddress, price);
+                        LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, price).Forget();
 
                         string message;
                         if (count > 1)
@@ -847,7 +876,7 @@ namespace Nekoyume.BlockChain
                     }
                     else
                     {
-                        LocalLayerModifier.ModifyAgentGold(agentAddress, price);
+                        LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, price).Forget();
                         LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
                         LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
 
@@ -890,7 +919,7 @@ namespace Nekoyume.BlockChain
                     var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
                     var taxedPrice = order.Price - order.GetTax();
 
-                    LocalLayerModifier.ModifyAgentGold(agentAddress, -taxedPrice);
+                    LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, -taxedPrice).Forget();
                     LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
 
                     string message;
@@ -1349,11 +1378,12 @@ namespace Nekoyume.BlockChain
 
             var sheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
             var cost = CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, sheet);
-            LocalLayerModifier.ModifyAgentCrystal(
-                States.Instance.AgentState.address, cost.MajorUnit);
-
-            await UpdateCurrentAvatarStateAsync(eval);
-            await UpdateAgentStateAsync(eval);
+            await UniTask.WhenAll(
+                LocalLayerModifier.ModifyAgentCrystalAsync(
+                    States.Instance.AgentState.address,
+                    cost.MajorUnit),
+                UpdateCurrentAvatarStateAsync(eval),
+                UpdateAgentStateAsync(eval));
             try
             {
                 UpdateCrystalBalance(eval);
