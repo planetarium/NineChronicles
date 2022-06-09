@@ -14,8 +14,8 @@ namespace Nekoyume.Game
             var sprites = transform.GetComponentsInChildren<SpriteRenderer>();
             _sprite.AddRange(sprites);
 
-            var particles = transform.GetComponentsInChildren<ParticleSystem>();
-            _particles.AddRange(particles);
+            // var particles = transform.GetComponentsInChildren<ParticleSystem>();
+            // _particles.AddRange(particles);
         }
 
         public void Show(float fadeTime)
@@ -24,11 +24,11 @@ namespace Nekoyume.Game
             {
                 sprite.DOFade(1.0f, fadeTime);
             }
-
-            foreach (var particle in _particles)
-            {
-                particle.Play();
-            }
+            //
+            // foreach (var particle in _particles)
+            // {
+            //     particle.Play();
+            // }
         }
     }
 }

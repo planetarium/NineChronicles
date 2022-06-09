@@ -64,5 +64,17 @@ namespace Nekoyume.UI.Module
         {
             buffLayout.SetBuff(modelBuffs);
         }
+
+        public void OnCompleteOfShowAnimation()
+        {
+            animator.enabled = false;
+        }
+
+        public void OnCompleteOfCloseAnimation()
+        {
+            animator.enabled = false;
+
+            gameObject.SetActive(false);
+        }
     }
 }

@@ -26,6 +26,9 @@ namespace Nekoyume.Game
         private ObjectPool objectPool;
 
         [SerializeField]
+        private GameObject container;
+
+        [SerializeField]
         private ArenaBackground background;
 
         [SerializeField]
@@ -62,16 +65,8 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(param.func(infos));
 
-            param.ArenaCharacter.UpdateStatusUI();
-
-            if (!(param.buffInfos is null))
-            {
-                foreach (var buffInfo in param.buffInfos)
-                {
-                    var target = buffInfo.Target.Id == me.Id ? me : enemy;
-                    target.UpdateStatusUI();
-                }
-            }
+            me.UpdateStatusUI();
+            enemy.UpdateStatusUI();
 
             yield return new WaitForSeconds(SkillDelay);
         }
@@ -110,7 +105,7 @@ namespace Nekoyume.Game
             ArenaPlayerDigest myDigest,
             ArenaPlayerDigest enemyDigest)
         {
-            yield return StartCoroutine(CoStart(log, myDigest, enemyDigest));
+            yield return StartCoroutine(CoStart(myDigest, enemyDigest));
 
             foreach (var e in log)
             {
@@ -120,11 +115,9 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoEnd(log, rewards));
         }
 
-        private IEnumerator CoStart(
-            BattleLog log,
-            ArenaPlayerDigest myDigest,
-            ArenaPlayerDigest enemyDigest)
+        private IEnumerator CoStart(ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest)
         {
+            container.SetActive(true);
             background.gameObject.SetActive(true);
             background.Show(3.0f);
             me.Init(myDigest, enemy);
@@ -252,7 +245,6 @@ namespace Nekoyume.Game
         {
             var target = caster.Id == me.Id ? me : enemy;
             target.UpdateStatusUI();
-            target.RemoveBuff();
             yield break;
         }
 
@@ -266,7 +258,9 @@ namespace Nekoyume.Game
 
         public IEnumerator CoArenaTurnEnd(int turnNumber)
         {
-            _turnNumber = turnNumber;
+            yield return new WaitWhile(() => me.Actions.Any());
+            yield return new WaitWhile(() => enemy.Actions.Any());
+            _turnNumber = turnNumber + 1;
             yield return null;
         }
     }

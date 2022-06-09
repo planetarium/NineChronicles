@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
@@ -19,10 +20,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private ComboText comboText;
-
-        public ArenaStatus MyStatus => myStatus;
-        public ArenaStatus EnemyStatus => enemyStatus;
-        public ComboText ComboText => comboText;
 
         protected override void Awake()
         {
@@ -48,17 +45,36 @@ namespace Nekoyume.UI
             bool ignoreShowAnimation = false)
         {
             Find<HeaderMenuStatic>().Close(true);
-            SetStatus(myDigest);
-            SetStatus(enemyDigest);
+            SetStatus(myDigest, myStatus);
+            SetStatus(enemyDigest, enemyStatus);
             comboText.Close();
             base.Show(ignoreShowAnimation);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            myStatus.Close(ignoreCloseAnimation);
             enemyStatus.Close(ignoreCloseAnimation);
             Find<HeaderMenuStatic>().Close();
             base.Close(ignoreCloseAnimation);
+        }
+
+        public void UpdateStatus(
+            bool isEnemy,
+            int currentHp,
+            int maxHp,
+            Dictionary<int, Nekoyume.Model.Buff.Buff> buffs)
+        {
+            if (isEnemy)
+            {
+                enemyStatus.SetHp(currentHp, maxHp);
+                enemyStatus.SetBuff(buffs);
+            }
+            else
+            {
+                myStatus.SetHp(currentHp, maxHp);
+                myStatus.SetBuff(buffs);
+            }
         }
 
         public void ShowComboText(bool attacked)
@@ -67,11 +83,11 @@ namespace Nekoyume.UI
             comboText.Show(attacked);
         }
 
-        private void SetStatus(ArenaPlayerDigest digest)
+        private void SetStatus(ArenaPlayerDigest digest, ArenaStatus status)
         {
             var armor = digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var sprite = SpriteHelper.GetItemIcon(armor?.Id ?? GameConfig.DefaultAvatarArmorId);
-            enemyStatus.Show(sprite, digest.NameWithHash, digest.Level);
+            status.Show(sprite, digest.NameWithHash, digest.Level);
         }
     }
 }

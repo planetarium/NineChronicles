@@ -12,7 +12,6 @@ using UnityEngine;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
-using UnityEngine.Rendering;
 
 namespace Nekoyume.Game.Character
 {
@@ -20,28 +19,30 @@ namespace Nekoyume.Game.Character
 
     public class ArenaCharacter : BaseCharacter
     {
-        private const float AnimatorTimeScale = 1.2f;
-
         [SerializeField]
         private CharacterAppearance appearance;
 
-        [SerializeField]
-        private bool shouldContainHUD = true;
-
-        public GameObject attackPoint;
-        public SortingGroup sortingGroup;
-
-        private Root _root;
-        private int _currentHp;
-
-        protected float RunSpeedDefault => _characterModel.RunSpeed;
+        private static readonly WaitForSeconds AttackTimeOut = new WaitForSeconds(999f);
+        private const float AnimatorTimeScale = 1.2f;
         private Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         private Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
 
-        private float AttackRange => _characterModel.AttackRange;
+        private Model.ArenaCharacter _characterModel;
+        private ArenaCharacter _target;
+        private ArenaBattle _arenaBattle;
+        private ArenaActionParams _runningAction;
+        private HudContainer _hudContainer;
+        private SpeechBubble _speechBubble;
+        private Root _root;
+        private float _runSpeed;
+        private int _currentHp;
+        private bool _forceStop;
+
+        private readonly List<Costume> _costumes = new List<Costume>();
+        private readonly List<Equipment> _equipments = new List<Equipment>();
+
 
         private int Hp => _characterModel.HP;
-
         private int CurrentHp
         {
             get => _currentHp;
@@ -51,60 +52,32 @@ namespace Nekoyume.Game.Character
                 UpdateStatusUI();
             }
         }
-
         private bool IsDead => CurrentHp <= 0;
-        private float RunSpeed { get; set; }
-        private HudContainer HudContainer { get; set; }
-        private ProgressBar CastingBar { get; set; }
-        private SpeechBubble SpeechBubble { get; set; }
-
         private bool CanRun
         {
             get
             {
-                if (IsDead)
+                if (IsDead || _forceStop)
                 {
                     return false;
                 }
 
-                return !Mathf.Approximately(RunSpeed, 0f);
+                return !Mathf.Approximately(_runSpeed, 0f);
             }
         }
 
-
-        private Vector3 HitPointLocalOffset { get; set; }
-
-        private Model.ArenaCharacter _characterModel;
-        private ArenaCharacter _target;
-        private HpBar _hpBar;
-        private ArenaBattle _arenaBattle;
-        private ArenaActionParams _runningAction;
-        private bool _forceQuit;
-
-        private readonly List<Costume> _costumes = new List<Costume>();
-        private readonly List<Equipment> _equipments = new List<Equipment>();
-
         public List<ArenaActionParams> Actions { get; } = new List<ArenaActionParams>();
 
-        protected void Awake()
+        private void Awake()
         {
-#if !UNITY_EDITOR
-            attackPoint.SetActive(false);
-#endif
-
             Animator = new PlayerAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
             Animator.TimeScale = AnimatorTimeScale;
         }
 
-        protected void Start()
+        private void OnDisable()
         {
-            InitializeHudContainer();
-        }
-
-        protected void OnDisable()
-        {
-            RunSpeed = 0.0f;
+            _runSpeed = 0.0f;
             _root = null;
             Actions.Clear();
             _runningAction = null;
@@ -114,46 +87,25 @@ namespace Nekoyume.Game.Character
         private void Update()
         {
             _root?.Tick();
-            if (HudContainer)
-            {
-                HudContainer.UpdateAlpha(appearance.SpineController.SkeletonAnimation.skeleton.A);
-            }
         }
 
         private void LateUpdate()
         {
-            if (HudContainer)
-            {
-                HudContainer.UpdatePosition(gameObject, HUDOffset);
-            }
-
-            if (SpeechBubble)
-            {
-                SpeechBubble.UpdatePosition(gameObject, HUDOffset);
-            }
-        }
-
-        private void InitializeHudContainer()
-        {
-            // No pooling. Widget.Create<HudContainer> didn't pooling HUD object.
-            // HUD Pooling causes HUD positioning bug.
-            if (!HudContainer && shouldContainHUD)
-            {
-                HudContainer = Widget.Create<HudContainer>(true);
-            }
+            _hudContainer.UpdatePosition(gameObject, HUDOffset);
+            _speechBubble.UpdatePosition(gameObject, HUDOffset);
         }
 
         public void Init(ArenaPlayerDigest digest, ArenaCharacter target)
         {
+            _hudContainer ??= Widget.Create<HudContainer>(true);
+            _speechBubble ??= Widget.Create<SpeechBubble>();
+
             _costumes.Clear();
             _costumes.AddRange(digest.Costumes);
             _equipments.Clear();
             _equipments.AddRange(digest.Equipments);
             _target = target;
-
-            appearance.Set(digest, Animator, HudContainer);
-
-            InitializeHudContainer();
+            appearance.Set(digest, Animator, _hudContainer);
         }
 
         public void StartRun(Model.ArenaCharacter model)
@@ -162,12 +114,18 @@ namespace Nekoyume.Game.Character
             Id = _characterModel.Id;
             SizeType = _characterModel.SizeType;
             CurrentHp = Hp;
-            RunSpeed = _characterModel.IsEnemy ? -_characterModel.RunSpeed : _characterModel.RunSpeed;
+            _runSpeed = _characterModel.IsEnemy ? -_characterModel.RunSpeed : _characterModel.RunSpeed;
 
+            Invoke(nameof(Test) , 0.5f);
             if (_root == null)
             {
                 InitBT();
             }
+        }
+
+        private void Test()
+        {
+            _forceStop = true;
         }
 
         public void UpdateStatusUI()
@@ -175,47 +133,21 @@ namespace Nekoyume.Game.Character
             if (!Game.instance.IsInWorld)
                 return;
 
-            if (_hpBar == null)
-            {
-                _hpBar = Widget.Create<HpBar>(true);
-                _hpBar.transform.SetParent(HudContainer.transform);
-                _hpBar.transform.localPosition = Vector3.zero;
-                _hpBar.transform.localScale = Vector3.one;
-                HudContainer.UpdateAlpha(1);
-            }
+            _hudContainer.UpdatePosition(gameObject, HUDOffset);
 
             if (_arenaBattle == null)
             {
                 _arenaBattle = Widget.Find<ArenaBattle>();
             }
 
-            HudContainer.UpdatePosition(gameObject, HUDOffset);
-            _hpBar.Set(CurrentHp, _characterModel.AdditionalHP, Hp);
-            _hpBar.SetBuffs(_characterModel.Buffs);
-            _hpBar.SetLevel(_characterModel.Level);
-
-            _arenaBattle.MyStatus.SetHp(CurrentHp, Hp);
-            _arenaBattle.MyStatus.SetBuff(_characterModel.Buffs);
-        }
-
-        public void RemoveBuff()
-        {
-            if(_hpBar.HpVFX != null)
-            {
-                _hpBar.HpVFX.Stop();
-            }
+            _arenaBattle.UpdateStatus(_characterModel.IsEnemy, CurrentHp, Hp, _characterModel.Buffs);
         }
 
         public void ShowSpeech(string key, params int[] list)
         {
-            if (ReferenceEquals(SpeechBubble, null))
-            {
-                SpeechBubble = Widget.Create<SpeechBubble>();
-            }
+            _speechBubble.enable = true;
 
-            SpeechBubble.enable = true;
-
-            if (SpeechBubble.gameObject.activeSelf)
+            if (_speechBubble.gameObject.activeSelf)
             {
                 return;
             }
@@ -230,7 +162,7 @@ namespace Nekoyume.Game.Character
                 key = $"{key}_";
             }
 
-            if (!SpeechBubble.SetKey(key))
+            if (!_speechBubble.SetKey(key))
             {
                 return;
             }
@@ -238,28 +170,18 @@ namespace Nekoyume.Game.Character
             if (!gameObject.activeSelf)
                 return;
 
-            StartCoroutine(SpeechBubble.CoShowText());
-            return;
+            StartCoroutine(_speechBubble.CoShowText());
         }
 
-        private IEnumerator CoProcessDamage(
-            Model.BattleStatus.Skill.SkillInfo info,
-            bool isConsiderDie,
-            bool isConsiderElementalType)
+        private IEnumerator CoProcessDamage(Model.BattleStatus.Skill.SkillInfo info, bool isConsiderElementalType)
         {
             var dmg = info.Effect;
             var position = HudTextPosition;
             var force = DamageTextForce;
 
-            // damage 0 = dodged.
             if (dmg <= 0)
             {
-                var index = 0;
-                if (this is Enemy)
-                {
-                    index = 1;
-                }
-
+                var index = _characterModel.IsEnemy ? 1 : 0;
                 MissText.Show(position, force, index);
                 yield break;
             }
@@ -269,8 +191,6 @@ namespace Nekoyume.Game.Character
 
             PopUpDmg(position, force, info, isConsiderElementalType);
         }
-
-
 
         private void PopUpDmg(
             Vector3 position,
@@ -332,100 +252,36 @@ namespace Nekoyume.Game.Character
         protected virtual void ExecuteRun()
         {
             Animator.Run();
-
             Vector2 position = transform.position;
-            position.x += Time.deltaTime * RunSpeed;
+            position.x += Time.deltaTime * _runSpeed;
             transform.position = position;
         }
 
         private void StopRun()
         {
-            RunSpeed = 0.0f;
+            _runSpeed = 0.0f;
             Animator.StopRun();
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.gameObject.CompareTag(gameObject.tag))
-                return;
-
-            var character = other.gameObject.GetComponent<ArenaCharacter>();
-            if (!character)
-                return;
-
-            StopRunIfTargetInAttackRange(character);
-        }
-
-
-        private void StopRunIfTargetInAttackRange(ArenaCharacter target)
-        {
-            if (target.IsDead)
-                return;
-
-            StartCoroutine(CoStop(target));
-            StopRun();
-        }
-
-        private IEnumerator CoStop(ArenaCharacter target)
-        {
-            yield return new WaitUntil(() => IsDead || target.IsDead);
         }
 
         #endregion
 
-        public virtual float CalculateRange(ArenaCharacter target)
-        {
-            var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
-            var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
-            return attackRangeStartPosition - targetHitPosition;
-        }
-
-        // public bool TargetInAttackRange(ArenaCharacter target)
-        // {
-        //     var diff = CalculateRange(target);
-        //     return AttackRange > diff;
-        // }
-
         private void DisableHUD()
         {
-            // No pooling. HUD Pooling causes HUD positioning bug.
-            if (_hpBar)
-            {
-                Destroy(_hpBar.gameObject);
-                _hpBar = null;
-            }
-
-            // No pooling. HUD Pooling causes HUD positioning bug.
-            if (HudContainer)
-            {
-                Destroy(HudContainer.gameObject);
-                HudContainer = null;
-            }
-
-            if (!ReferenceEquals(CastingBar, null))
-            {
-                Destroy(CastingBar.gameObject);
-                CastingBar = null;
-            }
-
-            if (!ReferenceEquals(SpeechBubble, null))
-            {
-                SpeechBubble.StopAllCoroutines();
-                SpeechBubble.gameObject.SetActive(false);
-                Destroy(SpeechBubble.gameObject, SpeechBubble.destroyTime);
-                SpeechBubble = null;
-            }
+            _speechBubble.StopAllCoroutines();
+            _speechBubble.gameObject.SetActive(false);
         }
 
         private void ProcessAttack(
             ArenaCharacter target,
             Model.BattleStatus.Skill.SkillInfo skill,
-            bool isLastHit,
             bool isConsiderElementalType)
         {
-            if (!target) return;
-            target.StopRun();
-            StartCoroutine(target.CoProcessDamage(skill, isLastHit, isConsiderElementalType));
+            if (target == null)
+            {
+                return;
+            }
+
+            StartCoroutine(target.CoProcessDamage(skill, isConsiderElementalType));
         }
 
         private void ProcessHeal(
@@ -467,14 +323,10 @@ namespace Nekoyume.Game.Character
         private void PreAnimationForTheKindOfAttack()
         {
             AttackEndCalled = false;
-            RunSpeed = 0.0f;
+            _runSpeed = 0.0f;
         }
 
-        private IEnumerator CoTimeOut()
-        {
-            yield return new WaitForSeconds(5f);
-            _forceQuit = true;
-        }
+
 
         private void ShowCutscene()
         {
@@ -489,60 +341,37 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoAnimationAttack(bool isCritical)
         {
-            while (true)
+            PreAnimationForTheKindOfAttack();
+            if (isCritical)
             {
-                PreAnimationForTheKindOfAttack();
-                if (isCritical)
-                {
-                    Animator.CriticalAttack();
-                }
-                else
-                {
-                    Animator.Attack();
-                }
-
-                _forceQuit = false;
-                var coroutine = StartCoroutine(CoTimeOut());
-                yield return new WaitUntil(() =>
-                    AttackEndCalled ||
-                    _forceQuit ||
-                    Animator.IsIdle());
-                StopCoroutine(coroutine);
-                if (_forceQuit)
-                {
-                    continue;
-                }
-                break;
+                Animator.CriticalAttack();
             }
+            else
+            {
+                Animator.Attack();
+            }
+
+            yield return new WaitUntil(CheckAttackEnd);
+        }
+
+        private bool CheckAttackEnd()
+        {
+            return AttackEndCalled || Animator.IsIdle();
         }
 
         private IEnumerator CoAnimationCastAttack(bool isCritical)
         {
-            while (true)
+            PreAnimationForTheKindOfAttack();
+            if (isCritical)
             {
-                PreAnimationForTheKindOfAttack();
-                if (isCritical)
-                {
-                    Animator.CriticalAttack();
-                }
-                else
-                {
-                    Animator.CastAttack();
-                }
-
-                _forceQuit = false;
-                var coroutine = StartCoroutine(CoTimeOut());
-                yield return new WaitUntil(() =>
-                    AttackEndCalled ||
-                    _forceQuit ||
-                    Animator.IsIdle());
-                StopCoroutine(coroutine);
-                if (_forceQuit)
-                {
-                    continue;
-                }
-                break;
+                Animator.CriticalAttack();
             }
+            else
+            {
+                Animator.CastAttack();
+            }
+
+            yield return new WaitUntil(CheckAttackEnd);
         }
 
         private IEnumerator CoAnimationCastBlow(IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> infos)
@@ -599,7 +428,7 @@ namespace Nekoyume.Game.Character
                 yield break;
 
             var skillInfosCount = skillInfos.Count;
-            var battleWidget = Widget.Find<Nekoyume.UI.Battle>();
+            var battleWidget = Widget.Find<ArenaBattle>();
 
             yield return StartCoroutine(
                 CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
@@ -610,7 +439,7 @@ namespace Nekoyume.Game.Character
                 if (info.Target is Model.ArenaCharacter arenaCharacter)
                 {
                     var target = info.Target.Id == Id ? this : _target;
-                    ProcessAttack(target, info, arenaCharacter.IsDead, false);
+                    ProcessAttack(target, info, false);
                     if (!arenaCharacter.IsEnemy)
                     {
                         battleWidget.ShowComboText(info.Effect > 0);
@@ -649,7 +478,7 @@ namespace Nekoyume.Game.Character
                 effect.Play();
                 if (info.Target is Model.ArenaCharacter arenaCharacter)
                 {
-                    ProcessAttack(target, info, arenaCharacter.IsDead, true);
+                    ProcessAttack(target, info, true);
                 }
             }
         }
@@ -681,7 +510,7 @@ namespace Nekoyume.Game.Character
                     effect.SecondStrike();
                 }
 
-                ProcessAttack(target, info, !first, true);
+                ProcessAttack(target, info, true);
             }
         }
 
@@ -744,7 +573,7 @@ namespace Nekoyume.Game.Character
 
                     yield return coroutine;
                     effect.Finisher();
-                    ProcessAttack(target, info, true, true);
+                    ProcessAttack(target, info,  true);
                     if (info.ElementalType != ElementalType.Fire
                         && info.ElementalType != ElementalType.Water)
                     {
@@ -755,7 +584,7 @@ namespace Nekoyume.Game.Character
                 }
                 else
                 {
-                    ProcessAttack(target, info, isTriggerOn, isTriggerOn);
+                    ProcessAttack(target, info, isTriggerOn);
                 }
             }
 
@@ -853,6 +682,7 @@ namespace Nekoyume.Game.Character
 
         private void OnDeadStart()
         {
+            _hudContainer.UpdateAlpha(0);
             Animator.Die();
         }
 
@@ -872,13 +702,13 @@ namespace Nekoyume.Game.Character
         public readonly Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> func;
 
         public ArenaActionParams(ArenaCharacter arenaCharacter,
-            IEnumerable<Model.BattleStatus.Skill.SkillInfo> enumerable,
-            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos1,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> skills,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffs,
             Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> coNormalAttack)
         {
             ArenaCharacter = arenaCharacter;
-            skillInfos = enumerable;
-            buffInfos = buffInfos1;
+            skillInfos = skills;
+            buffInfos = buffs;
             func = coNormalAttack;
         }
     }
