@@ -118,6 +118,8 @@ namespace Nekoyume.UI
                     _innerState = InnerState.Idle;
                     UpdateBottomButtons();
                     Find<LoadingScreen>().Close();
+                    Find<HeaderMenuStatic>()
+                        .Show(HeaderMenuStatic.AssetVisibleState.Arena);
                     return;
                 case InnerState.RegistrationAndTransitionToArenaBoard:
                     _innerState = InnerState.Idle;
@@ -128,7 +130,7 @@ namespace Nekoyume.UI
                         UpdateBottomButtons();
                         Find<LoadingScreen>().Close();
                         Find<HeaderMenuStatic>()
-                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
+                            .Show(HeaderMenuStatic.AssetVisibleState.Arena);
 
                         NotificationSystem.Push(
                             MailType.System,
