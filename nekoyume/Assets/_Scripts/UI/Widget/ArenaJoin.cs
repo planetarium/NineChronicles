@@ -98,6 +98,12 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            _disposablesForShow.DisposeAllAndClear();
+            base.Close(ignoreCloseAnimation);
+        }
+
         public void OnRenderJoinArena(ActionBase.ActionEvaluation<JoinArena> eval)
         {
             if (eval.Exception is { })
@@ -121,7 +127,9 @@ namespace Nekoyume.UI
                     {
                         UpdateBottomButtons();
                         Find<LoadingScreen>().Close();
-                        
+                        Find<HeaderMenuStatic>()
+                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
+
                         NotificationSystem.Push(
                             MailType.System,
                             "The round which is you want to join is ended.",
@@ -141,12 +149,6 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            _disposablesForShow.DisposeAllAndClear();
-            base.Close(ignoreCloseAnimation);
         }
 
         /// <summary>
@@ -274,8 +276,7 @@ namespace Nekoyume.UI
             _joinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                if (_scroll.SelectedItemData.RoundData.ArenaType == ArenaType.OffSeason &&
-                    RxProps.ArenaInfoTuple.HasValue &&
+                if (RxProps.ArenaInfoTuple.HasValue &&
                     RxProps.ArenaInfoTuple.Value.current is { })
                 {
                     Close();
