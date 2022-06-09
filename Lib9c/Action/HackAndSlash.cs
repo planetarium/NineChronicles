@@ -348,6 +348,11 @@ namespace Nekoyume.Action
             {
                 if (buffState != null)
                 {
+                    if (buffSkillsOnWaveStart.Any())
+                    {
+                        buffState = new HackAndSlashBuffState(buffStateAddress, stageId);
+                    }
+
                     buffState.Update(simulator.Log.clearedWaveNumber,
                         sheets.GetSheet<CrystalStageBuffGachaSheet>());
                     states = states.SetState(buffStateAddress, buffState.Serialize());
