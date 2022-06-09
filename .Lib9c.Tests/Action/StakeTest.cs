@@ -86,6 +86,23 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Execute_Throws_WhenClaimableExisting()
+        {
+            Address stakeStateAddress = StakeState.DeriveAddress(_signerAddress);
+            var states = _initialState
+                .SetState(stakeStateAddress, new StakeState(stakeStateAddress, 0).Serialize())
+                .MintAsset(stakeStateAddress, _currency * 50);
+            var action = new Stake(100);
+            Assert.Throws<StakeExistingClaimableException>(() =>
+                action.Execute(new ActionContext
+                {
+                    PreviousStates = states,
+                    Signer = _signerAddress,
+                    BlockIndex = StakeState.RewardInterval,
+                }));
+        }
+
+        [Fact]
         public void Execute_Throws_WhenCancelOrUpdateWhileLockup()
         {
             var action = new Stake(50);
