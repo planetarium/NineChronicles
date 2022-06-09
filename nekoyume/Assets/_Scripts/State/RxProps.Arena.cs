@@ -238,8 +238,8 @@ namespace Nekoyume.State
                 currentRoundData.ChampionshipId,
                 currentRoundData.Round);
             var participants
-                = await _agent.GetStateAsync(participantsAddr) is List list
-                    ? new ArenaParticipants(list)
+                = await _agent.GetStateAsync(participantsAddr) is List participantsList
+                    ? new ArenaParticipants(participantsList)
                     : null;
             if (participants is null)
             {
@@ -279,8 +279,8 @@ namespace Nekoyume.State
                     var (avatarAddr, scoreAddr) = tuple;
                     return (
                         avatarAddr,
-                        scores[scoreAddr] is Integer integer
-                            ? (int)integer
+                        scores[scoreAddr] is List scoreList
+                            ? (int)(Integer)scoreList[1]
                             : ArenaScore.ArenaScoreDefault
                     );
                 })
@@ -335,8 +335,8 @@ namespace Nekoyume.State
                     ? new AvatarState(avatarDict)
                     : null;
                 var inventory
-                    = stateBulk[avatarAddr.Derive(LegacyInventoryKey)] is List list2
-                        ? new Model.Item.Inventory(list2)
+                    = stateBulk[avatarAddr.Derive(LegacyInventoryKey)] is List inventoryList
+                        ? new Model.Item.Inventory(inventoryList)
                         : null;
                 if (avatar is { })
                 {
@@ -356,8 +356,8 @@ namespace Nekoyume.State
                 );
             }).ToArray();
 
-            var playerArenaInfo = stateBulk[playerArenaInfoAddr] is List list3
-                ? new ArenaInformation(list3)
+            var playerArenaInfo = stateBulk[playerArenaInfoAddr] is List arenaInfoList
+                ? new ArenaInformation(arenaInfoList)
                 : null;
             if (playersArenaParticipant is null)
             {
