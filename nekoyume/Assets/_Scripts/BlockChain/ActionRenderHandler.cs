@@ -1689,11 +1689,11 @@ namespace Nekoyume.BlockChain
             var previousScores = eval.PreviousStates
                 .GetStates(scoreAddrList)
                 .Select(scoreValue => scoreValue is List list
-                    ? new ArenaScore(list)
-                    : null)
+                    ? (int)(Integer)list[1]
+                    : ArenaScore.ArenaScoreDefault)
                 .ToArray();
-            var previousMyScore = previousScores[0].Score;
-            var previousEnemyScore = previousScores[1].Score;
+            var previousMyScore = previousScores[0];
+            var previousEnemyScore = previousScores[1];
             var rewards = RewardSelector.Select(
                 random,
                 tableSheets.WeeklyArenaRewardSheet,
