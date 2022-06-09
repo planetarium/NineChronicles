@@ -160,6 +160,14 @@ namespace Lib9c.Tests.Action
             Assert.False(achievements.Check(0, 1));
             Assert.False(achievements.Check(1, 0));
 
+            StakeState producedStakeState = new StakeState(
+                stakeState.address,
+                stakeState.StartedBlockIndex,
+                // Produce a situation that it already received rewards.
+                StakeState.LockupInterval - 1,
+                stakeState.CancellableBlockIndex,
+                stakeState.Achievements);
+            states = states.SetState(stakeState.address, producedStakeState.SerializeV2());
             var cancelAction = new Stake(0);
             states = cancelAction.Execute(new ActionContext
             {
