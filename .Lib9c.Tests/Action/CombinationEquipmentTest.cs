@@ -260,7 +260,7 @@ namespace Lib9c.Tests.Action
                         .SetState(beforePreviousCostAddress, beforePreviousCostState.Serialize());
                 }
 
-                expectedCrystal = previousCostStateExist ? crystalBalance * 2 : crystalBalance;
+                expectedCrystal = crystalBalance;
                 state = state.MintAsset(_agentAddress, expectedCrystal * CrystalCalculator.CRYSTAL);
             }
 
