@@ -74,7 +74,7 @@ namespace Nekoyume.Action
                 throw new NotEnoughFungibleAssetValueException(
                     context.Signer.ToHex(),
                     Amount,
-                    currentBalance.RawValue);
+                    currentBalance);
             }
 
             // Stake if it doesn't exist yet.
