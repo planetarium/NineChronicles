@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Join;
+using Nekoyume.UI.Scroller;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -95,35 +98,57 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        public void OnRenderJoinArena()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
+            _disposablesForShow.DisposeAllAndClear();
+            base.Close(ignoreCloseAnimation);
+        }
+
+        public void OnRenderJoinArena(ActionBase.ActionEvaluation<JoinArena> eval)
+        {
+            if (eval.Exception is { })
+            {
+                Find<LoadingScreen>().Close();
+                return;
+            }
+
             switch (_innerState)
             {
                 case InnerState.EarlyRegistration:
                     _innerState = InnerState.Idle;
                     UpdateBottomButtons();
                     Find<LoadingScreen>().Close();
-                    break;
+                    return;
                 case InnerState.RegistrationAndTransitionToArenaBoard:
                     _innerState = InnerState.Idle;
+                    var selectedRound = _scroll.SelectedItemData.RoundData;
+                    if (eval.Action.championshipId != selectedRound.ChampionshipId ||
+                        eval.Action.round != selectedRound.Round)
+                    {
+                        UpdateBottomButtons();
+                        Find<LoadingScreen>().Close();
+                        Find<HeaderMenuStatic>()
+                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
+
+                        NotificationSystem.Push(
+                            MailType.System,
+                            "The round which is you want to join is ended.",
+                            NotificationCell.NotificationType.Information);
+                        return;
+                    }
+
                     Close();
                     Find<LoadingScreen>().Close();
                     Find<ArenaBoard>().Show(
                         _scroll.SelectedItemData.RoundData,
                         RxProps.ArenaParticipantsOrderedWithScore.Value);
-                    break;
+                    return;
                 case InnerState.Idle:
                     UpdateBottomButtons();
-                    break;
+                    return;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            _disposablesForShow.DisposeAllAndClear();
-            base.Close(ignoreCloseAnimation);
         }
 
         /// <summary>
@@ -251,8 +276,7 @@ namespace Nekoyume.UI
             _joinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                if (_scroll.SelectedItemData.RoundData.ArenaType == ArenaType.OffSeason &&
-                    RxProps.ArenaInfoTuple.HasValue &&
+                if (RxProps.ArenaInfoTuple.HasValue &&
                     RxProps.ArenaInfoTuple.Value.current is { })
                 {
                     Close();
@@ -370,7 +394,7 @@ namespace Nekoyume.UI
                     {
                         _earlyPaymentButton.Hide();
                     }
-                    
+
                     break;
                 }
                 case ArenaType.Season:
@@ -383,7 +407,7 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
+
         private void UpdateJoinAndPaymentButton(
             ArenaType arenaType,
             bool isOpened,

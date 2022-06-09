@@ -121,6 +121,7 @@ namespace Nekoyume.BlockChain
             RedeemCode();
             ChargeActionPoint();
             ClaimMonsterCollectionReward();
+            ClaimStakeReward();
 
             // Crystal Unlocks
             UnlockEquipmentRecipe();
@@ -351,6 +352,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseStake)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimStakeReward()
+        {
+            _actionRenderer.EveryRender<ClaimStakeReward>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimStakeReward)
                 .AddTo(_disposables);
         }
 
@@ -1193,7 +1203,6 @@ namespace Nekoyume.BlockChain
         {
             if (!(eval.Exception is null))
             {
-                Debug.LogException(eval.Exception);
                 return;
             }
 
@@ -1202,12 +1211,14 @@ namespace Nekoyume.BlockChain
                 L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
                 NotificationCell.NotificationType.Information);
 
-            UpdateAgentStateAsync(eval);
-            UpdateCurrentAvatarStateAsync(eval);
-            var mcState = GetMonsterCollectionState(eval);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            var (mcState, level, balance) = GetMonsterCollectionState(eval);
             if (mcState != null)
             {
-                UpdateMonsterCollectionState(mcState);
+                UpdateMonsterCollectionState(mcState,
+                    new GoldBalanceState(mcState.address, balance),
+                    level);
             }
         }
 
@@ -1266,7 +1277,7 @@ namespace Nekoyume.BlockChain
             // ~LocalLayer
 
             // Notification
-            UI.NotificationSystem.Push(
+            NotificationSystem.Push(
                 MailType.System,
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
                 NotificationCell.NotificationType.Information);
@@ -1437,13 +1448,34 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var (state, level) = GetStakeState(eval);
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize("UI_MONSTERCOLLECTION_UPDATED"),
+                NotificationCell.NotificationType.Information);
+
+            var (state, level, balance) = GetStakeState(eval);
             if (state != null)
             {
-                UpdateStakeState(state, level);
+                UpdateStakeState(state, new GoldBalanceState(state.address, balance), level);
             }
 
             UpdateAgentStateAsync(eval).Forget();
+        }
+
+        private void ResponseClaimStakeReward(ActionBase.ActionEvaluation<ClaimStakeReward> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            // Notification
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
+                NotificationCell.NotificationType.Information);
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
@@ -1524,10 +1556,18 @@ namespace Nekoyume.BlockChain
 
         private static async UniTaskVoid ResponseJoinArenaAsync(ActionBase.ActionEvaluation<JoinArena> eval)
         {
-            if (eval.Exception != null ||
-                eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
+            if (eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
             {
                 return;
+            }
+
+            var arenaJoin = Widget.Find<ArenaJoin>();
+            if (eval.Exception != null)
+            {
+                if (arenaJoin && arenaJoin.IsActive())
+                {
+                    arenaJoin.OnRenderJoinArena(eval);
+                }
             }
 
             UpdateCrystalBalance(eval);
@@ -1546,10 +1586,9 @@ namespace Nekoyume.BlockChain
                 await RxProps.ArenaInfoTuple.UpdateAsync();
             }
 
-            var arenaJoin = Widget.Find<ArenaJoin>();
             if (arenaJoin && arenaJoin.IsActive())
             {
-                arenaJoin.OnRenderJoinArena();
+                arenaJoin.OnRenderJoinArena(eval);
             }
         }
 
@@ -1561,23 +1600,14 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var arenaBoard = Widget.Find<ArenaBoard>();
             if (eval.Exception != null)
             {
-                var showLoadingScreen = false;
-                Widget widget = Widget.Find<ArenaBattleLoadingScreen>();
-                if (widget.IsActive())
+                if (arenaBoard && arenaBoard.IsActive())
                 {
-                    widget.Close();
+                    arenaBoard.OnRenderBattleArena(eval);
                 }
 
-                widget = Widget.Find<RankingBattleResultPopup>();
-                if (widget.IsActive())
-                {
-                    showLoadingScreen = true;
-                    widget.Close();
-                }
-
-                Game.Game.BackToMainAsync(eval.Exception.InnerException, showLoadingScreen).Forget();
                 return;
             }
 
@@ -1682,9 +1712,9 @@ namespace Nekoyume.BlockChain
             };
             log.score = currentMyScore;
 
-            if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            if (arenaBoard && arenaBoard.IsActive())
             {
-                Widget.Find<ArenaBoard>().Close();
+                arenaBoard.OnRenderBattleArena(eval);
                 Game.Game.instance.Arena.Enter(log, rewards, myDigest, enemyDigest);
             }
 

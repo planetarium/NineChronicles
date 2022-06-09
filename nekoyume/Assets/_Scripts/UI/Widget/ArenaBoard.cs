@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
@@ -86,6 +87,18 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
+        public void OnRenderBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
+        {
+            if (eval.Exception is { })
+            {
+                Find<ArenaBattleLoadingScreen>().Close();
+                return;
+            }
+
+            Close();
+            Find<ArenaBattleLoadingScreen>().Close();
+        }
+
         private void UpdateBillboard()
         {
 #if UNITY_EDITOR
@@ -126,9 +139,16 @@ namespace Nekoyume.UI
                             NotificationCell.NotificationType.Alert);
                         return;
                     }
+
 #endif
                     var data = _boundedData[index];
+                    var avatarState = data.AvatarState;
+                    Find<ArenaBattleLoadingScreen>().Show(
+                        avatarState.NameWithHash,
+                        avatarState.level,
+                        avatarState.GetArmorId());
                     var inventory = States.Instance.CurrentAvatarState.inventory;
+                    ActionRenderHandler.Instance.Pending = true;
                     ActionManager.Instance.BattleArena(
                             data.AvatarAddr,
                             inventory.Costumes
@@ -141,27 +161,8 @@ namespace Nekoyume.UI
                                 .ToList(),
                             _roundData.ChampionshipId,
                             _roundData.Round,
+                            // TODO: Take the ticket count from the UI.
                             1)
-                        .DoOnSubscribe(() =>
-                        {
-                            ActionRenderHandler.Instance.Pending = true;
-                            var avatarState = data.AvatarState;
-                            Find<ArenaBattleLoadingScreen>().Show(
-                                avatarState.NameWithHash,
-                                avatarState.level,
-                                avatarState.GetArmorId());
-                        })
-                        .DoOnError(e =>
-                        {
-                            Find<ArenaBattleLoadingScreen>().Close();
-                            Find<HeaderMenuStatic>()
-                                .Show(HeaderMenuStatic.AssetVisibleState.Arena);
-                            NotificationSystem.Push(
-                                MailType.System,
-                                "Failed to battle.",
-                                NotificationCell.NotificationType.Alert);
-                        })
-                        .DoOnCompleted(() => { })
                         .Subscribe();
                 })
                 .AddTo(gameObject);

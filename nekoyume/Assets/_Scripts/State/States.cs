@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Debug = UnityEngine.Debug;
@@ -33,7 +30,7 @@ namespace Nekoyume.State
 
         public GoldBalanceState GoldBalanceState { get; private set; }
 
-        public MonsterCollectionState MonsterCollectionState { get; private set; }
+        public GoldBalanceState StakedBalanceState { get; private set; }
 
         public StakeState StakeState { get; private set; }
 
@@ -131,7 +128,10 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextCrystal(CrystalBalance);
         }
 
-        public void SetMonsterCollectionState(MonsterCollectionState monsterCollectionState)
+        public void SetMonsterCollectionState(
+            MonsterCollectionState monsterCollectionState,
+            GoldBalanceState stakedBalanceState,
+            int level)
         {
             if (monsterCollectionState is null)
             {
@@ -140,12 +140,12 @@ namespace Nekoyume.State
                 return;
             }
 
-            MonsterCollectionState = monsterCollectionState;
-            StakingLevel = monsterCollectionState.Level;
+            StakingLevel = level;
+            StakedBalanceState = stakedBalanceState;
             MonsterCollectionStateSubject.OnNextLevel(StakingLevel);
         }
 
-        public void SetStakeState(StakeState stakeState, int stakingLevel)
+        public void SetStakeState(StakeState stakeState, GoldBalanceState stakedBalanceState, int stakingLevel)
         {
             if (stakeState is null)
             {
@@ -154,6 +154,7 @@ namespace Nekoyume.State
             }
 
             StakeState = stakeState;
+            StakedBalanceState = stakedBalanceState;
             StakingLevel = stakingLevel;
             MonsterCollectionStateSubject.OnNextLevel(stakingLevel);
         }

@@ -4,6 +4,7 @@ using Lib9c.Renderer;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -57,7 +58,7 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
-        protected static MonsterCollectionState GetMonsterCollectionState<T>(
+        protected (MonsterCollectionState, int, FungibleAssetValue) GetMonsterCollectionState<T>(
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -67,13 +68,18 @@ namespace Nekoyume.BlockChain
             );
             if (evaluation.OutputStates.GetState(monsterCollectionAddress) is Bencodex.Types.Dictionary mcDict)
             {
-                return new MonsterCollectionState(mcDict);
+                var balance =
+                    evaluation.OutputStates.GetBalance(monsterCollectionAddress, GoldCurrency);
+                var level =
+                    TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
+                        agentAddress, balance);
+                return (new MonsterCollectionState(mcDict), level, balance);
             }
 
-            return null;
+            return (null, 0, new FungibleAssetValue());
         }
 
-        protected static (StakeState, int) GetStakeState<T>(
+        protected (StakeState, int, FungibleAssetValue) GetStakeState<T>(
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -84,15 +90,16 @@ namespace Nekoyume.BlockChain
                 var state = new StakeState(serialized);
                 var balance = evaluation.OutputStates.GetBalance(
                     state.address,
-                    ActionRenderHandler.Instance.GoldCurrency);
+                    GoldCurrency);
                 return (
                     state,
-                    Game.TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
+                    TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
                         agentAddress,
-                        balance));
+                        balance),
+                    balance);
             }
 
-            return (null, 0);
+            return (null, 0, new FungibleAssetValue());
         }
 
         protected async UniTask UpdateAgentStateAsync<T>(
@@ -185,19 +192,25 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGameConfigState(state);
         }
 
-        protected static void UpdateMonsterCollectionState(MonsterCollectionState mcState)
+        protected static void UpdateMonsterCollectionState(
+            MonsterCollectionState mcState,
+            GoldBalanceState stakedGoldBalance,
+            int level)
         {
             if (mcState is { })
             {
-                States.Instance.SetMonsterCollectionState(mcState);
+                States.Instance.SetMonsterCollectionState(mcState, stakedGoldBalance, level);
             }
         }
 
-        protected static void UpdateStakeState(StakeState state, int level)
+        protected static void UpdateStakeState(
+            StakeState state,
+            GoldBalanceState stakedBalanceState,
+            int level)
         {
             if (state is { })
             {
-                States.Instance.SetStakeState(state, level);
+                States.Instance.SetStakeState(state, stakedBalanceState, level);
             }
         }
 

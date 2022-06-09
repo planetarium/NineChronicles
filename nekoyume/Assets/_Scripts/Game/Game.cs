@@ -279,65 +279,7 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentPreloadStarted(RPCAgent rpcAgent)
         {
-            if (Widget.Find<IntroScreen>().IsActive() ||
-                Widget.Find<PreloadingScreen>().IsActive() ||
-                Widget.Find<Synopsis>().IsActive())
-            {
-                // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
-                // FIXME: 이 경우에는 메인 로비가 아니라 기존 초기화 로직이 흐르도록 처리해야 합니다.
-                return;
-            }
-
-            var needToBackToMain = false;
-            var showLoadingScreen = false;
-            var widget = (Widget)Widget.Find<DimmedLoadingScreen>();
-            if (widget.IsActive())
-            {
-                widget.Close();
-            }
-
-            if (Widget.Find<LoadingScreen>().IsActive())
-            {
-                Widget.Find<LoadingScreen>().Close();
-                widget = Widget.Find<BattlePreparation>();
-                if (widget.IsActive())
-                {
-                    widget.Close(true);
-                    needToBackToMain = true;
-                }
-
-                widget = Widget.Find<Menu>();
-                if (widget.IsActive())
-                {
-                    widget.Close(true);
-                    needToBackToMain = true;
-                }
-            }
-            else if (Widget.Find<StageLoadingEffect>().IsActive())
-            {
-                Widget.Find<StageLoadingEffect>().Close();
-
-                if (Widget.Find<BattleResultPopup>().IsActive())
-                {
-                    Widget.Find<BattleResultPopup>().Close(true);
-                }
-
-                needToBackToMain = true;
-                showLoadingScreen = true;
-            }
-            else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
-            {
-                Widget.Find<ArenaBattleLoadingScreen>().Close();
-                needToBackToMain = true;
-            }
-
-            if (!needToBackToMain)
-            {
-                return;
-            }
-
-            BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen)
-                .Forget();
+            // ignore.
         }
 
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
@@ -399,7 +341,8 @@ namespace Nekoyume.Game
                 return;
             }
 
-            BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen);
+            BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen)
+                .Forget();
         }
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
