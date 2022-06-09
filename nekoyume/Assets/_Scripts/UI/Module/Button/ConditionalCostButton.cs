@@ -48,7 +48,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<GameObject> costParents = null;
 
-        private readonly Dictionary<CostType, int> _costMap = new Dictionary<CostType, int>();
+        private readonly Dictionary<CostType, long> _costMap = new Dictionary<CostType, long>();
 
         public void SetCost(params CostParam[] costs)
         {

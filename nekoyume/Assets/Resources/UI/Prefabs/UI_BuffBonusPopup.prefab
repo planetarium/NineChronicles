@@ -5150,7 +5150,7 @@ MonoBehaviour:
   disabledObject: {fileID: 6067663932409378543}
   disabledText: {fileID: 2134122931250842801}
   effectOverlay: {fileID: 2280281905653075521}
-  conditionInfoKey: UI_HAS_BUFF_NOT_ENOUGH_STAR
+  conditionInfoKey: 
   showCostAlert: 1
   costObjects:
   - type: 1
@@ -16655,7 +16655,7 @@ MonoBehaviour:
   disabledObject: {fileID: 1394531090321194354}
   disabledText: {fileID: 6173659825702529242}
   effectOverlay: {fileID: 5051347804739722645}
-  conditionInfoKey: UI_HAS_BUFF_NOT_ENOUGH_STAR
+  conditionInfoKey: 
   showCostAlert: 1
   costObjects:
   - type: 1

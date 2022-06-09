@@ -171,6 +171,7 @@ namespace Nekoyume.UI
                 Widget.Create<DataLoadingScreen>(),
                 Widget.Create<WorldMapLoadingScreen>(),
                 Widget.Create<UnlockWorldLoadingScreen>(),
+                Widget.Create<BuffBonusLoadingScreen>(),
                 Widget.Create<PreloadingScreen>(),
 
                 // 팝업 영역.

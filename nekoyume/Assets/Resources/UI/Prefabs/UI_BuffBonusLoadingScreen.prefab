@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 224898616830980190}
   - component: {fileID: 222668420831161334}
+  - component: {fileID: 8948053487341707732}
   m_Layer: 5
-  m_Name: UI_BuffBonusLoading
+  m_Name: UI_BuffBonusLoadingScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,6 +48,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1907849136098932}
   m_CullTransparentMesh: 0
+--- !u!114 &8948053487341707732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1907849136098932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2de23aa442a900d4dac42c4284b2fae2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  messageText: {fileID: 650456451347729483}
 --- !u!1 &3555367175929677487
 GameObject:
   m_ObjectHideFlags: 0
@@ -10160,6 +10176,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8002662868142038659}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &650456451347729483 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7352629730520191688, guid: 1a0b987d9e902134fa44625a2541ac08,
+    type: 3}
+  m_PrefabInstance: {fileID: 8002662868142038659}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &9074034204482418706
 PrefabInstance:
   m_ObjectHideFlags: 0
