@@ -96,12 +96,11 @@
         }
 
         [Theory]
-        [InlineData(10, 5, 10_000, 10_000, null)]
-        [InlineData(20, 10, 10_000, 10_000, null)]
-        [InlineData(20, 10, 10_000, 0, typeof(NotEnoughStarException))]
-        [InlineData(20, 1, 10_000, 10_000, typeof(InvalidGachaCountException))]
-        [InlineData(20, 5, 1, 10_000, typeof(NotEnoughFungibleAssetValueException))]
-        public void Execute(int stageId, int gachaCount, int balance, int gatheredStar, Type excType)
+        [InlineData(10, false, 10_000, 10_000, null)]
+        [InlineData(20, true, 10_000, 10_000, null)]
+        [InlineData(20, true, 10_000, 0, typeof(NotEnoughStarException))]
+        [InlineData(20, false, 1, 10_000, typeof(NotEnoughFungibleAssetValueException))]
+        public void Execute(int stageId, bool advancedGacha, int balance, int gatheredStar, Type excType)
         {
             var states = _initialState.MintAsset(_agentAddress, balance * _currency);
             var gameConfigState = _initialState.GetGameConfigState();
@@ -134,12 +133,12 @@
             gachaState.Update(gatheredStar, crystalStageSheet);
             states = states.SetState(gachaStateAddress, gachaState.Serialize());
             var cost =
-                CrystalCalculator.CalculateBuffGachaCost(stageId, gachaCount, crystalStageSheet);
+                CrystalCalculator.CalculateBuffGachaCost(stageId, advancedGacha, crystalStageSheet);
 
             var action = new HackAndSlashRandomBuff
             {
                 AvatarAddress = _avatarAddress,
-                GachaCount = gachaCount,
+                AdvancedGacha = advancedGacha,
             };
 
             if (excType is null)
@@ -170,9 +169,9 @@
         }
 
         [Theory]
-        [InlineData(5, CrystalRandomBuffSheet.Row.BuffRank.A)]
-        [InlineData(10, CrystalRandomBuffSheet.Row.BuffRank.S)]
-        public void ContainMinimumBuffRank(int count, CrystalRandomBuffSheet.Row.BuffRank minimumRank)
+        [InlineData(false, CrystalRandomBuffSheet.Row.BuffRank.A)]
+        [InlineData(true, CrystalRandomBuffSheet.Row.BuffRank.S)]
+        public void ContainMinimumBuffRank(bool advancedGacha, CrystalRandomBuffSheet.Row.BuffRank minimumRank)
         {
             var states = _initialState.MintAsset(_agentAddress, 100_000_000 * _currency);
             var gameConfigState = _initialState.GetGameConfigState();
@@ -211,7 +210,7 @@
                 var action = new HackAndSlashRandomBuff
                 {
                     AvatarAddress = _avatarAddress,
-                    GachaCount = count,
+                    AdvancedGacha = advancedGacha,
                 };
                 var nextState = action.Execute(new ActionContext
                 {

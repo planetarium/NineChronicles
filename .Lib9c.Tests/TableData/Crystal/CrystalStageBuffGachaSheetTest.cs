@@ -18,8 +18,8 @@
         public void Set()
         {
             var sheet = new CrystalStageBuffGachaSheet();
-            sheet.Set(@"stage_id,max_star,crystal_cost
-1,5,10");
+            sheet.Set(@"stage_id,max_star,normal_cost,advanced_cost
+1,5,10,30");
 
             Assert.Single(sheet.Values);
 
@@ -27,7 +27,8 @@
 
             Assert.Equal(1, row.StageId);
             Assert.Equal(5, row.MaxStar);
-            Assert.Equal(10, row.CRYSTAL);
+            Assert.Equal(10, row.NormalCost);
+            Assert.Equal(30, row.AdvancedCost);
         }
     }
 }

@@ -110,13 +110,12 @@ namespace Lib9c.Tests
             var stageBuffGachaSheet = _tableSheets.CrystalStageBuffGachaSheet;
             foreach (var row in stageBuffGachaSheet.Values)
             {
-                var expectedCost = row.CRYSTAL * CrystalCalculator.CRYSTAL;
                 Assert.Equal(
-                    expectedCost,
-                    CrystalCalculator.CalculateBuffGachaCost(row.StageId, 5, stageBuffGachaSheet));
+                    row.NormalCost * CrystalCalculator.CRYSTAL,
+                    CrystalCalculator.CalculateBuffGachaCost(row.StageId, false, stageBuffGachaSheet));
                 Assert.Equal(
-                    expectedCost * 3,
-                    CrystalCalculator.CalculateBuffGachaCost(row.StageId, 10, stageBuffGachaSheet));
+                    row.AdvancedCost * CrystalCalculator.CRYSTAL,
+                    CrystalCalculator.CalculateBuffGachaCost(row.StageId, true, stageBuffGachaSheet));
             }
         }
 
