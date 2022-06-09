@@ -89,6 +89,11 @@ namespace Nekoyume.Action
                     .TransferAsset(context.Signer, stakeStateAddress, targetStakeBalance);
             }
 
+            if (stakeState.IsClaimable(context.BlockIndex))
+            {
+                throw new StakeExistingClaimableException();
+            }
+
             if (!stakeState.IsCancellable(context.BlockIndex) && targetStakeBalance < stakedBalance)
             {
                 throw new RequiredBlockIndexException();
