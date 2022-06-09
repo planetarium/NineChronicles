@@ -8,14 +8,11 @@ namespace Nekoyume.UI
 {
     public class PaymentPopup : ConfirmPopup
     {
-        [SerializeField]
-        private CostIconDataScriptableObject costIconData;
+        [SerializeField] private CostIconDataScriptableObject costIconData;
 
-        [SerializeField]
-        private Image costIcon;
+        [SerializeField] private Image costIcon;
 
-        [SerializeField]
-        private TextMeshProUGUI costText;
+        [SerializeField] private TextMeshProUGUI costText;
 
         public void Show(
             CostType costType,
@@ -43,7 +40,10 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        ShowAttract(cost, insufficientMessage, onAttract);
+                        var attractMessage = costType == CostType.Crystal
+                            ? L10nManager.Localize("UI_GO_GRINDING")
+                            : L10nManager.Localize("UI_YES");
+                        ShowAttract(cost, insufficientMessage, attractMessage, onAttract);
                     }
                 }
             };
@@ -52,12 +52,12 @@ namespace Nekoyume.UI
 
         public void ShowAttract(
             BigInteger cost,
-            string message,
+            string content,
+            string attractMessage,
             System.Action onAttract)
         {
             var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost.ToString();
-            var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
             CloseCallback = result =>
             {
@@ -66,7 +66,7 @@ namespace Nekoyume.UI
                     onAttract();
                 }
             };
-            Show(title, message, yes, no, false);
+            Show(title, content, attractMessage, no, false);
         }
     }
 }

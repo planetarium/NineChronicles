@@ -31,23 +31,17 @@ namespace Nekoyume.UI.Module.Arena.Board
     public class ArenaBoardPlayerCell
         : FancyScrollRectCell<ArenaBoardPlayerItemData, ArenaBoardPlayerScrollContext>
     {
-        [SerializeField]
-        private DetailedCharacterView _characterView;
+        [SerializeField] private DetailedCharacterView _characterView;
 
-        [SerializeField]
-        private TextMeshProUGUI _nameText;
+        [SerializeField] private TextMeshProUGUI _nameText;
 
-        [SerializeField]
-        private TextMeshProUGUI _ratingText;
+        [SerializeField] private TextMeshProUGUI _ratingText;
 
-        [SerializeField]
-        private TextMeshProUGUI _cpText;
+        [SerializeField] private TextMeshProUGUI _cpText;
 
-        [SerializeField]
-        private TextMeshProUGUI _plusRatingText;
+        [SerializeField] private TextMeshProUGUI _plusRatingText;
 
-        [SerializeField]
-        private ConditionalButton _choiceButton;
+        [SerializeField] private ConditionalButton _choiceButton;
 
         private ArenaBoardPlayerItemData _currentData;
 

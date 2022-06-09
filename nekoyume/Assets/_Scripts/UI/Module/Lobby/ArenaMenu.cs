@@ -13,11 +13,9 @@ namespace Nekoyume.UI.Module.Lobby
 
     public class ArenaMenu : MainMenu
     {
-        [SerializeField]
-        private ArenaTicketProgressBar _progressBar;
+        [SerializeField] private ArenaTicketProgressBar _progressBar;
 
-        [SerializeField]
-        private TextMeshProUGUI _ticketCount;
+        [SerializeField] private TextMeshProUGUI _ticketCount;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 

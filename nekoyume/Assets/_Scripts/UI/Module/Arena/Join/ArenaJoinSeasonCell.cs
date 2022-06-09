@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Module.Arena.Join
     {
         public ArenaSheet.RoundData RoundData;
         public int? SeasonNumber;
-        
+
         public string GetRoundName() => RoundData.ArenaType switch
         {
             ArenaType.OffSeason => "off-season",
@@ -35,23 +35,17 @@ namespace Nekoyume.UI.Module.Arena.Join
             public static readonly int Scroll = Animator.StringToHash("Scroll");
         }
 
-        [SerializeField]
-        private Animator _animator;
+        [SerializeField] private Animator _animator;
 
-        [SerializeField]
-        private ArenaJoinSeasonCellOffseason _offseason;
+        [SerializeField] private ArenaJoinSeasonCellOffseason _offseason;
 
-        [SerializeField]
-        private ArenaJoinSeasonCellSeason _season;
+        [SerializeField] private ArenaJoinSeasonCellSeason _season;
 
-        [SerializeField]
-        private ArenaJoinSeasonCellChampionship _championship;
+        [SerializeField] private ArenaJoinSeasonCellChampionship _championship;
 
-        [SerializeField]
-        private GameObject _medalCountObject;
+        [SerializeField] private GameObject _medalCountObject;
 
-        [SerializeField]
-        private GameObject _seasonCountObject;
+        [SerializeField] private GameObject _seasonCountObject;
 
         private ArenaJoinSeasonItemData _currentData;
 

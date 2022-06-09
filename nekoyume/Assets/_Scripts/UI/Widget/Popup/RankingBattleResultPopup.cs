@@ -14,20 +14,15 @@ namespace Nekoyume.UI
 {
     public class RankingBattleResultPopup : PopupWidget
     {
-        [SerializeField]
-        private GameObject victoryImageContainer = null;
+        [SerializeField] private GameObject victoryImageContainer = null;
 
-        [SerializeField]
-        private GameObject defeatImageContainer = null;
+        [SerializeField] private GameObject defeatImageContainer = null;
 
-        [SerializeField]
-        private TextButton submitButton = null;
+        [SerializeField] private TextButton submitButton = null;
 
-        [SerializeField]
-        private TextMeshProUGUI scoreText = null;
+        [SerializeField] private TextMeshProUGUI scoreText = null;
 
-        [SerializeField]
-        private List<SimpleCountableItemView> rewards = null;
+        [SerializeField] private List<SimpleCountableItemView> rewards = null;
 
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, .25f, 10f);
 

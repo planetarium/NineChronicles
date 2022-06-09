@@ -38,17 +38,13 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        [SerializeField]
-        private Stage stage = null;
+        [SerializeField] private Stage stage = null;
 
-        [SerializeField]
-        private bool useSystemLanguage = true;
+        [SerializeField] private bool useSystemLanguage = true;
 
-        [SerializeField]
-        private LanguageTypeReactiveProperty languageType = default;
+        [SerializeField] private LanguageTypeReactiveProperty languageType = default;
 
-        [SerializeField]
-        private Prologue prologue = null;
+        [SerializeField] private Prologue prologue = null;
 
         public States States { get; private set; }
 
@@ -269,7 +265,7 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentRetryEnded(RPCAgent rpcAgent)
         {
-            var widget = (Widget) Widget.Find<DimmedLoadingScreen>();
+            var widget = (Widget)Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -278,65 +274,9 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentPreloadStarted(RPCAgent rpcAgent)
         {
-            if (Widget.Find<IntroScreen>().IsActive() ||
-                Widget.Find<PreloadingScreen>().IsActive() ||
-                Widget.Find<Synopsis>().IsActive())
-            {
-                // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
-                // FIXME: 이 경우에는 메인 로비가 아니라 기존 초기화 로직이 흐르도록 처리해야 합니다.
-                return;
-            }
-
-            var needToBackToMain = false;
-            var showLoadingScreen = false;
-            var widget = (Widget) Widget.Find<DimmedLoadingScreen>();
-            if (widget.IsActive())
-            {
-                widget.Close();
-            }
-
-            if (Widget.Find<LoadingScreen>().IsActive())
-            {
-                Widget.Find<LoadingScreen>().Close();
-                widget = Widget.Find<BattlePreparation>();
-                if (widget.IsActive())
-                {
-                    widget.Close(true);
-                    needToBackToMain = true;
-                }
-
-                widget = Widget.Find<Menu>();
-                if (widget.IsActive())
-                {
-                    widget.Close(true);
-                    needToBackToMain = true;
-                }
-            }
-            else if (Widget.Find<StageLoadingEffect>().IsActive())
-            {
-                Widget.Find<StageLoadingEffect>().Close();
-
-                if (Widget.Find<BattleResultPopup>().IsActive())
-                {
-                    Widget.Find<BattleResultPopup>().Close(true);
-                }
-
-                needToBackToMain = true;
-                showLoadingScreen = true;
-            }
-            else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
-            {
-                Widget.Find<ArenaBattleLoadingScreen>().Close();
-                needToBackToMain = true;
-            }
-
-            if (!needToBackToMain)
-            {
-                return;
-            }
-
-            BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
+            // ignore.
         }
+
         private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
             if (Widget.Find<IntroScreen>().IsActive() ||
@@ -350,7 +290,7 @@ namespace Nekoyume.Game
 
             var needToBackToMain = false;
             var showLoadingScreen = false;
-            var widget = (Widget) Widget.Find<DimmedLoadingScreen>();
+            var widget = (Widget)Widget.Find<DimmedLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -396,7 +336,8 @@ namespace Nekoyume.Game
                 return;
             }
 
-            BackToMain(showLoadingScreen, new UnableToRenderWhenSyncingBlocksException());
+            BackToMainAsync(new UnableToRenderWhenSyncingBlocksException(), showLoadingScreen)
+                .Forget();
         }
 
         private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
@@ -435,7 +376,8 @@ namespace Nekoyume.Game
             if (rpcAgent.Connected)
             {
                 // 무슨 상황이지?
-                Debug.Log($"{nameof(QuitWithAgentConnectionError)}() called. But {nameof(RPCAgent)}.Connected is {rpcAgent.Connected}.");
+                Debug.Log(
+                    $"{nameof(QuitWithAgentConnectionError)}() called. But {nameof(RPCAgent)}.Connected is {rpcAgent.Connected}.");
                 return;
             }
 
@@ -463,6 +405,7 @@ namespace Nekoyume.Game
             {
                 csv[asset.name] = asset.text;
             }
+
             TableSheets = new TableSheets(csv);
         }
 
@@ -484,10 +427,7 @@ namespace Nekoyume.Game
                 List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
                 var map = new ConcurrentDictionary<Address, string>();
                 var csv = new ConcurrentDictionary<string, string>();
-                Parallel.ForEach(csvAssets, asset =>
-                {
-                    map[Addresses.TableSheet.Derive(asset.name)] = asset.name;
-                });
+                Parallel.ForEach(csvAssets, asset => { map[Addresses.TableSheet.Derive(asset.name)] = asset.name; });
                 var values = Agent.GetStateBulk(map.Keys).Result;
                 Parallel.ForEach(values, kv =>
                 {
@@ -564,7 +504,7 @@ namespace Nekoyume.Game
             }
         }
 
-        public static async UniTaskVoid BackToMain(bool showLoadingScreen, Exception exc)
+        public static async UniTaskVoid BackToMainAsync(Exception exc, bool showLoadingScreen = false)
         {
             Debug.LogException(exc);
 
@@ -596,6 +536,7 @@ namespace Nekoyume.Game
             {
                 widget.Close(true);
             }
+
             Widget.Find<Login>().Show();
         }
 
@@ -813,11 +754,12 @@ namespace Nekoyume.Game
                     Message = msg,
                     Timestamp = DateTime.UtcNow
                 };
-                var request = new PutLogEventsRequest(groupName, streamName, new List<InputLogEvent> {ie});
+                var request = new PutLogEventsRequest(groupName, streamName, new List<InputLogEvent> { ie });
                 if (!string.IsNullOrEmpty(token))
                 {
                     request.SequenceToken = token;
                 }
+
                 await _logsClient.PutLogEventsAsync(request);
             }
             catch (Exception)
@@ -862,7 +804,7 @@ namespace Nekoyume.Game
             var rpcServerHost = _options.RpcClient
                 ? _options.RpcServerHost
                 : null;
-            
+
 #if UNITY_EDITOR
             Debug.Log("This is editor mode.");
             Analyzer = new Analyzer(uniqueId, rpcServerHost);

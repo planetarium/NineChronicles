@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Tx;
@@ -53,17 +54,18 @@ namespace Nekoyume.BlockChain
 
         public static bool IsLastBattleActionId(Guid actionId) => actionId == Instance._lastBattleActionId;
 
-        private void HandleException(Guid actionId, Exception e)
+        public Exception HandleException(Guid actionId, Exception e)
         {
             if (e is TimeoutException)
             {
                 var txId = _actionIdToTxIdBridge.ContainsKey(actionId)
                     ? (TxId?)_actionIdToTxIdBridge[actionId].txId
                     : null;
-                throw new ActionTimeoutException(e.Message, txId, actionId);
+                e = new ActionTimeoutException(e.Message, txId, actionId);
             }
 
-            throw e;
+            Debug.LogException(e);
+            return e;
         }
 
         public ActionManager(IAgent agent)
@@ -116,8 +118,13 @@ namespace Nekoyume.BlockChain
 
         #region Actions
 
-        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(int index,
-            string nickName, int hair = 0, int lens = 0, int ear = 0, int tail = 0)
+        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(
+            int index,
+            string nickName,
+            int hair = 0,
+            int lens = 0,
+            int ear = 0,
+            int tail = 0)
         {
             if (States.Instance.AvatarStates.ContainsKey(index))
             {
@@ -144,19 +151,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e =>
                 {
                     Game.Game.instance.BackToNest();
-                    HandleException(action.Id, e);
-                })
-                .Finally(() =>
-                {
-                    var agentAddress = States.Instance.AgentState.address;
-                    var avatarAddress = agentAddress.Derive(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            CreateAvatar2.DeriveFormat,
-                            index
-                        )
-                    );
-                    DialogPopup.DeleteDialogPlayerPrefs(avatarAddress);
+                    throw HandleException(action.Id, e);
                 });
         }
 
@@ -200,14 +195,7 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -264,14 +252,7 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -329,7 +310,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
@@ -366,14 +347,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -414,7 +388,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
@@ -439,7 +413,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(
@@ -479,7 +453,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)
@@ -487,7 +461,9 @@ namespace Nekoyume.BlockChain
             var buyerAgentAddress = States.Instance.AgentState.address;
             foreach (var purchaseInfo in purchaseInfos)
             {
-                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -purchaseInfo.Price);
+                LocalLayerModifier
+                    .ModifyAgentGoldAsync(buyerAgentAddress, -purchaseInfo.Price)
+                    .Forget();
             }
 
             var action = new Buy
@@ -503,7 +479,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
@@ -527,7 +503,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(
@@ -570,14 +546,7 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception inner)
-                    {
-                        Game.Game.BackToMain(false, inner).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -617,14 +586,7 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -654,14 +616,7 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -700,14 +655,7 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -918,8 +866,11 @@ namespace Nekoyume.BlockChain
             List<int> recipeIdList,
             BigInteger openCost)
         {
-            LocalLayerModifier.ModifyAgentCrystal(
-                States.Instance.AgentState.address, -openCost);
+            LocalLayerModifier
+                .ModifyAgentCrystalAsync(
+                    States.Instance.AgentState.address,
+                    -openCost)
+                .Forget();
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = new UnlockEquipmentRecipe
@@ -992,14 +943,7 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 #endif
