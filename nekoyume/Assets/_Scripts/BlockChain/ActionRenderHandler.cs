@@ -1630,41 +1630,42 @@ namespace Nekoyume.BlockChain
             var tableSheets = Game.Game.instance.TableSheets;
             ArenaPlayerDigest myDigest;
             ArenaPlayerDigest enemyDigest;
-            if (eval.Extra is { })
-            {
-                var myDigestList
-                    = (List)eval.Extra[nameof(BattleArena.ExtraMyArenaPlayerDigest)];
-                myDigest = new ArenaPlayerDigest(myDigestList);
-                var enemyDigestList
-                    = (List)eval.Extra[nameof(BattleArena.ExtraEnemyArenaPlayerDigest)];
-                enemyDigest = new ArenaPlayerDigest(enemyDigestList);
-            }
-            else
-            {
-                var previousMyAvatarState
-                    = eval.PreviousStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
-                if (!eval.PreviousStates.TryGetArenaAvatarState(
+            // TODO!!!! lib9c와 headless 쪽에 결과 Digest와 이전 Score 추가하기
+            // if (eval.Extra is { })
+            // {
+            //     var myDigestList
+            //         = (List)eval.Extra[nameof(BattleArena.ExtraMyArenaPlayerDigest)];
+            //     myDigest = new ArenaPlayerDigest(myDigestList);
+            //     var enemyDigestList
+            //         = (List)eval.Extra[nameof(BattleArena.ExtraEnemyArenaPlayerDigest)];
+            //     enemyDigest = new ArenaPlayerDigest(enemyDigestList);
+            // }
+            // else
+            // {
+                var myAvatarState
+                    = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
+                if (!eval.OutputStates.TryGetArenaAvatarState(
                         ArenaAvatarState.DeriveAddress(eval.Action.myAvatarAddress),
-                        out var previousMyArenaAvatarState))
+                        out var myArenaAvatarState))
                 {
-                    Debug.LogError("Failed to get previous ArenaAvatarState of mine");
+                    Debug.LogError("Failed to get ArenaAvatarState of mine");
                 }
 
                 myDigest
-                    = new ArenaPlayerDigest(previousMyAvatarState, previousMyArenaAvatarState);
+                    = new ArenaPlayerDigest(myAvatarState, myArenaAvatarState);
 
-                var previousEnemyAvatarState
-                    = eval.PreviousStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
-                if (!eval.PreviousStates.TryGetArenaAvatarState(
+                var enemyAvatarState
+                    = eval.OutputStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
+                if (!eval.OutputStates.TryGetArenaAvatarState(
                         ArenaAvatarState.DeriveAddress(eval.Action.enemyAvatarAddress),
-                        out var previousEnemyArenaAvatarState))
+                        out var enemyArenaAvatarState))
                 {
-                    Debug.LogError("Failed to get previous ArenaAvatarState of enemy");
+                    Debug.LogError("Failed to get ArenaAvatarState of enemy");
                 }
 
                 enemyDigest
-                    = new ArenaPlayerDigest(previousEnemyAvatarState, previousEnemyArenaAvatarState);
-            }
+                    = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+            // }
 
             var random = new LocalRandom(eval.RandomSeed);
             // TODO!!!! ticket 수 만큼 돌려서 마지막 전투 결과를 띄운다.
