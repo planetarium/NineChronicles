@@ -2,13 +2,26 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
     public class RandomBuffButton : MonoBehaviour
     {
         [SerializeField]
+        private Button button = null;
+
+        [SerializeField]
         private TextMeshProUGUI starCountText = null;
+
+        private int _stageId;
+
+        private bool _hasEnoughStars;
+
+        private void Awake()
+        {
+            button.onClick.AddListener(OnClickButton);
+        }
 
         public void SetData(HackAndSlashBuffState state, int currentStageId)
         {
@@ -20,8 +33,15 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            _stageId = currentStageId;
+            _hasEnoughStars = state.StarCount >= row.MaxStar;
             starCountText.text = $"{state.StarCount}/{row.MaxStar}";
             gameObject.SetActive(true);
+        }
+
+        private void OnClickButton()
+        {
+            Widget.Find<BuffBonusPopup>().Show(_stageId, _hasEnoughStars);
         }
     }
 }

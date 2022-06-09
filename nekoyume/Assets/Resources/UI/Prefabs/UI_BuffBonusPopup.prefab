@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 224898616830980190}
   - component: {fileID: 222668420831161334}
   - component: {fileID: 95256010546860014}
-  - component: {fileID: 6355941756749141964}
+  - component: {fileID: 8492042957196577262}
   m_Layer: 5
   m_Name: UI_BuffBonusPopup
   m_TagString: Untagged
@@ -68,7 +68,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &6355941756749141964
+--- !u!114 &8492042957196577262
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -77,31 +77,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1907849136098932}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82b3d5870cad7044289220c2c78c9a2e, type: 3}
+  m_Script: {fileID: 11500000, guid: 79b8d656cc015a943be654e7d7fbfdd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  addressTitleText: {fileID: 4955539356675482337}
-  addressContentInputField: {fileID: 0}
-  addressCopyButton: {fileID: 0}
-  privateKeyTitleText: {fileID: 0}
-  privateKeyContentInputField: {fileID: 0}
-  privateKeyCopyButton: {fileID: 0}
-  closeButton: {fileID: 4712267050541225019}
-  warningText: {fileID: 0}
-  volumeMasterText: {fileID: 0}
-  volumeMasterSlider: {fileID: 0}
-  volumeMasterToggle: {fileID: 0}
-  muteTexts:
-  - {fileID: 0}
-  resetKeyStoreText: {fileID: 0}
-  resetStoreText: {fileID: 0}
-  confirmText: {fileID: 0}
-  redeemCodeText: {fileID: 0}
-  redeemCode: {fileID: 0}
-  resolutionDropdown: {fileID: 0}
-  windowedToggle: {fileID: 0}
+  normalButton: {fileID: 1517806122348923672}
+  advancedButton: {fileID: 1201621236616131713}
 --- !u!1 &210387742700253515
 GameObject:
   m_ObjectHideFlags: 0
@@ -408,7 +390,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 57cd2e2cc018b4799aa8ccc522c7e256, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4990c9bfed5794c54a74bd017d02191a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1136,7 +1118,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 57cd2e2cc018b4799aa8ccc522c7e256, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4990c9bfed5794c54a74bd017d02191a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3542,7 +3524,7 @@ GameObject:
   - component: {fileID: 7346998172841616409}
   - component: {fileID: 3835929102753291355}
   m_Layer: 5
-  m_Name: Text_Confirmed!
+  m_Name: Text_Guaranteed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3595,9 +3577,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Confirmed!
-
-'
+  m_text: Guaranteed!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -4126,7 +4106,7 @@ GameObject:
   - component: {fileID: 1385475298609102749}
   - component: {fileID: 1636073787866577413}
   m_Layer: 5
-  m_Name: Text_Confirmed!
+  m_Name: Text_Guaranteed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4179,9 +4159,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Confirmed!
-
-'
+  m_text: Guaranteed!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -4263,7 +4241,7 @@ GameObject:
   - component: {fileID: 5021115547318219868}
   - component: {fileID: 1392306549593904231}
   m_Layer: 5
-  m_Name: LibplanetButtons
+  m_Name: Buttons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4389,7 +4367,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 57cd2e2cc018b4799aa8ccc522c7e256, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4990c9bfed5794c54a74bd017d02191a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5113,7 +5091,7 @@ GameObject:
   - component: {fileID: 1605308449635286452}
   - component: {fileID: 8035845961740475358}
   m_Layer: 5
-  m_Name: Button_Right
+  m_Name: ButtonAdvanced
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5172,7 +5150,7 @@ MonoBehaviour:
   disabledObject: {fileID: 6067663932409378543}
   disabledText: {fileID: 2134122931250842801}
   effectOverlay: {fileID: 2280281905653075521}
-  conditionInfoKey: 
+  conditionInfoKey: UI_HAS_BUFF_NOT_ENOUGH_STAR
   showCostAlert: 1
   costObjects:
   - type: 1
@@ -5238,19 +5216,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!95 &8035845961740475358
 Animator:
   serializedVersion: 3
@@ -15271,7 +15237,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 377247300477404761}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8492042957196577262}
+        m_TargetAssemblyTypeName: Nekoyume.UI.Widget, Nekoyume
+        m_MethodName: Close
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!95 &735519432043355189
 Animator:
   serializedVersion: 3
@@ -15948,7 +15926,7 @@ GameObject:
   - component: {fileID: 7476817291134524545}
   - component: {fileID: 8787822776872531784}
   m_Layer: 5
-  m_Name: Grade_Confirmed_S
+  m_Name: Grade_Guaranteed_S
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16618,7 +16596,7 @@ GameObject:
   - component: {fileID: 7306009587153388459}
   - component: {fileID: 4848391096487254696}
   m_Layer: 5
-  m_Name: Button_Left
+  m_Name: ButtonNormal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16677,7 +16655,7 @@ MonoBehaviour:
   disabledObject: {fileID: 1394531090321194354}
   disabledText: {fileID: 6173659825702529242}
   effectOverlay: {fileID: 5051347804739722645}
-  conditionInfoKey: 
+  conditionInfoKey: UI_HAS_BUFF_NOT_ENOUGH_STAR
   showCostAlert: 1
   costObjects:
   - type: 1
@@ -16743,19 +16721,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!95 &4848391096487254696
 Animator:
   serializedVersion: 3
@@ -17641,7 +17607,7 @@ GameObject:
   - component: {fileID: 3912611590767362496}
   - component: {fileID: 7952144455000724362}
   m_Layer: 5
-  m_Name: Grade_Confirmed_A
+  m_Name: Grade_Guaranteed_A
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18065,7 +18031,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 57cd2e2cc018b4799aa8ccc522c7e256, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4990c9bfed5794c54a74bd017d02191a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -19595,7 +19561,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 57cd2e2cc018b4799aa8ccc522c7e256, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4990c9bfed5794c54a74bd017d02191a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -20964,7 +20930,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 57cd2e2cc018b4799aa8ccc522c7e256, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4990c9bfed5794c54a74bd017d02191a, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Arena;
@@ -298,7 +298,7 @@ namespace Nekoyume.UI
                         {
                             _joinButton.gameObject.SetActive(false);
                             _paymentButton.SetCondition(CheckChampionshipConditions);
-                            _paymentButton.SetCost(CostType.Crystal, (int)selectedRoundData.EntranceFee);
+                            _paymentButton.SetCost(CostType.Crystal, selectedRoundData.EntranceFee);
                             _paymentButton.UpdateObjects();
                             _paymentButton.Interactable = CheckChampionshipConditions();
                             _paymentButton.gameObject.SetActive(true);

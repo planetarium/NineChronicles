@@ -305,7 +305,7 @@ namespace Nekoyume.UI
 
                 ClearInformation();
                 _costNcg = row.Cost;
-                upgradeButton.SetCost(CostType.NCG, (int)row.Cost);
+                upgradeButton.SetCost(CostType.NCG, (long)row.Cost);
                 var slots = Find<CombinationSlotsPopup>();
                 upgradeButton.Interactable = slots.TryGetEmptyCombinationSlot(out var _);
 

@@ -276,6 +276,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<QuitSystem>());
             yield return null;
+            secondWidgets.Add(Widget.Create<BuffBonusPopup>());
+            yield return null;
 
             // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<RankingBattleResultPopup>());

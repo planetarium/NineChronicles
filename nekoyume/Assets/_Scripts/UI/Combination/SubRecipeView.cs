@@ -344,7 +344,7 @@ namespace Nekoyume.UI
                 var submittable = CheckNCGAndSlotIsEnough();
                 var cost = new ConditionalCostButton.CostParam(
                     CostType.NCG,
-                    (int)_selectedRecipeInfo.CostNCG);
+                    (long)_selectedRecipeInfo.CostNCG);
                 button.SetCost(cost);
                 button.Interactable = submittable;
                 button.gameObject.SetActive(true);
@@ -393,7 +393,7 @@ namespace Nekoyume.UI
                 var submittable = CheckNCGAndSlotIsEnough();
                 var costNCG = new ConditionalCostButton.CostParam(
                     CostType.NCG,
-                    (int)_selectedRecipeInfo.CostNCG);
+                    (long)_selectedRecipeInfo.CostNCG);
                 var sheet = Game.Game.instance.TableSheets.CrystalMaterialCostSheet;
                 
                 var crystalCost = 0 * CrystalCalculator.CRYSTAL;
@@ -404,7 +404,7 @@ namespace Nekoyume.UI
 
                 var costCrystal = new ConditionalCostButton.CostParam(
                     CostType.Crystal,
-                    (int) crystalCost.MajorUnit);
+                    (long)crystalCost.MajorUnit);
 
                 button.SetCost(costNCG, costCrystal);
                 button.Interactable = submittable;

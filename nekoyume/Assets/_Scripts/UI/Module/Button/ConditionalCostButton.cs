@@ -17,8 +17,8 @@ namespace Nekoyume.UI.Module
         public struct CostParam
         {
             public CostType type;
-            public int cost;
-            public CostParam(CostType type, int cost)
+            public long cost;
+            public CostParam(CostType type, long cost)
             {
                 this.type = type;
                 this.cost = cost;
@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Module
             UpdateObjects();
         }
 
-        public void SetCost(CostType type, int cost)
+        public void SetCost(CostType type, long cost)
         {
             _costMap.Clear();
             if (cost > 0)
@@ -153,7 +153,7 @@ namespace Nekoyume.UI.Module
             return CostType.None;
         }
 
-        protected bool CheckCostOfType(CostType type, int cost)
+        protected bool CheckCostOfType(CostType type, long cost)
         {
             switch (type)
             {
