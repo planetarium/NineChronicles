@@ -66,7 +66,7 @@ namespace Nekoyume.UI
         private ConditionalCostButton startButton;
 
         [SerializeField]
-        private RandomBuffButton randomBuffButton;
+        private BonusBuffButton randomBuffButton;
 
         [SerializeField]
         private Button closeButton;

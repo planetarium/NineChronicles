@@ -34,6 +34,13 @@ namespace Nekoyume.UI
                 Find<Grind>().Show();
             };
 
+            normalButton.OnClickSubject
+                .Subscribe(OnClickNormalButton)
+                .AddTo(gameObject);
+            advancedButton.OnClickSubject
+                .Subscribe(OnClickAdvancedButton)
+                .AddTo(gameObject);
+
             normalButton.OnClickDisabledSubject
                 .Subscribe(OnInsufficientStar)
                 .AddTo(gameObject);
@@ -54,20 +61,24 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        private bool CheckCost(BigInteger cost)
+        private bool CheckCrystal(BigInteger cost)
         {
             if (States.Instance.CrystalBalance.MajorUnit < cost)
             {
                 var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-                Find<PaymentPopup>().ShowAttract(_normalCost, message, _onAttract);
+                Find<PaymentPopup>().ShowAttract(
+                    _normalCost,
+                    message,
+                    L10nManager.Localize("UI_GO_GRINDING"),
+                    _onAttract);
                 return false;
             }
             return true;
         }
 
-        private void OnClickNormalButton()
+        private void OnClickNormalButton(ConditionalButton.State state)
         {
-            if (CheckCost(_normalCost))
+            if (CheckCrystal(_normalCost))
             {
                 var usageMessage = L10nManager.Localize("UI_NORMAL_BUFF_GACHA");
                 var balance = States.Instance.CrystalBalance;
@@ -84,9 +95,9 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnClickAdvancedButton()
+        private void OnClickAdvancedButton(ConditionalButton.State state)
         {
-            if (CheckCost(_advancedCost))
+            if (CheckCrystal(_advancedCost))
             {
                 var usageMessage = L10nManager.Localize("UI_ADVANCED_BUFF_GACHA");
                 var balance = States.Instance.CrystalBalance;
@@ -114,8 +125,9 @@ namespace Nekoyume.UI
         private void PushAction(bool advanced)
         {
             Find<BuffBonusLoadingScreen>().Show();
-            
+            Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
             ActionManager.Instance.HackAndSlashRandomBuff(advanced);
+            Close();
         }
     }
 }

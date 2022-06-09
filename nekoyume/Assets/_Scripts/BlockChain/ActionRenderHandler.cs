@@ -102,6 +102,7 @@ namespace Nekoyume.BlockChain
             HackAndSlash();
             MimisbrunnrBattle();
             HackAndSlashSweep();
+            HackAndSlashRandomBuff();
 
             // Craft
             CombinationConsumable();
@@ -272,6 +273,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnlockWorld)
+                .AddTo(_disposables);
+        }
+
+        private void HackAndSlashRandomBuff()
+        {
+            _actionRenderer.EveryRender<HackAndSlashRandomBuff>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseHackAndSlashRandomBuff)
                 .AddTo(_disposables);
         }
 
@@ -1453,6 +1463,31 @@ namespace Nekoyume.BlockChain
             {
                 Debug.LogError("Failed to update crystal balance : " + e);
             }
+        }
+
+        private void ResponseHackAndSlashRandomBuff(ActionBase.ActionEvaluation<HackAndSlashRandomBuff> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                Debug.LogError($"HackAndSlashRandomBuff exc : {eval.Exception.InnerException}");
+                return;
+            }
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateHackAndSlashBuffState(eval);
+            try
+            {
+                UpdateCrystalBalance(eval);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
+            }
+
+            Widget.Find<BuffBonusLoadingScreen>().Close();
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+            Widget.Find<BuffBonusResultPopup>().Show(States.Instance.HackAndSlashBuffState);
         }
 
         private void ResponseStake(ActionBase.ActionEvaluation<Stake> eval)

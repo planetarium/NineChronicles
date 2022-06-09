@@ -1,12 +1,13 @@
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class RandomBuffButton : MonoBehaviour
+    public class BonusBuffButton : MonoBehaviour
     {
         [SerializeField]
         private Button button = null;
@@ -41,7 +42,16 @@ namespace Nekoyume.UI.Module
 
         private void OnClickButton()
         {
-            Widget.Find<BuffBonusPopup>().Show(_stageId, _hasEnoughStars);
+            var buffState = States.Instance.HackAndSlashBuffState;
+
+            if (!buffState.BuffIds.Any())
+            {
+                Widget.Find<BuffBonusPopup>().Show(_stageId, _hasEnoughStars);
+            }
+            else
+            {
+                Widget.Find<BuffBonusResultPopup>().Show(buffState);
+            }
         }
     }
 }

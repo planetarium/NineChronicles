@@ -98,7 +98,7 @@ namespace Nekoyume.UI.Module
                         costText.text.text = cost.ToString();
                         costText.text.color = CheckCostOfType(costObject.type, cost) ?
                             Palette.GetColor(ColorType.ButtonEnabled) :
-                            Palette.GetColor(ColorType.ButtonDisabled);
+                            Palette.GetColor(ColorType.TextDenial);
                     }
                 }
             }
