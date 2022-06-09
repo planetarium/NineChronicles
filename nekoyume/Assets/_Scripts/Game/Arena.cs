@@ -29,9 +29,6 @@ namespace Nekoyume.Game
         private GameObject container;
 
         [SerializeField]
-        private ArenaBackground background;
-
-        [SerializeField]
         private Character.ArenaCharacter me;
 
         [SerializeField]
@@ -118,10 +115,14 @@ namespace Nekoyume.Game
         private IEnumerator CoStart(ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest)
         {
             container.SetActive(true);
-            background.gameObject.SetActive(true);
-            background.Show(3.0f);
+            me.gameObject.SetActive(true);
+            me.transform.localPosition = new Vector3(-2f, -1.2f, 0);
             me.Init(myDigest, enemy);
+
+            enemy.gameObject.SetActive(true);
+            enemy.transform.localPosition = new Vector3(2f, -1.2f, 0);
             enemy.Init(enemyDigest, me);
+
             _turnNumber = 1;
 
             Widget.Find<ArenaBattle>().Show(myDigest, enemyDigest);
@@ -153,12 +154,15 @@ namespace Nekoyume.Game
 
         private void OnEnd()
         {
-            background.gameObject.SetActive(false);
+            container.SetActive(false);
+            me.gameObject.SetActive(false);
+            enemy.gameObject.SetActive(false);
             objectPool.ReleaseAll();
             Game.instance.IsInWorld = false;
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
             Widget.Find<ArenaBoard>().Show(RxProps.ArenaParticipantsOrderedWithScore.Value);
+            _isPlaying = false;
         }
 
         public IEnumerator CoSpawnArenaPlayer(ArenaCharacter character)

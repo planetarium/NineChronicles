@@ -100,6 +100,7 @@ namespace Nekoyume.Game.Character
             _hudContainer ??= Widget.Create<HudContainer>(true);
             _speechBubble ??= Widget.Create<SpeechBubble>();
 
+            Animator.Idle();
             _costumes.Clear();
             _costumes.AddRange(digest.Costumes);
             _equipments.Clear();
@@ -682,7 +683,6 @@ namespace Nekoyume.Game.Character
 
         private void OnDeadStart()
         {
-            _hudContainer.UpdateAlpha(0);
             Animator.Die();
         }
 
