@@ -119,6 +119,7 @@ namespace Nekoyume.BlockChain
             RedeemCode();
             ChargeActionPoint();
             ClaimMonsterCollectionReward();
+            ClaimStakeReward();
 
             // Crystal Unlocks
             UnlockEquipmentRecipe();
@@ -353,6 +354,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseStake)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimStakeReward()
+        {
+            _actionRenderer.EveryRender<ClaimStakeReward>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimStakeReward)
                 .AddTo(_disposables);
         }
 
@@ -1237,7 +1247,7 @@ namespace Nekoyume.BlockChain
             // ~LocalLayer
 
             // Notification
-            UI.NotificationSystem.Push(
+            NotificationSystem.Push(
                 MailType.System,
                 L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
                 NotificationCell.NotificationType.Information);
@@ -1420,6 +1430,22 @@ namespace Nekoyume.BlockChain
             }
 
             UpdateAgentStateAsync(eval).Forget();
+        }
+
+        private void ResponseClaimStakeReward(ActionBase.ActionEvaluation<ClaimStakeReward> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            // Notification
+            NotificationSystem.Push(
+                MailType.System,
+                L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD_COMPLETE"),
+                NotificationCell.NotificationType.Information);
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
