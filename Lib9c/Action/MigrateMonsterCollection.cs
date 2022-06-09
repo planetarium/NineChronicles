@@ -60,7 +60,12 @@ namespace Nekoyume.Action
 
             var monsterCollectionState = new MonsterCollectionState(stateDict);
             var migratedStakeStateAddress = StakeState.DeriveAddress(context.Signer);
-            var migratedStakeState = new StakeState(migratedStakeStateAddress, monsterCollectionState.ReceivedBlockIndex);
+            var migratedStakeState = new StakeState(
+                migratedStakeStateAddress,
+                monsterCollectionState.StartedBlockIndex,
+                monsterCollectionState.ReceivedBlockIndex,
+                monsterCollectionState.ExpiredBlockIndex,
+                new StakeState.StakeAchievements());
 
             return states.SetState(monsterCollectionState.address, Null.Value)
                 .SetState(migratedStakeStateAddress, migratedStakeState.SerializeV2())

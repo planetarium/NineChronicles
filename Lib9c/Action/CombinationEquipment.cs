@@ -302,8 +302,9 @@ namespace Nekoyume.Action
                 var crystalFluctuationSheet = sheets.GetSheet<CrystalFluctuationSheet>();
                 var row = crystalFluctuationSheet.Values
                     .First(r => r.Type == CrystalFluctuationSheet.ServiceType.Combination);
-                var (dailyCostState, weeklyCostState, prevWeeklyCostState, beforePrevWeeklyCostState) = states.GetCrystalCostStates(context.BlockIndex, row.BlockInterval);
-                costCrystal = CrystalCalculator.CalculateCombinationCost(costCrystal, row: row, prevWeeklyCostState: prevWeeklyCostState, beforePrevWeeklyCostState: beforePrevWeeklyCostState);
+                var (dailyCostState, weeklyCostState, _, _) = states.GetCrystalCostStates(context.BlockIndex, row.BlockInterval);
+                // 1x fixed crystal cost.
+                costCrystal = CrystalCalculator.CalculateCombinationCost(costCrystal, row: row, prevWeeklyCostState: null, beforePrevWeeklyCostState: null);
                 // Update Daily Formula.
                 dailyCostState.Count++;
                 dailyCostState.CRYSTAL += costCrystal;

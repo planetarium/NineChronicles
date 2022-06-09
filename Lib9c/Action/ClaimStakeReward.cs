@@ -73,8 +73,21 @@ namespace Nekoyume.Action
                 avatarState.inventory.AddItem(item, (int) quantity * accumulatedRewards);
             }
 
-            stakeState.Claim(context.BlockIndex);
+            if (states.TryGetSheet<StakeRegularFixedRewardSheet>(
+                    out var stakeRegularFixedRewardSheet))
+            {
+                var fixedRewards = stakeRegularFixedRewardSheet[level].Rewards;
+                foreach (var reward in fixedRewards)
+                {
+                    ItemSheet.Row row = itemSheet[reward.ItemId];
+                    ItemBase item = row is MaterialItemSheet.Row materialRow
+                        ? ItemFactory.CreateTradableMaterial(materialRow)
+                        : ItemFactory.CreateItem(row, context.Random);
+                    avatarState.inventory.AddItem(item, reward.Count * accumulatedRewards);
+                }
+            }
 
+            stakeState.Claim(context.BlockIndex);
             return states.SetState(stakeState.address, stakeState.Serialize())
                 .SetState(avatarState.address, avatarState.SerializeV2())
                 .SetState(

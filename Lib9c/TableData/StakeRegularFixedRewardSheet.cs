@@ -1,19 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bencodex.Types;
+using Libplanet.Assets;
+using Nekoyume.Model.State;
 using static Nekoyume.TableData.TableExtensions;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class StakeRegularRewardSheet : Sheet<int, StakeRegularRewardSheet.Row>, IStakeRewardSheet
+    public class StakeRegularFixedRewardSheet : Sheet<int, StakeRegularFixedRewardSheet.Row>, IStakeRewardSheet
     {
         [Serializable]
         public class RewardInfo
         {
             protected bool Equals(RewardInfo other)
             {
-                return ItemId == other.ItemId && Rate == other.Rate;
+                return ItemId == other.ItemId && Count == other.Count;
             }
 
             public override bool Equals(object obj)
@@ -28,23 +32,23 @@ namespace Nekoyume.TableData
             {
                 unchecked
                 {
-                    return (ItemId * 397) ^ Rate;
+                    return (ItemId * 397) ^ Count;
                 }
             }
 
             public readonly int ItemId;
-            public readonly int Rate;
+            public readonly int Count;
 
             public RewardInfo(params string[] fields)
             {
                 ItemId = ParseInt(fields[0]);
-                Rate = ParseInt(fields[1]);
+                Count = ParseInt(fields[1]);
             }
 
-            public RewardInfo(int itemId, int rate)
+            public RewardInfo(int itemId, int count)
             {
                 ItemId = itemId;
-                Rate = rate;
+                Count = count;
             }
         }
 
@@ -68,7 +72,7 @@ namespace Nekoyume.TableData
             }
         }
 
-        public StakeRegularRewardSheet() : base(nameof(StakeRegularRewardSheet))
+        public StakeRegularFixedRewardSheet() : base(nameof(StakeRegularFixedRewardSheet))
         {
         }
 
