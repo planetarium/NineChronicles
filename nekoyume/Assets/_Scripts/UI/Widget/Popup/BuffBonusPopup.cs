@@ -31,6 +31,10 @@ namespace Nekoyume.UI
             _onAttract = () =>
             {
                 Close(true);
+                Find<Menu>().Close();
+                Find<WorldMap>().Close();
+                Find<StageInformation>().Close();
+                Find<BattlePreparation>().Close();
                 Find<Grind>().Show();
             };
 

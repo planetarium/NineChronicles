@@ -768,12 +768,19 @@ namespace Nekoyume.UI
             switch (stageType)
             {
                 case StageType.HackAndSlash:
+                    var buffState = States.Instance.HackAndSlashBuffState;
+                    var buffResult = Find<BuffBonusResultPopup>();
+                    var buffId = buffState != null && buffState.BuffIds.Any() ?
+                        buffResult.SelectedBuffId : null;
+                    buffResult.SelectedBuffId = null;
+
                     Game.Game.instance.ActionManager.HackAndSlash(
                         costumes,
                         equipments,
                         consumables,
                         _worldId,
-                        _stageId.Value
+                        _stageId.Value,
+                        buffId
                     ).Subscribe();
                     break;
                 case StageType.Mimisbrunnr:

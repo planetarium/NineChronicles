@@ -82,7 +82,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  buffViews:
+  bonusBuffViewData: {fileID: 11400000, guid: 99dd53a8a4f6af445ab50f3e081a7f5a, type: 2}
+  selectedBuffBg: {fileID: 2877063576143358293}
+  selectedBuffIcon: {fileID: 1889416411392604919}
+  selectedBuffText: {fileID: 6628972047112141141}
+  buffViewParents:
   - {fileID: 6147150062056210849}
   - {fileID: 5126516206812751854}
   - {fileID: 9177901368529328313}
@@ -5775,7 +5779,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 1914742501740125225}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
@@ -10782,7 +10786,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 1361700349350399775}
   m_OnClick:
     m_PersistentCalls:
       m_Calls:

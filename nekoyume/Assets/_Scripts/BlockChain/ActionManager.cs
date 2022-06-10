@@ -212,7 +212,8 @@ namespace Nekoyume.BlockChain
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
-            int stageId)
+            int stageId,
+            int? stageBuffId = null)
         {
             Analyzer.Instance.Track("Unity/HackAndSlash", new Value
             {
@@ -233,7 +234,7 @@ namespace Nekoyume.BlockChain
                 foods = foods.Select(f => f.ItemId).ToList(),
                 worldId = worldId,
                 stageId = stageId,
-                // stageBuffId = 1,
+                stageBuffId = stageBuffId,
                 avatarAddress = avatarAddress,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
