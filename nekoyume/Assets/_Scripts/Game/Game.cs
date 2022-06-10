@@ -179,7 +179,7 @@ namespace Nekoyume.Game
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
-            yield return StartCoroutine(CoSyncTableSheets());
+            yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             RxProps.Start(Agent, States, TableSheets);
             // Initialize MainCanvas second
@@ -409,37 +409,27 @@ namespace Nekoyume.Game
             TableSheets = new TableSheets(csv);
         }
 
-        // FIXME: Leave one between this or CoInitializeTableSheets()
-        private IEnumerator CoSyncTableSheets()
+        private async UniTask SyncTableSheetsAsync()
         {
-            yield return null;
-            var request =
-                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            yield return request;
-            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+            var container
+                = await Resources
+                    .LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath)
+                    .ToUniTask();
+            if (!(container is AddressableAssetsContainer addressableAssetsContainer))
             {
                 throw new FailedToLoadResourceException<AddressableAssetsContainer>(
                     AddressableAssetsContainerPath);
             }
 
-            var task = Task.Run(() =>
-            {
-                List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
-                var map = new ConcurrentDictionary<Address, string>();
-                var csv = new ConcurrentDictionary<string, string>();
-                Parallel.ForEach(csvAssets, asset => { map[Addresses.TableSheet.Derive(asset.name)] = asset.name; });
-                var values = Agent.GetStateBulk(map.Keys).Result;
-                Parallel.ForEach(values, kv =>
-                {
-                    if (kv.Value is Text tableCsv)
-                    {
-                        var table = tableCsv.ToDotnetString();
-                        csv[map[kv.Key]] = table;
-                    }
-                });
-                TableSheets = new TableSheets(csv);
-            });
-            yield return new WaitUntil(() => task.IsCompleted);
+            var csvAssets = addressableAssetsContainer.tableCsvAssets;
+            var map = csvAssets.ToDictionary(
+                asset => Addresses.TableSheet.Derive(asset.name),
+                asset => asset.name);
+            var dict = await Agent.GetStateBulk(map.Keys);
+            var csv = dict.ToDictionary(
+                pair => map[pair.Key],
+                pair => pair.Value.ToDotnetString());
+            TableSheets = new TableSheets(csv);
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()
