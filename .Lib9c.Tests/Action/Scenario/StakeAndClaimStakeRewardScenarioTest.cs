@@ -651,15 +651,15 @@ namespace Lib9c.Tests.Action.Scenario
         }
 
         [Theory]
-        [InlineData(500, 50, 499, StakeState.LockupInterval - 50)]
-        [InlineData(500, 499, 500, StakeState.LockupInterval - 5000)]
-        [InlineData(5000, 500, 4999, StakeState.LockupInterval - 50000)]
-        [InlineData(5000, 4999, 5000, StakeState.LockupInterval - 50000)]
-        [InlineData(50000, 5000, 49999, StakeState.LockupInterval - 50000)]
-        [InlineData(50000, 49999, 50000, StakeState.LockupInterval - 50000)]
-        [InlineData(500000, 50000, 499999, StakeState.LockupInterval - 50000)]
-        [InlineData(500000, 499999, 500000, StakeState.LockupInterval - 50000)]
-        [InlineData(500000000, 500000, 500000000, StakeState.LockupInterval - 50000)]
+        [InlineData(500, 50, 499, StakeState.LockupInterval - 1)]
+        [InlineData(500, 499, 500, StakeState.LockupInterval - 1)]
+        [InlineData(5000, 500, 4999, StakeState.LockupInterval - 1)]
+        [InlineData(5000, 4999, 5000, StakeState.LockupInterval - 1)]
+        [InlineData(50000, 5000, 49999, StakeState.LockupInterval - 1)]
+        [InlineData(50000, 49999, 50000, StakeState.LockupInterval - 1)]
+        [InlineData(500000, 50000, 499999, StakeState.LockupInterval - 1)]
+        [InlineData(500000, 499999, 500000, StakeState.LockupInterval - 1)]
+        [InlineData(500000000, 500000, 500000000, StakeState.LockupInterval - 1)]
         public void StakeAndStakeMore(long initialBalance, long stakeAmount, long newStakeAmount, long newStakeBlockIndex)
         {
             // Validate testcases
