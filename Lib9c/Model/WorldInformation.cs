@@ -153,9 +153,9 @@ namespace Nekoyume.Model
 
             if (openAllOfWorldsAndStages)
             {
-                foreach (var row in orderedSheet)
+                foreach (var row in orderedSheet.Take(1))
                 {
-                    _worlds.Add(row.Id, new World(row, blockIndex, blockIndex, row.StageEnd));
+                    _worlds.Add(row.Id, new World(row, blockIndex, blockIndex, 15));
                 }
             }
             else

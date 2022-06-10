@@ -58,8 +58,8 @@ _250001,속도 증가(전체),Normal,Buff,SpeedBuff,Ally,1,1 // 미구현
 300000,힐,Normal,Heal,Heal,Self,1,10
 _300001,힐(전체),Normal,Heal,Heal,Ally,1,1 // 미구현
 400000,SS 올스탯(테스트),Normal,Buff,Buff,Self,1,999
-400001,SS 스피드 체력(테스트),Normal,Buff,Buff,Self,1,999
-400002,SS 공격력 명중(테스트),Normal,Buff,Buff,Self,1,999
+400001,SS 스피드 체력(테스트),Normal,Buff,SpeedBuff,Self,1,999
+400002,SS 공격력 명중(테스트),Normal,Buff,AttackBuff,Self,1,999
 400003,S 체력(테스트),Normal,Buff,HPBuff,Self,1,999
 400004,S 공격력(테스트),Normal,Buff,AttackBuff,Self,1,999
 400005,S 속도(테스트),Normal,Buff,SpeedBuff,Self,1,999
