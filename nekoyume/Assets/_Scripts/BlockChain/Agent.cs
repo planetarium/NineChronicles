@@ -16,7 +16,6 @@ using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -55,7 +54,8 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class Agent : MonoBehaviour, IDisposable, IAgent
     {
-        private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us.planetarium.dev:3478/";
+        private const string DefaultIceServer =
+            "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn-us.planetarium.dev:3478/";
 
         private const int MaxSeed = 3;
 
@@ -132,7 +132,7 @@ namespace Nekoyume.BlockChain
             {
                 Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Debug.Log("Secp256K1CryptoBackend initialize failed. Use default backend.");
                 Debug.LogException(e);
@@ -238,7 +238,6 @@ namespace Nekoyume.BlockChain
 
             _cancellationTokenSource = new CancellationTokenSource();
         }
-
 
 
         public void Dispose()
@@ -352,6 +351,7 @@ namespace Nekoyume.BlockChain
             {
                 Directory.CreateDirectory(parentDir);
             }
+
             DeletePreviousStore();
         }
 
@@ -425,22 +425,28 @@ namespace Nekoyume.BlockChain
                 Currency goldCurrency =
                     new GoldCurrencyState((Dictionary)await GetStateAsync(GoldCurrencyState.Address)).Currency;
                 await States.Instance.SetAgentStateAsync(
-                    await GetStateAsync(Address) is Bencodex.Types.Dictionary agentDict
+                    await GetStateAsync(Address) is Dictionary agentDict
                         ? new AgentState(agentDict)
                         : new AgentState(Address));
                 States.Instance.SetGoldBalanceState(new GoldBalanceState(Address,
                     await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
-                if (await GetStateAsync(StakeState.DeriveAddress(States.Instance.AgentState.address)) is Dictionary stakeDict)
+                if (await GetStateAsync(
+                        StakeState.DeriveAddress(States.Instance.AgentState.address))
+                    is Dictionary stakeDict)
                 {
                     var stakingState = new StakeState(stakeDict);
+                    var balance = await GetBalanceAsync(stakingState.address,
+                        goldCurrency);
                     var level =
                         Game.TableSheets.Instance.StakeRegularRewardSheet
                             .FindLevelByStakedAmount(
                                 Address,
-                                await GetBalanceAsync(stakingState.address, CrystalCalculator.CRYSTAL));
-                    States.Instance.SetStakeState(stakingState, level);
+                                balance);
+                    States.Instance.SetStakeState(stakingState,
+                        new GoldBalanceState(stakingState.address, balance),
+                        level);
                 }
                 else
                 {
@@ -451,7 +457,16 @@ namespace Nekoyume.BlockChain
                     if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
                     {
                         var monsterCollectionState = new MonsterCollectionState(mcDict);
-                        States.Instance.SetMonsterCollectionState(monsterCollectionState);
+                        var balance = await GetBalanceAsync(monsterCollectionAddress,
+                            goldCurrency);
+                        var level =
+                            Game.TableSheets.Instance.StakeRegularRewardSheet
+                                .FindLevelByStakedAmount(
+                                    Address,
+                                    balance);
+                        States.Instance.SetMonsterCollectionState(monsterCollectionState,
+                            new GoldBalanceState(monsterCollectionAddress, balance),
+                            level);
                     }
                 }
 
@@ -534,7 +549,7 @@ namespace Nekoyume.BlockChain
             var uri = new Uri(iceServerInfo);
             string[] userInfo = uri.UserInfo.Split(':');
 
-            return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
+            return new IceServer(new[] { uri }, userInfo[0], userInfo[1]);
         }
 
         private static BaseStore LoadStore(string path, string storageType)
@@ -670,13 +685,14 @@ namespace Nekoyume.BlockChain
                 Cheat.Display("Logs", _tipInfo);
 
                 StringBuilder log = new StringBuilder($"Last 10 tips :\n");
-                foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
+                foreach (var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
                 {
                     log.Append($"[{block.Index}] {block.Hash}\n");
                     log.Append($" -Miner : {block.Miner.ToString()}\n");
                     log.Append($" -Created at : {block.Timestamp}\n");
                     log.Append($" -Appended at : {appendedTime}\n");
                 }
+
                 Cheat.Display("Blocks", log.ToString());
                 yield return new WaitForSeconds(0.1f);
             }
@@ -855,7 +871,7 @@ namespace Nekoyume.BlockChain
                     yield return new WaitUntil(() => task.IsCompleted);
                     foreach (var action in actions)
                     {
-                        var ga = (GameAction) action.InnerAction;
+                        var ga = (GameAction)action.InnerAction;
                         _transactions.TryAdd(ga.Id, task.Result.Id);
                     }
                 }
@@ -901,7 +917,7 @@ namespace Nekoyume.BlockChain
             var sleepInterval = new WaitForSeconds(15);
             while (true)
             {
-                var task = Task.Run(async() => await miner.MineBlockAsync(_cancellationTokenSource.Token));
+                var task = Task.Run(async () => await miner.MineBlockAsync(_cancellationTokenSource.Token));
                 yield return new WaitUntil(() => task.IsCompleted);
 #if UNITY_EDITOR
                 yield return sleepInterval;
@@ -965,7 +981,7 @@ namespace Nekoyume.BlockChain
 
                 Debug.LogWarning($"Save QueuedActions : {_queuedActions.Count}");
                 while (_queuedActions.TryDequeue(out var action))
-                    actionsList.Add((GameAction) action.InnerAction);
+                    actionsList.Add((GameAction)action.InnerAction);
 
                 File.WriteAllBytes(path, ByteSerializer.Serialize(actionsList));
             }
@@ -974,10 +990,7 @@ namespace Nekoyume.BlockChain
         private static void DeletePreviousStore()
         {
             // 백업 저장소 지우는 데에 시간이 꽤 걸리기 때문에 백그라운드 잡으로 스폰
-            Task.Run(() =>
-            {
-                StoreUtils.ClearBackupStores(DefaultStoragePath);
-            });
+            Task.Run(() => { StoreUtils.ClearBackupStores(DefaultStoragePath); });
         }
 
         private IEnumerator CoCheckStagedTxs()

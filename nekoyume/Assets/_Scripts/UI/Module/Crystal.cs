@@ -13,20 +13,19 @@ namespace Nekoyume.UI.Module
 
     public class Crystal : AlphaAnimateModule
     {
-        [SerializeField]
-        private TextMeshProUGUI text = null;
+        [SerializeField] private TextMeshProUGUI text = null;
 
-        [SerializeField]
-        private GameObject loadingObject;
+        [SerializeField] private GameObject loadingObject;
 
-        [SerializeField]
-        private Transform iconTransform;
+        [SerializeField] private Transform iconTransform;
 
-        public bool NowCharging => loadingObject.activeSelf;
+        public bool NowLoading => loadingObject.activeSelf;
 
         public Vector3 IconPosition => iconTransform.position;
 
         private IDisposable _disposable;
+
+        private int _loadingCount = 0;
 
         protected override void OnEnable()
         {
@@ -43,8 +42,17 @@ namespace Nekoyume.UI.Module
 
         public void SetProgressCircle(bool isVisible)
         {
-            loadingObject.SetActive(isVisible);
-            text.enabled = !isVisible;
+            if (isVisible)
+            {
+                _loadingCount++;
+            }
+            else if (_loadingCount > 0)
+            {
+                _loadingCount--;
+            }
+
+            loadingObject.SetActive(_loadingCount > 0);
+            text.enabled = _loadingCount <= 0;
         }
 
         private void UpdateCrystal()

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1157442911315655149}
   - component: {fileID: 6531245357102850630}
+  - component: {fileID: 5530955972664623431}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -37,8 +38,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 106.00012}
-  m_SizeDelta: {x: -200, y: -264.00024}
+  m_AnchoredPosition: {x: 0, y: 107}
+  m_SizeDelta: {x: -200, y: -266}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6531245357102850630
 MonoBehaviour:
@@ -58,7 +59,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 16
+  m_Spacing: 22
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -66,6 +67,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!225 &5530955972664623431
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 56962497292084984}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &731049050673715554
 GameObject:
   m_ObjectHideFlags: 0
@@ -788,6 +801,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7656153722608947791}
   - component: {fileID: 805960140674245084}
+  - component: {fileID: 4672678949458906074}
   m_Layer: 5
   m_Name: Buttons
   m_TagString: Untagged
@@ -842,6 +856,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!225 &4672678949458906074
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4239043344873619643}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5407126150094191624
 GameObject:
   m_ObjectHideFlags: 0
@@ -854,6 +880,7 @@ GameObject:
   - component: {fileID: 546623384315540820}
   - component: {fileID: 2509240734351868611}
   - component: {fileID: 7655777289154946791}
+  - component: {fileID: 1020539374827439931}
   m_Layer: 5
   m_Name: TextCrystal
   m_TagString: Untagged
@@ -993,6 +1020,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
   m_VerticalFit: 0
+--- !u!225 &1020539374827439931
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5407126150094191624}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5720851909369663088
 GameObject:
   m_ObjectHideFlags: 0
@@ -1275,7 +1314,7 @@ Animator:
   m_GameObject: {fileID: 6442027012497804290}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 0cd5d2c86a44744489151e7b78facb01, type: 2}
+  m_Controller: {fileID: 22100000, guid: 9d3c3819c1d35431a8d28bda5040a34d, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2121,6 +2160,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3366276964606696237, guid: 87642c5447ef73e458a3cb21ab7d2ec4,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4285071173
+      objectReference: {fileID: 0}
     - target: {fileID: 3480431803736383106, guid: 87642c5447ef73e458a3cb21ab7d2ec4,
         type: 3}
       propertyPath: m_RootOrder
@@ -2294,6 +2338,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3366276964606696237, guid: 87642c5447ef73e458a3cb21ab7d2ec4,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4285071173
+      objectReference: {fileID: 0}
     - target: {fileID: 3480431803736383106, guid: 87642c5447ef73e458a3cb21ab7d2ec4,
         type: 3}
       propertyPath: m_RootOrder
@@ -2466,6 +2515,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3366276964606696237, guid: 87642c5447ef73e458a3cb21ab7d2ec4,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4285071173
       objectReference: {fileID: 0}
     - target: {fileID: 3480431803736383106, guid: 87642c5447ef73e458a3cb21ab7d2ec4,
         type: 3}
@@ -2644,6 +2698,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3366276964606696237, guid: 87642c5447ef73e458a3cb21ab7d2ec4,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4285071173
       objectReference: {fileID: 0}
     - target: {fileID: 3480431803736383106, guid: 87642c5447ef73e458a3cb21ab7d2ec4,
         type: 3}

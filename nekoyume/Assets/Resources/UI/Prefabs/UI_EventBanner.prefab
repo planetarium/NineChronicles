@@ -996,31 +996,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Texture
       value: 
-      objectReference: {fileID: 2800000, guid: e69facdc6183b43c087f1a161df5832a, type: 3}
+      objectReference: {fileID: 2800000, guid: 8cc32cf6b2b394340a6ec38d852c2867, type: 3}
     - target: {fileID: 1460102931437610913, guid: 2831ed4426194424ca9f1ac772bbd698,
         type: 3}
       propertyPath: url
-      value: https://onboarding.nine-chronicles.com/earn
+      value: https://onboarding.nine-chronicles.com/earn?nc_address={0}
       objectReference: {fileID: 0}
     - target: {fileID: 1460102931437610913, guid: 2831ed4426194424ca9f1ac772bbd698,
         type: 3}
       propertyPath: endDateTime
-      value: 2022-05-12T23:59:59
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 1460102931437610913, guid: 2831ed4426194424ca9f1ac772bbd698,
         type: 3}
       propertyPath: useDateTime
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1460102931437610913, guid: 2831ed4426194424ca9f1ac772bbd698,
         type: 3}
       propertyPath: beginDateTime
-      value: 2022-04-18T00:00:00
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1460102931437610913, guid: 2831ed4426194424ca9f1ac772bbd698,
+        type: 3}
+      propertyPath: useAgentAddress
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6027921240644394760, guid: 2831ed4426194424ca9f1ac772bbd698,
         type: 3}
       propertyPath: m_Name
-      value: Event_Banner_Item_RewardBoosting
+      value: Event_Banner_Item_Daily_Reward
       objectReference: {fileID: 0}
     - target: {fileID: 6995089702164478004, guid: 2831ed4426194424ca9f1ac772bbd698,
         type: 3}

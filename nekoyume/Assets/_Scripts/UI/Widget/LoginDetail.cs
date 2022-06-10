@@ -1,5 +1,4 @@
 using System;
-using Nekoyume.BlockChain;
 using Nekoyume.State;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
@@ -12,6 +11,7 @@ using Nekoyume.Model.State;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -125,7 +125,7 @@ namespace Nekoyume.UI
             inputBox.Show("UI_INPUT_NAME", "UI_NICKNAME_CONDITION");
         }
 
-        public void CreateAndLogin(string nickName)
+        private void CreateAndLogin(string nickName)
         {
             if (!Regex.IsMatch(nickName, GameConfig.AvatarNickNamePattern))
             {
@@ -142,19 +142,26 @@ namespace Nekoyume.UI
                     _costumes[ItemSubType.EyeCostume][_index[ItemSubType.EyeCostume]],
                     _costumes[ItemSubType.EarCostume][_index[ItemSubType.EarCostume]],
                     _costumes[ItemSubType.TailCostume][_index[ItemSubType.TailCostume]])
-                .Subscribe(onNext: async eval =>
-                    {
-                        var avatarState = await States.Instance.SelectAvatarAsync(_selectedIndex);
-                        StartCoroutine(CreateAndLoginAnimation(avatarState));
-                        ActionRenderHandler.RenderQuest(avatarState.address,
-                            avatarState.questList.completedQuestIds);
-                    },
-                    e =>
-                    {
-                        Game.Game.PopupError(e).Forget();
-                        Find<GrayLoadingScreen>().Close();
-                    });
+                .DoOnError(e =>
+                {
+                    Game.Game.PopupError(e).Forget();
+                    Find<GrayLoadingScreen>().Close();
+                })
+                .Subscribe();
             AudioController.PlayClick();
+        }
+
+        public void OnRenderCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
+        {
+            if (eval.Exception is { })
+            {
+                // NOTE: If eval has an exception then
+                // UIs will handled in other places.
+                return;
+            }
+
+            var avatarState = States.Instance.CurrentAvatarState;
+            StartCoroutine(CreateAndLoginAnimation(avatarState));
         }
 
         private IEnumerator CreateAndLoginAnimation(AvatarState state)

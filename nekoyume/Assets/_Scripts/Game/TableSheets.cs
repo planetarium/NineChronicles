@@ -24,7 +24,7 @@ namespace Nekoyume.Game
                 }
 
                 var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
-                var iSheet = (ISheet) sheetObject;
+                var iSheet = (ISheet)sheetObject;
                 if (iSheet is null)
                 {
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
@@ -148,7 +148,7 @@ namespace Nekoyume.Game
         public ArenaSheet ArenaSheet { get; private set; }
 
         public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
-        
+
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
         public void ItemSheetInitialize()

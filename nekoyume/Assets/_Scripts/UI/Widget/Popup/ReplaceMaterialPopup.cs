@@ -8,16 +8,15 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using System.Collections.Immutable;
+using System;
 
 namespace Nekoyume.UI
 {
     public class ReplaceMaterialPopup : TwoButtonSystem
     {
-        [SerializeField]
-        private List<CostItemView> itemViews = null;
+        [SerializeField] private List<CostItemView> itemViews = null;
 
-        [SerializeField]
-        private TextMeshProUGUI costText = null;
+        [SerializeField] private TextMeshProUGUI costText = null;
 
         public void Show(Dictionary<int, int> materials,
             System.Action confirmCallback)
@@ -55,10 +54,19 @@ namespace Nekoyume.UI
             }
 
             BigInteger cost = 0;
+            var hasUnreplaceableMaterial = false;
             foreach (var pair in materials)
             {
-                cost += CrystalCalculator.CalculateMaterialCost(
-                    pair.Key, pair.Value, Game.Game.instance.TableSheets.CrystalMaterialCostSheet).MajorUnit;
+                try
+                {
+                    cost += CrystalCalculator.CalculateMaterialCost(
+                        pair.Key, pair.Value, Game.Game.instance.TableSheets.CrystalMaterialCostSheet).MajorUnit;
+                }
+                catch (ArgumentException)
+                {
+                    hasUnreplaceableMaterial = true;
+                    continue;
+                }
             }
 
             costText.text = cost.ToString();
@@ -69,9 +77,17 @@ namespace Nekoyume.UI
                 cost, currencyText, usageText);
             var yes = L10nManager.Localize("UI_YES");
             var no = L10nManager.Localize("UI_NO");
-            confirmCallback = cost <= States.Instance.CrystalBalance.MajorUnit ?
-                confirmCallback :
-                () => OnInsufficientCost(cost);
+
+            if (hasUnreplaceableMaterial)
+            {
+                confirmCallback = () => OnInsufficientCost(cost);
+            }
+            else
+            {
+                confirmCallback = cost <= States.Instance.CrystalBalance.MajorUnit
+                    ? confirmCallback
+                    : () => OnInsufficientCost(cost);
+            }
 
             Show(content, yes, no, confirmCallback);
         }
@@ -79,11 +95,15 @@ namespace Nekoyume.UI
         private void OnInsufficientCost(BigInteger cost)
         {
             var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
-            Find<PaymentPopup>().ShowAttract(cost, message, () =>
-            {
-                Find<Craft>().Close(true);
-                Find<Grind>().Show();
-            });
+            Find<PaymentPopup>().ShowAttract(
+                cost,
+                message,
+                L10nManager.Localize("UI_GO_GRINDING"),
+                () =>
+                {
+                    Find<Craft>().Close(true);
+                    Find<Grind>().Show();
+                });
         }
     }
 }

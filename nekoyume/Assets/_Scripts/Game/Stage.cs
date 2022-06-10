@@ -153,6 +153,7 @@ namespace Nekoyume.Game
                     _battleCoroutine = null;
                     objectPool.ReleaseAll();
                 }
+
                 _battleLog = log;
                 PlayStage(_battleLog);
             }
@@ -176,6 +177,7 @@ namespace Nekoyume.Game
                     _battleCoroutine = null;
                     objectPool.ReleaseAll();
                 }
+
                 _battleLog = tuple.battleLog;
                 _rewards = tuple.rewards;
                 PlayRankingBattle(_battleLog);
@@ -379,6 +381,7 @@ namespace Nekoyume.Game
             {
                 yield return StartCoroutine(e.CoExecute(this));
             }
+
             StopCoroutine(_positionCheckCoroutine);
             _positionCheckCoroutine = null;
             yield return StartCoroutine(CoRankingBattleEnd(log));
@@ -539,6 +542,7 @@ namespace Nekoyume.Game
                             enemy.Animator.Win();
                         }
                     }
+
                     yield return new WaitForSeconds(1f);
                 }
             }
@@ -573,6 +577,7 @@ namespace Nekoyume.Game
                     _stageRunningPlayer.Animator.TurnOver();
                     yield return new WaitForSeconds(2f);
                 }
+
                 ReleaseWhiteList.Remove(_stageRunningPlayer.gameObject);
                 objectPool.ReleaseExcept(ReleaseWhiteList);
             }
@@ -623,17 +628,17 @@ namespace Nekoyume.Game
                         {
                             if (stageId == worldRow.StageEnd)
                             {
-                                _battleResultModel.NextState = IsRepeatStage ?
-                                    BattleResultPopup.NextState.RepeatStage :
-                                    BattleResultPopup.NextState.GoToMain;
+                                _battleResultModel.NextState = IsRepeatStage
+                                    ? BattleResultPopup.NextState.RepeatStage
+                                    : BattleResultPopup.NextState.GoToMain;
                             }
                         }
                     }
                     else
                     {
-                        _battleResultModel.NextState = IsRepeatStage ?
-                            BattleResultPopup.NextState.RepeatStage :
-                            BattleResultPopup.NextState.GoToMain;
+                        _battleResultModel.NextState = IsRepeatStage
+                            ? BattleResultPopup.NextState.RepeatStage
+                            : BattleResultPopup.NextState.GoToMain;
                     }
                 }
             }
@@ -779,6 +784,7 @@ namespace Nekoyume.Game
             battle.EnemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
             yield return StartCoroutine(spawner.CoSetData(character, new Vector3(8f, -1.2f)));
         }
+
         #region Skill
 
         public IEnumerator CoNormalAttack(
@@ -884,7 +890,7 @@ namespace Nekoyume.Game
             var infos = skillInfos.ToList();
             var infosFirstWaveTurn = infos.First().WaveTurn;
             var time = Time.time;
-            yield return new WaitUntil(() => Time.time - time > 5f ||  waveTurn == infosFirstWaveTurn);
+            yield return new WaitUntil(() => Time.time - time > 5f || waveTurn == infosFirstWaveTurn);
             yield return StartCoroutine(CoBeforeSkill(character));
 
             yield return StartCoroutine(func(infos));
@@ -1174,12 +1180,14 @@ namespace Nekoyume.Game
                 {
                     Debug.Log("player is null");
                 }
+
                 if (ch is Player)
                 {
                     character = characters.FirstOrDefault(x =>
                         x.GetComponent<SortingGroup>().sortingLayerName == "Character");
                 }
             }
+
             character?.Set(caster);
 
             return character;
