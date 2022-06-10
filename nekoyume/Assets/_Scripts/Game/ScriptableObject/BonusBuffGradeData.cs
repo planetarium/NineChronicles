@@ -17,10 +17,15 @@ namespace Nekoyume.Game.ScriptableObject
         [SerializeField]
         private Sprite bgSprite;
 
+        [SerializeField]
+        private Sprite smallBgSprite;
+
         public CrystalRandomBuffSheet.Row.BuffRank BuffRank => buffRank;
 
         public Sprite IconSprite => iconSprite;
 
         public Sprite BgSprite => bgSprite;
+
+        public Sprite SmallBgSprite => smallBgSprite;
     }
 }

@@ -11,11 +11,11 @@ namespace Nekoyume
         order = int.MaxValue)]
     public class BonusBuffViewDataScriptableObject : ScriptableObject
     {
-        [SerializeField]
-        private SkillCategory fallbackCategory;
+        [field: SerializeField]
+        public Sprite FallbackIconSprite { get; set; }
 
-        [SerializeField]
-        private CrystalRandomBuffSheet.Row.BuffRank fallbackBuffRank;
+        [field: SerializeField]
+        public CrystalRandomBuffSheet.Row.BuffRank FallbackBuffRank { get; set; }
 
         [SerializeField]
         private List<BonusBuffIconData> bonusBuffIconDatas;
@@ -29,7 +29,7 @@ namespace Nekoyume
             data = bonusBuffIconDatas.FirstOrDefault(x => x.SkillCategory == skillCategory);
             if (data is null)
             {
-                data = bonusBuffIconDatas.FirstOrDefault(x => x.SkillCategory == fallbackCategory);
+                return FallbackIconSprite;
             }
 
             return data.IconSprite;
@@ -41,7 +41,7 @@ namespace Nekoyume
             data = bonusBuffGradeDatas.FirstOrDefault(x => x.BuffRank == buffRank);
             if (data is null)
             {
-                data = bonusBuffGradeDatas.FirstOrDefault(x => x.BuffRank == fallbackBuffRank);
+                data = bonusBuffGradeDatas.FirstOrDefault(x => x.BuffRank == FallbackBuffRank);
             }
 
             return data;

@@ -1487,7 +1487,8 @@ namespace Nekoyume.BlockChain
 
             Widget.Find<BuffBonusLoadingScreen>().Close();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
-            Widget.Find<BuffBonusResultPopup>().Show(States.Instance.HackAndSlashBuffState);
+            var buffState = States.Instance.HackAndSlashBuffState;
+            Widget.Find<BuffBonusResultPopup>().Show(buffState.StageId, buffState);
         }
 
         private void ResponseStake(ActionBase.ActionEvaluation<Stake> eval)

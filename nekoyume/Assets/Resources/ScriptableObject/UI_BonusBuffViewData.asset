@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a16fb586729b614cab12b00300cb5fa, type: 3}
   m_Name: UI_BonusBuffViewData
   m_EditorClassIdentifier: 
-  fallbackCategory: 11
-  fallbackBuffRank: 4
+  <FallbackIconSprite>k__BackingField: {fileID: 21300000, guid: 39d46914ec312d8469b6bb4740099db4,
+    type: 3}
+  <FallbackBuffRank>k__BackingField: 1
   bonusBuffIconDatas:
   - skillCategory: 5
     iconSprite: {fileID: 21300000, guid: c4377040b973b41eb82d99b5e2022d75, type: 3}
@@ -33,12 +34,16 @@ MonoBehaviour:
   - buffRank: 1
     iconSprite: {fileID: 21300000, guid: f15bf6bec64cf82459fe705a0f8024ec, type: 3}
     bgSprite: {fileID: 21300000, guid: 73cb9b15da45a6c498e8887afb4c0fa5, type: 3}
+    smallBgSprite: {fileID: 21300000, guid: ded920c499c5b7948976f05c7b554959, type: 3}
   - buffRank: 2
     iconSprite: {fileID: 21300000, guid: 3b669d23596674942885f501b559505b, type: 3}
     bgSprite: {fileID: 21300000, guid: ccaf8329f07255f499c0bc8376e27dd0, type: 3}
+    smallBgSprite: {fileID: 21300000, guid: a2d1f5e68537cf04ea4c5e13c9ddbc89, type: 3}
   - buffRank: 3
     iconSprite: {fileID: 21300000, guid: e6d998a86151ab94f8157ff8f4285d1c, type: 3}
     bgSprite: {fileID: 21300000, guid: 49914665360c7dd41a5a01a1bcdbdcb9, type: 3}
+    smallBgSprite: {fileID: 21300000, guid: 3e0660bc845693445ba7e03b782e9782, type: 3}
   - buffRank: 4
     iconSprite: {fileID: 21300000, guid: 2eb8497622881d04aad7ff63b4894baf, type: 3}
     bgSprite: {fileID: 21300000, guid: a17d9639b997784438094f272394c8de, type: 3}
+    smallBgSprite: {fileID: 21300000, guid: 88d51e7e327427048826ed48bc9eae22, type: 3}

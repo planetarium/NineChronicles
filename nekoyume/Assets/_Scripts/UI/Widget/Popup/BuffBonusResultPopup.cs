@@ -8,6 +8,7 @@ using Nekoyume.TableData.Crystal;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.State;
     using TMPro;
     using UniRx;
 
@@ -15,6 +16,9 @@ namespace Nekoyume.UI
     {
         [SerializeField]
         private BonusBuffViewDataScriptableObject bonusBuffViewData;
+
+        [SerializeField]
+        private Button retryButton = null;
 
         [SerializeField]
         private Image selectedBuffBg = null;
@@ -30,10 +34,12 @@ namespace Nekoyume.UI
 
         public int? SelectedBuffId { get; set; }
 
+        private int _stageId;
+
         private readonly Dictionary<GameObject, BonusBuffView> buffViewMap
             = new Dictionary<GameObject, BonusBuffView>();
 
-        private readonly Subject<CrystalRandomBuffSheet.Row> OnSelectedSubject
+        public readonly Subject<CrystalRandomBuffSheet.Row> OnBuffSelectedSubject
             = new Subject<CrystalRandomBuffSheet.Row>();
 
         protected override void Awake()
@@ -47,7 +53,7 @@ namespace Nekoyume.UI
                 view.BonusBuffViewData = bonusBuffViewData;
             }
 
-            OnSelectedSubject.Subscribe(row =>
+            OnBuffSelectedSubject.Subscribe(row =>
             {
                 foreach (var viewParent in buffViewParents)
                 {
@@ -68,10 +74,12 @@ namespace Nekoyume.UI
                 }
             })
             .AddTo(gameObject);
+            retryButton.onClick.AddListener(Retry);
         }
 
-        public void Show(HackAndSlashBuffState state)
+        public void Show(int stageId, HackAndSlashBuffState state)
         {
+            _stageId = stageId;
             foreach (var viewParent in buffViewParents)
             {
                 viewParent.SetActive(false);
@@ -94,15 +102,25 @@ namespace Nekoyume.UI
             {
                 var viewParent = buffViewParents.First(x => !x.activeSelf);
                 var view = buffViewMap[viewParent];
-                view.SetData(buff, OnSelectedSubject.OnNext);
+                view.SetData(buff, OnBuffSelectedSubject.OnNext);
                 viewParent.SetActive(true);
             }
 
             var selectedBuff = SelectedBuffId.HasValue ?
                 buffs.First(x => x.Id == SelectedBuffId) : buffs.First();
             SelectedBuffId = selectedBuff.Id;
-            OnSelectedSubject.OnNext(selectedBuff);
+            OnBuffSelectedSubject.OnNext(selectedBuff);
             base.Show();
+        }
+
+        private void Retry()
+        {
+            Close();
+            SelectedBuffId = null;
+            var hasEnoughStar =
+                Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(_stageId, out var row)
+                && States.Instance.HackAndSlashBuffState.StarCount >= row.MaxStar;
+            Find<BuffBonusPopup>().Show(_stageId, hasEnoughStar);
         }
     }
 }

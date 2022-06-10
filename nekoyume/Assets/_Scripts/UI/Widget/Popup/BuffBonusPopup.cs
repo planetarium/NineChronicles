@@ -28,6 +28,8 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
+            base.Awake();
+
             _onAttract = () =>
             {
                 Close(true);

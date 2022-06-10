@@ -83,6 +83,7 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   bonusBuffViewData: {fileID: 11400000, guid: 99dd53a8a4f6af445ab50f3e081a7f5a, type: 2}
+  retryButton: {fileID: 373304772462393821}
   selectedBuffBg: {fileID: 2877063576143358293}
   selectedBuffIcon: {fileID: 1889416411392604919}
   selectedBuffText: {fileID: 6628972047112141141}
@@ -5675,7 +5676,7 @@ GameObject:
   - component: {fileID: 1914742501740125225}
   - component: {fileID: 7749021168300127366}
   m_Layer: 5
-  m_Name: ConditionalButton_Type5
+  m_Name: CloseButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10712,7 +10713,7 @@ GameObject:
   - component: {fileID: 373304772462393821}
   - component: {fileID: 1361700349350399775}
   m_Layer: 5
-  m_Name: ConditionalButton_Type4
+  m_Name: RetryButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10789,19 +10790,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1361700349350399775}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1361700349350399775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11692,7 +11681,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.8}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
