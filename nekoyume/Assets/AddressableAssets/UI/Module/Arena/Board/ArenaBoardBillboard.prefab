@@ -1766,6 +1766,7 @@ GameObject:
   - component: {fileID: 2511200869530007736}
   - component: {fileID: 1610680704827240055}
   - component: {fileID: 4674218276714934138}
+  - component: {fileID: 1944949088651990629}
   m_Layer: 5
   m_Name: ArenaBoardBillboard
   m_TagString: Untagged
@@ -1846,6 +1847,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!225 &1944949088651990629
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7308405691750957562}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8316693649841477823
 GameObject:
   m_ObjectHideFlags: 0
@@ -2122,7 +2135,7 @@ MonoBehaviour:
     serializedVersion: 2
     rgba: 4294967295
   m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 1
+  m_enableVertexGradient: 0
   m_colorMode: 2
   m_fontColorGradient:
     topLeft: {r: 1, g: 0.9710349, b: 0.7688679, a: 1}
