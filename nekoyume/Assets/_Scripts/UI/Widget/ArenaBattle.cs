@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
@@ -47,6 +48,7 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().Close(true);
             SetStatus(myDigest, myStatus);
             SetStatus(enemyDigest, enemyStatus);
+            comboText.comboMax = AttackCountHelper.GetCountMax(myDigest.Level);
             comboText.Close();
             base.Show(ignoreShowAnimation);
         }

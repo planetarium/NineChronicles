@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -14,6 +15,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
 using UnityEngine;
+using UnityEngine.UI;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
 
 namespace Nekoyume.Game
@@ -33,6 +35,9 @@ namespace Nekoyume.Game
 
         [SerializeField]
         private Character.ArenaCharacter enemy;
+
+        [SerializeField]
+        private Text debugText;
 
         public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
         public IObservable<Arena> OnArenaEnd => _onArenaEnd;
@@ -104,8 +109,17 @@ namespace Nekoyume.Game
         {
             yield return StartCoroutine(CoStart(myDigest, enemyDigest));
 
+            var sb = new StringBuilder();
+
             foreach (var e in log)
             {
+                var ev = e.ToString().Replace("Nekoyume.Model.BattleStatus.", "");
+                var debugLog = e.Character.Id == me.Id
+                    ? $"[me] {ev} \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n"
+                    : $"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t [enemy] {ev}\n";
+                sb.Append(debugLog);
+                sb.Append("--------------------------\n");
+                debugText.text = sb.ToString();
                 yield return StartCoroutine(e.CoExecute(this));
             }
 
@@ -115,13 +129,8 @@ namespace Nekoyume.Game
         private IEnumerator CoStart(ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest)
         {
             container.SetActive(true);
-            me.gameObject.SetActive(true);
-            me.transform.localPosition = new Vector3(-2f, -1.2f, 0);
-            me.Init(myDigest, enemy);
-
-            enemy.gameObject.SetActive(true);
-            enemy.transform.localPosition = new Vector3(2f, -1.2f, 0);
-            enemy.Init(enemyDigest, me);
+            me.Init(myDigest, enemy, false);
+            enemy.Init(enemyDigest, me, true);
 
             _turnNumber = 1;
 
@@ -169,11 +178,11 @@ namespace Nekoyume.Game
         {
             if (character.IsEnemy)
             {
-                enemy.StartRun(character);
+                enemy.Spawn(character);
             }
             else
             {
-                me.StartRun(character);
+                me.Spawn(character);
                 me.ShowSpeech("PLAYER_INIT");
             }
             yield return null;

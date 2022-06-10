@@ -1,6 +1,7 @@
 ﻿using System;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Character;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
@@ -14,6 +15,8 @@ namespace Nekoyume.Game.Character
         protected Vector3 HealOffset => Animator.HealPosition;
         protected bool AttackEndCalled { get; set; }
 
+        protected System.Action ActionPoint;
+
         protected void OnAnimatorEvent(string eventName)
         {
             switch (eventName)
@@ -23,6 +26,7 @@ namespace Nekoyume.Game.Character
                     break;
                 case "attackPoint":
                     AttackEndCalled = true;
+                    ActionPoint?.Invoke();
                     break;
                 case "footstep":
                     AudioController.PlayFootStep();

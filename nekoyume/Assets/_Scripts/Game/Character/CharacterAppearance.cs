@@ -19,8 +19,7 @@ namespace Nekoyume.Game.Character
         private GameObject _cachedCharacterTitle;
 
         public PlayerSpineController SpineController { get; private set; }
-        public BoxCollider HitPointBoxCollider => boxCollider; // hitPoint 안써보기
-
+        public BoxCollider BoxCollider => boxCollider;
 
         public void Set(
             ArenaPlayerDigest digest,

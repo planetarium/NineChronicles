@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BTAI;
+using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -12,6 +13,7 @@ using UnityEngine;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
+using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game.Character
 {
@@ -22,10 +24,10 @@ namespace Nekoyume.Game.Character
         [SerializeField]
         private CharacterAppearance appearance;
 
-        private static readonly WaitForSeconds AttackTimeOut = new WaitForSeconds(999f);
+        private static Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         private const float AnimatorTimeScale = 1.2f;
-        private Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
-        private Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
+        private const float StartPos = 2.5f;
+        private const float RunDuration = 1f;
 
         private Model.ArenaCharacter _characterModel;
         private ArenaCharacter _target;
@@ -34,54 +36,20 @@ namespace Nekoyume.Game.Character
         private HudContainer _hudContainer;
         private SpeechBubble _speechBubble;
         private Root _root;
-        private float _runSpeed;
-        private int _currentHp;
         private bool _forceStop;
-
+        private int _currentHp;
         private readonly List<Costume> _costumes = new List<Costume>();
         private readonly List<Equipment> _equipments = new List<Equipment>();
 
-
-        private int Hp => _characterModel.HP;
-        private int CurrentHp
-        {
-            get => _currentHp;
-            set
-            {
-                _currentHp = Mathf.Clamp(value, 0, Hp);
-                UpdateStatusUI();
-            }
-        }
-        private bool IsDead => CurrentHp <= 0;
-        private bool CanRun
-        {
-            get
-            {
-                if (IsDead || _forceStop)
-                {
-                    return false;
-                }
-
-                return !Mathf.Approximately(_runSpeed, 0f);
-            }
-        }
-
         public List<ArenaActionParams> Actions { get; } = new List<ArenaActionParams>();
+
+        private bool IsDead => _currentHp <= 0;
 
         private void Awake()
         {
             Animator = new PlayerAnimator(this);
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
             Animator.TimeScale = AnimatorTimeScale;
-        }
-
-        private void OnDisable()
-        {
-            _runSpeed = 0.0f;
-            _root = null;
-            Actions.Clear();
-            _runningAction = null;
-            DisableHUD();
         }
 
         private void Update()
@@ -95,10 +63,14 @@ namespace Nekoyume.Game.Character
             _speechBubble.UpdatePosition(gameObject, HUDOffset);
         }
 
-        public void Init(ArenaPlayerDigest digest, ArenaCharacter target)
+        public void Init(ArenaPlayerDigest digest, ArenaCharacter target, bool isEnemy)
         {
+            gameObject.SetActive(true);
+            transform.localPosition = new Vector3(isEnemy ? StartPos : -StartPos, -1.2f, 0);
+
             _hudContainer ??= Widget.Create<HudContainer>(true);
             _speechBubble ??= Widget.Create<SpeechBubble>();
+            _arenaBattle ??= Widget.Find<ArenaBattle>();
 
             Animator.Idle();
             _costumes.Clear();
@@ -109,24 +81,22 @@ namespace Nekoyume.Game.Character
             appearance.Set(digest, Animator, _hudContainer);
         }
 
-        public void StartRun(Model.ArenaCharacter model)
+        public void Spawn(Model.ArenaCharacter model)
         {
             _characterModel = model;
             Id = _characterModel.Id;
             SizeType = _characterModel.SizeType;
-            CurrentHp = Hp;
-            _runSpeed = _characterModel.IsEnemy ? -_characterModel.RunSpeed : _characterModel.RunSpeed;
-
-            Invoke(nameof(Test) , 0.5f);
-            if (_root == null)
-            {
-                InitBT();
-            }
-        }
-
-        private void Test()
-        {
-            _forceStop = true;
+            _currentHp = _characterModel.HP;
+            UpdateStatusUI();
+            Animator.Run();
+            var endPos = appearance.BoxCollider.size.x * 0.5f;
+            transform.DOLocalMoveX(_characterModel.IsEnemy ? endPos : -endPos, RunDuration)
+                .SetEase(Ease.OutSine)
+                .OnComplete(() =>
+                {
+                    Animator.StopRun();
+                    InitBT();
+                });
         }
 
         public void UpdateStatusUI()
@@ -135,13 +105,7 @@ namespace Nekoyume.Game.Character
                 return;
 
             _hudContainer.UpdatePosition(gameObject, HUDOffset);
-
-            if (_arenaBattle == null)
-            {
-                _arenaBattle = Widget.Find<ArenaBattle>();
-            }
-
-            _arenaBattle.UpdateStatus(_characterModel.IsEnemy, CurrentHp, Hp, _characterModel.Buffs);
+            _arenaBattle.UpdateStatus(_characterModel.IsEnemy, _currentHp, _characterModel.HP, _characterModel.Buffs);
         }
 
         public void ShowSpeech(string key, params int[] list)
@@ -174,40 +138,19 @@ namespace Nekoyume.Game.Character
             StartCoroutine(_speechBubble.CoShowText());
         }
 
-        private IEnumerator CoProcessDamage(Model.BattleStatus.Skill.SkillInfo info, bool isConsiderElementalType)
-        {
-            var dmg = info.Effect;
-            var position = HudTextPosition;
-            var force = DamageTextForce;
-
-            if (dmg <= 0)
-            {
-                var index = _characterModel.IsEnemy ? 1 : 0;
-                MissText.Show(position, force, index);
-                yield break;
-            }
-
-            CurrentHp -= dmg;
-            Animator.Hit();
-
-            PopUpDmg(position, force, info, isConsiderElementalType);
-        }
-
         private void PopUpDmg(
             Vector3 position,
             Vector3 force,
-            Model.BattleStatus.Skill.SkillInfo info,
+            Skill.SkillInfo info,
             bool isConsiderElementalType)
         {
             var dmg = info.Effect.ToString();
             var pos = transform.position;
             pos.x -= 0.2f;
             pos.y += 0.32f;
-            var group = DamageText.TextGroupState.Basic;
-            if (this is Player)
-            {
-                group = DamageText.TextGroupState.Damage;
-            }
+            var group = _characterModel.IsEnemy
+                ? DamageText.TextGroupState.Damage
+                : DamageText.TextGroupState.Basic;
 
             if (info.Critical)
             {
@@ -228,48 +171,60 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        #region Run
-
         private void InitBT()
         {
+            if (_root != null)
+            {
+                return;
+            }
+
             _root = new Root();
             _root.OpenBranch(
                 BT.Selector().OpenBranch(
-                    BT.If(() => CanRun).OpenBranch(
-                        BT.Call(ExecuteRun)
-                    ),
-                    BT.If(() => !CanRun).OpenBranch(
-                        BT.Sequence().OpenBranch(
-                            BT.Call(StopRun),
-                            BT.If(() => Actions.Any()).OpenBranch(
-                                BT.Call(ExecuteAction)
-                            )
-                        )
+                    BT.If(() => Actions.Any()).OpenBranch(
+                        BT.Call(ExecuteAction)
                     )
                 )
             );
         }
 
-        protected virtual void ExecuteRun()
+        private void ExecuteAction()
         {
-            Animator.Run();
-            Vector2 position = transform.position;
-            position.x += Time.deltaTime * _runSpeed;
-            transform.position = position;
+            StartCoroutine(CoExecuteAction());
         }
 
-        private void StopRun()
+        private IEnumerator CoExecuteAction()
         {
-            _runSpeed = 0.0f;
-            Animator.StopRun();
-        }
+            if (_runningAction is null)
+            {
+                _runningAction = Actions.First();
 
-        #endregion
+                var arena = Game.instance.Arena;
+                var waitSeconds = StageConfig.instance.actionDelay;
 
-        private void DisableHUD()
-        {
-            _speechBubble.StopAllCoroutines();
-            _speechBubble.gameObject.SetActive(false);
+                foreach (var info in _runningAction.skillInfos)
+                {
+                    if (info.Target is Model.ArenaCharacter arenaCharacter)
+                    {
+                        if (arenaCharacter.IsDead)
+                        {
+                            var target = info.Target.Id == Id ? this : _target;
+                            if (target.Actions.Any())
+                            {
+                                var time = Time.time;
+                                yield return new WaitWhile(() =>
+                                    Time.time - time > 10f || target.Actions.Any());
+                            }
+                        }
+                    }
+                }
+
+                yield return new WaitForSeconds(waitSeconds);
+                var coroutine = StartCoroutine(arena.CoSkill(_runningAction));
+                yield return coroutine;
+                Actions.Remove(_runningAction);
+                _runningAction = null;
+            }
         }
 
         private void ProcessAttack(
@@ -282,52 +237,58 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
+            ShowSpeech("PLAYER_SKILL", (int)skill.ElementalType, (int)skill.SkillCategory);
             StartCoroutine(target.CoProcessDamage(skill, isConsiderElementalType));
+            ShowSpeech("PLAYER_ATTACK");
         }
 
-        private void ProcessHeal(
-            ArenaCharacter target,
-            Model.BattleStatus.Skill.SkillInfo info)
+        private IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
         {
-            if (target && !target.IsDead)
+            var dmg = info.Effect;
+            var position = transform.TransformPoint(0f, 1.7f, 0f);
+            var force = DamageTextForce;
+
+            if (dmg <= 0)
             {
-                target.CurrentHp = Math.Min(target.CurrentHp + info.Effect, target.Hp);
-
-                var position = transform.TransformPoint(0f, 1.7f, 0f);
-                var force = new Vector3(-0.1f, 0.5f);
-                var txt = info.Effect.ToString();
-                PopUpHeal(position, force, txt, info.Critical);
+                var index = _characterModel.IsEnemy ? 1 : 0;
+                MissText.Show(position, force, index);
+                yield break;
             }
+
+            var value = _currentHp - dmg;
+            _currentHp = Mathf.Clamp(value, 0, _characterModel.HP);
+            PopUpDmg(position, force, info, isConsiderElementalType);
         }
 
-        private void ProcessBuff(ArenaCharacter target, Model.BattleStatus.Skill.SkillInfo info)
+        private void ProcessHeal(Model.BattleStatus.Skill.SkillInfo info)
         {
-            if (target && !target.IsDead)
+            if (IsDead)
             {
-                var position = transform.TransformPoint(0f, 1.7f, 0f);
-                var force = new Vector3(-0.1f, 0.5f);
-                var buff = info.Buff;
-                var effect = Game.instance.Arena.BuffController.Get<BuffVFX>(target, buff);
-                effect.Play();
-                target.UpdateStatusUI();
+                return;
             }
-        }
 
-        private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
-        {
-            DamageText.Show(position, force, dmg, DamageText.TextGroupState.Heal);
+            _currentHp = Math.Min(_currentHp + info.Effect, _characterModel.HP);
+
+            var position = transform.TransformPoint(0f, 1.7f, 0f);
+            var force = new Vector3(-0.1f, 0.5f);
+            var txt = info.Effect.ToString();
+            DamageText.Show(position, force, txt, DamageText.TextGroupState.Heal);
             VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 
-        #region Animation
-
-        private void PreAnimationForTheKindOfAttack()
+        private void ProcessBuff(BaseCharacter target, Model.BattleStatus.Skill.SkillInfo info)
         {
-            AttackEndCalled = false;
-            _runSpeed = 0.0f;
+            if (IsDead)
+            {
+                return;
+            }
+
+            var buff = info.Buff;
+            var effect = Game.instance.Arena.BuffController.Get<BuffVFX>(target, buff);
+            effect.Play();
         }
 
-
+        #region Animation
 
         private void ShowCutscene()
         {
@@ -342,7 +303,6 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoAnimationAttack(bool isCritical)
         {
-            PreAnimationForTheKindOfAttack();
             if (isCritical)
             {
                 Animator.CriticalAttack();
@@ -352,17 +312,12 @@ namespace Nekoyume.Game.Character
                 Animator.Attack();
             }
 
-            yield return new WaitUntil(CheckAttackEnd);
-        }
-
-        private bool CheckAttackEnd()
-        {
-            return AttackEndCalled || Animator.IsIdle();
+            var time = Animator.PlayTime();
+            yield return new WaitForSeconds(time);
         }
 
         private IEnumerator CoAnimationCastAttack(bool isCritical)
         {
-            PreAnimationForTheKindOfAttack();
             if (isCritical)
             {
                 Animator.CriticalAttack();
@@ -372,7 +327,8 @@ namespace Nekoyume.Game.Character
                 Animator.CastAttack();
             }
 
-            yield return new WaitUntil(CheckAttackEnd);
+            var time = Animator.PlayTime();
+            yield return new WaitForSeconds(time);
         }
 
         private IEnumerator CoAnimationCastBlow(IReadOnlyList<Model.BattleStatus.Skill.SkillInfo> infos)
@@ -395,8 +351,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual IEnumerator CoAnimationCast(Model.BattleStatus.Skill.SkillInfo info)
         {
-            PreAnimationForTheKindOfAttack();
-
+            ShowSpeech("PLAYER_SKILL", (int)info.ElementalType, (int)info.SkillCategory);
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
@@ -408,8 +363,6 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoAnimationBuffCast(Model.BattleStatus.Skill.SkillInfo info)
         {
-            PreAnimationForTheKindOfAttack();
-
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
@@ -428,22 +381,23 @@ namespace Nekoyume.Game.Character
                 skillInfos.Count == 0)
                 yield break;
 
-            var skillInfosCount = skillInfos.Count;
-            var battleWidget = Widget.Find<ArenaBattle>();
+            ActionPoint = () => { ApplyDamage(skillInfos); };
+            yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
+        }
 
-            yield return StartCoroutine(
-                CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
-
-            for (var i = 0; i < skillInfosCount; i++)
+        private void ApplyDamage(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        {
+            for (var i = 0; i < skillInfos.Count; i++)
             {
                 var info = skillInfos[i];
-                if (info.Target is Model.ArenaCharacter arenaCharacter)
+                if (info.Target is Model.ArenaCharacter targetArenaCharacter)
                 {
                     var target = info.Target.Id == Id ? this : _target;
                     ProcessAttack(target, info, false);
-                    if (!arenaCharacter.IsEnemy)
+
+                    if (targetArenaCharacter.IsEnemy)
                     {
-                        battleWidget.ShowComboText(info.Effect > 0);
+                        _arenaBattle.ShowComboText(info.Effect > 0);
                     }
                 }
             }
@@ -602,7 +556,7 @@ namespace Nekoyume.Game.Character
             foreach (var info in skillInfos)
             {
                 var target = info.Target.Id == Id ? this : _target;
-                ProcessHeal(target, info);
+                target.ProcessHeal(info);
             }
 
             Animator.Idle();
@@ -619,52 +573,13 @@ namespace Nekoyume.Game.Character
             foreach (var info in skillInfos)
             {
                 var target = info.Target.Id == Id ? this : _target;
-                ProcessBuff(target, info);
+                target.ProcessBuff(target, info);
             }
 
             Animator.Idle();
         }
 
         #endregion
-
-        private void ExecuteAction()
-        {
-            StartCoroutine(CoExecuteAction());
-        }
-
-        private IEnumerator CoExecuteAction()
-        {
-            if (_runningAction is null)
-            {
-                _runningAction = Actions.First();
-
-                var arena = Game.instance.Arena;
-                var waitSeconds = StageConfig.instance.actionDelay;
-
-                foreach (var info in _runningAction.skillInfos)
-                {
-                    if (info.Target is Model.ArenaCharacter arenaCharacter)
-                    {
-                        if (arenaCharacter.IsDead)
-                        {
-                            var target = info.Target.Id == Id ? this : _target;
-                            if (target.Actions.Any())
-                            {
-                                var time = Time.time;
-                                yield return new WaitWhile(() =>
-                                    Time.time - time > 10f || target.Actions.Any());
-                            }
-                        }
-                    }
-                }
-
-                yield return new WaitForSeconds(waitSeconds);
-                var coroutine = StartCoroutine(arena.CoSkill(_runningAction));
-                yield return coroutine;
-                Actions.Remove(_runningAction);
-                _runningAction = null;
-            }
-        }
 
         public void Dead()
         {
@@ -675,41 +590,25 @@ namespace Nekoyume.Game.Character
         {
             yield return new WaitWhile(() => Actions.Any());
             OnDeadStart();
-            yield return new WaitForSeconds(.2f);
-            DisableHUD();
-            yield return new WaitForSeconds(.8f);
+            yield return new WaitForSeconds(0.2f);
+            _speechBubble.gameObject.SetActive(false);
+            yield return new WaitForSeconds(0.8f);
             OnDeadEnd();
         }
 
         private void OnDeadStart()
         {
+            ShowSpeech("PLAYER_LOSE");
             Animator.Die();
         }
 
         private void OnDeadEnd()
         {
             Animator.Idle();
-            gameObject.SetActive(false);
             Actions.Clear();
-        }
-    }
-
-    public class ArenaActionParams
-    {
-        public readonly ArenaCharacter ArenaCharacter;
-        public readonly IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos;
-        public readonly IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos;
-        public readonly Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> func;
-
-        public ArenaActionParams(ArenaCharacter arenaCharacter,
-            IEnumerable<Model.BattleStatus.Skill.SkillInfo> skills,
-            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffs,
-            Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> coNormalAttack)
-        {
-            ArenaCharacter = arenaCharacter;
-            skillInfos = skills;
-            buffInfos = buffs;
-            func = coNormalAttack;
+            gameObject.SetActive(false);
+            _root = null;
+            _runningAction = null;
         }
     }
 }

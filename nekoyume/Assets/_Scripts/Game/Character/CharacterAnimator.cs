@@ -294,5 +294,15 @@ namespace Nekoyume.Game.Character
         {
             return Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).IsName(nameof(CharacterAnimation.Type.Idle));
         }
+
+        public bool IsHit()
+        {
+            return Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).IsName(nameof(CharacterAnimation.Type.Hit));
+        }
+
+        public float PlayTime()
+        {
+            return Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).length;
+        }
     }
 }
