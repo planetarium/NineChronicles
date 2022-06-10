@@ -20,14 +20,6 @@ namespace Nekoyume.Game.Character
         private Spine.TrackEntry _trackEntry;
         private float _normalizedTime;
 
-        public override void OnStateExit(Animator animator,
-            AnimatorStateInfo stateInfo,
-            int layerIndex)
-        {
-            base.OnStateExit(animator, stateInfo, layerIndex);
-            Debug.Log($"########## {animationClip}");
-        }
-
         public override void OnStateEnter(
             Animator animator,
             AnimatorStateInfo stateInfo,

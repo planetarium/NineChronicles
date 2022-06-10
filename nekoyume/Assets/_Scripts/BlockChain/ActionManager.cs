@@ -936,8 +936,10 @@ namespace Nekoyume.BlockChain
             int accountCount
         )
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var action = new CreateArenaDummy
             {
+                myAvatarAddress = avatarAddress,
                 costumes = costumes,
                 equipments = equipments,
                 championshipId = championshipId,

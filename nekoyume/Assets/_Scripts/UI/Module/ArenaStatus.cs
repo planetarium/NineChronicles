@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -26,24 +27,25 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Animator animator;
 
-        public void Show(Sprite sprite, string avatarName, int level)
+        public void OnDisable()
         {
-            gameObject.SetActive(true);
-            animator.enabled = true;
+            gameObject.SetActive(false);
+        }
 
+        public void Set(Sprite sprite, string avatarName, int level)
+        {
             SetProfile(sprite, avatarName, level);
             SetBuff();
         }
 
+        public void Show()
+        {
+            gameObject.SetActive(true);
+            animator.Play("Show");
+        }
+
         public void Close(bool ignoreAnimation = true)
         {
-            if (ignoreAnimation)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            animator.enabled = true;
             animator.Play("Close");
         }
 

@@ -53,6 +53,18 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
+        public void ShowStatus(bool isEnemy)
+        {
+            if (isEnemy)
+            {
+                enemyStatus.Show();
+            }
+            else
+            {
+                myStatus.Show();
+            }
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
             myStatus.Close(ignoreCloseAnimation);
@@ -89,7 +101,8 @@ namespace Nekoyume.UI
         {
             var armor = digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var sprite = SpriteHelper.GetItemIcon(armor?.Id ?? GameConfig.DefaultAvatarArmorId);
-            status.Show(sprite, digest.NameWithHash, digest.Level);
+            status.Set(sprite, digest.NameWithHash, digest.Level);
+            status.gameObject.SetActive(false);
         }
     }
 }

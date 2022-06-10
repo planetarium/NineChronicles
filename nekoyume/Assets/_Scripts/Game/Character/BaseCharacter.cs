@@ -1,7 +1,6 @@
 ﻿using System;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Character;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character

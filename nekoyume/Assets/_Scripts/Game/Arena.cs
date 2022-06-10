@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -15,7 +14,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
 using UnityEngine;
-using UnityEngine.UI;
 using ArenaCharacter = Nekoyume.Model.ArenaCharacter;
 
 namespace Nekoyume.Game
@@ -36,9 +34,6 @@ namespace Nekoyume.Game
         [SerializeField]
         private Character.ArenaCharacter enemy;
 
-        [SerializeField]
-        private Text debugText;
-
         public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
         public IObservable<Arena> OnArenaEnd => _onArenaEnd;
         private readonly ISubject<Arena> _onArenaEnd = new Subject<Arena>();
@@ -50,6 +45,7 @@ namespace Nekoyume.Game
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
+        public int TurnNumber => _turnNumber;
 
         public void Initialize()
         {
@@ -109,17 +105,8 @@ namespace Nekoyume.Game
         {
             yield return StartCoroutine(CoStart(myDigest, enemyDigest));
 
-            var sb = new StringBuilder();
-
             foreach (var e in log)
             {
-                var ev = e.ToString().Replace("Nekoyume.Model.BattleStatus.", "");
-                var debugLog = e.Character.Id == me.Id
-                    ? $"[me] {ev} \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n"
-                    : $"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t [enemy] {ev}\n";
-                sb.Append(debugLog);
-                sb.Append("--------------------------\n");
-                debugText.text = sb.ToString();
                 yield return StartCoroutine(e.CoExecute(this));
             }
 
