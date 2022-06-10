@@ -1597,12 +1597,12 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var arenaBoard = Widget.Find<ArenaBoard>();
+            var arenaBattlePreparation = Widget.Find<ArenaBattlePreparation>();
             if (eval.Exception != null)
             {
-                if (arenaBoard && arenaBoard.IsActive())
+                if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
                 {
-                    arenaBoard.OnRenderBattleArena(eval, null, null);
+                    arenaBattlePreparation.OnRenderBattleArena(eval, null, null);
                 }
 
                 return;
@@ -1714,9 +1714,9 @@ namespace Nekoyume.BlockChain
             };
             simulator.Log.score = currentMyScore;
 
-            if (arenaBoard && arenaBoard.IsActive())
+            if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
             {
-                arenaBoard.OnRenderBattleArena(eval, simulator.Log, rewards);
+                arenaBattlePreparation.OnRenderBattleArena(eval, simulator.Log, rewards);
             }
 
             // TODO!!!! 전투 보여주는 동안 뒤에서는 최신 목록 가져오기.

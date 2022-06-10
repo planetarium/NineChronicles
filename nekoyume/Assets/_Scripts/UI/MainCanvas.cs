@@ -230,6 +230,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<BattlePreparation>());
             yield return null;
+            secondWidgets.Add(Widget.Create<ArenaBattlePreparation>());
+            yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaJoin>());

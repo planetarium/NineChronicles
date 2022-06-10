@@ -57,10 +57,9 @@ namespace Nekoyume.UI.Module
         [SerializeField] private Crystal crystal;
         [SerializeField] private GameObject dailyBonus;
         [SerializeField] private GameObject hourglass;
-        [SerializeField] private GameObject arenaTickets;
+        [SerializeField] private ArenaTickets arenaTickets;
         [SerializeField] private VFX inventoryVFX;
         [SerializeField] private VFX workshopVFX;
-        [SerializeField] private Image actionPointImage;
         [SerializeField] private ToggleDropdown menuToggleDropdown;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
@@ -93,11 +92,13 @@ namespace Nekoyume.UI.Module
 
         private long _blockIndex;
 
-        public Image ActionPointImage => actionPointImage;
+        public Image ActionPointImage => actionPoint.Image;
 
         public bool ChargingAP => actionPoint.NowCharging;
 
         public Crystal Crystal => crystal;
+
+        public ArenaTickets ArenaTickets => arenaTickets;
 
         public override bool CanHandleInputEvent => false;
 
@@ -281,7 +282,7 @@ namespace Nekoyume.UI.Module
             actionPoint.gameObject.SetActive(isActionPointActive);
             dailyBonus.SetActive(isDailyBonusActive);
             hourglass.SetActive(isHourglassActive);
-            arenaTickets.SetActive(isArenaTicketsActive);
+            arenaTickets.gameObject.SetActive(isArenaTicketsActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)

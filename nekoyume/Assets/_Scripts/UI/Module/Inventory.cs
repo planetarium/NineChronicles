@@ -461,7 +461,8 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetAvatarInfo(Action<InventoryItem, RectTransform> clickItem,
+        public void SetAvatarInfo(
+            Action<InventoryItem, RectTransform> clickItem,
             Action<InventoryItem> doubleClickItem,
             System.Action clickEquipmentToggle,
             System.Action clickCostumeToggle,
@@ -469,7 +470,8 @@ namespace Nekoyume.UI.Module
         {
             _reverseOrder = false;
             SetAction(clickItem, doubleClickItem, clickEquipmentToggle, clickCostumeToggle);
-            var predicateByElementalType = InventoryHelper.GetDimmedFuncByElementalTypes(elementalTypes.ToList());
+            var predicateByElementalType =
+                InventoryHelper.GetDimmedFuncByElementalTypes(elementalTypes.ToList());
             var predicateList = predicateByElementalType != null
                 ? new List<(ItemType type, Predicate<InventoryItem>)>
                     {(ItemType.Equipment, predicateByElementalType)}
@@ -506,7 +508,9 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
-        public void Focus(ItemType itemType, ItemSubType subType,
+        public void Focus(
+            ItemType itemType,
+            ItemSubType subType,
             List<ElementalType> elementalTypes)
         {
             foreach (var model in GetModels(itemType))
@@ -515,7 +519,8 @@ namespace Nekoyume.UI.Module
                 {
                     if (model.ItemBase.ItemType == ItemType.Equipment)
                     {
-                        if (elementalTypes.Exists(x => x.Equals(model.ItemBase.ElementalType)))
+                        if (elementalTypes.Exists(x =>
+                                x.Equals(model.ItemBase.ElementalType)))
                         {
                             model.Focused.Value = !model.Focused.Value;
                             if (model.Focused.Value)

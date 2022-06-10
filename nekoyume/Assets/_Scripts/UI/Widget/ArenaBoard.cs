@@ -86,22 +86,6 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        public void OnRenderBattleArena(
-            ActionBase.ActionEvaluation<BattleArena> eval,
-            BattleLog battleLog,
-            List<ItemBase> rewards)
-        {
-            if (eval.Exception is { })
-            {
-                Find<ArenaBattleLoadingScreen>().Close();
-                return;
-            }
-
-            Close();
-            Find<ArenaBattleLoadingScreen>().Close();
-            Game.Event.OnRankingBattleStart.Invoke((battleLog, rewards));
-        }
-
         private void UpdateBillboard()
         {
 #if UNITY_EDITOR
@@ -118,6 +102,12 @@ namespace Nekoyume.UI
             }
 #endif
             var player = RxProps.PlayersArenaParticipant.Value;
+            if (player is null)
+            {
+                Debug.Log($"{nameof(RxProps.PlayersArenaParticipant)} is null");
+                return;
+            }
+
             _billboard.SetData(
                 "season",
                 player.Rank,
@@ -142,31 +132,13 @@ namespace Nekoyume.UI
                             NotificationCell.NotificationType.Alert);
                         return;
                     }
-
 #endif
                     var data = _boundedData[index];
-                    var avatarState = data.AvatarState;
-                    Find<ArenaBattleLoadingScreen>().Show(
-                        avatarState.NameWithHash,
-                        avatarState.level,
-                        avatarState.GetArmorId());
-                    var inventory = States.Instance.CurrentAvatarState.inventory;
-                    ActionRenderHandler.Instance.Pending = true;
-                    ActionManager.Instance.BattleArena(
-                            data.AvatarAddr,
-                            inventory.Costumes
-                                .Where(e => e.Equipped)
-                                .Select(e => e.NonFungibleId)
-                                .ToList(),
-                            inventory.Equipments
-                                .Where(e => e.Equipped)
-                                .Select(e => e.NonFungibleId)
-                                .ToList(),
-                            _roundData.ChampionshipId,
-                            _roundData.Round,
-                            // TODO: Take the ticket count from the UI.
-                            1)
-                        .Subscribe();
+                    Close();
+                    Find<ArenaBattlePreparation>().Show(
+                        _roundData.ChampionshipId,
+                        _roundData.Round,
+                        data.AvatarState);
                 })
                 .AddTo(gameObject);
         }
@@ -187,11 +159,12 @@ namespace Nekoyume.UI
 
             var currentAvatarAddr = States.Instance.CurrentAvatarState.address;
             return RxProps.ArenaParticipantsOrderedWithScore.Value.Select(e =>
-                new ArenaBoardPlayerItemData
+            {
+                return new ArenaBoardPlayerItemData
                 {
                     name = e.AvatarState.NameWithHash,
                     level = e.AvatarState.level,
-                    armorId = e.AvatarState.GetArmorId(),
+                    fullCostumeOrArmorId = e.AvatarState.inventory.GetEquippedFullCostumeOrArmorId(),
                     titleId = e.AvatarState.inventory.Costumes
                         .FirstOrDefault(costume =>
                             costume.ItemSubType == ItemSubType.Title
@@ -201,7 +174,8 @@ namespace Nekoyume.UI
                     score = e.Score,
                     expectWinDeltaScore = e.ExpectDeltaScore.win,
                     interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
-                }).ToList();
+                };
+            }).ToList();
         }
     }
 }

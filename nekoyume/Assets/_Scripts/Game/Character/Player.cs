@@ -120,8 +120,12 @@ namespace Nekoyume.Game.Character
         public void Set(AvatarState avatarState)
         {
             var tableSheets = Game.instance.TableSheets;
-            Set(new Model.Player(avatarState, tableSheets.CharacterSheet,
-                tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet));
+            var model = new Model.Player(
+                avatarState,
+                tableSheets.CharacterSheet,
+                tableSheets.CharacterLevelSheet,
+                tableSheets.EquipmentItemSetEffectSheet);
+            Set(model);
         }
 
         public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)

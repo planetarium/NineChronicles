@@ -48,7 +48,7 @@ namespace Nekoyume.UI.Module.Arena.Board
                 {
                     name = "Alpha",
                     level = 99,
-                    armorId = GameConfig.DefaultAvatarArmorId,
+                    fullCostumeOrArmorId = GameConfig.DefaultAvatarArmorId,
                     titleId = null,
                     cp = 999_999,
                     score = 999_999,
@@ -59,7 +59,7 @@ namespace Nekoyume.UI.Module.Arena.Board
                 {
                     name = "Bravo",
                     level = 99,
-                    armorId = GameConfig.DefaultAvatarArmorId,
+                    fullCostumeOrArmorId = GameConfig.DefaultAvatarArmorId,
                     titleId = null,
                     cp = 999_998,
                     score = 999_998,
@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Module.Arena.Board
                 {
                     name = "Charlie",
                     level = 99,
-                    armorId = GameConfig.DefaultAvatarArmorId,
+                    fullCostumeOrArmorId = GameConfig.DefaultAvatarArmorId,
                     titleId = null,
                     cp = 999_997,
                     score = 999_997,
@@ -81,7 +81,7 @@ namespace Nekoyume.UI.Module.Arena.Board
                 {
                     name = "Delta",
                     level = 99,
-                    armorId = GameConfig.DefaultAvatarArmorId,
+                    fullCostumeOrArmorId = GameConfig.DefaultAvatarArmorId,
                     titleId = null,
                     cp = 999_996,
                     score = 999_996,
@@ -92,7 +92,7 @@ namespace Nekoyume.UI.Module.Arena.Board
                 {
                     name = "Echo",
                     level = 99,
-                    armorId = GameConfig.DefaultAvatarArmorId,
+                    fullCostumeOrArmorId = GameConfig.DefaultAvatarArmorId,
                     titleId = null,
                     cp = 999_995,
                     score = 999_995,
@@ -103,7 +103,7 @@ namespace Nekoyume.UI.Module.Arena.Board
                 {
                     name = "Foxtrot",
                     level = 99,
-                    armorId = GameConfig.DefaultAvatarArmorId,
+                    fullCostumeOrArmorId = GameConfig.DefaultAvatarArmorId,
                     titleId = null,
                     cp = 999_994,
                     score = 999_994,
@@ -114,7 +114,7 @@ namespace Nekoyume.UI.Module.Arena.Board
                 {
                     name = "Golf",
                     level = 99,
-                    armorId = GameConfig.DefaultAvatarArmorId,
+                    fullCostumeOrArmorId = GameConfig.DefaultAvatarArmorId,
                     titleId = null,
                     cp = 999_993,
                     score = 999_993,
