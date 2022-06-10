@@ -16,11 +16,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1085
-    /// Updated at https://github.com/planetarium/lib9c/pull/1085
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/884
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("mimisbrunnr_battle10")]
+    [ActionType("mimisbrunnr_battle9")]
     public class MimisbrunnrBattle : GameAction
     {
         public List<Guid> costumes;
