@@ -262,22 +262,11 @@ namespace Nekoyume.Action
 
                 if (buffState.BuffIds.Any())
                 {
-                    stageBuffId = HackAndSlashBuffState.GetBuffId(
+                    var skill = HackAndSlashBuffState.GetBuffSkill(
                         buffState.BuffIds,
                         stageBuffId,
-                        crystalRandomBuffSheet);
-
-                    if (!crystalRandomBuffSheet.TryGetValue(stageBuffId.Value, out var row))
-                    {
-                        throw new SheetRowNotFoundException(addressesHex, nameof(CrystalRandomBuffSheet), stageBuffId.Value);
-                    }
-
-                    if (!skillSheet.TryGetValue(row.SkillId, out var skillRow))
-                    {
-                        throw new SheetRowNotFoundException(addressesHex, nameof(SkillSheet), row.SkillId);
-                    }
-
-                    var skill = new Model.Skill.BuffSkill(skillRow, 0, 100);
+                        crystalRandomBuffSheet,
+                        skillSheet);
                     buffSkillsOnWaveStart.Add(skill);
                 }
             }
