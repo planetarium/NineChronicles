@@ -154,7 +154,7 @@ namespace Nekoyume.UI
             CombinationClickInternal(() => Find<Craft>().Show(recipeId));
         }
 
-        private async void UpdateButtons()
+        private void UpdateButtons()
         {
             btnQuest.Update();
             btnCombination.Update();
@@ -164,27 +164,34 @@ namespace Nekoyume.UI
             btnStaking.Update();
 
             var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
-            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHex);
-            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHex);
-            var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHex);
-            var firstOpenMimisbrunnrKey = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
+            var firstOpenCombinationKey
+                = string.Format(FirstOpenCombinationKeyFormat, addressHex);
+            var firstOpenShopKey
+                = string.Format(FirstOpenShopKeyFormat, addressHex);
+            var firstOpenQuestKey
+                = string.Format(FirstOpenQuestKeyFormat, addressHex);
+            var firstOpenMimisbrunnrKey
+                = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
 
             combinationExclamationMark.gameObject.SetActive(
-                btnCombination.IsUnlocked &&
-                (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
-                 Craft.SharedModel.HasNotification));
+                btnCombination.IsUnlocked
+                && (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
+                    Craft.SharedModel.HasNotification));
             shopExclamationMark.gameObject.SetActive(
-                btnShop.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
+                btnShop.IsUnlocked
+                && PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
 
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
             var hasNotificationInWorldMap = worldMap.HasNotification;
 
             questExclamationMark.gameObject.SetActive(
-                (btnQuest.IsUnlocked && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) || hasNotificationInWorldMap);
-            mimisbrunnrExclamationMark.gameObject.SetActive((btnMimisbrunnr.IsUnlocked &&
-                                                             PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0));
+                (btnQuest.IsUnlocked
+                 && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0)
+                || hasNotificationInWorldMap);
+            mimisbrunnrExclamationMark.gameObject.SetActive(
+                btnMimisbrunnr.IsUnlocked
+                && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0);
         }
 
         private void HideButtons()

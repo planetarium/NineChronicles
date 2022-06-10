@@ -92,7 +92,7 @@ namespace Nekoyume.State
             return true;
         }
 
-        public static async Task SetBuyDigests(List<ItemSubType> list)
+        public static async UniTask SetBuyDigestsAsync(List<ItemSubType> list)
         {
             await UniTask.Run(async () =>
             {
@@ -100,8 +100,8 @@ namespace Nekoyume.State
 
                 foreach (var itemSubType in list)
                 {
-                    var digests = await GetBuyOrderDigests(itemSubType);
-                    var result = await UpdateCachedShopItems(digests);
+                    var digests = await GetBuyOrderDigestsAsync(itemSubType);
+                    var result = await UpdateCachedShopItemsAsync(digests);
                     if (result)
                     {
                         AddBuyDigest(digests, itemSubType);
@@ -138,10 +138,10 @@ namespace Nekoyume.State
             BuyDigest.Value = buyDigests;
         }
 
-        public static async Task UpdateSellDigests()
+        public static async UniTask UpdateSellDigestsAsync()
         {
-            var digests = await GetSellOrderDigests();
-            var result = await UpdateCachedShopItems(digests);
+            var digests = await GetSellOrderDigestsAsync();
+            var result = await UpdateCachedShopItemsAsync(digests);
             if (result)
             {
                 SellDigest.Value = digests;
@@ -173,7 +173,7 @@ namespace Nekoyume.State
             }
         }
 
-        private static async Task<List<OrderDigest>> GetBuyOrderDigests(ItemSubType itemSubType)
+        private static async UniTask<List<OrderDigest>> GetBuyOrderDigestsAsync(ItemSubType itemSubType)
         {
             var orderDigests = new Dictionary<Address, List<OrderDigest>>();
             var addressList = new List<Address>();
@@ -210,7 +210,7 @@ namespace Nekoyume.State
             return digests;
         }
 
-        private static async Task<List<OrderDigest>> GetBuyOrderDigests()
+        private static async UniTask<List<OrderDigest>> GetBuyOrderDigestsAsync()
         {
             var orderDigests = new Dictionary<Address, List<OrderDigest>>();
             var addressList = new List<Address>();
@@ -272,7 +272,7 @@ namespace Nekoyume.State
             }
         }
 
-        private static async Task<List<OrderDigest>> GetSellOrderDigests()
+        private static async UniTask<List<OrderDigest>> GetSellOrderDigestsAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var receiptAddress = OrderDigestListState.DeriveAddress(avatarAddress);
@@ -298,7 +298,7 @@ namespace Nekoyume.State
             return receipts;
         }
 
-        private static async Task<bool> UpdateCachedShopItems(IEnumerable<OrderDigest> digests)
+        private static async UniTask<bool> UpdateCachedShopItemsAsync(IEnumerable<OrderDigest> digests)
         {
             var selectedDigests = digests
                 .Where(orderDigest => !CachedShopItems.ContainsKey(orderDigest.OrderId)).ToList();

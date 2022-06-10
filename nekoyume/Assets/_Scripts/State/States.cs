@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Debug = UnityEngine.Debug;
@@ -33,7 +30,7 @@ namespace Nekoyume.State
 
         public GoldBalanceState GoldBalanceState { get; private set; }
 
-        public MonsterCollectionState MonsterCollectionState { get; private set; }
+        public GoldBalanceState StakedBalanceState { get; private set; }
 
         public StakeState StakeState { get; private set; }
 
@@ -131,7 +128,10 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextCrystal(CrystalBalance);
         }
 
-        public void SetMonsterCollectionState(MonsterCollectionState monsterCollectionState)
+        public void SetMonsterCollectionState(
+            MonsterCollectionState monsterCollectionState,
+            GoldBalanceState stakedBalanceState,
+            int level)
         {
             if (monsterCollectionState is null)
             {
@@ -140,12 +140,12 @@ namespace Nekoyume.State
                 return;
             }
 
-            MonsterCollectionState = monsterCollectionState;
-            StakingLevel = monsterCollectionState.Level;
+            StakingLevel = level;
+            StakedBalanceState = stakedBalanceState;
             MonsterCollectionStateSubject.OnNextLevel(StakingLevel);
         }
 
-        public void SetStakeState(StakeState stakeState, int stakingLevel)
+        public void SetStakeState(StakeState stakeState, GoldBalanceState stakedBalanceState, int stakingLevel)
         {
             if (stakeState is null)
             {
@@ -154,6 +154,7 @@ namespace Nekoyume.State
             }
 
             StakeState = stakeState;
+            StakedBalanceState = stakedBalanceState;
             StakingLevel = stakingLevel;
             MonsterCollectionStateSubject.OnNextLevel(stakingLevel);
         }
@@ -172,11 +173,12 @@ namespace Nekoyume.State
             return null;
         }
 
-        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(Address address,
+        public static async UniTask<(bool exist, AvatarState avatarState)> TryGetAvatarStateAsync(
+            Address address,
             bool allowBrokenState = false)
         {
             AvatarState avatarState = null;
-            bool exist = false;
+            var exist = false;
             try
             {
                 avatarState = await GetAvatarStateAsync(address, allowBrokenState);
@@ -302,7 +304,9 @@ namespace Nekoyume.State
         /// <param name="initializeReactiveState"></param>
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
-        public async UniTask<AvatarState> SelectAvatarAsync(int index, bool initializeReactiveState = true)
+        public async UniTask<AvatarState> SelectAvatarAsync(
+            int index,
+            bool initializeReactiveState = true)
         {
             if (!_avatarStates.ContainsKey(index))
             {
@@ -329,7 +333,7 @@ namespace Nekoyume.State
 
             if (isNew)
             {
-                // notee: commit c1b7f0dc2e8fd922556b83f0b9b2d2d2b2626603 에서 코드 수정이 생기면서
+                // NOTE: commit c1b7f0dc2e8fd922556b83f0b9b2d2d2b2626603 에서 코드 수정이 생기면서
                 // SetCombinationSlotStatesAsync()가 호출이 안되는 이슈가 있어서 revert했습니다. 재수정 필요
                 _combinationSlotStates.Clear();
                 await UniTask.Run(async () =>

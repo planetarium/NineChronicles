@@ -3,6 +3,7 @@ using System.Linq;
 using Amazon.CloudWatchLogs.Model;
 using Nekoyume.Arena;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module.Arena.Join;
 using UnityEngine;
@@ -134,6 +135,19 @@ namespace Nekoyume
             // 7, 8, 9, 10: 2024
             // ...
             return (row.ChampionshipId - 1) / 4 + 2022;
+        }
+
+        public static bool IsChampionshipConditionComplete(
+            this ArenaSheet sheet,
+            int championshipId,
+            AvatarState avatarState) =>
+            sheet[championshipId].IsChampionshipConditionComplete(avatarState);
+
+        public static bool IsChampionshipConditionComplete(this ArenaSheet.Row row, AvatarState avatarState)
+        {
+            var medalTotalCount = ArenaHelper.GetMedalTotalCount(row, avatarState);
+            var championshipRound = row.Round[7];
+            return medalTotalCount >= championshipRound.RequiredMedalCount;
         }
     }
 }

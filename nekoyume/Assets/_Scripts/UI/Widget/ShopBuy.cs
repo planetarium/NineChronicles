@@ -91,7 +91,7 @@ namespace Nekoyume.UI
             var initWeaponTask = Task.Run(async () =>
             {
                 var list = new List<ItemSubType>() { ItemSubType.Weapon, };
-                await ReactiveShopState.SetBuyDigests(list);
+                await ReactiveShopState.SetBuyDigestsAsync(list);
                 return true;
             });
 
@@ -124,7 +124,7 @@ namespace Nekoyume.UI
                     ItemSubType.Hourglass,
                     ItemSubType.ApStone,
                 };
-                await ReactiveShopState.SetBuyDigests(list);
+                await ReactiveShopState.SetBuyDigestsAsync(list);
                 return true;
             }, _cancellationTokenSource.Token);
 

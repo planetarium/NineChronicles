@@ -24,7 +24,7 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="agentAddress"></param>
         /// <param name="gold"></param>
-        public static async void ModifyAgentGold(Address agentAddress, FungibleAssetValue gold)
+        public static async UniTask ModifyAgentGoldAsync(Address agentAddress, FungibleAssetValue gold)
         {
             if (gold.Sign == 0)
             {
@@ -35,7 +35,9 @@ namespace Nekoyume.State
             LocalLayer.Instance.Add(agentAddress, modifier);
 
             //FIXME Avoid LocalLayer duplicate modify gold.
-            var state = new GoldBalanceState(agentAddress, await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, gold.Currency));
+            var state = new GoldBalanceState(
+                agentAddress,
+                await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, gold.Currency));
             if (!state.address.Equals(agentAddress))
             {
                 return;
@@ -51,26 +53,30 @@ namespace Nekoyume.State
                 return;
             }
 
-            ModifyAgentGold(agentAddress, new FungibleAssetValue(
+            var fav = new FungibleAssetValue(
                 States.Instance.GoldBalanceState.Gold.Currency,
                 gold,
-                0));
+                0);
+            ModifyAgentGoldAsync(agentAddress, fav).Forget();
         }
 
-        public static void ModifyAgentCrystal(Address agentAddress, BigInteger crystal) =>
-            ModifyAgentCrystalAsync(agentAddress, crystal).Forget();
-
-        public static async UniTaskVoid ModifyAgentCrystalAsync(Address agentAddress, BigInteger crystal)
+        public static async UniTask ModifyAgentCrystalAsync(Address agentAddress, BigInteger crystal)
         {
             if (crystal == 0)
             {
                 return;
             }
 
-            var fav = new FungibleAssetValue(CrystalCalculator.CRYSTAL, crystal, 0);
+            var fav = new FungibleAssetValue(
+                CrystalCalculator.CRYSTAL,
+                crystal,
+                0);
             var modifier = new AgentCrystalModifier(fav);
             LocalLayer.Instance.Add(agentAddress, modifier);
-            var crystalBalance = await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, CrystalCalculator.CRYSTAL);
+            var crystalBalance
+                = await Game.Game.instance.Agent.GetBalanceAsync(
+                    agentAddress,
+                    CrystalCalculator.CRYSTAL);
             States.Instance.SetCrystalBalance(crystalBalance);
         }
 
@@ -597,7 +603,7 @@ namespace Nekoyume.State
         /// Therefore, there is no need to additionally update `ReactiveAvatarState` after using this function.
         /// </summary>
         /// <param name="avatarAddress"></param>
-        private static async Task TryResetLoadedAvatarState(Address avatarAddress)
+        private static async UniTask TryResetLoadedAvatarState(Address avatarAddress)
         {
             if (!TryGetLoadedAvatarState(avatarAddress, out _, out var outKey,
                 out var isCurrentAvatarState))

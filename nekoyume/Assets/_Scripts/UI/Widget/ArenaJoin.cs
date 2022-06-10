@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -21,6 +22,13 @@ namespace Nekoyume.UI
 
     public class ArenaJoin : Widget
     {
+        private enum InnerState
+        {
+            Idle,
+            EarlyRegistration,
+            RegistrationAndTransitionToArenaBoard,
+        }
+
         private const int BarScrollCellCount = 8;
         private static readonly int BarScrollIndexOffset = (int)math.ceil(BarScrollCellCount / 2f) - 1;
 
@@ -32,20 +40,28 @@ namespace Nekoyume.UI
         private ArenaJoinSO _so;
 #endif
 
-        [SerializeField] private ArenaJoinSeasonScroll _scroll;
+        [SerializeField]
+        private ArenaJoinSeasonScroll _scroll;
 
-        [SerializeField] private ArenaJoinSeasonBarScroll _barScroll;
+        [SerializeField]
+        private ArenaJoinSeasonBarScroll _barScroll;
 
-        [SerializeField] private ArenaJoinSeasonInfo _info;
+        [SerializeField]
+        private ArenaJoinSeasonInfo _info;
 
-        [SerializeField] private ConditionalButton _joinButton;
+        [SerializeField]
+        private ConditionalButton _joinButton;
 
-        [SerializeField] private ConditionalCostButton _paymentButton;
+        [SerializeField]
+        private ConditionalCostButton _paymentButton;
 
-        [SerializeField] private ArenaJoinEarlyRegisterButton _earlyPaymentButton;
+        [SerializeField]
+        private ArenaJoinEarlyRegisterButton _earlyPaymentButton;
 
-        [SerializeField] private Button _backButton;
+        [SerializeField]
+        private Button _backButton;
 
+        private InnerState _innerState = InnerState.Idle;
         private readonly List<IDisposable> _disposablesForShow = new List<IDisposable>();
 
         protected override void Awake()
@@ -70,11 +86,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            _innerState = InnerState.Idle;
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateScrolls();
             UpdateInfo();
 
-            // TODO!!!! 크리스탈 업데이트 확인해서 하단 버튼들을 업데이트 한다.
             // NOTE: RxProp invoke on next callback when subscribe function invoked.
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())
@@ -86,6 +102,53 @@ namespace Nekoyume.UI
         {
             _disposablesForShow.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
+        }
+
+        public void OnRenderJoinArena(ActionBase.ActionEvaluation<JoinArena> eval)
+        {
+            if (eval.Exception is { })
+            {
+                Find<LoadingScreen>().Close();
+                return;
+            }
+
+            switch (_innerState)
+            {
+                case InnerState.EarlyRegistration:
+                    _innerState = InnerState.Idle;
+                    UpdateBottomButtons();
+                    Find<LoadingScreen>().Close();
+                    return;
+                case InnerState.RegistrationAndTransitionToArenaBoard:
+                    _innerState = InnerState.Idle;
+                    var selectedRound = _scroll.SelectedItemData.RoundData;
+                    if (eval.Action.championshipId != selectedRound.ChampionshipId ||
+                        eval.Action.round != selectedRound.Round)
+                    {
+                        UpdateBottomButtons();
+                        Find<LoadingScreen>().Close();
+                        Find<HeaderMenuStatic>()
+                            .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Arena);
+
+                        NotificationSystem.Push(
+                            MailType.System,
+                            "The round which is you want to join is ended.",
+                            NotificationCell.NotificationType.Information);
+                        return;
+                    }
+
+                    Close();
+                    Find<LoadingScreen>().Close();
+                    Find<ArenaBoard>().Show(
+                        _scroll.SelectedItemData.RoundData,
+                        RxProps.ArenaParticipantsOrderedWithScore.Value);
+                    return;
+                case InnerState.Idle:
+                    UpdateBottomButtons();
+                    return;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         /// <summary>
@@ -184,7 +247,6 @@ namespace Nekoyume.UI
         private void UpdateInfo()
         {
             var selectedRoundData = _scroll.SelectedItemData.RoundData;
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             _info.SetData(
                 _scroll.SelectedItemData.GetRoundName(),
                 selectedRoundData,
@@ -203,17 +265,29 @@ namespace Nekoyume.UI
             _joinButton.SetState(ConditionalButton.State.Normal);
             _paymentButton.SetState(ConditionalButton.State.Conditional);
 
+            _earlyPaymentButton.OnJoinArenaAction
+                .Subscribe(_ =>
+                {
+                    _innerState = InnerState.EarlyRegistration;
+                    Find<LoadingScreen>().Show();
+                })
+                .AddTo(gameObject);
+
             _joinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Close();
-                Find<ArenaBoard>()
-                    .ShowAsync(_scroll.SelectedItemData.RoundData)
-                    .Forget();
-            }).AddTo(gameObject);
-            _paymentButton.OnClickSubject.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
+                if (RxProps.ArenaInfoTuple.HasValue &&
+                    RxProps.ArenaInfoTuple.Value.current is { })
+                {
+                    Close();
+                    Find<ArenaBoard>()
+                        .ShowAsync(_scroll.SelectedItemData.RoundData)
+                        .Forget();
+                    return;
+                }
+
+                _innerState = InnerState.RegistrationAndTransitionToArenaBoard;
+                Find<LoadingScreen>().Show();
                 var inventory = States.Instance.CurrentAvatarState.inventory;
                 var selectedRoundData = _scroll.SelectedItemData.RoundData;
                 ActionManager.Instance.JoinArena(
@@ -227,35 +301,50 @@ namespace Nekoyume.UI
                             .ToList(),
                         selectedRoundData.ChampionshipId,
                         selectedRoundData.Round)
-                    .DoOnSubscribe(() => Find<LoadingScreen>().Show())
-                    .DoOnError(e =>
-                    {
-                        Find<LoadingScreen>().Close();
-                        Find<HeaderMenuStatic>()
-                            .Show(HeaderMenuStatic.AssetVisibleState.Arena);
-                        NotificationSystem.Push(
-                            MailType.System,
-                            $"Failed to payment. {e}",
-                            NotificationCell.NotificationType.Notification);
-                    })
-                    .DoOnCompleted(() =>
-                    {
-                        Find<LoadingScreen>().Close();
-                        Close();
-                        Find<ArenaBoard>()
-                            .ShowAsync(_scroll.SelectedItemData.RoundData)
-                            .Forget();
-                    })
+                    .Subscribe();
+            }).AddTo(gameObject);
+
+            _paymentButton.OnClickSubject.Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                _innerState = InnerState.RegistrationAndTransitionToArenaBoard;
+                Find<LoadingScreen>().Show();
+                var inventory = States.Instance.CurrentAvatarState.inventory;
+                var selectedRoundData = _scroll.SelectedItemData.RoundData;
+                ActionManager.Instance.JoinArena(
+                        inventory.Costumes
+                            .Where(e => e.Equipped)
+                            .Select(e => e.NonFungibleId)
+                            .ToList(),
+                        inventory.Equipments
+                            .Where(e => e.Equipped)
+                            .Select(e => e.NonFungibleId)
+                            .ToList(),
+                        selectedRoundData.ChampionshipId,
+                        selectedRoundData.Round)
                     .Subscribe();
             }).AddTo(gameObject);
         }
 
         private void UpdateBottomButtons()
         {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var selectedRoundData = _scroll.SelectedItemData.RoundData;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var isOpened = selectedRoundData.IsTheRoundOpened(blockIndex);
-            switch (selectedRoundData.ArenaType)
+            var arenaType = selectedRoundData.ArenaType;
+            var championshipId = selectedRoundData.ChampionshipId;
+            var crystal = (int)selectedRoundData.EntranceFee;
+            UpdateEarlyRegistrationButton(arenaType, isOpened, blockIndex, championshipId);
+            UpdateJoinAndPaymentButton(arenaType, isOpened, crystal);
+        }
+
+        private void UpdateEarlyRegistrationButton(
+            ArenaType arenaType,
+            bool isOpened,
+            long blockIndex,
+            int championshipId)
+        {
+            switch (arenaType)
             {
                 case ArenaType.OffSeason:
                 {
@@ -264,19 +353,70 @@ namespace Nekoyume.UI
                             blockIndex,
                             out var next))
                     {
-                        var isRegisteredNextRound = RxProps.ArenaInfoTuple.Value.next is { };
-                        _earlyPaymentButton.Show(
-                            next.ArenaType,
-                            next.ChampionshipId,
-                            next.Round,
-                            isRegisteredNextRound,
-                            next.DiscountedEntranceFee);
+                        if (RxProps.ArenaInfoTuple.Value.next is { })
+                        {
+                            _earlyPaymentButton.Show(
+                                next.ArenaType,
+                                next.ChampionshipId,
+                                next.Round,
+                                true,
+                                next.DiscountedEntranceFee);
+                        }
+                        else if (next.ArenaType == ArenaType.Championship)
+                        {
+                            if (TableSheets.Instance.ArenaSheet.IsChampionshipConditionComplete(
+                                    championshipId,
+                                    States.Instance.CurrentAvatarState))
+                            {
+                                _earlyPaymentButton.Show(
+                                    next.ArenaType,
+                                    next.ChampionshipId,
+                                    next.Round,
+                                    false,
+                                    next.DiscountedEntranceFee);
+                            }
+                            else
+                            {
+                                _earlyPaymentButton.Hide();
+                            }
+                        }
+                        else
+                        {
+                            _earlyPaymentButton.Show(
+                                next.ArenaType,
+                                next.ChampionshipId,
+                                next.Round,
+                                false,
+                                next.DiscountedEntranceFee);
+                        }
                     }
                     else
                     {
                         _earlyPaymentButton.Hide();
                     }
 
+                    break;
+                }
+                case ArenaType.Season:
+                case ArenaType.Championship:
+                {
+                    _earlyPaymentButton.Hide();
+                    break;
+                }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void UpdateJoinAndPaymentButton(
+            ArenaType arenaType,
+            bool isOpened,
+            int crystal)
+        {
+            switch (arenaType)
+            {
+                case ArenaType.OffSeason:
+                {
                     _joinButton.Interactable = isOpened;
                     _joinButton.gameObject.SetActive(true);
                     _paymentButton.gameObject.SetActive(false);
@@ -285,15 +425,13 @@ namespace Nekoyume.UI
                 case ArenaType.Season:
                 case ArenaType.Championship:
                 {
-                    _earlyPaymentButton.Hide();
-
                     if (isOpened)
                     {
                         if (RxProps.ArenaInfoTuple.Value.current is null)
                         {
                             _joinButton.gameObject.SetActive(false);
                             _paymentButton.SetCondition(CheckChampionshipConditions);
-                            _paymentButton.SetCost(CostType.Crystal, (int)selectedRoundData.EntranceFee);
+                            _paymentButton.SetCost(CostType.Crystal, crystal);
                             _paymentButton.UpdateObjects();
                             _paymentButton.Interactable = CheckChampionshipConditions();
                             _paymentButton.gameObject.SetActive(true);
