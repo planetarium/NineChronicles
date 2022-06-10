@@ -47,5 +47,18 @@ namespace Nekoyume.Model.State
                 .Add(StarCount.Serialize())
                 .Add(BuffIds.Select(i => i.Serialize()).Serialize());
         }
+
+        public static int GetBuffId(List<int> buffIds, int? buffId, CrystalRandomBuffSheet crystalRandomBuffSheet)
+        {
+            if (buffId.HasValue && buffIds.Contains(buffId.Value))
+            {
+                return buffId.Value;
+            }
+
+            return buffIds
+                .OrderBy(id => crystalRandomBuffSheet[id].Rank)
+                .ThenBy(id => id)
+                .First();
+        }
     }
 }

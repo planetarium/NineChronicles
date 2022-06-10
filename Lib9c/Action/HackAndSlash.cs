@@ -262,13 +262,10 @@ namespace Nekoyume.Action
 
                 if (buffState.BuffIds.Any())
                 {
-                    if (!stageBuffId.HasValue || !buffState.BuffIds.Contains(stageBuffId.Value))
-                    {
-                        stageBuffId = buffState.BuffIds
-                            .OrderBy(id => crystalRandomBuffSheet[id].Rank)
-                            .ThenBy(id => id)
-                            .First();
-                    }
+                    stageBuffId = HackAndSlashBuffState.GetBuffId(
+                        buffState.BuffIds,
+                        stageBuffId,
+                        crystalRandomBuffSheet);
 
                     if (!crystalRandomBuffSheet.TryGetValue(stageBuffId.Value, out var row))
                     {
