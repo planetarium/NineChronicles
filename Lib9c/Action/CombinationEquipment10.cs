@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -15,13 +15,13 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    /// <summary>
-    /// Updated at https://github.com/planetarium/lib9c/pull/1069
-    /// </summary>
     [Serializable]
-    [ActionType("combination_equipment11")]
-    public class CombinationEquipment : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100220ObsoleteIndex)]
+    [ActionType("combination_equipment10")]
+    public class CombinationEquipment10 : GameAction
     {
+        public static readonly Address BlacksmithAddress = ItemEnhancement9.BlacksmithAddress;
+
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
 
@@ -74,8 +74,10 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, ItemEnhancement.GetFeeStoreAddress());
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100220ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -258,7 +260,7 @@ namespace Nekoyume.Action
             {
                 states = states.TransferAsset(
                     context.Signer,
-                    ItemEnhancement.GetFeeStoreAddress(),
+                    BlacksmithAddress,
                     states.GetGoldCurrency() * costNCG
                 );
             }
