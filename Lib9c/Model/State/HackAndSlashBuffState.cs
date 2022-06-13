@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Nekoyume.TableData.Crystal;
 using System.Linq;
 using Libplanet;
 using Nekoyume.TableData;
+using Nekoyume.Model.Skill;
 
 namespace Nekoyume.Model.State
 {
@@ -13,14 +14,14 @@ namespace Nekoyume.Model.State
         public Address Address { get; }
         public int StageId { get; }
         public int StarCount { get; private set; }
-        public List<int> BuffIds { get; private set; }
+        public List<int> SkillIds { get; private set; }
 
         public HackAndSlashBuffState(Address address, int stageId)
         {
             Address = address;
             StageId = stageId;
             StarCount = 0;
-            BuffIds = new List<int>();
+            SkillIds = new List<int>();
         }
 
         public HackAndSlashBuffState(Address address, List serialized)
@@ -28,7 +29,7 @@ namespace Nekoyume.Model.State
             Address = address;
             StageId = serialized[0].ToInteger();
             StarCount = serialized[1].ToInteger();
-            BuffIds = serialized[2].ToList(StateExtensions.ToInteger);
+            SkillIds = serialized[2].ToList(StateExtensions.ToInteger);
         }
 
         public void Update(int gotStarCount, CrystalStageBuffGachaSheet sheet)
@@ -36,9 +37,9 @@ namespace Nekoyume.Model.State
             StarCount = Math.Min(StarCount + gotStarCount, sheet[StageId].MaxStar);
         }
 
-        public void Update(List<int> buffIds)
+        public void Update(List<int> skillIds)
         {
-            BuffIds = buffIds;
+            SkillIds = skillIds;
         }
 
         public IValue Serialize()
@@ -46,23 +47,23 @@ namespace Nekoyume.Model.State
             return List.Empty
                 .Add(StageId.Serialize())
                 .Add(StarCount.Serialize())
-                .Add(BuffIds.Select(i => i.Serialize()).Serialize());
+                .Add(SkillIds.Select(i => i.Serialize()).Serialize());
         }
 
-        public static Skill.BuffSkill GetBuffSkill(
-            List<int> buffIds,
-            int? buffId,
+        public static Skill.Skill GetSkill(
+            List<int> skillIds,
+            int? skillId,
             CrystalRandomBuffSheet crystalRandomBuffSheet,
             SkillSheet skillSheet)
         {
             int selectedId;
-            if (buffId.HasValue && buffIds.Contains(buffId.Value))
+            if (skillId.HasValue && skillIds.Contains(skillId.Value))
             {
-                selectedId = buffId.Value;
+                selectedId = skillId.Value;
             }
             else
             {
-                selectedId = buffIds
+                selectedId = skillIds
                     .OrderBy(id => crystalRandomBuffSheet[id].Rank)
                     .ThenBy(id => id)
                     .First();
@@ -78,7 +79,7 @@ namespace Nekoyume.Model.State
                 throw new SheetRowNotFoundException(nameof(SkillSheet), row.SkillId);
             }
 
-            return new Skill.BuffSkill(skillRow, 0, 100);
+            return SkillFactory.Get(skillRow, 10000, 100);
         }
     }
 }

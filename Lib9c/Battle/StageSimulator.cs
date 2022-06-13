@@ -19,7 +19,7 @@ namespace Nekoyume.Battle
     {
         private readonly List<Wave> _waves;
         private readonly List<ItemBase> _waveRewards;
-        private readonly List<Model.Skill.BuffSkill> _buffSkillsOnWaveStart = new List<Model.Skill.BuffSkill>();
+        private readonly List<Model.Skill.Skill> _skillsOnWaveStart = new List<Model.Skill.Skill>();
         public CollectionMap ItemMap = new CollectionMap();
         public readonly EnemySkillSheet EnemySkillSheet;
 
@@ -230,7 +230,7 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
-            List<Model.Skill.BuffSkill> buffSkillsOnWaveStart,
+            List<Model.Skill.Skill> skillsOnWaveStart,
             int worldId,
             int stageId,
             StageSimulatorSheets stageSimulatorSheets,
@@ -250,7 +250,7 @@ namespace Nekoyume.Battle
                 playCount
             )
         {
-            _buffSkillsOnWaveStart = buffSkillsOnWaveStart;
+            _skillsOnWaveStart = skillsOnWaveStart;
         }
 
         public StageSimulator(
@@ -320,7 +320,7 @@ namespace Nekoyume.Battle
                 WaveTurn = 1;
                 _waves[i].Spawn(this);
 
-                foreach (var skill in _buffSkillsOnWaveStart)
+                foreach (var skill in _skillsOnWaveStart)
                 {
                     var buffs = BuffFactory.GetBuffs(
                         skill,
