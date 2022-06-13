@@ -1,7 +1,9 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Extensions;
 using Nekoyume.Model.State;
@@ -39,6 +41,15 @@ namespace Nekoyume.Action
         {
             IAccountStateDelta states = context.PreviousStates;
 
+            // Restrict staking if there is a monster collection until now.
+            if (states.GetAgentState(context.Signer) is { } agentState &&
+                states.TryGetState(MonsterCollectionState.DeriveAddress(
+                    context.Signer,
+                    agentState.MonsterCollectionRound), out Dictionary _))
+            {
+                throw new MonsterCollectionExistingException();
+            }
+
             if (context.Rehearsal)
             {
                 return states.SetState(StakeState.DeriveAddress(context.Signer), MarkChanged)
@@ -63,7 +74,7 @@ namespace Nekoyume.Action
                 throw new NotEnoughFungibleAssetValueException(
                     context.Signer.ToHex(),
                     Amount,
-                    currentBalance.RawValue);
+                    currentBalance);
             }
 
             // Stake if it doesn't exist yet.
@@ -75,6 +86,11 @@ namespace Nekoyume.Action
                         stakeStateAddress,
                         stakeState.SerializeV2())
                     .TransferAsset(context.Signer, stakeStateAddress, targetStakeBalance);
+            }
+
+            if (stakeState.IsClaimable(context.BlockIndex))
+            {
+                throw new StakeExistingClaimableException();
             }
 
             if (!stakeState.IsCancellable(context.BlockIndex) && targetStakeBalance < stakedBalance)
