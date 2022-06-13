@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -128,11 +127,13 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case PlaceType.Stage:
-                    var successToGetUnlockedWorld = States.Instance.CurrentAvatarState.worldInformation
+                    var sharedViewModel = Widget.Find<WorldMap>().SharedViewModel;
+                    var successToGetUnlockedWorld = sharedViewModel.WorldInformation
                         .TryGetWorldByStageId(model.StageRow.Id, out var world);
                     if (successToGetUnlockedWorld)
                     {
-                        if (model.StageRow.Id > world.StageClearedId + 1)
+                        if (model.StageRow.Id > world.StageClearedId + 1 ||
+                            !sharedViewModel.UnlockedWorldIds.Contains(world.Id))
                         {
                             disableObject.SetActive(true);
                         }
