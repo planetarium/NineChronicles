@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Bencodex.Types;
+using JetBrains.Annotations;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -502,6 +503,20 @@ namespace Nekoyume.Action
             }
         }
 
+        public static bool TryGetSheet<T>(this IAccountStateDelta states, out T sheet) where T : ISheet, new()
+        {
+            try
+            {
+                sheet = states.GetSheet<T>();
+                return true;
+            }
+            catch (Exception)
+            {
+                sheet = default;
+                return false;
+            }
+        }
+
         public static Dictionary<Type, (Address address, ISheet sheet)> GetSheets(
             this IAccountStateDelta states,
             bool containAvatarSheets = false,
@@ -759,7 +774,7 @@ namespace Nekoyume.Action
 
             return new ShopState((Dictionary)value);
         }
-        
+
         public static (Address arenaInfoAddress, ArenaInfo arenaInfo, bool isNewArenaInfo) GetArenaInfo(
             this IAccountStateDelta states,
             Address weeklyArenaAddress,
@@ -781,6 +796,18 @@ namespace Nekoyume.Action
             }
 
             return (arenaInfoAddress, arenaInfo, isNew);
+        }
+
+        public static bool TryGetStakeState(this IAccountStateDelta states, Address agentAddress, out StakeState stakeState)
+        {
+            if (states.TryGetState(StakeState.DeriveAddress(agentAddress), out Dictionary dictionary))
+            {
+                stakeState = new StakeState(dictionary);
+                return true;
+            }
+
+            stakeState = null;
+            return false;
         }
     }
 }
