@@ -5,6 +5,7 @@ using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
+using Nekoyume.Model.Skill.Stage;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using NUnit.Framework;

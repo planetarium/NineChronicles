@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Character
             battle.EnemyPlayerStatus.SetBuff(CharacterModel.Buffs);
         }
 
-        public void Set(Model.CharacterBase model, Player player, bool updateCurrentHP = false)
+        public void Set(Model.StageCharacter model, Player player, bool updateCurrentHP = false)
         {
             base.Set(model, updateCurrentHP);
             _player = player;
@@ -38,7 +38,7 @@ namespace Nekoyume.Game.Character
             attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x - CharacterModel.attackRange, 0f);
         }
 
-        public override float CalculateRange(CharacterBase target)
+        public override float CalculateRange(StageCharacter target)
         {
             var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
             var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;

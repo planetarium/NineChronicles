@@ -1537,17 +1537,20 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTestbed)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<CreateArenaDummy>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseCreateArenaDummy)
+                .AddTo(_disposables);
         }
 
         private void ResponseTestbed(ActionBase.ActionEvaluation<CreateTestbed> eval)
         {
-            if (eval.Exception is null)
-            {
-            }
-            else
-            {
+        }
 
-            }
+        private void ResponseCreateArenaDummy(ActionBase.ActionEvaluation<CreateArenaDummy> eval)
+        {
         }
 #endif
 
@@ -1602,14 +1605,14 @@ namespace Nekoyume.BlockChain
             {
                 if (arenaBoard && arenaBoard.IsActive())
                 {
-                    arenaBoard.OnRenderBattleArena(eval, null, null);
+                    arenaBoard.OnRenderBattleArena(eval);
                 }
 
                 return;
             }
 
             _disposableForBattleEnd?.Dispose();
-            _disposableForBattleEnd = Game.Game.instance.Stage.onEnterToStageEnd
+            _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
                 .First()
                 .Subscribe(_ =>
                 {
@@ -1620,7 +1623,7 @@ namespace Nekoyume.BlockChain
                             // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
                             // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
                             _disposableForBattleEnd = null;
-                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
                         }).ToObservable()
                         .First()
                         // ReSharper disable once ConvertClosureToMethodGroup
@@ -1670,12 +1673,8 @@ namespace Nekoyume.BlockChain
             var random = new LocalRandom(eval.RandomSeed);
             // TODO!!!! ticket 수 만큼 돌려서 마지막 전투 결과를 띄운다.
             // eval.Action.ticket
-            var simulator = new ArenaSimulator(
-                random,
-                myDigest,
-                enemyDigest,
-                tableSheets.GetArenaSimulatorSheets());
-            simulator.Simulate();
+            var simulator = new ArenaSimulator(random);
+            var log = simulator.Simulate(myDigest, enemyDigest, tableSheets.GetArenaSimulatorSheets());
             var scoreAddrList = new[]
             {
                 ArenaScore.DeriveAddress(
@@ -1703,7 +1702,7 @@ namespace Nekoyume.BlockChain
                 maxCount: ArenaHelper.GetRewardCount(previousMyScore));
             var (myWinPoint, myDefeatPoint, _) =
                 ArenaHelper.GetScores(previousMyScore, previousEnemyScore);
-            var currentMyScore = simulator.Log.result switch
+            var currentMyScore = log.result switch
             {
                 BattleLog.Result.Win =>
                     math.max(ArenaScore.ArenaScoreDefault, previousMyScore + myWinPoint),
@@ -1712,11 +1711,12 @@ namespace Nekoyume.BlockChain
                 BattleLog.Result.TimeOver => previousMyScore,
                 _ => throw new ArgumentOutOfRangeException()
             };
-            simulator.Log.score = currentMyScore;
+            log.score = currentMyScore;
 
             if (arenaBoard && arenaBoard.IsActive())
             {
-                arenaBoard.OnRenderBattleArena(eval, simulator.Log, rewards);
+                arenaBoard.OnRenderBattleArena(eval);
+                Game.Game.instance.Arena.Enter(log, rewards, myDigest, enemyDigest);
             }
 
             // TODO!!!! 전투 보여주는 동안 뒤에서는 최신 목록 가져오기.

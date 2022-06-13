@@ -21,7 +21,7 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public T Get<T>(CharacterBase target, Buff buff) where T : BuffVFX
+        public T Get<T>(BaseCharacter target, Buff buff) where T : BuffVFX
         {
             if (target is null)
             {

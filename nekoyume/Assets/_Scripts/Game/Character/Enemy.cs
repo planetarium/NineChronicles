@@ -10,7 +10,7 @@ namespace Nekoyume.Game.Character
 {
     using UniRx;
 
-    public class Enemy : CharacterBase
+    public class Enemy : StageCharacter
     {
         private Player _player;
 
@@ -48,7 +48,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
+        public override void Set(Model.StageCharacter model, bool updateCurrentHP = false)
         {
             if (!(model is Model.Enemy enemyModel))
                 throw new ArgumentException(nameof(model));
@@ -169,7 +169,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
+        protected override void ProcessAttack(StageCharacter target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
             ShowSpeech("ENEMY_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
