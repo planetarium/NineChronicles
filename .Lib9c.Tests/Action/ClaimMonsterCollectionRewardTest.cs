@@ -12,6 +12,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Serilog;
@@ -346,6 +347,30 @@ namespace Lib9c.Tests.Action
                     1,
                     MonsterCollectionState.RewardInterval * 2,
                     MonsterCollectionState.RewardInterval * 2 - 1,
+                    new (int, int)[]
+                    {
+                        (400000, 80),
+                        (500000, 1),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    1,
+                    BlockPolicySource.V100220ObsoleteIndex,
+                    BlockPolicySource.V100220ObsoleteIndex - MonsterCollectionState.RewardInterval,
+                    new (int, int)[]
+                    {
+                        (400000, 80),
+                        (500000, 1),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    1,
+                    BlockPolicySource.V100220ObsoleteIndex + MonsterCollectionState.RewardInterval * 3,
+                    BlockPolicySource.V100220ObsoleteIndex - MonsterCollectionState.RewardInterval,
                     new (int, int)[]
                     {
                         (400000, 80),

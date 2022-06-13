@@ -60,7 +60,7 @@ namespace Nekoyume.Action
             List<MonsterCollectionRewardSheet.RewardInfo> rewards =
                 monsterCollectionState.CalculateRewards(
                     states.GetSheet<MonsterCollectionRewardSheet>(),
-                    context.BlockIndex
+                    Math.Min(BlockPolicySource.V100220ObsoleteIndex, context.BlockIndex)
                 );
 
             if (rewards.Count == 0)
