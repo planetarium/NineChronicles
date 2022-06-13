@@ -62,7 +62,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  messageText: {fileID: 650456451347729483}
 --- !u!1 &3555367175929677487
 GameObject:
   m_ObjectHideFlags: 0
@@ -10104,6 +10103,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: LoadingIndicator
       objectReference: {fileID: 0}
+    - target: {fileID: 654562747126494499, guid: 1a0b987d9e902134fa44625a2541ac08,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_BUFF_BONUS_LOADING
+      objectReference: {fileID: 0}
     - target: {fileID: 3037678829127117104, guid: 1a0b987d9e902134fa44625a2541ac08,
         type: 3}
       propertyPath: m_IsActive
@@ -10119,7 +10123,8 @@ PrefabInstance:
       propertyPath: m_text
       value: Loading acquisition buffs...
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7689968050281011826, guid: 1a0b987d9e902134fa44625a2541ac08, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 1a0b987d9e902134fa44625a2541ac08, type: 3}
 --- !u!224 &7810186978255948888 stripped
 RectTransform:
@@ -10127,18 +10132,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8002662868142038659}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &650456451347729483 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7352629730520191688, guid: 1a0b987d9e902134fa44625a2541ac08,
-    type: 3}
-  m_PrefabInstance: {fileID: 8002662868142038659}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &9074034204482418706
 PrefabInstance:
   m_ObjectHideFlags: 0

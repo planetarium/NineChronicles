@@ -55,6 +55,13 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
+        public override void Initialize()
+        {
+            normalButton.Text = L10nManager.Localize("UI_DRAW_NORMAL");
+            advancedButton.Text = L10nManager.Localize("UI_DRAW_ADVANCED");
+            base.Initialize();
+        }
+
         public void Show(int stageId, bool hasEnoughStars)
         {
             var sheet = Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet;
@@ -86,7 +93,7 @@ namespace Nekoyume.UI
         {
             if (CheckCrystal(_normalCost))
             {
-                var usageMessage = L10nManager.Localize("UI_NORMAL_BUFF_GACHA");
+                var usageMessage = L10nManager.Localize("UI_DRAW_NORMAL_BUFF");
                 var balance = States.Instance.CrystalBalance;
                 var content = balance.GetPaymentFormatText(usageMessage, _normalCost);
 
@@ -105,7 +112,7 @@ namespace Nekoyume.UI
         {
             if (CheckCrystal(_advancedCost))
             {
-                var usageMessage = L10nManager.Localize("UI_ADVANCED_BUFF_GACHA");
+                var usageMessage = L10nManager.Localize("UI_DRAW_ADVANCED_BUFF");
                 var balance = States.Instance.CrystalBalance;
                 var content = balance.GetPaymentFormatText(usageMessage, _advancedCost);
 
