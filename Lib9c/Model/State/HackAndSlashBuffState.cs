@@ -79,7 +79,7 @@ namespace Nekoyume.Model.State
                 throw new SheetRowNotFoundException(nameof(SkillSheet), row.SkillId);
             }
 
-            return SkillFactory.Get(skillRow, 10000, 100);
+            return SkillFactory.Get(skillRow, 0, 100);
         }
     }
 }
