@@ -356,6 +356,33 @@ namespace Lib9c.Tests.Action
                 new object[]
                 {
                     1,
+                    ClaimMonsterCollectionReward.MonsterCollectionRewardEndBlockIndex,
+                    ClaimMonsterCollectionReward.MonsterCollectionRewardEndBlockIndex -
+                    MonsterCollectionState.RewardInterval,
+                    new (int, int)[]
+                    {
+                        (400000, 80),
+                        (500000, 1),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    1,
+                    ClaimMonsterCollectionReward.MonsterCollectionRewardEndBlockIndex +
+                    MonsterCollectionState.RewardInterval * 3,
+                    ClaimMonsterCollectionReward.MonsterCollectionRewardEndBlockIndex -
+                    MonsterCollectionState.RewardInterval,
+                    new (int, int)[]
+                    {
+                        (400000, 80),
+                        (500000, 1),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    1,
                     1,
                     null,
                     new (int, int)[] { },

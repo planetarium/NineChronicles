@@ -3,12 +3,14 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
@@ -80,6 +82,35 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 Random = new TestRandom(),
             }));
+        }
+
+        [Fact]
+        public void Execute_After_V100220ObsoleteIndex()
+        {
+            Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            var monsterCollectionState = new MonsterCollectionState(
+                monsterCollectionAddress, 1, BlockPolicySource.V100220ObsoleteIndex - MonsterCollectionState.RewardInterval);
+            var currency = _state.GetGoldCurrency();
+            var states = _state
+                .SetState(monsterCollectionAddress, monsterCollectionState.Serialize())
+                .MintAsset(monsterCollectionAddress, currency * 100);
+            MigrateMonsterCollection action = new MigrateMonsterCollection(_avatarAddress);
+            states = action.Execute(new ActionContext
+            {
+                PreviousStates = states,
+                Signer = _signer,
+                BlockIndex = BlockPolicySource.V100220ObsoleteIndex + 1,
+                Random = new TestRandom(),
+            });
+
+            Assert.True(states.TryGetAvatarStateV2(
+                _signer,
+                _avatarAddress,
+                out AvatarState avatarState,
+                out bool _));
+
+            Assert.Equal(80, avatarState.inventory.Items.First(item => item.item.Id == 400000).count);
+            Assert.Equal(1, avatarState.inventory.Items.First(item => item.item.Id == 500000).count);
         }
 
         [Theory]
