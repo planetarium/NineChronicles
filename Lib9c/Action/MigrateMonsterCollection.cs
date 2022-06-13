@@ -3,6 +3,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
+using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
@@ -43,11 +44,21 @@ namespace Nekoyume.Action
                 throw new InvalidOperationException("The user has already staked.");
             }
 
-            var claimMonsterCollectionReward = new ClaimMonsterCollectionReward
+            try
             {
-                avatarAddress = AvatarAddress,
-            };
-            states = claimMonsterCollectionReward.Execute(context);
+                var claimMonsterCollectionReward = new ClaimMonsterCollectionReward
+                {
+                    avatarAddress = AvatarAddress,
+                };
+                states = claimMonsterCollectionReward.Execute(context);
+            }
+            catch (Exception e)
+            {
+                Log.Error(
+                    e,
+                    "An exception({Exception}) occurred while claiming monster collection rewards.",
+                    e);
+            }
 
             var agentState = states.GetAgentState(context.Signer);
             var currency = states.GetGoldCurrency();
