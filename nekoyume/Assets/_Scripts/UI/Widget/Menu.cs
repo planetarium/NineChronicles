@@ -45,11 +45,9 @@ namespace Nekoyume.UI
 
         [SerializeField] private MainMenu btnMimisbrunnr = null;
 
-        [SerializeField]
-        private MainMenu btnStaking = null;
+        [SerializeField] private MainMenu btnStaking = null;
 
-        [SerializeField]
-        private SpeechBubble[] speechBubbles = null;
+        [SerializeField] private SpeechBubble[] speechBubbles = null;
 
         [SerializeField] private GameObject shopExclamationMark = null;
 
