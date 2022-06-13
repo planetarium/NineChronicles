@@ -23,6 +23,7 @@ namespace Nekoyume.Action
     [ActionObsolete(BlockPolicySource.V100220ObsoleteIndex)]
     public class ClaimMonsterCollectionReward : GameAction
     {
+        public const long MonsterCollectionRewardEndBlockIndex = 4_481_909;
         public Address avatarAddress;
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -60,7 +61,7 @@ namespace Nekoyume.Action
             List<MonsterCollectionRewardSheet.RewardInfo> rewards =
                 monsterCollectionState.CalculateRewards(
                     states.GetSheet<MonsterCollectionRewardSheet>(),
-                    Math.Min(BlockPolicySource.V100220ObsoleteIndex, context.BlockIndex)
+                    Math.Min(MonsterCollectionRewardEndBlockIndex, context.BlockIndex)
                 );
 
             if (rewards.Count == 0)
