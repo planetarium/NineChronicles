@@ -18,14 +18,12 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    /// <summary>
-    /// Updated at https://github.com/planetarium/lib9c/pull/1069
-    /// </summary>
     [Serializable]
-    [ActionType("item_enhancement10")]
-    public class ItemEnhancement : GameAction
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100220ObsoleteIndex)]
+    [ActionType("item_enhancement9")]
+    public class ItemEnhancement9 : GameAction
     {
-        public static Address GetFeeStoreAddress() => Addresses.Blacksmith.Derive("_0_0");
+        public static readonly Address BlacksmithAddress = Addresses.Blacksmith;
 
         public enum EnhancementResult
         {
@@ -126,13 +124,15 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 return states
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, GetFeeStoreAddress())
+                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress)
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100220ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -265,7 +265,7 @@ namespace Nekoyume.Action
             var requiredNcg = row.Cost;
             if (requiredNcg > 0)
             {
-                states = states.TransferAsset(ctx.Signer, GetFeeStoreAddress(), states.GetGoldCurrency() * requiredNcg);
+                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, states.GetGoldCurrency() * requiredNcg);
             }
 
             // Unequip items

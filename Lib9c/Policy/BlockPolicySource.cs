@@ -66,7 +66,11 @@ namespace Nekoyume.BlockChain.Policy
 
         public const long V100193ObsoleteIndex = 3_975_929;
 
-        public const long V100210ObsoleteIndex = 4_246_225;
+        public const long V100200ObsoleteIndex = 4_246_225;
+
+        public const long V100210ObsoleteIndex = 4_366_622;
+
+        public const long V100220ObsoleteIndex = 4_378_478;
 
         public const long PermissionedMiningStartIndex = 2_225_500;
 
@@ -156,6 +160,21 @@ namespace Nekoyume.BlockChain.Policy
                 maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 authorizedMinersPolicy: AuthorizedMinersPolicy.Mainnet,
                 permissionedMinersPolicy: PermissionedMinersPolicy.Mainnet);
+
+        /// <summary>
+        /// Creates an <see cref="IBlockPolicy{T}"/> instance for networks
+        /// with default options, without authorized mining and permissioned mining.
+        /// </summary>
+        public IBlockPolicy<NCAction> GetDefaultPolicy() =>
+            GetPolicy(
+                minimumDifficulty: DifficultyStability,
+                hashAlgorithmTypePolicy: HashAlgorithmTypePolicy.Default,
+                maxBlockBytesPolicy: MaxBlockBytesPolicy.Default,
+                minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Default,
+                maxTransactionsPerBlockPolicy: MaxTransactionsPerBlockPolicy.Default,
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Default,
+                authorizedMinersPolicy: AuthorizedMinersPolicy.Default,
+                permissionedMinersPolicy: PermissionedMinersPolicy.Default);
 
         /// <summary>
         /// Gets a <see cref="BlockPolicy"/> constructed from given parameters.

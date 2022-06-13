@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class BuyTest
+    public class Buy10Test
     {
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
@@ -40,7 +40,7 @@ namespace Lib9c.Tests.Action
         private readonly Guid _orderId;
         private IAccountStateDelta _initialState;
 
-        public BuyTest(ITestOutputHelper outputHelper)
+        public Buy10Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -322,7 +322,7 @@ namespace Lib9c.Tests.Action
                     .SetState(orderDigestListState.Address, orderDigestListState.Serialize());
             }
 
-            var buyAction = new Buy
+            var buyAction = new Buy10
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = purchaseInfos,
@@ -412,7 +412,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(30, nextBuyerAvatarState.mailBox.Count);
 
-            var goldCurrencyGold = nextState.GetBalance(Buy.GetFeeStoreAddress(), goldCurrencyState);
+            var goldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);
             Assert.Equal(totalTax, goldCurrencyGold);
             var buyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
             var prevBuyerGold = _initialState.GetBalance(_buyerAgentAddress, goldCurrencyState);
@@ -447,7 +447,7 @@ namespace Lib9c.Tests.Action
             }
 
             var avatarAddress = equalAvatarAddress ? _buyerAvatarAddress : default;
-            var action = new Buy
+            var action = new Buy10
             {
                 buyerAvatarAddress = avatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -564,7 +564,7 @@ namespace Lib9c.Tests.Action
                 price
             );
 
-            var action = new Buy
+            var action = new Buy10
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -690,7 +690,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(1, sellerAvatarState.inventory.Items.Count);
             Assert.Equal(sumCount, sellerAvatarState.inventory.Items.First().count);
 
-            var buyAction = new Buy
+            var buyAction = new Buy10
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = purchaseInfos,
@@ -779,7 +779,7 @@ namespace Lib9c.Tests.Action
                 new FungibleAssetValue(_goldCurrencyState.Currency, 10, 0)
             );
 
-            var action = new Buy
+            var action = new Buy10
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -798,7 +798,7 @@ namespace Lib9c.Tests.Action
                 _buyerAvatarAddress.Derive(LegacyInventoryKey),
                 _buyerAvatarAddress.Derive(LegacyWorldInformationKey),
                 _buyerAvatarAddress.Derive(LegacyQuestListKey),
-                Buy.GetFeeStoreAddress(),
+                Addresses.GoldCurrency,
                 ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, _orderId),
                 OrderReceipt.DeriveAddress(_orderId),
             };
@@ -846,7 +846,7 @@ namespace Lib9c.Tests.Action
 
             var prevBuyerGold = nextState.GetBalance(result.GetAgentState().address, nextState.GetGoldCurrency());
 
-            var buyAction = new Buy
+            var buyAction = new Buy10
             {
                 buyerAvatarAddress = result.GetAvatarState().address,
                 purchaseInfos = purchaseInfos,
@@ -923,8 +923,8 @@ namespace Lib9c.Tests.Action
 
             var buyerGold = nextState.GetBalance(result.GetAgentState().address, goldCurrencyState);
             Assert.Equal(prevBuyerGold - totalPrice, buyerGold);
-            var goldCurrencyGold = nextState.GetBalance(Buy.GetFeeStoreAddress(), goldCurrencyState);
-            Assert.Equal(totalTax, goldCurrencyGold);
+            var goldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);
+            Assert.Equal(result.GetCurrencyGold() + totalTax, goldCurrencyGold);
 
             foreach (var (agentAddress, expectedGold) in agentRevenue)
             {
