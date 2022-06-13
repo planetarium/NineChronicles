@@ -39,6 +39,12 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
             }
 
+            if (states.TryGetStakeState(context.Signer, out StakeState _))
+            {
+                throw new InvalidOperationException(
+                    "The user has staked. You cannot stake and monster-collect at the same time.");
+            }
+
             MonsterCollectionSheet monsterCollectionSheet = states.GetSheet<MonsterCollectionSheet>();
 
             AgentState agentState = states.GetAgentState(context.Signer);

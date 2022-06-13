@@ -153,6 +153,26 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Execute_Throw_InvalidOperationException()
+        {
+            var stakeAddress = StakeState.DeriveAddress(_signer);
+            var states = _initialState.SetState(
+                stakeAddress,
+                new StakeState(stakeAddress, 0).SerializeV2());
+            MonsterCollect action = new MonsterCollect
+            {
+                level = 1,
+            };
+
+            Assert.Throws<InvalidOperationException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = states,
+                Signer = _signer,
+                BlockIndex = 1,
+            }));
+        }
+
+        [Fact]
         public void Rehearsal()
         {
             MonsterCollect action = new MonsterCollect
