@@ -67,7 +67,7 @@ namespace Nekoyume.UI.Module.Lobby
                     _requireStage = GameConfig.RequireClearedStageLevel.UIBottomMenuMimisbrunnr;
                     break;
                 case MenuType.Staking:
-                    _requireStage = 3;  // Todo
+                    _requireStage = 1;  // always allow
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

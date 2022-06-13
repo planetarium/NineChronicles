@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Nekoyume.Model.Item;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public void Set(ItemBase itemBase, int count, Action<ItemBase> onClick)
+        public void Set(ItemBase itemBase, BigInteger count, Action<ItemBase> onClick)
         {
             if (itemBase == null)
             {

@@ -15,8 +15,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            var _icons = Resources.LoadAll<Sprite>("");
-
             uploadButton.OnSubmitSubject.Subscribe(_ =>
             {
                 // Do Something

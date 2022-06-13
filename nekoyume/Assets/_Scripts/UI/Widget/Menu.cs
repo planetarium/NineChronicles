@@ -11,6 +11,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -57,6 +58,8 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject questExclamationMark = null;
 
         [SerializeField] private GameObject mimisbrunnrExclamationMark = null;
+
+        [SerializeField] private Image stakingLevelIcon;
 
         [SerializeField] private GuidedQuest guidedQuest = null;
 
@@ -192,6 +195,8 @@ namespace Nekoyume.UI
             mimisbrunnrExclamationMark.gameObject.SetActive(
                 btnMimisbrunnr.IsUnlocked
                 && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0);
+            
+            stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(States.Instance.StakingLevel);
         }
 
         private void HideButtons()
@@ -373,7 +378,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Find<StakingPopup>().Show();
+            if (States.Instance.StakingLevel < 1)
+            {
+                Find<StakingPopupNone>().Show();
+            }
+            else
+            {
+                Find<StakingPopup>().Show();
+            }
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

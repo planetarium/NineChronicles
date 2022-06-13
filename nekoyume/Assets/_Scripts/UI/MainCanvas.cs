@@ -332,6 +332,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<StakingPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<StakingPopupNone>());
+            yield return null;
 
             // tooltip
             secondWidgets.Add(Widget.Create<EquipmentTooltip>());

@@ -1,8 +1,12 @@
+using System.Linq;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,7 +40,8 @@ namespace Nekoyume.UI
 
             stakingButton.OnSubmitSubject.Subscribe(_ =>
             {
-                Debug.LogError("stakingButton.OnSubmitSubject");
+                // Do Something
+                AudioController.PlayClick();
             }).AddTo(gameObject);
 
             closeButton.onClick.AddListener(() =>
@@ -44,38 +49,59 @@ namespace Nekoyume.UI
                 Close();
                 AudioController.PlayClick();
             });
-            // StepImage sprite list 불러오기
 
             tooltip.SetActive(false);
+
+            this.UpdateAsObservable()
+                .Where(_ => tooltip.activeSelf && Input.GetMouseButtonDown(0))
+                .Subscribe(_ => tooltip.SetActive(false));
         }
 
         public override void Show(bool ignoreStartAnimation = false)
         {
-            stepImage.sprite = null;
-            stepText.text = $"Step {4}";
-            stepScoreText.text = string.Format(StepScoreFormat, 999, 999);
+            var level = States.Instance.StakingLevel;
+            var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
+            var regularSheet = Game.Game.instance.TableSheets.StakeRegularRewardSheet;
+            var regularFixedSheet = Game.Game.instance.TableSheets.StakeRegularFixedRewardSheet;
 
-            foreach (var view in regularItemViews)
+            stepImage.sprite = SpriteHelper.GetStakingIcon(level, true);
+            stepText.text = $"Step {level}";
+
+            if (regularSheet.TryGetValue(level, out var regular)
+                && regularFixedSheet.TryGetValue(level, out var regularFixed))
             {
-                view.Set(null, 100, itemBase =>
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+                var rewardsCount = Mathf.Min(regular.Rewards.Count, regularItemViews.Length);
+                for (int i = 0; i < rewardsCount; i++)
                 {
-                    ShowToolTip(itemBase, view.GetComponent<RectTransform>().anchoredPosition);
-                });
-                Debug.LogError($"{view.transform.position}");
+                    var item = ItemFactory.CreateMaterial(materialSheet, regular.Rewards[i].ItemId);
+
+                    var result = deposit / regular.Rewards[i].Rate;
+                    var levelBonus = regularFixed.Rewards.FirstOrDefault(
+                        reward => reward.ItemId == regular.Rewards[i].ItemId)?.Count ?? 0;
+                    result += levelBonus;
+
+                    var view = regularItemViews[i];
+                    view.Set(item, result, itemBase =>
+                    {
+                        ShowToolTip(itemBase, view.gameObject.transform); // 틀림
+                    });
+                }
+
+                var nextRequired = regularSheet.TryGetValue(level + 1, out var nextLevel)
+                    ? nextLevel.RequiredGold
+                    : regular.RequiredGold;
+                stepScoreText.text = string.Format(StepScoreFormat, deposit, nextRequired);
             }
+
             base.Show(ignoreStartAnimation);
         }
 
-        private void ShowToolTip(ItemBase itemBase, Vector2 position)
+        private void ShowToolTip(ItemBase itemBase, Transform target)
         {
             tooltip.SetActive(true);
             tooltipText.text = itemBase.GetLocalizedDescription();
-            tooltipRectTransform.anchoredPosition = position;
-        }
-
-        public void OnEnterButtonArea(bool value)
-        {
-            Debug.LogError(value);
+            tooltipRectTransform.position = target.position;
         }
     }
 }
