@@ -5,6 +5,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
@@ -17,7 +18,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("monster_collect3")]
-    // FIXME: This action should be obsoleted.
+    [ActionObsolete(BlockPolicySource.V100220ObsoleteIndex)]
     public class MonsterCollect : GameAction
     {
         public int level;
