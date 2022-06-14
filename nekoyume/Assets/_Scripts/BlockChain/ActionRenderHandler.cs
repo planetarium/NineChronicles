@@ -1002,7 +1002,7 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
                                 UpdateWeeklyArenaState(eval);
-                                UpdateHackAndSlashBuffState(eval);
+                                UpdateCrystalRandomSkillState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -1476,7 +1476,7 @@ namespace Nekoyume.BlockChain
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
-            UpdateHackAndSlashBuffState(eval);
+            UpdateCrystalRandomSkillState(eval);
             try
             {
                 UpdateCrystalBalance(eval);
@@ -1488,8 +1488,8 @@ namespace Nekoyume.BlockChain
 
             Widget.Find<BuffBonusLoadingScreen>().Close();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
-            var buffState = States.Instance.CrystalRandomSkillState;
-            Widget.Find<BuffBonusResultPopup>().Show(buffState.StageId, buffState);
+            var skillState = States.Instance.CrystalRandomSkillState;
+            Widget.Find<BuffBonusResultPopup>().Show(skillState.StageId, skillState);
         }
 
         private void ResponseStake(ActionBase.ActionEvaluation<Stake> eval)

@@ -106,7 +106,7 @@ namespace Nekoyume.BlockChain
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var buffStateAddress = Addresses.GetskillStateAddressFromAvatarAddress(avatarAddress);
+            var buffStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
             if (evaluation.OutputStates.GetState(buffStateAddress) is
                 Bencodex.Types.List serialized)
             {
@@ -229,14 +229,14 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        protected static void UpdateHackAndSlashBuffState<T>(
+        protected static void UpdateCrystalRandomSkillState<T>(
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var state = GetCrystalRandomSkillState(evaluation);
 
             if (state is { })
             {
-                States.Instance.SetHackAndSlashBuffState(state);
+                States.Instance.SetCrystalRandomSkillState(state);
             }
         }
 

@@ -161,11 +161,11 @@ namespace Nekoyume.State
             MonsterCollectionStateSubject.OnNextLevel(stakingLevel);
         }
 
-        public void SetHackAndSlashBuffState(CrystalRandomSkillState buffState)
+        public void SetCrystalRandomSkillState(CrystalRandomSkillState buffState)
         {
             if (buffState is null)
             {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetHackAndSlashBuffState)}] {nameof(buffState)} is null.");
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetCrystalRandomSkillState)}] {nameof(buffState)} is null.");
                 return;
             }
 
@@ -358,12 +358,12 @@ namespace Nekoyume.State
                     }
 
                     var avatarAddress = CurrentAvatarState.address;
-                    var buffStateAddress = Addresses.GetskillStateAddressFromAvatarAddress(avatarAddress);
+                    var buffStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
                     var buffStateIValue = await Game.Game.instance.Agent.GetStateAsync(buffStateAddress);
                     if (buffStateIValue is List serialized)
                     {
                         var buffState = new CrystalRandomSkillState(buffStateAddress, serialized);
-                        SetHackAndSlashBuffState(buffState);
+                        SetCrystalRandomSkillState(buffState);
                     }
 
                     await SetCombinationSlotStatesAsync(curAvatarState);

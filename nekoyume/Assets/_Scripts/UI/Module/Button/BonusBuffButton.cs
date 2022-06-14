@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Module
         private void SetIcon(CrystalRandomSkillState skillState)
         {
             var isBuffAvailable = _hasEnoughStars;
-            var selectedId = Widget.Find<BuffBonusResultPopup>().SelectedBuffId;
+            var selectedId = Widget.Find<BuffBonusResultPopup>().SelectedSkillId;
 
             var tableSheets = Game.Game.instance.TableSheets;
             if (selectedId.HasValue ||
@@ -122,15 +122,15 @@ namespace Nekoyume.UI.Module
 
         private void OnClickButton()
         {
-            var buffState = States.Instance.CrystalRandomSkillState;
+            var skillState = States.Instance.CrystalRandomSkillState;
 
-            if (!buffState.SkillIds.Any())
+            if (!skillState.SkillIds.Any())
             {
                 Widget.Find<BuffBonusPopup>().Show(_stageId, _hasEnoughStars);
             }
             else
             {
-                Widget.Find<BuffBonusResultPopup>().Show(_stageId, buffState);
+                Widget.Find<BuffBonusResultPopup>().Show(_stageId, skillState);
             }
         }
     }

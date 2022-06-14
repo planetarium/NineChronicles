@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<GameObject> buffViewParents = null;
 
-        public int? SelectedBuffId { get; set; }
+        public int? SelectedSkillId { get; set; }
 
         private int _stageId;
 
@@ -69,7 +69,7 @@ namespace Nekoyume.UI
                         selectedBuffText.text = view.CurrentSkillName;
                         selectedBuffIcon.sprite = view.CurrentIcon;
                         selectedBuffBg.sprite = view.CurrentGradeData.BgSprite;
-                        SelectedBuffId = row.Id;
+                        SelectedSkillId = row.Id;
                     }
                 }
             })
@@ -106,9 +106,9 @@ namespace Nekoyume.UI
                 viewParent.SetActive(true);
             }
 
-            var selectedBuff = SelectedBuffId.HasValue ?
-                buffs.First(x => x.Id == SelectedBuffId) : buffs.First();
-            SelectedBuffId = selectedBuff.Id;
+            var selectedBuff = SelectedSkillId.HasValue ?
+                buffs.First(x => x.Id == SelectedSkillId) : buffs.First();
+            SelectedSkillId = selectedBuff.Id;
             OnBuffSelectedSubject.OnNext(selectedBuff);
             base.Show();
         }
@@ -116,7 +116,7 @@ namespace Nekoyume.UI
         private void Retry()
         {
             Close();
-            SelectedBuffId = null;
+            SelectedSkillId = null;
             var hasEnoughStar =
                 Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(_stageId, out var row)
                 && States.Instance.CrystalRandomSkillState.StarCount >= row.MaxStar;

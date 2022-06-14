@@ -768,11 +768,11 @@ namespace Nekoyume.UI
             switch (stageType)
             {
                 case StageType.HackAndSlash:
-                    var buffState = States.Instance.CrystalRandomSkillState;
+                    var skillState = States.Instance.CrystalRandomSkillState;
                     var buffResult = Find<BuffBonusResultPopup>();
-                    var buffId = buffState != null && buffState.SkillIds.Any() ?
-                        buffResult.SelectedBuffId : null;
-                    buffResult.SelectedBuffId = null;
+                    var skillId = skillState != null && skillState.SkillIds.Any() ?
+                        buffResult.SelectedSkillId : null;
+                    buffResult.SelectedSkillId = null;
 
                     Game.Game.instance.ActionManager.HackAndSlash(
                         costumes,
@@ -780,7 +780,7 @@ namespace Nekoyume.UI
                         consumables,
                         _worldId,
                         _stageId.Value,
-                        buffId
+                        skillId
                     ).Subscribe();
                     break;
                 case StageType.Mimisbrunnr:
