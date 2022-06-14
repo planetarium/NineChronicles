@@ -2,7 +2,7 @@ namespace Nekoyume.Game.Character
 {
     public class PlayerAnimator : CharacterAnimator
     {
-        public PlayerAnimator(BaseCharacter root) : base(root)
+        public PlayerAnimator(Character root) : base(root)
         {
         }
     }

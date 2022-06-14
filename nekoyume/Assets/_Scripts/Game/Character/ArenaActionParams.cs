@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.Model.BattleStatus.Arena;
 
 namespace Nekoyume.Game.Character
 {
     public class ArenaActionParams
     {
         public readonly ArenaCharacter ArenaCharacter;
-        public readonly IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos;
-        public readonly IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos;
-        public readonly Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> func;
+        public readonly IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos;
+        public readonly IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos;
+        public readonly Func<IReadOnlyList<ArenaSkill.ArenaSkillInfo>, IEnumerator> func;
 
         public ArenaActionParams(ArenaCharacter arenaCharacter,
-            IEnumerable<Model.BattleStatus.Skill.SkillInfo> skills,
-            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffs,
-            Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> coNormalAttack)
+            IEnumerable<ArenaSkill.ArenaSkillInfo> skills,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> buffs,
+            Func<IReadOnlyList<ArenaSkill.ArenaSkillInfo>, IEnumerator> coNormalAttack)
         {
             ArenaCharacter = arenaCharacter;
             skillInfos = skills;

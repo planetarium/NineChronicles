@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
-    public abstract class BaseCharacter : MonoBehaviour
+    public abstract class Character : MonoBehaviour
     {
         public Guid Id {get; protected set; }
         public SizeType SizeType { get; protected set; }
@@ -26,6 +26,7 @@ namespace Nekoyume.Game.Character
                 case "attackPoint":
                     AttackEndCalled = true;
                     ActionPoint?.Invoke();
+                    ActionPoint = null;
                     break;
                 case "footstep":
                     AudioController.PlayFootStep();

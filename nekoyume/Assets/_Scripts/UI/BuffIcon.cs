@@ -14,7 +14,7 @@ namespace Nekoyume.UI
         public Image image;
         public TextMeshProUGUI remainedDurationText;
         public Buff Data { get; set; }
-        public StageCharacter character;
+        public CharacterBase character;
 
         public void Show(Buff buff, bool isAdded)
         {

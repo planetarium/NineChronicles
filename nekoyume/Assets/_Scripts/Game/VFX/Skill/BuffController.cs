@@ -21,7 +21,24 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public T Get<T>(BaseCharacter target, Buff buff) where T : BuffVFX
+        public T Get<T>(CharacterBase target, Buff buff) where T : BuffVFX
+        {
+            if (target is null)
+            {
+                return null;
+            }
+
+            var position = target.transform.position;
+            position.y += 0.55f;
+            var resource = buff.RowData.IconResource;
+            var resourceName = resource.Replace("icon_", "");
+            var go = _pool.Get(resourceName, false, position) ??
+                     _pool.Get(resourceName, true, position);
+
+            return GetEffect<T>(go);
+        }
+
+        public T Get<T>(ArenaCharacter target, Buff buff) where T : BuffVFX
         {
             if (target is null)
             {

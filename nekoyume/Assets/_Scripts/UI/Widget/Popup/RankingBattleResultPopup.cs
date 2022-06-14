@@ -4,6 +4,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -36,11 +37,11 @@ namespace Nekoyume.UI
             submitButton.OnClick = BackToRanking;
         }
 
-        public void Show(BattleLog log, IReadOnlyList<ItemBase> rewardItems, System.Action onClose)
+        public void Show(ArenaLog log, IReadOnlyList<ItemBase> rewardItems, System.Action onClose)
         {
             base.Show();
 
-            var win = log.result == BattleLog.Result.Win;
+            var win = log.Result == ArenaLog.ArenaResult.Win;
             var code = win ? AudioController.MusicCode.PVPWin : AudioController.MusicCode.PVPLose;
             AudioController.instance.PlayMusic(code);
             victoryImageContainer.SetActive(win);
@@ -51,7 +52,7 @@ namespace Nekoyume.UI
                     ActionCamera.instance.transform, VfxBattleWinOffset);
             }
 
-            scoreText.text = $"{log.score}";
+            scoreText.text = $"{log.Score}";
 
             var items = rewardItems.Select(e => new CountableItem(e, 1)).ToList();
             for (var i = 0; i < rewards.Count; i++)

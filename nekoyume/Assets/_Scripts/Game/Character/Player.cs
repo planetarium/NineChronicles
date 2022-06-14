@@ -18,7 +18,7 @@ namespace Nekoyume.Game.Character
     using UniRx;
 
     // todo: 경험치 정보를 `CharacterBase`로 옮기는 것이 좋겠음.
-    public class Player : StageCharacter
+    public class Player : CharacterBase
     {
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
         private GameObject _cachedCharacterTitle;
@@ -72,7 +72,7 @@ namespace Nekoyume.Game.Character
             touchHandler.OnClick.Merge(touchHandler.OnDoubleClick)
                 .Merge(touchHandler.OnMultipleClick).Subscribe(_ =>
                 {
-                    if (Game.instance.IsInWorld || ActionCamera.instance.InPrologue)
+                    if (Game.instance.Stage.IsInStage || ActionCamera.instance.InPrologue)
                     {
                         return;
                     }
@@ -86,7 +86,7 @@ namespace Nekoyume.Game.Character
             base.Update();
             if (HudContainer)
             {
-                if (Game.instance.IsInWorld)
+                if (Game.instance.Stage.IsInStage)
                 {
                     if (Game.instance.Stage.IsShowHud)
                     {
@@ -124,7 +124,7 @@ namespace Nekoyume.Game.Character
                 tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet));
         }
 
-        public override void Set(Model.StageCharacter model, bool updateCurrentHP = false)
+        public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
         {
             if (!(model is Model.Player playerModel))
             {
@@ -229,7 +229,7 @@ namespace Nekoyume.Game.Character
                 new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
         }
 
-        public override float CalculateRange(StageCharacter target)
+        public override float CalculateRange(CharacterBase target)
         {
             var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
             var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
@@ -644,7 +644,7 @@ namespace Nekoyume.Game.Character
             Inventory = character.Inventory;
         }
 
-        protected override void ProcessAttack(StageCharacter target,
+        protected override void ProcessAttack(CharacterBase target,
             Model.BattleStatus.Skill.SkillInfo skill,
             bool isLastHit,
             bool isConsiderElementalType)

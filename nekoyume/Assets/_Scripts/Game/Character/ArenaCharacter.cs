@@ -8,18 +8,18 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model.Arena;
+using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.UI;
 using UnityEngine;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
-using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Game.Character
 {
     using UniRx;
 
-    public class ArenaCharacter : BaseCharacter
+    public class ArenaCharacter : Character
     {
         [SerializeField]
         private CharacterAppearance appearance;
@@ -142,7 +142,7 @@ namespace Nekoyume.Game.Character
         private void PopUpDmg(
             Vector3 position,
             Vector3 force,
-            Skill.SkillInfo info,
+            ArenaSkill.ArenaSkillInfo info,
             bool isConsiderElementalType)
         {
             var dmg = info.Effect.ToString();
@@ -228,14 +228,14 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void ProcessAttack(ArenaCharacter target, Skill.SkillInfo skill, bool isConsiderElementalType)
+        private void ProcessAttack(ArenaCharacter target, ArenaSkill.ArenaSkillInfo skill, bool isConsiderElementalType)
         {
             ShowSpeech("PLAYER_SKILL", (int)skill.ElementalType, (int)skill.SkillCategory);
             StartCoroutine(target.CoProcessDamage(skill, isConsiderElementalType));
             ShowSpeech("PLAYER_ATTACK");
         }
 
-        private IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
+        private IEnumerator CoProcessDamage(ArenaSkill.ArenaSkillInfo info, bool isConsiderElementalType)
         {
             var dmg = info.Effect;
 
@@ -256,7 +256,7 @@ namespace Nekoyume.Game.Character
             PopUpDmg(position, force, info, isConsiderElementalType);
         }
 
-        private void ProcessHeal(Skill.SkillInfo info)
+        private void ProcessHeal(ArenaSkill.ArenaSkillInfo info)
         {
             if (IsDead)
             {
@@ -272,7 +272,7 @@ namespace Nekoyume.Game.Character
             VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 
-        private void ProcessBuff(BaseCharacter target, Skill.SkillInfo info)
+        private void ProcessBuff(ArenaCharacter target, ArenaSkill.ArenaSkillInfo info)
         {
             if (IsDead)
             {
@@ -326,12 +326,12 @@ namespace Nekoyume.Game.Character
             yield return null;
         }
 
-        private IEnumerator CoAnimationCastBlow(IReadOnlyList<Skill.SkillInfo> infos)
+        private IEnumerator CoAnimationCastBlow(IReadOnlyList<ArenaSkill.ArenaSkillInfo> infos)
         {
             var info = infos.First();
-            var copy = new Skill.SkillInfo(info.Target, info.Effect,
+            var copy = new ArenaSkill.ArenaSkillInfo(info.Target, info.Effect,
                 info.Critical, info.SkillCategory,
-                info.WaveTurn, ElementalType.Normal, info.SkillTargetType, info.Buff);
+                info.Turn, ElementalType.Normal, info.SkillTargetType, info.Buff);
             yield return StartCoroutine(CoAnimationCast(copy));
 
             var pos = transform.position;
@@ -344,7 +344,7 @@ namespace Nekoyume.Game.Character
             yield return new WaitForSeconds(0.2f);
         }
 
-        protected virtual IEnumerator CoAnimationCast(Skill.SkillInfo info)
+        protected virtual IEnumerator CoAnimationCast(ArenaSkill.ArenaSkillInfo info)
         {
             ShowSpeech("PLAYER_SKILL", (int)info.ElementalType, (int)info.SkillCategory);
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
@@ -356,7 +356,7 @@ namespace Nekoyume.Game.Character
             yield return new WaitForSeconds(0.6f);
         }
 
-        private IEnumerator CoAnimationBuffCast(Skill.SkillInfo info)
+        private IEnumerator CoAnimationBuffCast(ArenaSkill.ArenaSkillInfo info)
         {
             var sfxCode = AudioController.GetElementalCastingSFX(info.ElementalType);
             AudioController.instance.PlaySfx(sfxCode);
@@ -370,7 +370,7 @@ namespace Nekoyume.Game.Character
 
         #region Skill
 
-        public IEnumerator CoNormalAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        public IEnumerator CoNormalAttack(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
             if (skillInfos is null || skillInfos.Count == 0)
             {
@@ -381,12 +381,12 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
         }
 
-        private void ApplyDamage(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        private void ApplyDamage(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
             for (var i = 0; i < skillInfos.Count; i++)
             {
                 var info = skillInfos[i];
-                if (Game.instance.Arena.TurnNumber != info.WaveTurn)
+                if (Game.instance.Arena.TurnNumber != info.Turn)
                 {
                     continue;
                 }
@@ -405,7 +405,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public IEnumerator CoBlowAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        public IEnumerator CoBlowAttack(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
             if (skillInfos is null ||
                 skillInfos.Count == 0)
@@ -440,7 +440,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public IEnumerator CoDoubleAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        public IEnumerator CoDoubleAttack(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
             if (skillInfos is null || skillInfos.Count == 0)
             {
@@ -472,7 +472,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public IEnumerator CoAreaAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        public IEnumerator CoAreaAttack(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
             if (skillInfos is null ||
                 skillInfos.Count == 0)
@@ -490,7 +490,7 @@ namespace Nekoyume.Game.Character
             if (effect is null)
                 yield break;
 
-            Skill.SkillInfo trigger = null;
+            ArenaSkill.ArenaSkillInfo trigger = null;
             if (effect.finisher)
             {
                 var count = FindObjectsOfType(effectTarget.GetType()).Length;
@@ -549,7 +549,7 @@ namespace Nekoyume.Game.Character
             yield return new WaitForSeconds(0.5f);
         }
 
-        public IEnumerator CoHeal(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        public IEnumerator CoHeal(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
             if (skillInfos is null || skillInfos.Count == 0)
                 yield break;
@@ -565,7 +565,7 @@ namespace Nekoyume.Game.Character
             Animator.Idle();
         }
 
-        public IEnumerator CoBuff(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        public IEnumerator CoBuff(IReadOnlyList<ArenaSkill.ArenaSkillInfo> skillInfos)
         {
             if (skillInfos is null ||
                 skillInfos.Count == 0)

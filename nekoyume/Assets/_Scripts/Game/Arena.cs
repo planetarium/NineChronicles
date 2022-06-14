@@ -10,6 +10,7 @@ using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -57,7 +58,7 @@ namespace Nekoyume.Game
         public IEnumerator CoSkill(ArenaActionParams param)
         {
             var infos = param.skillInfos.ToList();
-            var turn = infos.First().WaveTurn;
+            var turn = infos.First().Turn;
             var time = Time.time;
             yield return new WaitUntil(() => Time.time - time > 5f || _turnNumber == turn);
 
@@ -70,7 +71,7 @@ namespace Nekoyume.Game
         }
 
         public void Enter(
-            BattleLog log,
+            ArenaLog log,
             List<ItemBase> rewards,
             ArenaPlayerDigest myDigest,
             ArenaPlayerDigest enemyDigest)
@@ -86,7 +87,7 @@ namespace Nekoyume.Game
                     objectPool.ReleaseAll();
                 }
 
-                if (log?.Count > 0)
+                if (log?.Events.Count > 0)
                 {
                     _battleCoroutine = StartCoroutine(CoEnter(log, rewards, myDigest, enemyDigest));
                 }
@@ -98,7 +99,7 @@ namespace Nekoyume.Game
         }
 
         private IEnumerator CoEnter(
-            BattleLog log,
+            ArenaLog log,
             IReadOnlyList<ItemBase> rewards,
             ArenaPlayerDigest myDigest,
             ArenaPlayerDigest enemyDigest)
@@ -129,7 +130,7 @@ namespace Nekoyume.Game
             Game.instance.IsInWorld = true;
         }
 
-        private IEnumerator CoEnd(BattleLog log, IReadOnlyList<ItemBase> rewards)
+        private IEnumerator CoEnd(ArenaLog log, IReadOnlyList<ItemBase> rewards)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             ActionRenderHandler.Instance.Pending = false;
@@ -140,7 +141,7 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => enemy.Actions.Any());
             yield return new WaitForSeconds(0.75f);
 
-            var arenaCharacter = log.result == BattleLog.Result.Win ? me : enemy;
+            var arenaCharacter = log.Result == ArenaLog.ArenaResult.Win ? me : enemy;
             arenaCharacter.Animator.Win();
             arenaCharacter.ShowSpeech("PLAYER_WIN");
             Widget.Find<ArenaBattle>().Close();
@@ -161,7 +162,7 @@ namespace Nekoyume.Game
             _isPlaying = false;
         }
 
-        public IEnumerator CoSpawnArenaPlayer(ArenaCharacter character)
+        public IEnumerator CoSpawnCharacter(ArenaCharacter character)
         {
             if (character.IsEnemy)
             {
@@ -176,9 +177,9 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoNormalAttack(
-            ICharacter caster,
-            IEnumerable<Skill.SkillInfo> skillInfos,
-            IEnumerable<Skill.SkillInfo> buffInfos)
+            ArenaCharacter caster,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoNormalAttack);
@@ -187,9 +188,9 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoBlowAttack(
-            ICharacter caster,
-            IEnumerable<Skill.SkillInfo> skillInfos,
-            IEnumerable<Skill.SkillInfo> buffInfos)
+            ArenaCharacter caster,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoBlowAttack);
@@ -198,9 +199,9 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoDoubleAttack(
-            ICharacter caster,
-            IEnumerable<Skill.SkillInfo> skillInfos,
-            IEnumerable<Skill.SkillInfo> buffInfos)
+            ArenaCharacter caster,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoDoubleAttack);
@@ -209,9 +210,9 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoAreaAttack(
-            ICharacter caster,
-            IEnumerable<Skill.SkillInfo> skillInfos,
-            IEnumerable<Skill.SkillInfo> buffInfos)
+            ArenaCharacter caster,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoAreaAttack);
@@ -220,9 +221,9 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoHeal(
-            ICharacter caster,
-            IEnumerable<Skill.SkillInfo> skillInfos,
-            IEnumerable<Skill.SkillInfo> buffInfos)
+            ArenaCharacter caster,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoHeal);
@@ -231,9 +232,9 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoBuff(
-            ICharacter caster,
-            IEnumerable<Skill.SkillInfo> skillInfos,
-            IEnumerable<Skill.SkillInfo> buffInfos)
+            ArenaCharacter caster,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> skillInfos,
+            IEnumerable<ArenaSkill.ArenaSkillInfo> buffInfos)
         {
             var target = caster.Id == me.Id ? me : enemy;
             var actionParams = new ArenaActionParams(target, skillInfos, buffInfos, target.CoBuff);
@@ -241,14 +242,14 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoRemoveBuffs(ICharacter caster)
+        public IEnumerator CoRemoveBuffs(ArenaCharacter caster)
         {
             var target = caster.Id == me.Id ? me : enemy;
             target.UpdateStatusUI();
             yield break;
         }
 
-        public IEnumerator CoDead(ICharacter caster)
+        public IEnumerator CoDead(ArenaCharacter caster)
         {
             yield return new WaitWhile(() => me.Actions.Any());
             yield return new WaitWhile(() => enemy.Actions.Any());
@@ -256,7 +257,7 @@ namespace Nekoyume.Game
             target.Dead();
         }
 
-        public IEnumerator CoArenaTurnEnd(int turnNumber)
+        public IEnumerator CoTurnEnd(int turnNumber)
         {
             yield return new WaitWhile(() => me.Actions.Any());
             yield return new WaitWhile(() => enemy.Actions.Any());

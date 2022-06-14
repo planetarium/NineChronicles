@@ -11,11 +11,12 @@ using UnityEngine;
 using UniRx;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Character;
 using UnityEngine.Rendering;
 
 namespace Nekoyume.Game.Character
 {
-    public abstract class StageCharacter : BaseCharacter
+    public abstract class CharacterBase : Character
     {
         protected const float AnimatorTimeScale = 1.2f;
 
@@ -31,16 +32,17 @@ namespace Nekoyume.Game.Character
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
-        public Model.StageCharacter CharacterModel { get; protected set; }
+        public Model.CharacterBase CharacterModel { get; protected set; }
 
-        protected readonly Subject<StageCharacter> OnUpdateHPBar = new Subject<StageCharacter>();
+        public readonly Subject<CharacterBase> OnUpdateHPBar = new Subject<CharacterBase>();
 
         protected abstract float RunSpeedDefault { get; }
         protected abstract Vector3 DamageTextForce { get; }
         protected abstract Vector3 HudTextPosition { get; }
         public virtual string TargetTag { get; protected set; }
 
-
+        public Guid Id => CharacterModel.Id;
+        public SizeType SizeType => CharacterModel.SizeType;
         private float AttackRange => CharacterModel.attackRange;
 
         public int Level
@@ -71,6 +73,7 @@ namespace Nekoyume.Game.Character
         public HudContainer HudContainer { get; private set; }
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
+
 
         private bool _forceQuit;
 
@@ -131,12 +134,10 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public virtual void Set(Model.StageCharacter model, bool updateCurrentHP = false)
+        public virtual void Set(Model.CharacterBase model, bool updateCurrentHP = false)
         {
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
-            Id = CharacterModel.Id;
-            SizeType = CharacterModel.SizeType;
             InitializeHudContainer();
             if (updateCurrentHP)
             {
@@ -194,7 +195,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void UpdateHpBar()
         {
-            if (!Game.instance.IsInWorld)
+            if (!Game.instance.Stage.IsInStage)
                 return;
 
             if (!HPBar)
@@ -396,7 +397,7 @@ namespace Nekoyume.Game.Character
             if (!other.gameObject.CompareTag(TargetTag))
                 return;
 
-            var character = other.gameObject.GetComponent<StageCharacter>();
+            var character = other.gameObject.GetComponent<CharacterBase>();
             if (!character)
                 return;
 
@@ -408,14 +409,14 @@ namespace Nekoyume.Game.Character
             if (!other.gameObject.CompareTag(TargetTag))
                 return;
 
-            var character = other.gameObject.GetComponent<StageCharacter>();
+            var character = other.gameObject.GetComponent<CharacterBase>();
             if (!character)
                 return;
 
             StopRunIfTargetInAttackRange(character);
         }
 
-        private void StopRunIfTargetInAttackRange(StageCharacter target)
+        private void StopRunIfTargetInAttackRange(CharacterBase target)
         {
             if (target.IsDead || !TargetInAttackRange(target))
                 return;
@@ -425,7 +426,7 @@ namespace Nekoyume.Game.Character
             StopRun();
         }
 
-        private IEnumerator CoStop(StageCharacter target)
+        private IEnumerator CoStop(CharacterBase target)
         {
             yield return new WaitUntil(() => IsDead || target.IsDead);
             _forceStop = false;
@@ -433,14 +434,14 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public virtual float CalculateRange(StageCharacter target)
+        public virtual float CalculateRange(CharacterBase target)
         {
             var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
             var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
             return attackRangeStartPosition - targetHitPosition;
         }
 
-        public bool TargetInAttackRange(StageCharacter target)
+        public bool TargetInAttackRange(CharacterBase target)
         {
             var diff = CalculateRange(target);
             return AttackRange > diff;
@@ -488,7 +489,7 @@ namespace Nekoyume.Game.Character
         }
 
         protected virtual void ProcessAttack(
-            StageCharacter target,
+            CharacterBase target,
             Model.BattleStatus.Skill.SkillInfo skill,
             bool isLastHit,
             bool isConsiderElementalType)
@@ -499,7 +500,7 @@ namespace Nekoyume.Game.Character
         }
 
         protected virtual void ProcessHeal(
-            StageCharacter target,
+            CharacterBase target,
             Model.BattleStatus.Skill.SkillInfo info)
         {
             if (target && target.IsAlive)
@@ -514,7 +515,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void ProcessBuff(StageCharacter target, Model.BattleStatus.Skill.SkillInfo info)
+        private void ProcessBuff(CharacterBase target, Model.BattleStatus.Skill.SkillInfo info)
         {
             if (target && target.IsAlive)
             {
@@ -669,7 +670,7 @@ namespace Nekoyume.Game.Character
 
         private void PostAnimationForTheKindOfAttack()
         {
-            var enemy = GetComponentsInChildren<StageCharacter>()
+            var enemy = GetComponentsInChildren<CharacterBase>()
                 .Where(c => c.gameObject.CompareTag(TargetTag))
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
             if (enemy != null && !TargetInAttackRange(enemy))
@@ -697,13 +698,9 @@ namespace Nekoyume.Game.Character
             {
                 var info = skillInfos[i];
                 var target = Game.instance.Stage.GetCharacter(info.Target);
-
-                if (info.Target is Model.StageCharacter stageCharacter)
-                {
-                    ProcessAttack(target, info, stageCharacter.IsDead, false);
-                    if (this is Player && !(this is EnemyPlayer))
-                        battleWidget.ShowComboText(info.Effect > 0);
-                }
+                ProcessAttack(target, info, info.Target.IsDead, false);
+                if (this is Player && !(this is EnemyPlayer))
+                    battleWidget.ShowComboText(info.Effect > 0);
             }
         }
 
@@ -739,10 +736,7 @@ namespace Nekoyume.Game.Character
                     continue;
 
                 effect.Play();
-                if (info.Target is Model.StageCharacter stageCharacter)
-                {
-                    ProcessAttack(target, info, stageCharacter.IsDead, true);
-                }
+                ProcessAttack(target, info, info.Target.IsDead, true);
             }
         }
 
@@ -917,19 +911,17 @@ namespace Nekoyume.Game.Character
 
                 foreach (var info in action.skillInfos)
                 {
-                    if (info.Target is Model.StageCharacter stageCharacter)
+                    var target = info.Target;
+                    if (target.IsDead)
                     {
-                        if (stageCharacter.IsDead)
+                        var character = Game.instance.Stage.GetCharacter(target);
+                        if (character)
                         {
-                            var character = Game.instance.Stage.GetCharacter(info.Target);
-                            if (character)
+                            if (character.actions.Any())
                             {
-                                if (character.actions.Any())
-                                {
-                                    var time = Time.time;
-                                    yield return new WaitWhile(() =>
-                                        Time.time - time > 10f || character.actions.Any());
-                                }
+                                var time = Time.time;
+                                yield return new WaitWhile(() =>
+                                    Time.time - time > 10f || character.actions.Any());
                             }
                         }
                     }
@@ -963,17 +955,17 @@ namespace Nekoyume.Game.Character
 
     public class ActionParams
     {
-        public StageCharacter StageCharacter;
+        public CharacterBase character;
         public IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos;
         public IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos;
         public Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> func;
 
-        public ActionParams(StageCharacter stageCharacter,
+        public ActionParams(CharacterBase characterBase,
             IEnumerable<Model.BattleStatus.Skill.SkillInfo> enumerable,
             IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos1,
             Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> coNormalAttack)
         {
-            StageCharacter = stageCharacter;
+            character = characterBase;
             skillInfos = enumerable;
             buffInfos = buffInfos1;
             func = coNormalAttack;

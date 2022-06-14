@@ -30,6 +30,7 @@ using Nekoyume.UI.Module;
 using Spine.Unity;
 using UnityEngine;
 using UnityEngine.Rendering;
+using CharacterBase = Nekoyume.Model.CharacterBase;
 using Enemy = Nekoyume.Model.Enemy;
 using EnemyPlayer = Nekoyume.Model.EnemyPlayer;
 using Player = Nekoyume.Game.Character.Player;
@@ -85,7 +86,7 @@ namespace Nekoyume.Game
         public TutorialController TutorialController { get; private set; }
         public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
-
+        public bool IsInStage { get; set; }
         public bool IsShowHud { get; set; }
         public bool IsExitReserved { get; set; }
         public bool IsRepeatStage { get; set; }
@@ -154,31 +155,6 @@ namespace Nekoyume.Game
 
                 _battleLog = log;
                 PlayStage(_battleLog);
-            }
-            else
-            {
-                Debug.Log("Skip incoming battle. Battle is already simulating.");
-            }
-        }
-
-        private void OnRankingBattleStart((BattleLog battleLog, List<ItemBase> rewards) tuple)
-        {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(OnRankingBattleStart)}() enter");
-#endif
-            _rankingBattle = true;
-            if (_battleLog is null)
-            {
-                if (!(_battleCoroutine is null))
-                {
-                    StopCoroutine(_battleCoroutine);
-                    _battleCoroutine = null;
-                    objectPool.ReleaseAll();
-                }
-
-                _battleLog = tuple.battleLog;
-                _rewards = tuple.rewards;
-                PlayRankingBattle(_battleLog);
             }
             else
             {
@@ -256,7 +232,7 @@ namespace Nekoyume.Game
 #endif
             showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();
-            Game.instance.IsInWorld = false;
+            IsInStage = false;
         }
 
         // todo: 배경 캐싱.
@@ -330,17 +306,6 @@ namespace Nekoyume.Game
             }
         }
 
-        private void PlayRankingBattle(BattleLog log)
-        {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(PlayRankingBattle)}() enter");
-#endif
-            if (log?.Count > 0)
-            {
-                _battleCoroutine = StartCoroutine(CoPlayRankingBattle(log));
-            }
-        }
-
         private IEnumerator CoPlayStage(BattleLog log)
         {
 #if TEST_LOG
@@ -354,7 +319,7 @@ namespace Nekoyume.Game
                 .Select(r => r.Id)
                 .ToList();
 
-            Game.instance.IsInWorld = true;
+            IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
             HelpTooltip.HelpMe(100005, true);
             foreach (var e in log)
@@ -364,54 +329,6 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(CoStageEnd(log));
             ClearBattle();
-        }
-
-        private IEnumerator CoPlayRankingBattle(BattleLog log)
-        {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoPlayRankingBattle)}() enter");
-#endif
-            Game.instance.IsInWorld = true;
-            yield return StartCoroutine(CoRankingBattleEnter(log));
-            Widget.Find<ArenaBattleLoadingScreen>().Close();
-            _positionCheckCoroutine = StartCoroutine(CheckPosition(log));
-            foreach (var e in log)
-            {
-                yield return StartCoroutine(e.CoExecute(this));
-            }
-
-            StopCoroutine(_positionCheckCoroutine);
-            _positionCheckCoroutine = null;
-            yield return StartCoroutine(CoRankingBattleEnd(log));
-            ClearBattle();
-        }
-
-        private IEnumerator CheckPosition(BattleLog log)
-        {
-            var player = GetPlayer();
-            while (player.isActiveAndEnabled)
-            {
-                if (player.transform.localPosition.x >= 16f)
-                {
-                    _positionCheckCoroutine = null;
-
-                    if (log.FirstOrDefault(e => e is GetReward) is GetReward getReward)
-                    {
-                        var rewards = getReward.Rewards;
-                        foreach (var item in rewards)
-                        {
-                            var countableItem = new CountableItem(item, 1);
-                            _battleResultModel.AddReward(countableItem);
-                        }
-                    }
-
-                    yield return StartCoroutine(CoRankingBattleEnd(log, true));
-                    ClearBattle();
-                    StopAllCoroutines();
-                }
-
-                yield return new WaitForSeconds(1f);
-            }
         }
 
         public void ClearBattle()
@@ -517,7 +434,7 @@ namespace Nekoyume.Game
             var avatarState = States.Instance.CurrentAvatarState;
 
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
-            var characters = GetComponentsInChildren<Character.StageCharacter>();
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(1f);
             Boss = null;
@@ -668,42 +585,6 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoRankingBattleEnd(BattleLog log, bool forceQuit = false)
-        {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoRankingBattleEnd)}() enter");
-#endif
-            IsAvatarStateUpdatedAfterBattle = false;
-
-            // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
-            ActionRenderHandler.Instance.Pending = false;
-            _onEnterToStageEnd.OnNext(this);
-            yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
-
-            var characters = GetComponentsInChildren<Character.StageCharacter>();
-
-            if (!forceQuit)
-            {
-                yield return new WaitWhile(() =>
-                    characters.Any(i => i.actions.Any()));
-            }
-
-            Boss = null;
-            var playerCharacter = log.result == BattleLog.Result.Win
-                ? GetPlayer()
-                : GetComponentInChildren<Character.EnemyPlayer>();
-
-            yield return new WaitForSeconds(0.75f);
-            playerCharacter.Animator.Win();
-            playerCharacter.ShowSpeech("PLAYER_WIN");
-            Widget.Find<UI.Battle>().Close();
-            Widget.Find<Status>().Close();
-            // Widget.Find<RankingBattleResultPopup>().Show(
-            //     log,
-            //     _rewards.Select(e => new CountableItem(e, 1)).ToList());
-            yield return null;
-        }
-
         public IEnumerator CoSpawnPlayer(Model.Player character)
         {
 #if TEST_LOG
@@ -786,7 +667,7 @@ namespace Nekoyume.Game
         #region Skill
 
         public IEnumerator CoNormalAttack(
-            ICharacter caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -800,7 +681,7 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoBlowAttack(
-            ICharacter caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -814,7 +695,7 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoDoubleAttack(
-            ICharacter caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -829,7 +710,7 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoAreaAttack(
-            ICharacter caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -844,7 +725,7 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoHeal(
-            ICharacter caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -858,7 +739,7 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoBuff(
-            ICharacter caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -873,27 +754,27 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSkill(ActionParams param)
         {
-            yield return StartCoroutine(CoSkill(param.StageCharacter, param.skillInfos, param.buffInfos, param.func));
+            yield return StartCoroutine(CoSkill(param.character, param.skillInfos, param.buffInfos, param.func));
         }
 
         private IEnumerator CoSkill(
-            Character.StageCharacter stageCharacter,
+            Character.CharacterBase character,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos,
             Func<IReadOnlyList<Skill.SkillInfo>, IEnumerator> func)
         {
-            if (!stageCharacter)
-                throw new ArgumentNullException(nameof(stageCharacter));
+            if (!character)
+                throw new ArgumentNullException(nameof(character));
 
             var infos = skillInfos.ToList();
             var infosFirstWaveTurn = infos.First().WaveTurn;
             var time = Time.time;
             yield return new WaitUntil(() => Time.time - time > 5f || waveTurn == infosFirstWaveTurn);
-            yield return StartCoroutine(CoBeforeSkill(stageCharacter));
+            yield return StartCoroutine(CoBeforeSkill(character));
 
             yield return StartCoroutine(func(infos));
 
-            yield return StartCoroutine(CoAfterSkill(stageCharacter, buffInfos));
+            yield return StartCoroutine(CoAfterSkill(character, buffInfos));
         }
 
         #endregion
@@ -915,31 +796,31 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        private IEnumerator CoBeforeSkill(Character.StageCharacter stageCharacter)
+        private IEnumerator CoBeforeSkill(Character.CharacterBase character)
         {
-            if (!stageCharacter)
-                throw new ArgumentNullException(nameof(stageCharacter));
+            if (!character)
+                throw new ArgumentNullException(nameof(character));
 
-            var enemy = GetComponentsInChildren<Character.StageCharacter>()
-                .Where(c => c.gameObject.CompareTag(stageCharacter.TargetTag) && c.IsAlive)
+            var enemy = GetComponentsInChildren<Character.CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive)
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
-            if (!enemy || stageCharacter.TargetInAttackRange(enemy))
+            if (!enemy || character.TargetInAttackRange(enemy))
                 yield break;
 
-            stageCharacter.StartRun();
+            character.StartRun();
             var time = Time.time;
             yield return new WaitUntil(() =>
-                Time.time - time > 2f || stageCharacter.TargetInAttackRange(enemy));
+                Time.time - time > 2f || character.TargetInAttackRange(enemy));
         }
 
         private IEnumerator CoAfterSkill(
-            Character.StageCharacter stageCharacter,
+            Character.CharacterBase character,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
-            if (!stageCharacter)
-                throw new ArgumentNullException(nameof(stageCharacter));
+            if (!character)
+                throw new ArgumentNullException(nameof(character));
 
-            stageCharacter.UpdateHpBar();
+            character.UpdateHpBar();
 
             if (!(buffInfos is null))
             {
@@ -953,14 +834,14 @@ namespace Nekoyume.Game
             }
 
             yield return new WaitForSeconds(SkillDelay);
-            var enemy = GetComponentsInChildren<Character.StageCharacter>()
-                .Where(c => c.gameObject.CompareTag(stageCharacter.TargetTag) && c.IsAlive)
+            var enemy = GetComponentsInChildren<Character.CharacterBase>()
+                .Where(c => c.gameObject.CompareTag(character.TargetTag) && c.IsAlive)
                 .OrderBy(c => c.transform.position.x).FirstOrDefault();
-            if (enemy && !stageCharacter.TargetInAttackRange(enemy))
-                stageCharacter.StartRun();
+            if (enemy && !character.TargetInAttackRange(enemy))
+                character.StartRun();
         }
 
-        public IEnumerator CoRemoveBuffs(ICharacter caster)
+        public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -977,7 +858,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoGetReward(List<ItemBase> rewards)
         {
-            var characters = GetComponentsInChildren<Character.StageCharacter>();
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             foreach (var item in rewards)
             {
@@ -1010,7 +891,7 @@ namespace Nekoyume.Game
 
             Event.OnWaveStart.Invoke(enemies.Sum(enemy => enemy.HP));
 
-            var characters = GetComponentsInChildren<Character.StageCharacter>();
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(StageConfig.instance.spawnWaveDelay);
             Widget.Find<UI.Battle>().BossStatus.Close();
@@ -1055,7 +936,7 @@ namespace Nekoyume.Game
 #endif
             yield return new WaitWhile(() => SelectedPlayer.actions.Any());
             Event.OnPlayerTurnEnd.Invoke(turnNumber);
-            var characters = GetComponentsInChildren<Character.StageCharacter>();
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
 #if TEST_LOG
             Debug.Log($"[{nameof(Stage)}] {nameof(CoWaveTurnEnd)} ing. {nameof(this.waveTurn)}({this.waveTurn}) [para : waveTurn :{waveTurn}");
 #endif
@@ -1070,18 +951,18 @@ namespace Nekoyume.Game
 
         public IEnumerator CoGetExp(long exp)
         {
-            var characters = GetComponentsInChildren<Character.StageCharacter>();
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             _battleResultModel.Exp += exp;
             var player = GetPlayer();
             yield return StartCoroutine(player.CoGetExp(exp));
         }
 
-        public IEnumerator CoDead(ICharacter caster)
+        public IEnumerator CoDead(CharacterBase model)
         {
-            var characters = GetComponentsInChildren<Character.StageCharacter>();
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
-            var character = GetCharacter(caster);
+            var character = GetCharacter(model);
             _playerPosition = SelectedPlayer.transform.position;
             character.Dead();
         }
@@ -1161,18 +1042,13 @@ namespace Nekoyume.Game
         /// <param name="caster"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public Character.StageCharacter GetCharacter(ICharacter caster)
+        public Character.CharacterBase GetCharacter(CharacterBase caster)
         {
             if (caster is null)
                 throw new ArgumentNullException(nameof(caster));
 
-            if (!(caster is Model.StageCharacter stageCharacter))
-            {
-                throw new InvalidCastException(nameof(caster));
-            }
-
-            var characters = GetComponentsInChildren<Character.StageCharacter>()
-                .Where(c => c.Id == stageCharacter.Id);
+            var characters = GetComponentsInChildren<Character.CharacterBase>()
+                .Where(c => c.Id == caster.Id);
             var character = characters?.FirstOrDefault();
 
             if (!(characters is null) && characters.Any())
@@ -1191,7 +1067,7 @@ namespace Nekoyume.Game
                 }
             }
 
-            character?.Set(stageCharacter);
+            character?.Set(caster);
 
             return character;
         }
@@ -1240,7 +1116,7 @@ namespace Nekoyume.Game
             }
         }
 
-        private static void RunAndChasePlayer(Character.StageCharacter player)
+        private static void RunAndChasePlayer(Character.CharacterBase player)
         {
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);

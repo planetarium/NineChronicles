@@ -27,6 +27,7 @@ using mixpanel;
 using Nekoyume.Arena;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
+using Nekoyume.Model.BattleStatus.Arena;
 using Unity.Mathematics;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
@@ -1702,16 +1703,15 @@ namespace Nekoyume.BlockChain
                 maxCount: ArenaHelper.GetRewardCount(previousMyScore));
             var (myWinPoint, myDefeatPoint, _) =
                 ArenaHelper.GetScores(previousMyScore, previousEnemyScore);
-            var currentMyScore = log.result switch
+            var currentMyScore = log.Result switch
             {
-                BattleLog.Result.Win =>
+                ArenaLog.ArenaResult.Win =>
                     math.max(ArenaScore.ArenaScoreDefault, previousMyScore + myWinPoint),
-                BattleLog.Result.Lose =>
+                ArenaLog.ArenaResult.Lose =>
                     math.max(ArenaScore.ArenaScoreDefault, previousMyScore + myDefeatPoint),
-                BattleLog.Result.TimeOver => previousMyScore,
                 _ => throw new ArgumentOutOfRangeException()
             };
-            log.score = currentMyScore;
+            log.Score = currentMyScore;
 
             if (arenaBoard && arenaBoard.IsActive())
             {

@@ -4,6 +4,6 @@ namespace Nekoyume.Game.VFX.Skill
 {
     public class BuffVFX : VFX
     {
-        public StageCharacter target;
+        public CharacterBase target;
     }
 }
