@@ -47,10 +47,10 @@ namespace Nekoyume.Action
             if (!states.TryGetState(gachaStateAddress, out List rawGachaState))
             {
                 throw new FailedLoadStateException(
-                    $"Can't find {nameof(HackAndSlashBuffState)}. Gacha state address:{gachaStateAddress}");
+                    $"Can't find {nameof(CrystalRandomSkillState)}. Gacha state address:{gachaStateAddress}");
             }
 
-            var gachaState = new HackAndSlashBuffState(gachaStateAddress, rawGachaState);
+            var gachaState = new CrystalRandomSkillState(gachaStateAddress, rawGachaState);
             var stageBuffSheet = states.GetSheet<CrystalStageBuffGachaSheet>();
 
             // Insufficient gathered star.

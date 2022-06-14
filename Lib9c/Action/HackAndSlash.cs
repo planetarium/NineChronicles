@@ -242,15 +242,15 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var buffStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(avatarAddress);
-            HackAndSlashBuffState buffState = null;
+            CrystalRandomSkillState buffState = null;
             var isNotClearedStage = !worldInformation.IsStageCleared(stageId);
             var skillsOnWaveStart = new List<Model.Skill.Skill>();
             if (isNotClearedStage)
             {
                 // It has state, get HackAndSlashBuffState. If not, newly make.
                 buffState = states.TryGetState<List>(buffStateAddress, out var serialized)
-                    ? new HackAndSlashBuffState(buffStateAddress, serialized)
-                    : new HackAndSlashBuffState(buffStateAddress, stageId);
+                    ? new CrystalRandomSkillState(buffStateAddress, serialized)
+                    : new CrystalRandomSkillState(buffStateAddress, stageId);
 
                 if (buffState.SkillIds.Any())
                 {
@@ -269,7 +269,7 @@ namespace Nekoyume.Action
                             .First();
                     }
 
-                    var skill = HackAndSlashBuffState.GetSkill(
+                    var skill = CrystalRandomSkillState.GetSkill(
                         selectedId,
                         crystalRandomBuffSheet,
                         skillSheet);
@@ -328,7 +328,7 @@ namespace Nekoyume.Action
                 if (isNotClearedStage)
                 {
                     // Make new HackAndSlashBuffState by next stage Id.
-                    var nextStageBuffState = new HackAndSlashBuffState(buffStateAddress, stageId + 1);
+                    var nextStageBuffState = new CrystalRandomSkillState(buffStateAddress, stageId + 1);
                     states = states.SetState(buffStateAddress, nextStageBuffState.Serialize());
                 }
             }
@@ -339,7 +339,7 @@ namespace Nekoyume.Action
                     if (skillsOnWaveStart.Any())
                     {
                         // If new crystal random skill, reset stars.
-                        buffState = new HackAndSlashBuffState(buffStateAddress, stageId);
+                        buffState = new CrystalRandomSkillState(buffStateAddress, stageId);
                     }
 
                     // Update HackAndSlashBuffState.Stars by clearedWaveNumber. (add)

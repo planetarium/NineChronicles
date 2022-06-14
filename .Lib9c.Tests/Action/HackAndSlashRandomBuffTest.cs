@@ -117,7 +117,7 @@
                 level = 400,
             };
             var gachaStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(_avatarAddress);
-            var gachaState = new HackAndSlashBuffState(gachaStateAddress, stageId);
+            var gachaState = new CrystalRandomSkillState(gachaStateAddress, stageId);
             states = states
                 .SetState(_avatarAddress, avatarState.SerializeV2())
                 .SetState(
@@ -188,7 +188,7 @@
                 level = 400,
             };
             var gachaStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(_avatarAddress);
-            var gachaState = new HackAndSlashBuffState(gachaStateAddress, 1);
+            var gachaState = new CrystalRandomSkillState(gachaStateAddress, 1);
             states = states
                 .SetState(_avatarAddress, avatarState.SerializeV2())
                 .SetState(
@@ -218,7 +218,7 @@
                     Signer = _agentAddress,
                     Random = _random,
                 });
-                var newGachaState = new HackAndSlashBuffState(
+                var newGachaState = new CrystalRandomSkillState(
                     gachaStateAddress,
                     (List)nextState.GetState(gachaStateAddress));
                 Assert.Contains(
