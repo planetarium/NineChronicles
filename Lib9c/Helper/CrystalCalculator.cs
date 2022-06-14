@@ -35,12 +35,12 @@ namespace Nekoyume.Helper
         }
 
         public static FungibleAssetValue CalculateBuffGachaCost(int stageId,
-            int count,
+            bool advancedGacha,
             CrystalStageBuffGachaSheet stageBuffGachaSheet)
         {
-            var cost = CRYSTAL * stageBuffGachaSheet[stageId].CRYSTAL;
-
-            return count == 5 ? cost : cost * 3;
+            return CRYSTAL * (advancedGacha
+                ? stageBuffGachaSheet[stageId].AdvancedCost
+                : stageBuffGachaSheet[stageId].NormalCost);
         }
 
         public static FungibleAssetValue CalculateCrystal(
