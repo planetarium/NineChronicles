@@ -55,7 +55,6 @@ namespace Nekoyume.Model.State
             CrystalRandomBuffSheet crystalRandomBuffSheet,
             SkillSheet skillSheet)
         {
-
             if (!crystalRandomBuffSheet.TryGetValue(skillId, out var row))
             {
                 throw new SheetRowNotFoundException(nameof(CrystalRandomBuffSheet), skillId);

@@ -242,26 +242,20 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var buffStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(avatarAddress);
-            HackAndSlashBuffState buffState;
+            HackAndSlashBuffState buffState = null;
+            var isNotClearedStage = !worldInformation.IsStageCleared(stageId);
             var skillsOnWaveStart = new List<Model.Skill.Skill>();
-            var crystalRandomBuffSheet = sheets.GetSheet<CrystalRandomBuffSheet>();
-            var skillSheet = sheets.GetSheet<SkillSheet>();
-            if (!worldInformation.IsStageCleared(stageId))
+            if (isNotClearedStage)
             {
-                if (states.TryGetState<List>(buffStateAddress, out var serialized))
-                {
-                    var newBuffState = new HackAndSlashBuffState(buffStateAddress, serialized);
-                    buffState = newBuffState.StageId == stageId
-                        ? newBuffState
-                        : new HackAndSlashBuffState(buffStateAddress, stageId);
-                }
-                else
-                {
-                    buffState = new HackAndSlashBuffState(buffStateAddress, stageId);
-                }
+                // It has state, get HackAndSlashBuffState. If not, newly make.
+                buffState = states.TryGetState<List>(buffStateAddress, out var serialized)
+                    ? new HackAndSlashBuffState(buffStateAddress, serialized)
+                    : new HackAndSlashBuffState(buffStateAddress, stageId);
 
                 if (buffState.SkillIds.Any())
                 {
+                    var crystalRandomBuffSheet = sheets.GetSheet<CrystalRandomBuffSheet>();
+                    var skillSheet = sheets.GetSheet<SkillSheet>();
                     int selectedId;
                     if (stageBuffId.HasValue && buffState.SkillIds.Contains(stageBuffId.Value))
                     {
@@ -282,16 +276,11 @@ namespace Nekoyume.Action
                     skillsOnWaveStart.Add(skill);
                 }
             }
-            else
-            {
-                buffState = null;
-            }
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Get BuffState : {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-
             var simulator = new StageSimulator(
                 ctx.Random,
                 avatarState,
@@ -336,21 +325,24 @@ namespace Nekoyume.Action
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
 
-                if (buffState != null)
+                if (isNotClearedStage)
                 {
-                    buffState = new HackAndSlashBuffState(buffStateAddress, stageId + 1);
-                    states = states.SetState(buffStateAddress, buffState.Serialize());
+                    // Make new HackAndSlashBuffState by next stage Id.
+                    var nextStageBuffState = new HackAndSlashBuffState(buffStateAddress, stageId + 1);
+                    states = states.SetState(buffStateAddress, nextStageBuffState.Serialize());
                 }
             }
             else
             {
-                if (buffState != null)
+                if (isNotClearedStage)
                 {
                     if (skillsOnWaveStart.Any())
                     {
+                        // If new crystal random skill, reset stars.
                         buffState = new HackAndSlashBuffState(buffStateAddress, stageId);
                     }
 
+                    // Update HackAndSlashBuffState.Stars by clearedWaveNumber. (add)
                     buffState.Update(simulator.Log.clearedWaveNumber,
                         sheets.GetSheet<CrystalStageBuffGachaSheet>());
                     states = states.SetState(buffStateAddress, buffState.Serialize());
