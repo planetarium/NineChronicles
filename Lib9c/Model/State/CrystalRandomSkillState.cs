@@ -9,14 +9,14 @@ using Nekoyume.Model.Skill;
 
 namespace Nekoyume.Model.State
 {
-    public class HackAndSlashBuffState : IState
+    public class CrystalRandomSkillState : IState
     {
         public Address Address { get; }
         public int StageId { get; }
         public int StarCount { get; private set; }
         public List<int> SkillIds { get; private set; }
 
-        public HackAndSlashBuffState(Address address, int stageId)
+        public CrystalRandomSkillState(Address address, int stageId)
         {
             Address = address;
             StageId = stageId;
@@ -24,7 +24,7 @@ namespace Nekoyume.Model.State
             SkillIds = new List<int>();
         }
 
-        public HackAndSlashBuffState(Address address, List serialized)
+        public CrystalRandomSkillState(Address address, List serialized)
         {
             Address = address;
             StageId = serialized[0].ToInteger();
