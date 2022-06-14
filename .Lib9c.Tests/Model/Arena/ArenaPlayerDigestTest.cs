@@ -70,7 +70,6 @@ namespace Lib9c.Tests.Model.Arena
 
             Assert.Equal(_avatarState.NameWithHash, digest.NameWithHash);
             Assert.Equal(_avatarState.characterId, digest.CharacterId);
-            Assert.Equal(_arenaAvatarState.Level, digest.Level);
             Assert.Equal(2, digest.HairIndex);
             Assert.Equal(3, digest.LensIndex);
             Assert.Equal(4, digest.EarIndex);

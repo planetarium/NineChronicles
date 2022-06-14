@@ -161,7 +161,8 @@ namespace Lib9c.Tests.Action
             var avatarState = _state.GetAvatarStateV2(_avatarAddress);
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
             avatarState = AddMedal(avatarState, row, 20);
-            var preCurrency = 100_000 * _currency;
+
+            var preCurrency = 99800100000 * _currency;
             var state = _state.MintAsset(_signer, preCurrency);
 
             var action = new JoinArena()
@@ -206,7 +207,6 @@ namespace Lib9c.Tests.Action
             }
 
             Assert.Equal(arenaAvatarStateAdr, arenaAvatarState.Address);
-            Assert.Equal(avatarState.level, arenaAvatarState.Level);
 
             // ArenaScore
             var arenaScoreAdr = ArenaScore.DeriveAddress(_avatarAddress, championshipId, round);
@@ -231,16 +231,10 @@ namespace Lib9c.Tests.Action
                 throw new RoundNotFoundException($"{nameof(JoinArena)} : {row.ChampionshipId} / {round}");
             }
 
-            if (roundData.IsTheRoundOpened(blockIndex))
-            {
-                var curCurrency = preCurrency - (roundData.EntranceFee * _currency);
-                Assert.Equal(curCurrency, state.GetBalance(_signer, _currency));
-            }
-            else
-            {
-                var curCurrency = preCurrency - (roundData.DiscountedEntranceFee * _currency);
-                Assert.Equal(curCurrency, state.GetBalance(_signer, _currency));
-            }
+            var fee = roundData.EntranceFee * _currency * avatarState.level *
+                      avatarState.level;
+            var curCurrency = preCurrency - fee;
+            Assert.Equal(curCurrency, state.GetBalance(_signer, _currency));
         }
 
         [Theory]
@@ -300,7 +294,7 @@ namespace Lib9c.Tests.Action
         {
             var avatarState = _state.GetAvatarStateV2(_avatarAddress);
             GetAvatarState(avatarState, out var equipments, out var costumes);
-            var preCurrency = 100_000 * _currency;
+            var preCurrency = 99800100000 * _currency;
             var state = _state.MintAsset(_signer, preCurrency);
 
             var action = new JoinArena()

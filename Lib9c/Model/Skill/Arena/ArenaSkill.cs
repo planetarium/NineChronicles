@@ -1,30 +1,30 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Model.Skill
+namespace Nekoyume.Model.Skill.Arena
 {
     [Serializable]
-    public abstract class Skill : IState, ISkill
+    public abstract class ArenaSkill : IState, ISkill
     {
         public SkillSheet.Row SkillRow { get; }
         public int Power { get; private set; }
         public int Chance { get; private set; }
 
-        protected Skill(SkillSheet.Row skillRow, int power, int chance)
+        protected ArenaSkill(SkillSheet.Row skillRow, int power, int chance)
         {
             SkillRow = skillRow;
             Power = power;
             Chance = chance;
         }
 
-        public abstract BattleStatus.Skill Use(
-            CharacterBase caster,
-            int simulatorWaveTurn,
+        public abstract BattleStatus.Arena.ArenaSkill Use(
+            ArenaCharacter caster,
+            ArenaCharacter target,
+            int turn,
             IEnumerable<Buff.Buff> buffs
         );
 
@@ -52,27 +52,50 @@ namespace Nekoyume.Model.Skill
             }
         }
 
-        protected IEnumerable<Model.BattleStatus.Skill.SkillInfo> ProcessBuff(
-            CharacterBase caster,
-            int simulatorWaveTurn,
+        protected IEnumerable<BattleStatus.Arena.ArenaSkill.ArenaSkillInfo> ProcessBuff(
+            ArenaCharacter caster,
+            ArenaCharacter target,
+            int turn,
             IEnumerable<Buff.Buff> buffs
         )
         {
-            var infos = new List<Model.BattleStatus.Skill.SkillInfo>();
+            var infos = new List<BattleStatus.Arena.ArenaSkill.ArenaSkillInfo>();
             foreach (var buff in buffs)
             {
-                var targets = buff.GetTarget(caster);
-                foreach (var target in targets.Where(target => target.GetChance(buff.RowData.Chance)))
+                switch (buff.RowData.TargetType)
                 {
-                    target.AddBuff(buff);
-                    infos.Add(new Model.BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
-                        SkillRow.SkillCategory, simulatorWaveTurn, ElementalType.Normal, SkillRow.SkillTargetType,
-                        buff));
+                    case SkillTargetType.Enemy:
+                    case SkillTargetType.Enemies:
+                        target.AddBuff(buff);
+                        infos.Add(GetSkillInfo(target, turn, buff));
+                        break;
+
+                    case SkillTargetType.Self:
+                    case SkillTargetType.Ally:
+                        caster.AddBuff(buff);
+                        infos.Add(GetSkillInfo(caster, turn, buff));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
             return infos;
         }
+
+        private BattleStatus.Arena.ArenaSkill.ArenaSkillInfo GetSkillInfo(ICloneable target, int turn, Buff.Buff buff)
+        {
+            return new BattleStatus.Arena.ArenaSkill.ArenaSkillInfo(
+                (ArenaCharacter) target.Clone(),
+                0,
+                false,
+                SkillRow.SkillCategory,
+                turn,
+                ElementalType.Normal,
+                SkillRow.SkillTargetType,
+                buff);
+        }
+
 
         public void Update(int chance, int power)
         {

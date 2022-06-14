@@ -39,6 +39,29 @@ namespace Nekoyume.Battle
             return isHit;
         }
 
+        public static bool IsHitForArena(
+            int attackerLevel, int attackerHit,
+            int defenderLevel, int defenderHit,
+            int lowLimitChance)
+        {
+            var correction = 40;
+            correction += GetHitStep2(attackerHit, defenderHit);
+            correction = GetHitStep3(correction);
+            var isHit = GetHitStep4(lowLimitChance, correction);
+#if TEST_LOG
+            var sb = new StringBuilder();
+            sb.Append($"{nameof(attackerLevel)}: {attackerLevel}");
+            sb.Append($" / {nameof(attackerHit)}: {attackerHit}");
+            sb.Append($" / {nameof(defenderLevel)}: {defenderLevel}");
+            sb.Append($" / {nameof(defenderHit)}: {defenderHit}");
+            sb.Append($" / {nameof(lowLimitChance)}: {lowLimitChance}");
+            sb.Append($" / {nameof(correction)}: {correction}");
+            sb.Append($" / {nameof(isHit)}: {isHit}");
+            Debug.LogWarning(sb.ToString());
+#endif
+            return isHit;
+        }
+
         public static int GetHitStep1(int attackerLevel, int defenderLevel)
         {
             var correction = 0;

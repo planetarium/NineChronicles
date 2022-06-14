@@ -19,6 +19,8 @@ namespace Nekoyume.Model.State
         public Address Address;
         public List<Guid> Costumes { get; }
         public List<Guid> Equipments { get; }
+
+        /// It is only for previewnet.
         public int Level { get; private set; }
 
         public ArenaAvatarState(AvatarState avatarState)
@@ -68,6 +70,7 @@ namespace Nekoyume.Model.State
             Equipments.AddRange(equipments);
         }
 
+        /// It is only for previewnet.
         public void UpdateLevel(int level)
         {
             Level = level;

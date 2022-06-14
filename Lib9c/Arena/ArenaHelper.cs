@@ -23,9 +23,17 @@ namespace Nekoyume.Arena
         public static readonly IReadOnlyDictionary<ArenaType, (int, int)> ScoreLimits =
             new Dictionary<ArenaType, (int, int)>()
         {
-            { ArenaType.Season, (50, -25) },
-            { ArenaType.Championship, (30, -25) }
+            { ArenaType.Season, (50, -100) },
+            { ArenaType.Championship, (50, -100) }
         };
+
+        /// It is only for previewnet.
+        public static readonly IReadOnlyDictionary<ArenaType, (int, int)> ScoreLimits2 =
+            new Dictionary<ArenaType, (int, int)>()
+            {
+                { ArenaType.Season, (50, -25) },
+                { ArenaType.Championship, (30, -25) }
+            };
 
         public static int GetMedalItemId(int championshipId, int round) =>
             700_000 + (championshipId * 100) + round;
@@ -60,6 +68,7 @@ namespace Nekoyume.Arena
             return count;
         }
 
+        /// It is only for previewnet.
         public static FungibleAssetValue GetEntranceFee(
             ArenaSheet.RoundData roundData,
             long currentBlockIndex)

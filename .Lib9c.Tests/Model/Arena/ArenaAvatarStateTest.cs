@@ -29,7 +29,6 @@ namespace Lib9c.Tests.Model.Arena
 
             Assert.Equal(state.Costumes, deserialized.Costumes);
             Assert.Equal(state.Equipments, deserialized.Equipments);
-            Assert.Equal(state.Level, deserialized.Level);
         }
 
         private AvatarState GetNewAvatarState(Address avatarAddress, Address agentAddress)

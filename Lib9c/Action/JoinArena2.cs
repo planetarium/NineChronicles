@@ -16,11 +16,11 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1135
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1027
     /// </summary>
     [Serializable]
-    [ActionType("join_arena2")]
-    public class JoinArena : GameAction
+    [ActionType("join_arena")]
+    public class JoinArena2 : GameAction
     {
         public Address avatarAddress;
         public int championshipId;
@@ -64,7 +64,7 @@ namespace Nekoyume.Action
                     out var agentState, out var avatarState, out _))
             {
                 throw new FailedLoadStateException(
-                    $"[{nameof(JoinArena)}] Aborted as the avatar state of the signer failed to load.");
+                    $"[{nameof(JoinArena2)}] Aborted as the avatar state of the signer failed to load.");
             }
 
             var sheets = states.GetSheets(
@@ -94,22 +94,22 @@ namespace Nekoyume.Action
             if (!row.TryGetRound(round, out var roundData))
             {
                 throw new RoundNotFoundException(
-                    $"[{nameof(JoinArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
+                    $"[{nameof(JoinArena2)}] ChampionshipId({row.ChampionshipId}) - round({round})");
             }
 
             // check fee
-            var fee = roundData.EntranceFee * avatarState.level * avatarState.level * CrystalCalculator.CRYSTAL;
-            if (fee > 0 * CrystalCalculator.CRYSTAL)
+            var costCrystal = ArenaHelper.GetEntranceFee(roundData, context.BlockIndex);
+            if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
             {
                 var crystalBalance = states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
-                if (fee > crystalBalance)
+                if (costCrystal > crystalBalance)
                 {
                     throw new NotEnoughFungibleAssetValueException(
-                        $"required {fee}, but balance is {crystalBalance}");
+                        $"required {costCrystal}, but balance is {crystalBalance}");
                 }
 
                 var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
-                states = states.TransferAsset(context.Signer, arenaAdr, fee);
+                states = states.TransferAsset(context.Signer, arenaAdr, costCrystal);
             }
 
             // check medal
@@ -119,7 +119,7 @@ namespace Nekoyume.Action
                 if (medalCount < roundData.RequiredMedalCount)
                 {
                     throw new NotEnoughMedalException(
-                        $"[{nameof(JoinArena)}] have({medalCount}) < Required Medal Count({roundData.RequiredMedalCount}) ");
+                        $"[{nameof(JoinArena2)}] have({medalCount}) < Required Medal Count({roundData.RequiredMedalCount}) ");
                 }
             }
 
@@ -129,7 +129,7 @@ namespace Nekoyume.Action
             if (states.TryGetState(arenaScoreAdr, out List _))
             {
                 throw new ArenaScoreAlreadyContainsException(
-                    $"[{nameof(JoinArena)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
+                    $"[{nameof(JoinArena2)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
             }
 
             var arenaScore = new ArenaScore(avatarAddress, roundData.ChampionshipId, roundData.Round);
@@ -140,7 +140,7 @@ namespace Nekoyume.Action
             if (states.TryGetState(arenaInformationAdr, out List _))
             {
                 throw new ArenaInformationAlreadyContainsException(
-                    $"[{nameof(JoinArena)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
+                    $"[{nameof(JoinArena2)}] id({roundData.ChampionshipId}) / round({roundData.Round})");
             }
 
             var arenaInformation =
@@ -156,6 +156,7 @@ namespace Nekoyume.Action
             var arenaAvatarState = states.GetArenaAvatarState(arenaAvatarStateAdr, avatarState);
             arenaAvatarState.UpdateCostumes(costumes);
             arenaAvatarState.UpdateEquipment(equipments);
+            arenaAvatarState.UpdateLevel(avatarState.level);
 
             return states
                 .SetState(arenaScoreAdr, arenaScore.Serialize())
