@@ -102,7 +102,7 @@ namespace Nekoyume.BlockChain
             return (null, 0, new FungibleAssetValue());
         }
 
-        protected static HackAndSlashBuffState GetHackAndSlashBuffState<T>(
+        protected static CrystalRandomSkillState GetCrystalRandomSkillState<T>(
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -110,7 +110,7 @@ namespace Nekoyume.BlockChain
             if (evaluation.OutputStates.GetState(buffStateAddress) is
                 Bencodex.Types.List serialized)
             {
-                var state = new HackAndSlashBuffState(buffStateAddress, serialized);
+                var state = new CrystalRandomSkillState(buffStateAddress, serialized);
                 return state;
             }
 
@@ -232,7 +232,7 @@ namespace Nekoyume.BlockChain
         protected static void UpdateHackAndSlashBuffState<T>(
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var state = GetHackAndSlashBuffState(evaluation);
+            var state = GetCrystalRandomSkillState(evaluation);
 
             if (state is { })
             {

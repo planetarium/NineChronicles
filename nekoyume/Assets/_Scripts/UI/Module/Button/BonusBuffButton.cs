@@ -48,41 +48,41 @@ namespace Nekoyume.UI.Module
             _disposableForOnDisabled = null;
         }
 
-        public void SetData(HackAndSlashBuffState buffState, int currentStageId)
+        public void SetData(CrystalRandomSkillState skillState, int currentStageId)
         {
             _disposableForOnDisabled?.Dispose();
             _disposableForOnDisabled = null;
 
             var tableSheets = Game.Game.instance.TableSheets;
 
-            if (buffState is null ||
+            if (skillState is null ||
                 States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(currentStageId) ||
-                !tableSheets.CrystalStageBuffGachaSheet.TryGetValue(buffState.StageId, out var row))
+                !tableSheets.CrystalStageBuffGachaSheet.TryGetValue(skillState.StageId, out var row))
             {
                 gameObject.SetActive(false);
                 return;
             }
 
             _stageId = currentStageId;
-            _hasEnoughStars = buffState.StarCount >= row.MaxStar;
-            starCountText.text = $"{buffState.StarCount}/{row.MaxStar}";
+            _hasEnoughStars = skillState.StarCount >= row.MaxStar;
+            starCountText.text = $"{skillState.StarCount}/{row.MaxStar}";
             _disposableForOnDisabled = Widget.Find<BuffBonusResultPopup>().OnBuffSelectedSubject
-                .Subscribe(_ => SetIcon(buffState))
+                .Subscribe(_ => SetIcon(skillState))
                 .AddTo(gameObject);
-            SetIcon(buffState);
+            SetIcon(skillState);
             gameObject.SetActive(true);
         }
 
-        private void SetIcon(HackAndSlashBuffState buffState)
+        private void SetIcon(CrystalRandomSkillState skillState)
         {
             var isBuffAvailable = _hasEnoughStars;
             var selectedId = Widget.Find<BuffBonusResultPopup>().SelectedBuffId;
 
             var tableSheets = Game.Game.instance.TableSheets;
             if (selectedId.HasValue ||
-                (buffState != null && buffState.SkillIds.Any()))
+                (skillState != null && skillState.SkillIds.Any()))
             {
-                var buffId = selectedId ?? buffState.SkillIds.Select(buffId =>
+                var buffId = selectedId ?? skillState.SkillIds.Select(buffId =>
                 {
                     var randomBuffSheet = tableSheets.CrystalRandomBuffSheet;
                     if (!randomBuffSheet.TryGetValue(buffId, out var bonusBuffRow))
@@ -122,7 +122,7 @@ namespace Nekoyume.UI.Module
 
         private void OnClickButton()
         {
-            var buffState = States.Instance.HackAndSlashBuffState;
+            var buffState = States.Instance.CrystalRandomSkillState;
 
             if (!buffState.SkillIds.Any())
             {

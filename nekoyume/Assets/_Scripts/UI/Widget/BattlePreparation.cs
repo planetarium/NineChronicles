@@ -251,7 +251,7 @@ namespace Nekoyume.UI
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
             ShowHelpTooltip(stageType);
-            randomBuffButton.SetData(States.Instance.HackAndSlashBuffState, stageId);
+            randomBuffButton.SetData(States.Instance.CrystalRandomSkillState, stageId);
             ReactiveAvatarState.ActionPoint.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
             ReactiveAvatarState.Inventory.Subscribe(_ =>
             {
@@ -768,7 +768,7 @@ namespace Nekoyume.UI
             switch (stageType)
             {
                 case StageType.HackAndSlash:
-                    var buffState = States.Instance.HackAndSlashBuffState;
+                    var buffState = States.Instance.CrystalRandomSkillState;
                     var buffResult = Find<BuffBonusResultPopup>();
                     var buffId = buffState != null && buffState.SkillIds.Any() ?
                         buffResult.SelectedBuffId : null;

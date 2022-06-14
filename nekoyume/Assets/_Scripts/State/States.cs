@@ -34,7 +34,7 @@ namespace Nekoyume.State
 
         public StakeState StakeState { get; private set; }
 
-        public HackAndSlashBuffState HackAndSlashBuffState { get; set; }
+        public CrystalRandomSkillState CrystalRandomSkillState { get; set; }
 
         private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
 
@@ -161,7 +161,7 @@ namespace Nekoyume.State
             MonsterCollectionStateSubject.OnNextLevel(stakingLevel);
         }
 
-        public void SetHackAndSlashBuffState(HackAndSlashBuffState buffState)
+        public void SetHackAndSlashBuffState(CrystalRandomSkillState buffState)
         {
             if (buffState is null)
             {
@@ -169,7 +169,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            HackAndSlashBuffState = buffState;
+            CrystalRandomSkillState = buffState;
         }
 
         public async UniTask<AvatarState> AddOrReplaceAvatarStateAsync(
@@ -362,7 +362,7 @@ namespace Nekoyume.State
                     var buffStateIValue = await Game.Game.instance.Agent.GetStateAsync(buffStateAddress);
                     if (buffStateIValue is List serialized)
                     {
-                        var buffState = new HackAndSlashBuffState(buffStateAddress, serialized);
+                        var buffState = new CrystalRandomSkillState(buffStateAddress, serialized);
                         SetHackAndSlashBuffState(buffState);
                     }
 

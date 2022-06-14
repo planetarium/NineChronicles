@@ -1020,7 +1020,7 @@ namespace Nekoyume.BlockChain
                 var skillsOnWaveStart = new List<Model.Skill.Skill>();
                 if (eval.Action.stageBuffId.HasValue)
                 {
-                    var skill = HackAndSlashBuffState.GetSkill(
+                    var skill = CrystalRandomSkillState.GetSkill(
                         eval.Action.stageBuffId.Value,
                         tableSheets.CrystalRandomBuffSheet,
                         tableSheets.SkillSheet);
@@ -1488,7 +1488,7 @@ namespace Nekoyume.BlockChain
 
             Widget.Find<BuffBonusLoadingScreen>().Close();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
-            var buffState = States.Instance.HackAndSlashBuffState;
+            var buffState = States.Instance.CrystalRandomSkillState;
             Widget.Find<BuffBonusResultPopup>().Show(buffState.StageId, buffState);
         }
 

@@ -77,7 +77,7 @@ namespace Nekoyume.UI
             retryButton.onClick.AddListener(Retry);
         }
 
-        public void Show(int stageId, HackAndSlashBuffState state)
+        public void Show(int stageId, CrystalRandomSkillState state)
         {
             _stageId = stageId;
             foreach (var viewParent in buffViewParents)
@@ -119,7 +119,7 @@ namespace Nekoyume.UI
             SelectedBuffId = null;
             var hasEnoughStar =
                 Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(_stageId, out var row)
-                && States.Instance.HackAndSlashBuffState.StarCount >= row.MaxStar;
+                && States.Instance.CrystalRandomSkillState.StarCount >= row.MaxStar;
             Find<BuffBonusPopup>().Show(_stageId, hasEnoughStar);
         }
     }
