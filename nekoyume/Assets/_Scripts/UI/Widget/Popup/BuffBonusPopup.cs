@@ -139,7 +139,7 @@ namespace Nekoyume.UI
         {
             Find<BuffBonusLoadingScreen>().Show();
             Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
-            ActionManager.Instance.HackAndSlashRandomBuff(advanced);
+            ActionManager.Instance.HackAndSlashRandomBuff(advanced).Subscribe();
             Close();
         }
     }
