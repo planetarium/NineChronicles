@@ -222,7 +222,7 @@
                     gachaStateAddress,
                     (List)nextState.GetState(gachaStateAddress));
                 Assert.Contains(
-                    newGachaState.BuffIds.Select(id => randomBuffSheet[id].Rank),
+                    newGachaState.SkillIds.Select(id => randomBuffSheet[id].Rank),
                     rank => rank <= minimumRank);
             }
         }

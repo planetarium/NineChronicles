@@ -29,7 +29,7 @@
             var deserialized = new HackAndSlashBuffState(address, (List)serialized);
 
             Assert.Equal(state.Address, deserialized.Address);
-            Assert.Equal(state.BuffIds, deserialized.BuffIds);
+            Assert.Equal(state.SkillIds, deserialized.SkillIds);
             Assert.Equal(state.StageId, deserialized.StageId);
             Assert.Equal(state.StarCount, deserialized.StarCount);
         }
