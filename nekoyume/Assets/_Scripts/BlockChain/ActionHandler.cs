@@ -106,7 +106,7 @@ namespace Nekoyume.BlockChain
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var buffStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(avatarAddress);
+            var buffStateAddress = Addresses.GetskillStateAddressFromAvatarAddress(avatarAddress);
             if (evaluation.OutputStates.GetState(buffStateAddress) is
                 Bencodex.Types.List serialized)
             {

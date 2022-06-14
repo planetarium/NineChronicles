@@ -358,7 +358,7 @@ namespace Nekoyume.State
                     }
 
                     var avatarAddress = CurrentAvatarState.address;
-                    var buffStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(avatarAddress);
+                    var buffStateAddress = Addresses.GetskillStateAddressFromAvatarAddress(avatarAddress);
                     var buffStateIValue = await Game.Game.instance.Agent.GetStateAsync(buffStateAddress);
                     if (buffStateIValue is List serialized)
                     {
