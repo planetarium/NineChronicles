@@ -243,7 +243,7 @@ namespace Nekoyume.Action
 
             var buffStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(avatarAddress);
             HackAndSlashBuffState buffState;
-            var buffSkillsOnWaveStart = new List<Model.Skill.BuffSkill>();
+            var skillsOnWaveStart = new List<Model.Skill.Skill>();
             var crystalRandomBuffSheet = sheets.GetSheet<CrystalRandomBuffSheet>();
             var skillSheet = sheets.GetSheet<SkillSheet>();
             if (!worldInformation.IsStageCleared(stageId))
@@ -260,14 +260,26 @@ namespace Nekoyume.Action
                     buffState = new HackAndSlashBuffState(buffStateAddress, stageId);
                 }
 
-                if (buffState.BuffIds.Any())
+                if (buffState.SkillIds.Any())
                 {
-                    var skill = HackAndSlashBuffState.GetBuffSkill(
-                        buffState.BuffIds,
-                        stageBuffId,
+                    int selectedId;
+                    if (stageBuffId.HasValue && buffState.SkillIds.Contains(stageBuffId.Value))
+                    {
+                        selectedId = stageBuffId.Value;
+                    }
+                    else
+                    {
+                        selectedId = buffState.SkillIds
+                            .OrderBy(id => crystalRandomBuffSheet[id].Rank)
+                            .ThenBy(id => id)
+                            .First();
+                    }
+
+                    var skill = HackAndSlashBuffState.GetSkill(
+                        selectedId,
                         crystalRandomBuffSheet,
                         skillSheet);
-                    buffSkillsOnWaveStart.Add(skill);
+                    skillsOnWaveStart.Add(skill);
                 }
             }
             else
@@ -284,7 +296,7 @@ namespace Nekoyume.Action
                 ctx.Random,
                 avatarState,
                 foods,
-                buffSkillsOnWaveStart,
+                skillsOnWaveStart,
                 worldId,
                 stageId,
                 sheets.GetStageSimulatorSheets(),
@@ -334,7 +346,7 @@ namespace Nekoyume.Action
             {
                 if (buffState != null)
                 {
-                    if (buffSkillsOnWaveStart.Any())
+                    if (skillsOnWaveStart.Any())
                     {
                         buffState = new HackAndSlashBuffState(buffStateAddress, stageId);
                     }

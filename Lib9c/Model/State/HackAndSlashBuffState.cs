@@ -51,32 +51,25 @@ namespace Nekoyume.Model.State
         }
 
         public static Skill.Skill GetSkill(
-            List<int> skillIds,
-            int? skillId,
+            int skillId,
             CrystalRandomBuffSheet crystalRandomBuffSheet,
             SkillSheet skillSheet)
         {
-            int selectedId;
-            if (skillId.HasValue && skillIds.Contains(skillId.Value))
-            {
-                selectedId = skillId.Value;
-            }
-            else
-            {
-                selectedId = skillIds
-                    .OrderBy(id => crystalRandomBuffSheet[id].Rank)
-                    .ThenBy(id => id)
-                    .First();
-            }
 
-            if (!crystalRandomBuffSheet.TryGetValue(selectedId, out var row))
+            if (!crystalRandomBuffSheet.TryGetValue(skillId, out var row))
             {
-                throw new SheetRowNotFoundException(nameof(CrystalRandomBuffSheet), selectedId);
+                throw new SheetRowNotFoundException(nameof(CrystalRandomBuffSheet), skillId);
             }
 
             if (!skillSheet.TryGetValue(row.SkillId, out var skillRow))
             {
                 throw new SheetRowNotFoundException(nameof(SkillSheet), row.SkillId);
+            }
+
+            var isBuff = skillRow.SkillType == SkillType.Buff || skillRow.SkillType == SkillType.Debuff;
+            if (!isBuff)
+            {
+                throw new ArgumentException($"Buff/Debuff skill is only supported for now. skillType : {skillRow.SkillType}");
             }
 
             return SkillFactory.Get(skillRow, default, 100);
