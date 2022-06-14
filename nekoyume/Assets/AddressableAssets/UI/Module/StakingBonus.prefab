@@ -164,6 +164,7 @@ GameObject:
   - component: {fileID: 437187996237788050}
   - component: {fileID: 147946971732728717}
   - component: {fileID: 5099591821764617533}
+  - component: {fileID: 3190610291325093023}
   m_Layer: 5
   m_Name: StakingBonus
   m_TagString: Untagged
@@ -309,6 +310,18 @@ MonoBehaviour:
   button: {fileID: 7137233762324309947}
   enableObject: {fileID: 8072067005245214279}
   disableObject: {fileID: 7801474875810921257}
+--- !u!225 &3190610291325093023
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6175386925380304352}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6599541019057155014
 GameObject:
   m_ObjectHideFlags: 0
