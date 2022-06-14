@@ -891,11 +891,10 @@ namespace Lib9c.Tests.Action
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.actionPoint = 999999;
             previousAvatarState.level = 400;
-            var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
-                clearedStageId);
+                stageId);
 
             var costumes = new List<Guid>();
             var random = new TestRandom();
@@ -955,7 +954,7 @@ namespace Lib9c.Tests.Action
 
             state = state.SetState(
                 _avatarAddress.Derive("world_ids"),
-                List.Empty.Add(worldId.Serialize())
+                Enumerable.Range(1, worldId).ToList().Select(i => i.Serialize()).Serialize()
             );
 
             var action = new HackAndSlash
