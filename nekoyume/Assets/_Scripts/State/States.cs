@@ -161,15 +161,15 @@ namespace Nekoyume.State
             MonsterCollectionStateSubject.OnNextLevel(stakingLevel);
         }
 
-        public void SetCrystalRandomSkillState(CrystalRandomSkillState buffState)
+        public void SetCrystalRandomSkillState(CrystalRandomSkillState skillState)
         {
-            if (buffState is null)
+            if (skillState is null)
             {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetCrystalRandomSkillState)}] {nameof(buffState)} is null.");
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetCrystalRandomSkillState)}] {nameof(skillState)} is null.");
                 return;
             }
 
-            CrystalRandomSkillState = buffState;
+            CrystalRandomSkillState = skillState;
         }
 
         public async UniTask<AvatarState> AddOrReplaceAvatarStateAsync(
@@ -358,12 +358,12 @@ namespace Nekoyume.State
                     }
 
                     var avatarAddress = CurrentAvatarState.address;
-                    var buffStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
-                    var buffStateIValue = await Game.Game.instance.Agent.GetStateAsync(buffStateAddress);
-                    if (buffStateIValue is List serialized)
+                    var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
+                    var skillStateIValue = await Game.Game.instance.Agent.GetStateAsync(skillStateAddress);
+                    if (skillStateIValue is List serialized)
                     {
-                        var buffState = new CrystalRandomSkillState(buffStateAddress, serialized);
-                        SetCrystalRandomSkillState(buffState);
+                        var skillState = new CrystalRandomSkillState(skillStateAddress, serialized);
+                        SetCrystalRandomSkillState(skillState);
                     }
 
                     await SetCombinationSlotStatesAsync(curAvatarState);
