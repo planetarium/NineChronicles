@@ -86,7 +86,6 @@ namespace Nekoyume.Game
         public TutorialController TutorialController { get; private set; }
         public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
-        public bool IsInStage { get; set; }
         public bool IsShowHud { get; set; }
         public bool IsExitReserved { get; set; }
         public bool IsRepeatStage { get; set; }
@@ -232,7 +231,7 @@ namespace Nekoyume.Game
 #endif
             showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();
-            IsInStage = false;
+            Game.instance.IsInWorld = false;
         }
 
         // todo: 배경 캐싱.
@@ -319,7 +318,7 @@ namespace Nekoyume.Game
                 .Select(r => r.Id)
                 .ToList();
 
-            IsInStage = true;
+            Game.instance.IsInWorld = true;
             yield return StartCoroutine(CoStageEnter(log));
             HelpTooltip.HelpMe(100005, true);
             foreach (var e in log)

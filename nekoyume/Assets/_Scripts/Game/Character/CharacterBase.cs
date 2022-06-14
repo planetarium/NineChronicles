@@ -195,7 +195,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void UpdateHpBar()
         {
-            if (!Game.instance.Stage.IsInStage)
+            if (!Game.instance.IsInWorld)
                 return;
 
             if (!HPBar)
