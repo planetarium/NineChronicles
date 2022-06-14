@@ -80,9 +80,9 @@ namespace Nekoyume.UI.Module
 
             var tableSheets = Game.Game.instance.TableSheets;
             if (selectedId.HasValue ||
-                (buffState != null && buffState.BuffIds.Any()))
+                (buffState != null && buffState.SkillIds.Any()))
             {
-                var buffId = selectedId ?? buffState.BuffIds.Select(buffId =>
+                var buffId = selectedId ?? buffState.SkillIds.Select(buffId =>
                 {
                     var randomBuffSheet = tableSheets.CrystalRandomBuffSheet;
                     if (!randomBuffSheet.TryGetValue(buffId, out var bonusBuffRow))
@@ -124,7 +124,7 @@ namespace Nekoyume.UI.Module
         {
             var buffState = States.Instance.HackAndSlashBuffState;
 
-            if (!buffState.BuffIds.Any())
+            if (!buffState.SkillIds.Any())
             {
                 Widget.Find<BuffBonusPopup>().Show(_stageId, _hasEnoughStars);
             }

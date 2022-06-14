@@ -85,7 +85,7 @@ namespace Nekoyume.UI
                 viewParent.SetActive(false);
             }
 
-            var buffs = state.BuffIds
+            var buffs = state.SkillIds
                 .Select(buffId =>
                 {
                     var randomBuffSheet = Game.Game.instance.TableSheets.CrystalRandomBuffSheet;

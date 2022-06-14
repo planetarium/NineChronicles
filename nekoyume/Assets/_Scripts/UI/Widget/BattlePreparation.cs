@@ -770,7 +770,7 @@ namespace Nekoyume.UI
                 case StageType.HackAndSlash:
                     var buffState = States.Instance.HackAndSlashBuffState;
                     var buffResult = Find<BuffBonusResultPopup>();
-                    var buffId = buffState != null && buffState.BuffIds.Any() ?
+                    var buffId = buffState != null && buffState.SkillIds.Any() ?
                         buffResult.SelectedBuffId : null;
                     buffResult.SelectedBuffId = null;
 

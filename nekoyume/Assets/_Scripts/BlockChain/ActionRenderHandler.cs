@@ -1017,12 +1017,13 @@ namespace Nekoyume.BlockChain
 
                 var tableSheets = Game.Game.instance.TableSheets;
 
-                var skillsOnWaveStart = new List<Model.Skill.BuffSkill>();
+                var skillsOnWaveStart = new List<Model.Skill.Skill>();
                 if (eval.Action.stageBuffId.HasValue)
                 {
-                    var buffRow = tableSheets.CrystalRandomBuffSheet[eval.Action.stageBuffId.Value];
-                    var skillRow = tableSheets.SkillSheet[buffRow.SkillId];
-                    var skill = new Model.Skill.BuffSkill(skillRow, 0, 100);
+                    var skill = HackAndSlashBuffState.GetSkill(
+                        eval.Action.stageBuffId.Value,
+                        tableSheets.CrystalRandomBuffSheet,
+                        tableSheets.SkillSheet);
                     skillsOnWaveStart.Add(skill);
                 }
 
