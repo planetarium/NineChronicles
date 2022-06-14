@@ -176,7 +176,7 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            startButton.OnSubmitSubject.Where(_ => !_stage.IsInStage)
+            startButton.OnSubmitSubject.Where(_ => !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ => OnClickBattle(repeatToggle.isOn))
                 .AddTo(gameObject);
@@ -186,10 +186,10 @@ namespace Nekoyume.UI
                 .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId.Value));
 
             boostPopupButton.OnClickAsObservable()
-                .Where(_ => EnoughToPlay && !_stage.IsInStage)
+                .Where(_ => EnoughToPlay && !Game.Game.instance.IsInWorld)
                 .Subscribe(_ => ShowBoosterPopup());
 
-            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
+            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(
@@ -623,7 +623,7 @@ namespace Nekoyume.UI
 
         private void OnClickBattle(bool repeat)
         {
-            if (_stage.IsInStage)
+            if (Game.Game.instance.IsInWorld)
             {
                 return;
             }
@@ -636,7 +636,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _stage.IsInStage = true;
+            Game.Game.instance.IsInWorld = true;
             _stage.IsShowHud = true;
             StartCoroutine(CoBattleStart(_stageType, repeat));
             repeatToggle.interactable = false;

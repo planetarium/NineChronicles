@@ -208,9 +208,9 @@ namespace Nekoyume.UI.Module
 
             return type switch
             {
-                PlaceType.Stage => !Game.Game.instance.Stage.IsInStage,
-                PlaceType.Shop => !Game.Game.instance.Stage.IsInStage,
-                PlaceType.Arena => !Game.Game.instance.Stage.IsInStage,
+                PlaceType.Stage => !Game.Game.instance.IsInWorld,
+                PlaceType.Shop => !Game.Game.instance.IsInWorld,
+                PlaceType.Arena => !Game.Game.instance.IsInWorld,
                 PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() &&
                                    !Widget.Find<RankingBattleResultPopup>().IsActive(),
                 PlaceType.Staking => true,

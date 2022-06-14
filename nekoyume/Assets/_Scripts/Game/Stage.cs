@@ -86,7 +86,6 @@ namespace Nekoyume.Game
         public TutorialController TutorialController { get; private set; }
         public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
-        public bool IsInStage { get; set; }
         public bool IsShowHud { get; set; }
         public bool IsExitReserved { get; set; }
         public bool IsRepeatStage { get; set; }
@@ -127,7 +126,6 @@ namespace Nekoyume.Game
             Event.OnLoginDetail.AddListener(OnLoginDetail);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageStart.AddListener(OnStageStart);
-            Event.OnRankingBattleStart.AddListener(OnRankingBattleStart);
         }
 
         public void Initialize()
@@ -156,31 +154,6 @@ namespace Nekoyume.Game
 
                 _battleLog = log;
                 PlayStage(_battleLog);
-            }
-            else
-            {
-                Debug.Log("Skip incoming battle. Battle is already simulating.");
-            }
-        }
-
-        private void OnRankingBattleStart((BattleLog battleLog, List<ItemBase> rewards) tuple)
-        {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(OnRankingBattleStart)}() enter");
-#endif
-            _rankingBattle = true;
-            if (_battleLog is null)
-            {
-                if (!(_battleCoroutine is null))
-                {
-                    StopCoroutine(_battleCoroutine);
-                    _battleCoroutine = null;
-                    objectPool.ReleaseAll();
-                }
-
-                _battleLog = tuple.battleLog;
-                _rewards = tuple.rewards;
-                PlayRankingBattle(_battleLog);
             }
             else
             {
@@ -258,7 +231,7 @@ namespace Nekoyume.Game
 #endif
             showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();
-            IsInStage = false;
+            Game.instance.IsInWorld = false;
         }
 
         // todo: 배경 캐싱.
@@ -332,17 +305,6 @@ namespace Nekoyume.Game
             }
         }
 
-        private void PlayRankingBattle(BattleLog log)
-        {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(PlayRankingBattle)}() enter");
-#endif
-            if (log?.Count > 0)
-            {
-                _battleCoroutine = StartCoroutine(CoPlayRankingBattle(log));
-            }
-        }
-
         private IEnumerator CoPlayStage(BattleLog log)
         {
 #if TEST_LOG
@@ -356,7 +318,7 @@ namespace Nekoyume.Game
                 .Select(r => r.Id)
                 .ToList();
 
-            IsInStage = true;
+            Game.instance.IsInWorld = true;
             yield return StartCoroutine(CoStageEnter(log));
             HelpTooltip.HelpMe(100005, true);
             foreach (var e in log)
@@ -366,54 +328,6 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(CoStageEnd(log));
             ClearBattle();
-        }
-
-        private IEnumerator CoPlayRankingBattle(BattleLog log)
-        {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoPlayRankingBattle)}() enter");
-#endif
-            IsInStage = true;
-            yield return StartCoroutine(CoRankingBattleEnter(log));
-            Widget.Find<ArenaBattleLoadingScreen>().Close();
-            _positionCheckCoroutine = StartCoroutine(CheckPosition(log));
-            foreach (var e in log)
-            {
-                yield return StartCoroutine(e.CoExecute(this));
-            }
-
-            StopCoroutine(_positionCheckCoroutine);
-            _positionCheckCoroutine = null;
-            yield return StartCoroutine(CoRankingBattleEnd(log));
-            ClearBattle();
-        }
-
-        private IEnumerator CheckPosition(BattleLog log)
-        {
-            var player = GetPlayer();
-            while (player.isActiveAndEnabled)
-            {
-                if (player.transform.localPosition.x >= 16f)
-                {
-                    _positionCheckCoroutine = null;
-
-                    if (log.FirstOrDefault(e => e is GetReward) is GetReward getReward)
-                    {
-                        var rewards = getReward.Rewards;
-                        foreach (var item in rewards)
-                        {
-                            var countableItem = new CountableItem(item, 1);
-                            _battleResultModel.AddReward(countableItem);
-                        }
-                    }
-
-                    yield return StartCoroutine(CoRankingBattleEnd(log, true));
-                    ClearBattle();
-                    StopAllCoroutines();
-                }
-
-                yield return new WaitForSeconds(1f);
-            }
         }
 
         public void ClearBattle()
@@ -668,42 +582,6 @@ namespace Nekoyume.Game
             {
                 yield return new WaitForEndOfFrame();
             }
-        }
-
-        private IEnumerator CoRankingBattleEnd(BattleLog log, bool forceQuit = false)
-        {
-#if TEST_LOG
-            Debug.Log($"[{nameof(Stage)}] {nameof(CoRankingBattleEnd)}() enter");
-#endif
-            IsAvatarStateUpdatedAfterBattle = false;
-
-            // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
-            ActionRenderHandler.Instance.Pending = false;
-            _onEnterToStageEnd.OnNext(this);
-            yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
-
-            var characters = GetComponentsInChildren<Character.CharacterBase>();
-
-            if (!forceQuit)
-            {
-                yield return new WaitWhile(() =>
-                    characters.Any(i => i.actions.Any()));
-            }
-
-            Boss = null;
-            var playerCharacter = log.result == BattleLog.Result.Win
-                ? GetPlayer()
-                : GetComponentInChildren<Character.EnemyPlayer>();
-
-            yield return new WaitForSeconds(0.75f);
-            playerCharacter.Animator.Win();
-            playerCharacter.ShowSpeech("PLAYER_WIN");
-            Widget.Find<UI.Battle>().Close();
-            Widget.Find<Status>().Close();
-            Widget.Find<RankingBattleResultPopup>().Show(
-                log,
-                _rewards.Select(e => new CountableItem(e, 1)).ToList());
-            yield return null;
         }
 
         public IEnumerator CoSpawnPlayer(Model.Player character)

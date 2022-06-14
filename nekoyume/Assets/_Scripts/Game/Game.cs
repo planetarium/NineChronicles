@@ -40,6 +40,8 @@ namespace Nekoyume.Game
     {
         [SerializeField] private Stage stage = null;
 
+        [SerializeField] private Arena arena = null;
+
         [SerializeField] private bool useSystemLanguage = true;
 
         [SerializeField] private LanguageTypeReactiveProperty languageType = default;
@@ -57,6 +59,7 @@ namespace Nekoyume.Game
         public Analyzer Analyzer { get; private set; }
 
         public Stage Stage => stage;
+        public Arena Arena => arena;
 
         // FIXME Action.PatchTableSheet.Execute()에 의해서만 갱신됩니다.
         // 액션 실행 여부와 상관 없이 최신 상태를 반영하게끔 수정해야합니다.
@@ -65,6 +68,7 @@ namespace Nekoyume.Game
         public ActionManager ActionManager { get; private set; }
 
         public bool IsInitialized { get; private set; }
+        public bool IsInWorld { get; set; }
 
         public Prologue Prologue => prologue;
 
@@ -190,6 +194,7 @@ namespace Nekoyume.Game
             RankPopup.UpdateSharedModel();
             // Initialize Stage
             Stage.Initialize();
+            Arena.Initialize();
 
             Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
 
@@ -503,13 +508,15 @@ namespace Nekoyume.Game
             instance.Stage.OnRoomEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));
-
+            instance.Arena.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ => PopupError(key, code, errorMsg));
             MainCanvas.instance.InitWidgetInMain();
         }
 
         public void BackToNest()
         {
-            if (Stage.IsInStage)
+            if (IsInWorld)
             {
                 NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
                     L10nManager.Localize("UI_BLOCK_EXIT"),

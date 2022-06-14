@@ -264,7 +264,7 @@ namespace Nekoyume.UI
 
         private void Equip(InventoryItem inventoryItem)
         {
-            if (Game.Game.instance.Stage.IsInStage)
+            if (Game.Game.instance.IsInWorld)
             {
                 return;
             }
@@ -345,7 +345,7 @@ namespace Nekoyume.UI
 
         private void Unequip(EquipmentSlot slot, bool considerInventoryOnly)
         {
-            if (Game.Game.instance.Stage.IsInStage || slot.IsEmpty)
+            if (Game.Game.instance.IsInWorld || slot.IsEmpty)
             {
                 return;
             }
@@ -425,7 +425,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            return !Game.Game.instance.Stage.IsInStage;
+            return !Game.Game.instance.IsInWorld;
         }
 
         private void ShowRefillConfirmPopup(Material material)
@@ -469,7 +469,7 @@ namespace Nekoyume.UI
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-                    if (!Game.Game.instance.Stage.IsInStage)
+                    if (!Game.Game.instance.IsInWorld)
                     {
                         if (model.DimObjectEnabled.Value)
                         {
@@ -483,7 +483,7 @@ namespace Nekoyume.UI
 
                     submit = () => Equip(model);
 
-                    if (Game.Game.instance.Stage.IsInStage)
+                    if (Game.Game.instance.IsInWorld)
                     {
                         blocked = () => NotificationSystem.Push(MailType.System,
                             L10nManager.Localize("UI_BLOCK_EQUIP"),
@@ -512,7 +512,7 @@ namespace Nekoyume.UI
                             submit = () => Game.Game.instance.ActionManager.ChargeActionPoint(item as Material).Subscribe();
                         }
 
-                        if (Game.Game.instance.Stage.IsInStage)
+                        if (Game.Game.instance.IsInWorld)
                         {
                             blocked = () => NotificationSystem.Push(MailType.System,
                                 L10nManager.Localize("UI_BLOCK_CHARGE_AP"),

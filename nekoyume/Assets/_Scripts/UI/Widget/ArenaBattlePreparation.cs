@@ -158,7 +158,7 @@ namespace Nekoyume.UI
             CloseWidget = () => Close(true);
 
             startButton.OnSubmitSubject
-                .Where(_ => !Game.Game.instance.Stage.IsInStage)
+                .Where(_ => !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ => OnClickBattle())
                 .AddTo(gameObject);
@@ -541,14 +541,14 @@ namespace Nekoyume.UI
 
         private void OnClickBattle()
         {
-            var stage = Game.Game.instance.Stage;
-            if (stage.IsInStage)
+            var game = Game.Game.instance;
+            if (game.IsInWorld)
             {
                 return;
             }
 
-            stage.IsInStage = true;
-            stage.IsShowHud = true;
+            game.IsInWorld = true;
+            game.Stage.IsShowHud = true;
             StartCoroutine(CoBattleStart());
             coverToBlockClick.SetActive(true);
         }
@@ -642,10 +642,7 @@ namespace Nekoyume.UI
                 .Subscribe();
         }
 
-        public void OnRenderBattleArena(
-            ActionBase.ActionEvaluation<BattleArena> eval,
-            BattleLog battleLog,
-            List<ItemBase> rewards)
+        public void OnRenderBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
         {
             if (eval.Exception is { })
             {
@@ -655,7 +652,6 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<ArenaBattleLoadingScreen>().Close();
-            Game.Event.OnRankingBattleStart.Invoke((battleLog, rewards));
         }
 
         private void UpdateStartButton(AvatarState avatarState)

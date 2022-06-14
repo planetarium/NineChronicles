@@ -5,7 +5,7 @@ namespace Nekoyume.Game.VFX.Skill
 {
     public class SkillVFX : VFX
     {
-        public CharacterBase target;
+        public Character.Character target;
         public GameObject go;
     }
 }

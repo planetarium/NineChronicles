@@ -926,6 +926,44 @@ namespace Nekoyume.BlockChain
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
+
+
+        public IObservable<ActionBase.ActionEvaluation<CreateArenaDummy>> CreateArenaDummy(
+            List<Guid> costumes,
+            List<Guid> equipments,
+            int championshipId,
+            int round,
+            int accountCount
+        )
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = new CreateArenaDummy
+            {
+                myAvatarAddress = avatarAddress,
+                costumes = costumes,
+                equipments = equipments,
+                championshipId = championshipId,
+                round = round,
+                accountCount = accountCount,
+            };
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<CreateArenaDummy>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    try
+                    {
+                        HandleException(action.Id, e);
+                    }
+                    catch (Exception e2)
+                    {
+                    }
+                });
+        }
 #endif
 
         #endregion
