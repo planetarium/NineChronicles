@@ -15,6 +15,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Lobby;
 using UnityEngine.UI;
@@ -93,6 +94,9 @@ namespace Nekoyume.UI
                 };
                 buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
+
+            MonsterCollectionStateSubject.Level.Subscribe(level =>
+                stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(level)).AddTo(gameObject);
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
@@ -193,8 +197,6 @@ namespace Nekoyume.UI
             mimisbrunnrExclamationMark.gameObject.SetActive(
                 btnMimisbrunnr.IsUnlocked
                 && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0);
-            
-            stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(States.Instance.StakingLevel);
         }
 
         private void HideButtons()

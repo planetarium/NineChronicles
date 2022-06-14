@@ -28,8 +28,6 @@ namespace Nekoyume.UI.Module
 
             baseItemView.TouchHandler.OnClick
                 .Select(_ => itemBase).Subscribe(onClick).AddTo(_disposables);
-            baseItemView.TouchHandler.OnExit
-                .Subscribe(_ => Debug.LogError("OnExit")).AddTo(_disposables);
         }
     }
 }

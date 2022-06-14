@@ -1,4 +1,5 @@
 using System.Linq;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -26,8 +27,6 @@ namespace Nekoyume.UI
 
         [SerializeField] private StakingItemView[] regularItemViews;
 
-        [SerializeField] private GameObject tooltip;
-
         [SerializeField] private RectTransform tooltipRectTransform;
 
         [SerializeField] private TextMeshProUGUI tooltipText;
@@ -50,19 +49,20 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
             });
 
-            tooltip.SetActive(false);
+            tooltipRectTransform.gameObject.SetActive(false);
 
             this.UpdateAsObservable()
-                .Where(_ => tooltip.activeSelf && Input.GetMouseButtonDown(0))
-                .Subscribe(_ => tooltip.SetActive(false));
+                .Where(_ => tooltipRectTransform.gameObject.activeSelf && Input.GetMouseButtonDown(0))
+                .Subscribe(_ => tooltipRectTransform.gameObject.SetActive(false))
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreStartAnimation = false)
         {
             var level = States.Instance.StakingLevel;
             var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
-            var regularSheet = Game.Game.instance.TableSheets.StakeRegularRewardSheet;
-            var regularFixedSheet = Game.Game.instance.TableSheets.StakeRegularFixedRewardSheet;
+            var regularSheet = TableSheets.Instance.StakeRegularRewardSheet;
+            var regularFixedSheet = TableSheets.Instance.StakeRegularFixedRewardSheet;
 
             stepImage.sprite = SpriteHelper.GetStakingIcon(level, true);
             stepText.text = $"Step {level}";
@@ -84,7 +84,7 @@ namespace Nekoyume.UI
                     var view = regularItemViews[i];
                     view.Set(item, result, itemBase =>
                     {
-                        ShowToolTip(itemBase, view.gameObject.transform); // 틀림
+                        ShowToolTip(itemBase, view.gameObject.transform);
                     });
                 }
 
@@ -99,7 +99,7 @@ namespace Nekoyume.UI
 
         private void ShowToolTip(ItemBase itemBase, Transform target)
         {
-            tooltip.SetActive(true);
+            tooltipRectTransform.gameObject.SetActive(true);
             tooltipText.text = itemBase.GetLocalizedDescription();
             tooltipRectTransform.position = target.position;
         }
