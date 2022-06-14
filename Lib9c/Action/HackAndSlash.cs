@@ -241,29 +241,29 @@ namespace Nekoyume.Action
 
             sw.Restart();
 
-            var buffStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(avatarAddress);
-            CrystalRandomSkillState buffState = null;
+            var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
+            CrystalRandomSkillState skillState = null;
             var isNotClearedStage = !worldInformation.IsStageCleared(stageId);
             var skillsOnWaveStart = new List<Model.Skill.Skill>();
             if (isNotClearedStage)
             {
-                // It has state, get HackAndSlashBuffState. If not, newly make.
-                buffState = states.TryGetState<List>(buffStateAddress, out var serialized)
-                    ? new CrystalRandomSkillState(buffStateAddress, serialized)
-                    : new CrystalRandomSkillState(buffStateAddress, stageId);
+                // It has state, get CrystalRandomSkillState. If not, newly make.
+                skillState = states.TryGetState<List>(skillStateAddress, out var serialized)
+                    ? new CrystalRandomSkillState(skillStateAddress, serialized)
+                    : new CrystalRandomSkillState(skillStateAddress, stageId);
 
-                if (buffState.SkillIds.Any())
+                if (skillState.SkillIds.Any())
                 {
                     var crystalRandomBuffSheet = sheets.GetSheet<CrystalRandomBuffSheet>();
                     var skillSheet = sheets.GetSheet<SkillSheet>();
                     int selectedId;
-                    if (stageBuffId.HasValue && buffState.SkillIds.Contains(stageBuffId.Value))
+                    if (stageBuffId.HasValue && skillState.SkillIds.Contains(stageBuffId.Value))
                     {
                         selectedId = stageBuffId.Value;
                     }
                     else
                     {
-                        selectedId = buffState.SkillIds
+                        selectedId = skillState.SkillIds
                             .OrderBy(id => crystalRandomBuffSheet[id].Rank)
                             .ThenBy(id => id)
                             .First();
@@ -278,7 +278,7 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Get BuffState : {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}HAS Get skillState : {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
             var simulator = new StageSimulator(
@@ -327,9 +327,9 @@ namespace Nekoyume.Action
 
                 if (isNotClearedStage)
                 {
-                    // Make new HackAndSlashBuffState by next stage Id.
-                    var nextStageBuffState = new CrystalRandomSkillState(buffStateAddress, stageId + 1);
-                    states = states.SetState(buffStateAddress, nextStageBuffState.Serialize());
+                    // Make new CrystalRandomSkillState by next stage Id.
+                    var nextStageskillState = new CrystalRandomSkillState(skillStateAddress, stageId + 1);
+                    states = states.SetState(skillStateAddress, nextStageskillState.Serialize());
                 }
             }
             else
@@ -338,14 +338,13 @@ namespace Nekoyume.Action
                 {
                     if (skillsOnWaveStart.Any())
                     {
-                        // If new crystal random skill, reset stars.
-                        buffState = new CrystalRandomSkillState(buffStateAddress, stageId);
+                        skillState = new CrystalRandomSkillState(skillStateAddress, stageId);
                     }
 
-                    // Update HackAndSlashBuffState.Stars by clearedWaveNumber. (add)
-                    buffState.Update(simulator.Log.clearedWaveNumber,
+                    // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
+                    skillState.Update(simulator.Log.clearedWaveNumber,
                         sheets.GetSheet<CrystalStageBuffGachaSheet>());
-                    states = states.SetState(buffStateAddress, buffState.Serialize());
+                    states = states.SetState(skillStateAddress, skillState.Serialize());
                 }
             }
 

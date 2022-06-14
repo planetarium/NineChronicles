@@ -41,7 +41,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
-            var gachaStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(AvatarAddress);
+            var gachaStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(AvatarAddress);
 
             // Invalid Avatar address, or does not have GachaState.
             if (!states.TryGetState(gachaStateAddress, out List rawGachaState))

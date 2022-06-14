@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -116,7 +116,7 @@
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), stageId),
                 level = 400,
             };
-            var gachaStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(_avatarAddress);
+            var gachaStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(_avatarAddress);
             var gachaState = new CrystalRandomSkillState(gachaStateAddress, stageId);
             states = states
                 .SetState(_avatarAddress, avatarState.SerializeV2())
@@ -187,7 +187,7 @@
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 1),
                 level = 400,
             };
-            var gachaStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(_avatarAddress);
+            var gachaStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(_avatarAddress);
             var gachaState = new CrystalRandomSkillState(gachaStateAddress, 1);
             states = states
                 .SetState(_avatarAddress, avatarState.SerializeV2())
