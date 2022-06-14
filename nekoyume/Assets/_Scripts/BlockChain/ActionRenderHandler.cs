@@ -1628,20 +1628,35 @@ namespace Nekoyume.BlockChain
                 });
 
             var tableSheets = Game.Game.instance.TableSheets;
-            ArenaPlayerDigest myDigest;
-            ArenaPlayerDigest enemyDigest;
-            // TODO!!!! lib9c와 headless 쪽에 결과 Digest와 이전 Score 추가하기
-            // if (eval.Extra is { })
-            // {
-            //     var myDigestList
-            //         = (List)eval.Extra[nameof(BattleArena.ExtraMyArenaPlayerDigest)];
-            //     myDigest = new ArenaPlayerDigest(myDigestList);
-            //     var enemyDigestList
-            //         = (List)eval.Extra[nameof(BattleArena.ExtraEnemyArenaPlayerDigest)];
-            //     enemyDigest = new ArenaPlayerDigest(enemyDigestList);
-            // }
-            // else
-            // {
+            ArenaPlayerDigest? myDigest = null;
+            ArenaPlayerDigest? enemyDigest = null;
+            int? previousMyScore = null;
+            int? previousEnemyScore = null;
+            // TODO!!!! lib9c와 headless 쪽에 이전 Score 추가하기
+            if (eval.Extra is { })
+            {
+                myDigest = eval.Extra.TryGetValue(
+                    nameof(BattleArena.ExtraMyArenaPlayerDigest),
+                    out var myDigestValue)
+                    ? myDigestValue is List myDigestList
+                        ? new ArenaPlayerDigest(myDigestList)
+                        : (ArenaPlayerDigest?)null
+                    : null;
+
+                enemyDigest = eval.Extra.TryGetValue(
+                    nameof(BattleArena.ExtraMyArenaPlayerDigest),
+                    out var enemyDigestValue)
+                    ? enemyDigestValue is List enemyDigestList
+                        ? new ArenaPlayerDigest(enemyDigestList)
+                        : (ArenaPlayerDigest?)null
+                    : null;
+
+                previousMyScore = null;
+                previousEnemyScore = null;
+            }
+
+            if (!myDigest.HasValue)
+            {
                 var myAvatarState
                     = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
                 if (!eval.OutputStates.TryGetArenaAvatarState(
@@ -1653,7 +1668,10 @@ namespace Nekoyume.BlockChain
 
                 myDigest
                     = new ArenaPlayerDigest(myAvatarState, myArenaAvatarState);
+            }
 
+            if (!enemyDigest.HasValue)
+            {
                 var enemyAvatarState
                     = eval.OutputStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
                 if (!eval.OutputStates.TryGetArenaAvatarState(
@@ -1665,62 +1683,66 @@ namespace Nekoyume.BlockChain
 
                 enemyDigest
                     = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
-            // }
+            }
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (!previousMyScore.HasValue ||
+                !previousEnemyScore.HasValue)
+            {
+                var scoreAddrList = new[]
+                {
+                    ArenaScore.DeriveAddress(
+                        eval.Action.myAvatarAddress,
+                        eval.Action.championshipId,
+                        eval.Action.round),
+                    ArenaScore.DeriveAddress(
+                        eval.Action.enemyAvatarAddress,
+                        eval.Action.championshipId,
+                        eval.Action.round),
+                };
+                var previousScores = eval.PreviousStates
+                    .GetStates(scoreAddrList)
+                    .Select(scoreValue => scoreValue is List list
+                        ? (int)(Integer)list[1]
+                        : ArenaScore.ArenaScoreDefault)
+                    .ToArray();
+                previousMyScore = previousScores[0];
+                previousEnemyScore = previousScores[1];
+            }
 
             var random = new LocalRandom(eval.RandomSeed);
             // TODO!!!! ticket 수 만큼 돌려서 마지막 전투 결과를 띄운다.
             // eval.Action.ticket
             var simulator = new ArenaSimulator(
                 random,
-                myDigest,
-                enemyDigest,
+                myDigest.Value,
+                enemyDigest.Value,
                 tableSheets.GetArenaSimulatorSheets());
             simulator.Simulate();
-            var scoreAddrList = new[]
-            {
-                ArenaScore.DeriveAddress(
-                    eval.Action.myAvatarAddress,
-                    eval.Action.championshipId,
-                    eval.Action.round),
-                ArenaScore.DeriveAddress(
-                    eval.Action.enemyAvatarAddress,
-                    eval.Action.championshipId,
-                    eval.Action.round),
-            };
-            var previousScores = eval.PreviousStates
-                .GetStates(scoreAddrList)
-                .Select(scoreValue => scoreValue is List list
-                    ? (int)(Integer)list[1]
-                    : ArenaScore.ArenaScoreDefault)
-                .ToArray();
-            var previousMyScore = previousScores[0];
-            var previousEnemyScore = previousScores[1];
             var rewards = RewardSelector.Select(
                 random,
                 tableSheets.WeeklyArenaRewardSheet,
                 tableSheets.MaterialItemSheet,
-                myDigest.Level,
-                maxCount: ArenaHelper.GetRewardCount(previousMyScore));
+                myDigest.Value.Level,
+                maxCount: ArenaHelper.GetRewardCount(previousMyScore.Value));
             var (myWinPoint, myDefeatPoint, _) =
-                ArenaHelper.GetScores(previousMyScore, previousEnemyScore);
+                ArenaHelper.GetScores(previousMyScore.Value, previousEnemyScore.Value);
             var currentMyScore = simulator.Log.result switch
             {
                 BattleLog.Result.Win =>
-                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore + myWinPoint),
+                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore.Value + myWinPoint),
                 BattleLog.Result.Lose =>
-                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore + myDefeatPoint),
+                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore.Value + myDefeatPoint),
                 BattleLog.Result.TimeOver => previousMyScore,
                 _ => throw new ArgumentOutOfRangeException()
             };
-            simulator.Log.score = currentMyScore;
+            simulator.Log.score = currentMyScore.Value;
 
             if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
             {
                 arenaBattlePreparation.OnRenderBattleArena(eval, simulator.Log, rewards);
             }
 
-            // TODO!!!! 전투 보여주는 동안 뒤에서는 최신 목록 가져오기.
-            // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
             RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
         }
     }
