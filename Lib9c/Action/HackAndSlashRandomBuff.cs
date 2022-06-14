@@ -41,16 +41,16 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
-            var gachaStateAddress = Addresses.GetBuffStateAddressFromAvatarAddress(AvatarAddress);
+            var gachaStateAddress = Addresses.GetskillStateAddressFromAvatarAddress(AvatarAddress);
 
             // Invalid Avatar address, or does not have GachaState.
             if (!states.TryGetState(gachaStateAddress, out List rawGachaState))
             {
                 throw new FailedLoadStateException(
-                    $"Can't find {nameof(HackAndSlashBuffState)}. Gacha state address:{gachaStateAddress}");
+                    $"Can't find {nameof(CrystalRandomSkillState)}. Gacha state address:{gachaStateAddress}");
             }
 
-            var gachaState = new HackAndSlashBuffState(gachaStateAddress, rawGachaState);
+            var gachaState = new CrystalRandomSkillState(gachaStateAddress, rawGachaState);
             var stageBuffSheet = states.GetSheet<CrystalStageBuffGachaSheet>();
 
             // Insufficient gathered star.

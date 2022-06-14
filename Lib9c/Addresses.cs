@@ -45,7 +45,7 @@ namespace Nekoyume
             return MaterialCost.Derive($"weekly_{index.ToString(CultureInfo.InvariantCulture)}");
         }
 
-        public static Address GetBuffStateAddressFromAvatarAddress(Address avatarAddress) =>
+        public static Address GetskillStateAddressFromAvatarAddress(Address avatarAddress) =>
             avatarAddress.Derive("has_buff");
     }
 }
