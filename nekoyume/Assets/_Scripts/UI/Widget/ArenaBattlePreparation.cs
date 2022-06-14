@@ -19,7 +19,9 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Factory;
 using Nekoyume.Model.Elemental;
+using Nekoyume.State.Subjects;
 using Inventory = Nekoyume.UI.Module.Inventory;
 
 namespace Nekoyume.UI
@@ -85,7 +87,6 @@ namespace Nekoyume.UI
         private int _championshipId;
         private int _round;
         private AvatarState _chooseAvatarState;
-        private bool _shouldResetPlayer = true;
         private Player _player;
         private GameObject _cachedCharacterTitle;
         private int _ticketCountToUse = 1;
@@ -95,7 +96,7 @@ namespace Nekoyume.UI
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
             (startButton.Interactable || !EnoughToPlay);
-
+        
         private bool EnoughToPlay
         {
             get
@@ -152,7 +153,6 @@ namespace Nekoyume.UI
             {
                 Close();
                 Find<ArenaBoard>().Show();
-                AudioController.PlayClick();
             });
 
             CloseWidget = () => Close(true);
@@ -179,52 +179,41 @@ namespace Nekoyume.UI
             var stage = Game.Game.instance.Stage;
             stage.IsRepeatStage = false;
 
-            // NOTE: [`stage.SelectedPlayer`] should be set to null
-            // before calling [`stage.GetPlayer()`]
-            stage.SelectedPlayer = null;
-            _player = stage.GetPlayer(PlayerPosition);
-            if (_player is null)
+            var avatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
+            if (!_player)
             {
-                throw new NotFoundComponentException<Player>();
+                _player = PlayerFactory.Create(avatarState).GetComponent<Player>();                
             }
 
-            var playerAvatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
-            if (_shouldResetPlayer)
-            {
-                _shouldResetPlayer = false;
-                _player.Set(playerAvatarState);
-                _player.gameObject.SetActive(false);
-                _player.gameObject.SetActive(true);
-                _player.SpineController.Appear();
-            }
+            _player.transform.position = PlayerPosition;
+            _player.Set(avatarState);
+            _player.SpineController.Appear();
+            _player.gameObject.SetActive(true);
 
             UpdateInventory();
             UpdateTitle();
-            UpdateStat(playerAvatarState);
-            UpdateSlot(playerAvatarState);
-            UpdateStartButton(playerAvatarState);
+            UpdateStat(avatarState);
+            UpdateSlot(avatarState);
+            UpdateStartButton(avatarState);
 
             startButton.gameObject.SetActive(true);
             startButton.Interactable = true;
             coverToBlockClick.SetActive(false);
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
-            ReactiveAvatarState.ActionPoint
+            AgentStateSubject.Crystal
                 .Subscribe(_ => ReadyToBattle())
-                .AddTo(_disposables);
-            ReactiveAvatarState.Inventory
-                .Subscribe(_ =>
-                {
-                    UpdateSlot(Game.Game.instance.States.CurrentAvatarState);
-                    UpdateStartButton(Game.Game.instance.States.CurrentAvatarState);
-                })
                 .AddTo(_disposables);
             base.Show(ignoreShowAnimation);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            _shouldResetPlayer = true;
+            if (_player)
+            {
+                _player.gameObject.SetActive(false);
+            }
+
             _disposables.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
         }
@@ -246,7 +235,8 @@ namespace Nekoyume.UI
                     costumeSlots.gameObject.SetActive(true);
                     equipmentSlots.gameObject.SetActive(false);
                 },
-                ElementalTypeExtension.GetAllTypes());
+                ElementalTypeExtension.GetAllTypes(),
+                true);
         }
 
         private void UpdateTitle()
@@ -323,12 +313,18 @@ namespace Nekoyume.UI
 
         private void Equip(InventoryItem inventoryItem)
         {
-            if (inventoryItem.LevelLimited.Value && !inventoryItem.Equipped.Value)
+            if (inventoryItem.LevelLimited.Value &&
+                !inventoryItem.Equipped.Value)
             {
                 return;
             }
 
             var itemBase = inventoryItem.ItemBase;
+            if (!(itemBase is INonFungibleItem nonFungibleItem))
+            {
+                return;
+            }
+
             if (TryToFindSlotAlreadyEquip(itemBase, out var slot))
             {
                 Unequip(slot, false);
@@ -345,21 +341,27 @@ namespace Nekoyume.UI
                 Unequip(slot, true);
             }
 
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             slot.Set(itemBase, OnClickSlot, OnDoubleClickSlot);
-            LocalLayerModifier.SetItemEquip(
-                currentAvatarState.address,
-                slot.Item,
-                true);
+            var arenaPlayer = RxProps.PlayersArenaParticipant.Value;
+            var targetItem =
+                arenaPlayer.AvatarState.inventory.Items
+                    .Select(e => e.item)
+                    .OfType<INonFungibleItem>()
+                    .FirstOrDefault(e =>
+                        e.NonFungibleId == nonFungibleItem.NonFungibleId);
+            if (!(targetItem is IEquippableItem equippableItem))
+            {
+                return;
+            }
 
-            var player = Game.Game.instance.Stage.GetPlayer();
-            switch (itemBase)
+            equippableItem.Equip();
+            switch (equippableItem)
             {
                 default:
                     return;
                 case Costume costume:
                 {
-                    player.EquipCostume(costume);
+                    _player.EquipCostume(costume);
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
                         Destroy(_cachedCharacterTitle);
@@ -379,11 +381,11 @@ namespace Nekoyume.UI
                         {
                             var armor = (Armor)_armorSlot.Item;
                             var weapon = (Weapon)_weaponSlot.Item;
-                            player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
+                            _player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                             break;
                         }
                         case ItemSubType.Weapon:
-                            player.EquipWeapon((Weapon)slot.Item);
+                            _player.EquipWeapon((Weapon)slot.Item);
                             break;
                     }
 
@@ -391,40 +393,48 @@ namespace Nekoyume.UI
                 }
             }
 
-            Game.Event.OnUpdatePlayerEquip.OnNext(player);
+            Game.Event.OnUpdatePlayerEquip.OnNext(_player);
             PostEquipOrUnequip(slot);
         }
 
         private void Unequip(EquipmentSlot slot, bool considerInventoryOnly)
         {
-            if (slot.IsEmpty)
+            if (slot.IsEmpty ||
+                !(slot.Item is INonFungibleItem nonFungibleItem))
             {
                 return;
             }
 
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            var slotItem = slot.Item;
             slot.Clear();
-            LocalLayerModifier.SetItemEquip(
-                currentAvatarState.address,
-                slotItem,
-                false);
+
+            var arenaPlayer = RxProps.PlayersArenaParticipant.Value;
+            var targetItem =
+                arenaPlayer.AvatarState.inventory.Items
+                    .Select(e => e.item)
+                    .OfType<INonFungibleItem>()
+                    .FirstOrDefault(e =>
+                    e.NonFungibleId == nonFungibleItem.NonFungibleId);
+            if (!(targetItem is IEquippableItem equippableItem))
+            {
+                return;
+            }
+
+            equippableItem.Unequip();
 
             if (!considerInventoryOnly)
             {
-                var selectedPlayer = Game.Game.instance.Stage.GetPlayer();
-                switch (slotItem)
+                switch (equippableItem)
                 {
                     default:
                         return;
                     case Costume costume:
-                        selectedPlayer.UnequipCostume(
+                        _player.UnequipCostume(
                             costume,
                             true);
-                        selectedPlayer.EquipEquipmentsAndUpdateCustomize(
+                        _player.EquipEquipmentsAndUpdateCustomize(
                             (Armor)_armorSlot.Item,
                             (Weapon)_weaponSlot.Item);
-                        Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
+                        Game.Event.OnUpdatePlayerEquip.OnNext(_player);
 
                         if (costume.ItemSubType == ItemSubType.Title)
                         {
@@ -437,17 +447,17 @@ namespace Nekoyume.UI
                         {
                             case ItemSubType.Armor:
                             {
-                                selectedPlayer.EquipEquipmentsAndUpdateCustomize(
+                                _player.EquipEquipmentsAndUpdateCustomize(
                                     (Armor)_armorSlot.Item,
                                     (Weapon)_weaponSlot.Item);
                                 break;
                             }
                             case ItemSubType.Weapon:
-                                selectedPlayer.EquipWeapon((Weapon)_weaponSlot.Item);
+                                _player.EquipWeapon((Weapon)_weaponSlot.Item);
                                 break;
                         }
 
-                        Game.Event.OnUpdatePlayerEquip.OnNext(selectedPlayer);
+                        Game.Event.OnUpdatePlayerEquip.OnNext(_player);
                         break;
                 }
             }
@@ -555,9 +565,6 @@ namespace Nekoyume.UI
                 true,
                 animationTime,
                 middleXGap);
-            // LocalLayerModifier.ModifyAgentCrystalAsync(
-            //     States.Instance.CurrentAvatarState.address,
-            //     -_ticketCountToUse).Forget();
             yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
             SendBattleArenaAction();
@@ -566,7 +573,7 @@ namespace Nekoyume.UI
 
         private void PostEquipOrUnequip(EquipmentSlot slot)
         {
-            UpdateStat(Game.Game.instance.States.CurrentAvatarState);
+            UpdateStat(RxProps.PlayersArenaParticipant.Value.AvatarState);
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
@@ -607,14 +614,19 @@ namespace Nekoyume.UI
 
         private void SendBattleArenaAction()
         {
+            startButton.gameObject.SetActive(false);
+            var playerAvatar = RxProps.PlayersArenaParticipant.Value.AvatarState;
             Find<ArenaBattleLoadingScreen>().Show(
+                playerAvatar.NameWithHash,
+                playerAvatar.level,
+                playerAvatar.inventory.GetEquippedFullCostumeOrArmorId(),
                 _chooseAvatarState.NameWithHash,
                 _chooseAvatarState.level,
                 _chooseAvatarState.inventory.GetEquippedFullCostumeOrArmorId());
 
-            startButton.gameObject.SetActive(false);
-            _player.StartRun();
-            ActionCamera.instance.ChaseX(_player.transform);
+            _player.StopRun();
+            _player.gameObject.SetActive(false);
+
             ActionRenderHandler.Instance.Pending = true;
             ActionManager.Instance.BattleArena(
                     _chooseAvatarState.address,
@@ -644,8 +656,6 @@ namespace Nekoyume.UI
             Close(true);
             Find<ArenaBattleLoadingScreen>().Close();
             Game.Event.OnRankingBattleStart.Invoke((battleLog, rewards));
-            _player.StartRun();
-            ActionCamera.instance.ChaseX(_player.transform);
         }
 
         private void UpdateStartButton(AvatarState avatarState)

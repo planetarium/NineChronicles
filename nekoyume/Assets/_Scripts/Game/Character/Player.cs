@@ -196,7 +196,8 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            if (_cachedCharacterTitle && costume.Id.ToString().Equals(_cachedCharacterTitle.name))
+            if (_cachedCharacterTitle &&
+                costume.Id.ToString().Equals(_cachedCharacterTitle.name))
             {
                 return;
             }
