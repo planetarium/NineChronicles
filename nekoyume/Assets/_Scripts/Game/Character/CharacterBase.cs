@@ -16,7 +16,7 @@ using UnityEngine.Rendering;
 
 namespace Nekoyume.Game.Character
 {
-    public abstract class CharacterBase : MonoBehaviour
+    public abstract class CharacterBase : Character
     {
         protected const float AnimatorTimeScale = 1.2f;
 
@@ -74,10 +74,6 @@ namespace Nekoyume.Game.Character
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
 
-        public CharacterAnimator Animator { get; protected set; }
-        protected Vector3 HUDOffset => Animator.GetHUDPosition();
-        protected Vector3 HealOffset => Animator.HealPosition;
-        protected bool AttackEndCalled { get; set; }
 
         private bool _forceQuit;
 
@@ -199,7 +195,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void UpdateHpBar()
         {
-            if (!Game.instance.Stage.IsInStage)
+            if (!Game.instance.IsInWorld)
                 return;
 
             if (!HPBar)
@@ -937,22 +933,6 @@ namespace Nekoyume.Game.Character
                 actions.Remove(action);
                 action = null;
                 _forceStop = false;
-            }
-        }
-
-        protected void OnAnimatorEvent(string eventName)
-        {
-            switch (eventName)
-            {
-                case "attackStart":
-                    AudioController.PlaySwing();
-                    break;
-                case "attackPoint":
-                    AttackEndCalled = true;
-                    break;
-                case "footstep":
-                    AudioController.PlayFootStep();
-                    break;
             }
         }
 

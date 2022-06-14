@@ -218,6 +218,8 @@ namespace Nekoyume.UI
             // 메뉴보단 더 앞에 나와야 합니다.
             secondWidgets.Add(Widget.Create<Battle>());
             yield return null;
+            secondWidgets.Add(Widget.Create<ArenaBattle>());
+            yield return null;
             secondWidgets.Add(Widget.Create<Blind>());
             yield return null;
             secondWidgets.Add(Widget.Create<ShopSell>());

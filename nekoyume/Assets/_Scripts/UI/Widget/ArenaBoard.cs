@@ -7,6 +7,7 @@ using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -86,10 +87,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        public void OnRenderBattleArena(
-            ActionBase.ActionEvaluation<BattleArena> eval,
-            BattleLog battleLog,
-            List<ItemBase> rewards)
+        public void OnRenderBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
         {
             if (eval.Exception is { })
             {
@@ -99,7 +97,6 @@ namespace Nekoyume.UI
 
             Close();
             Find<ArenaBattleLoadingScreen>().Close();
-            Game.Event.OnRankingBattleStart.Invoke((battleLog, rewards));
         }
 
         private void UpdateBillboard()
