@@ -308,8 +308,8 @@ namespace Nekoyume.Action
                 if (isNotClearedStage)
                 {
                     // Make new CrystalRandomSkillState by next stage Id.
-                    var nextStageskillState = new CrystalRandomSkillState(skillStateAddress, stageId + 1);
-                    states = states.SetState(skillStateAddress, nextStageskillState.Serialize());
+                    var nextStageSkillState = new CrystalRandomSkillState(skillStateAddress, stageId + 1);
+                    states = states.SetState(skillStateAddress, nextStageSkillState.Serialize());
                 }
             }
             else
@@ -318,13 +318,14 @@ namespace Nekoyume.Action
                 {
                     if (skillsOnWaveStart.Any())
                     {
+                        // clear current star count, skill id.
                         skillState = new CrystalRandomSkillState(skillStateAddress, stageId);
                     }
 
                     // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
-                    skillState.Update(simulator.Log.clearedWaveNumber,
+                    skillState!.Update(simulator.Log.clearedWaveNumber,
                         sheets.GetSheet<CrystalStageBuffGachaSheet>());
-                    states = states.SetState(skillStateAddress, skillState.Serialize());
+                    states = states.SetState(skillStateAddress, skillState!.Serialize());
                 }
             }
 

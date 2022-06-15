@@ -1017,11 +1017,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(false, false)]
-        [InlineData(true, false)]
-        [InlineData(false, true)]
-        [InlineData(true, true)]
-        public void CheckCrystalRandomSkillState(bool clear, bool hasCrystalSkill)
+        [InlineData(false, false, false)]
+        [InlineData(false, true, true)]
+        [InlineData(false, true, false)]
+        [InlineData(true, false, false)]
+        [InlineData(true, true, false)]
+        [InlineData(true, true, true)]
+        public void CheckCrystalRandomSkillState(bool clear, bool skillStateExist, bool hasCrystalSkill)
         {
             const int worldId = 1;
             const int stageId = 5;
@@ -1089,10 +1091,14 @@ namespace Lib9c.Tests.Action
 
             var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(_avatarAddress);
             CrystalRandomSkillState skillState = null;
-            if (hasCrystalSkill)
+            if (skillStateExist)
             {
                 skillState = new CrystalRandomSkillState(skillStateAddress, stageId);
-                skillState.Update(int.MaxValue, _tableSheets.CrystalStageBuffGachaSheet);
+                if (hasCrystalSkill)
+                {
+                    skillState.Update(int.MaxValue, _tableSheets.CrystalStageBuffGachaSheet);
+                }
+
                 state = state.SetState(skillStateAddress, skillState.Serialize());
             }
 
@@ -1135,25 +1141,25 @@ namespace Lib9c.Tests.Action
                 nextState.GetState(skillStateAddress);
             var serialized = skillStateIValue as List;
             Assert.NotNull(serialized);
-            skillState = new CrystalRandomSkillState(skillStateAddress, serialized);
-            Assert.Equal(skillStateAddress, skillState.Address);
+            var nextSkillState = new CrystalRandomSkillState(skillStateAddress, serialized);
+            Assert.Equal(skillStateAddress, nextSkillState.Address);
 
             if (clear)
             {
-                Assert.Equal(stageId + 1, skillState.StageId);
-                Assert.Equal(0, skillState.StarCount);
+                Assert.Equal(stageId + 1, nextSkillState.StageId);
+                Assert.Equal(0, nextSkillState.StarCount);
             }
             else
             {
-                Assert.Equal(stageId, skillState.StageId);
+                Assert.Equal(stageId, nextSkillState.StageId);
                 Assert.Equal(
                     hasCrystalSkill
                         ? _tableSheets.CrystalStageBuffGachaSheet[stageId].MaxStar
                         : log.clearedWaveNumber,
-                    skillState.StarCount);
+                    nextSkillState.StarCount);
             }
 
-            Assert.Empty(skillState.SkillIds);
+            Assert.Empty(nextSkillState.SkillIds);
         }
 
         [Fact]
