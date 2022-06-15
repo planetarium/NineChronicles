@@ -753,6 +753,7 @@ MonoBehaviour:
   closeButton: {fileID: 9079972992155342913}
   grindModeToggle: {fileID: 3142300265155442787}
   grindModule: {fileID: 3769217305576225194}
+  grindModePanel: {fileID: 2193221098278990777}
   statusObject: {fileID: 9125718473325203290}
   equipmentSlotObject: {fileID: 5738009322488806545}
 --- !u!82 &1589883110002112256
@@ -3603,7 +3604,7 @@ PrefabInstance:
     - target: {fileID: 2427735306065156072, guid: 30ca55af9c4c11f45a533b51c5d72258,
         type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2427735306065156072, guid: 30ca55af9c4c11f45a533b51c5d72258,
         type: 3}

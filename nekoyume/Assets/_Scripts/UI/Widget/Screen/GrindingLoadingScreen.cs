@@ -1,12 +1,9 @@
-﻿using Nekoyume.Game;
-using Nekoyume.Game.Character;
-using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
+﻿using Nekoyume.Game.Character;
 using Nekoyume.UI.Tween;
 using System.Collections;
+using DG.Tweening;
 using Nekoyume.Game.Factory;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Spine.Unity;
@@ -41,6 +38,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private SkeletonGraphic npcSkeletonGraphic;
+
+        [SerializeField]
+        private Color npcCloseColor;
 
         public RectTransform crystalAnimationStartRect;
         public RectTransform crystalAnimationTargetRect;
@@ -78,10 +78,12 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        private void HideButton()
+        private void TweenByClosing()
         {
             _buttonAlphaTweener.PlayReverse();
             _bgAlphaTweener.PlayReverse();
+            npcSkeletonGraphic.DOColor(npcCloseColor, 1);
+            speechBubble.Hide();
         }
 
         public void AnimateNPC(string quote)
@@ -110,6 +112,7 @@ namespace Nekoyume.UI
                 NPCAnimation.Type.Emotion_02.ToString(), false);
             npcSkeletonGraphic.AnimationState.AddAnimation(0,
                 NPCAnimation.Type.Emotion_03.ToString(), true, 0f);
+            npcSkeletonGraphic.color = Color.white;
             npcSkeletonGraphic.gameObject.SetActive(true);
 
             yield return new WaitForSeconds(1f);
@@ -161,7 +164,7 @@ namespace Nekoyume.UI
         {
             if (AnimationState.Value == AnimationStateType.Shown)
             {
-                HideButton();
+                TweenByClosing();
                 AnimationState.Value = AnimationStateType.Closing;
                 yield return new WaitWhile(() => _bgAlphaTweener.IsPlaying);
                 OnCloseComplete();
