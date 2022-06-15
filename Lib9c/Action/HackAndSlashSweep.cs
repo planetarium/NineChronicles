@@ -15,6 +15,10 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/994
+    /// Updated at https://github.com/planetarium/lib9c/pull/994
+    /// </summary>
     [Serializable]
     /// <summary>
     /// Introduced at https://github.com/planetarium/lib9c/pull/1017
@@ -78,11 +82,7 @@ namespace Nekoyume.Action
                                                     $"apStoneCount : {apStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
             }
 
-            if (worldId >= GameConfig.MimisbrunnrWorldId)
-            {
-                throw new InvalidWorldException(
-                    $"{addressesHex} [{worldId}] can't execute HackAndSlashSweep action.");
-            }
+            states.ValidateWorldId(avatarAddress, worldId);
 
             if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState, out var migrationRequired))
             {

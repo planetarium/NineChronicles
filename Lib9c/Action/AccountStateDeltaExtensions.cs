@@ -944,13 +944,41 @@ namespace Nekoyume.Action
             CrystalCostState beforePrevWeeklyCostState = null;
             if (weeklyCostIndex > 1)
             {
-                Address prevWeeklyCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyCostIndex - 1);
+                Address prevWeeklyCostAddress =
+                    Addresses.GetWeeklyCrystalCostAddress(weeklyCostIndex - 1);
                 prevWeeklyCostState = states.GetCrystalCostState(prevWeeklyCostAddress);
-                Address beforePrevWeeklyCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyCostIndex - 2);
+                Address beforePrevWeeklyCostAddress =
+                    Addresses.GetWeeklyCrystalCostAddress(weeklyCostIndex - 2);
                 beforePrevWeeklyCostState = states.GetCrystalCostState(beforePrevWeeklyCostAddress);
             }
 
-            return (dailyCostState, weeklyCostState, prevWeeklyCostState, beforePrevWeeklyCostState);
+            return (dailyCostState, weeklyCostState, prevWeeklyCostState,
+                beforePrevWeeklyCostState);
+        }
+
+        public static void ValidateWorldId(this IAccountStateDelta states, Address avatarAddress, int worldId)
+        {
+            if (worldId > 1)
+            {
+                if (worldId == GameConfig.MimisbrunnrWorldId)
+                {
+                    throw new InvalidWorldException();
+                }
+
+                var unlockedWorldIdsAddress = avatarAddress.Derive("world_ids");
+
+                // Unlock First.
+                if (!states.TryGetState(unlockedWorldIdsAddress, out List rawIds))
+                {
+                    throw new InvalidWorldException();
+                }
+
+                List<int> unlockedWorldIds = rawIds.ToList(StateExtensions.ToInteger);
+                if (!unlockedWorldIds.Contains(worldId))
+                {
+                    throw new InvalidWorldException();
+                }
+            }
         }
     }
 }
