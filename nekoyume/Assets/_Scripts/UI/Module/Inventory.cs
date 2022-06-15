@@ -77,7 +77,8 @@ namespace Nekoyume.UI.Module
         private string _notAllowedMoveTabMessage;
         private bool _isArena;
 
-        public bool HasNotification => _equipments.Any(x => x.Value.Any(item => item.HasNotification.Value));
+        public bool HasNotification => _equipments.Any(x =>
+            x.Value.Any(item => item.HasNotification.Value));
 
         protected void Awake()
         {
@@ -87,17 +88,17 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(costumeButton);
             _toggleGroup.DisabledFunc = () => !_allowMoveTab;
 
-            equipmentButton.OnClick.Subscribe(button =>
-                {
-                    OnTabButtonClick(button, ItemType.Equipment, _onToggleEquipment);
-                })
+            equipmentButton.OnClick
+                .Subscribe(button => OnTabButtonClick(button, ItemType.Equipment, _onToggleEquipment))
                 .AddTo(gameObject);
-            costumeButton.OnClick.Subscribe(button => { OnTabButtonClick(button, ItemType.Costume, _onToggleCostume); })
+            costumeButton.OnClick
+                .Subscribe(button => OnTabButtonClick(button, ItemType.Costume, _onToggleCostume))
                 .AddTo(gameObject);
             consumableButton.OnClick
-                .Subscribe(button => { OnTabButtonClick(button, ItemType.Consumable); })
+                .Subscribe(button => OnTabButtonClick(button, ItemType.Consumable))
                 .AddTo(gameObject);
-            materialButton.OnClick.Subscribe(button => { OnTabButtonClick(button, ItemType.Material); })
+            materialButton.OnClick
+                .Subscribe(button => OnTabButtonClick(button, ItemType.Material))
                 .AddTo(gameObject);
 
             foreach (var type in ItemTypes)
@@ -115,7 +116,9 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                OneLineSystem.Push(MailType.System, _notAllowedMoveTabMessage,
+                OneLineSystem.Push(
+                    MailType.System,
+                    _notAllowedMoveTabMessage,
                     NotificationCell.NotificationType.Notification);
             }
         }
