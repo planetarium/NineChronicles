@@ -72,7 +72,7 @@ namespace Nekoyume.Game.Character
             touchHandler.OnClick.Merge(touchHandler.OnDoubleClick)
                 .Merge(touchHandler.OnMultipleClick).Subscribe(_ =>
                 {
-                    if (Game.instance.Stage.IsInStage || ActionCamera.instance.InPrologue)
+                    if (Game.instance.IsInWorld || ActionCamera.instance.InPrologue)
                     {
                         return;
                     }
@@ -86,7 +86,7 @@ namespace Nekoyume.Game.Character
             base.Update();
             if (HudContainer)
             {
-                if (Game.instance.Stage.IsInStage)
+                if (Game.instance.IsInWorld)
                 {
                     if (Game.instance.Stage.IsShowHud)
                     {
@@ -120,8 +120,12 @@ namespace Nekoyume.Game.Character
         public void Set(AvatarState avatarState)
         {
             var tableSheets = Game.instance.TableSheets;
-            Set(new Model.Player(avatarState, tableSheets.CharacterSheet,
-                tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet));
+            var model = new Model.Player(
+                avatarState,
+                tableSheets.CharacterSheet,
+                tableSheets.CharacterLevelSheet,
+                tableSheets.EquipmentItemSetEffectSheet);
+            Set(model);
         }
 
         public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
@@ -192,7 +196,8 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            if (_cachedCharacterTitle && costume.Id.ToString().Equals(_cachedCharacterTitle.name))
+            if (_cachedCharacterTitle &&
+                costume.Id.ToString().Equals(_cachedCharacterTitle.name))
             {
                 return;
             }

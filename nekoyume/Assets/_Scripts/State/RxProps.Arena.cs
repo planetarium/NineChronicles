@@ -232,7 +232,8 @@ namespace Nekoyume.State
             _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = _agent.BlockIndex;
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var currentAvatarAddr = _states.CurrentAvatarState.address;
+            var currentAvatar = _states.CurrentAvatarState;
+            var currentAvatarAddr = currentAvatar.address;
             var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
             var participantsAddr = ArenaParticipants.DeriveAddress(
                 currentRoundData.ChampionshipId,
@@ -247,11 +248,13 @@ namespace Nekoyume.State
 
                 // TODO!!!! [`_playersArenaParticipant`]를 이 문맥이 아닌 곳에서
                 // 따로 처리합니다.
+                var arenaAvatarState = currentAvatar.ToArenaAvatarState();
+                var clonedCurrentAvatar = currentAvatar.CloneAndApplyToInventory(arenaAvatarState);
                 _playersArenaParticipant.SetValueAndForceNotify(new PlayerArenaParticipant(
                     currentAvatarAddr,
                     ArenaScore.ArenaScoreDefault,
                     0,
-                    _states.CurrentAvatarState,
+                    clonedCurrentAvatar,
                     (0, 0),
                     new ArenaInformation(
                         currentAvatarAddr,
@@ -300,11 +303,13 @@ namespace Nekoyume.State
             }
             catch
             {
+                var arenaAvatarState = currentAvatar.ToArenaAvatarState();
+                var clonedCurrentAvatar = currentAvatar.CloneAndApplyToInventory(arenaAvatarState);
                 playersArenaParticipant = new PlayerArenaParticipant(
                     currentAvatarAddr,
                     ArenaScore.ArenaScoreDefault,
                     0,
-                    _states.CurrentAvatarState,
+                    clonedCurrentAvatar,
                     default,
                     null);
                 playerScore = playersArenaParticipant.Score;
@@ -323,6 +328,7 @@ namespace Nekoyume.State
                 {
                     tuple.avatarAddr,
                     tuple.avatarAddr.Derive(LegacyInventoryKey),
+                    ArenaAvatarState.DeriveAddress(tuple.avatarAddr),
                 })
                 .ToList();
             addrBulk.Add(playerArenaInfoAddr);
@@ -334,8 +340,8 @@ namespace Nekoyume.State
                 var avatar = stateBulk[avatarAddr] is Dictionary avatarDict
                     ? new AvatarState(avatarDict)
                     : null;
-                var inventory
-                    = stateBulk[avatarAddr.Derive(LegacyInventoryKey)] is List inventoryList
+                var inventory =
+                    stateBulk[avatarAddr.Derive(LegacyInventoryKey)] is List inventoryList
                         ? new Model.Item.Inventory(inventoryList)
                         : null;
                 if (avatar is { })
@@ -343,6 +349,11 @@ namespace Nekoyume.State
                     avatar.inventory = inventory;
                 }
 
+                var arenaAvatar =
+                    stateBulk[ArenaAvatarState.DeriveAddress(avatarAddr)] is List arenaAvatarList
+                        ? new ArenaAvatarState(arenaAvatarList)
+                        : null;
+                avatar = avatar.ApplyToInventory(arenaAvatar);
                 var (win, lose, _) =
                     ArenaHelper.GetScores(playerScore, score);
                 return new ArenaParticipant(

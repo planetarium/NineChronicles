@@ -15,7 +15,8 @@ namespace Nekoyume.Helper
         /// </summary>
         /// <param name="elementalTypes">Allowable Item elemental types</param>
         /// <returns>Predicate func or null. If it need to dim item, func will return true.</returns>
-        public static Predicate<InventoryItem> GetDimmedFuncByElementalTypes(List<ElementalType> elementalTypes)
+        public static Predicate<InventoryItem> GetDimmedFuncByElementalTypes(
+            List<ElementalType> elementalTypes)
         {
             if (!elementalTypes.SequenceEqual(ElementalTypeExtension.GetAllTypes()))
             {

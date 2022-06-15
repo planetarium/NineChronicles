@@ -102,6 +102,21 @@ namespace Nekoyume.BlockChain
             return (null, 0, new FungibleAssetValue());
         }
 
+        protected static CrystalRandomSkillState GetCrystalRandomSkillState<T>(
+            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var buffStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
+            if (evaluation.OutputStates.GetState(buffStateAddress) is
+                Bencodex.Types.List serialized)
+            {
+                var state = new CrystalRandomSkillState(buffStateAddress, serialized);
+                return state;
+            }
+
+            return null;
+        }
+
         protected async UniTask UpdateAgentStateAsync<T>(
             ActionBase.ActionEvaluation<T> evaluation)
             where T : ActionBase
@@ -211,6 +226,17 @@ namespace Nekoyume.BlockChain
             if (state is { })
             {
                 States.Instance.SetStakeState(state, stakedBalanceState, level);
+            }
+        }
+
+        protected static void UpdateCrystalRandomSkillState<T>(
+            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var state = GetCrystalRandomSkillState(evaluation);
+
+            if (state is { })
+            {
+                States.Instance.SetCrystalRandomSkillState(state);
             }
         }
 

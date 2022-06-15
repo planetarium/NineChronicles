@@ -24,7 +24,7 @@ namespace Nekoyume.UI
         public override void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
             Analyzer.Instance.Track("Unity/SystemPopupImpression");
-            if (Game.Game.instance.Stage.IsInStage)
+            if (Game.Game.instance.IsInWorld)
             {
                 var props = new Value
                 {

@@ -27,6 +27,7 @@ using mixpanel;
 using Nekoyume.Arena;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
+using Nekoyume.Model.BattleStatus.Arena;
 using Unity.Mathematics;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
@@ -102,6 +103,7 @@ namespace Nekoyume.BlockChain
             HackAndSlash();
             MimisbrunnrBattle();
             HackAndSlashSweep();
+            HackAndSlashRandomBuff();
 
             // Craft
             CombinationConsumable();
@@ -272,6 +274,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnlockWorld)
+                .AddTo(_disposables);
+        }
+
+        private void HackAndSlashRandomBuff()
+        {
+            _actionRenderer.EveryRender<HackAndSlashRandomBuff>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseHackAndSlashRandomBuff)
                 .AddTo(_disposables);
         }
 
@@ -992,6 +1003,7 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
                                 UpdateWeeklyArenaState(eval);
+                                UpdateCrystalRandomSkillState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -1004,10 +1016,23 @@ namespace Nekoyume.BlockChain
                                 .DoOnError(e => Debug.LogException(e));
                         });
 
+                var tableSheets = Game.Game.instance.TableSheets;
+
+                var skillsOnWaveStart = new List<Model.Skill.Skill>();
+                if (eval.Action.stageBuffId.HasValue)
+                {
+                    var skill = CrystalRandomSkillState.GetSkill(
+                        eval.Action.stageBuffId.Value,
+                        tableSheets.CrystalRandomBuffSheet,
+                        tableSheets.SkillSheet);
+                    skillsOnWaveStart.Add(skill);
+                }
+
                 var simulator = new StageSimulator(
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
                     eval.Action.foods,
+                    skillsOnWaveStart,
                     eval.Action.worldId,
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
@@ -1106,6 +1131,7 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
+
                 var simulator = new StageSimulator(
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
@@ -1441,6 +1467,32 @@ namespace Nekoyume.BlockChain
             }
         }
 
+        private void ResponseHackAndSlashRandomBuff(ActionBase.ActionEvaluation<HackAndSlashRandomBuff> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                Debug.LogError($"HackAndSlashRandomBuff exc : {eval.Exception.InnerException}");
+                return;
+            }
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCrystalRandomSkillState(eval);
+            try
+            {
+                UpdateCrystalBalance(eval);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
+            }
+
+            Widget.Find<BuffBonusLoadingScreen>().Close();
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+            var skillState = States.Instance.CrystalRandomSkillState;
+            Widget.Find<BuffBonusResultPopup>().Show(skillState.StageId, skillState);
+        }
+
         private void ResponseStake(ActionBase.ActionEvaluation<Stake> eval)
         {
             if (!(eval.Exception is null))
@@ -1537,17 +1589,20 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTestbed)
                 .AddTo(_disposables);
+
+            _actionRenderer.EveryRender<CreateArenaDummy>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseCreateArenaDummy)
+                .AddTo(_disposables);
         }
 
         private void ResponseTestbed(ActionBase.ActionEvaluation<CreateTestbed> eval)
         {
-            if (eval.Exception is null)
-            {
-            }
-            else
-            {
+        }
 
-            }
+        private void ResponseCreateArenaDummy(ActionBase.ActionEvaluation<CreateArenaDummy> eval)
+        {
         }
 #endif
 
@@ -1597,19 +1652,19 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var arenaBoard = Widget.Find<ArenaBoard>();
+            var arenaBattlePreparation = Widget.Find<ArenaBattlePreparation>();
             if (eval.Exception != null)
             {
-                if (arenaBoard && arenaBoard.IsActive())
+                if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
                 {
-                    arenaBoard.OnRenderBattleArena(eval, null, null);
+                    arenaBattlePreparation.OnRenderBattleArena(eval);
                 }
 
                 return;
             }
 
             _disposableForBattleEnd?.Dispose();
-            _disposableForBattleEnd = Game.Game.instance.Stage.onEnterToStageEnd
+            _disposableForBattleEnd = Game.Game.instance.Arena.OnArenaEnd
                 .First()
                 .Subscribe(_ =>
                 {
@@ -1620,7 +1675,7 @@ namespace Nekoyume.BlockChain
                             // TODO!!!! [`PlayersArenaParticipant`]를 개별로 업데이트 한다.
                             // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
                             _disposableForBattleEnd = null;
-                            Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
+                            Game.Game.instance.Arena.IsAvatarStateUpdatedAfterBattle = true;
                         }).ToObservable()
                         .First()
                         // ReSharper disable once ConvertClosureToMethodGroup
@@ -1628,20 +1683,35 @@ namespace Nekoyume.BlockChain
                 });
 
             var tableSheets = Game.Game.instance.TableSheets;
-            ArenaPlayerDigest myDigest;
-            ArenaPlayerDigest enemyDigest;
-            // TODO!!!! lib9c와 headless 쪽에 결과 Digest와 이전 Score 추가하기
-            // if (eval.Extra is { })
-            // {
-            //     var myDigestList
-            //         = (List)eval.Extra[nameof(BattleArena.ExtraMyArenaPlayerDigest)];
-            //     myDigest = new ArenaPlayerDigest(myDigestList);
-            //     var enemyDigestList
-            //         = (List)eval.Extra[nameof(BattleArena.ExtraEnemyArenaPlayerDigest)];
-            //     enemyDigest = new ArenaPlayerDigest(enemyDigestList);
-            // }
-            // else
-            // {
+            ArenaPlayerDigest? myDigest = null;
+            ArenaPlayerDigest? enemyDigest = null;
+            int? previousMyScore = null;
+            int? previousEnemyScore = null;
+            // TODO!!!! lib9c와 headless 쪽에 이전 Score 추가하기
+            if (eval.Extra is { })
+            {
+                myDigest = eval.Extra.TryGetValue(
+                    nameof(BattleArena.ExtraMyArenaPlayerDigest),
+                    out var myDigestValue)
+                    ? myDigestValue is List myDigestList
+                        ? new ArenaPlayerDigest(myDigestList)
+                        : (ArenaPlayerDigest?)null
+                    : null;
+
+                enemyDigest = eval.Extra.TryGetValue(
+                    nameof(BattleArena.ExtraMyArenaPlayerDigest),
+                    out var enemyDigestValue)
+                    ? enemyDigestValue is List enemyDigestList
+                        ? new ArenaPlayerDigest(enemyDigestList)
+                        : (ArenaPlayerDigest?)null
+                    : null;
+
+                previousMyScore = null;
+                previousEnemyScore = null;
+            }
+
+            if (!myDigest.HasValue)
+            {
                 var myAvatarState
                     = eval.OutputStates.GetAvatarStateV2(eval.Action.myAvatarAddress);
                 if (!eval.OutputStates.TryGetArenaAvatarState(
@@ -1653,7 +1723,10 @@ namespace Nekoyume.BlockChain
 
                 myDigest
                     = new ArenaPlayerDigest(myAvatarState, myArenaAvatarState);
+            }
 
+            if (!enemyDigest.HasValue)
+            {
                 var enemyAvatarState
                     = eval.OutputStates.GetAvatarStateV2(eval.Action.enemyAvatarAddress);
                 if (!eval.OutputStates.TryGetArenaAvatarState(
@@ -1665,62 +1738,68 @@ namespace Nekoyume.BlockChain
 
                 enemyDigest
                     = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
-            // }
+            }
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (!previousMyScore.HasValue ||
+                !previousEnemyScore.HasValue)
+            {
+                var scoreAddrList = new[]
+                {
+                    ArenaScore.DeriveAddress(
+                        eval.Action.myAvatarAddress,
+                        eval.Action.championshipId,
+                        eval.Action.round),
+                    ArenaScore.DeriveAddress(
+                        eval.Action.enemyAvatarAddress,
+                        eval.Action.championshipId,
+                        eval.Action.round),
+                };
+                var previousScores = eval.PreviousStates
+                    .GetStates(scoreAddrList)
+                    .Select(scoreValue => scoreValue is List list
+                        ? (int)(Integer)list[1]
+                        : ArenaScore.ArenaScoreDefault)
+                    .ToArray();
+                previousMyScore = previousScores[0];
+                previousEnemyScore = previousScores[1];
+            }
 
             var random = new LocalRandom(eval.RandomSeed);
             // TODO!!!! ticket 수 만큼 돌려서 마지막 전투 결과를 띄운다.
             // eval.Action.ticket
-            var simulator = new ArenaSimulator(
-                random,
-                myDigest,
-                enemyDigest,
+            var simulator = new ArenaSimulator(random);
+            var log = simulator.Simulate(
+                myDigest.Value,
+                enemyDigest.Value,
                 tableSheets.GetArenaSimulatorSheets());
-            simulator.Simulate();
-            var scoreAddrList = new[]
-            {
-                ArenaScore.DeriveAddress(
-                    eval.Action.myAvatarAddress,
-                    eval.Action.championshipId,
-                    eval.Action.round),
-                ArenaScore.DeriveAddress(
-                    eval.Action.enemyAvatarAddress,
-                    eval.Action.championshipId,
-                    eval.Action.round),
-            };
-            var previousScores = eval.PreviousStates
-                .GetStates(scoreAddrList)
-                .Select(scoreValue => scoreValue is List list
-                    ? (int)(Integer)list[1]
-                    : ArenaScore.ArenaScoreDefault)
-                .ToArray();
-            var previousMyScore = previousScores[0];
-            var previousEnemyScore = previousScores[1];
             var rewards = RewardSelector.Select(
                 random,
                 tableSheets.WeeklyArenaRewardSheet,
                 tableSheets.MaterialItemSheet,
-                myDigest.Level,
-                maxCount: ArenaHelper.GetRewardCount(previousMyScore));
+                myDigest.Value.Level,
+                maxCount: ArenaHelper.GetRewardCount(previousMyScore.Value));
             var (myWinPoint, myDefeatPoint, _) =
-                ArenaHelper.GetScores(previousMyScore, previousEnemyScore);
-            var currentMyScore = simulator.Log.result switch
+                ArenaHelper.GetScores(previousMyScore.Value, previousEnemyScore.Value);
+            var currentMyScore = log.Result switch
             {
-                BattleLog.Result.Win =>
-                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore + myWinPoint),
-                BattleLog.Result.Lose =>
-                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore + myDefeatPoint),
-                BattleLog.Result.TimeOver => previousMyScore,
+                ArenaLog.ArenaResult.Win =>
+                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore.Value + myWinPoint),
+                ArenaLog.ArenaResult.Lose =>
+                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore.Value + myDefeatPoint),
                 _ => throw new ArgumentOutOfRangeException()
             };
-            simulator.Log.score = currentMyScore;
+            log.Score = currentMyScore;
 
-            if (arenaBoard && arenaBoard.IsActive())
+            if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
             {
-                arenaBoard.OnRenderBattleArena(eval, simulator.Log, rewards);
-            }
+                arenaBattlePreparation.OnRenderBattleArena(eval);
+                Game.Game.instance.Arena.Enter(
+                    log,
+                    rewards,
+                    myDigest.Value,
+                    enemyDigest.Value);}
 
-            // TODO!!!! 전투 보여주는 동안 뒤에서는 최신 목록 가져오기.
-            // RxProps.PlayersArenaParticipant.UpdateAsync().Forget();
             RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
         }
     }
