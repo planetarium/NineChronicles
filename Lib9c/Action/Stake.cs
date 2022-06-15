@@ -64,6 +64,13 @@ namespace Nekoyume.Action
                 throw new ArgumentOutOfRangeException(nameof(Amount));
             }
 
+            var stakeRegularRewardSheet = states.GetSheet<StakeRegularRewardSheet>();
+            var minimumRequiredGold = stakeRegularRewardSheet.OrderedRows.Min(x => x.RequiredGold);
+            if (Amount != 0 && Amount < minimumRequiredGold)
+            {
+                throw new ArgumentOutOfRangeException(nameof(Amount));
+            }
+
             var stakeStateAddress = StakeState.DeriveAddress(context.Signer);
             var currency = states.GetGoldCurrency();
             var currentBalance = states.GetBalance(context.Signer, currency);
