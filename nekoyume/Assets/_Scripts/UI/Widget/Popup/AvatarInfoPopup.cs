@@ -60,6 +60,9 @@ namespace Nekoyume.UI
         private GrindModule grindModule;
 
         [SerializeField]
+        private GameObject grindModePanel;
+
+        [SerializeField]
         private GameObject statusObject;
 
         [SerializeField]
@@ -106,16 +109,15 @@ namespace Nekoyume.UI
 
             grindModeToggle.onValueChanged.AddListener(toggledOn =>
             {
+                grindModePanel.SetActive(toggledOn);
+                statusObject.SetActive(!toggledOn);
+                equipmentSlotObject.SetActive(!toggledOn);
                 if (toggledOn)
                 {
-                    statusObject.SetActive(false);
-                    equipmentSlotObject.SetActive(false);
                     grindModule.Show();
                 }
                 else
                 {
-                    statusObject.SetActive(true);
-                    equipmentSlotObject.SetActive(true);
                     grindModule.gameObject.SetActive(false);
                     UpdateInventory();
                 }
