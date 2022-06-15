@@ -72,7 +72,7 @@ namespace Nekoyume.Game.Character
             touchHandler.OnClick.Merge(touchHandler.OnDoubleClick)
                 .Merge(touchHandler.OnMultipleClick).Subscribe(_ =>
                 {
-                    if (Game.instance.Stage.IsInStage || ActionCamera.instance.InPrologue)
+                    if (Game.instance.IsInWorld || ActionCamera.instance.InPrologue)
                     {
                         return;
                     }
@@ -86,7 +86,7 @@ namespace Nekoyume.Game.Character
             base.Update();
             if (HudContainer)
             {
-                if (Game.instance.Stage.IsInStage)
+                if (Game.instance.IsInWorld)
                 {
                     if (Game.instance.Stage.IsShowHud)
                     {

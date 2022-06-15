@@ -40,6 +40,8 @@ namespace Nekoyume.Game
     {
         [SerializeField] private Stage stage = null;
 
+        [SerializeField] private Arena arena = null;
+
         [SerializeField] private bool useSystemLanguage = true;
 
         [SerializeField] private LanguageTypeReactiveProperty languageType = default;
@@ -57,6 +59,7 @@ namespace Nekoyume.Game
         public Analyzer Analyzer { get; private set; }
 
         public Stage Stage => stage;
+        public Arena Arena => arena;
 
         // FIXME Action.PatchTableSheet.Execute()에 의해서만 갱신됩니다.
         // 액션 실행 여부와 상관 없이 최신 상태를 반영하게끔 수정해야합니다.
@@ -65,6 +68,7 @@ namespace Nekoyume.Game
         public ActionManager ActionManager { get; private set; }
 
         public bool IsInitialized { get; private set; }
+        public bool IsInWorld { get; set; }
 
         public Prologue Prologue => prologue;
 
@@ -179,7 +183,7 @@ namespace Nekoyume.Game
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
-            yield return StartCoroutine(CoSyncTableSheets());
+            yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             RxProps.Start(Agent, States, TableSheets);
             // Initialize MainCanvas second
@@ -190,6 +194,7 @@ namespace Nekoyume.Game
             RankPopup.UpdateSharedModel();
             // Initialize Stage
             Stage.Initialize();
+            Arena.Initialize();
 
             Widget.Find<VersionSystem>().SetVersion(Agent.AppProtocolVersion);
 
@@ -409,37 +414,27 @@ namespace Nekoyume.Game
             TableSheets = new TableSheets(csv);
         }
 
-        // FIXME: Leave one between this or CoInitializeTableSheets()
-        private IEnumerator CoSyncTableSheets()
+        private async UniTask SyncTableSheetsAsync()
         {
-            yield return null;
-            var request =
-                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            yield return request;
-            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+            var container
+                = await Resources
+                    .LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath)
+                    .ToUniTask();
+            if (!(container is AddressableAssetsContainer addressableAssetsContainer))
             {
                 throw new FailedToLoadResourceException<AddressableAssetsContainer>(
                     AddressableAssetsContainerPath);
             }
 
-            var task = Task.Run(() =>
-            {
-                List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
-                var map = new ConcurrentDictionary<Address, string>();
-                var csv = new ConcurrentDictionary<string, string>();
-                Parallel.ForEach(csvAssets, asset => { map[Addresses.TableSheet.Derive(asset.name)] = asset.name; });
-                var values = Agent.GetStateBulk(map.Keys).Result;
-                Parallel.ForEach(values, kv =>
-                {
-                    if (kv.Value is Text tableCsv)
-                    {
-                        var table = tableCsv.ToDotnetString();
-                        csv[map[kv.Key]] = table;
-                    }
-                });
-                TableSheets = new TableSheets(csv);
-            });
-            yield return new WaitUntil(() => task.IsCompleted);
+            var csvAssets = addressableAssetsContainer.tableCsvAssets;
+            var map = csvAssets.ToDictionary(
+                asset => Addresses.TableSheet.Derive(asset.name),
+                asset => asset.name);
+            var dict = await Agent.GetStateBulk(map.Keys);
+            var csv = dict.ToDictionary(
+                pair => map[pair.Key],
+                pair => pair.Value.ToDotnetString());
+            TableSheets = new TableSheets(csv);
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()
@@ -513,13 +508,15 @@ namespace Nekoyume.Game
             instance.Stage.OnRoomEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));
-
+            instance.Arena.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ => PopupError(key, code, errorMsg));
             MainCanvas.instance.InitWidgetInMain();
         }
 
         public void BackToNest()
         {
-            if (Stage.IsInStage)
+            if (IsInWorld)
             {
                 NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
                     L10nManager.Localize("UI_BLOCK_EXIT"),
