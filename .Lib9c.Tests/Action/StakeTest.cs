@@ -1,5 +1,7 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
+    using System.Linq;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
@@ -105,7 +107,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throws_WhenCancelOrUpdateWhileLockup()
         {
-            var action = new Stake(50);
+            var action = new Stake(51);
             var states = action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
@@ -123,10 +125,23 @@ namespace Lib9c.Tests.Action
             }));
 
             // Less
-            updateAction = new Stake(10);
+            updateAction = new Stake(50);
             Assert.Throws<RequiredBlockIndexException>(() => updateAction.Execute(new ActionContext
             {
                 PreviousStates = states,
+                Signer = _signerAddress,
+                BlockIndex = 1,
+            }));
+        }
+
+        [Fact]
+        public void Execute_Throws_WhenStakeLessThanMinimumRequiredGold()
+        {
+            Assert.True(_tableSheets.StakeRegularRewardSheet.Min(x => x.Value.RequiredGold) > 10);
+            var action = new Stake(10);
+            Assert.Throws<ArgumentOutOfRangeException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = _initialState,
                 Signer = _signerAddress,
                 BlockIndex = 1,
             }));
