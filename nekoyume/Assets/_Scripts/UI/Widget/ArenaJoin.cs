@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
@@ -335,7 +335,7 @@ namespace Nekoyume.UI
             var isOpened = selectedRoundData.IsTheRoundOpened(blockIndex);
             var arenaType = selectedRoundData.ArenaType;
             var championshipId = selectedRoundData.ChampionshipId;
-            var crystal = (int)selectedRoundData.EntranceFee;
+            var crystal = selectedRoundData.EntranceFee;
             UpdateEarlyRegistrationButton(arenaType, isOpened, blockIndex, championshipId);
             UpdateJoinAndPaymentButton(arenaType, isOpened, crystal);
         }
@@ -413,7 +413,7 @@ namespace Nekoyume.UI
         private void UpdateJoinAndPaymentButton(
             ArenaType arenaType,
             bool isOpened,
-            int crystal)
+            long crystal)
         {
             switch (arenaType)
             {

@@ -66,6 +66,9 @@ namespace Nekoyume.UI
         private ConditionalCostButton startButton;
 
         [SerializeField]
+        private BonusBuffButton randomBuffButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -248,6 +251,7 @@ namespace Nekoyume.UI
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
             ShowHelpTooltip(stageType);
+            randomBuffButton.SetData(States.Instance.CrystalRandomSkillState, stageId);
             ReactiveAvatarState.ActionPoint.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
             ReactiveAvatarState.Inventory.Subscribe(_ =>
             {
@@ -764,12 +768,19 @@ namespace Nekoyume.UI
             switch (stageType)
             {
                 case StageType.HackAndSlash:
+                    var skillState = States.Instance.CrystalRandomSkillState;
+                    var buffResult = Find<BuffBonusResultPopup>();
+                    var skillId = skillState != null && skillState.SkillIds.Any() ?
+                        buffResult.SelectedSkillId : null;
+                    buffResult.SelectedSkillId = null;
+
                     Game.Game.instance.ActionManager.HackAndSlash(
                         costumes,
                         equipments,
                         consumables,
                         _worldId,
-                        _stageId.Value
+                        _stageId.Value,
+                        skillId
                     ).Subscribe();
                     break;
                 case StageType.Mimisbrunnr:

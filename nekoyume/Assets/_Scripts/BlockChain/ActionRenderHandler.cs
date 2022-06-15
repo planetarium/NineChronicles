@@ -103,6 +103,7 @@ namespace Nekoyume.BlockChain
             HackAndSlash();
             MimisbrunnrBattle();
             HackAndSlashSweep();
+            HackAndSlashRandomBuff();
 
             // Craft
             CombinationConsumable();
@@ -273,6 +274,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnlockWorld)
+                .AddTo(_disposables);
+        }
+
+        private void HackAndSlashRandomBuff()
+        {
+            _actionRenderer.EveryRender<HackAndSlashRandomBuff>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseHackAndSlashRandomBuff)
                 .AddTo(_disposables);
         }
 
@@ -993,6 +1003,7 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
                                 UpdateWeeklyArenaState(eval);
+                                UpdateCrystalRandomSkillState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -1005,10 +1016,23 @@ namespace Nekoyume.BlockChain
                                 .DoOnError(e => Debug.LogException(e));
                         });
 
+                var tableSheets = Game.Game.instance.TableSheets;
+
+                var skillsOnWaveStart = new List<Model.Skill.Skill>();
+                if (eval.Action.stageBuffId.HasValue)
+                {
+                    var skill = CrystalRandomSkillState.GetSkill(
+                        eval.Action.stageBuffId.Value,
+                        tableSheets.CrystalRandomBuffSheet,
+                        tableSheets.SkillSheet);
+                    skillsOnWaveStart.Add(skill);
+                }
+
                 var simulator = new StageSimulator(
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
                     eval.Action.foods,
+                    skillsOnWaveStart,
                     eval.Action.worldId,
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
@@ -1107,6 +1131,7 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
+
                 var simulator = new StageSimulator(
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
@@ -1440,6 +1465,32 @@ namespace Nekoyume.BlockChain
             {
                 Debug.LogError("Failed to update crystal balance : " + e);
             }
+        }
+
+        private void ResponseHackAndSlashRandomBuff(ActionBase.ActionEvaluation<HackAndSlashRandomBuff> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                Debug.LogError($"HackAndSlashRandomBuff exc : {eval.Exception.InnerException}");
+                return;
+            }
+
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCrystalRandomSkillState(eval);
+            try
+            {
+                UpdateCrystalBalance(eval);
+            }
+            catch (BalanceDoesNotExistsException e)
+            {
+                Debug.LogError("Failed to update crystal balance : " + e);
+            }
+
+            Widget.Find<BuffBonusLoadingScreen>().Close();
+            Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+            var skillState = States.Instance.CrystalRandomSkillState;
+            Widget.Find<BuffBonusResultPopup>().Show(skillState.StageId, skillState);
         }
 
         private void ResponseStake(ActionBase.ActionEvaluation<Stake> eval)

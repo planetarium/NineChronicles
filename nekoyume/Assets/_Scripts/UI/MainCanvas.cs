@@ -171,6 +171,7 @@ namespace Nekoyume.UI
                 Widget.Create<DataLoadingScreen>(),
                 Widget.Create<WorldMapLoadingScreen>(),
                 Widget.Create<UnlockWorldLoadingScreen>(),
+                Widget.Create<BuffBonusLoadingScreen>(),
                 Widget.Create<PreloadingScreen>(),
 
                 // 팝업 영역.
@@ -278,6 +279,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<QuitSystem>());
             yield return null;
+            secondWidgets.Add(Widget.Create<BuffBonusPopup>());
+            yield return null;
 
             // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<RankingBattleResultPopup>());
@@ -335,6 +338,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<StakingPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<StakingPopupNone>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<BuffBonusResultPopup>());
             yield return null;
 
             // tooltip
