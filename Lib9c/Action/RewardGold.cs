@@ -7,13 +7,14 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Action
 {
     /// <summary>
     /// Introduced at Initial commit(2e645be18a4e2caea031c347f00777fbad5dbcc6)
     /// Updated at many pull requests
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Updated at https://github.com/planetarium/lib9c/pull/1135
     /// </summary>
     [Serializable]
     public class RewardGold : ActionBase
@@ -34,7 +35,13 @@ namespace Nekoyume.Action
         {
             var states = context.PreviousStates;
             states = GenesisGoldDistribution(context, states);
-            states = WeeklyArenaRankingBoard2(context, states);
+
+            var arenaSheet = states.GetSheet<ArenaSheet>();
+            if (arenaSheet == null)
+            {
+                states = WeeklyArenaRankingBoard2(context, states);
+            }
+
             return MinerReward(context, states);
         }
 
