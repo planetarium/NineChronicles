@@ -19,6 +19,7 @@ namespace Nekoyume.Game.Character
     public abstract class CharacterBase : MonoBehaviour
     {
         protected const float AnimatorTimeScale = 1.2f;
+        protected static readonly WaitForSeconds AttackTimeOut = new WaitForSeconds(5f);
 
         [SerializeField]
         private bool shouldContainHUD = true;
@@ -78,8 +79,6 @@ namespace Nekoyume.Game.Character
         protected Vector3 HUDOffset => Animator.GetHUDPosition();
         protected Vector3 HealOffset => Animator.HealPosition;
         protected bool AttackEndCalled { get; set; }
-
-        private bool _forceQuit;
 
         protected virtual bool CanRun
         {
@@ -547,10 +546,9 @@ namespace Nekoyume.Game.Character
             RunSpeed = 0.0f;
         }
 
-        private IEnumerator CoTimeOut()
+        private bool CheckAttackEnd()
         {
-            yield return new WaitForSeconds(5f);
-            _forceQuit = true;
+            return AttackEndCalled || Animator.IsIdle();
         }
 
         protected virtual void ShowCutscene()
@@ -572,14 +570,9 @@ namespace Nekoyume.Game.Character
                     Animator.Attack();
                 }
 
-                _forceQuit = false;
-                var coroutine = StartCoroutine(CoTimeOut());
-                yield return new WaitUntil(() =>
-                    AttackEndCalled ||
-                    _forceQuit ||
-                    Animator.IsIdle());
-                StopCoroutine(coroutine);
-                if (_forceQuit)
+                yield return new WaitForEndOfFrame();
+                yield return new WaitUntil(CheckAttackEnd);
+                if (Animator.IsIdle())
                 {
                     continue;
                 }
@@ -603,14 +596,9 @@ namespace Nekoyume.Game.Character
                     Animator.CastAttack();
                 }
 
-                _forceQuit = false;
-                var coroutine = StartCoroutine(CoTimeOut());
-                yield return new WaitUntil(() =>
-                    AttackEndCalled ||
-                    _forceQuit ||
-                    Animator.IsIdle());
-                StopCoroutine(coroutine);
-                if (_forceQuit)
+                yield return new WaitForEndOfFrame();
+                yield return new WaitUntil(CheckAttackEnd);
+                if (Animator.IsIdle())
                 {
                     continue;
                 }

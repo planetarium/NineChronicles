@@ -179,13 +179,11 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
-            Analyzer = _options.RpcClient
-                ? new Analyzer(Agent.Address.ToString(), _options.RpcServerHost)
-                : new Analyzer(Agent.Address.ToString());
+            InitializeAnalyzer();
             Analyzer.Track("Unity/Started");
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
-            yield return StartCoroutine(CoSyncTableSheets());
+            yield return SyncTableSheetsAsync().ToCoroutine();
             Debug.Log("[Game] Start() TableSheets synchronized");
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
@@ -467,40 +465,27 @@ namespace Nekoyume.Game
             TableSheets = new TableSheets(csv);
         }
 
-        // FIXME: Leave one between this or CoInitializeTableSheets()
-        private IEnumerator CoSyncTableSheets()
+        private async UniTask SyncTableSheetsAsync()
         {
-            yield return null;
-            var request =
-                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            yield return request;
-            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+            var container
+                = await Resources
+                    .LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath)
+                    .ToUniTask();
+            if (!(container is AddressableAssetsContainer addressableAssetsContainer))
             {
                 throw new FailedToLoadResourceException<AddressableAssetsContainer>(
                     AddressableAssetsContainerPath);
             }
 
-            var task = Task.Run(() =>
-            {
-                List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
-                var map = new ConcurrentDictionary<Address, string>();
-                var csv = new ConcurrentDictionary<string, string>();
-                Parallel.ForEach(csvAssets, asset =>
-                {
-                    map[Addresses.TableSheet.Derive(asset.name)] = asset.name;
-                });
-                var values = Agent.GetStateBulk(map.Keys).Result;
-                Parallel.ForEach(values, kv =>
-                {
-                    if (kv.Value is Text tableCsv)
-                    {
-                        var table = tableCsv.ToDotnetString();
-                        csv[map[kv.Key]] = table;
-                    }
-                });
-                TableSheets = new TableSheets(csv);
-            });
-            yield return new WaitUntil(() => task.IsCompleted);
+            var csvAssets = addressableAssetsContainer.tableCsvAssets;
+            var map = csvAssets.ToDictionary(
+                asset => Addresses.TableSheet.Derive(asset.name),
+                asset => asset.name);
+            var dict = await Agent.GetStateBulk(map.Keys);
+            var csv = dict.ToDictionary(
+                pair => map[pair.Key],
+                pair => pair.Value.ToDotnetString());
+            TableSheets = new TableSheets(csv);
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()
@@ -855,6 +840,37 @@ namespace Nekoyume.Game
         public void ResumeTimeline()
         {
             _activeDirector.playableGraph.GetRootPlayable(0).SetSpeed(1);
+        }
+
+        private void InitializeAnalyzer()
+        {
+            var uniqueId = Agent.Address.ToString();
+            var rpcServerHost = _options.RpcClient
+                ? _options.RpcServerHost
+                : null;
+            
+#if UNITY_EDITOR
+            Debug.Log("This is editor mode.");
+            Analyzer = new Analyzer(uniqueId, rpcServerHost);
+            return;
+#endif
+            var isTrackable = true;
+            if (!Debug.isDebugBuild)
+            {
+                Debug.Log("This is debug build.");
+                isTrackable = false;
+            }
+
+            if (_options.Development)
+            {
+                Debug.Log("This is development mode.");
+                isTrackable = false;
+            }
+
+            Analyzer = new Analyzer(
+                uniqueId,
+                rpcServerHost,
+                isTrackable);
         }
     }
 }
