@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class ItemEnhancementTest
+    public class ItemEnhancement9Test
     {
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private IAccountStateDelta _initialState;
 
-        public ItemEnhancementTest()
+        public ItemEnhancement9Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _random = new TestRandom();
@@ -125,7 +125,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
             }
 
-            var action = new ItemEnhancement()
+            var action = new ItemEnhancement9()
             {
                 itemId = default,
                 materialId = materialId,
@@ -148,7 +148,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(expectedGold * _currency, nextState.GetBalance(_agentAddress, _currency));
             Assert.Equal(
                 (1000 - expectedGold) * _currency,
-                nextState.GetBalance(ItemEnhancement.GetFeeStoreAddress(), _currency)
+                nextState.GetBalance(Addresses.Blacksmith, _currency)
             );
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
@@ -190,7 +190,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new ItemEnhancement()
+            var action = new ItemEnhancement9()
             {
                 itemId = default,
                 materialId = default,
@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(LegacyInventoryKey),
                 _avatarAddress.Derive(LegacyWorldInformationKey),
                 _avatarAddress.Derive(LegacyQuestListKey),
-                ItemEnhancement.GetFeeStoreAddress(),
+                Addresses.Blacksmith,
             };
 
             var state = new State();
