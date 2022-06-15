@@ -9,7 +9,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using Spine;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
@@ -65,7 +64,7 @@ namespace Nekoyume.UI
                     StopCoroutine(_npcAppearCoroutine);
                 }
 
-                DisappearNpc();
+                StartCoroutine(DisappearNpc());
             });
         }
 
@@ -107,13 +106,11 @@ namespace Nekoyume.UI
 
         private IEnumerator CoAnimateNPC(string quote = null)
         {
-            var pos = ActionCamera.instance.Cam.transform.position;
-            npcSkeletonGraphic.gameObject.SetActive(true);
             npcSkeletonGraphic.AnimationState.SetAnimation(0,
                 NPCAnimation.Type.Emotion_02.ToString(), false);
-            npcSkeletonGraphic.AnimationState.Complete += AnimateCrystalMoving;
             npcSkeletonGraphic.AnimationState.AddAnimation(0,
                 NPCAnimation.Type.Emotion_03.ToString(), true, 0f);
+            npcSkeletonGraphic.gameObject.SetActive(true);
 
             yield return new WaitForSeconds(1f);
 
@@ -136,7 +133,7 @@ namespace Nekoyume.UI
                 yield return _waitForOneSec;
             }
 
-            DisappearNpc();
+            StartCoroutine(DisappearNpc());
         }
 
         private IEnumerator CoWorkshopItemMove()
@@ -160,17 +157,18 @@ namespace Nekoyume.UI
             yield return null;
         }
 
-        private void DisappearNpc()
+        private IEnumerator DisappearNpc()
         {
-            // Not created Disappear animation in Grinding NPC.
-            // npcSkeletonGraphic.AnimationState.SetAnimation(0,
-            //     NPCAnimation.Type.Disappear_02.ToString(), false);
-            //npcSkeletonGraphic.AnimationState.Complete += OnComplete;
-            HideButton();
-            OnComplete(null);
+            if (AnimationState.Value == AnimationStateType.Shown)
+            {
+                HideButton();
+                AnimationState.Value = AnimationStateType.Closing;
+                yield return new WaitWhile(() => _bgAlphaTweener.IsPlaying);
+                OnCloseComplete();
+            }
         }
 
-        private void AnimateCrystalMoving(TrackEntry trackEntry)
+        private void AnimateCrystalMoving()
         {
             var crystalAnimationStartPosition = crystalAnimationStartRect != null
                 ? (Vector3) crystalAnimationStartRect
@@ -187,17 +185,16 @@ namespace Nekoyume.UI
                 crystalAnimationStartPosition,
                 crystalAnimationTargetPosition,
                 CrystalAnimationCount));
-            npcSkeletonGraphic.AnimationState.Complete -= AnimateCrystalMoving;
         }
 
-        private void OnComplete(TrackEntry trackEntry)
+        private void OnCloseComplete()
         {
             npcSkeletonGraphic.gameObject.SetActive(false);
             speechBubble.Hide();
             OnDisappear?.Invoke();
             _closeAction?.Invoke();
+            AnimateCrystalMoving();
             Close();
-            //npcSkeletonGraphic.AnimationState.Complete -= OnComplete;
         }
     }
 }
