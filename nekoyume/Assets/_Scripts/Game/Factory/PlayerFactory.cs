@@ -26,7 +26,11 @@ namespace Nekoyume.Game.Factory
             if (model is null)
             {
                 var tableSheets = Game.instance.TableSheets;
-                model = new Player(1, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet);
+                model = new Player(
+                    1,
+                    tableSheets.CharacterSheet,
+                    tableSheets.CharacterLevelSheet,
+                    tableSheets.EquipmentItemSetEffectSheet);
             }
 
             var objectPool = Game.instance.Stage.objectPool;

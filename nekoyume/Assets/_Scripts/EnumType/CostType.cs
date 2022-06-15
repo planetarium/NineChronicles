@@ -4,5 +4,6 @@ public enum CostType
     NCG,
     ActionPoint,
     Hourglass,
-    Crystal
+    Crystal,
+    ArenaTicket,
 }

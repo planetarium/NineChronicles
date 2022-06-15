@@ -5,6 +5,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -13,11 +14,19 @@ namespace Nekoyume.UI.Module
 
     public class Crystal : AlphaAnimateModule
     {
-        [SerializeField] private TextMeshProUGUI text = null;
+        [SerializeField]
+        private TextMeshProUGUI text = null;
 
-        [SerializeField] private GameObject loadingObject;
+        [SerializeField]
+        private GameObject loadingObject;
 
-        [SerializeField] private Transform iconTransform;
+        [SerializeField]
+        private Transform iconTransform;
+
+        [SerializeField]
+        private Image _image;
+
+        public Image Image => _image;
 
         public bool NowLoading => loadingObject.activeSelf;
 

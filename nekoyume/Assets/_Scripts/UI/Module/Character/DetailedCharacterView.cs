@@ -23,9 +23,9 @@ namespace Nekoyume.UI.Module
             levelText.text = $"Lv.{player.Level}";
         }
 
-        public void SetByArmorId(int armorId, int? titleId, int level)
+        public void SetByFullCostumeOrArmorId(int armorId, int? titleId, int level)
         {
-            SetByArmorId(armorId);
+            SetByFullCostumeOrArmorId(armorId);
             if (titleId.HasValue)
             {
                 var sprite = SpriteHelper.GetTitleFrame(titleId.Value);
@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Module
 
         public void SetByArenaInfo(ArenaInfo arenaInfo)
         {
-            SetByArmorId(arenaInfo.ArmorId);
+            SetByFullCostumeOrArmorId(arenaInfo.ArmorId);
             levelText.text = $"Lv.{arenaInfo.Level}";
         }
     }

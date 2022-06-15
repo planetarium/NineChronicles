@@ -117,7 +117,7 @@ namespace Nekoyume.UI
         private StageType _stageType = StageType.None;
         private int _worldId;
         private int _requiredCost;
-        private bool _reset = true;
+        private bool _shouldResetPlayer = true;
 
         private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
@@ -224,9 +224,9 @@ namespace Nekoyume.UI
             }
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            if (_reset)
+            if (_shouldResetPlayer)
             {
-                _reset = false;
+                _shouldResetPlayer = false;
                 _player.gameObject.SetActive(false);
                 _player.gameObject.SetActive(true);
                 _player.SpineController.Appear();
@@ -263,7 +263,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            _reset = true;
+            _shouldResetPlayer = true;
             consumableSlots.Clear();
             _disposables.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
@@ -650,7 +650,7 @@ namespace Nekoyume.UI
         private IEnumerator CoBattleStart(StageType stageType, bool repeat)
         {
             var actionPointImage = Find<HeaderMenuStatic>().ActionPointImage;
-            var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
+            var itemMoveAnimation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,
                 Vector2.one,
@@ -660,7 +660,7 @@ namespace Nekoyume.UI
                 middleXGap);
             LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 -_requiredCost);
-            yield return new WaitWhile(() => animation.IsPlaying);
+            yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
             Battle(stageType, repeat);
             AudioController.PlayClick();

@@ -174,7 +174,8 @@ namespace Nekoyume.UI
         {
             var bp = Find<BattlePreparation>();
             var elementalTypes = bp.isActiveAndEnabled
-                ? bp.GetElementalTypes() : ElementalTypeExtension.GetAllTypes();
+                ? bp.GetElementalTypes()
+                : ElementalTypeExtension.GetAllTypes();
             inventory.SetAvatarInfo(
                 clickItem: ShowItemTooltip,
                 doubleClickItem: Equip,
