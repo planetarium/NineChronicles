@@ -318,13 +318,14 @@ namespace Nekoyume.Action
                 {
                     if (skillsOnWaveStart.Any())
                     {
+                        // clear current star count, skill id.
                         skillState = new CrystalRandomSkillState(skillStateAddress, stageId);
                     }
 
                     // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
-                    skillState.Update(simulator.Log.clearedWaveNumber,
+                    skillState!.Update(simulator.Log.clearedWaveNumber,
                         sheets.GetSheet<CrystalStageBuffGachaSheet>());
-                    states = states.SetState(skillStateAddress, skillState.Serialize());
+                    states = states.SetState(skillStateAddress, skillState!.Serialize());
                 }
             }
 
