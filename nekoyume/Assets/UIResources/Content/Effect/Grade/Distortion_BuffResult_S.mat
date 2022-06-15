@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Distortion_BuffResult_A
+  m_Name: Distortion_BuffResult_S
   m_Shader: {fileID: 4800000, guid: c3da13bfce1354c11af0ce57aec987db, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
@@ -109,7 +109,7 @@ Material:
     - _UseUIAlphaClip: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.39999998, g: 0.9336054, b: 1, a: 0.19215687}
+    - _Color: {r: 1, g: 0.7971306, b: 0.39999998, a: 0.27450982}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Specular: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
