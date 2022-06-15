@@ -355,7 +355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76be27e850e46024da43907616ed0acf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingAnimationName: Greeting
+  startingAnimationName: Idle
   idleAnimationName: Idle
   onClickAnimationName: Touch
 --- !u!1 &574435511512657937
@@ -2598,7 +2598,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -205, y: -0.0002746582}
+  m_AnchoredPosition: {x: -205, y: -0.00024414062}
   m_SizeDelta: {x: 206, y: 240.7}
   m_Pivot: {x: 0.5, y: 0.00000016018748}
 --- !u!222 &6274492408613066937
