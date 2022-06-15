@@ -91,7 +91,6 @@ namespace Nekoyume.UI
             UpdateScrolls();
             UpdateInfo();
 
-            // NOTE: RxProp invoke on next callback when subscribe function invoked.
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())
                 .AddTo(_disposablesForShow);
@@ -326,6 +325,11 @@ namespace Nekoyume.UI
                         selectedRoundData.Round)
                     .Subscribe();
             }).AddTo(gameObject);
+
+            _info.OnSeasonBeginning
+                .Merge(_info.OnSeasonEnded)
+                .Subscribe(_ => UpdateBottomButtons())
+                .AddTo(gameObject);
         }
 
         private void UpdateBottomButtons()

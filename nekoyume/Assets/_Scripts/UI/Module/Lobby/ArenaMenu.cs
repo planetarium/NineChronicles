@@ -24,7 +24,7 @@ namespace Nekoyume.UI.Module.Lobby
         private void OnEnable()
         {
             RxProps.ArenaInfoTuple
-                .SubscribeOnMainThreadWithUpdateOnce(UpdateTicketCount)
+                .SubscribeOnMainThreadWithUpdateOnce(tuple => UpdateTicketCount(tuple.current))
                 .AddTo(_disposables);
             RxProps.ArenaTicketProgress
                 .SubscribeOnMainThread()
@@ -37,10 +37,9 @@ namespace Nekoyume.UI.Module.Lobby
             _disposables.DisposeAllAndClear();
         }
 
-        private void UpdateTicketCount((ArenaInformation current, ArenaInformation next) tuple)
+        private void UpdateTicketCount(ArenaInformation arenaInformation)
         {
-            var (current, _) = tuple;
-            if (current is null)
+            if (arenaInformation is null)
             {
                 _ticketCount.text = ArenaInformation.MaxTicketCount.ToString();
                 _ticketResetTime.text = string.Empty;
@@ -49,7 +48,7 @@ namespace Nekoyume.UI.Module.Lobby
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var currentRoundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            var ticket = current.GetTicketCount(
+            var ticket = arenaInformation.GetTicketCount(
                 blockIndex,
                 currentRoundData.StartBlockIndex,
                 States.Instance.GameConfigState.DailyArenaInterval);
