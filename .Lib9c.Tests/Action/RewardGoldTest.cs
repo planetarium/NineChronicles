@@ -2,18 +2,30 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
+    using System.Security.Cryptography;
     using Bencodex.Types;
+    using Lib9c.Tests.TestHelper;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
+    using Libplanet.Blockchain;
+    using Libplanet.Blockchain.Policies;
+    using Libplanet.Blocks;
     using Libplanet.Crypto;
+    using Libplanet.Store;
+    using Libplanet.Store.Trie;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
+    using Nekoyume.BlockChain;
+    using Nekoyume.BlockChain.Policy;
+    using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Serilog.Core;
     using Xunit;
 
     public class RewardGoldTest
@@ -450,6 +462,56 @@ namespace Lib9c.Tests.Action
 
             // Rewardless era
             AssertMinerReward(50457601, "0");
+        }
+
+        [Fact]
+        public void Genesis_StateRootHash()
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = adminPrivateKey.ToAddress();
+            var activatedAccounts = ImmutableHashSet<Address>.Empty;
+            var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
+            var privateKey = new PrivateKey();
+            (ActivationKey activationKey, PendingActivationState pendingActivation) =
+                ActivationKey.Create(privateKey, nonce);
+            var pendingActivationStates = new List<PendingActivationState>
+            {
+                pendingActivation,
+            };
+            var initializeStates = new InitializeStates(
+                rankingState: new RankingState0(),
+                shopState: new ShopState(),
+                gameConfigState: new GameConfigState(),
+                redeemCodeState: new RedeemCodeState(Bencodex.Types.Dictionary.Empty
+                    .Add("address", RedeemCodeState.Address.Serialize())
+                    .Add("map", Bencodex.Types.Dictionary.Empty)
+                ),
+                adminAddressState: new AdminState(adminAddress, 1500000),
+                activatedAccountsState: new ActivatedAccountsState(activatedAccounts),
+                goldCurrencyState: new GoldCurrencyState(new Currency("NCG", 2, minter: null)),
+                goldDistributions: new GoldDistribution[0],
+                tableSheets: TableSheetsImporter.ImportSheets(),
+                pendingActivationStates: pendingActivationStates.ToArray()
+            );
+            Block<PolymorphicAction<ActionBase>> genesis = BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
+                HashAlgorithmType.Of<SHA256>(),
+                new PolymorphicAction<ActionBase>[] { initializeStates }
+            );
+
+            BlockPolicySource blockPolicySource = new BlockPolicySource(Logger.None);
+            StagePolicy stagePolicy = new StagePolicy(default, 2);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy();
+            var store = new DefaultStore(null);
+            var stateStore = new TrieStateStore(new DefaultKeyValueStore(null));
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+                policy: policy,
+                store: store,
+                stagePolicy: stagePolicy,
+                stateStore: stateStore,
+                genesisBlock: genesis,
+                renderers: blockPolicySource.GetRenderers()
+            );
+            Assert.Equal(genesis.StateRootHash, blockChain.Genesis.StateRootHash);
         }
     }
 }
