@@ -10,6 +10,15 @@ namespace Nekoyume.UI.Module
     public class BonusBuffView : MonoBehaviour
     {
         [SerializeField]
+        private GameObject ssRankVFX;
+
+        [SerializeField]
+        private GameObject sRankVFX;
+
+        [SerializeField]
+        private GameObject aRankVFX;
+
+        [SerializeField]
         private Button button;
 
         [SerializeField]
@@ -68,6 +77,10 @@ namespace Nekoyume.UI.Module
                 gameObject.SetActive(false);
                 return;
             }
+
+            ssRankVFX.SetActive(bonusBuffRow.Rank == CrystalRandomBuffSheet.Row.BuffRank.SS);
+            sRankVFX.SetActive(bonusBuffRow.Rank == CrystalRandomBuffSheet.Row.BuffRank.S);
+            aRankVFX.SetActive(bonusBuffRow.Rank == CrystalRandomBuffSheet.Row.BuffRank.A);
 
             CurrentSkillName = skillRow.GetLocalizedName();
             buffNameText.text = CurrentSkillName;
