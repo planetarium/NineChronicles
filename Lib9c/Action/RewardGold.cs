@@ -37,7 +37,8 @@ namespace Nekoyume.Action
             states = GenesisGoldDistribution(context, states);
 
             var arenaSheet = states.GetSheet<ArenaSheet>();
-            if (arenaSheet == null)
+            // Avoid InvalidBlockStateRootHashException in unit test genesis block evaluate.
+            if (arenaSheet == null || context.BlockIndex == 0)
             {
                 states = WeeklyArenaRankingBoard2(context, states);
             }
