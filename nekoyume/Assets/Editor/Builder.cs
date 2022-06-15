@@ -157,7 +157,6 @@ namespace Editor
         {
             Debug.Log("Build Windows For QA");
             CopyJsonDataFile("TestbedSell");
-            CopyJsonDataFile("TestbedWeeklyArena");
             CopyJsonDataFile("TestbedCreateAvatar");
             Build(BuildTarget.StandaloneWindows64, BuildOptions.Development | BuildOptions.AllowDebugging, "Windows", true);
         }

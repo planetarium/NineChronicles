@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
@@ -91,7 +91,6 @@ namespace Nekoyume.UI
             UpdateScrolls();
             UpdateInfo();
 
-            // NOTE: RxProp invoke on next callback when subscribe function invoked.
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())
                 .AddTo(_disposablesForShow);
@@ -326,6 +325,11 @@ namespace Nekoyume.UI
                         selectedRoundData.Round)
                     .Subscribe();
             }).AddTo(gameObject);
+
+            _info.OnSeasonBeginning
+                .Merge(_info.OnSeasonEnded)
+                .Subscribe(_ => UpdateBottomButtons())
+                .AddTo(gameObject);
         }
 
         private void UpdateBottomButtons()
@@ -334,10 +338,13 @@ namespace Nekoyume.UI
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var isOpened = selectedRoundData.IsTheRoundOpened(blockIndex);
             var arenaType = selectedRoundData.ArenaType;
+            UpdateJoinAndPaymentButton(arenaType, isOpened);
             var championshipId = selectedRoundData.ChampionshipId;
-            var crystal = (int)selectedRoundData.EntranceFee;
-            UpdateEarlyRegistrationButton(arenaType, isOpened, blockIndex, championshipId);
-            UpdateJoinAndPaymentButton(arenaType, isOpened, crystal);
+            UpdateEarlyRegistrationButton(
+                arenaType,
+                isOpened,
+                blockIndex,
+                championshipId);
         }
 
         private void UpdateEarlyRegistrationButton(
@@ -355,6 +362,9 @@ namespace Nekoyume.UI
                             blockIndex,
                             out var next))
                     {
+                        var cost = next.GetCost(
+                            States.Instance.CurrentAvatarState.level,
+                            true);
                         if (RxProps.ArenaInfoTuple.Value.next is { })
                         {
                             _earlyPaymentButton.Show(
@@ -362,7 +372,7 @@ namespace Nekoyume.UI
                                 next.ChampionshipId,
                                 next.Round,
                                 true,
-                                next.DiscountedEntranceFee);
+                                cost);
                         }
                         else if (next.ArenaType == ArenaType.Championship)
                         {
@@ -375,7 +385,7 @@ namespace Nekoyume.UI
                                     next.ChampionshipId,
                                     next.Round,
                                     false,
-                                    next.DiscountedEntranceFee);
+                                    cost);
                             }
                             else
                             {
@@ -389,7 +399,7 @@ namespace Nekoyume.UI
                                 next.ChampionshipId,
                                 next.Round,
                                 false,
-                                next.DiscountedEntranceFee);
+                                cost);
                         }
                     }
                     else
@@ -412,8 +422,7 @@ namespace Nekoyume.UI
 
         private void UpdateJoinAndPaymentButton(
             ArenaType arenaType,
-            bool isOpened,
-            int crystal)
+            bool isOpened)
         {
             switch (arenaType)
             {
@@ -431,9 +440,13 @@ namespace Nekoyume.UI
                     {
                         if (RxProps.ArenaInfoTuple.Value.current is null)
                         {
+                            var cost =
+                                _scroll.SelectedItemData.RoundData.GetCost(
+                                    States.Instance.CurrentAvatarState.level,
+                                    false);
                             _joinButton.gameObject.SetActive(false);
                             _paymentButton.SetCondition(CheckChampionshipConditions);
-                            _paymentButton.SetCost(CostType.Crystal, crystal);
+                            _paymentButton.SetCost(CostType.Crystal, cost);
                             _paymentButton.UpdateObjects();
                             _paymentButton.Interactable = CheckChampionshipConditions();
                             _paymentButton.gameObject.SetActive(true);

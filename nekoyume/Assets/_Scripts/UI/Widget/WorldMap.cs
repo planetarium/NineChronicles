@@ -119,6 +119,11 @@ namespace Nekoyume.UI
                     worldButton.SetOpenCostTextColor(crystal.MajorUnit);
                 }
             }).AddTo(gameObject);
+
+            ReactiveAvatarState.WorldInformation.Subscribe(worldInformation =>
+            {
+                SharedViewModel.WorldInformation = worldInformation;
+            }).AddTo(gameObject);
         }
 
         #endregion

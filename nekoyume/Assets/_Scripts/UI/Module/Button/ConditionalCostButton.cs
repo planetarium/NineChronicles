@@ -17,8 +17,8 @@ namespace Nekoyume.UI.Module
         public struct CostParam
         {
             public CostType type;
-            public int cost;
-            public CostParam(CostType type, int cost)
+            public long cost;
+            public CostParam(CostType type, long cost)
             {
                 this.type = type;
                 this.cost = cost;
@@ -48,7 +48,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<GameObject> costParents = null;
 
-        private readonly Dictionary<CostType, int> _costMap = new Dictionary<CostType, int>();
+        private readonly Dictionary<CostType, long> _costMap = new Dictionary<CostType, long>();
 
         public void SetCost(params CostParam[] costs)
         {
@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Module
             UpdateObjects();
         }
 
-        public void SetCost(CostType type, int cost)
+        public void SetCost(CostType type, long cost)
         {
             _costMap.Clear();
             if (cost > 0)
@@ -98,7 +98,7 @@ namespace Nekoyume.UI.Module
                         costText.text.text = cost.ToString();
                         costText.text.color = CheckCostOfType(costObject.type, cost) ?
                             Palette.GetColor(ColorType.ButtonEnabled) :
-                            Palette.GetColor(ColorType.ButtonDisabled);
+                            Palette.GetColor(ColorType.TextDenial);
                     }
                 }
             }
@@ -153,7 +153,7 @@ namespace Nekoyume.UI.Module
             return CostType.None;
         }
 
-        protected bool CheckCostOfType(CostType type, int cost)
+        protected bool CheckCostOfType(CostType type, long cost)
         {
             switch (type)
             {

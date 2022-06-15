@@ -6,15 +6,20 @@ namespace Nekoyume.UI.Module.Arena.Board
 {
     public class ArenaBoardBillboard : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI _seasonText;
+        [SerializeField]
+        private TextMeshProUGUI _seasonText;
 
-        [SerializeField] private TextMeshProUGUI _rankValueText;
+        [SerializeField]
+        private TextMeshProUGUI _rankValueText;
 
-        [SerializeField] private TextMeshProUGUI _winLoseValueText;
+        [SerializeField]
+        private TextMeshProUGUI _winLoseValueText;
 
-        [SerializeField] private TextMeshProUGUI _cpValueText;
+        [SerializeField]
+        private TextMeshProUGUI _cpValueText;
 
-        [SerializeField] private TextMeshProUGUI _ratingValueText;
+        [SerializeField]
+        private TextMeshProUGUI _ratingValueText;
 
         public void SetData(
             string season,

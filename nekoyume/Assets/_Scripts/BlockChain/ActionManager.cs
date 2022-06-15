@@ -212,7 +212,8 @@ namespace Nekoyume.BlockChain
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
-            int stageId)
+            int stageId,
+            int? stageBuffId = null)
         {
             Analyzer.Instance.Track("Unity/HackAndSlash", new Value
             {
@@ -233,6 +234,7 @@ namespace Nekoyume.BlockChain
                 foods = foods.Select(f => f.ItemId).ToList(),
                 worldId = worldId,
                 stageId = stageId,
+                stageBuffId = stageBuffId,
                 avatarAddress = avatarAddress,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
@@ -907,6 +909,25 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlashRandomBuff>> HackAndSlashRandomBuff(bool advanced)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            var action = new HackAndSlashRandomBuff
+            {
+                AvatarAddress = avatarAddress,
+                AdvancedGacha = advanced
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<HackAndSlashRandomBuff>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
@@ -924,6 +945,44 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e =>
                 {
                     Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
+
+        public IObservable<ActionBase.ActionEvaluation<CreateArenaDummy>> CreateArenaDummy(
+            List<Guid> costumes,
+            List<Guid> equipments,
+            int championshipId,
+            int round,
+            int accountCount
+        )
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = new CreateArenaDummy
+            {
+                myAvatarAddress = avatarAddress,
+                costumes = costumes,
+                equipments = equipments,
+                championshipId = championshipId,
+                round = round,
+                accountCount = accountCount,
+            };
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<CreateArenaDummy>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    try
+                    {
+                        HandleException(action.Id, e);
+                    }
+                    catch (Exception e2)
+                    {
+                    }
                 });
         }
 #endif
