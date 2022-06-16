@@ -1699,7 +1699,7 @@ namespace Nekoyume.BlockChain
                     : null;
 
                 enemyDigest = eval.Extra.TryGetValue(
-                    nameof(BattleArena.ExtraMyArenaPlayerDigest),
+                    nameof(BattleArena.ExtraEnemyArenaPlayerDigest),
                     out var enemyDigestValue)
                     ? enemyDigestValue is List enemyDigestList
                         ? new ArenaPlayerDigest(enemyDigestList)
