@@ -30,8 +30,11 @@ namespace Nekoyume.UI.Module
         {
             var isRegister = item != null;
             AssignedItem = item;
-            selectedSlotObject.SetActive(isRegister);
-            itemImage.overrideSprite = item?.ItemBase.GetIconSprite();
+            if (isRegister)
+            {
+                itemImage.overrideSprite = item.ItemBase.GetIconSprite();
+            }
+
             animator.SetBool(Register, isRegister);
         }
     }
