@@ -82,8 +82,9 @@ namespace Nekoyume.UI
         {
             _buttonAlphaTweener.PlayReverse();
             _bgAlphaTweener.PlayReverse();
-            npcSkeletonGraphic.DOColor(npcCloseColor, 1);
-            speechBubble.Hide();
+            npcSkeletonGraphic.AnimationState.SetAnimation(0,
+                NPCAnimation.Type.Disappear.ToString(), false);
+            speechBubble.Close();
         }
 
         public void AnimateNPC(string quote)
@@ -109,7 +110,9 @@ namespace Nekoyume.UI
         private IEnumerator CoAnimateNPC(string quote = null)
         {
             npcSkeletonGraphic.AnimationState.SetAnimation(0,
-                NPCAnimation.Type.Emotion_02.ToString(), false);
+                NPCAnimation.Type.Appear.ToString(), false);
+            npcSkeletonGraphic.AnimationState.AddAnimation(0,
+                NPCAnimation.Type.Emotion_02.ToString(), false, 0f);
             npcSkeletonGraphic.AnimationState.AddAnimation(0,
                 NPCAnimation.Type.Emotion_03.ToString(), true, 0f);
             npcSkeletonGraphic.color = Color.white;

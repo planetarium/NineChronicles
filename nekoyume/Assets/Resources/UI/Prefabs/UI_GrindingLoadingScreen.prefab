@@ -415,12 +415,12 @@ RectTransform:
   m_LocalScale: {x: 0.6, y: 0.6, z: 1}
   m_Children:
   - {fileID: 3950499329594492948}
-  m_Father: {fileID: 6233236883578401466}
+  m_Father: {fileID: 5218555744927940610}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 218, y: -108}
+  m_AnchoredPosition: {x: 203, y: -139}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3970688297644746415
@@ -569,7 +569,7 @@ RectTransform:
   - {fileID: 2875654899631478600}
   - {fileID: 6934627042710683287}
   m_Father: {fileID: 5218555744927940610}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -737,7 +737,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5218555744927940610}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -886,6 +886,7 @@ RectTransform:
   m_Children:
   - {fileID: 5218715033342264746}
   - {fileID: 6233236883578401466}
+  - {fileID: 6125216285525633836}
   - {fileID: 8242006819702765794}
   - {fileID: 4797255846765648886}
   - {fileID: 1323841202289259959}
@@ -957,6 +958,7 @@ MonoBehaviour:
   continueText: {fileID: 8450438534055216996}
   speechBubble: {fileID: 8381221411227790039}
   npcSkeletonGraphic: {fileID: 2844869084947429269}
+  npcCloseColor: {r: 0, g: 0, b: 0, a: 0}
   crystalAnimationStartRect: {fileID: 3950499329594492948}
   crystalAnimationTargetRect: {fileID: 0}
 --- !u!1 &5704916783573856934
@@ -990,7 +992,6 @@ RectTransform:
   m_Children:
   - {fileID: 8788158341608022170}
   - {fileID: 7599303059426470727}
-  - {fileID: 6125216285525633836}
   m_Father: {fileID: 5218555744927940610}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1418,7 +1419,7 @@ PrefabInstance:
     - target: {fileID: 7758710241042155044, guid: 6c17785e2b2d9c846a7037abfdbc902b,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7758710241042155044, guid: 6c17785e2b2d9c846a7037abfdbc902b,
         type: 3}
