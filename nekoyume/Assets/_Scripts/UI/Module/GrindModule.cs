@@ -217,7 +217,8 @@ namespace Nekoyume.UI.Module
                     animator.SetTrigger(EmptySlot);
                 }
             }).AddTo(_disposables);
-            _selectedItemsForGrind.ObserveReset().Subscribe(_ => { itemSlots.ForEach(slot => slot.UpdateSlot()); })
+            _selectedItemsForGrind.ObserveReset()
+                .Subscribe(_ => { itemSlots.ForEach(slot => slot.ResetSlot()); })
                 .AddTo(_disposables);
             _selectedItemsForGrind.ObserveCountChanged().Subscribe(count =>
             {
