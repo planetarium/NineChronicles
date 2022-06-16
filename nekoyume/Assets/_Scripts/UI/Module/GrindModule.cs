@@ -338,9 +338,16 @@ namespace Nekoyume.UI.Module
                 States.Instance.StakingLevel);
             if (_cachedGrindingRewardCrystal.MajorUnit > 0)
             {
-                crystalRewardTweener.Play(
-                    (long) prevCrystalReward,
-                    (long) _cachedGrindingRewardCrystal.MajorUnit);
+                if (prevCrystalReward > _cachedGrindingRewardCrystal.MajorUnit)
+                {
+                    crystalRewardText.text = _cachedGrindingRewardCrystal.GetQuantityString();
+                }
+                else
+                {
+                    crystalRewardTweener.Play(
+                        (long) prevCrystalReward,
+                        (long) _cachedGrindingRewardCrystal.MajorUnit);
+                }
             }
             else
             {
