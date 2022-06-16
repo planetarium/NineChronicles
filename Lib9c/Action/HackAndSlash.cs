@@ -32,17 +32,27 @@ namespace Nekoyume.Action
         public int? stageBuffId;
         public Address avatarAddress;
 
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            new Dictionary<string, IValue>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal
+        {
+            get
             {
-                ["costumes"] = new List(costumes.OrderBy(i => i).Select(e => e.Serialize())),
-                ["equipments"] = new List(equipments.OrderBy(i => i).Select(e => e.Serialize())),
-                ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
-                ["worldId"] = worldId.Serialize(),
-                ["stageId"] = stageId.Serialize(),
-                ["stageBuffId"] = stageBuffId.Serialize(),
-                ["avatarAddress"] = avatarAddress.Serialize(),
-            }.ToImmutableDictionary();
+                var dict = new Dictionary<string, IValue>
+                {
+                    ["costumes"] = new List(costumes.OrderBy(i => i).Select(e => e.Serialize())),
+                    ["equipments"] =
+                        new List(equipments.OrderBy(i => i).Select(e => e.Serialize())),
+                    ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
+                    ["worldId"] = worldId.Serialize(),
+                    ["stageId"] = stageId.Serialize(),
+                    ["avatarAddress"] = avatarAddress.Serialize(),
+                };
+                if (stageBuffId.HasValue)
+                {
+                    dict["stageBuffId"] = stageBuffId.Serialize();
+                }
+                return dict.ToImmutableDictionary();
+            }
+        }
 
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
@@ -52,7 +62,10 @@ namespace Nekoyume.Action
             foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
-            stageBuffId = plainValue["stageBuffId"].ToNullableInteger();
+            if (plainValue.ContainsKey("stageBuffId"))
+            {
+                stageBuffId = plainValue["stageBuffId"].ToNullableInteger();
+            }
             avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
