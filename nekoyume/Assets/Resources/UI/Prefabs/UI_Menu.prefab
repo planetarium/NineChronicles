@@ -5390,7 +5390,7 @@ PrefabInstance:
     - target: {fileID: 5885916176950025658, guid: 16913dec42abae948a9298f9e887d339,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4294964719
+      value: 16774639
       objectReference: {fileID: 0}
     - target: {fileID: 6241647539857283787, guid: 16913dec42abae948a9298f9e887d339,
         type: 3}
@@ -5435,7 +5435,7 @@ PrefabInstance:
     - target: {fileID: 8919328922962173905, guid: 16913dec42abae948a9298f9e887d339,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4294967295
+      value: 16777215
       objectReference: {fileID: 0}
     - target: {fileID: 9184902237990004220, guid: 16913dec42abae948a9298f9e887d339,
         type: 3}
@@ -5445,7 +5445,7 @@ PrefabInstance:
     - target: {fileID: 9184902237990004220, guid: 16913dec42abae948a9298f9e887d339,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4293783039
+      value: 15592959
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 16913dec42abae948a9298f9e887d339, type: 3}
@@ -6006,11 +6006,21 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 479056002676622486, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1237055269245973160, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
         type: 3}
       propertyPath: m_TargetGraphic
       value: 
       objectReference: {fileID: 4575390391634127904}
+    - target: {fileID: 1237055269245973163, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 2515619557571949509, guid: 09b93ce70a9aa954abba7ecf30fa3cbf,
         type: 3}
       propertyPath: m_Pivot.x
@@ -6329,7 +6339,7 @@ PrefabInstance:
     - target: {fileID: 7986294082044089132, guid: e587c4b496eb8ef438f378e406f363a3,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4294967295
+      value: 16777215
       objectReference: {fileID: 0}
     - target: {fileID: 8199595393565442001, guid: e587c4b496eb8ef438f378e406f363a3,
         type: 3}
@@ -6418,6 +6428,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: QuestBtn
+      objectReference: {fileID: 0}
+    - target: {fileID: 2673266939117811252, guid: e6d7b535158669e49bc77f0431126854,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2673266939117811253, guid: e6d7b535158669e49bc77f0431126854,
         type: 3}
@@ -6595,7 +6610,7 @@ PrefabInstance:
     - target: {fileID: 1673535001864683183, guid: a0621b719bbce604a8df0febf5bf9537,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4043309055
+      value: 16777215
       objectReference: {fileID: 0}
     - target: {fileID: 1806947039787728185, guid: a0621b719bbce604a8df0febf5bf9537,
         type: 3}
@@ -7686,7 +7701,7 @@ PrefabInstance:
     - target: {fileID: 4168524533700969186, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4294967295
+      value: 16777215
       objectReference: {fileID: 0}
     - target: {fileID: 4536149002758751583, guid: 1ffb848deec53694c97c3f01ed7a5b4c,
         type: 3}
@@ -8383,7 +8398,7 @@ PrefabInstance:
     - target: {fileID: 8338442937347405792, guid: a1a8cf8d009954b41b08759608622cfa,
         type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4294967295
+      value: 16777215
       objectReference: {fileID: 0}
     - target: {fileID: 8338442938563373544, guid: a1a8cf8d009954b41b08759608622cfa,
         type: 3}
