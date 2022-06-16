@@ -422,10 +422,8 @@ namespace Nekoyume.UI.Module
 
             yield return null;
             yield return new WaitUntil(() =>
-                animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+                animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= .5f);
             loadingScreen.Show();
-            yield return new WaitForSeconds(.5f);
-
             var quote = L10nManager.Localize("UI_GRIND_NPC_QUOTE");
             loadingScreen.AnimateNPC(quote);
         }

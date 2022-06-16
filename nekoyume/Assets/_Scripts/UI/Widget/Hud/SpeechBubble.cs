@@ -117,7 +117,10 @@ namespace Nekoyume.UI
 
         public void Close()
         {
-            StartCoroutine(CoClose());
+            if (isActiveAndEnabled)
+            {
+                StartCoroutine(CoClose());
+            }
         }
 
         private void BeforeSpeech()
