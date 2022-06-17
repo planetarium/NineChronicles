@@ -52,11 +52,15 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid ShowAsync(
             ArenaSheet.RoundData roundData,
-            bool ignoreShowAnimation = false) =>
+            bool ignoreShowAnimation = false)
+        {
+            var data = await UniTask.Run(async () =>
+                await RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync());
             Show(
                 roundData,
-                await RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync(),
+                data,
                 ignoreShowAnimation);
+        }
 
         public void Show(
             RxProps.ArenaParticipant[] arenaParticipants,
