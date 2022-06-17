@@ -36,18 +36,6 @@ namespace Nekoyume.UI.Module.Arena.Join
         private TextMeshProUGUI _seasonProgressSliderFillText;
 
         [SerializeField]
-        private GameObject _conditionsContainer;
-
-        [SerializeField]
-        private Image _conditionsSliderFillArea;
-
-        [SerializeField]
-        private TextMeshProUGUI _conditionsSliderFillText;
-
-        [SerializeField]
-        private string _conditionsSliderFillTextFormat;
-
-        [SerializeField]
         private GameObject _medalReward;
 
         [SerializeField]
@@ -87,7 +75,6 @@ namespace Nekoyume.UI.Module.Arena.Join
 
         /// <param name="title">Season Name</param>
         /// <param name="roundData"></param>
-        /// <param name="conditions">Season Conditions</param>
         /// <param name="rewardType">
         ///   Reward types.
         ///   (e.g., RewardType.None or RewardType.Medal | RewardType.NCG)
@@ -96,7 +83,6 @@ namespace Nekoyume.UI.Module.Arena.Join
         public void SetData(
             string title,
             ArenaSheet.RoundData roundData,
-            (int max, int current)? conditions,
             RewardType rewardType,
             int? medalItemId)
         {
@@ -105,7 +91,6 @@ namespace Nekoyume.UI.Module.Arena.Join
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             SetSliderAndText(_roundData.GetSeasonProgress(blockIndex));
-            SetConditions(conditions);
             SetRewards(rewardType);
             SetMedalImages(medalItemId);
         }
@@ -139,21 +124,6 @@ namespace Nekoyume.UI.Module.Arena.Join
             {
                 _onSeasonBeginning.OnNext(Unit.Default);
             }
-        }
-
-        private void SetConditions((int max, int current)? conditions)
-        {
-            if (!conditions.HasValue)
-            {
-                _conditionsContainer.SetActive(false);
-                return;
-            }
-
-            var (max, current) = conditions.Value;
-            _conditionsSliderFillArea.fillAmount = (float)current / max;
-            _conditionsSliderFillText.text =
-                string.Format(_conditionsSliderFillTextFormat, current, max);
-            _conditionsContainer.SetActive(true);
         }
 
         private void SetRewards(RewardType rewardType)
