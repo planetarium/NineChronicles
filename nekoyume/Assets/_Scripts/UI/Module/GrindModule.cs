@@ -84,10 +84,10 @@ namespace Nekoyume.UI.Module
             DimConditionPredicateList
                 = new List<(ItemType type, Predicate<InventoryItem>)>
                 {
-                    (ItemType.Equipment, InventoryHelper.CheckCanNotGrinding),
-                    (ItemType.Consumable, _ => false),
-                    (ItemType.Material, _ => false),
-                    (ItemType.Costume, _ => false),
+                    (ItemType.Equipment, _ => false),
+                    (ItemType.Consumable, _ => true),
+                    (ItemType.Material, _ => true),
+                    (ItemType.Costume, _ => true),
                 };
 
         private const int LimitGrindingCount = 10;
@@ -100,8 +100,7 @@ namespace Nekoyume.UI.Module
         private static readonly int EmptySlot = Animator.StringToHash("EmptySlot");
         private static readonly int ShowAnimationHash = Animator.StringToHash("Show");
 
-        private bool CanGrind => _selectedItemsForGrind.Any() &&
-                                 _selectedItemsForGrind.All(item => !item.Equipped.Value);
+        private bool CanGrind => _selectedItemsForGrind.Any();
 
         public void Show(bool reverseInventoryOrder = true)
         {
@@ -243,12 +242,28 @@ namespace Nekoyume.UI.Module
             var tooltip = ItemTooltip.Find(model.ItemBase.ItemType);
             var isRegister = !_selectedItemsForGrind.Contains(model);
             var isEquipment = model.ItemBase.ItemType == ItemType.Equipment;
+            var isEquipped = model.Equipped.Value;
             var interactable =
-                isEquipment && _selectedItemsForGrind.Count < 10 && !InventoryHelper.CheckCanNotGrinding(model)
+                _selectedItemsForGrind.Count < 10 && isEquipment
                 || !isRegister;
-            var onSubmit = isEquipment
-                ? new System.Action(() => RegisterToGrindingList(model, isRegister))
-                : null;
+
+            void OnSubmit()
+            {
+                if (isEquipped)
+                {
+                    var confirm = Widget.Find<IconAndButtonSystem>();
+                    confirm.ConfirmCallback = () => RegisterToGrindingList(model, isRegister);
+                    confirm.ShowWithTwoButton(
+                        "UI_CONFIRM",
+                        "UI_CONFIRM_EQUIPPED_GRINDING",
+                        type: IconAndButtonSystem.SystemType.Information);
+                }
+                else
+                {
+                    RegisterToGrindingList(model, isRegister);
+                }
+            }
+
             var blockMessage = model.Equipped.Value ? "ERROR_NOT_GRINDING_EQUIPPED" : "ERROR_NOT_GRINDING_10OVER";
             var onBlock = new System.Action(() =>
                 OneLineSystem.Push(MailType.System,
@@ -260,7 +275,7 @@ namespace Nekoyume.UI.Module
                     ? L10nManager.Localize("UI_COMBINATION_REGISTER_MATERIAL")
                     : L10nManager.Localize("UI_COMBINATION_UNREGISTER_MATERIAL"),
                 interactable,
-                onSubmit,
+                OnSubmit,
                 grindInventory.ClearSelectedItem,
                 onBlock,
                 target);
