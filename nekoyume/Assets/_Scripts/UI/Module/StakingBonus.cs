@@ -49,6 +49,7 @@ namespace Nekoyume.UI.Module
             var bonusEnabled = level > 0;
             enableObject.SetActive(bonusEnabled);
             disableObject.SetActive(!bonusEnabled);
+            stakingBonusText.gameObject.SetActive(bonusEnabled);
             if (bonusEnabled)
             {
                 stakingLevelText.text = $"Staking Lv.{level}";
@@ -59,6 +60,8 @@ namespace Nekoyume.UI.Module
                     enableObjects[i].SetActive(i < level);
                 }
             }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(stakingBonusText.rectTransform);
         }
     }
 }
