@@ -116,6 +116,14 @@ namespace Nekoyume.UI
             gameObject.SetActive(false);
         }
 
+        public void Close()
+        {
+            if (isActiveAndEnabled)
+            {
+                StartCoroutine(CoClose());
+            }
+        }
+
         private void BeforeSpeech()
         {
             if (!(_coroutine is null))
@@ -231,13 +239,18 @@ namespace Nekoyume.UI
                 yield return new WaitForSeconds(speechWaitTime);
                 yield return new WaitWhile(() => forceFixed);
 
-                realText.text = string.Empty;
-                contentSize.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
-                yield return new WaitForSeconds(bubbleTweenTime);
+                yield return CoClose();
             }
 
             yield return new WaitForSeconds(breakTime);
             Hide();
+        }
+
+        public override IEnumerator CoClose()
+        {
+            realText.text = string.Empty;
+            contentSize.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
+            yield return new WaitForSeconds(bubbleTweenTime);
         }
 
         public void ResetKey()

@@ -9,9 +9,9 @@ namespace Nekoyume.UI.Tween
     {
         public TweenCallback onComplete = null;
 
-        public int beginValue = 0;
+        public long beginValue = 0;
 
-        public int endValue = 0;
+        public long endValue = 0;
 
         private TextMeshProUGUI _text = null;
 
@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Tween
             SetEase().OnComplete(onComplete);
         }
 
-        public void Play(int beginValue, int endValue)
+        public void Play(long beginValue, long endValue)
         {
             this.beginValue = beginValue;
             this.endValue = endValue;
