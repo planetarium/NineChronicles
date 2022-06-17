@@ -97,8 +97,6 @@ namespace Lib9c.Tests.Action
         [InlineData(true, true, 120, false, false, false, 1, 0, false, false, false, 0, 0, 1, typeof(ItemDoesNotExistException))]
         // Locked equipment.
         [InlineData(true, true, 120, false, false, true, 100, 0, false, false, false, 0, 0, 1, typeof(RequiredBlockIndexException))]
-        // Equipped equipment.
-        [InlineData(true, true, 120, false, false, true, 1, 0, true, false, false, 0, 100, 1, typeof(InvalidEquipmentException))]
         public void Execute(
             bool agentExist,
             bool avatarExist,
