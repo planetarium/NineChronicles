@@ -125,6 +125,11 @@ namespace Nekoyume.State
         public static IReadOnlyAsyncUpdatableRxProp<ArenaParticipant[]>
             ArenaParticipantsOrderedWithScore => _arenaParticipantsOrderedWithScore;
 
+        public static void UpdateArenaInfoToNext()
+        {
+            _arenaInfoTuple.Value = (_arenaInfoTuple.Value.next, null);
+        }
+
         private static void StartArena()
         {
             // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
