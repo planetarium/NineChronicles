@@ -120,11 +120,6 @@ namespace Nekoyume.Action
                     {
                         throw new RequiredBlockIndexException($"{equipment.ItemSubType} / unlock on {equipment.RequiredBlockIndex}");
                     }
-
-                    if (equipment.equipped)
-                    {
-                        throw new InvalidEquipmentException($"Can't grind equipped item. {equipmentId}");
-                    }
                 }
                 else
                 {
