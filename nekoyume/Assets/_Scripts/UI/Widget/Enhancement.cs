@@ -24,59 +24,41 @@ namespace Nekoyume.UI
 
     public class Enhancement : Widget
     {
-        [SerializeField]
-        private EnhancementInventory enhancementInventory;
+        [SerializeField] private EnhancementInventory enhancementInventory;
 
-        [SerializeField]
-        private ConditionalCostButton upgradeButton;
+        [SerializeField] private ConditionalCostButton upgradeButton;
 
-        [SerializeField]
-        private Button closeButton;
+        [SerializeField] private Button closeButton;
 
-        [SerializeField]
-        private UpgradeEquipmentSlot baseSlot;
+        [SerializeField] private UpgradeEquipmentSlot baseSlot;
 
-        [SerializeField]
-        private UpgradeEquipmentSlot materialSlot;
+        [SerializeField] private UpgradeEquipmentSlot materialSlot;
 
-        [SerializeField]
-        private TextMeshProUGUI successRatioText;
+        [SerializeField] private TextMeshProUGUI successRatioText;
 
-        [SerializeField]
-        private TextMeshProUGUI requiredBlockIndexText;
+        [SerializeField] private TextMeshProUGUI requiredBlockIndexText;
 
-        [SerializeField]
-        private TextMeshProUGUI itemNameText;
+        [SerializeField] private TextMeshProUGUI itemNameText;
 
-        [SerializeField]
-        private TextMeshProUGUI currentLevelText;
+        [SerializeField] private TextMeshProUGUI currentLevelText;
 
-        [SerializeField]
-        private TextMeshProUGUI nextLevelText;
+        [SerializeField] private TextMeshProUGUI nextLevelText;
 
-        [SerializeField]
-        private TextMeshProUGUI materialGuideText;
+        [SerializeField] private TextMeshProUGUI materialGuideText;
 
-        [SerializeField]
-        private EnhancementOptionView mainStatView;
+        [SerializeField] private EnhancementOptionView mainStatView;
 
-        [SerializeField]
-        private List<EnhancementOptionView> statViews;
+        [SerializeField] private List<EnhancementOptionView> statViews;
 
-        [SerializeField]
-        private List<EnhancementOptionView> skillViews;
+        [SerializeField] private List<EnhancementOptionView> skillViews;
 
-        [SerializeField]
-        private TextMeshProUGUI levelText;
+        [SerializeField] private TextMeshProUGUI levelText;
 
-        [SerializeField]
-        private GameObject noneContainer;
+        [SerializeField] private GameObject noneContainer;
 
-        [SerializeField]
-        private GameObject itemInformationContainer;
+        [SerializeField] private GameObject itemInformationContainer;
 
-        [SerializeField]
-        private Animator animator;
+        [SerializeField] private Animator animator;
 
         private static readonly int HashToShow = Animator.StringToHash("Show");
         private static readonly int HashToEnchantSelect = Animator.StringToHash("EnchantSelect");
@@ -182,6 +164,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
                 NotificationCell.NotificationType.Information);
 
+            Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
 
@@ -283,6 +266,7 @@ namespace Nekoyume.UI
                     {
                         animator.Play(HashToUnregisterMaterial);
                     }
+
                     materialSlot.RemoveMaterial();
                 }
                 else
@@ -291,6 +275,7 @@ namespace Nekoyume.UI
                     {
                         animator.Play(HashToPostRegisterMaterial);
                     }
+
                     materialSlot.AddMaterial(materialModel.ItemBase);
                 }
 
@@ -305,7 +290,7 @@ namespace Nekoyume.UI
 
                 ClearInformation();
                 _costNcg = row.Cost;
-                upgradeButton.SetCost(CostType.NCG, (int)row.Cost);
+                upgradeButton.SetCost(CostType.NCG, (long)row.Cost);
                 var slots = Find<CombinationSlotsPopup>();
                 upgradeButton.Interactable = slots.TryGetEmptyCombinationSlot(out var _);
 

@@ -4,6 +4,7 @@ using Lib9c.Renderer;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -57,7 +58,7 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
-        protected static MonsterCollectionState GetMonsterCollectionState<T>(
+        protected (MonsterCollectionState, int, FungibleAssetValue) GetMonsterCollectionState<T>(
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -67,13 +68,18 @@ namespace Nekoyume.BlockChain
             );
             if (evaluation.OutputStates.GetState(monsterCollectionAddress) is Bencodex.Types.Dictionary mcDict)
             {
-                return new MonsterCollectionState(mcDict);
+                var balance =
+                    evaluation.OutputStates.GetBalance(monsterCollectionAddress, GoldCurrency);
+                var level =
+                    TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
+                        agentAddress, balance);
+                return (new MonsterCollectionState(mcDict), level, balance);
             }
 
-            return null;
+            return (null, 0, new FungibleAssetValue());
         }
 
-        protected static (StakeState, int) GetStakeState<T>(
+        protected (StakeState, int, FungibleAssetValue) GetStakeState<T>(
             ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -82,20 +88,42 @@ namespace Nekoyume.BlockChain
                 Bencodex.Types.Dictionary serialized)
             {
                 var state = new StakeState(serialized);
-                var balance = evaluation.OutputStates.GetBalance(state.address, CrystalCalculator.CRYSTAL);
+                var balance = evaluation.OutputStates.GetBalance(
+                    state.address,
+                    GoldCurrency);
                 return (
                     state,
-                    Game.TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
+                    TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
                         agentAddress,
-                        balance));
+                        balance),
+                    balance);
             }
 
-            return (null, 0);
+            return (null, 0, new FungibleAssetValue());
         }
 
-        protected async UniTask UpdateAgentStateAsync<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        protected static CrystalRandomSkillState GetCrystalRandomSkillState<T>(
+            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var buffStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
+            if (evaluation.OutputStates.GetState(buffStateAddress) is
+                Bencodex.Types.List serialized)
+            {
+                var state = new CrystalRandomSkillState(buffStateAddress, serialized);
+                return state;
+            }
+
+            return null;
+        }
+
+        protected async UniTask UpdateAgentStateAsync<T>(
+            ActionBase.ActionEvaluation<T> evaluation)
+            where T : ActionBase
+        {
+            Debug.LogFormat(
+                "Called UpdateAgentState<{0}>. Updated Addresses : `{1}`",
+                evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
             await UpdateAgentStateAsync(GetAgentState(evaluation));
             try
@@ -108,10 +136,14 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        protected static async UniTask UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index)
+        protected static async UniTask UpdateAvatarState<T>(
+            ActionBase.ActionEvaluation<T> evaluation,
+            int index)
             where T : ActionBase
         {
-            Debug.LogFormat("Called UpdateAvatarState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
+            Debug.LogFormat(
+                "Called UpdateAvatarState<{0}>. Updated Addresses : `{1}`",
+                evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
             if (!States.Instance.AgentState.avatarAddresses.ContainsKey(index))
             {
@@ -121,7 +153,11 @@ namespace Nekoyume.BlockChain
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.AgentState.avatarAddresses[index];
-            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
+            if (evaluation.OutputStates.TryGetAvatarStateV2(
+                    agentAddress,
+                    avatarAddress,
+                    out var avatarState,
+                    out _))
             {
                 await UpdateAvatarState(avatarState, index);
             }
@@ -171,19 +207,36 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGameConfigState(state);
         }
 
-        protected static void UpdateMonsterCollectionState(MonsterCollectionState mcState)
+        protected static void UpdateMonsterCollectionState(
+            MonsterCollectionState mcState,
+            GoldBalanceState stakedGoldBalance,
+            int level)
         {
             if (mcState is { })
             {
-                States.Instance.SetMonsterCollectionState(mcState);
+                States.Instance.SetMonsterCollectionState(mcState, stakedGoldBalance, level);
             }
         }
 
-        protected static void UpdateStakeState(StakeState state, int level)
+        protected static void UpdateStakeState(
+            StakeState state,
+            GoldBalanceState stakedBalanceState,
+            int level)
         {
             if (state is { })
             {
-                States.Instance.SetStakeState(state, level);
+                States.Instance.SetStakeState(state, stakedBalanceState, level);
+            }
+        }
+
+        protected static void UpdateCrystalRandomSkillState<T>(
+            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var state = GetCrystalRandomSkillState(evaluation);
+
+            if (state is { })
+            {
+                States.Instance.SetCrystalRandomSkillState(state);
             }
         }
 
@@ -204,7 +257,7 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
-        public static void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        protected static void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var crystal = evaluation.OutputStates.GetBalance(evaluation.Signer, CrystalCalculator.CRYSTAL);
             var agentState = States.Instance.AgentState;

@@ -75,8 +75,10 @@ namespace Nekoyume.UI.Module
         private bool _reverseOrder;
         private bool _allowMoveTab;
         private string _notAllowedMoveTabMessage;
+        private bool _isArena;
 
-        public bool HasNotification => _equipments.Any(x => x.Value.Any(item=> item.HasNotification.Value));
+        public bool HasNotification => _equipments.Any(x =>
+            x.Value.Any(item => item.HasNotification.Value));
 
         protected void Awake()
         {
@@ -86,26 +88,17 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(costumeButton);
             _toggleGroup.DisabledFunc = () => !_allowMoveTab;
 
-            equipmentButton.OnClick.Subscribe(button =>
-                {
-                    OnTabButtonClick(button, ItemType.Equipment, _onToggleEquipment);
-                })
+            equipmentButton.OnClick
+                .Subscribe(button => OnTabButtonClick(button, ItemType.Equipment, _onToggleEquipment))
                 .AddTo(gameObject);
-            costumeButton.OnClick.Subscribe(button =>
-                {
-                    OnTabButtonClick(button, ItemType.Costume, _onToggleCostume);
-                })
+            costumeButton.OnClick
+                .Subscribe(button => OnTabButtonClick(button, ItemType.Costume, _onToggleCostume))
                 .AddTo(gameObject);
             consumableButton.OnClick
-                .Subscribe(button =>
-                {
-                    OnTabButtonClick(button, ItemType.Consumable);
-                })
+                .Subscribe(button => OnTabButtonClick(button, ItemType.Consumable))
                 .AddTo(gameObject);
-            materialButton.OnClick.Subscribe(button =>
-                {
-                    OnTabButtonClick(button, ItemType.Material);
-                })
+            materialButton.OnClick
+                .Subscribe(button => OnTabButtonClick(button, ItemType.Material))
                 .AddTo(gameObject);
 
             foreach (var type in ItemTypes)
@@ -123,7 +116,10 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                OneLineSystem.Push(MailType.System, _notAllowedMoveTabMessage, NotificationCell.NotificationType.Notification);
+                OneLineSystem.Push(
+                    MailType.System,
+                    _notAllowedMoveTabMessage,
+                    NotificationCell.NotificationType.Notification);
             }
         }
 
@@ -138,7 +134,8 @@ namespace Nekoyume.UI.Module
             _onToggleCostume = clickCostumeToggle;
         }
 
-        private void Set(Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
+        private void Set(
+            Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null)
         {
             _disposables.DisposeAllAndClear();
@@ -150,41 +147,17 @@ namespace Nekoyume.UI.Module
             itemSetDimPredicates?.ForEach(tuple =>
                 _dimConditionFuncsByItemType[tuple.type].Add(tuple.predicate));
 
-            ReactiveAvatarState.Inventory.Subscribe(inventory =>
+            if (_isArena)
             {
-                _equipments.Clear();
-                _consumables.Clear();
-                _materials.Clear();
-                _costumes.Clear();
-
-                if (inventory is null)
-                {
-                    return;
-                }
-
-                _selectedModel = null;
-                foreach (var item in
-                         inventory.Items.OrderByDescending(x => x.item is ITradableItem))
-                {
-                    if (item.Locked)
-                    {
-                        continue;
-                    }
-
-                    AddItem(item.item, item.count);
-                }
-
-                var models = GetModels(_activeItemType);
-                if (_reverseOrder)
-                {
-                    models.Reverse();
-                }
-
-                scroll.UpdateData(models, resetScrollOnEnable);
-                UpdateDimmedInventoryItem();
-
-                onUpdateInventory?.Invoke(this, inventory);
-            }).AddTo(_disposables);
+                var inventory = RxProps.PlayersArenaParticipant.Value.AvatarState.inventory;
+                SetInventory(inventory, onUpdateInventory);
+            }
+            else
+            {
+                ReactiveAvatarState.Inventory
+                    .Subscribe(e => SetInventory(e, onUpdateInventory))
+                    .AddTo(_disposables);
+            }
 
             SetToggle(equipmentButton, ItemType.Equipment);
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
@@ -203,6 +176,44 @@ namespace Nekoyume.UI.Module
             AudioController.PlayClick();
         }
 
+        private void SetInventory(
+            Nekoyume.Model.Item.Inventory inventory,
+            Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null)
+        {
+            _equipments.Clear();
+            _consumables.Clear();
+            _materials.Clear();
+            _costumes.Clear();
+
+            if (inventory is null)
+            {
+                return;
+            }
+
+            _selectedModel = null;
+            foreach (var item in
+                     inventory.Items.OrderByDescending(x => x.item is ITradableItem))
+            {
+                if (item.Locked)
+                {
+                    continue;
+                }
+
+                AddItem(item.item, item.count);
+            }
+
+            var models = GetModels(_activeItemType);
+            if (_reverseOrder)
+            {
+                models.Reverse();
+            }
+
+            scroll.UpdateData(models, resetScrollOnEnable);
+            UpdateDimmedInventoryItem();
+
+            onUpdateInventory?.Invoke(this, inventory);
+        }
+
         private void AddItem(ItemBase itemBase, int count = 1)
         {
             if (itemBase is ITradableItem tradableItem)
@@ -218,13 +229,17 @@ namespace Nekoyume.UI.Module
             switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
-                    inventoryItem = CreateInventoryItem(itemBase, count,
+                    inventoryItem = CreateInventoryItem(
+                        itemBase,
+                        count,
                         levelLimited: !Util.IsUsableItem(itemBase));
                     _consumables.Add(inventoryItem);
                     break;
                 case ItemType.Costume:
                     var costume = (Costume)itemBase;
-                    inventoryItem = CreateInventoryItem(itemBase, count,
+                    inventoryItem = CreateInventoryItem(
+                        itemBase,
+                        count,
                         equipped: costume.equipped,
                         levelLimited: !Util.IsUsableItem(itemBase));
                     _costumes.Add(inventoryItem);
@@ -284,10 +299,17 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        private InventoryItem CreateInventoryItem(ItemBase itemBase, int count,
-            bool equipped = false, bool levelLimited = false)
+        private InventoryItem CreateInventoryItem(
+            ItemBase itemBase,
+            int count,
+            bool equipped = false,
+            bool levelLimited = false)
         {
-            return new InventoryItem(itemBase, count, equipped, levelLimited,
+            return new InventoryItem(
+                itemBase,
+                count,
+                equipped,
+                levelLimited,
                 _checkTradable && !(itemBase is ITradableItem));
         }
 
@@ -461,18 +483,22 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void SetAvatarInfo(Action<InventoryItem, RectTransform> clickItem,
+        public void SetAvatarInfo(
+            Action<InventoryItem, RectTransform> clickItem,
             Action<InventoryItem> doubleClickItem,
             System.Action clickEquipmentToggle,
             System.Action clickCostumeToggle,
-            IEnumerable<ElementalType> elementalTypes)
+            IEnumerable<ElementalType> elementalTypes,
+            bool isArena = false)
         {
+            _isArena = isArena;
             _reverseOrder = false;
             SetAction(clickItem, doubleClickItem, clickEquipmentToggle, clickCostumeToggle);
-            var predicateByElementalType = InventoryHelper.GetDimmedFuncByElementalTypes(elementalTypes.ToList());
+            var predicateByElementalType =
+                InventoryHelper.GetDimmedFuncByElementalTypes(elementalTypes.ToList());
             var predicateList = predicateByElementalType != null
                 ? new List<(ItemType type, Predicate<InventoryItem>)>
-                    {(ItemType.Equipment, predicateByElementalType)}
+                    { (ItemType.Equipment, predicateByElementalType) }
                 : null;
             Set(itemSetDimPredicates: predicateList);
             _allowMoveTab = true;
@@ -506,7 +532,9 @@ namespace Nekoyume.UI.Module
             ClearFocus();
         }
 
-        public void Focus(ItemType itemType, ItemSubType subType,
+        public void Focus(
+            ItemType itemType,
+            ItemSubType subType,
             List<ElementalType> elementalTypes)
         {
             foreach (var model in GetModels(itemType))
@@ -515,7 +543,8 @@ namespace Nekoyume.UI.Module
                 {
                     if (model.ItemBase.ItemType == ItemType.Equipment)
                     {
-                        if (elementalTypes.Exists(x => x.Equals(model.ItemBase.ElementalType)))
+                        if (elementalTypes.Exists(x =>
+                                x.Equals(model.ItemBase.ElementalType)))
                         {
                             model.Focused.Value = !model.Focused.Value;
                             if (model.Focused.Value)

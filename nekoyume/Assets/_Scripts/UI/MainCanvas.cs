@@ -171,6 +171,7 @@ namespace Nekoyume.UI
                 Widget.Create<DataLoadingScreen>(),
                 Widget.Create<WorldMapLoadingScreen>(),
                 Widget.Create<UnlockWorldLoadingScreen>(),
+                Widget.Create<BuffBonusLoadingScreen>(),
                 Widget.Create<PreloadingScreen>(),
 
                 // 팝업 영역.
@@ -218,6 +219,8 @@ namespace Nekoyume.UI
             // 메뉴보단 더 앞에 나와야 합니다.
             secondWidgets.Add(Widget.Create<Battle>());
             yield return null;
+            secondWidgets.Add(Widget.Create<ArenaBattle>());
+            yield return null;
             secondWidgets.Add(Widget.Create<Blind>());
             yield return null;
             secondWidgets.Add(Widget.Create<ShopSell>());
@@ -229,6 +232,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<StageInformation>());
             yield return null;
             secondWidgets.Add(Widget.Create<BattlePreparation>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ArenaBattlePreparation>());
             yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
@@ -275,6 +280,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<ChatPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<QuitSystem>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<BuffBonusPopup>());
             yield return null;
 
             // Over than HeaderMenu
@@ -331,6 +338,12 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<BoosterPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<SweepResultPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<StakingPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<StakingPopupNone>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<BuffBonusResultPopup>());
             yield return null;
 
             // tooltip

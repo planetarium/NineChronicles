@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.Model.Stat;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using System.Text.Json;
 using Nekoyume.Helper;
 using Nekoyume.State;
@@ -18,10 +19,6 @@ using System.Linq;
 
 namespace Nekoyume.UI
 {
-    using Libplanet;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.Security.Cryptography;
     using UniRx;
     using Toggle = Module.Toggle;
 
@@ -157,7 +154,7 @@ namespace Nekoyume.UI
             Show();
 
             if (!Game.Game.instance.TableSheets
-                .EquipmentItemRecipeSheet.TryGetValue(equipmentRecipeId, out var row))
+                    .EquipmentItemRecipeSheet.TryGetValue(equipmentRecipeId, out var row))
             {
                 return;
             }
@@ -246,8 +243,9 @@ namespace Nekoyume.UI
         private void LoadRecipeModel()
         {
             var jsonAsset = Resources.Load<TextAsset>(ConsumableRecipeGroupPath);
-            var group = jsonAsset is null ?
-                default : JsonSerializer.Deserialize<CombinationRecipeGroup>(jsonAsset.text);
+            var group = jsonAsset is null
+                ? default
+                : JsonSerializer.Deserialize<CombinationRecipeGroup>(jsonAsset.text);
 
             SharedModel = new RecipeModel(
                 Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values,
@@ -264,9 +262,9 @@ namespace Nekoyume.UI
 
             if (quest is null ||
                 !Game.Game.instance.TableSheets.EquipmentItemRecipeSheet
-                .TryGetValue(quest.RecipeId, out var row) ||
+                    .TryGetValue(quest.RecipeId, out var row) ||
                 !States.Instance.CurrentAvatarState.worldInformation
-                .TryGetLastClearedStageId(out var clearedStage))
+                    .TryGetLastClearedStageId(out var clearedStage))
             {
                 SharedModel.NotifiedRow.Value = null;
                 return;
@@ -342,6 +340,7 @@ namespace Nekoyume.UI
                     {
                         var slots = Find<CombinationSlotsPopup>();
                         slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
+                        Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
                         Game.Game.instance.ActionManager
                             .CombinationEquipment(recipeInfo, slotIndex, true).Subscribe();
                         StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
@@ -370,7 +369,7 @@ namespace Nekoyume.UI
                 consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
             var slots = Find<CombinationSlotsPopup>();
-            slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:consumable);
+            slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: consumable);
 
             consumableSubRecipeView.UpdateView();
             Game.Game.instance.ActionManager.CombinationConsumable(recipeInfo, slotIndex).Subscribe();

@@ -11,9 +11,11 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Lobby;
 using UnityEngine.UI;
@@ -44,6 +46,8 @@ namespace Nekoyume.UI
 
         [SerializeField] private MainMenu btnMimisbrunnr = null;
 
+        [SerializeField] private MainMenu btnStaking = null;
+
         [SerializeField] private SpeechBubble[] speechBubbles = null;
 
         [SerializeField] private GameObject shopExclamationMark = null;
@@ -53,6 +57,8 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject questExclamationMark = null;
 
         [SerializeField] private GameObject mimisbrunnrExclamationMark = null;
+
+        [SerializeField] private Image stakingLevelIcon;
 
         [SerializeField] private GuidedQuest guidedQuest = null;
 
@@ -83,10 +89,14 @@ namespace Nekoyume.UI
                     btnMimisbrunnr.GetComponent<Button>(),
                     btnQuest.GetComponent<Button>(),
                     btnRanking.GetComponent<Button>(),
-                    btnShop.GetComponent<Button>()
+                    btnShop.GetComponent<Button>(),
+                    btnStaking.GetComponent<Button>(),
                 };
                 buttonList.ForEach(button => button.interactable = stateType == AnimationStateType.Shown);
             }).AddTo(gameObject);
+
+            MonsterCollectionStateSubject.Level.Subscribe(level =>
+                stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(level)).AddTo(gameObject);
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
@@ -149,36 +159,44 @@ namespace Nekoyume.UI
             CombinationClickInternal(() => Find<Craft>().Show(recipeId));
         }
 
-        private async void UpdateButtons()
+        private void UpdateButtons()
         {
             btnQuest.Update();
             btnCombination.Update();
             btnShop.Update();
             btnRanking.Update();
             btnMimisbrunnr.Update();
+            btnStaking.Update();
 
             var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
-            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHex);
-            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHex);
-            var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHex);
-            var firstOpenMimisbrunnrKey = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
+            var firstOpenCombinationKey
+                = string.Format(FirstOpenCombinationKeyFormat, addressHex);
+            var firstOpenShopKey
+                = string.Format(FirstOpenShopKeyFormat, addressHex);
+            var firstOpenQuestKey
+                = string.Format(FirstOpenQuestKeyFormat, addressHex);
+            var firstOpenMimisbrunnrKey
+                = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
 
             combinationExclamationMark.gameObject.SetActive(
-                btnCombination.IsUnlocked &&
-                (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
-                 Craft.SharedModel.HasNotification));
+                btnCombination.IsUnlocked
+                && (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
+                    Craft.SharedModel.HasNotification));
             shopExclamationMark.gameObject.SetActive(
-                btnShop.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
+                btnShop.IsUnlocked
+                && PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
 
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
             var hasNotificationInWorldMap = worldMap.HasNotification;
 
             questExclamationMark.gameObject.SetActive(
-                (btnQuest.IsUnlocked && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) || hasNotificationInWorldMap);
-            mimisbrunnrExclamationMark.gameObject.SetActive((btnMimisbrunnr.IsUnlocked &&
-                                                             PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0));
+                (btnQuest.IsUnlocked
+                 && PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0)
+                || hasNotificationInWorldMap);
+            mimisbrunnrExclamationMark.gameObject.SetActive(
+                btnMimisbrunnr.IsUnlocked
+                && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0);
         }
 
         private void HideButtons()
@@ -188,6 +206,7 @@ namespace Nekoyume.UI
             btnShop.gameObject.SetActive(false);
             btnRanking.gameObject.SetActive(false);
             btnMimisbrunnr.gameObject.SetActive(false);
+            btnStaking.gameObject.SetActive(false);
         }
 
         public void ShowWorld()
@@ -349,6 +368,24 @@ namespace Nekoyume.UI
             Find<EventBanner>().Close(true);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             HelpTooltip.HelpMe(100019, true);
+        }
+
+        public void StakingClick()
+        {
+            if (!btnStaking.IsUnlocked)
+            {
+                btnStaking.JingleTheCat();
+                return;
+            }
+
+            if (States.Instance.StakingLevel < 1)
+            {
+                Find<StakingPopupNone>().Show();
+            }
+            else
+            {
+                Find<StakingPopup>().Show();
+            }
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

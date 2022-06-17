@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Libplanet.Assets;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume
 {
+    using UniRx;
+
     public static class UniRxExtension
     {
         public static void DisposeAll<T>(this ReactiveProperty<T> property) where T : IDisposable
@@ -41,6 +43,9 @@ namespace Nekoyume
             collection.Dispose();
             collection.Clear();
         }
+
+        public static IDisposable Subscribe<T>(this IObservable<T> source, Func<T, UniTaskVoid> onNext) =>
+            source.Subscribe(x => onNext(x).Forget());
 
         public static IDisposable SubscribeTo<T>(this IObservable<T> source, T target) =>
             source.SubscribeWithState(target, (x, t) => t = x);

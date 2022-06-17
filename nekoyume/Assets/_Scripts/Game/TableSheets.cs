@@ -141,6 +141,10 @@ namespace Nekoyume.Game
 
         public CrystalMonsterCollectionMultiplierSheet CrystalMonsterCollectionMultiplierSheet { get; private set; }
 
+        public CrystalStageBuffGachaSheet CrystalStageBuffGachaSheet { get; private set; }
+
+        public CrystalRandomBuffSheet CrystalRandomBuffSheet { get; private set; }
+
         public CrystalMaterialCostSheet CrystalMaterialCostSheet { get; private set; }
 
         public SweepRequiredCPSheet SweepRequiredCPSheet { get; private set; }
@@ -148,6 +152,8 @@ namespace Nekoyume.Game
         public ArenaSheet ArenaSheet { get; private set; }
 
         public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
+
+        public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 

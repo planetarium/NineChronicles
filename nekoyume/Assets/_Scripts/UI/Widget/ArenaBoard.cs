@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using Libplanet;
-using Nekoyume.Arena;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
@@ -85,12 +78,6 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        public void GoToStage(BattleLog battleLog, List<ItemBase> rewards)
-        {
-            Close();
-            Game.Event.OnRankingBattleStart.Invoke((battleLog, rewards));
-        }
-
         private void UpdateBillboard()
         {
 #if UNITY_EDITOR
@@ -107,6 +94,12 @@ namespace Nekoyume.UI
             }
 #endif
             var player = RxProps.PlayersArenaParticipant.Value;
+            if (player is null)
+            {
+                Debug.Log($"{nameof(RxProps.PlayersArenaParticipant)} is null");
+                return;
+            }
+
             _billboard.SetData(
                 "season",
                 player.Rank,
@@ -133,41 +126,11 @@ namespace Nekoyume.UI
                     }
 #endif
                     var data = _boundedData[index];
-                    var inventory = States.Instance.CurrentAvatarState.inventory;
-                    ActionManager.Instance.BattleArena(
-                            data.AvatarAddr,
-                            inventory.Costumes
-                                .Where(e => e.Equipped)
-                                .Select(e => e.NonFungibleId)
-                                .ToList(),
-                            inventory.Equipments
-                                .Where(e => e.Equipped)
-                                .Select(e => e.NonFungibleId)
-                                .ToList(),
-                            _roundData.ChampionshipId,
-                            _roundData.Round,
-                            1)
-                        .DoOnSubscribe(() =>
-                        {
-                            ActionRenderHandler.Instance.Pending = true;
-                            var avatarState = data.AvatarState;
-                            Find<ArenaBattleLoadingScreen>().Show(
-                                avatarState.NameWithHash,
-                                avatarState.level,
-                                avatarState.GetArmorId());
-                        })
-                        .DoOnError(e =>
-                        {
-                            Find<ArenaBattleLoadingScreen>().Close();
-                            Find<HeaderMenuStatic>()
-                                .Show(HeaderMenuStatic.AssetVisibleState.Arena);
-                            NotificationSystem.Push(
-                                MailType.System,
-                                "Failed to battle.",
-                                NotificationCell.NotificationType.Alert);
-                        })
-                        .DoOnCompleted(() => { })
-                        .Subscribe();
+                    Close();
+                    Find<ArenaBattlePreparation>().Show(
+                        _roundData.ChampionshipId,
+                        _roundData.Round,
+                        data.AvatarState);
                 })
                 .AddTo(gameObject);
         }
@@ -188,11 +151,12 @@ namespace Nekoyume.UI
 
             var currentAvatarAddr = States.Instance.CurrentAvatarState.address;
             return RxProps.ArenaParticipantsOrderedWithScore.Value.Select(e =>
-                new ArenaBoardPlayerItemData
+            {
+                return new ArenaBoardPlayerItemData
                 {
                     name = e.AvatarState.NameWithHash,
                     level = e.AvatarState.level,
-                    armorId = e.AvatarState.GetArmorId(),
+                    fullCostumeOrArmorId = e.AvatarState.inventory.GetEquippedFullCostumeOrArmorId(),
                     titleId = e.AvatarState.inventory.Costumes
                         .FirstOrDefault(costume =>
                             costume.ItemSubType == ItemSubType.Title
@@ -202,7 +166,8 @@ namespace Nekoyume.UI
                     score = e.Score,
                     expectWinDeltaScore = e.ExpectDeltaScore.win,
                     interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
-                }).ToList();
+                };
+            }).ToList();
         }
     }
 }

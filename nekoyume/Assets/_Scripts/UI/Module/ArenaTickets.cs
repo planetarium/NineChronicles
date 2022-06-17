@@ -14,28 +14,27 @@ namespace Nekoyume.UI.Module
 
     public class ArenaTickets : MonoBehaviour
     {
-        [SerializeField] private Slider _slider;
+        [SerializeField]
+        private Image _iconImage;
 
-        [SerializeField] private TextMeshProUGUI _fillText;
+        public Image IconImage => _iconImage;
 
-        [SerializeField] private TextMeshProUGUI _timespanText;
+        [SerializeField]
+        private Slider _slider;
+
+        [SerializeField]
+        private TextMeshProUGUI _fillText;
+
+        [SerializeField]
+        private TextMeshProUGUI _timespanText;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private void Awake()
-        {
-            _slider.normalizedValue = 0f;
-            _fillText.text = string.Empty;
-        }
-
         private void OnEnable()
         {
-            UpdateSliderAndFillText(RxProps.ArenaInfoTuple.Value);
             RxProps.ArenaInfoTuple
                 .SubscribeOnMainThreadWithUpdateOnce(UpdateSliderAndFillText)
                 .AddTo(_disposables);
-
-            UpdateTimespanText(RxProps.ArenaTicketProgress.Value);
             RxProps.ArenaTicketProgress
                 .SubscribeOnMainThread()
                 .Subscribe(UpdateTimespanText)
@@ -71,8 +70,8 @@ namespace Nekoyume.UI.Module
 
         private void UpdateTimespanText((long beginning, long end, long progress) tuple)
         {
-            var (bedinning, end, progress) = tuple;
-            _timespanText.text = Util.GetBlockToTime(end - bedinning - progress);
+            var (beginning, end, progress) = tuple;
+            _timespanText.text = Util.GetBlockToTime(end - beginning - progress);
         }
     }
 }

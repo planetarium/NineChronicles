@@ -40,6 +40,7 @@ namespace Nekoyume.UI
 
         protected override void OnDisable()
         {
+            StopAllCoroutines();
             _forceFixed = false;
             realText.text = string.Empty;
             KillTween();
