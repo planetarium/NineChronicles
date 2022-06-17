@@ -85,9 +85,16 @@ namespace Nekoyume
                 return false;
             }
 
+            // NOTE: The season number is beginning from 4 when the championship id is 1 or 2.
+            //       So it initialized as 3 when the championship id is 1 or 2 because the first
+            //       season number will be set like `seasonNumber++` in the following code.
+            seasonNumber = championshipId == 1 || championshipId == 2
+                ? 3
+                : 0;
+
             // NOTE: The championship cycles once over four times.
             // And each championship includes three seasons.
-            seasonNumber = (championshipId % 4 - 1) * 3;
+            seasonNumber += (championshipId % 4 - 1) * 3;
             foreach (var roundData in roundDataArray)
             {
                 if (roundData.ArenaType == ArenaType.Season)
