@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.L10n;
@@ -61,7 +61,7 @@ namespace Nekoyume.UI
         [SerializeField] private Animator animator;
 
         private static readonly int HashToShow = Animator.StringToHash("Show");
-        private static readonly int HashToRegisterBase = Animator.StringToHash("RegisterBase");
+        private static readonly int HashToEnchantSelect = Animator.StringToHash("EnchantSelect");
 
         private static readonly int HashToPostRegisterBase =
             Animator.StringToHash("PostRegisterBase");
@@ -105,7 +105,7 @@ namespace Nekoyume.UI
             Clear();
             HelpTooltip.HelpMe(100017, true);
             enhancementInventory.Set(ShowItemTooltip, UpdateInformation);
-            animator.Play(HashToShow);
+            //animator.Play(HashToShow);
             base.Show(ignoreShowAnimation);
         }
 
@@ -248,7 +248,7 @@ namespace Nekoyume.UI
                 materialSlot.RemoveMaterial();
                 noneContainer.SetActive(true);
                 itemInformationContainer.SetActive(false);
-                animator.Play(HashToRegisterBase);
+                animator.SetTrigger(HashToEnchantSelect);
                 closeButton.interactable = true;
             }
             else

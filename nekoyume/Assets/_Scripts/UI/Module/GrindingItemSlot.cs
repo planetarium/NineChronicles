@@ -21,6 +21,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Animator animator;
 
+        private static readonly int Register = Animator.StringToHash("Register");
+
         public IObservable<Unit> OnClick => removeButton.OnClickAsObservable();
         public InventoryItem AssignedItem { get; private set; }
 
@@ -28,9 +30,18 @@ namespace Nekoyume.UI.Module
         {
             var isRegister = item != null;
             AssignedItem = item;
-            selectedSlotObject.SetActive(isRegister);
-            itemImage.overrideSprite = item?.ItemBase.GetIconSprite();
-            animator.SetTrigger(isRegister ? "Register" : "UnRegister");
+            if (isRegister)
+            {
+                itemImage.overrideSprite = item.ItemBase.GetIconSprite();
+            }
+
+            animator.SetBool(Register, isRegister);
+        }
+
+        public void ResetSlot()
+        {
+            AssignedItem = null;
+            selectedSlotObject.SetActive(false);
         }
     }
 }
