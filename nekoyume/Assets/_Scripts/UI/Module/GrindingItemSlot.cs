@@ -41,6 +41,7 @@ namespace Nekoyume.UI.Module
         public void ResetSlot()
         {
             AssignedItem = null;
+            animator.SetBool(Register, false);
             selectedSlotObject.SetActive(false);
         }
     }

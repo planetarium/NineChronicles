@@ -25,10 +25,5 @@ namespace Nekoyume.Helper
 
             return null;
         }
-
-        public static bool CheckCanNotGrinding(InventoryItem item)
-        {
-            return item.Equipped.Value || item.ItemBase.ItemType != ItemType.Equipment;
-        }
     }
 }
