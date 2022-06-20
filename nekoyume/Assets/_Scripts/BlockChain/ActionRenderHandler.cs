@@ -1783,10 +1783,12 @@ namespace Nekoyume.BlockChain
                 ArenaHelper.GetScores(previousMyScore.Value, previousEnemyScore.Value);
             var currentMyScore = log.Result switch
             {
-                ArenaLog.ArenaResult.Win =>
-                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore.Value + myWinPoint),
-                ArenaLog.ArenaResult.Lose =>
-                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore.Value + myDefeatPoint),
+                ArenaLog.ArenaResult.Win => math.max(
+                    ArenaScore.ArenaScoreDefault,
+                    previousMyScore.Value + myWinPoint),
+                ArenaLog.ArenaResult.Lose => math.max(
+                    ArenaScore.ArenaScoreDefault,
+                    previousMyScore.Value + myDefeatPoint),
                 _ => throw new ArgumentOutOfRangeException()
             };
             log.Score = currentMyScore;
