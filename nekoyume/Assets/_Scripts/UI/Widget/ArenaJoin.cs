@@ -493,7 +493,8 @@ namespace Nekoyume.UI
                         if (arenaType == ArenaType.Championship &&
                             !CheckChampionshipConditions(false))
                         {
-                            _bottomButtonText.text = "Not enough medals";
+                            _bottomButtonText.text =
+                                L10nManager.Localize("UI_NOT_ENOUGH_ARENA_MEDALS");
                             _bottomButtonText.enabled = true;
                             _joinButton.gameObject.SetActive(false);
                             _paymentButton.gameObject.SetActive(false);
