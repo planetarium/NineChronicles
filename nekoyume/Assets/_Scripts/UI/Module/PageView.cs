@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class PageView : MonoBehaviour, IDragHandler, IEndDragHandler
+    public class PageView : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler
     {
         [SerializeField]
         private RectTransform maskTransform = null;
@@ -38,11 +38,13 @@ namespace Nekoyume.UI.Module
 
         private float _xBorderMax;
 
-        private Coroutine _animationCoroutine = null;
-
         private int _currentIndex;
 
         private Vector2 _initialPosition;
+
+        private bool _isPageMoving;
+
+        private bool _isDragging;
 
         public void Set(RectTransform content, IEnumerable<Image> indexImages)
         {
@@ -65,11 +67,25 @@ namespace Nekoyume.UI.Module
             _xBorderMax = _panelPosition.x;
             _xBorderMin = _xBorderMax - maskTransform.rect.width * (_content.childCount - 1);
             SetPageIndex(0);
+            _isPageMoving = false;
+            _isDragging = false;
             StartCoroutine(CoMovePage());
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            if (!_isPageMoving)
+            {
+                _isDragging = true;
+            }
         }
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (!_isDragging)
+            {
+                return;
+            }
             var delta = eventData.pressPosition.x - eventData.position.x;
             var x = Mathf.Clamp(_panelPosition.x - delta, _xBorderMin, _xBorderMax);
             _content.localPosition = new Vector3(x, _content.localPosition.y, _content.localPosition.z);
@@ -77,6 +93,13 @@ namespace Nekoyume.UI.Module
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (_isPageMoving && !_isDragging)
+            {
+                _isDragging = false;
+                return;
+            }
+
+            _isDragging = false;
             var contentWidth = maskTransform.rect.width;
             var percentage = (eventData.pressPosition.x - eventData.position.x) / contentWidth;
             var newX = _panelPosition.x;
@@ -95,21 +118,19 @@ namespace Nekoyume.UI.Module
                     --pageDelta;
                 }
 
-                var x = Mathf.Clamp(newX, _xBorderMin, _xBorderMax);
-                targetPosition = new Vector3(x, _content.localPosition.y, _content.localPosition.z);
-                var pageDiff = Mathf.RoundToInt((_panelPosition.x - x) / contentWidth);
-                SetPageIndex(_currentIndex + pageDiff);
+                newX = Mathf.Clamp(newX, _xBorderMin, _xBorderMax);
+                targetPosition = new Vector3(newX, _content.localPosition.y, _content.localPosition.z);
             }
 
-            if (_animationCoroutine != null)
-            {
-                StopCoroutine(_animationCoroutine);
-            }
-            _animationCoroutine = StartCoroutine(CoSmoothMovePage(_content.localPosition, targetPosition));
+            var pageDiff = Mathf.RoundToInt((_panelPosition.x - newX) / contentWidth);
+            var newIndex = _currentIndex + pageDiff;
+            StartCoroutine(CoSmoothMovePage(_content.localPosition, targetPosition, newIndex));
+            SetPageIndex(newIndex);
         }
 
-        private IEnumerator CoSmoothMovePage(Vector3 startPos, Vector3 endPos)
+        private IEnumerator CoSmoothMovePage(Vector3 startPos, Vector3 endPos, int index)
         {
+            _isPageMoving = true;
             var elapsed = .0f;
 
             while (elapsed < animationTime)
@@ -123,9 +144,10 @@ namespace Nekoyume.UI.Module
                 yield return null;
             }
 
+            SetPageIndex(index);
             _content.localPosition = endPos;
             _panelPosition = _content.localPosition;
-            _animationCoroutine = null;
+            _isPageMoving = false;
         }
 
         private void SetPageIndex(int index)
@@ -145,18 +167,17 @@ namespace Nekoyume.UI.Module
             var contentWidth = maskTransform.rect.width;
             while (gameObject.activeSelf)
             {
-                yield return waitInterval;
-
-                if (_animationCoroutine == null)
+                do
                 {
-                    var idx = _currentIndex + 1 < _indexImages.Count ?
-                        _currentIndex + 1 : 0;
-                    var x = _xBorderMax - (idx * contentWidth);
-                    var targetPosition = new Vector3(x, _content.localPosition.y, _content.localPosition.z);
+                    yield return waitInterval;
+                } while (_isDragging);
 
-                    StartCoroutine(CoSmoothMovePage(_content.localPosition, targetPosition));
-                    SetPageIndex(idx);
-                }
+                var idx = _currentIndex + 1 < _indexImages.Count ?
+                    _currentIndex + 1 : 0;
+                var x = _xBorderMax - (idx * contentWidth);
+                var targetPosition = new Vector3(x, _content.localPosition.y, _content.localPosition.z);
+
+                StartCoroutine(CoSmoothMovePage(_content.localPosition, targetPosition, idx));
             }
         }
     }

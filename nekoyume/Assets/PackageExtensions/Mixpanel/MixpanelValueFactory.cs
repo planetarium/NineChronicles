@@ -52,6 +52,7 @@ namespace PackageExtensions.Mixpanel
         {
             value[_clientHostKey] = _clientHost;
             value[_clientHashKey] = _clientHash;
+            value[_targetNetworkKey] = _targetNetwork;
 
             if (_rpcServerHost is { })
             {
