@@ -64,12 +64,16 @@ namespace Nekoyume.UI.Module.Arena.Board
             _characterView.SetByFullCostumeOrArmorId(
                 _currentData.fullCostumeOrArmorId,
                 _currentData.titleId,
-                _currentData.level);
+                _currentData.level.ToString("N0", CultureInfo.CurrentCulture));
             _nameText.text = _currentData.name;
-            _cpText.text = _currentData.cp.ToString("N0", CultureInfo.CurrentCulture);
-            _ratingText.text = _currentData.score.ToString("N0", CultureInfo.CurrentCulture);
-            _plusRatingText.text
-                = _currentData.expectWinDeltaScore.ToString("N0", CultureInfo.CurrentCulture);
+            _cpText.text =
+                _currentData.cp.ToString("N0", CultureInfo.CurrentCulture);
+            _ratingText.text =
+                _currentData.score.ToString("N0", CultureInfo.CurrentCulture);
+            _plusRatingText.text =
+                _currentData.expectWinDeltaScore.ToString(
+                    "N0",
+                    CultureInfo.CurrentCulture);
             _choiceButton.Interactable = _currentData.interactableChoiceButton;
         }
 
