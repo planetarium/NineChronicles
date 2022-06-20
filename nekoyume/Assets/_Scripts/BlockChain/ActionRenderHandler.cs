@@ -1002,7 +1002,6 @@ namespace Nekoyume.BlockChain
                             var task = UniTask.Run(() =>
                             {
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
-                                UpdateWeeklyArenaState(eval);
                                 UpdateCrystalRandomSkillState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
@@ -1119,7 +1118,6 @@ namespace Nekoyume.BlockChain
                             var task = UniTask.Run(() =>
                             {
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
-                                UpdateWeeklyArenaState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);

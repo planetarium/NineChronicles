@@ -24,8 +24,6 @@ namespace Nekoyume.State
     {
         public static States Instance => Game.Game.instance.States;
 
-        public WeeklyArenaState WeeklyArenaState { get; private set; }
-
         public AgentState AgentState { get; private set; }
 
         public GoldBalanceState GoldBalanceState { get; private set; }
@@ -59,19 +57,6 @@ namespace Nekoyume.State
         }
 
         #region Setter
-
-        public void SetWeeklyArenaState(WeeklyArenaState state)
-        {
-            if (state is null)
-            {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetWeeklyArenaState)}] {nameof(state)} is null.");
-                return;
-            }
-
-            LocalLayer.Instance.InitializeWeeklyArena(state);
-            WeeklyArenaState = LocalLayer.Instance.Modify(state);
-            WeeklyArenaStateSubject.OnNext(WeeklyArenaState);
-        }
 
         /// <summary>
         /// 에이전트 상태를 할당한다.

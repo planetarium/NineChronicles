@@ -480,14 +480,6 @@ namespace Nekoyume.BlockChain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
-                var weeklyArenaState = await ArenaHelperOld.GetThisWeekStateAsync(BlockIndex);
-                if (weeklyArenaState is null)
-                {
-                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
-                }
-
-                States.Instance.SetWeeklyArenaState(weeklyArenaState);
-
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 BlockRenderHandler.Instance.Start(BlockRenderer);
                 ActionRenderHandler.Instance.Start(ActionRenderer);
