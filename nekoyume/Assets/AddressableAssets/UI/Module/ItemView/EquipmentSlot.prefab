@@ -222,6 +222,7 @@ MonoBehaviour:
   enhancementText: {fileID: 4379491137101888571}
   lockImage: {fileID: 1277656586473789476}
   itemSubType: 0
+  itemType: 2
   itemSubTypeIndex: 1
   optionTagBg: {fileID: 7828636600482819491}
   optionTagImages:
@@ -759,7 +760,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 735fdcbd1e0cd415182a62512d1020b2, type: 3}
-  m_Type: 1
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
