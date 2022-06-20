@@ -19,11 +19,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/991
-    /// Updated at https://github.com/planetarium/lib9c/pull/991
+    /// Updated at https://github.com/planetarium/lib9c/pull/
     /// </summary>
     [Serializable]
-    [ActionType("combination_equipment11")]
+    [ActionType("combination_equipment12")]
     public class CombinationEquipment : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;

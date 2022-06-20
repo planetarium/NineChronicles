@@ -5,6 +5,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
@@ -13,11 +14,11 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/500
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Updated at https://github.com/planetarium/lib9c/pull/958
     /// </summary>
     [Serializable]
     [ActionType("monster_collect3")]
-    // FIXME: This action should be obsoleted.
+    [ActionObsolete(BlockPolicySource.V100220ObsoleteIndex)]
     public class MonsterCollect : GameAction
     {
         public int level;
@@ -36,6 +37,12 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 1))
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 2))
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
+            }
+
+            if (states.TryGetStakeState(context.Signer, out StakeState _))
+            {
+                throw new InvalidOperationException(
+                    "The user has staked. You cannot stake and monster-collect at the same time.");
             }
 
             MonsterCollectionSheet monsterCollectionSheet = states.GetSheet<MonsterCollectionSheet>();
