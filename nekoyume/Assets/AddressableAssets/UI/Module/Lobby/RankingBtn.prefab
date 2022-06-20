@@ -1755,6 +1755,7 @@ GameObject:
   - component: {fileID: 654358469586272635}
   - component: {fileID: 2768692403265153442}
   - component: {fileID: 4470828118180837623}
+  - component: {fileID: 7211811589785260793}
   m_Layer: 5
   m_Name: ArenaSeasonTitle
   m_TagString: Untagged
@@ -1821,6 +1822,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &7211811589785260793
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4819401203780462280}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5089208893042244483
 GameObject:
   m_ObjectHideFlags: 0
