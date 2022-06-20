@@ -49,6 +49,15 @@ namespace Nekoyume
             }
         }
 
+        public static int GetSeasonNumber(
+            this ArenaSheet sheet,
+            long blockIndex,
+            int round,
+            int defaultValue = 0) =>
+            sheet.TryGetSeasonNumber(blockIndex, round, out var seasonNumber)
+                ? seasonNumber
+                : defaultValue;
+
         public static bool TryGetSeasonNumber(
             this ArenaSheet sheet,
             long blockIndex,
@@ -58,11 +67,27 @@ namespace Nekoyume
                 .GetRowByBlockIndex(blockIndex)
                 .TryGetSeasonNumber(round, out seasonNumber);
 
+        public static int GetSeasonNumber(
+            this ArenaSheet.Row row,
+            int round,
+            int defaultValue = 0) =>
+            row.TryGetSeasonNumber(round, out var seasonNumber)
+                ? seasonNumber
+                : defaultValue;
+
         public static bool TryGetSeasonNumber(
             this ArenaSheet.Row row,
             int round,
             out int seasonNumber) =>
             row.Round.TryGetSeasonNumber(round, out seasonNumber);
+
+        public static int GetSeasonNumber(
+            this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable,
+            int round,
+            int defaultValue = 0) =>
+            roundDataEnumerable.TryGetSeasonNumber(round, out var seasonNumber)
+                ? seasonNumber
+                : defaultValue;
 
         public static bool TryGetSeasonNumber(
             this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable,
@@ -121,9 +146,14 @@ namespace Nekoyume
                 return false;
             }
 
+            // NOTE: The season number is beginning from 4 when the championship id is 1 or 2.
+            var round = roundData.ChampionshipId == 1 || roundData.ChampionshipId == 2
+                ? roundData.Round + 3
+                : roundData.Round;
+
             // NOTE: The name of the medal item resource is
             // prepared only for championship id 1.
-            medalItemId = ArenaHelper.GetMedalItemId(1, roundData.Round);
+            medalItemId = ArenaHelper.GetMedalItemId(1, round);
             return true;
         }
 

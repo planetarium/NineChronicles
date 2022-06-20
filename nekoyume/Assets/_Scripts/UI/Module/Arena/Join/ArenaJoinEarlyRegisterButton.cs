@@ -95,12 +95,10 @@ namespace Nekoyume.UI.Module.Arena.Join
                     Hide();
                     return;
                 case ArenaType.Season:
-                    var seasonNumber = TableSheets.Instance.ArenaSheet.TryGetSeasonNumber(
-                        Game.Game.instance.Agent.BlockIndex,
-                        _round,
-                        out var outSeasonNumber)
-                        ? outSeasonNumber
-                        : throw new Exception($"Failed to get season number: {_championshipId}, {round}");
+                    var seasonNumber = TableSheets.Instance.ArenaSheet
+                        .GetSeasonNumber(
+                            Game.Game.instance.Agent.BlockIndex,
+                            _round);
                     _seasonArenaEmblem.Show(seasonNumber, !isRegistered);
                     _championshipArenaEmblem.Hide();
                     break;
