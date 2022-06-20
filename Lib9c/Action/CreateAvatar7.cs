@@ -18,8 +18,8 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("create_avatar8")]
-    public class CreateAvatar : GameAction
+    [ActionType("create_avatar7")]
+    public class CreateAvatar7 : GameAction
     {
         public const string DeriveFormat = "avatar-state-{0}";
 
