@@ -848,14 +848,14 @@ namespace Nekoyume.Game
             var rpcServerHost = _options.RpcClient
                 ? _options.RpcServerHost
                 : null;
-            
+
 #if UNITY_EDITOR
             Debug.Log("This is editor mode.");
             Analyzer = new Analyzer(uniqueId, rpcServerHost);
             return;
 #endif
             var isTrackable = true;
-            if (!Debug.isDebugBuild)
+            if (Debug.isDebugBuild)
             {
                 Debug.Log("This is debug build.");
                 isTrackable = false;
