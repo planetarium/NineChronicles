@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class CombinationEquipment10Test
+    public class CombinationEquipment11Test
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
         private readonly IRandom _random;
         private readonly IAccountStateDelta _initialState;
 
-        public CombinationEquipment10Test(ITestOutputHelper outputHelper)
+        public CombinationEquipment11Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -111,7 +111,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new CombinationEquipment10
+            var action = new CombinationEquipment11
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -134,7 +134,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(LegacyInventoryKey),
                 _avatarAddress.Derive(LegacyWorldInformationKey),
                 _avatarAddress.Derive(LegacyQuestListKey),
-                Addresses.Blacksmith,
+                ItemEnhancement10.GetFeeStoreAddress(),
             };
 
             var state = new State();
@@ -161,7 +161,7 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid(),
                 default);
             Assert.Equal(0, equipment.optionCountFromCombination);
-            CombinationEquipment.AddAndUnlockOption(
+            CombinationEquipment11.AddAndUnlockOption(
                 agentState,
                 equipment,
                 _random,
@@ -224,7 +224,7 @@ namespace Lib9c.Tests.Action
 
             previousState = previousState.MintAsset(_agentAddress, 10_000 * currency);
 
-            var action = new CombinationEquipment10
+            var action = new CombinationEquipment11
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -315,7 +315,7 @@ namespace Lib9c.Tests.Action
             var previousNCG = previousState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(mintNCG * currency, previousNCG);
 
-            var action = new CombinationEquipment10
+            var action = new CombinationEquipment11
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -354,9 +354,8 @@ namespace Lib9c.Tests.Action
 
             var agentGold = nextState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(previousNCG - costNCG, agentGold);
-
-            var blackSmithGold = nextState.GetBalance(Addresses.Blacksmith, goldCurrencyState);
-            Assert.Equal(costNCG, blackSmithGold);
+            var fee = nextState.GetBalance(ItemEnhancement10.GetFeeStoreAddress(), goldCurrencyState);
+            Assert.Equal(costNCG, fee);
         }
     }
 }

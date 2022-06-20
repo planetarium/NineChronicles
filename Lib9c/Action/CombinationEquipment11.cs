@@ -6,7 +6,6 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
@@ -16,13 +15,13 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Updated at https://github.com/planetarium/lib9c/pull/1069
+    /// </summary>
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100086ObsoleteIndex)]
-    [ActionType("combination_equipment8")]
-    public class CombinationEquipment8 : GameAction
+    [ActionType("combination_equipment11")]
+    public class CombinationEquipment11 : GameAction
     {
-        public static readonly Address BlacksmithAddress = ItemEnhancement9.BlacksmithAddress;
-
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
 
@@ -75,10 +74,8 @@ namespace Nekoyume.Action
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress);
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, ItemEnhancement10.GetFeeStoreAddress());
             }
-
-            CheckObsolete(BlockPolicySource.V100086ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -261,7 +258,7 @@ namespace Nekoyume.Action
             {
                 states = states.TransferAsset(
                     context.Signer,
-                    BlacksmithAddress,
+                    ItemEnhancement10.GetFeeStoreAddress(),
                     states.GetGoldCurrency() * costNCG
                 );
             }
@@ -271,7 +268,8 @@ namespace Nekoyume.Action
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
                 equipmentRow,
                 context.Random.GenerateRandomGuid(),
-                endBlockIndex);
+                endBlockIndex,
+                madeWithMimisbrunnrRecipe: recipeRow.IsMimisBrunnrSubRecipe(subRecipeId));
 
             if (!(subRecipeRow is null))
             {
@@ -339,7 +337,10 @@ namespace Nekoyume.Action
             SkillSheet skillSheet
         )
         {
-            foreach (var optionInfo in subRecipe.Options.OrderByDescending(e => e.Ratio))
+            foreach (var optionInfo in subRecipe.Options
+                .OrderByDescending(e => e.Ratio)
+                .ThenBy(e => e.RequiredBlockIndex)
+                .ThenBy(e => e.Id))
             {
                 if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
                 {

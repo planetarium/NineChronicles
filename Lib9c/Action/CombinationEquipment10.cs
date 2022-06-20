@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
@@ -16,10 +16,11 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100220ObsoleteIndex)]
     [ActionType("combination_equipment10")]
     public class CombinationEquipment10 : GameAction
     {
-        public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
+        public static readonly Address BlacksmithAddress = ItemEnhancement9.BlacksmithAddress;
 
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
@@ -75,6 +76,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress);
             }
+
+            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100220ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

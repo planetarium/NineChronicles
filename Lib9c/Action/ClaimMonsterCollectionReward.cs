@@ -5,6 +5,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -19,9 +20,10 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("claim_monster_collection_reward3")]
-    // FIXME: This action should be obsoleted.
+    [ActionObsolete(BlockPolicySource.V100220ObsoleteIndex)]
     public class ClaimMonsterCollectionReward : GameAction
     {
+        public const long MonsterCollectionRewardEndBlockIndex = 4_481_909;
         public Address avatarAddress;
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -59,7 +61,7 @@ namespace Nekoyume.Action
             List<MonsterCollectionRewardSheet.RewardInfo> rewards =
                 monsterCollectionState.CalculateRewards(
                     states.GetSheet<MonsterCollectionRewardSheet>(),
-                    context.BlockIndex
+                    Math.Min(MonsterCollectionRewardEndBlockIndex, context.BlockIndex)
                 );
 
             if (rewards.Count == 0)

@@ -413,9 +413,9 @@ namespace Lib9c.Tests.Action.Scenario
             //      → (현재 deposit 묶인 상태 확인)
             yield return new object[]
             {
+                51,
+                51,
                 50,
-                50,
-                9,
                 BuildEvents(10, 800, 1, 50),
             };
             yield return new object[]
@@ -721,7 +721,7 @@ namespace Lib9c.Tests.Action.Scenario
         }
 
         [Theory]
-        [InlineData(500, 50, 1)]
+        [InlineData(500, 51, 50)]
         [InlineData(500, 499, 50)]
         [InlineData(5000, 500, 499)]
         [InlineData(5000, 500, 50)]

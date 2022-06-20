@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class ItemEnhancement9Test
+    public class ItemEnhancement10Test
     {
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private IAccountStateDelta _initialState;
 
-        public ItemEnhancement9Test()
+        public ItemEnhancement10Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _random = new TestRandom();
@@ -125,7 +125,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
             }
 
-            var action = new ItemEnhancement9()
+            var action = new ItemEnhancement10()
             {
                 itemId = default,
                 materialId = materialId,
@@ -148,7 +148,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(expectedGold * _currency, nextState.GetBalance(_agentAddress, _currency));
             Assert.Equal(
                 (1000 - expectedGold) * _currency,
-                nextState.GetBalance(Addresses.Blacksmith, _currency)
+                nextState.GetBalance(ItemEnhancement10.GetFeeStoreAddress(), _currency)
             );
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
@@ -158,17 +158,17 @@ namespace Lib9c.Tests.Action
                 .FirstOrDefault(x => x.Grade == grade && x.Level == resultEquipment.level);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
-            var slotResult = (ItemEnhancement.ResultModel)slot.Result;
+            var slotResult = (ItemEnhancement10.ResultModel)slot.Result;
 
-            switch ((ItemEnhancement.EnhancementResult)slotResult.enhancementResult)
+            switch ((ItemEnhancement10.EnhancementResult)slotResult.enhancementResult)
             {
-                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                case ItemEnhancement10.EnhancementResult.GreatSuccess:
                     var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
                     Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
                     break;
-                case ItemEnhancement.EnhancementResult.Success:
+                case ItemEnhancement10.EnhancementResult.Success:
                     var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var baseMaxAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1);
@@ -176,7 +176,7 @@ namespace Lib9c.Tests.Action
                     Assert.InRange(resultEquipment.StatsMap.ATK, (int)(baseMinAtk + extraMinAtk), (int)(baseMaxAtk + extraMaxAtk) + 1);
                     Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
                     break;
-                case ItemEnhancement.EnhancementResult.Fail:
+                case ItemEnhancement10.EnhancementResult.Fail:
                     Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);
                     Assert.Equal(preItemUsable.level, resultEquipment.level);
                     break;
@@ -190,7 +190,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new ItemEnhancement9()
+            var action = new ItemEnhancement10()
             {
                 itemId = default,
                 materialId = default,
@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(LegacyInventoryKey),
                 _avatarAddress.Derive(LegacyWorldInformationKey),
                 _avatarAddress.Derive(LegacyQuestListKey),
-                Addresses.Blacksmith,
+                ItemEnhancement10.GetFeeStoreAddress(),
             };
 
             var state = new State();
