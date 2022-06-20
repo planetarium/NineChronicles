@@ -16,10 +16,10 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1135
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1156
     /// </summary>
     [Serializable]
-    [ActionType("join_arena2")]
+    [ActionType("join_arena")]
     public class JoinArena : GameAction
     {
         public Address avatarAddress;
@@ -98,7 +98,8 @@ namespace Nekoyume.Action
             }
 
             // check fee
-            var fee = roundData.EntranceFee * avatarState.level * avatarState.level * CrystalCalculator.CRYSTAL;
+
+            var fee = ArenaHelper.GetEntranceFee(roundData, context.BlockIndex, avatarState.level);
             if (fee > 0 * CrystalCalculator.CRYSTAL)
             {
                 var crystalBalance = states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);

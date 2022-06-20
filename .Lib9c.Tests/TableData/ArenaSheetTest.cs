@@ -25,10 +25,10 @@ namespace Lib9c.Tests.TableData
         [Fact]
         public void SetToSheet()
         {
-            const string content = @"id,round,arena_type,start_block_index,end_block_index,required_medal_count,entrance_fee,discounted_entrance_fee,ticket_price,additional_ticket_price
-1,1,OffSeason,0,5,0,0,0,5,2
-1,2,Season,6,10,0,0,0,5,2
-1,3,Championship,11,20000,1,0,0,5,2";
+            const string content = @"id,round,arena_type,start_block_index,end_block_index,required_medal_count,entrance_fee,ticket_price,additional_ticket_price
+1,1,OffSeason,1,2,0,0,5,2
+1,2,Season,3,4,0,100,50,20
+1,3,OffSeason,5,1005284,0,0,5,2";
 
             var sheet = new ArenaSheet();
             sheet.Set(content);
@@ -39,8 +39,8 @@ namespace Lib9c.Tests.TableData
             Assert.Equal(1, sheet.First.Round.First().ChampionshipId);
             Assert.Equal(1, sheet.First.Round.First().Round);
             Assert.Equal(ArenaType.OffSeason, sheet.First.Round.First().ArenaType);
-            Assert.Equal(0, sheet.First.Round.First().StartBlockIndex);
-            Assert.Equal(5, sheet.First.Round.First().EndBlockIndex);
+            Assert.Equal(1, sheet.First.Round.First().StartBlockIndex);
+            Assert.Equal(2, sheet.First.Round.First().EndBlockIndex);
             Assert.Equal(0, sheet.First.Round.First().RequiredMedalCount);
             Assert.Equal(0, sheet.First.Round.First().EntranceFee);
             Assert.Equal(5, sheet.First.Round.First().TicketPrice);
@@ -67,7 +67,6 @@ namespace Lib9c.Tests.TableData
                 Assert.Equal(ArenaType.OffSeason, round.ArenaType);
                 Assert.Equal(0, round.RequiredMedalCount);
                 Assert.Equal(0L, round.EntranceFee);
-                Assert.Equal(0L, round.DiscountedEntranceFee);
                 Assert.True(round.StartBlockIndex < round.EndBlockIndex);
                 Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
                 round = nextRound;
@@ -75,7 +74,6 @@ namespace Lib9c.Tests.TableData
                 Assert.Equal(ArenaType.Season, round.ArenaType);
                 Assert.Equal(0, round.RequiredMedalCount);
                 Assert.True(round.EntranceFee > 0L);
-                Assert.True(round.DiscountedEntranceFee > 0L);
                 Assert.True(round.StartBlockIndex < round.EndBlockIndex);
                 Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
                 round = nextRound;
@@ -83,7 +81,6 @@ namespace Lib9c.Tests.TableData
                 Assert.Equal(ArenaType.OffSeason, round.ArenaType);
                 Assert.Equal(0, round.RequiredMedalCount);
                 Assert.Equal(0L, round.EntranceFee);
-                Assert.Equal(0L, round.DiscountedEntranceFee);
                 Assert.True(round.StartBlockIndex < round.EndBlockIndex);
                 Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
                 round = nextRound;
@@ -91,7 +88,6 @@ namespace Lib9c.Tests.TableData
                 Assert.Equal(ArenaType.Season, round.ArenaType);
                 Assert.Equal(0, round.RequiredMedalCount);
                 Assert.True(round.EntranceFee > 0L);
-                Assert.True(round.DiscountedEntranceFee > 0L);
                 Assert.True(round.StartBlockIndex < round.EndBlockIndex);
                 Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
                 round = nextRound;
@@ -99,7 +95,6 @@ namespace Lib9c.Tests.TableData
                 Assert.Equal(ArenaType.OffSeason, round.ArenaType);
                 Assert.Equal(0, round.RequiredMedalCount);
                 Assert.Equal(0L, round.EntranceFee);
-                Assert.Equal(0L, round.DiscountedEntranceFee);
                 Assert.True(round.StartBlockIndex < round.EndBlockIndex);
                 Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
                 round = nextRound;
@@ -107,7 +102,6 @@ namespace Lib9c.Tests.TableData
                 Assert.Equal(ArenaType.Season, round.ArenaType);
                 Assert.Equal(0, round.RequiredMedalCount);
                 Assert.True(round.EntranceFee > 0L);
-                Assert.True(round.DiscountedEntranceFee > 0L);
                 Assert.True(round.StartBlockIndex < round.EndBlockIndex);
                 Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
                 round = nextRound;
@@ -115,14 +109,12 @@ namespace Lib9c.Tests.TableData
                 Assert.Equal(ArenaType.OffSeason, round.ArenaType);
                 Assert.Equal(0, round.RequiredMedalCount);
                 Assert.Equal(0L, round.EntranceFee);
-                Assert.Equal(0L, round.DiscountedEntranceFee);
                 Assert.True(round.StartBlockIndex < round.EndBlockIndex);
                 Assert.Equal(round.EndBlockIndex + 1, nextRound.StartBlockIndex);
                 round = nextRound;
                 Assert.Equal(ArenaType.Championship, round.ArenaType);
                 Assert.True(round.RequiredMedalCount > 0);
                 Assert.True(round.EntranceFee > 0L);
-                Assert.True(round.DiscountedEntranceFee > 0L);
                 Assert.True(round.StartBlockIndex < round.EndBlockIndex);
             }
         }

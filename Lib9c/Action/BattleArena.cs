@@ -20,10 +20,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1135
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1156
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena2")]
+    [ActionType("battle_arena")]
     public class BattleArena : GameAction
     {
         public Address myAvatarAddress;
