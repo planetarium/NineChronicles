@@ -59,16 +59,16 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -45.2
-        inSlope: 0.124387935
-        outSlope: 0.124387935
-        tangentMode: 0
+        value: -24
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.7611936
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 2.5333333
-        value: -49
+        value: -30
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -77,18 +77,18 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 5
-        value: -45.2
-        inSlope: -0.21725662
-        outSlope: -0.21725662
-        tangentMode: 0
+        value: -24
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
         weightedMode: 0
-        inWeight: 0.64419234
+        inWeight: 0.33333334
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/BoxCatBtnContainers/BeforeRevomonContainer/BoxCatBtn/image
+    path: MenuObject/BoxCatBtnContainers/BeforeRevomonContainer/BoxCatBtn/HelpButton
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -96,7 +96,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 9.5
+        value: -160
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -105,7 +105,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 2.5333333
-        value: 4.5
+        value: -150
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -114,7 +114,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 5
-        value: 9.5
+        value: -160
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -125,7 +125,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/BoxCatBtnContainers/BeforeRevomonContainer/BoxCatBtn/Character
+    path: MenuObject/BoxCatBtnContainers/AfterRevomonContainer/BoxCatBtn
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -162,7 +162,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/BoxCatBtnContainers/BeforeRevomonContainer/BoxCatBtn/HelpButton
+    path: MenuObject/BoxCatBtnContainers/AfterRevomonContainer/BoxCatBtn/HelpButton
     classID: 224
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -181,21 +181,21 @@ AnimationClip:
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 677133686
-      attribute: 538195251
-      script: {fileID: 0}
-      typeID: 224
-      customType: 28
-      isPPtrCurve: 0
-    - serializedVersion: 2
-      path: 1163315231
-      attribute: 538195251
-      script: {fileID: 0}
-      typeID: 224
-      customType: 28
-      isPPtrCurve: 0
-    - serializedVersion: 2
       path: 2086686806
+      attribute: 538195251
+      script: {fileID: 0}
+      typeID: 224
+      customType: 28
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 3933685357
+      attribute: 538195251
+      script: {fileID: 0}
+      typeID: 224
+      customType: 28
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 2349342552
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
@@ -265,16 +265,16 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: -45.2
-        inSlope: 0.124387935
-        outSlope: 0.124387935
-        tangentMode: 0
+        value: -24
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.7611936
+        outWeight: 0.33333334
       - serializedVersion: 3
         time: 2.5333333
-        value: -49
+        value: -30
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -283,18 +283,18 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 5
-        value: -45.2
-        inSlope: -0.21725662
-        outSlope: -0.21725662
-        tangentMode: 0
+        value: -24
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
         weightedMode: 0
-        inWeight: 0.64419234
+        inWeight: 0.33333334
         outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/BoxCatBtnContainers/BeforeRevomonContainer/BoxCatBtn/image
+    path: MenuObject/BoxCatBtnContainers/BeforeRevomonContainer/BoxCatBtn/HelpButton
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -302,7 +302,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 9.5
+        value: -160
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -311,7 +311,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 2.5333333
-        value: 4.5
+        value: -150
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -320,7 +320,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 5
-        value: 9.5
+        value: -160
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -331,7 +331,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/BoxCatBtnContainers/BeforeRevomonContainer/BoxCatBtn/Character
+    path: MenuObject/BoxCatBtnContainers/AfterRevomonContainer/BoxCatBtn
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -368,7 +368,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: MenuObject/BoxCatBtnContainers/BeforeRevomonContainer/BoxCatBtn/HelpButton
+    path: MenuObject/BoxCatBtnContainers/AfterRevomonContainer/BoxCatBtn/HelpButton
     classID: 224
     script: {fileID: 0}
   m_EulerEditorCurves: []
