@@ -22,12 +22,12 @@ namespace Nekoyume.UI.Module.Arena.Board
         private TextMeshProUGUI _ratingValueText;
 
         public void SetData(
-            string season,
-            int rank,
-            int winCount,
-            int loseCount,
-            int cp,
-            int score)
+            string season = "",
+            int rank = 0,
+            int winCount = 0,
+            int loseCount = 0,
+            int cp = 0,
+            int score = 0)
         {
             _seasonText.text = season;
             _rankValueText.text = rank.ToString("N0", CultureInfo.CurrentCulture);

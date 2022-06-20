@@ -101,6 +101,14 @@ namespace Nekoyume.UI
             if (player is null)
             {
                 Debug.Log($"{nameof(RxProps.PlayersArenaParticipant)} is null");
+                _billboard.SetData();
+                return;
+            }
+
+            if (player.CurrentArenaInfo is null)
+            {
+                Debug.Log($"{nameof(player.CurrentArenaInfo)} is null");
+                _billboard.SetData();
                 return;
             }
 
