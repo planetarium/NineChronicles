@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ArenaJoinSeasonInfoSessionProgressFill
+  m_Name: ArenaJoinSeasonInfoSessionProgressFill_Disabled
   m_Shader: {fileID: 4800000, guid: 5e85c204f931cd544a05b0a43ad97833, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
@@ -125,7 +125,7 @@ Material:
     - OffsetUV_ZoomY_1: 1
     - PinchUV_Size_1: 0.25
     - PixelSnap: 0
-    - PositionUV_X_1: 1.1497023
+    - PositionUV_X_1: -1.17
     - PositionUV_Y_1: 0
     - ResizeUV_X_1: -1
     - ResizeUV_X_2: 0
@@ -258,8 +258,8 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Outline_Color_1: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowLight_Color_1: {r: 1, g: 0.7728195, b: 0.1764706, a: 1}
-    - _TintRGBA_Color_1: {r: 0.50980395, g: 0.114449024, b: 0, a: 1}
-    - _TintRGBA_Color_2: {r: 0.99215686, g: 0.55522823, b: 0.30196083, a: 1}
-    - _TintRGBA_Color_3: {r: 0.65882355, g: 0.31868622, b: 0, a: 0.972549}
+    - _TintRGBA_Color_1: {r: 0, g: 0, b: 0, a: 1}
+    - _TintRGBA_Color_2: {r: 0.4056604, g: 0.2835997, b: 0.21239765, a: 1}
+    - _TintRGBA_Color_3: {r: 0.21698111, g: 0.20479055, b: 0.1934407, a: 0.972549}
     - _TintRGBA_Color_4: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
