@@ -231,10 +231,16 @@ namespace Lib9c.Tests.Action
                 throw new RoundNotFoundException($"{nameof(JoinArena)} : {row.ChampionshipId} / {round}");
             }
 
-            var fee = roundData.EntranceFee * _currency * avatarState.level *
-                      avatarState.level;
-            var curCurrency = preCurrency - fee;
-            Assert.Equal(curCurrency, state.GetBalance(_signer, _currency));
+            if (roundData.IsTheRoundOpened(blockIndex))
+            {
+                var curCurrency = preCurrency - (roundData.EntranceFee * _currency * avatarState.level * avatarState.level);
+                Assert.Equal(curCurrency, state.GetBalance(_signer, _currency));
+            }
+            else
+            {
+                var curCurrency = preCurrency - (roundData.EntranceFee / 2 * _currency * avatarState.level * avatarState.level);
+                Assert.Equal(curCurrency, state.GetBalance(_signer, _currency));
+            }
         }
 
         [Theory]

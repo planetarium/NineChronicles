@@ -8,7 +8,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Model.Arena
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1029
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1156
     /// </summary>
     public readonly struct ArenaPlayerDigest : IState
     {
@@ -32,7 +32,7 @@ namespace Nekoyume.Model.Arena
             EarIndex = avatarState.ear;
             TailIndex = avatarState.tail;
 
-            Level = arenaAvatarState.Level;
+            Level = avatarState.level;
             Costumes = avatarState.GetNonFungibleItems<Costume>(arenaAvatarState.Costumes);
             Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);;
         }

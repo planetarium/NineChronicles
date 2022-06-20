@@ -21,14 +21,13 @@ namespace Nekoyume.TableData
             public long EndBlockIndex { get; }
             public int RequiredMedalCount { get; }
             public long EntranceFee { get; }
-            public long DiscountedEntranceFee { get; }
             public long TicketPrice { get; }
             public long AdditionalTicketPrice { get; }
 
             public RoundData(int championshipId, int round, ArenaType arenaType,
                 long startBlockIndex, long endBlockIndex,
                 int requiredMedalCount,
-                long entranceFee, long discountedEntranceFee,
+                long entranceFee,
                 long ticketPrice, long additionalTicketPrice)
             {
                 ChampionshipId = championshipId;
@@ -38,7 +37,6 @@ namespace Nekoyume.TableData
                 EndBlockIndex = endBlockIndex;
                 RequiredMedalCount = requiredMedalCount;
                 EntranceFee = entranceFee;
-                DiscountedEntranceFee = discountedEntranceFee;
                 TicketPrice = ticketPrice;
                 AdditionalTicketPrice = additionalTicketPrice;
             }
@@ -67,13 +65,12 @@ namespace Nekoyume.TableData
                 var endIndex = ParseLong(fields[4]);
                 var requiredWins = ParseInt(fields[5]);
                 var entranceFee = ParseLong(fields[6]);
-                var discountedEntranceFee = ParseLong(fields[7]);
-                var ticketPrice = ParseLong(fields[8]);
-                var additionalTicketPrice = ParseLong(fields[9]);
+                var ticketPrice = ParseLong(fields[7]);
+                var additionalTicketPrice = ParseLong(fields[8]);
                 Round = new List<RoundData>
                 {
                     new RoundData(ChampionshipId, round, arenaType, startIndex, endIndex,
-                        requiredWins, entranceFee, discountedEntranceFee,
+                        requiredWins, entranceFee,
                         ticketPrice, additionalTicketPrice)
                 };
             }
