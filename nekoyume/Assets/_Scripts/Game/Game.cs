@@ -812,7 +812,7 @@ namespace Nekoyume.Game
             return;
 #endif
             var isTrackable = true;
-            if (!Debug.isDebugBuild)
+            if (Debug.isDebugBuild)
             {
                 Debug.Log("This is debug build.");
                 isTrackable = false;

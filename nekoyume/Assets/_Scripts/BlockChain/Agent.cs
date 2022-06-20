@@ -540,8 +540,7 @@ namespace Nekoyume.BlockChain
         {
             var uri = new Uri(iceServerInfo);
             string[] userInfo = uri.UserInfo.Split(':');
-
-            return new IceServer(new[] { uri }, userInfo[0], userInfo[1]);
+            return new IceServer(uri, userInfo[0], userInfo[1]);
         }
 
         private static BaseStore LoadStore(string path, string storageType)
@@ -701,7 +700,8 @@ namespace Nekoyume.BlockChain
                     {
                         await _swarm.BootstrapAsync(
                             seedPeers: _seedPeers,
-                            depth: 1,
+                            dialTimeout: null,
+                            searchDepth: 1,
                             cancellationToken: _cancellationTokenSource.Token
                         );
                     }
@@ -745,6 +745,7 @@ namespace Nekoyume.BlockChain
                 {
                     await _swarm.PreloadAsync(
                         TimeSpan.FromMilliseconds(SwarmDialTimeout),
+                        25,
                         new Progress<PreloadState>(state =>
                             PreloadProcessed?.Invoke(this, state)
                         ),
