@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image background = null;
 
-        private const string BACKGROUND_PATH = "UI/Textures/WorldMap/battle_UI_BG";
+        private const string BACKGROUND_PATH = "UI/Textures/00_WorldMap/battle_UI_BG";
 
         public IReadOnlyList<WorldMapStage> Stages => stages;
 
