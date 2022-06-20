@@ -162,8 +162,7 @@ namespace Nekoyume
             int avatarLevel,
             bool isEarlyRegistration)
         {
-            // TODO!!!! The discount rate should be changed.
-            const float discountRate = 0f;
+            const decimal discountRate = 0.5m;
             var cost = roundData.EntranceFee * avatarLevel * avatarLevel;
             return isEarlyRegistration
                 ? (int)(cost * (1 - discountRate))
