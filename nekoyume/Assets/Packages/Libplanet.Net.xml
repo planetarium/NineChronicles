@@ -263,6 +263,26 @@
         <member name="P:Libplanet.Net.BlockVerificationState.CurrentPhase">
             <inheritdoc />
         </member>
+        <member name="P:Libplanet.Net.BootstrapOptions.DialTimeout">
+            <summary>
+            Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timimg out
+            when dialing peers for either <see cref="T:Libplanet.Net.Messages.Pong"/>, <see cref="T:Libplanet.Net.Messages.Neighbors"/>,
+            or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> during a bootstrapping phase.  Generally, a more relaxed
+            <see cref="T:System.TimeSpan"/> is used compared to <see cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>.
+            Set to <see cref="F:Libplanet.Net.BootstrapOptions.DefaultDialTimeout"/> seconds by default.
+            </summary>
+            <seealso cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>
+        </member>
+        <member name="P:Libplanet.Net.BootstrapOptions.SeedPeers">
+            <summary>
+            The list of seed peers to connect to.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.BootstrapOptions.SearchDepth">
+            <summary>
+            Determines the depth of the search when discovering neighbors for the local node.
+            </summary>
+        </member>
         <member name="M:Libplanet.Net.BoundPeer.#ctor(Libplanet.Crypto.PublicKey,System.Net.DnsEndPoint)">
             <summary>
             Initializes a new instance of the <see cref="T:Libplanet.Net.BoundPeer"/> class.
@@ -738,6 +758,23 @@
             <summary>
             Delay of verification in milliseconds.
             </summary>
+        </member>
+        <member name="P:Libplanet.Net.PreloadOptions.DialTimeout">
+            <summary>
+            Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timimg out
+            when dialing peers for either <see cref="T:Libplanet.Net.Messages.Pong"/>, <see cref="T:Libplanet.Net.Messages.Neighbors"/>,
+            or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> during a preloading phase.  Generally, a more relaxed
+            <see cref="T:System.TimeSpan"/> is used compared to <see cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>.
+            Set to <see cref="F:Libplanet.Net.PreloadOptions.DefaultDialTimeout"/> seconds by default.
+            </summary>
+            <seealso cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>
+        </member>
+        <member name="P:Libplanet.Net.PreloadOptions.TipDeltaThreshold">
+            <summary>
+            Determines when to stop preloading. Preloading is considered complete when
+            the delta between the local node's tip index and the best known tip
+            index is less than or equal to this value.  Set to
+            <see cref="F:Libplanet.Net.PreloadOptions.DefaultTipDeltaThreshold"/> by default. </summary>
         </member>
         <member name="F:Libplanet.Net.PreloadState.TotalPhase">
             <summary>
@@ -1369,15 +1406,14 @@
             <param name="iceServers">
             <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
             servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
-            <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
-            with one different from <paramref name="appProtocolVersion"/>, and their version is
-            signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
-            If this callback returns <c>false</c> an encountered peer is ignored.  If this callback
-            is omitted all peers with different <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/>s are ignored.
+            <param name="differentAppProtocolVersionEncountered">A delegate called back when this
+            node encounters a peer with one different from <paramref name="appProtocolVersion"/>,
+            and their version is signed by a trusted party (i.e.,
+            <paramref name="trustedAppProtocolVersionSigners"/>).
             </param>
-            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
-            to trust <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/>s they signed.  To trust any party, pass
-            <c>null</c>, which is default.</param>
+            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties who
+            signed <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/>s to trust.  To trust any party, pass
+            <see langword="null"/>, which is the default.</param>
             <param name="options">Options for <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
         </member>
         <member name="P:Libplanet.Net.Swarm`1.LastMessageTimestamp">
@@ -1390,6 +1426,17 @@
             <summary>
             The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance this <see cref="T:Libplanet.Net.Swarm`1"/> instance
             synchronizes with.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Swarm`1.TrustedAppProtocolVersionSigners">
+            <summary>
+            <see cref="T:Libplanet.Crypto.PublicKey"/>s of parties who signed <see cref="P:Libplanet.Net.Swarm`1.AppProtocolVersion"/>s to
+            trust.  In case of <see langword="null"/>, any parties are trusted.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Swarm`1.AppProtocolVersion">
+            <summary>
+            The application protocol version to comply.
             </summary>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.WaitForRunningAsync">
@@ -1417,7 +1464,7 @@
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use
-            <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)"/>
+            <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Threading.CancellationToken)"/>
             method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
@@ -1446,16 +1493,13 @@
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use
-            <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)"/>
+            <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Threading.CancellationToken)"/>
             method too.</remarks>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Threading.CancellationToken)">
             <summary>
             Join to the peer-to-peer network using seed peers.
             </summary>
-            <param name="seedPeers">List of seed peers.</param>
-            <param name="depth">Depth to find neighbors of current <see cref="T:Libplanet.Net.Peer"/>
-            from seed peers.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
@@ -1468,8 +1512,8 @@
             </summary>
             <param name="seedPeers">List of seed peers.</param>
             <param name="dialTimeout">Timeout for connecting to peers.</param>
-            <param name="depth">Depth to find neighbors of current <see cref="T:Libplanet.Net.Peer"/>
-            from seed peers.</param>
+            <param name="searchDepth">Maximum recursion depth when finding neighbors of
+            current <see cref="T:Libplanet.Net.Peer"/> from seed peers.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
@@ -1502,7 +1546,7 @@
             </param>
             <returns><see cref="T:Libplanet.Net.PeerChainState"/> of the connected <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
@@ -1511,10 +1555,6 @@
             </param>
             <param name="render">
             The value indicates whether to render blocks and actions while preloading.</param>
-            <param name="tipDeltaThreshold">The threshold of the difference between the topmost tip
-            among peers and the local tip.  If the local tip is still behind the topmost tip among
-            peers by more than this threshold after a preloading is once done, the preloading
-            is repeated.  25 by default.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -1528,7 +1568,7 @@
             <exception cref="T:System.AggregateException">Thrown when the given the block downloading is
             failed.</exception>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.TimeSpan,System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Int64,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.Int64,System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
@@ -1537,15 +1577,15 @@
             the dial-up is cancelled after this timeout, and it tries another peer.
             If <c>null</c> is given it never gives up dial-ups.
             </param>
+            <param name="tipDeltaThreshold">The threshold of the difference between the topmost tip
+            among peers and the local tip.  If the local tip is still behind the topmost tip among
+            peers by more than this threshold after a preloading is once done, the preloading
+            is repeated.</param>
             <param name="progress">
             An instance that receives progress updates for block downloads.
             </param>
             <param name="render">
             The value indicates whether to render blocks and actions while preloading.</param>
-            <param name="tipDeltaThreshold">The threshold of the difference between the topmost tip
-            among peers and the local tip.  If the local tip is still behind the topmost tip among
-            peers by more than this threshold after a preloading is once done, the preloading
-            is repeated.  25 by default.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -1756,6 +1796,16 @@
             The type of <see cref="T:Libplanet.Net.Transports.ITransport"/> used in <see cref="T:Libplanet.Net.Swarm`1"/>.
             </summary>
         </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BootstrapOptions">
+            <summary>
+            Various options for the default bootstrap behavior of <see cref="T:Libplanet.Net.Swarm`1"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.PreloadOptions">
+            <summary>
+            Various options for the default preload behavior of <see cref="T:Libplanet.Net.Swarm`1"/>.
+            </summary>
+        </member>
         <member name="P:Libplanet.Net.SwarmOptions.TimeoutOptions">
             <summary>
             Various timeout options for sending and receiving <see cref="T:Libplanet.Net.Messages.Message"/>s through
@@ -1777,26 +1827,6 @@
             by default.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.TimeoutOptions.BootstrapDialTimeout">
-            <summary>
-            Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timimg out
-            when dialing peers for either <see cref="T:Libplanet.Net.Messages.Pong"/>, <see cref="T:Libplanet.Net.Messages.Neighbors"/>,
-            or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> during a bootstrapping phase.  Generally, a more relaxed
-            <see cref="T:System.TimeSpan"/> is used compared to <see cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>.
-            Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultBootstrapDialTimeout"/> seconds by default.
-            </summary>
-            <seealso cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>
-        </member>
-        <member name="P:Libplanet.Net.TimeoutOptions.PreloadDialTimeout">
-            <summary>
-            Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timimg out
-            when dialing peers for either <see cref="T:Libplanet.Net.Messages.Pong"/>, <see cref="T:Libplanet.Net.Messages.Neighbors"/>,
-            or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> during a preloading phase.  Generally, a more relaxed
-            <see cref="T:System.TimeSpan"/> is used compared to <see cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>.
-            Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultPreloadDialTimeout"/> seconds by default.
-            </summary>
-            <seealso cref="P:Libplanet.Net.TimeoutOptions.DialTimeout"/>
-        </member>
         <member name="P:Libplanet.Net.TimeoutOptions.DialTimeout">
             <summary>
             Determines how long an <see cref="T:Libplanet.Net.Transports.ITransport"/> should wait before timing out
@@ -1804,8 +1834,8 @@
             or <see cref="T:Libplanet.Net.Messages.ChainStatus"/> for a long running process.
             Set to <see cref="F:Libplanet.Net.TimeoutOptions.DefaultDialTimeout"/> seconds by default.
             </summary>
-            <seealso cref="P:Libplanet.Net.TimeoutOptions.BootstrapDialTimeout"/>
-            <seealso cref="P:Libplanet.Net.TimeoutOptions.PreloadDialTimeout"/>
+            <seealso cref="P:Libplanet.Net.BootstrapOptions.DialTimeout"/>
+            <seealso cref="P:Libplanet.Net.PreloadOptions.DialTimeout"/>
         </member>
         <member name="P:Libplanet.Net.TimeoutOptions.GetBlockHashesTimeout">
             <summary>
