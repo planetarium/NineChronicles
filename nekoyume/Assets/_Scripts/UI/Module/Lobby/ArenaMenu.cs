@@ -55,10 +55,15 @@ namespace Nekoyume.UI.Module.Lobby
             _ticketCount.text = ticket.ToString();
         }
 
-        private void UpdateTicketResetTime((long beginning, long end, long progress) tuple)
+        private void UpdateTicketResetTime((
+            int currentTicketCount,
+            int maxTicketCount,
+            int progressedBlockRange,
+            int totalBlockRange,
+            string remainTimespanToReset) tuple)
         {
-            var (beginning, end, progress) = tuple;
-            _ticketResetTime.text = Util.GetBlockToTime(end - beginning - progress);
+            var (_, _, _, _, remainTimespan) = tuple;
+            _ticketResetTime.text = remainTimespan;
         }
     }
 }

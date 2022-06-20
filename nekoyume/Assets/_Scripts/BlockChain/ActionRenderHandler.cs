@@ -1802,6 +1802,7 @@ namespace Nekoyume.BlockChain
                     myDigest.Value,
                     enemyDigest.Value);}
 
+            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
             RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
         }
     }
