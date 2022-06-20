@@ -26,14 +26,16 @@ namespace Lib9c.Tests.TableData
         public void SetToSheet()
         {
             const string content = @"id,round,arena_type,start_block_index,end_block_index,required_medal_count,entrance_fee,ticket_price,additional_ticket_price
-1,1,OffSeason,1,2,0,0,5,2";
+1,1,OffSeason,1,2,0,0,5,2
+1,2,Season,3,4,0,100,50,20
+1,3,OffSeason,5,1005284,0,0,5,2";
 
             var sheet = new ArenaSheet();
             sheet.Set(content);
 
             Assert.Single(sheet);
             Assert.NotNull(sheet.First);
-            Assert.Single(sheet.First.Round);
+            Assert.Equal(3, sheet.First.Round.Count);
             Assert.Equal(1, sheet.First.Round.First().ChampionshipId);
             Assert.Equal(1, sheet.First.Round.First().Round);
             Assert.Equal(ArenaType.OffSeason, sheet.First.Round.First().ArenaType);
