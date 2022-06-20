@@ -54,7 +54,7 @@ namespace Nekoyume.Model.Skill.Arena
                     isCritical,
                     SkillRow.SkillCategory,
                     simulatorWaveTurn,
-                    SkillRow.ElementalType,
+                    elementalType,
                     SkillRow.SkillTargetType));
             }
 
