@@ -6,8 +6,10 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Arena;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
@@ -19,14 +21,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Updated at https://github.com/planetarium/lib9c/pull/
+    /// Updated at https://github.com/planetarium/lib9c/pull/1164
     /// </summary>
     [Serializable]
     [ActionType("combination_equipment12")]
     public class CombinationEquipment : GameAction
     {
-        public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
-
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;
 
@@ -76,14 +76,7 @@ namespace Nekoyume.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
-                return states
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(slotAddress, MarkChanged)
-                    .SetState(context.Signer, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, BlacksmithAddress, Addresses.MaterialCost);
+                return states;
             }
 
             if (recipeId != 1)
@@ -340,9 +333,18 @@ namespace Nekoyume.Action
             // Transfer Required NCG
             if (costNCG > 0L)
             {
+                var arenaSheet = states.GetSheet<ArenaSheet>();
+                if (arenaSheet.GetRowByBlockIndex(context.BlockIndex) == null)
+                {
+                    throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({context.BlockIndex})");
+                }
+
+                var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
+                var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
+
                 states = states.TransferAsset(
                     context.Signer,
-                    BlacksmithAddress,
+                    arenaAdr,
                     states.GetGoldCurrency() * costNCG
                 );
             }

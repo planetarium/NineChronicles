@@ -12,9 +12,11 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Arena;
     using Nekoyume.Extensions;
     using Nekoyume.Helper;
     using Nekoyume.Model;
+    using Nekoyume.Model.Arena;
     using Nekoyume.Model.Elemental;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
@@ -89,17 +91,19 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // Tutorial recipe.
-        [InlineData(null, false, false, true, true, false, 3, 0, true, 0L, 1, null, true, false, false, false, false)]
+        [InlineData(null, false, false, true, true, false, 3, 0, true, 1L, 1, null, true, false, false, false, false)]
         // Migration AvatarState.
-        [InlineData(null, false, false, true, true, true, 3, 0, true, 0L, 1, null, true, false, false, false, false)]
+        [InlineData(null, false, false, true, true, true, 3, 0, true, 1L, 1, null, true, false, false, false, false)]
         // SubRecipe
-        [InlineData(null, true, true, true, true, false, 11, 0, true, 0L, 2, 1, true, false, false, false, false)]
+        [InlineData(null, true, true, true, true, false, 11, 0, true, 1L, 2, 1, true, false, false, false, false)]
         // Mimisbrunnr Equipment.
-        [InlineData(null, true, true, true, true, false, 11, 0, true, 0L, 2, 3, true, true, true, false, false)]
+        [InlineData(null, true, true, true, true, false, 11, 0, true, 1L, 2, 3, true, true, true, false, false)]
         // Purchase CRYSTAL.
-        [InlineData(null, true, true, true, true, false, 3, 0, true, 0L, 1, null, false, false, false, true, false)]
+        [InlineData(null, true, true, true, true, false, 3, 0, true, 1L, 1, null, false, false, false, true, false)]
         // Purchase CRYSTAL with calculate previous cost.
         [InlineData(null, true, true, true, true, false, 3, 0, true, 100_800L, 1, null, false, false, true, true, true)]
+        // Arena round not found
+        [InlineData(null, false, false, true, true, false, 3, 0, true, 0L, 1, null, true, false, false, false, false)]
         // UnlockEquipmentRecipe not executed.
         [InlineData(typeof(FailedLoadStateException), false, true, true, true, false, 11, 0, true, 0L, 2, 1, true, false, false, false, false)]
         // CRYSTAL not paid.
@@ -122,7 +126,7 @@ namespace Lib9c.Tests.Action
         // Purchase CRYSTAL failed by Mimisbrunnr material.
         [InlineData(typeof(ArgumentException), true, true, true, true, false, 11, 0, true, 0L, 2, 3, false, false, true, true, false)]
         // Insufficient NCG.
-        [InlineData(typeof(InsufficientBalanceException), true, true, true, true, false, 11, 0, true, 0L, 2, 3, true, false, true, false, false)]
+        [InlineData(typeof(InsufficientBalanceException), true, true, true, true, false, 11, 0, true, 1L, 2, 3, true, false, true, false, false)]
         public void Execute(
             Type exc,
             bool unlockIdsExist,
@@ -306,7 +310,15 @@ namespace Lib9c.Tests.Action
 
                     if (ncgBalanceExist)
                     {
-                        Assert.Equal(450 * currency, nextState.GetBalance(Addresses.Blacksmith, currency));
+                        var arenaSheet = _tableSheets.ArenaSheet;
+                        if (arenaSheet.GetRowByBlockIndex(blockIndex) == null)
+                        {
+                            throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({blockIndex})");
+                        }
+
+                        var arenaData = arenaSheet.GetRoundByBlockIndex(blockIndex);
+                        var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
+                        Assert.Equal(450 * currency, nextState.GetBalance(arenaAdr, currency));
                     }
 
                     Assert.Equal(mimisbrunnr, equipment.MadeWithMimisbrunnrRecipe);
@@ -360,49 +372,6 @@ namespace Lib9c.Tests.Action
                     Random = _random,
                 }));
             }
-        }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new CombinationEquipment
-            {
-                avatarAddress = _avatarAddress,
-                slotIndex = 0,
-                recipeId = 1,
-                subRecipeId = 255,
-            };
-            var slotAddress = _avatarAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    0
-                )
-            );
-
-            var updatedAddresses = new List<Address>
-            {
-                _agentAddress,
-                _avatarAddress,
-                slotAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                Addresses.Blacksmith,
-                Addresses.MaterialCost,
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext
-            {
-                PreviousStates = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
 
         [Fact]

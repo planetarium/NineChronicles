@@ -9,8 +9,10 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Arena;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -23,14 +25,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Updated at https://github.com/planetarium/lib9c/pull/1164
     /// </summary>
     [Serializable]
     [ActionType("item_enhancement11")]
     public class ItemEnhancement : GameAction
     {
-        public static readonly Address BlacksmithAddress = Addresses.Blacksmith;
-
         public enum EnhancementResult
         {
             GreatSuccess = 0,
@@ -130,15 +130,10 @@ namespace Nekoyume.Action
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
+
             if (ctx.Rehearsal)
             {
-                return states
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress)
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(slotAddress, MarkChanged);
+                return states;
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -282,7 +277,15 @@ namespace Nekoyume.Action
             var requiredNcg = row.Cost;
             if (requiredNcg > 0)
             {
-                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, states.GetGoldCurrency() * requiredNcg);
+                var arenaSheet = states.GetSheet<ArenaSheet>();
+                if (arenaSheet.GetRowByBlockIndex(context.BlockIndex) == null)
+                {
+                    throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({context.BlockIndex})");
+                }
+
+                var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
+                var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
+                states = states.TransferAsset(ctx.Signer, arenaAdr, states.GetGoldCurrency() * requiredNcg);
             }
 
             // Unequip items

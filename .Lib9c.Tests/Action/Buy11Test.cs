@@ -19,9 +19,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Arena;
     using Nekoyume.Model;
-    using Nekoyume.Model.Arena;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
@@ -30,7 +28,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class BuyTest
+    public class Buy11Test
     {
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
@@ -42,7 +40,7 @@ namespace Lib9c.Tests.Action
         private readonly Guid _orderId;
         private IAccountStateDelta _initialState;
 
-        public BuyTest(ITestOutputHelper outputHelper)
+        public Buy11Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -324,7 +322,7 @@ namespace Lib9c.Tests.Action
                     .SetState(orderDigestListState.Address, orderDigestListState.Serialize());
             }
 
-            var buyAction = new Buy
+            var buyAction = new Buy11
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = purchaseInfos,
@@ -414,16 +412,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(30, nextBuyerAvatarState.mailBox.Count);
 
-            var arenaSheet = _tableSheets.ArenaSheet;
-            if (arenaSheet.GetRowByBlockIndex(100) == null)
-            {
-                throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({100})");
-            }
-
-            var arenaData = arenaSheet.GetRoundByBlockIndex(100);
-            var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
-
-            var goldCurrencyGold = nextState.GetBalance(arenaAdr, goldCurrencyState);
+            var goldCurrencyGold = nextState.GetBalance(Buy11.GetFeeStoreAddress(), goldCurrencyState);
             Assert.Equal(totalTax, goldCurrencyGold);
             var buyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
             var prevBuyerGold = _initialState.GetBalance(_buyerAgentAddress, goldCurrencyState);
@@ -458,7 +447,7 @@ namespace Lib9c.Tests.Action
             }
 
             var avatarAddress = equalAvatarAddress ? _buyerAvatarAddress : default;
-            var action = new Buy
+            var action = new Buy11
             {
                 buyerAvatarAddress = avatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -575,7 +564,7 @@ namespace Lib9c.Tests.Action
                 price
             );
 
-            var action = new Buy
+            var action = new Buy11
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -701,7 +690,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(1, sellerAvatarState.inventory.Items.Count);
             Assert.Equal(sumCount, sellerAvatarState.inventory.Items.First().count);
 
-            var buyAction = new Buy
+            var buyAction = new Buy11
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = purchaseInfos,
@@ -779,6 +768,55 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void Rehearsal()
+        {
+            PurchaseInfo purchaseInfo = new PurchaseInfo(
+                _orderId,
+                default,
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                ItemSubType.Weapon,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 10, 0)
+            );
+
+            var action = new Buy11
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                purchaseInfos = new[] { purchaseInfo },
+            };
+
+            var updatedAddresses = new List<Address>()
+            {
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                _sellerAvatarAddress.Derive(LegacyInventoryKey),
+                _sellerAvatarAddress.Derive(LegacyWorldInformationKey),
+                _sellerAvatarAddress.Derive(LegacyQuestListKey),
+                OrderDigestListState.DeriveAddress(_sellerAvatarAddress),
+                _buyerAgentAddress,
+                _buyerAvatarAddress,
+                _buyerAvatarAddress.Derive(LegacyInventoryKey),
+                _buyerAvatarAddress.Derive(LegacyWorldInformationKey),
+                _buyerAvatarAddress.Derive(LegacyQuestListKey),
+                Buy11.GetFeeStoreAddress(),
+                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, _orderId),
+                OrderReceipt.DeriveAddress(_orderId),
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _buyerAgentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+        }
+
+        [Fact]
         public void Execute_With_Testbed()
         {
             var result = BlockChainHelper.MakeInitialState();
@@ -808,7 +846,7 @@ namespace Lib9c.Tests.Action
 
             var prevBuyerGold = nextState.GetBalance(result.GetAgentState().address, nextState.GetGoldCurrency());
 
-            var buyAction = new Buy
+            var buyAction = new Buy11
             {
                 buyerAvatarAddress = result.GetAvatarState().address,
                 purchaseInfos = purchaseInfos,
@@ -885,15 +923,7 @@ namespace Lib9c.Tests.Action
 
             var buyerGold = nextState.GetBalance(result.GetAgentState().address, goldCurrencyState);
             Assert.Equal(prevBuyerGold - totalPrice, buyerGold);
-            var arenaSheet = _tableSheets.ArenaSheet;
-            if (arenaSheet.GetRowByBlockIndex(100) == null)
-            {
-                throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({100})");
-            }
-
-            var arenaData = arenaSheet.GetRoundByBlockIndex(100);
-            var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
-            var goldCurrencyGold = nextState.GetBalance(arenaAdr, goldCurrencyState);
+            var goldCurrencyGold = nextState.GetBalance(Buy11.GetFeeStoreAddress(), goldCurrencyState);
             Assert.Equal(totalTax, goldCurrencyGold);
 
             foreach (var (agentAddress, expectedGold) in agentRevenue)

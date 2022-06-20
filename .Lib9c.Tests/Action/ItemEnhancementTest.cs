@@ -13,11 +13,14 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Arena;
     using Nekoyume.Extensions;
     using Nekoyume.Helper;
+    using Nekoyume.Model.Arena;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
@@ -185,9 +188,18 @@ namespace Lib9c.Tests.Action
             Assert.Equal(default, resultEquipment.ItemId);
             Assert.Equal(expectedLevel, resultEquipment.level);
             Assert.Equal(expectedGold * _currency, nextState.GetBalance(_agentAddress, _currency));
+
+            var arenaSheet = _tableSheets.ArenaSheet;
+            if (arenaSheet.GetRowByBlockIndex(1) == null)
+            {
+                throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({1})");
+            }
+
+            var arenaData = arenaSheet.GetRoundByBlockIndex(1);
+            var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
             Assert.Equal(
                 (1000 - expectedGold) * _currency,
-                nextState.GetBalance(Addresses.Blacksmith, _currency)
+                nextState.GetBalance(arenaAdr, _currency)
             );
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
@@ -222,48 +234,6 @@ namespace Lib9c.Tests.Action
             Assert.Equal(preItemUsable.TradableId, resultEquipment.TradableId);
             Assert.Equal(costRow.Cost, slotResult.gold);
             Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, slotResult.CRYSTAL);
-        }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new ItemEnhancement()
-            {
-                itemId = default,
-                materialId = default,
-                avatarAddress = _avatarAddress,
-                slotIndex = 0,
-            };
-
-            var slotAddress = _avatarAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    0
-                )
-            );
-            var updatedAddresses = new List<Address>()
-            {
-                _agentAddress,
-                _avatarAddress,
-                slotAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                Addresses.Blacksmith,
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousStates = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
     }
 }
