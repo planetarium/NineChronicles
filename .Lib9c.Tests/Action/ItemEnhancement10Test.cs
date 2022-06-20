@@ -158,17 +158,17 @@ namespace Lib9c.Tests.Action
                 .FirstOrDefault(x => x.Grade == grade && x.Level == resultEquipment.level);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
-            var slotResult = (ItemEnhancement10.ResultModel)slot.Result;
+            var slotResult = (ItemEnhancement9.ResultModel)slot.Result;
 
-            switch ((ItemEnhancement.EnhancementResult)slotResult.enhancementResult)
+            switch ((ItemEnhancement10.EnhancementResult)slotResult.enhancementResult)
             {
-                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                case ItemEnhancement10.EnhancementResult.GreatSuccess:
                     var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
                     Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
                     break;
-                case ItemEnhancement.EnhancementResult.Success:
+                case ItemEnhancement10.EnhancementResult.Success:
                     var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin.NormalizeFromTenThousandths() + 1);
                     var baseMaxAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax.NormalizeFromTenThousandths() + 1);
                     var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin.NormalizeFromTenThousandths() + 1);
@@ -176,7 +176,7 @@ namespace Lib9c.Tests.Action
                     Assert.InRange(resultEquipment.StatsMap.ATK, (int)(baseMinAtk + extraMinAtk), (int)(baseMaxAtk + extraMaxAtk) + 1);
                     Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
                     break;
-                case ItemEnhancement.EnhancementResult.Fail:
+                case ItemEnhancement10.EnhancementResult.Fail:
                     Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);
                     Assert.Equal(preItemUsable.level, resultEquipment.level);
                     break;
