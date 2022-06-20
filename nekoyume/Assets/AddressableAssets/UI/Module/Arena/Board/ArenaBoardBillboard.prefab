@@ -1099,8 +1099,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 73.6, y: -50.15999}
-  m_SizeDelta: {x: 147.2, y: 100.31998}
+  m_AnchoredPosition: {x: 43.6432, y: -50.15999}
+  m_SizeDelta: {x: 87.2864, y: 100.31998}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2530379009007740718
 MonoBehaviour:
@@ -1601,8 +1601,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 83.6, y: -50.15999}
-  m_SizeDelta: {x: 127.2, y: 100.31998}
+  m_AnchoredPosition: {x: 53.6432, y: -50.15999}
+  m_SizeDelta: {x: 67.2864, y: 100.31998}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &5598611519943916505
 GameObject:
@@ -2204,6 +2204,7 @@ GameObject:
   - component: {fileID: 625612848591579098}
   - component: {fileID: 7258101659749491983}
   - component: {fileID: 161532601269135783}
+  - component: {fileID: 4275118392462557672}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -2327,6 +2328,37 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4275118392462557672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8727467955888229053}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 16
+  l10nKey: UI_RANK
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &8758639667970942077
 GameObject:
   m_ObjectHideFlags: 0
