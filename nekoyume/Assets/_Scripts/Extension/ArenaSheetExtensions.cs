@@ -186,17 +186,5 @@ namespace Nekoyume
             var championshipRound = row.Round[7];
             return medalTotalCount >= championshipRound.RequiredMedalCount;
         }
-
-        public static long GetCost(
-            this ArenaSheet.RoundData roundData,
-            int avatarLevel,
-            bool isEarlyRegistration)
-        {
-            const decimal discountRate = 0.5m;
-            var cost = roundData.EntranceFee * avatarLevel * avatarLevel;
-            return isEarlyRegistration
-                ? (int)(cost * (1 - discountRate))
-                : cost;
-        }
     }
 }

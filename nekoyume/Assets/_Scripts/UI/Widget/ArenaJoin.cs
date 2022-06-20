@@ -375,9 +375,10 @@ namespace Nekoyume.UI
                             blockIndex,
                             out var next))
                     {
-                        var cost = next.GetCost(
-                            States.Instance.CurrentAvatarState.level,
-                            true);
+                        var cost = (long)ArenaHelper.GetEntranceFee(
+                            next,
+                            blockIndex,
+                            States.Instance.CurrentAvatarState.level).MajorUnit;
                         if (RxProps.ArenaInfoTuple.Value.next is { })
                         {
                             _earlyPaymentButton.Show(
@@ -455,10 +456,10 @@ namespace Nekoyume.UI
                     {
                         if (RxProps.ArenaInfoTuple.Value.current is null)
                         {
-                            var cost =
-                                _scroll.SelectedItemData.RoundData.GetCost(
-                                    States.Instance.CurrentAvatarState.level,
-                                    false);
+                            var cost = (long)ArenaHelper.GetEntranceFee(
+                                _scroll.SelectedItemData.RoundData,
+                                Game.Game.instance.Agent.BlockIndex,
+                                States.Instance.CurrentAvatarState.level).MajorUnit;
                             _joinButton.gameObject.SetActive(false);
 
                             if (arenaType == ArenaType.Championship &&
@@ -517,7 +518,8 @@ namespace Nekoyume.UI
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var cost = ArenaHelper.GetEntranceFee(
                 selectedRoundData,
-                blockIndex);
+                blockIndex,
+                States.Instance.CurrentAvatarState.level);
             return States.Instance.CrystalBalance >= cost;
         }
 
