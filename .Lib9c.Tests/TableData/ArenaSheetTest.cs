@@ -37,8 +37,8 @@ namespace Lib9c.Tests.TableData
             Assert.Equal(1, sheet.First.Round.First().ChampionshipId);
             Assert.Equal(1, sheet.First.Round.First().Round);
             Assert.Equal(ArenaType.OffSeason, sheet.First.Round.First().ArenaType);
-            Assert.Equal(0, sheet.First.Round.First().StartBlockIndex);
-            Assert.Equal(5, sheet.First.Round.First().EndBlockIndex);
+            Assert.Equal(1, sheet.First.Round.First().StartBlockIndex);
+            Assert.Equal(2, sheet.First.Round.First().EndBlockIndex);
             Assert.Equal(0, sheet.First.Round.First().RequiredMedalCount);
             Assert.Equal(0, sheet.First.Round.First().EntranceFee);
             Assert.Equal(5, sheet.First.Round.First().TicketPrice);
