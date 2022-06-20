@@ -51,6 +51,6 @@ namespace Lib9c.Tests
             .GetFullPath($"..{Path.DirectorySeparatorChar}")
             .Replace(
                 $".Lib9c.Tests{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}",
-                $"Lib9c{Path.DirectorySeparatorChar}TableCSV{Path.DirectorySeparatorChar}");
+                $".Lib9c.Tests{Path.DirectorySeparatorChar}TableCSV{Path.DirectorySeparatorChar}");
     }
 }
