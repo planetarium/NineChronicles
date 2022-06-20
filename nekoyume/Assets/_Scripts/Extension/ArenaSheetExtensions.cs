@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Amazon.CloudWatchLogs.Model;
 using Nekoyume.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Module.Arena.Join;
 using UnityEngine;
 
 namespace Nekoyume
@@ -185,6 +184,58 @@ namespace Nekoyume
             var medalTotalCount = ArenaHelper.GetMedalTotalCount(row, avatarState);
             var championshipRound = row.Round[7];
             return medalTotalCount >= championshipRound.RequiredMedalCount;
+        }
+
+        public static List<int> GetSeasonNumbersOfChampionship(
+            this ArenaSheet.Row row) =>
+            TryGetSeasonNumbersOfChampionship(
+                row.Round,
+                out var seasonNumbers)
+                ? seasonNumbers
+                : new List<int>();
+
+        public static List<int> GetSeasonNumbersOfChampionship(
+            this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable) =>
+            TryGetSeasonNumbersOfChampionship(
+                roundDataEnumerable,
+                out var seasonNumbers)
+                ? seasonNumbers
+                : new List<int>();
+
+        public static bool TryGetSeasonNumbersOfChampionship(
+            this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable,
+            out List<int> seasonNumbers)
+        {
+            seasonNumbers = new List<int>();
+            var roundDataArray = roundDataEnumerable as ArenaSheet.RoundData[]
+                                 ?? roundDataEnumerable.ToArray();
+            var firstRound = roundDataArray.FirstOrDefault();
+            if (firstRound is null)
+            {
+                return false;
+            }
+
+            var championshipId = firstRound.ChampionshipId;
+            if (roundDataArray.Any(e => e.ChampionshipId != championshipId))
+            {
+                return false;
+            }
+
+            // NOTE: The season number is beginning from 4.
+            // NOTE: The championship cycles once over four times.
+            // And each championship includes three seasons.
+            var seasonStartNumber = (championshipId % 4 - 1) * 3 + 4;
+            foreach (var roundData in roundDataArray)
+            {
+                if (roundData.ArenaType != ArenaType.Season)
+                {
+                    continue;
+                }
+
+                seasonNumbers.Add(seasonStartNumber++);
+            }
+
+            return true;
         }
     }
 }

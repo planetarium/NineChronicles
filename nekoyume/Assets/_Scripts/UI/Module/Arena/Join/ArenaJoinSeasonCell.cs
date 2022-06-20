@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Nekoyume.Model.EnumType;
 using Nekoyume.TableData;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace Nekoyume.UI.Module.Arena.Join
     {
         public ArenaSheet.RoundData RoundData;
         public int? SeasonNumber;
+        public List<int> ChampionshipSeasonNumbers;
 
         public string GetRoundName() => RoundData.ArenaType switch
         {

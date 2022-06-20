@@ -222,6 +222,8 @@ namespace Nekoyume.UI
                         out var seasonNumber)
                         ? seasonNumber
                         : (int?)null,
+                    ChampionshipSeasonNumbers =
+                        arenaDataList.GetSeasonNumbersOfChampionship(),
                 }).ToList();
             }
 #endif
@@ -237,6 +239,8 @@ namespace Nekoyume.UI
                             out var seasonNumber)
                             ? seasonNumber
                             : (int?)null,
+                        ChampionshipSeasonNumbers =
+                            row.GetSeasonNumbersOfChampionship(),
                     }).ToList();
             }
         }
