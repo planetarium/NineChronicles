@@ -50,6 +50,10 @@ namespace Nekoyume.UI.Module
 
         private readonly Dictionary<CostType, long> _costMap = new Dictionary<CostType, long>();
 
+        public long CrystalCost => _costMap.TryGetValue(CostType.Crystal, out var cost)
+            ? cost
+            : 0L;
+
         public void SetCost(params CostParam[] costs)
         {
             _costMap.Clear();
