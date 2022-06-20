@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
 using Libplanet.Action;
-using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -15,12 +14,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1158
-    /// Updated at https://github.com/planetarium/lib9c/pull/1158
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/823
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("create_avatar8")]
-    public class CreateAvatar : GameAction
+    [ActionType("create_avatar7")]
+    public class CreateAvatar7 : GameAction
     {
         public const string DeriveFormat = "avatar-state-{0}";
 
@@ -84,8 +83,7 @@ namespace Nekoyume.Action
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer);
+                    .SetState(questListAddress, MarkChanged);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -158,8 +156,7 @@ namespace Nekoyume.Action
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .MintAsset(ctx.Signer, 50 * CrystalCalculator.CRYSTAL);
+                .SetState(avatarAddress, avatarState.SerializeV2());
         }
     }
 }

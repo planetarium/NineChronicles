@@ -10,18 +10,17 @@ namespace Lib9c.Tests.Action
     using Libplanet.Assets;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Helper;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class CreateAvatarTest
+    public class CreateAvatar7Test
     {
         private readonly Address _agentAddress;
         private readonly TableSheets _tableSheets;
 
-        public CreateAvatarTest()
+        public CreateAvatar7Test()
         {
             _agentAddress = default;
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
@@ -30,7 +29,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var action = new CreateAvatar()
+            var action = new CreateAvatar7()
             {
                 index = 0,
                 hair = 0,
@@ -39,6 +38,8 @@ namespace Lib9c.Tests.Action
                 tail = 0,
                 name = "test",
             };
+
+            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
 
             var sheets = TableSheetsImporter.ImportSheets();
             var state = new State()
@@ -51,8 +52,6 @@ namespace Lib9c.Tests.Action
             {
                 state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
-
-            Assert.Equal(0 * CrystalCalculator.CRYSTAL, state.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
 
             var nextState = action.Execute(new ActionContext()
             {
@@ -77,7 +76,6 @@ namespace Lib9c.Tests.Action
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(50 * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
         }
 
         [Theory]
@@ -87,7 +85,7 @@ namespace Lib9c.Tests.Action
         {
             var agentAddress = default(Address);
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar7()
             {
                 index = 0,
                 hair = 0,
@@ -128,7 +126,7 @@ namespace Lib9c.Tests.Action
                 default
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar7()
             {
                 index = 0,
                 hair = 0,
@@ -156,7 +154,7 @@ namespace Lib9c.Tests.Action
         {
             var agentState = new AgentState(_agentAddress);
             var state = new State().SetState(_agentAddress, agentState.Serialize());
-            var action = new CreateAvatar()
+            var action = new CreateAvatar7()
             {
                 index = index,
                 hair = 0,
@@ -192,7 +190,7 @@ namespace Lib9c.Tests.Action
             agentState.avatarAddresses[index] = avatarAddress;
             var state = new State().SetState(_agentAddress, agentState.Serialize());
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar7()
             {
                 index = index,
                 hair = 0,
@@ -226,7 +224,7 @@ namespace Lib9c.Tests.Action
                 )
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar7()
             {
                 index = index,
                 hair = 0,
@@ -277,7 +275,7 @@ namespace Lib9c.Tests.Action
         public void Serialize_With_DotnetAPI()
         {
             var formatter = new BinaryFormatter();
-            var action = new CreateAvatar()
+            var action = new CreateAvatar7()
             {
                 index = 2,
                 hair = 1,
@@ -291,7 +289,7 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
 
             ms.Seek(0, SeekOrigin.Begin);
-            var deserialized = (CreateAvatar)formatter.Deserialize(ms);
+            var deserialized = (CreateAvatar7)formatter.Deserialize(ms);
 
             Assert.Equal(2, deserialized.index);
             Assert.Equal(1, deserialized.hair);
