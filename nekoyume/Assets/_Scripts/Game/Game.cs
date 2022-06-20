@@ -414,6 +414,9 @@ namespace Nekoyume.Game
             TableSheets = new TableSheets(csv);
         }
 
+        // FIXME: Return some of exceptions when table csv is `Null` in the chain.
+        //        And if it is `Null` in the chain, then it should be handled in the caller.
+        //        Show a popup with error message and quit the application.
         private async UniTask SyncTableSheetsAsync()
         {
             var container
@@ -433,6 +436,7 @@ namespace Nekoyume.Game
             var dict = await Agent.GetStateBulk(map.Keys);
             var csv = dict.ToDictionary(
                 pair => map[pair.Key],
+                // NOTE: `pair.Value` is nullable when the chain not contains the `pair.Key`.
                 pair => pair.Value.ToDotnetString());
             TableSheets = new TableSheets(csv);
         }

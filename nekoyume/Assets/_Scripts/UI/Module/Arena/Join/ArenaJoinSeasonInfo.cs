@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nekoyume.BlockChain;
-using Nekoyume.Game;
 using Nekoyume.Helper;
-using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.ValueControlComponents.Shader;
 using TMPro;
@@ -26,52 +23,58 @@ namespace Nekoyume.UI.Module.Arena.Join
             Costume = 8,
         }
 
-        [SerializeField] private TextMeshProUGUI _titleText;
+        [SerializeField]
+        private TextMeshProUGUI _titleText;
 
-        [SerializeField] private ShaderPropertySlider _seasonProgressSlider;
+        [SerializeField]
+        private ShaderPropertySlider _seasonProgressSlider;
 
-        [SerializeField] private Image _seasonProgressFillImage;
+        [SerializeField]
+        private Image _seasonProgressFillImage;
 
-        [SerializeField] private TextMeshProUGUI _seasonProgressSliderFillText;
+        [SerializeField]
+        private TextMeshProUGUI _seasonProgressSliderFillText;
 
-        [SerializeField] private GameObject _conditionsContainer;
+        [SerializeField]
+        private GameObject _medalReward;
 
-        [SerializeField] private Image _conditionsSliderFillArea;
+        [SerializeField]
+        private GameObject _ncgReward;
 
-        [SerializeField] private TextMeshProUGUI _conditionsSliderFillText;
+        [SerializeField]
+        private GameObject _foodReward;
 
-        [SerializeField] private string _conditionsSliderFillTextFormat;
+        [SerializeField]
+        private GameObject _costumeReward;
 
-        [SerializeField] private GameObject _medalReward;
+        [SerializeField]
+        private List<Image> _currentRoundMedalImages;
 
-        [SerializeField] private GameObject _ncgReward;
-
-        [SerializeField] private GameObject _foodReward;
-
-        [SerializeField] private GameObject _costumeReward;
-
-        [SerializeField] private List<Image> _currentRoundMedalImages;
-
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesFromOnEnable = new List<IDisposable>();
 
         private ArenaSheet.RoundData _roundData;
+
+        private readonly Subject<Unit> _onSeasonBeginning = new Subject<Unit>();
+        public IObservable<Unit> OnSeasonBeginning => _onSeasonBeginning;
+
+        private readonly Subject<Unit> _onSeasonEnded = new Subject<Unit>();
+        public IObservable<Unit> OnSeasonEnded => _onSeasonEnded;
 
         private void OnEnable()
         {
             Game.Game.instance.Agent.BlockIndexSubject
                 .Subscribe(blockIndex =>
                     SetSliderAndText(_roundData.GetSeasonProgress(blockIndex)))
-                .AddTo(gameObject);
+                .AddTo(_disposablesFromOnEnable);
         }
 
         private void OnDisable()
         {
-            _disposables.DisposeAllAndClear();
+            _disposablesFromOnEnable.DisposeAllAndClear();
         }
 
         /// <param name="title">Season Name</param>
         /// <param name="roundData"></param>
-        /// <param name="conditions">Season Conditions</param>
         /// <param name="rewardType">
         ///   Reward types.
         ///   (e.g., RewardType.None or RewardType.Medal | RewardType.NCG)
@@ -80,17 +83,14 @@ namespace Nekoyume.UI.Module.Arena.Join
         public void SetData(
             string title,
             ArenaSheet.RoundData roundData,
-            (int max, int current)? conditions,
             RewardType rewardType,
             int? medalItemId)
         {
-            _disposables.DisposeAllAndClear();
             _titleText.text = title;
             _roundData = roundData;
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             SetSliderAndText(_roundData.GetSeasonProgress(blockIndex));
-            SetConditions(conditions);
             SetRewards(rewardType);
             SetMedalImages(medalItemId);
         }
@@ -98,17 +98,17 @@ namespace Nekoyume.UI.Module.Arena.Join
         private void SetSliderAndText((long beginning, long end, long current) tuple)
         {
             var (beginning, end, current) = tuple;
-            if (current < beginning)
+            if (current < beginning ||
+                current > end)
             {
                 _seasonProgressFillImage.enabled = false;
                 _seasonProgressSliderFillText.enabled = false;
-                return;
-            }
 
-            if (current > end)
-            {
-                _seasonProgressFillImage.enabled = false;
-                _seasonProgressSliderFillText.enabled = false;
+                if (current == end + 1)
+                {
+                    _onSeasonEnded.OnNext(Unit.Default);
+                }
+
                 return;
             }
 
@@ -119,21 +119,11 @@ namespace Nekoyume.UI.Module.Arena.Join
             _seasonProgressFillImage.enabled = true;
             _seasonProgressSliderFillText.text = Util.GetBlockToTime(range - progress);
             _seasonProgressSliderFillText.enabled = true;
-        }
 
-        private void SetConditions((int max, int current)? conditions)
-        {
-            if (!conditions.HasValue)
+            if (current == beginning)
             {
-                _conditionsContainer.SetActive(false);
-                return;
+                _onSeasonBeginning.OnNext(Unit.Default);
             }
-
-            var (max, current) = conditions.Value;
-            _conditionsSliderFillArea.fillAmount = (float)current / max;
-            _conditionsSliderFillText.text =
-                string.Format(_conditionsSliderFillTextFormat, current, max);
-            _conditionsContainer.SetActive(true);
         }
 
         private void SetRewards(RewardType rewardType)

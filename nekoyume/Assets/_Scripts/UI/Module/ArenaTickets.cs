@@ -30,20 +30,11 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private void Awake()
-        {
-            _slider.normalizedValue = 0f;
-            _fillText.text = string.Empty;
-        }
-
         private void OnEnable()
         {
-            UpdateSliderAndFillText(RxProps.ArenaInfoTuple.Value);
             RxProps.ArenaInfoTuple
                 .SubscribeOnMainThreadWithUpdateOnce(UpdateSliderAndFillText)
                 .AddTo(_disposables);
-
-            UpdateTimespanText(RxProps.ArenaTicketProgress.Value);
             RxProps.ArenaTicketProgress
                 .SubscribeOnMainThread()
                 .Subscribe(UpdateTimespanText)
@@ -79,8 +70,8 @@ namespace Nekoyume.UI.Module
 
         private void UpdateTimespanText((long beginning, long end, long progress) tuple)
         {
-            var (bedinning, end, progress) = tuple;
-            _timespanText.text = Util.GetBlockToTime(end - bedinning - progress);
+            var (beginning, end, progress) = tuple;
+            _timespanText.text = Util.GetBlockToTime(end - beginning - progress);
         }
     }
 }

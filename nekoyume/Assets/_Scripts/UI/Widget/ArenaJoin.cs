@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Action;
 using Nekoyume.Arena;
 using Nekoyume.BlockChain;
@@ -12,6 +13,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Arena.Join;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,6 +52,9 @@ namespace Nekoyume.UI
         private ArenaJoinSeasonInfo _info;
 
         [SerializeField]
+        private TextMeshProUGUI _bottomButtonText;
+
+        [SerializeField]
         private ConditionalButton _joinButton;
 
         [SerializeField]
@@ -57,6 +62,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private ArenaJoinEarlyRegisterButton _earlyPaymentButton;
+
+        [SerializeField]
+        private ArenaJoinMissionButton _missionButton;
 
         [SerializeField]
         private Button _backButton;
@@ -91,7 +99,6 @@ namespace Nekoyume.UI
             UpdateScrolls();
             UpdateInfo();
 
-            // NOTE: RxProp invoke on next callback when subscribe function invoked.
             RxProps.ArenaInfoTuple
                 .Subscribe(tuple => UpdateBottomButtons())
                 .AddTo(_disposablesForShow);
@@ -252,7 +259,6 @@ namespace Nekoyume.UI
             _info.SetData(
                 _scroll.SelectedItemData.GetRoundName(),
                 selectedRoundData,
-                GetConditions(),
                 GetRewardType(_scroll.SelectedItemData),
                 selectedRoundData.TryGetMedalItemResourceId(out var medalItemId)
                     ? medalItemId
@@ -264,9 +270,6 @@ namespace Nekoyume.UI
         /// </summary>
         private void InitializeBottomButtons()
         {
-            _joinButton.SetState(ConditionalButton.State.Normal);
-            _paymentButton.SetState(ConditionalButton.State.Conditional);
-
             _earlyPaymentButton.OnJoinArenaAction
                 .Subscribe(_ =>
                 {
@@ -275,6 +278,7 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
+            _joinButton.SetState(ConditionalButton.State.Normal);
             _joinButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -306,6 +310,9 @@ namespace Nekoyume.UI
                     .Subscribe();
             }).AddTo(gameObject);
 
+
+            _paymentButton.SetState(ConditionalButton.State.Conditional);
+            _paymentButton.SetCondition(() => CheckChampionshipConditions(true));
             _paymentButton.OnClickSubject.Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -326,6 +333,15 @@ namespace Nekoyume.UI
                         selectedRoundData.Round)
                     .Subscribe();
             }).AddTo(gameObject);
+
+            _info.OnSeasonBeginning
+                .Merge(_info.OnSeasonEnded)
+                .Subscribe(_ =>
+                {
+                    RxProps.UpdateArenaInfoToNext();
+                    UpdateBottomButtons();
+                })
+                .AddTo(gameObject);
         }
 
         private void UpdateBottomButtons()
@@ -334,10 +350,14 @@ namespace Nekoyume.UI
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var isOpened = selectedRoundData.IsTheRoundOpened(blockIndex);
             var arenaType = selectedRoundData.ArenaType;
+            UpdateJoinAndPaymentButton(arenaType, isOpened);
             var championshipId = selectedRoundData.ChampionshipId;
-            var crystal = selectedRoundData.EntranceFee;
-            UpdateEarlyRegistrationButton(arenaType, isOpened, blockIndex, championshipId);
-            UpdateJoinAndPaymentButton(arenaType, isOpened, crystal);
+            UpdateEarlyRegistrationButton(
+                arenaType,
+                isOpened,
+                blockIndex,
+                championshipId);
+            _missionButton.SetConditions(GetConditions());
         }
 
         private void UpdateEarlyRegistrationButton(
@@ -355,6 +375,9 @@ namespace Nekoyume.UI
                             blockIndex,
                             out var next))
                     {
+                        var cost = next.GetCost(
+                            States.Instance.CurrentAvatarState.level,
+                            true);
                         if (RxProps.ArenaInfoTuple.Value.next is { })
                         {
                             _earlyPaymentButton.Show(
@@ -362,7 +385,7 @@ namespace Nekoyume.UI
                                 next.ChampionshipId,
                                 next.Round,
                                 true,
-                                next.DiscountedEntranceFee);
+                                cost);
                         }
                         else if (next.ArenaType == ArenaType.Championship)
                         {
@@ -375,7 +398,7 @@ namespace Nekoyume.UI
                                     next.ChampionshipId,
                                     next.Round,
                                     false,
-                                    next.DiscountedEntranceFee);
+                                    cost);
                             }
                             else
                             {
@@ -389,7 +412,7 @@ namespace Nekoyume.UI
                                 next.ChampionshipId,
                                 next.Round,
                                 false,
-                                next.DiscountedEntranceFee);
+                                cost);
                         }
                     }
                     else
@@ -412,17 +435,18 @@ namespace Nekoyume.UI
 
         private void UpdateJoinAndPaymentButton(
             ArenaType arenaType,
-            bool isOpened,
-            long crystal)
+            bool isOpened)
         {
             switch (arenaType)
             {
                 case ArenaType.OffSeason:
                 {
+                    _bottomButtonText.enabled = false;
                     _joinButton.Interactable = isOpened;
                     _joinButton.gameObject.SetActive(true);
                     _paymentButton.gameObject.SetActive(false);
-                    break;
+
+                    return;
                 }
                 case ArenaType.Season:
                 case ArenaType.Championship:
@@ -431,22 +455,50 @@ namespace Nekoyume.UI
                     {
                         if (RxProps.ArenaInfoTuple.Value.current is null)
                         {
+                            var cost =
+                                _scroll.SelectedItemData.RoundData.GetCost(
+                                    States.Instance.CurrentAvatarState.level,
+                                    false);
                             _joinButton.gameObject.SetActive(false);
-                            _paymentButton.SetCondition(CheckChampionshipConditions);
-                            _paymentButton.SetCost(CostType.Crystal, crystal);
+
+                            if (arenaType == ArenaType.Championship &&
+                                CheckChampionshipConditions(false))
+                            {
+                                _bottomButtonText.text = "Not enough medals";
+                                _bottomButtonText.enabled = true;
+                                _paymentButton.gameObject.SetActive(false);
+
+                                return;
+                            }
+
+                            _bottomButtonText.enabled = false;
+                            _paymentButton.SetCost(CostType.Crystal, cost);
                             _paymentButton.UpdateObjects();
-                            _paymentButton.Interactable = CheckChampionshipConditions();
+                            _paymentButton.Interactable = true;
                             _paymentButton.gameObject.SetActive(true);
+
+                            return;
                         }
-                        else
-                        {
-                            _joinButton.Interactable = true;
-                            _joinButton.gameObject.SetActive(true);
-                            _paymentButton.gameObject.SetActive(false);
-                        }
+
+                        _bottomButtonText.enabled = false;
+                        _joinButton.Interactable = true;
+                        _joinButton.gameObject.SetActive(true);
+                        _paymentButton.gameObject.SetActive(false);
                     }
                     else
                     {
+                        if (arenaType == ArenaType.Championship &&
+                            !CheckChampionshipConditions(false))
+                        {
+                            _bottomButtonText.text = "Not enough medals";
+                            _bottomButtonText.enabled = true;
+                            _joinButton.gameObject.SetActive(false);
+                            _paymentButton.gameObject.SetActive(false);
+
+                            return;
+                        }
+
+                        _bottomButtonText.enabled = false;
                         _joinButton.Interactable = false;
                         _joinButton.gameObject.SetActive(true);
                         _paymentButton.gameObject.SetActive(false);
@@ -459,7 +511,17 @@ namespace Nekoyume.UI
             }
         }
 
-        private bool CheckChampionshipConditions()
+        private bool CheckJoinCost()
+        {
+            var selectedRoundData = _scroll.SelectedItemData.RoundData;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var cost = ArenaHelper.GetEntranceFee(
+                selectedRoundData,
+                blockIndex);
+            return States.Instance.CrystalBalance >= cost;
+        }
+
+        private bool CheckChampionshipConditions(bool considerCrystal)
         {
             var selectedRoundData = _scroll.SelectedItemData.RoundData;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -469,11 +531,12 @@ namespace Nekoyume.UI
                 States.Instance.CurrentAvatarState);
             var completeCondition = medalTotalCount >=
                                     selectedRoundData.RequiredMedalCount;
-            var cost = ArenaHelper.GetEntranceFee(
-                selectedRoundData,
-                blockIndex);
-            var hasCost = States.Instance.CrystalBalance >= cost;
-            return completeCondition && hasCost;
+            if (!considerCrystal)
+            {
+                return completeCondition;
+            }
+
+            return completeCondition && CheckJoinCost();
         }
 
         private (int max, int current) GetConditions()

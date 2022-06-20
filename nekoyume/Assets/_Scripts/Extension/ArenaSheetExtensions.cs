@@ -85,9 +85,16 @@ namespace Nekoyume
                 return false;
             }
 
+            // NOTE: The season number is beginning from 4 when the championship id is 1 or 2.
+            //       So it initialized as 3 when the championship id is 1 or 2 because the first
+            //       season number will be set like `seasonNumber++` in the following code.
+            seasonNumber = championshipId == 1 || championshipId == 2
+                ? 3
+                : 0;
+
             // NOTE: The championship cycles once over four times.
             // And each championship includes three seasons.
-            seasonNumber = (championshipId % 4 - 1) * 3;
+            seasonNumber += (championshipId % 4 - 1) * 3;
             foreach (var roundData in roundDataArray)
             {
                 if (roundData.ArenaType == ArenaType.Season)
@@ -148,6 +155,19 @@ namespace Nekoyume
             var medalTotalCount = ArenaHelper.GetMedalTotalCount(row, avatarState);
             var championshipRound = row.Round[7];
             return medalTotalCount >= championshipRound.RequiredMedalCount;
+        }
+
+        public static long GetCost(
+            this ArenaSheet.RoundData roundData,
+            int avatarLevel,
+            bool isEarlyRegistration)
+        {
+            // TODO!!!! The discount rate should be changed.
+            const float discountRate = 0f;
+            var cost = roundData.EntranceFee * avatarLevel * avatarLevel;
+            return isEarlyRegistration
+                ? (int)(cost * (1 - discountRate))
+                : cost;
         }
     }
 }

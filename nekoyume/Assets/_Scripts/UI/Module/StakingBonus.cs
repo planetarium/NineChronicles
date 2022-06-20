@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +23,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject disableObject;
 
+        [SerializeField]
+        private List<Sprite> enableIcons;
+
+        [SerializeField]
+        private Image enableIcon;
+
+        [SerializeField]
+        private List<GameObject> enableObjects;
+
         private Func<int, string> _bonusTextFunc;
 
         private void Awake()
@@ -39,8 +49,19 @@ namespace Nekoyume.UI.Module
             var bonusEnabled = level > 0;
             enableObject.SetActive(bonusEnabled);
             disableObject.SetActive(!bonusEnabled);
-            stakingLevelText.text = $"Staking Lv.{level}";
-            stakingBonusText.text = _bonusTextFunc?.Invoke(level);
+            stakingBonusText.gameObject.SetActive(bonusEnabled);
+            if (bonusEnabled)
+            {
+                stakingLevelText.text = $"Staking Lv.{level}";
+                stakingBonusText.text = _bonusTextFunc?.Invoke(level);
+                enableIcon.sprite = enableIcons[level - 1];
+                for(var i = 0; i < enableObjects.Count; i++)
+                {
+                    enableObjects[i].SetActive(i < level);
+                }
+            }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(stakingBonusText.rectTransform);
         }
     }
 }
