@@ -17,6 +17,7 @@ using TMPro;
 
 namespace Nekoyume.UI.Scroller
 {
+    using mixpanel;
     using Nekoyume.State.Subjects;
     using Nekoyume.UI.Module;
     using UniRx;
@@ -148,6 +149,10 @@ namespace Nekoyume.UI.Scroller
             }
 
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
+            Analyzer.Instance.Track("Unity/UnlockEquipmentRecipe", new Value
+            {
+                ["BurntCrystal"] = (long)_openCost,
+            });
             Game.Game.instance.ActionManager
                 .UnlockEquipmentRecipe(_unlockableRecipeIds, _openCost)
                 .Subscribe();

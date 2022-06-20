@@ -19,6 +19,7 @@ using System.Linq;
 
 namespace Nekoyume.UI
 {
+    using mixpanel;
     using UniRx;
     using Toggle = Module.Toggle;
 
@@ -341,6 +342,13 @@ namespace Nekoyume.UI
                         var slots = Find<CombinationSlotsPopup>();
                         slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
                         Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
+
+                        Analyzer.Instance.Track("Unity/Replace Combination Material", new Value
+                        {
+                            ["MaterialCount"] = insufficientMaterials.Sum(x => x.Value),
+                            ["BurntCrystal"] = (long) recipeInfo.CostCrystal,
+                        });
+
                         Game.Game.instance.ActionManager
                             .CombinationEquipment(recipeInfo, slotIndex, true).Subscribe();
                         StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));

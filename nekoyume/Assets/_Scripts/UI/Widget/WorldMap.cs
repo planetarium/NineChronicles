@@ -15,6 +15,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using mixpanel;
     using UniRx;
 
     public class WorldMap : Widget
@@ -271,6 +272,10 @@ namespace Nekoyume.UI
                 () =>
                 {
                     Find<UnlockWorldLoadingScreen>().Show();
+                    Analyzer.Instance.Track("Unity/UnlockWorld", new Value
+                    {
+                        ["BurntCrystal"] = (long)cost,
+                    });
                     ActionManager.Instance.UnlockWorld(new List<int> {worldId}).Subscribe();
                 },
                 OnAttractInPaymentPopup);
@@ -302,6 +307,10 @@ namespace Nekoyume.UI
                         () =>
                         {
                             Find<UnlockWorldLoadingScreen>().Show();
+                            Analyzer.Instance.Track("Unity/UnlockWorld", new Value
+                            {
+                                ["BurntCrystal"] = (long)cost,
+                            });
                             ActionManager.Instance.UnlockWorld(worldIdListForUnlock).Subscribe();
                         },
                         OnAttractInPaymentPopup);

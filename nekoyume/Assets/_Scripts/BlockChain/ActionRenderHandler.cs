@@ -84,7 +84,7 @@ namespace Nekoyume.BlockChain
                 {
                     var actionType = gameAction.GetActionTypeAttribute();
                     var elapsed = (DateTime.Now - enqueuedDateTime).TotalSeconds;
-                    Analyzer.Instance.Track($"Unity/ActionRender", new Value
+                    Analyzer.Instance.Track("Unity/ActionRender", new Value
                     {
                         ["ActionType"] = actionType.TypeIdentifier,
                         ["Elapsed"] = elapsed,
@@ -482,6 +482,11 @@ namespace Nekoyume.BlockChain
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                                 break;
                             case Action.ItemEnhancement.EnhancementResult.Fail:
+                                Analyzer.Instance.Track("Unity/ItemEnhancement Failed", new Value
+                                {
+                                    ["GainedCrystal"] = (long)enhancementResultModel.CRYSTAL.MajorUnit,
+                                    ["BurntNCG"] = (long)enhancementResultModel.gold,
+                                });
                                 formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                                 break;
                             default:
@@ -729,6 +734,11 @@ namespace Nekoyume.BlockChain
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
                         break;
                     case Action.ItemEnhancement.EnhancementResult.Fail:
+                        Analyzer.Instance.Track("Unity/ItemEnhancement Failed", new Value
+                        {
+                            ["GainedCrystal"] = (long)result.CRYSTAL.MajorUnit,
+                            ["BurntNCG"] = (long)result.gold,
+                        });
                         formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
                         break;
                     default:
@@ -1041,6 +1051,15 @@ namespace Nekoyume.BlockChain
                 simulator.Simulate(1);
                 var log = simulator.Log;
                 Game.Game.instance.Stage.PlayCount = 1;
+
+                if (eval.Action.stageBuffId.HasValue)
+                {
+                    Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill", new Value
+                    {
+                        ["RandomSkillId"] = eval.Action.stageBuffId,
+                        ["IsCleared"] = simulator.Log.IsClear,
+                    });
+                }
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {

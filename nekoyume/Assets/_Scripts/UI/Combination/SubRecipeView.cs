@@ -28,6 +28,7 @@ namespace Nekoyume.UI
             public int RecipeId;
             public int? SubRecipeId;
             public BigInteger CostNCG;
+            public BigInteger CostCrystal;
             public int CostAP;
             public Dictionary<int, int> Materials;
             public Dictionary<int, int> ReplacedMaterials;
@@ -408,6 +409,7 @@ namespace Nekoyume.UI
                     }
                 }
 
+                _selectedRecipeInfo.CostCrystal = crystalCost.MajorUnit;
                 var costCrystal = new ConditionalCostButton.CostParam(
                     CostType.Crystal,
                     (long)crystalCost.MajorUnit);
