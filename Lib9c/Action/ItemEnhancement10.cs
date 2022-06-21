@@ -134,8 +134,8 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            var arenaSheet = states.GetSheet<ArenaSheet>();
-            if (arenaSheet != null)
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            if (states.GetState(arenaSheetAddress) is null)
             {
                 throw new ActionObsoletedException(nameof(ItemEnhancement10));
             }
