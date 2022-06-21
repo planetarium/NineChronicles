@@ -16,6 +16,10 @@ using Nekoyume.L10n;
 using System.Threading.Tasks;
 using Nekoyume.Helper;
 
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+using Microsoft.Win32;
+#endif
+
 namespace Nekoyume.UI
 {
     public class Synopsis : Widget
@@ -353,7 +357,13 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             Analyzer.Instance.Track("Unity/Synopsis Start");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+            var skipPrologueReg = (int) Registry.CurrentUser.OpenSubKey("Software\\Planetarium\\9c")
+                .GetValue("SkipSynopsis") == 1;
+            var skipPrologue = States.Instance.AgentState.avatarAddresses.Any() || skipPrologueReg;
+#else
             var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
+#endif
             skipButton.SetActive(skipPrologue);
             StartCoroutine(StartSynopsis(skipPrologue));
         }
