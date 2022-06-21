@@ -77,6 +77,12 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, ItemEnhancement10.GetFeeStoreAddress());
             }
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            if (states.GetState(arenaSheetAddress) is null)
+            {
+                throw new ActionObsoletedException(nameof(CombinationEquipment11));
+            }
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out var agentState,

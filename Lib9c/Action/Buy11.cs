@@ -8,8 +8,6 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Nekoyume.Arena;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -23,10 +21,10 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1164
     /// </summary>
     [Serializable]
-    [ActionType("buy12")]
-    public class Buy : GameAction, IBuy5
+    [ActionType("buy11")]
+    public class Buy11 : GameAction, IBuy5
     {
-
+        public static Address GetFeeStoreAddress() => Addresses.Shop.Derive("_0_0");
 
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
@@ -69,7 +67,43 @@ namespace Nekoyume.Action
             var buyerQuestListAddress = buyerAvatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
-                return states;
+                foreach (var purchaseInfo in purchaseInfos)
+                {
+                    var sellerAvatarAddress = purchaseInfo.SellerAvatarAddress;
+                    var sellerInventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
+                    var sellerWorldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
+                    var sellerQuestListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
+                    Address shardedShopAddress =
+                        ShardedShopStateV2.DeriveAddress(purchaseInfo.ItemSubType, purchaseInfo.OrderId);
+                    Address orderReceiptAddress = OrderReceipt.DeriveAddress(purchaseInfo.OrderId);
+                    Address digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
+                    states = states
+                        .SetState(shardedShopAddress, MarkChanged)
+                        .SetState(sellerAvatarAddress, MarkChanged)
+                        .SetState(sellerInventoryAddress, MarkChanged)
+                        .SetState(sellerWorldInformationAddress, MarkChanged)
+                        .SetState(sellerQuestListAddress, MarkChanged)
+                        .SetState(orderReceiptAddress, MarkChanged)
+                        .SetState(digestListAddress, MarkChanged)
+                        .MarkBalanceChanged(
+                            GoldCurrencyMock,
+                            ctx.Signer,
+                            purchaseInfo.SellerAgentAddress,
+                            GetFeeStoreAddress());
+                }
+
+                return states
+                    .SetState(buyerAvatarAddress, MarkChanged)
+                    .SetState(buyerInventoryAddress, MarkChanged)
+                    .SetState(buyerWorldInformationAddress, MarkChanged)
+                    .SetState(buyerQuestListAddress, MarkChanged)
+                    .SetState(ctx.Signer, MarkChanged);
+            }
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            if (states.GetState(arenaSheetAddress) is null)
+            {
+                throw new ActionObsoletedException(nameof(Buy11));
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress);
@@ -253,12 +287,9 @@ namespace Nekoyume.Action
                 var taxedPrice = order.Price - tax;
 
                 // Transfer tax.
-                var arenaSheet = states.GetSheet<ArenaSheet>();
-                var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
-                var feeStoreAddress = Addresses.GetShopFeeAddress(arenaData.ChampionshipId, arenaData.Round);
                 states = states.TransferAsset(
                     context.Signer,
-                    feeStoreAddress,
+                    GetFeeStoreAddress(),
                     tax);
 
                 // Transfer seller.

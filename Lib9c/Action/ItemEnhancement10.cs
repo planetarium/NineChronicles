@@ -134,6 +134,12 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            if (states.GetState(arenaSheetAddress) is null)
+            {
+                throw new ActionObsoletedException(nameof(ItemEnhancement10));
+            }
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             var sw = new Stopwatch();

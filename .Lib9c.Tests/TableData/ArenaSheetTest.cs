@@ -3,6 +3,7 @@ namespace Lib9c.Tests.TableData
     using System;
     using System.Linq;
     using Lib9c.Tests.Action;
+    using Nekoyume.Model.Arena;
     using Nekoyume.Model.EnumType;
     using Nekoyume.TableData;
     using Xunit;
@@ -161,7 +162,7 @@ namespace Lib9c.Tests.TableData
 
             var lastRound = expectRow.Round[7];
             blockIndex = lastRound.EndBlockIndex + 1;
-            Assert.Throws<InvalidOperationException>(() =>
+            Assert.Throws<RoundNotFoundException>(() =>
                 _arenaSheet.GetRoundByBlockIndex(blockIndex));
         }
     }
