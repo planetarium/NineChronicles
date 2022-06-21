@@ -17,7 +17,7 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/921
-    /// Updated at https://github.com/planetarium/lib9c/pull/1167
+    /// Updated at https://github.com/planetarium/lib9c/pull/1176
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash13")]
@@ -70,7 +70,8 @@ namespace Nekoyume.Action
             }
 
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
-            if (states.GetState(arenaSheetAddress) is null)
+            var arenaSheetState = states.GetState(arenaSheetAddress);
+            if (arenaSheetState != null)
             {
                 throw new ActionObsoletedException(nameof(HackAndSlash13));
             }

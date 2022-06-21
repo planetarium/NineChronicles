@@ -82,6 +82,9 @@ namespace Lib9c.Tests.Action
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            _initialState = _initialState.SetState(arenaSheetAddress, null);
+
             foreach (var address in _avatarState.combinationSlotAddresses)
             {
                 var slotState = new CombinationSlotState(
@@ -232,8 +235,6 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), null!)
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), null!);
             }
-
-            state = state.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {
@@ -762,7 +763,7 @@ namespace Lib9c.Tests.Action
                 stageId = 50,
             };
 
-            var state = new State();
+            var state = _initialState.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
             Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = state,

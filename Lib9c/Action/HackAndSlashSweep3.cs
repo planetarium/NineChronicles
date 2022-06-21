@@ -18,7 +18,7 @@ namespace Nekoyume.Action
     [Serializable]
     /// <summary>0
     /// Introduced at https://github.com/planetarium/lib9c/pull/1017
-    /// Updated at https://github.com/planetarium/lib9c/pull/1167
+    /// Updated at https://github.com/planetarium/lib9c/pull/1176
     /// </summary>
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex)]
     [ActionType("hack_and_slash_sweep3")]
@@ -73,7 +73,8 @@ namespace Nekoyume.Action
             }
 
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
-            if (states.GetState(arenaSheetAddress) is null)
+            var arenaSheetState = states.GetState(arenaSheetAddress);
+            if (arenaSheetState != null)
             {
                 throw new ActionObsoletedException(nameof(HackAndSlashSweep3));
             }

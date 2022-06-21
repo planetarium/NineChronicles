@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -16,6 +17,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
@@ -28,6 +30,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
         private readonly IAccountStateDelta _initialState;
+        private IValue _arenaSheetState;
 
         public CombinationEquipment11Test(ITestOutputHelper outputHelper)
         {
@@ -80,6 +83,10 @@ namespace Lib9c.Tests.Action
                 _initialState =
                     _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            _arenaSheetState = _initialState.GetState(arenaSheetAddress);
+            _initialState = _initialState.SetState(arenaSheetAddress, null);
         }
 
         [Theory]
@@ -356,6 +363,33 @@ namespace Lib9c.Tests.Action
             Assert.Equal(previousNCG - costNCG, agentGold);
             var fee = nextState.GetBalance(ItemEnhancement10.GetFeeStoreAddress(), goldCurrencyState);
             Assert.Equal(costNCG, fee);
+        }
+
+        [Fact]
+        private void Execute_ActionObsoletedException()
+        {
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            var previousState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            previousState = previousState.SetState(arenaSheetAddress, _arenaSheetState);
+            var action = new CombinationEquipment11
+            {
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+                recipeId = 1,
+                subRecipeId = 1,
+            };
+
+            Assert.Throws<ActionObsoletedException>(() =>
+            {
+                action.Execute(new ActionContext
+                {
+                    PreviousStates = previousState,
+                    Signer = _agentAddress,
+                    BlockIndex = 1,
+                    Random = _random,
+                });
+            });
         }
     }
 }

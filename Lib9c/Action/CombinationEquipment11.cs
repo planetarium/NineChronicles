@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Updated at https://github.com/planetarium/lib9c/pull/1069
+    /// Updated at https://github.com/planetarium/lib9c/pull/1176
     /// </summary>
     [Serializable]
     [ActionType("combination_equipment11")]
@@ -78,7 +78,8 @@ namespace Nekoyume.Action
             }
 
             var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
-            if (states.GetState(arenaSheetAddress) is null)
+            var arenaSheetState = states.GetState(arenaSheetAddress);
+            if (arenaSheetState != null)
             {
                 throw new ActionObsoletedException(nameof(CombinationEquipment11));
             }
