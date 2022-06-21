@@ -73,7 +73,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_weeklyArenaAddress, weeklyArenaState.Serialize());
         }
 
-        public static (AgentState, AvatarState) GetAgentStateWithAvatarState(
+        public static (AgentState AgentState, AvatarState AvatarState) GetAgentStateWithAvatarState(
             IReadOnlyDictionary<string, string> sheets,
             TableSheets tableSheets,
             Address rankingMapAddress)

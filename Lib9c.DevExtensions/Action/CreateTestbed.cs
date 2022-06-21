@@ -92,22 +92,6 @@ namespace Lib9c.DevExtensions.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             var orderReceiptAddress = OrderDigestListState.DeriveAddress(avatarAddress);
 
-            var weeklyArenaData = TestbedHelper.LoadData<TestbedWeeklyArena>("TestbedWeeklyArena");
-            var weeklyArenaAvatarNames = weeklyArenaData.Avatars
-                .Distinct()
-                .Select(avatar => avatar.Name)
-                .ToArray();
-            var weeklyArenaAgentAndAvatarAddresses = weeklyArenaAvatarNames
-                .Select(name => _privateKey.ToAddress().Derive(name))
-                .Select(e => (agentAddress: e, avatarAddress: e.Derive(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        CreateAvatar.DeriveFormat,
-                        0
-                    )
-                )))
-                .ToArray();
-
             if (context.Rehearsal)
             {
                 states = states.SetState(agentAddress, MarkChanged);
@@ -142,15 +126,6 @@ namespace Lib9c.DevExtensions.Action
                         .SetState(orderAddress, MarkChanged)
                         .SetState(shopAddress, MarkChanged);
                 }
-
-                states = states.SetState(weeklyArenaAddress, MarkChanged);
-                foreach (var tuple in weeklyArenaAgentAndAvatarAddresses)
-                {
-                    states = states
-                        .SetState(tuple.agentAddress, MarkChanged)
-                        .SetState(tuple.avatarAddress, MarkChanged);
-                }
-
                 return states;
             }
 
@@ -278,33 +253,6 @@ namespace Lib9c.DevExtensions.Action
                     sellData.Items[i].Price,
                     sellData.Items[i].Count));
             }
-            
-            // NOTE: Update WeeklyArenaState
-            var gameConfigState = states.GetGameConfigState();
-            var weeklyArenaState = states.GetWeeklyArenaState(weeklyArenaAddress);
-            var characterSheet = states.GetSheet<CharacterSheet>();
-            // loop
-            for (var i = 0; i < weeklyArenaAvatarNames.Length; i++)
-            {
-                var name = weeklyArenaAvatarNames[i];
-                var tuple = weeklyArenaAgentAndAvatarAddresses[i];
-                rankingMapAddress = rankingState.UpdateRankingMap(tuple.avatarAddress);
-                avatarState = new AvatarState(
-                    tuple.avatarAddress,
-                    tuple.agentAddress,
-                    context.BlockIndex,
-                    states.GetAvatarSheets(),
-                    gameConfigState,
-                    rankingMapAddress,
-                    name);
-                weeklyArenaState.SetV2(avatarState, characterSheet, costumeStatSheet);
-                states = states
-                    .SetState(tuple.avatarAddress, new AgentState(tuple.agentAddress).Serialize())
-                    .SetState(tuple.avatarAddress, avatarState.Serialize());
-            }
-            // ~loop
-            states = states.SetState(weeklyArenaAddress, weeklyArenaState.Serialize());
-            // ~Update WeeklyArenaState
 
             return states;
         }

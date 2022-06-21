@@ -9,6 +9,7 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using Nekoyume.Model.Buff;
 using Nekoyume.TableData;
 using Priority_Queue;
 
@@ -18,6 +19,7 @@ namespace Nekoyume.Battle
     {
         private readonly List<Wave> _waves;
         private readonly List<ItemBase> _waveRewards;
+        private readonly List<Model.Skill.Skill> _skillsOnWaveStart = new List<Model.Skill.Skill>();
         public CollectionMap ItemMap = new CollectionMap();
         public readonly EnemySkillSheet EnemySkillSheet;
 
@@ -228,6 +230,33 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
+            List<Model.Skill.Skill> skillsOnWaveStart,
+            int worldId,
+            int stageId,
+            StageSimulatorSheets stageSimulatorSheets,
+            CostumeStatSheet costumeStatSheet,
+            int constructorVersion,
+            int playCount = 1
+        )
+            : this(
+                random,
+                avatarState,
+                foods,
+                worldId,
+                stageId,
+                stageSimulatorSheets,
+                costumeStatSheet,
+                constructorVersion,
+                playCount
+            )
+        {
+            _skillsOnWaveStart = skillsOnWaveStart;
+        }
+
+        public StageSimulator(
+            IRandom random,
+            AvatarState avatarState,
+            List<Guid> foods,
             int worldId,
             int stageId,
             StageSimulatorSheets stageSimulatorSheets,
@@ -272,7 +301,7 @@ namespace Nekoyume.Battle
         {
             Player.SetCostumeStat(costumeStatSheet);
         }
-
+        
         public Player Simulate(int playCount)
         {
             Log.worldId = WorldId;
@@ -290,6 +319,19 @@ namespace Nekoyume.Battle
                 WaveNumber = i + 1;
                 WaveTurn = 1;
                 _waves[i].Spawn(this);
+
+                foreach (var skill in _skillsOnWaveStart)
+                {
+                    var buffs = BuffFactory.GetBuffs(
+                        skill,
+                        SkillBuffSheet,
+                        BuffSheet
+                    );
+
+                    var usedSkill = skill.Use(Player, 0, buffs);
+                    Log.Add(usedSkill);
+                }
+
                 while (true)
                 {
                     // 제한 턴을 넘어서는 경우 break.
@@ -300,7 +342,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
-                                Player.GetExp((int) (Exp * 0.3m * playCount), true);
+                                Player.GetExp((int)(Exp * 0.3m * playCount), true);
                             }
                         }
                         else
@@ -324,7 +366,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
-                                Player.GetExp((int) (Exp * 0.3m * playCount), true);
+                                Player.GetExp((int)(Exp * 0.3m * playCount), true);
                             }
                         }
                         else
@@ -350,14 +392,14 @@ namespace Nekoyume.Battle
 
                                 break;
                             case 2:
-                            {
-                                ItemMap = Player.GetRewards(_waveRewards);
-                                var dropBox = new DropBox(null, _waveRewards);
-                                Log.Add(dropBox);
-                                var getReward = new GetReward(null, _waveRewards);
-                                Log.Add(getReward);
-                                break;
-                            }
+                                {
+                                    ItemMap = Player.GetRewards(_waveRewards);
+                                    var dropBox = new DropBox(null, _waveRewards);
+                                    Log.Add(dropBox);
+                                    var getReward = new GetReward(null, _waveRewards);
+                                    Log.Add(getReward);
+                                    break;
+                                }
                             default:
                                 if (WaveNumber == _waves.Count)
                                 {

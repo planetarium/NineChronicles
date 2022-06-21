@@ -983,6 +983,25 @@ namespace Nekoyume.Model.State
             return BitConverter.ToInt32(hash, 0);
         }
 
+        public List<T> GetNonFungibleItems<T>(List<Guid> itemIds)
+        {
+            var items = new List<T>();
+            foreach (var nonFungibleId in itemIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(nonFungibleId, out var inventoryItem))
+                {
+                    continue;
+                }
+
+                if (inventoryItem.item is T item)
+                {
+                    items.Add(item);
+                }
+            }
+
+            return items;
+        }
+
         public override IValue Serialize() =>
 #pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>

@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class HackAndSlashTest
     {
@@ -178,6 +178,11 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
             }
 
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
             var action = new HackAndSlash
             {
                 costumes = costumes,
@@ -261,6 +266,11 @@ namespace Lib9c.Tests.Action
             avatarState = state.GetAvatarStateV2(avatarState.address);
             avatarWorldQuests = avatarState.questList.OfType<WorldQuest>().ToList();
             Assert.DoesNotContain(avatarWorldQuests, e => e.Complete);
+
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
 
             // Second Execute
             state = action.Execute(new ActionContext
@@ -432,29 +442,6 @@ namespace Lib9c.Tests.Action
             SerializeException<FailedLoadStateException>(exec);
         }
 
-        [Fact]
-        public void ExecuteThrowSheetRowNotFoundExceptionByWorld()
-        {
-            var action = new HackAndSlash
-            {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 100,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
-            };
-
-            var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
-            {
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-            }));
-
-            SerializeException<SheetRowNotFoundException>(exec);
-        }
-
         [Theory]
         [InlineData(0)]
         [InlineData(51)]
@@ -540,24 +527,36 @@ namespace Lib9c.Tests.Action
             SerializeException<FailedAddWorldException>(exec);
         }
 
-        [Fact]
-        public void ExecuteThrowInvalidWorldException()
+        [Theory]
+        // Try challenge Mimisbrunnr.
+        [InlineData(GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, false)]
+        // Unlock CRYSTAL first.
+        [InlineData(2, 51, false)]
+        [InlineData(2, 51, true)]
+        public void Execute_Throw_InvalidWorldException(int worldId, int stageId, bool unlockedIdsExist)
         {
             var action = new HackAndSlash
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
-                worldId = 2,
-                stageId = 51,
+                worldId = worldId,
+                stageId = stageId,
                 avatarAddress = _avatarAddress,
             };
 
-            Assert.False(_avatarState.worldInformation.IsStageCleared(51));
+            IAccountStateDelta state = _initialState;
+            if (unlockedIdsExist)
+            {
+                state = state.SetState(
+                    _avatarAddress.Derive("world_ids"),
+                    List.Empty.Add(worldId.Serialize())
+                );
+            }
 
             var exec = Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousStates = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -892,12 +891,10 @@ namespace Lib9c.Tests.Action
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.actionPoint = 999999;
             previousAvatarState.level = 400;
-            var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
-            clearedStageId = stageId;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
-                clearedStageId);
+                stageId);
 
             var costumes = new List<Guid>();
             var random = new TestRandom();
@@ -954,6 +951,11 @@ namespace Lib9c.Tests.Action
                         _avatarAddress.Derive(LegacyQuestListKey),
                         previousAvatarState.questList.Serialize());
             }
+
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                Enumerable.Range(1, worldId).ToList().Select(i => i.Serialize()).Serialize()
+            );
 
             var action = new HackAndSlash
             {
@@ -1014,39 +1016,150 @@ namespace Lib9c.Tests.Action
             Assert.InRange(totalCount, totalMin, totalMax);
         }
 
-        [Fact]
-        public void Rehearsal()
+        [Theory]
+        [InlineData(false, false, false)]
+        [InlineData(false, true, true)]
+        [InlineData(false, true, false)]
+        [InlineData(true, false, false)]
+        [InlineData(true, true, false)]
+        [InlineData(true, true, true)]
+        public void CheckCrystalRandomSkillState(bool clear, bool skillStateExist, bool hasCrystalSkill)
         {
+            const int worldId = 1;
+            const int stageId = 5;
+            const int clearedStageId = 4;
+            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+            previousAvatarState.actionPoint = 999999;
+            previousAvatarState.level = clear ? 400 : 3;
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearedStageId);
+
+            var costumes = new List<Guid>();
+            var random = new TestRandom();
+            var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+
+            var costume = (Costume)ItemFactory.CreateItem(
+                _tableSheets.ItemSheet[costumeId], random);
+            previousAvatarState.inventory.AddItem(costume);
+            costumes.Add(costume.ItemId);
+
+            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
+            foreach (var equipment in equipments)
+            {
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
+            var result = new CombinationConsumable5.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = mailEquipment,
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            var state = _initialState
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    previousAvatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    previousAvatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    previousAvatarState.questList.Serialize());
+
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
+            var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(_avatarAddress);
+            CrystalRandomSkillState skillState = null;
+            if (skillStateExist)
+            {
+                skillState = new CrystalRandomSkillState(skillStateAddress, stageId);
+                if (hasCrystalSkill)
+                {
+                    skillState.Update(int.MaxValue, _tableSheets.CrystalStageBuffGachaSheet);
+                }
+
+                state = state.SetState(skillStateAddress, skillState.Serialize());
+            }
+
             var action = new HackAndSlash
             {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
+                costumes = clear ? costumes : new List<Guid>(),
+                equipments = clear
+                    ? equipments.Select(e => e.NonFungibleId).ToList()
+                    : new List<Guid>(),
                 foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
+                worldId = worldId,
+                stageId = stageId,
                 avatarAddress = _avatarAddress,
+                stageBuffId = skillState?.SkillIds
+                    .OrderBy(key => _tableSheets.CrystalRandomBuffSheet[key].Rank)
+                    .FirstOrDefault(),
             };
 
-            var updatedAddresses = new List<Address>
-            {
-                _agentAddress,
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext
+            var ctx = new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
+                Random = new TestRandom(),
+                Rehearsal = false,
+                BlockIndex = 1,
+            };
+            var nextState = action.Execute(ctx);
+            var simulator = new StageSimulator(
+                new TestRandom(ctx.Random.Seed),
+                previousAvatarState,
+                new List<Guid>(),
+                worldId,
+                stageId,
+                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.CostumeStatSheet,
+                StageSimulator.ConstructorVersionV100080);
+            simulator.Simulate(1);
+            var log = simulator.Log;
+            var skillStateIValue =
+                nextState.GetState(skillStateAddress);
+            var serialized = skillStateIValue as List;
+            Assert.NotNull(serialized);
+            var nextSkillState = new CrystalRandomSkillState(skillStateAddress, serialized);
+            Assert.Equal(skillStateAddress, nextSkillState.Address);
 
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+            if (clear)
+            {
+                Assert.Equal(stageId + 1, nextSkillState.StageId);
+                Assert.Equal(0, nextSkillState.StarCount);
+            }
+            else
+            {
+                Assert.Equal(stageId, nextSkillState.StageId);
+                Assert.Equal(
+                    hasCrystalSkill
+                        ? _tableSheets.CrystalStageBuffGachaSheet[stageId].MaxStar
+                        : log.clearedWaveNumber,
+                    nextSkillState.StarCount);
+            }
+
+            Assert.Empty(nextSkillState.SkillIds);
         }
 
         private static void SerializeException<T>(Exception exec)
