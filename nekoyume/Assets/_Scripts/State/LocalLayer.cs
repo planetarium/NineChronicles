@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Libplanet;
+using Libplanet.Assets;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 using UnityEngine;
@@ -37,6 +39,8 @@ namespace Nekoyume.State
         private ModifierInfo<AgentStateModifier> _agentModifierInfo;
 
         private ModifierInfo<AgentGoldModifier> _agentGoldModifierInfo;
+
+        private ModifierInfo<AgentCrystalModifier> _agentCrystalModifierInfo;
 
         private ModifierInfo<AvatarStateModifier> _avatarModifierInfo;
 
@@ -74,6 +78,7 @@ namespace Nekoyume.State
             _agentModifierInfo =
                 new ModifierInfo<AgentStateModifier>(address);
             _agentGoldModifierInfo = new ModifierInfo<AgentGoldModifier>(address);
+            _agentCrystalModifierInfo = new ModifierInfo<AgentCrystalModifier>(address);
         }
 
         public void InitializeCurrentAvatarState(AvatarState avatarState)
@@ -217,6 +222,31 @@ namespace Nekoyume.State
             if (agentAddress.Equals(_agentGoldModifierInfo.Address))
             {
                 var modifiers = _agentGoldModifierInfo.Modifiers;
+                if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
+                {
+                    outModifier.Add(modifier);
+                    if (outModifier.IsEmpty)
+                    {
+                        modifiers.Remove(outModifier);
+                    }
+                }
+                else
+                {
+                    modifiers.Add(modifier);
+                }
+            }
+        }
+
+        public void Add(Address agentAddress, AgentCrystalModifier modifier)
+        {
+            if (modifier is null || modifier.IsEmpty)
+            {
+                return;
+            }
+
+            if (agentAddress.Equals(_agentCrystalModifierInfo.Address))
+            {
+                var modifiers = _agentCrystalModifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -448,6 +478,18 @@ namespace Nekoyume.State
             return PostModify(state, _agentModifierInfo);
         }
 
+        public FungibleAssetValue ModifyCrystal(FungibleAssetValue value)
+        {
+            if (value.Equals(default) ||
+                !value.Currency.Equals(CrystalCalculator.CRYSTAL) ||
+                value.Sign == 0)
+            {
+                return value;
+            }
+
+            return PostModifyValue(value, _agentCrystalModifierInfo);
+        }
+
         /// <summary>
         /// 인자로 받은 잔고 상태에 로컬 세팅을 반영한다.
         /// </summary>
@@ -531,6 +573,20 @@ namespace Nekoyume.State
             }
 
             return state;
+        }
+
+        private static TValue PostModifyValue<TValue, TModifier>(
+            TValue value,
+            ModifierInfo<TModifier> modifierInfo)
+            where TValue : struct
+            where TModifier : class, IValueModifier<TValue>
+        {
+            foreach (var modifier in modifierInfo.Modifiers)
+            {
+                value = modifier.Modify(value);
+            }
+
+            return value;
         }
 
         #endregion

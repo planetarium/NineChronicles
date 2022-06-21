@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
-using Nekoyume.EnumType;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -35,10 +34,11 @@ namespace Nekoyume.UI.Module
 
         public enum AssetVisibleState
         {
-            Main,
+            Main = 0,
             Combination,
             Shop,
             Battle,
+            Arena,
         }
 
         [Serializable]
@@ -54,11 +54,12 @@ namespace Nekoyume.UI.Module
         [SerializeField] private List<ToggleInfo> toggles = new List<ToggleInfo>();
         [SerializeField] private GameObject ncg;
         [SerializeField] private ActionPoint actionPoint;
+        [SerializeField] private Crystal crystal;
         [SerializeField] private GameObject dailyBonus;
         [SerializeField] private GameObject hourglass;
+        [SerializeField] private ArenaTickets arenaTickets;
         [SerializeField] private VFX inventoryVFX;
         [SerializeField] private VFX workshopVFX;
-        [SerializeField] private Image actionPointImage;
         [SerializeField] private ToggleDropdown menuToggleDropdown;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
@@ -91,9 +92,13 @@ namespace Nekoyume.UI.Module
 
         private long _blockIndex;
 
-        public Image ActionPointImage => actionPointImage;
+        public Image ActionPointImage => actionPoint.Image;
 
         public bool ChargingAP => actionPoint.NowCharging;
+
+        public Crystal Crystal => crystal;
+
+        public ArenaTickets ArenaTickets => arenaTickets;
 
         public override bool CanHandleInputEvent => false;
 
@@ -134,7 +139,7 @@ namespace Nekoyume.UI.Module
                         }
 
                         var stage = Game.Game.instance.Stage;
-                        if (!stage.IsInStage || stage.SelectedPlayer.IsAlive)
+                        if (!Game.Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
                         {
                             widget.Show(() => { toggleInfo.Toggle.isOn = false; });
                         }
@@ -251,28 +256,33 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case AssetVisibleState.Main:
-                    SetActiveAssets(true, true, true, false);
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isDailyBonusActive: true);
                     break;
                 case AssetVisibleState.Combination:
-                    SetActiveAssets(true, true, false, true);
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isHourglassActive: true);
                     break;
                 case AssetVisibleState.Shop:
                 case AssetVisibleState.Battle:
-                    SetActiveAssets(true, true, false, false);
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true);
+                    break;
+                case AssetVisibleState.Arena:
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isArenaTicketsActive: true);
                     break;
             }
         }
 
         private void SetActiveAssets(
-            bool isNcgActive,
-            bool isActionPointActive,
-            bool isDailyBonusActive,
-            bool isHourglassActive)
+            bool isNcgActive = false,
+            bool isActionPointActive = false,
+            bool isDailyBonusActive = false,
+            bool isHourglassActive = false,
+            bool isArenaTicketsActive = false)
         {
             ncg.SetActive(isNcgActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             dailyBonus.SetActive(isDailyBonusActive);
             hourglass.SetActive(isHourglassActive);
+            arenaTickets.gameObject.SetActive(isArenaTicketsActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)

@@ -339,6 +339,8 @@ namespace Nekoyume.BlockChain
                         : new AgentState(Address));
                 States.Instance.SetGoldBalanceState(
                     new GoldBalanceState(Address, await GetBalanceAsync(Address, goldCurrency)));
+                States.Instance.SetCrystalBalance(
+                    await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
 
                 // 상점의 상태를 한 번 동기화 한다.
 
@@ -350,15 +352,6 @@ namespace Nekoyume.BlockChain
                 {
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
-
-                // FIXME: BlockIndex may not initialized.
-                var weeklyArenaState = await ArenaHelper.GetThisWeekStateAsync(BlockIndex);
-                if (weeklyArenaState is null)
-                {
-                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
-                }
-
-                States.Instance.SetWeeklyArenaState(weeklyArenaState);
 
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 

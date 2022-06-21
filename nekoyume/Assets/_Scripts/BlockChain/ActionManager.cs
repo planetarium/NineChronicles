@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Cysharp.Threading.Tasks;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Tx;
 using mixpanel;
@@ -54,17 +54,18 @@ namespace Nekoyume.BlockChain
 
         public static bool IsLastBattleActionId(Guid actionId) => actionId == Instance._lastBattleActionId;
 
-        private void HandleException(Guid actionId, Exception e)
+        public Exception HandleException(Guid actionId, Exception e)
         {
             if (e is TimeoutException)
             {
                 var txId = _actionIdToTxIdBridge.ContainsKey(actionId)
                     ? (TxId?)_actionIdToTxIdBridge[actionId].txId
                     : null;
-                throw new ActionTimeoutException(e.Message, txId, actionId);
+                e = new ActionTimeoutException(e.Message, txId, actionId);
             }
 
-            throw e;
+            Debug.LogException(e);
+            return e;
         }
 
         public ActionManager(IAgent agent)
@@ -117,8 +118,13 @@ namespace Nekoyume.BlockChain
 
         #region Actions
 
-        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(int index,
-            string nickName, int hair = 0, int lens = 0, int ear = 0, int tail = 0)
+        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(
+            int index,
+            string nickName,
+            int hair = 0,
+            int lens = 0,
+            int ear = 0,
+            int tail = 0)
         {
             if (States.Instance.AvatarStates.ContainsKey(index))
             {
@@ -145,19 +151,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e =>
                 {
                     Game.Game.instance.BackToNest();
-                    HandleException(action.Id, e);
-                })
-                .Finally(() =>
-                {
-                    var agentAddress = States.Instance.AgentState.address;
-                    var avatarAddress = agentAddress.Derive(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            CreateAvatar2.DeriveFormat,
-                            index
-                        )
-                    );
-                    DialogPopup.DeleteDialogPlayerPrefs(avatarAddress);
+                    throw HandleException(action.Id, e);
                 });
         }
 
@@ -201,18 +195,12 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(Player player, int worldId, int stageId) => HackAndSlash(
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(Player player, int worldId,
+            int stageId) => HackAndSlash(
             player.Costumes,
             player.Equipments,
             null,
@@ -224,7 +212,8 @@ namespace Nekoyume.BlockChain
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
-            int stageId)
+            int stageId,
+            int? stageBuffId = null)
         {
             Analyzer.Instance.Track("Unity/HackAndSlash", new Value
             {
@@ -245,6 +234,7 @@ namespace Nekoyume.BlockChain
                 foods = foods.Select(f => f.ItemId).ToList(),
                 worldId = worldId,
                 stageId = stageId,
+                stageBuffId = stageBuffId,
                 avatarAddress = avatarAddress,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
@@ -263,14 +253,7 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -279,14 +262,33 @@ namespace Nekoyume.BlockChain
             int slotIndex)
         {
             var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
-            foreach (var (material, count) in recipeInfo.Materials)
+            foreach (var pair in recipeInfo.Materials)
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
+                {
+                    if (!avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items))
+                    {
+                        count = 0;
+                    }
+
+                    count = items.Sum(x => x.count);
+                }
+
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
             }
 
             Analyzer.Instance.Track("Unity/Create CombinationConsumable", new Value
@@ -309,7 +311,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlashSweep>> HackAndSlashSweep(
@@ -346,14 +348,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout)
                 .DoOnError(e =>
                 {
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -394,7 +389,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
@@ -419,7 +414,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(
@@ -459,7 +454,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(List<PurchaseInfo> purchaseInfos)
@@ -467,7 +462,9 @@ namespace Nekoyume.BlockChain
             var buyerAgentAddress = States.Instance.AgentState.address;
             foreach (var purchaseInfo in purchaseInfos)
             {
-                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -purchaseInfo.Price);
+                LocalLayerModifier
+                    .ModifyAgentGoldAsync(buyerAgentAddress, -purchaseInfo.Price)
+                    .Forget();
             }
 
             var action = new Buy
@@ -483,7 +480,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
@@ -507,7 +504,7 @@ namespace Nekoyume.BlockChain
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
-                .DoOnError(e => HandleException(action.Id, e));
+                .DoOnError(e => throw HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(
@@ -550,15 +547,7 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
-                    try
-                    {
-                        HandleException(action.Id, e);
-                    }
-                    catch (Exception inner)
-                    {
-                        Game.Game.BackToMain(false, inner).Forget();
-                    }
-
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -568,7 +557,7 @@ namespace Nekoyume.BlockChain
             List<Guid> equipmentIds
         )
         {
-            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+            if (!ArenaHelperOld.TryGetThisWeekAddress(out var weeklyArenaAddress))
             {
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
@@ -598,14 +587,76 @@ namespace Nekoyume.BlockChain
                         _lastBattleActionId = null;
                     }
 
-                    try
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<JoinArena>> JoinArena(
+            List<Guid> costumes,
+            List<Guid> equipments,
+            int championshipId,
+            int round
+        )
+        {
+            var action = new JoinArena
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                costumes = costumes,
+                equipments = equipments,
+                championshipId = championshipId,
+                round = round,
+            };
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<JoinArena>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<BattleArena>> BattleArena(
+            Address enemyAvatarAddress,
+            List<Guid> costumes,
+            List<Guid> equipments,
+            int championshipId,
+            int round,
+            int ticket
+        )
+        {
+            var action = new BattleArena
+            {
+                myAvatarAddress = States.Instance.CurrentAvatarState.address,
+                enemyAvatarAddress = enemyAvatarAddress,
+                costumes = costumes,
+                equipments = equipments,
+                championshipId = championshipId,
+                round = round,
+                ticket = ticket,
+            };
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<BattleArena>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    if (_lastBattleActionId == action.Id)
                     {
-                        HandleException(action.Id, e);
+                        _lastBattleActionId = null;
                     }
-                    catch (Exception e2)
-                    {
-                        Game.Game.BackToMain(false, e2).Forget();
-                    }
+
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
                 });
         }
 
@@ -631,7 +682,8 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
             SubRecipeView.RecipeInfo recipeInfo,
-            int slotIndex)
+            int slotIndex,
+            bool payByCrystal)
         {
             Analyzer.Instance.Track("Unity/Create CombinationEquipment", new Value
             {
@@ -639,14 +691,33 @@ namespace Nekoyume.BlockChain
             });
 
             var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
             LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
 
-            foreach (var (material, count) in recipeInfo.Materials)
+            foreach (var pair in recipeInfo.Materials)
             {
-                LocalLayerModifier.RemoveItem(avatarAddress, material, count);
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
+                {
+                    if (!avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items))
+                    {
+                        count = 0;
+                    }
+
+                    count = items.Sum(x => x.count);
+                }
+
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
             }
 
             var action = new CombinationEquipment
@@ -655,6 +726,7 @@ namespace Nekoyume.BlockChain
                 slotIndex = slotIndex,
                 recipeId = recipeInfo.RecipeId,
                 subRecipeId = recipeInfo.SubRecipeId,
+                payByCrystal = payByCrystal,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -748,6 +820,114 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
+        public IObservable<ActionBase.ActionEvaluation<Grinding>> Grinding(List<Equipment> equipmentList, bool chargeAp)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            equipmentList.ForEach(equipment =>
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, equipment.TradableId,
+                    equipment.RequiredBlockIndex, 1);
+            });
+
+            if (chargeAp)
+            {
+                var row = TableSheets.Instance.MaterialItemSheet
+                    .OrderedList
+                    .First(r => r.ItemSubType == ItemSubType.ApStone);
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId);
+                LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                    States.Instance.GameConfigState.ActionPointMax);
+
+                var address = States.Instance.CurrentAvatarState.address;
+                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+                {
+                    GameConfigStateSubject.ActionPointState.Remove(address);
+                }
+
+                GameConfigStateSubject.ActionPointState.Add(address, true);
+            }
+
+            var action = new Grinding
+            {
+                AvatarAddress = avatarAddress,
+                EquipmentIds = equipmentList.Select(i => i.ItemId).ToList(),
+                ChargeAp = chargeAp
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<Grinding>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<UnlockEquipmentRecipe>> UnlockEquipmentRecipe(
+            List<int> recipeIdList,
+            BigInteger openCost)
+        {
+            LocalLayerModifier
+                .ModifyAgentCrystalAsync(
+                    States.Instance.AgentState.address,
+                    -openCost)
+                .Forget();
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = new UnlockEquipmentRecipe
+            {
+                AvatarAddress = avatarAddress,
+                RecipeIds = recipeIdList
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<UnlockEquipmentRecipe>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
+
+        public IObservable<ActionBase.ActionEvaluation<UnlockWorld>> UnlockWorld(List<int> worldIdList)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            var action = new UnlockWorld
+            {
+                AvatarAddress = avatarAddress,
+                WorldIds = worldIdList,
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<UnlockWorld>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlashRandomBuff>> HackAndSlashRandomBuff(bool advanced)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            var action = new HackAndSlashRandomBuff
+            {
+                AvatarAddress = avatarAddress,
+                AdvancedGacha = advanced
+            };
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<HackAndSlashRandomBuff>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
         {
@@ -764,17 +944,49 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .DoOnError(e =>
                 {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
+
+        public IObservable<ActionBase.ActionEvaluation<CreateArenaDummy>> CreateArenaDummy(
+            List<Guid> costumes,
+            List<Guid> equipments,
+            int championshipId,
+            int round,
+            int accountCount
+        )
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var action = new CreateArenaDummy
+            {
+                myAvatarAddress = avatarAddress,
+                costumes = costumes,
+                equipments = equipments,
+                championshipId = championshipId,
+                round = round,
+                accountCount = accountCount,
+            };
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<CreateArenaDummy>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
                     try
                     {
                         HandleException(action.Id, e);
                     }
                     catch (Exception e2)
                     {
-                        Game.Game.BackToMain(false, e2).Forget();
                     }
                 });
         }
 #endif
+
         #endregion
 
         public void Dispose()

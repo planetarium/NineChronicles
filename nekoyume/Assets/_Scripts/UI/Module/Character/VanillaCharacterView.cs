@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Module
         public virtual void SetByAvatarState(AvatarState avatarState)
         {
             var id = avatarState.GetArmorIdForPortrait();
-            SetByArmorId(id);
+            SetByFullCostumeOrArmorId(id);
         }
 
         public virtual void SetByPlayer(Player player)
@@ -48,7 +48,7 @@ namespace Nekoyume.UI.Module
                 .FirstOrDefault(costume => costume.ItemSubType == ItemSubType.FullCostume);
             if (!(fullCostume is null))
             {
-                SetByArmorId(fullCostume.Id);
+                SetByFullCostumeOrArmorId(fullCostume.Id);
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace Nekoyume.UI.Module
                 .FirstOrDefault(equipment => equipment.ItemSubType == ItemSubType.Armor);
             if (!(armor is null))
             {
-                SetByArmorId(armor.Id);
+                SetByFullCostumeOrArmorId(armor.Id);
                 return;
             }
 
@@ -74,12 +74,12 @@ namespace Nekoyume.UI.Module
             SetIcon(image);
         }
 
-        public void SetByArmorId(int armorId)
+        public void SetByFullCostumeOrArmorId(int armorOrFullCostumeId)
         {
-            var image = SpriteHelper.GetItemIcon(armorId);
+            var image = SpriteHelper.GetItemIcon(armorOrFullCostumeId);
             if (image is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(armorId.ToString());
+                throw new FailedToLoadResourceException<Sprite>(armorOrFullCostumeId.ToString());
             }
 
             SetIcon(image);

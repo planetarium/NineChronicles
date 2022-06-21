@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.Model.Stat;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using System.Text.Json;
 using Nekoyume.Helper;
 using Nekoyume.State;
@@ -18,6 +19,7 @@ using System.Linq;
 
 namespace Nekoyume.UI
 {
+    using mixpanel;
     using UniRx;
     using Toggle = Module.Toggle;
 
@@ -111,13 +113,24 @@ namespace Nekoyume.UI
             SharedModel.SelectedRow
                 .Subscribe(SetSubRecipe)
                 .AddTo(gameObject);
+            SharedModel.UnlockedRecipes
+                .Subscribe(list =>
+                {
+                    if (list != null &&
+                        SharedModel.SelectedRow.Value != null &&
+                        list.Contains(SharedModel.SelectedRow.Value.Key))
+                    {
+                        SetSubRecipe(SharedModel.SelectedRow.Value);
+                    }
+                })
+                .AddTo(gameObject);
+
             ReactiveAvatarState.Address.Subscribe(address =>
             {
                 if (address.Equals(default)) return;
-                SharedModel.LoadRecipeVFXSkipList();
+                SharedModel.UpdateUnlockedRecipesAsync(address);
             }).AddTo(gameObject);
 
-            recipeScroll.InitializeNotification();
             ReactiveAvatarState.QuestList
                 .Subscribe(SubscribeQuestList)
                 .AddTo(gameObject);
@@ -142,7 +155,7 @@ namespace Nekoyume.UI
             Show();
 
             if (!Game.Game.instance.TableSheets
-                .EquipmentItemRecipeSheet.TryGetValue(equipmentRecipeId, out var row))
+                    .EquipmentItemRecipeSheet.TryGetValue(equipmentRecipeId, out var row))
             {
                 return;
             }
@@ -151,7 +164,7 @@ namespace Nekoyume.UI
             recipeScroll.ShowAsEquipment(itemRow.ItemSubType, true);
             var group = RecipeModel.GetEquipmentGroup(row.ResultEquipmentId);
             recipeScroll.GoToRecipeGroup(group);
-            if (SharedModel.RecipeVFXSkipList.Contains(equipmentRecipeId))
+            if (SharedModel.UnlockedRecipes.Value.Contains(equipmentRecipeId))
             {
                 SharedModel.SelectedRow.Value = row;
             }
@@ -159,7 +172,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            Find<CombinationLoadingScreen>().OnDisappear = OnNPCDisappear;
             equipmentSubRecipeView.gameObject.SetActive(false);
             consumableSubRecipeView.gameObject.SetActive(false);
             base.Show(ignoreShowAnimation);
@@ -186,6 +198,12 @@ namespace Nekoyume.UI
             {
                 AudioController.instance.PlayMusic(musicName);
             }
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            SharedModel.SelectedRow.Value = null;
+            base.Close(ignoreCloseAnimation);
         }
 
         private void ShowEquipment()
@@ -226,8 +244,9 @@ namespace Nekoyume.UI
         private void LoadRecipeModel()
         {
             var jsonAsset = Resources.Load<TextAsset>(ConsumableRecipeGroupPath);
-            var group = jsonAsset is null ?
-                default : JsonSerializer.Deserialize<CombinationRecipeGroup>(jsonAsset.text);
+            var group = jsonAsset is null
+                ? default
+                : JsonSerializer.Deserialize<CombinationRecipeGroup>(jsonAsset.text);
 
             SharedModel = new RecipeModel(
                 Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values,
@@ -244,9 +263,9 @@ namespace Nekoyume.UI
 
             if (quest is null ||
                 !Game.Game.instance.TableSheets.EquipmentItemRecipeSheet
-                .TryGetValue(quest.RecipeId, out var row) ||
+                    .TryGetValue(quest.RecipeId, out var row) ||
                 !States.Instance.CurrentAvatarState.worldInformation
-                .TryGetLastClearedStageId(out var clearedStage))
+                    .TryGetLastClearedStageId(out var clearedStage))
             {
                 SharedModel.NotifiedRow.Value = null;
                 return;
@@ -290,7 +309,7 @@ namespace Nekoyume.UI
                 CombinationConsumableAction(recipeInfo);
                 return;
             }
-            
+
             CombinationConsumableAction(recipeInfo);
         }
 
@@ -313,13 +332,36 @@ namespace Nekoyume.UI
                 requiredBlockIndex += subRecipeRow.RequiredBlockIndex;
             }
 
-            var slots = Find<CombinationSlotsPopup>();
-            slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:equipment);
-
             equipmentSubRecipeView.UpdateView();
-            Game.Game.instance.ActionManager.CombinationEquipment(recipeInfo, slotIndex).Subscribe();
+            var insufficientMaterials = recipeInfo.ReplacedMaterials;
+            if (insufficientMaterials.Any())
+            {
+                Find<ReplaceMaterialPopup>().Show(insufficientMaterials,
+                    () =>
+                    {
+                        var slots = Find<CombinationSlotsPopup>();
+                        slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
+                        Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
 
-            StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+                        Analyzer.Instance.Track("Unity/Replace Combination Material", new Value
+                        {
+                            ["MaterialCount"] = insufficientMaterials.Sum(x => x.Value),
+                            ["BurntCrystal"] = (long) recipeInfo.CostCrystal,
+                        });
+
+                        Game.Game.instance.ActionManager
+                            .CombinationEquipment(recipeInfo, slotIndex, true).Subscribe();
+                        StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+                    });
+            }
+            else
+            {
+                var slots = Find<CombinationSlotsPopup>();
+                slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: equipment);
+                Game.Game.instance.ActionManager.CombinationEquipment(recipeInfo, slotIndex, false)
+                    .Subscribe();
+                StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
+            }
         }
 
         private void CombinationConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
@@ -335,7 +377,7 @@ namespace Nekoyume.UI
                 consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
             var slots = Find<CombinationSlotsPopup>();
-            slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:consumable);
+            slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable: consumable);
 
             consumableSubRecipeView.UpdateView();
             Game.Game.instance.ActionManager.CombinationConsumable(recipeInfo, slotIndex).Subscribe();
@@ -348,6 +390,8 @@ namespace Nekoyume.UI
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
             loadingScreen.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.SetCloseAction(null);
+            loadingScreen.OnDisappear = OnNPCDisappear;
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
             Push();
@@ -368,7 +412,7 @@ namespace Nekoyume.UI
         public void TutorialActionClickFirstRecipeCellView()
         {
             SharedModel.SelectedRow.Value = SharedModel.RecipeForTutorial;
-            SharedModel.SelectedRecipeCell.Unlock();
+            SharedModel.SelectedRecipeCell.UnlockDummyLocked();
         }
 
         public void TutorialActionClickCombinationSubmitButton()

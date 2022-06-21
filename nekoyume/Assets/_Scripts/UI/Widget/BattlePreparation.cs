@@ -66,6 +66,9 @@ namespace Nekoyume.UI
         private ConditionalCostButton startButton;
 
         [SerializeField]
+        private BonusBuffButton randomBuffButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -114,7 +117,7 @@ namespace Nekoyume.UI
         private StageType _stageType = StageType.None;
         private int _worldId;
         private int _requiredCost;
-        private bool _reset = true;
+        private bool _shouldResetPlayer = true;
 
         private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
@@ -176,7 +179,7 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            startButton.OnSubmitSubject.Where(_ => !_stage.IsInStage)
+            startButton.OnSubmitSubject.Where(_ => !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ => OnClickBattle(repeatToggle.isOn))
                 .AddTo(gameObject);
@@ -186,10 +189,10 @@ namespace Nekoyume.UI
                 .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId.Value));
 
             boostPopupButton.OnClickAsObservable()
-                .Where(_ => EnoughToPlay && !_stage.IsInStage)
+                .Where(_ => EnoughToPlay && !Game.Game.instance.IsInWorld)
                 .Subscribe(_ => ShowBoosterPopup());
 
-            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
+            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(
@@ -221,9 +224,9 @@ namespace Nekoyume.UI
             }
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            if (_reset)
+            if (_shouldResetPlayer)
             {
-                _reset = false;
+                _shouldResetPlayer = false;
                 _player.gameObject.SetActive(false);
                 _player.gameObject.SetActive(true);
                 _player.SpineController.Appear();
@@ -248,6 +251,7 @@ namespace Nekoyume.UI
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
             ShowHelpTooltip(stageType);
+            randomBuffButton.SetData(States.Instance.CrystalRandomSkillState, stageId);
             ReactiveAvatarState.ActionPoint.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
             ReactiveAvatarState.Inventory.Subscribe(_ =>
             {
@@ -259,7 +263,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            _reset = true;
+            _shouldResetPlayer = true;
             consumableSlots.Clear();
             _disposables.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
@@ -538,7 +542,7 @@ namespace Nekoyume.UI
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-                    if (model.ElementalTypeDisabled.Value)
+                    if (model.DimObjectEnabled.Value)
                     {
                         interactable = model.Equipped.Value;
                     }
@@ -618,12 +622,12 @@ namespace Nekoyume.UI
             if (stage is null)
                 return;
             _requiredCost = stage.CostAP;
-            startButton.SetCost(ConditionalCostButton.CostType.ActionPoint, _requiredCost);
+            startButton.SetCost(CostType.ActionPoint, _requiredCost);
         }
 
         private void OnClickBattle(bool repeat)
         {
-            if (_stage.IsInStage)
+            if (Game.Game.instance.IsInWorld)
             {
                 return;
             }
@@ -636,7 +640,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _stage.IsInStage = true;
+            Game.Game.instance.IsInWorld = true;
             _stage.IsShowHud = true;
             StartCoroutine(CoBattleStart(_stageType, repeat));
             repeatToggle.interactable = false;
@@ -646,7 +650,7 @@ namespace Nekoyume.UI
         private IEnumerator CoBattleStart(StageType stageType, bool repeat)
         {
             var actionPointImage = Find<HeaderMenuStatic>().ActionPointImage;
-            var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
+            var itemMoveAnimation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,
                 Vector2.one,
@@ -656,7 +660,7 @@ namespace Nekoyume.UI
                 middleXGap);
             LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 -_requiredCost);
-            yield return new WaitWhile(() => animation.IsPlaying);
+            yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
             Battle(stageType, repeat);
             AudioController.PlayClick();
@@ -764,12 +768,19 @@ namespace Nekoyume.UI
             switch (stageType)
             {
                 case StageType.HackAndSlash:
+                    var skillState = States.Instance.CrystalRandomSkillState;
+                    var buffResult = Find<BuffBonusResultPopup>();
+                    var skillId = skillState != null && skillState.SkillIds.Any() ?
+                        buffResult.SelectedSkillId : null;
+                    buffResult.SelectedSkillId = null;
+
                     Game.Game.instance.ActionManager.HackAndSlash(
                         costumes,
                         equipments,
                         consumables,
                         _worldId,
-                        _stageId.Value
+                        _stageId.Value,
+                        skillId
                     ).Subscribe();
                     break;
                 case StageType.Mimisbrunnr:

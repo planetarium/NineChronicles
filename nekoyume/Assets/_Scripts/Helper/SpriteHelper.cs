@@ -1,7 +1,9 @@
 using System;
 using Nekoyume.Data;
 using Nekoyume.Model.Mail;
+using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -40,6 +42,12 @@ namespace Nekoyume.Helper
 
         private static readonly string MailIconDefaultPath =
             string.Format(MailIconPathFormat, "icon_mail_system");
+
+        private const string StakingIconDefaultPath = "UI/Textures/Staking_00";
+        private const string StakingIconPathFormat = "UI/Textures/Staking_{0}";
+
+        private const string StakingMobIconDefaultPath = "UI/Textures/Staking_Mob_01";
+        private const string StakingMobIconPathFormat = "UI/Textures/Staking_Mob_{0}";
 
         public static Sprite GetCharacterIcon(int characterId)
         {
@@ -109,15 +117,14 @@ namespace Nekoyume.Helper
             Sprite result = null;
             switch (menuName)
             {
-                case nameof(RankingBoard):
+                case nameof(ArenaJoin):
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_ranking"));
                     break;
-                case "Shop":
+                case nameof(Shop):
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_shop"));
                     break;
-
                 case "Mimisbrunnr":
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_mimisbrunnr"));
@@ -144,11 +151,29 @@ namespace Nekoyume.Helper
                     result = Resources.Load<Sprite>(
                         string.Format(MailIconPathFormat, "icon_mail_system"));
                     break;
+                case MailType.Grinding:
+                    result = Resources.Load<Sprite>(
+                        string.Format(MailIconPathFormat, "icon_mail_grind"));
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mailType), mailType, null);
             }
 
             return result ? result : Resources.Load<Sprite>(MailIconDefaultPath);
+        }
+
+        public static Sprite GetStakingIcon(int level, bool isMobIcon = false)
+        {
+            if (isMobIcon)
+            {
+                return Resources.Load<Sprite>(string.Format(StakingMobIconPathFormat, level.ToString("D2")))
+                       ?? Resources.Load<Sprite>(StakingMobIconDefaultPath);
+            }
+            else
+            {
+                return Resources.Load<Sprite>(string.Format(StakingIconPathFormat, level.ToString("D2")))
+                       ?? Resources.Load<Sprite>(StakingIconDefaultPath);
+            }
         }
     }
 }
