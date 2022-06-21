@@ -72,8 +72,8 @@ namespace Nekoyume.Action
                     .SetState(context.Signer, MarkChanged);
             }
 
-            var arenaSheet = states.GetSheet<ArenaSheet>();
-            if (arenaSheet != null)
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            if (states.GetState(arenaSheetAddress) is null)
             {
                 throw new ActionObsoletedException(nameof(HackAndSlashSweep3));
             }
