@@ -31,8 +31,6 @@ namespace Nekoyume.Action
     [ActionType("item_enhancement11")]
     public class ItemEnhancement : GameAction
     {
-        public static Address GetFeeStoreAddress(int championshipId, int round) =>
-            Addresses.Blacksmith.Derive($"_{championshipId}_{round}");
         public enum EnhancementResult
         {
             GreatSuccess = 0,
@@ -280,13 +278,8 @@ namespace Nekoyume.Action
             if (requiredNcg > 0)
             {
                 var arenaSheet = states.GetSheet<ArenaSheet>();
-                if (arenaSheet.GetRowByBlockIndex(context.BlockIndex) == null)
-                {
-                    throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({context.BlockIndex})");
-                }
-
                 var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
-                var feeStoreAddress = GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
+                var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
                 states = states.TransferAsset(ctx.Signer, feeStoreAddress, states.GetGoldCurrency() * requiredNcg);
             }
 

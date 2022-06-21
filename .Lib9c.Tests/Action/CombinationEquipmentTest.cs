@@ -311,13 +311,8 @@ namespace Lib9c.Tests.Action
                     if (ncgBalanceExist)
                     {
                         var arenaSheet = _tableSheets.ArenaSheet;
-                        if (arenaSheet.GetRowByBlockIndex(blockIndex) == null)
-                        {
-                            throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({blockIndex})");
-                        }
-
                         var arenaData = arenaSheet.GetRoundByBlockIndex(blockIndex);
-                        var feeStoreAddress = ItemEnhancement.GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
+                        var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
                         Assert.Equal(450 * currency, nextState.GetBalance(feeStoreAddress, currency));
                     }
 

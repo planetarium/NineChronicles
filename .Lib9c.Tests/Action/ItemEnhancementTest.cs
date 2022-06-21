@@ -190,13 +190,8 @@ namespace Lib9c.Tests.Action
             Assert.Equal(expectedGold * _currency, nextState.GetBalance(_agentAddress, _currency));
 
             var arenaSheet = _tableSheets.ArenaSheet;
-            if (arenaSheet.GetRowByBlockIndex(1) == null)
-            {
-                throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({1})");
-            }
-
             var arenaData = arenaSheet.GetRoundByBlockIndex(1);
-            var feeStoreAddress = ItemEnhancement.GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
+            var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
             Assert.Equal(
                 (1000 - expectedGold) * _currency,
                 nextState.GetBalance(feeStoreAddress, _currency)

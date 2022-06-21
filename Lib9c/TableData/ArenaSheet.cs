@@ -112,8 +112,22 @@ namespace Nekoyume.TableData
         public Row GetRowByBlockIndex(long blockIndex) => OrderedList.First(e =>
             e.Round.Any(roundData => roundData.IsTheRoundOpened(blockIndex)));
 
-        public RoundData GetRoundByBlockIndex(long blockIndex) => OrderedList
-            .SelectMany(row => row.Round)
-            .First(e => e.IsTheRoundOpened(blockIndex));
+        public RoundData GetRoundByBlockIndex(long blockIndex)
+        {
+            var roundList = OrderedList.SelectMany(row => row.Round);
+
+            if (roundList == null || !roundList.Any())
+            {
+                throw new SheetRowNotFoundException(nameof(ArenaSheet), $"BlockIndex : {blockIndex}");
+            }
+
+            var round = roundList.First(e => e.IsTheRoundOpened(blockIndex));
+            if (round == null)
+            {
+                throw new RoundNotFoundException($"[{nameof(ArenaSheet)}] BlockIndex({blockIndex})");
+            }
+
+            return round;
+        }
     }
 }

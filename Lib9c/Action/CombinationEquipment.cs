@@ -334,13 +334,8 @@ namespace Nekoyume.Action
             if (costNCG > 0L)
             {
                 var arenaSheet = states.GetSheet<ArenaSheet>();
-                if (arenaSheet.GetRowByBlockIndex(context.BlockIndex) == null)
-                {
-                    throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({context.BlockIndex})");
-                }
-
                 var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
-                var feeStoreAddress = ItemEnhancement.GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
+                var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
 
                 states = states.TransferAsset(
                     context.Signer,

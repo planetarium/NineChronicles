@@ -47,5 +47,11 @@ namespace Nekoyume
 
         public static Address GetSkillStateAddressFromAvatarAddress(Address avatarAddress) =>
             avatarAddress.Derive("has_buff");
+
+        public static Address GetShopFeeAddress(int championshipId, int round) =>
+            Addresses.Shop.Derive($"_{championshipId}_{round}");
+
+        public static Address GetBlacksmithFeeAddress(int championshipId, int round) =>
+            Addresses.Blacksmith.Derive($"_{championshipId}_{round}");
     }
 }

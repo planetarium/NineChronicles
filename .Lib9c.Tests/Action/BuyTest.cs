@@ -415,13 +415,8 @@ namespace Lib9c.Tests.Action
             Assert.Equal(30, nextBuyerAvatarState.mailBox.Count);
 
             var arenaSheet = _tableSheets.ArenaSheet;
-            if (arenaSheet.GetRowByBlockIndex(100) == null)
-            {
-                throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({100})");
-            }
-
             var arenaData = arenaSheet.GetRoundByBlockIndex(100);
-            var feeStoreAddress = Buy.GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
+            var feeStoreAddress = Addresses.GetShopFeeAddress(arenaData.ChampionshipId, arenaData.Round);
             var goldCurrencyGold = nextState.GetBalance(feeStoreAddress, goldCurrencyState);
             Assert.Equal(totalTax, goldCurrencyGold);
             var buyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
@@ -885,13 +880,8 @@ namespace Lib9c.Tests.Action
             var buyerGold = nextState.GetBalance(result.GetAgentState().address, goldCurrencyState);
             Assert.Equal(prevBuyerGold - totalPrice, buyerGold);
             var arenaSheet = _tableSheets.ArenaSheet;
-            if (arenaSheet.GetRowByBlockIndex(100) == null)
-            {
-                throw new RoundNotFoundException($"[{nameof(Buy)}] BlockIndex({100})");
-            }
-
             var arenaData = arenaSheet.GetRoundByBlockIndex(100);
-            var feeStoreAddress = Buy.GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
+            var feeStoreAddress = Addresses.GetShopFeeAddress(arenaData.ChampionshipId, arenaData.Round);
             var goldCurrencyGold = nextState.GetBalance(feeStoreAddress, goldCurrencyState);
             Assert.Equal(totalTax, goldCurrencyGold);
 
