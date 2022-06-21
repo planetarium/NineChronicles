@@ -505,6 +505,9 @@ MonoBehaviour:
   hoverScaleTweener: {fileID: 5955187542966030738}
   _ticketCount: {fileID: 9184902237990004220}
   _ticketResetTime: {fileID: 5885916176950025658}
+  _seasonText: {fileID: 2938966998453191817}
+  _seasonGameObject: {fileID: 7694181548214814764}
+  _championshipGameObject: {fileID: 635508035456408890}
 --- !u!225 &73013701249350966
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2397,7 +2400,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7958334647484695838
 RectTransform:
   m_ObjectHideFlags: 0

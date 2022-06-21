@@ -353,15 +353,6 @@ namespace Nekoyume.BlockChain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
-                // FIXME: BlockIndex may not initialized.
-                var weeklyArenaState = await ArenaHelperOld.GetThisWeekStateAsync(BlockIndex);
-                if (weeklyArenaState is null)
-                {
-                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
-                }
-
-                States.Instance.SetWeeklyArenaState(weeklyArenaState);
-
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
             });

@@ -1012,7 +1012,6 @@ namespace Nekoyume.BlockChain
                             var task = UniTask.Run(() =>
                             {
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
-                                UpdateWeeklyArenaState(eval);
                                 UpdateCrystalRandomSkillState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
@@ -1138,7 +1137,6 @@ namespace Nekoyume.BlockChain
                             var task = UniTask.Run(() =>
                             {
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
-                                UpdateWeeklyArenaState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -1802,10 +1800,12 @@ namespace Nekoyume.BlockChain
                 ArenaHelper.GetScores(previousMyScore.Value, previousEnemyScore.Value);
             var currentMyScore = log.Result switch
             {
-                ArenaLog.ArenaResult.Win =>
-                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore.Value + myWinPoint),
-                ArenaLog.ArenaResult.Lose =>
-                    math.max(ArenaScore.ArenaScoreDefault, previousMyScore.Value + myDefeatPoint),
+                ArenaLog.ArenaResult.Win => math.max(
+                    ArenaScore.ArenaScoreDefault,
+                    previousMyScore.Value + myWinPoint),
+                ArenaLog.ArenaResult.Lose => math.max(
+                    ArenaScore.ArenaScoreDefault,
+                    previousMyScore.Value + myDefeatPoint),
                 _ => throw new ArgumentOutOfRangeException()
             };
             log.Score = currentMyScore;
@@ -1819,6 +1819,7 @@ namespace Nekoyume.BlockChain
                     myDigest.Value,
                     enemyDigest.Value);}
 
+            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
             RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
         }
     }

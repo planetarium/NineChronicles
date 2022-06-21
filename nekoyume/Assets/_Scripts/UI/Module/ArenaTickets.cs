@@ -32,9 +32,6 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            RxProps.ArenaInfoTuple
-                .SubscribeOnMainThreadWithUpdateOnce(UpdateSliderAndFillText)
-                .AddTo(_disposables);
             RxProps.ArenaTicketProgress
                 .SubscribeOnMainThread()
                 .Subscribe(UpdateTimespanText)
@@ -46,32 +43,23 @@ namespace Nekoyume.UI.Module
             _disposables.DisposeAllAndClear();
         }
 
-        private void UpdateSliderAndFillText((ArenaInformation current, ArenaInformation next) tuple)
+        private void UpdateTimespanText((
+            int currentTicketCount,
+            int maxTicketCount,
+            int progressedBlockRange,
+            int totalBlockRange,
+            string remainTimespanToReset) tuple)
         {
-            const int max = ArenaInformation.MaxTicketCount;
-            var (current, _) = tuple;
-            if (current is null)
-            {
-                _slider.normalizedValue = 1f;
-                _fillText.text = $"{max}/{max}";
-                return;
-            }
-
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var currentRoundData = TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            var ticket = current.GetTicketCount(
-                blockIndex,
-                currentRoundData.StartBlockIndex,
-                States.Instance.GameConfigState.DailyArenaInterval);
-            var progress = (float)ticket / max;
-            _slider.normalizedValue = progress;
-            _fillText.text = $"{ticket}/{max}";
-        }
-
-        private void UpdateTimespanText((long beginning, long end, long progress) tuple)
-        {
-            var (beginning, end, progress) = tuple;
-            _timespanText.text = Util.GetBlockToTime(end - beginning - progress);
+            var (
+                currentTicketCount,
+                maxTicketCount,
+                _,
+                _,
+                remainTimespan) = tuple;
+            _slider.normalizedValue =
+                (float)currentTicketCount / maxTicketCount;
+            _fillText.text = $"{currentTicketCount}/{maxTicketCount}";
+            _timespanText.text = remainTimespan;
         }
     }
 }

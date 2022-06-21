@@ -60,7 +60,6 @@ namespace Nekoyume.UI.Module.Arena.Join
                 EndBlockIndex,
                 RequiredMedalCount,
                 EntranceFee,
-                DiscountedEntranceFee,
                 TicketPrice,
                 AdditionalTicketPrice);
         }

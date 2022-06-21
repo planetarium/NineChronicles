@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Amazon.CloudWatchLogs.Model;
 using Nekoyume.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Module.Arena.Join;
 using UnityEngine;
 
 namespace Nekoyume
@@ -49,6 +48,15 @@ namespace Nekoyume
             }
         }
 
+        public static int GetSeasonNumber(
+            this ArenaSheet sheet,
+            long blockIndex,
+            int round,
+            int defaultValue = 0) =>
+            sheet.TryGetSeasonNumber(blockIndex, round, out var seasonNumber)
+                ? seasonNumber
+                : defaultValue;
+
         public static bool TryGetSeasonNumber(
             this ArenaSheet sheet,
             long blockIndex,
@@ -58,11 +66,27 @@ namespace Nekoyume
                 .GetRowByBlockIndex(blockIndex)
                 .TryGetSeasonNumber(round, out seasonNumber);
 
+        public static int GetSeasonNumber(
+            this ArenaSheet.Row row,
+            int round,
+            int defaultValue = 0) =>
+            row.TryGetSeasonNumber(round, out var seasonNumber)
+                ? seasonNumber
+                : defaultValue;
+
         public static bool TryGetSeasonNumber(
             this ArenaSheet.Row row,
             int round,
             out int seasonNumber) =>
             row.Round.TryGetSeasonNumber(round, out seasonNumber);
+
+        public static int GetSeasonNumber(
+            this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable,
+            int round,
+            int defaultValue = 0) =>
+            roundDataEnumerable.TryGetSeasonNumber(round, out var seasonNumber)
+                ? seasonNumber
+                : defaultValue;
 
         public static bool TryGetSeasonNumber(
             this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable,
@@ -121,9 +145,14 @@ namespace Nekoyume
                 return false;
             }
 
+            // NOTE: The season number is beginning from 4 when the championship id is 1 or 2.
+            var round = roundData.ChampionshipId == 1 || roundData.ChampionshipId == 2
+                ? roundData.Round + 3
+                : roundData.Round;
+
             // NOTE: The name of the medal item resource is
             // prepared only for championship id 1.
-            medalItemId = ArenaHelper.GetMedalItemId(1, roundData.Round);
+            medalItemId = ArenaHelper.GetMedalItemId(1, round);
             return true;
         }
 
@@ -157,17 +186,56 @@ namespace Nekoyume
             return medalTotalCount >= championshipRound.RequiredMedalCount;
         }
 
-        public static long GetCost(
-            this ArenaSheet.RoundData roundData,
-            int avatarLevel,
-            bool isEarlyRegistration)
+        public static List<int> GetSeasonNumbersOfChampionship(
+            this ArenaSheet.Row row) =>
+            TryGetSeasonNumbersOfChampionship(
+                row.Round,
+                out var seasonNumbers)
+                ? seasonNumbers
+                : new List<int>();
+
+        public static List<int> GetSeasonNumbersOfChampionship(
+            this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable) =>
+            TryGetSeasonNumbersOfChampionship(
+                roundDataEnumerable,
+                out var seasonNumbers)
+                ? seasonNumbers
+                : new List<int>();
+
+        public static bool TryGetSeasonNumbersOfChampionship(
+            this IEnumerable<ArenaSheet.RoundData> roundDataEnumerable,
+            out List<int> seasonNumbers)
         {
-            // TODO!!!! The discount rate should be changed.
-            const float discountRate = 0f;
-            var cost = roundData.EntranceFee * avatarLevel * avatarLevel;
-            return isEarlyRegistration
-                ? (int)(cost * (1 - discountRate))
-                : cost;
+            seasonNumbers = new List<int>();
+            var roundDataArray = roundDataEnumerable as ArenaSheet.RoundData[]
+                                 ?? roundDataEnumerable.ToArray();
+            var firstRound = roundDataArray.FirstOrDefault();
+            if (firstRound is null)
+            {
+                return false;
+            }
+
+            var championshipId = firstRound.ChampionshipId;
+            if (roundDataArray.Any(e => e.ChampionshipId != championshipId))
+            {
+                return false;
+            }
+
+            // NOTE: The season number is beginning from 4.
+            // NOTE: The championship cycles once over four times.
+            // And each championship includes three seasons.
+            var seasonStartNumber = (championshipId % 4 - 1) * 3 + 4;
+            foreach (var roundData in roundDataArray)
+            {
+                if (roundData.ArenaType != ArenaType.Season)
+                {
+                    continue;
+                }
+
+                seasonNumbers.Add(seasonStartNumber++);
+            }
+
+            return true;
         }
     }
 }
