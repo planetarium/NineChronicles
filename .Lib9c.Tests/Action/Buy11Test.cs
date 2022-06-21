@@ -23,6 +23,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
@@ -39,6 +40,7 @@ namespace Lib9c.Tests.Action
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly Guid _orderId;
         private IAccountStateDelta _initialState;
+        private IValue _arenaSheetState;
 
         public Buy11Test(ITestOutputHelper outputHelper)
         {
@@ -106,6 +108,10 @@ namespace Lib9c.Tests.Action
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
                 .SetState(Addresses.Shop, new ShopState().Serialize())
                 .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 100);
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            _arenaSheetState = _initialState.GetState(arenaSheetAddress);
+            _initialState = _initialState.SetState(arenaSheetAddress, null);
         }
 
         public static IEnumerable<object[]> GetExecuteMemberData()
@@ -852,6 +858,9 @@ namespace Lib9c.Tests.Action
                 purchaseInfos = purchaseInfos,
             };
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            nextState = nextState.SetState(arenaSheetAddress, null);
+
             nextState = buyAction.Execute(new ActionContext()
             {
                 BlockIndex = 100,
@@ -931,6 +940,55 @@ namespace Lib9c.Tests.Action
                 var gold = nextState.GetBalance(agentAddress, goldCurrencyState);
                 Assert.Equal(expectedGold, gold);
             }
+        }
+
+        [Fact]
+        public void Execute_ActionObsoletedException()
+        {
+            var result = BlockChainHelper.MakeInitialState();
+            var testbed = result.GetTestbed();
+            var nextState = result.GetState();
+            var data = TestbedHelper.LoadData<TestbedSell>("TestbedSell");
+
+            Assert.Equal(testbed.Orders.Count(), testbed.result.ItemInfos.Count);
+            for (var i = 0; i < testbed.Orders.Count; i++)
+            {
+                Assert.Equal(data.Items[i].ItemSubType, testbed.Orders[i].ItemSubType);
+            }
+
+            var purchaseInfos = new List<PurchaseInfo>();
+            foreach (var order in testbed.Orders)
+            {
+                var purchaseInfo = new PurchaseInfo(
+                    order.OrderId,
+                    order.TradableId,
+                    order.SellerAgentAddress,
+                    order.SellerAvatarAddress,
+                    order.ItemSubType,
+                    order.Price
+                );
+                purchaseInfos.Add(purchaseInfo);
+            }
+
+            var buyAction = new Buy11
+            {
+                buyerAvatarAddress = result.GetAvatarState().address,
+                purchaseInfos = purchaseInfos,
+            };
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            nextState = nextState.SetState(arenaSheetAddress, _arenaSheetState);
+            Assert.Throws<ActionObsoletedException>(() =>
+            {
+                buyAction.Execute(new ActionContext()
+                {
+                    BlockIndex = 100,
+                    PreviousStates = nextState,
+                    Random = new TestRandom(),
+                    Rehearsal = false,
+                    Signer = result.GetAgentState().address,
+                });
+            });
         }
 
         private (AvatarState AvatarState, AgentState AgentState) CreateAvatarState(

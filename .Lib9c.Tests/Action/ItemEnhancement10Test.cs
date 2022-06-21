@@ -16,6 +16,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
     using static SerializeKeys;
 
@@ -29,6 +30,7 @@ namespace Lib9c.Tests.Action
         private readonly AvatarState _avatarState;
         private readonly Currency _currency;
         private IAccountStateDelta _initialState;
+        private IValue _arenaSheetState;
 
         public ItemEnhancement10Test()
         {
@@ -71,6 +73,10 @@ namespace Lib9c.Tests.Action
             {
                 _initialState = _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            _arenaSheetState = _initialState.GetState(arenaSheetAddress);
+            _initialState = _initialState.SetState(arenaSheetAddress, null);
         }
 
         [Theory]
@@ -227,6 +233,56 @@ namespace Lib9c.Tests.Action
             });
 
             Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+        }
+
+        [Fact]
+        public void Execute_ActionObsoletedException()
+        {
+            var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, 1);
+            var materialId = Guid.NewGuid();
+            var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, 1);
+
+            _avatarState.inventory.AddItem(equipment, count: 1);
+            _avatarState.inventory.AddItem(material, count: 1);
+
+            var result = new CombinationConsumable5.ResultModel()
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = equipment,
+            };
+
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                _avatarState.Update(mail);
+            }
+
+            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            _initialState = _initialState.SetState(arenaSheetAddress, _arenaSheetState);
+            var action = new ItemEnhancement10()
+            {
+                itemId = default,
+                materialId = materialId,
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<ActionObsoletedException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 1,
+                    Random = _random,
+                });
+            });
         }
     }
 }
