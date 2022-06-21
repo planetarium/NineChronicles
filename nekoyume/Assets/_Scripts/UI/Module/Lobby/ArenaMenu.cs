@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
@@ -13,6 +14,12 @@ namespace Nekoyume.UI.Module.Lobby
 
     public class ArenaMenu : MainMenu
     {
+        public enum ViewState
+        {
+            Idle,
+            LoadingArenaData
+        }
+
         [SerializeField]
         private TextMeshProUGUI _ticketCount;
 
@@ -30,17 +37,32 @@ namespace Nekoyume.UI.Module.Lobby
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
+        public ViewState State { get; private set; }
+
         private void OnEnable()
         {
-            Game.Game.instance.Agent.BlockIndexSubject
+            State = ViewState.LoadingArenaData;
+            var agent = Game.Game.instance.Agent;
+            UpdateArenaSeasonTitle(agent.BlockIndex);
+            agent.BlockIndexSubject
                 .Subscribe(UpdateArenaSeasonTitle)
-                .AddTo(_disposables);
-            RxProps.ArenaInfoTuple
-                .SubscribeOnMainThreadWithUpdateOnce(tuple => UpdateTicketCount(tuple.current))
                 .AddTo(_disposables);
             RxProps.ArenaTicketProgress
                 .SubscribeOnMainThread()
                 .Subscribe(UpdateTicketResetTime)
+                .AddTo(_disposables);
+            UniTask.WhenAll(
+                    RxProps.ArenaInfoTuple.UpdateAsync(),
+                    RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync())
+                .ToObservable()
+                .First()
+                .SubscribeOnMainThread()
+                .Subscribe(tuple =>
+                {
+                    var ((current, _), _) = tuple;
+                    UpdateTicketCount(current);
+                    State = ViewState.Idle;
+                })
                 .AddTo(_disposables);
         }
 
