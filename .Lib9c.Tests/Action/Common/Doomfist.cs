@@ -11,10 +11,10 @@ namespace Lib9c.Tests.Action
 
     public static class Doomfist
     {
-        public static readonly (int equipmentSlotLevel, ItemSubType itemSubType)[]
+        public static readonly (int EquipmentSlotLevel, ItemSubType ItemSubType)[]
             OrderedEquipmentSlotLevelAndItemSubType
                 =
-                new (int equipmentSlotLevel, ItemSubType itemSubType)[]
+                new (int EquipmentSlotLevel, ItemSubType ItemSubType)[]
                     {
                         (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor, ItemSubType.Armor),
                         (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt, ItemSubType.Belt),
@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
                         (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1, ItemSubType.Ring),
                         (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2, ItemSubType.Ring),
                         (GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon, ItemSubType.Weapon),
-                    }.OrderBy(tuple => tuple.equipmentSlotLevel)
+                    }.OrderBy(tuple => tuple.EquipmentSlotLevel)
                     .ToArray();
 
         public static Equipment GetOne(

@@ -61,6 +61,12 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            if (states.GetState(arenaSheetAddress) is null)
+            {
+                throw new ActionObsoletedException(nameof(RankingBattle11));
+            }
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress, enemyAddress);
 
             var sw = new Stopwatch();

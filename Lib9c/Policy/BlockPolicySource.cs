@@ -71,6 +71,7 @@ namespace Nekoyume.BlockChain.Policy
         public const long V100210ObsoleteIndex = 4_366_622;
 
         public const long V100220ObsoleteIndex = 4_390_272;
+        public const long V100230ObsoleteIndex = 4_558_559;
 
         public const long PermissionedMiningStartIndex = 2_225_500;
 

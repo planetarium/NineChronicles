@@ -1,0 +1,17 @@
+id,round,arena_type,start_block_index,end_block_index,required_medal_count,entrance_fee,ticket_price,additional_ticket_price
+1,1,OffSeason,1,4480000,0,0,5,2
+1,2,Season,4480001,4580800,0,1,50,20
+1,3,OffSeason,4580801,4631200,0,0,5,2
+1,4,Season,4631201,4732000,0,1,50,20
+1,5,OffSeason,4732001,4782400,0,0,5,2
+1,6,Season,4782401,4883200,0,1,50,20
+1,7,OffSeason,4883201,4933600,0,0,5,2
+1,8,Championship,4933601,5034400,240,4,50,20
+2,1,OffSeason,5034401,5084800,0,0,5,2
+2,2,Season,5084801,5185600,0,1,50,20
+2,3,OffSeason,5185601,5236000,0,0,5,2
+2,4,Season,5236001,5336800,0,1,50,20
+2,5,OffSeason,5336801,5387200,0,0,5,2
+2,6,Season,5387201,5488000,0,1,50,20
+2,7,OffSeason,5488001,5538400,0,0,5,2
+2,8,Championship,5538401,5639200,240,4,50,20

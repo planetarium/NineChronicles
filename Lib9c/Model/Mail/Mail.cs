@@ -12,7 +12,8 @@ namespace Nekoyume.Model.Mail
     {
         Workshop = 1,
         Auction,
-        System
+        System,
+        Grinding,
     }
     [Serializable]
     public abstract class Mail : IState
@@ -31,6 +32,7 @@ namespace Nekoyume.Model.Mail
                 [nameof(CancelOrderMail)] = d => new CancelOrderMail(d),
                 [nameof(OrderBuyerMail)] = d => new OrderBuyerMail(d),
                 [nameof(OrderSellerMail)] = d => new OrderSellerMail(d),
+                [nameof(GrindingMail)] = d => new GrindingMail(d),
             };
 
         public Guid id;

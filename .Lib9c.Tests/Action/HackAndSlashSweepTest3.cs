@@ -233,6 +233,8 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), null!);
             }
 
+            state = state.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
+
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = state,
@@ -747,6 +749,26 @@ namespace Lib9c.Tests.Action
                         Random = new TestRandom(),
                     }));
             }
+        }
+
+        [Fact]
+        public void Execute_ActionObsoletedException()
+        {
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = 1,
+                stageId = 50,
+            };
+
+            var state = new State();
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
         }
     }
 }

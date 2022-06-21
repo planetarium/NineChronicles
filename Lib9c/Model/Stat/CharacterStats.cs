@@ -343,6 +343,11 @@ namespace Nekoyume.Model.Stat
             AddOption(statModifiers);
         }
 
+        public void IncreaseHpForArena()
+        {
+            hp.SetValue(Math.Max(0, hp.Value * 2));
+        }
+
         private void UpdateLevelStats()
         {
             var statsData = _row.ToStats(Level);

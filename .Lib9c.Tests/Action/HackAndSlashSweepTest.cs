@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
@@ -14,7 +15,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class HackAndSlashSweepTest
     {
@@ -180,6 +181,11 @@ namespace Lib9c.Tests.Action
                         avatarState.questList.Serialize());
             }
 
+            state = state.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
             var stageSheet = _initialState.GetSheet<StageSheet>();
             var (expectedLevel, expectedExp) = (0, 0L);
             if (stageSheet.TryGetValue(stageId, out var stageRow))
@@ -273,9 +279,14 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
             };
 
+            var state = _initialState.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
             Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousStates = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -294,9 +305,14 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
             };
 
+            var state = _initialState.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
             Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousStates = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -321,14 +337,18 @@ namespace Lib9c.Tests.Action
 
             _avatarState.worldInformation.ClearStage(clearedWorldId, clearedStageId, 1, worldSheet, worldUnlockSheet);
 
-            var state = _initialState;
+            var state = _initialState.SetState(
+                _avatarAddress.Derive("world_ids"),
+                List.Empty.Add(worldId.Serialize())
+            );
+
             if (backward)
             {
-                state = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+                state = state.SetState(_avatarAddress, _avatarState.Serialize());
             }
             else
             {
-                state = _initialState
+                state = state
                     .SetState(
                         _avatarAddress.Derive(LegacyWorldInformationKey),
                         _avatarState.worldInformation.Serialize());
@@ -343,9 +363,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(GameConfig.MimisbrunnrWorldId, true)]
-        [InlineData(GameConfig.MimisbrunnrWorldId, false)]
-        public void Execute_InvalidWorldException(int worldId, bool backward)
+        [InlineData(GameConfig.MimisbrunnrWorldId, true, 10000001, false)]
+        [InlineData(GameConfig.MimisbrunnrWorldId, false, 10000001, true)]
+        // Unlock CRYSTAL first.
+        [InlineData(2, false, 51, false)]
+        [InlineData(2, true, 51, false)]
+        public void Execute_InvalidWorldException(int worldId, bool backward, int stageId, bool unlockedIdsExist)
         {
             var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
             var avatarState = new AvatarState(
@@ -380,12 +403,20 @@ namespace Lib9c.Tests.Action
                         avatarState.questList.Serialize());
             }
 
+            if (unlockedIdsExist)
+            {
+                state = state.SetState(
+                    _avatarAddress.Derive("world_ids"),
+                    List.Empty.Add(worldId.Serialize())
+                );
+            }
+
             var action = new HackAndSlashSweep
             {
                 apStoneCount = 1,
                 avatarAddress = _avatarAddress,
                 worldId = worldId,
-                stageId = 10000001,
+                stageId = stageId,
             };
 
             Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext()
