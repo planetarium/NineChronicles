@@ -69,6 +69,12 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            if (states.GetState(arenaSheetAddress) is null)
+            {
+                throw new ActionObsoletedException(nameof(HackAndSlash13));
+            }
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
@@ -79,12 +85,6 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
-            }
-
-            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
-            if (states.GetState(arenaSheetAddress) is null)
-            {
-                throw new ActionObsoletedException(nameof(HackAndSlash13));
             }
 
             sw.Stop();

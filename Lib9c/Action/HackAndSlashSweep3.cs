@@ -72,6 +72,12 @@ namespace Nekoyume.Action
                     .SetState(context.Signer, MarkChanged);
             }
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            if (states.GetState(arenaSheetAddress) is null)
+            {
+                throw new ActionObsoletedException(nameof(HackAndSlashSweep3));
+            }
+
             CheckObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -91,12 +97,6 @@ namespace Nekoyume.Action
             if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState, out var migrationRequired))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
-            }
-
-            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
-            if (states.GetState(arenaSheetAddress) is null)
-            {
-                throw new ActionObsoletedException(nameof(HackAndSlashSweep3));
             }
 
             var sheets = states.GetSheets(
