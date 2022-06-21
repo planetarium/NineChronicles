@@ -26,6 +26,9 @@ namespace Nekoyume.Action
     [ActionType("buy12")]
     public class Buy : GameAction, IBuy5
     {
+        public static Address GetFeeStoreAddress(int championshipId, int round) =>
+            Addresses.Shop.Derive($"_{championshipId}_{round}");
+
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
         public const int ErrorCodeItemDoesNotExist = 2;
@@ -258,10 +261,10 @@ namespace Nekoyume.Action
                 }
 
                 var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
-                var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
+                var feeStoreAddress = GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
                 states = states.TransferAsset(
                     context.Signer,
-                    arenaAdr,
+                    feeStoreAddress,
                     tax);
 
                 // Transfer seller.

@@ -421,9 +421,8 @@ namespace Lib9c.Tests.Action
             }
 
             var arenaData = arenaSheet.GetRoundByBlockIndex(100);
-            var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
-
-            var goldCurrencyGold = nextState.GetBalance(arenaAdr, goldCurrencyState);
+            var feeStoreAddress = Buy.GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
+            var goldCurrencyGold = nextState.GetBalance(feeStoreAddress, goldCurrencyState);
             Assert.Equal(totalTax, goldCurrencyGold);
             var buyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
             var prevBuyerGold = _initialState.GetBalance(_buyerAgentAddress, goldCurrencyState);
@@ -892,8 +891,8 @@ namespace Lib9c.Tests.Action
             }
 
             var arenaData = arenaSheet.GetRoundByBlockIndex(100);
-            var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
-            var goldCurrencyGold = nextState.GetBalance(arenaAdr, goldCurrencyState);
+            var feeStoreAddress = Buy.GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
+            var goldCurrencyGold = nextState.GetBalance(feeStoreAddress, goldCurrencyState);
             Assert.Equal(totalTax, goldCurrencyGold);
 
             foreach (var (agentAddress, expectedGold) in agentRevenue)

@@ -196,10 +196,10 @@ namespace Lib9c.Tests.Action
             }
 
             var arenaData = arenaSheet.GetRoundByBlockIndex(1);
-            var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
+            var feeStoreAddress = ItemEnhancement.GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
             Assert.Equal(
                 (1000 - expectedGold) * _currency,
-                nextState.GetBalance(arenaAdr, _currency)
+                nextState.GetBalance(feeStoreAddress, _currency)
             );
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 

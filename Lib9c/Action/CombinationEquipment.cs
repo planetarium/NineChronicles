@@ -340,11 +340,11 @@ namespace Nekoyume.Action
                 }
 
                 var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
-                var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
+                var feeStoreAddress = ItemEnhancement.GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
 
                 states = states.TransferAsset(
                     context.Signer,
-                    arenaAdr,
+                    feeStoreAddress,
                     states.GetGoldCurrency() * costNCG
                 );
             }

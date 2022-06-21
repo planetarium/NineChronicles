@@ -317,8 +317,8 @@ namespace Lib9c.Tests.Action
                         }
 
                         var arenaData = arenaSheet.GetRoundByBlockIndex(blockIndex);
-                        var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
-                        Assert.Equal(450 * currency, nextState.GetBalance(arenaAdr, currency));
+                        var feeStoreAddress = ItemEnhancement.GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
+                        Assert.Equal(450 * currency, nextState.GetBalance(feeStoreAddress, currency));
                     }
 
                     Assert.Equal(mimisbrunnr, equipment.MadeWithMimisbrunnrRecipe);

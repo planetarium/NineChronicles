@@ -31,6 +31,8 @@ namespace Nekoyume.Action
     [ActionType("item_enhancement11")]
     public class ItemEnhancement : GameAction
     {
+        public static Address GetFeeStoreAddress(int championshipId, int round) =>
+            Addresses.Blacksmith.Derive($"_{championshipId}_{round}");
         public enum EnhancementResult
         {
             GreatSuccess = 0,
@@ -284,8 +286,8 @@ namespace Nekoyume.Action
                 }
 
                 var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
-                var arenaAdr = ArenaHelper.DeriveArenaAddress(arenaData.ChampionshipId, arenaData.Round);
-                states = states.TransferAsset(ctx.Signer, arenaAdr, states.GetGoldCurrency() * requiredNcg);
+                var feeStoreAddress = GetFeeStoreAddress(arenaData.ChampionshipId, arenaData.Round);
+                states = states.TransferAsset(ctx.Signer, feeStoreAddress, states.GetGoldCurrency() * requiredNcg);
             }
 
             // Unequip items
