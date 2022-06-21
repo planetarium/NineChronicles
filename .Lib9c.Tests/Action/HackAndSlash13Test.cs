@@ -915,9 +915,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            var state = _initialState;
-            state = state.SetState(Addresses.GetSheetAddress<ArenaSheet>(), null!);
-
+            var state = new State();
             var exec = Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
