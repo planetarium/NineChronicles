@@ -224,8 +224,6 @@ namespace Lib9c.Tests.Action
             };
 
             var state = backward ? new State() : _initialState;
-
-            state = state.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
             if (!backward)
             {
                 state = _initialState
@@ -234,6 +232,8 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), null!)
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), null!);
             }
+
+            state = state.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {

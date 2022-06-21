@@ -18,6 +18,7 @@ namespace Nekoyume.Action
     [Serializable]
     /// <summary>
     /// Introduced at https://github.com/planetarium/lib9c/pull/1017
+    /// Updated at https://github.com/planetarium/lib9c/pull/1173
     /// </summary>
     [ActionType("hack_and_slash_sweep4")]
     public class HackAndSlashSweep4 : GameAction
@@ -68,6 +69,12 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(context.Signer, MarkChanged);
+            }
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            if (states.GetState(arenaSheetAddress) is null)
+            {
+                throw new ActionObsoletedException(nameof(HackAndSlashSweep4));
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
