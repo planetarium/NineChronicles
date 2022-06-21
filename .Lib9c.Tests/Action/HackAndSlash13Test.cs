@@ -423,6 +423,8 @@ namespace Lib9c.Tests.Action
             };
 
             IAccountStateDelta state = backward ? new State() : _initialState;
+
+            state = state.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
             if (!backward)
             {
                 state = _initialState
@@ -893,6 +895,35 @@ namespace Lib9c.Tests.Action
                     SerializeException<NotEnoughAvatarLevelException>(exec);
                 }
             }
+        }
+
+        [Fact]
+        public void ExecuteThrowActionObsoletedException()
+        {
+            var avatarState = new AvatarState(_avatarState)
+            {
+                actionPoint = 10,
+            };
+
+            var action = new HackAndSlash13
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+            };
+
+            var state = new State();
+            var exec = Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+
+            SerializeException<ActionObsoletedException>(exec);
         }
 
         [Theory]

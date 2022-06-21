@@ -14,7 +14,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static Lib9c.SerializeKeys;
+    using static SerializeKeys;
 
     public class HackAndSlashSweepTest3
     {
@@ -224,6 +224,8 @@ namespace Lib9c.Tests.Action
             };
 
             var state = backward ? new State() : _initialState;
+
+            state = state.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
             if (!backward)
             {
                 state = _initialState
@@ -747,6 +749,26 @@ namespace Lib9c.Tests.Action
                         Random = new TestRandom(),
                     }));
             }
+        }
+
+        [Fact]
+        public void Execute_ActionObsoletedException()
+        {
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = 1,
+                stageId = 50,
+            };
+
+            var state = new State();
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
         }
     }
 }

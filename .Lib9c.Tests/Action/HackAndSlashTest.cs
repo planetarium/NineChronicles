@@ -1162,41 +1162,6 @@ namespace Lib9c.Tests.Action
             Assert.Empty(nextSkillState.SkillIds);
         }
 
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new HackAndSlash
-            {
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
-            };
-
-            var updatedAddresses = new List<Address>
-            {
-                _agentAddress,
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext
-            {
-                PreviousStates = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
-        }
-
         private static void SerializeException<T>(Exception exec)
             where T : Exception
         {

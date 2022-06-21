@@ -17,7 +17,7 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/921
-    /// Updated at https://github.com/planetarium/lib9c/pull/963
+    /// Updated at https://github.com/planetarium/lib9c/pull/1167
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash13")]
@@ -67,6 +67,12 @@ namespace Nekoyume.Action
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
+            }
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            if (states.GetState(arenaSheetAddress) is null)
+            {
+                throw new ActionObsoletedException(nameof(HackAndSlash13));
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
