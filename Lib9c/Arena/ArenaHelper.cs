@@ -23,8 +23,8 @@ namespace Nekoyume.Arena
         public static readonly IReadOnlyDictionary<ArenaType, (int, int)> ScoreLimits =
             new Dictionary<ArenaType, (int, int)>()
         {
-            { ArenaType.Season, (50, -100) },
-            { ArenaType.Championship, (50, -100) }
+            { ArenaType.Season, (100, -100) },
+            { ArenaType.Championship, (100, -100) }
         };
 
         public static int GetMedalItemId(int championshipId, int round) =>
