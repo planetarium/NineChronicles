@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using mixpanel;
     using Nekoyume.BlockChain;
     using UniRx;
 
@@ -139,6 +140,13 @@ namespace Nekoyume.UI
         {
             Find<BuffBonusLoadingScreen>().Show();
             Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
+
+            Analyzer.Instance.Track("Unity/Purchase Crystal Bonus Skill", new Value
+            {
+                ["BurntCrystal"] = (long) (advanced ? _advancedCost : _normalCost),
+                ["isAdvanced"] = advanced,
+            });
+
             ActionManager.Instance.HackAndSlashRandomBuff(advanced).Subscribe();
             Close();
         }
