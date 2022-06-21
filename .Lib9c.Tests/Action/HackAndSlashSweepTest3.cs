@@ -14,7 +14,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static Lib9c.SerializeKeys;
+    using static SerializeKeys;
 
     public class HackAndSlashSweepTest3
     {
@@ -115,13 +115,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute(bool backward)
+        [InlineData(1, 1, 1, true)]
+        [InlineData(1, 1, 1, false)]
+        [InlineData(2, 1, 2, true)]
+        [InlineData(2, 1, 2, false)]
+        public void Execute(int apStoneCount, int worldId, int stageId, bool backward)
         {
-            var worldId = 1;
-            var stageId = 1;
-            var apStoneCount = 1;
             var gameConfigState = _initialState.GetGameConfigState();
             var avatarState = new AvatarState(
                 _avatarAddress,
@@ -135,6 +134,11 @@ namespace Lib9c.Tests.Action
                     new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), stageId),
                 level = 400,
             };
+
+            var row = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            var apStone = ItemFactory.CreateTradableMaterial(row);
+            avatarState.inventory.AddItem(apStone, apStoneCount);
 
             IAccountStateDelta state;
             if (backward)
@@ -184,15 +188,564 @@ namespace Lib9c.Tests.Action
                     stageId = stageId,
                 };
 
-                Assert.Throws<ActionObsoletedException>(() =>
+                state = action.Execute(new ActionContext
                 {
-                    action.Execute(new ActionContext
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    Random = _random,
+                });
+
+                var nextAvatarState = state.GetAvatarStateV2(_avatarAddress);
+
+                Assert.Equal(expectedLevel, nextAvatarState.level);
+                Assert.Equal(expectedExp, nextAvatarState.exp);
+                Assert.Equal(
+                    expectedRewardItems.Count(),
+                    nextAvatarState.inventory.Items.Sum(x => x.count));
+                foreach (var i in nextAvatarState.inventory.Items)
+                {
+                    nextAvatarState.inventory.TryGetItem(i.item.Id, out var item);
+                    Assert.Equal(expectedRewardItems.Count(x => x.Id == i.item.Id), item.count);
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_FailedLoadStateException(bool backward)
+        {
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = 1,
+                stageId = 1,
+            };
+
+            var state = backward ? new State() : _initialState;
+            if (!backward)
+            {
+                state = _initialState
+                    .SetState(_avatarAddress, _avatarState.SerializeV2())
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), null!)
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), null!)
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), null!);
+            }
+
+            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Theory]
+        [InlineData(100, 1)]
+        public void Execute_SheetRowNotFoundException(int worldId, int stageId)
+        {
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = worldId,
+                stageId = stageId,
+            };
+
+            Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Theory]
+        [InlineData(1, 999)]
+        public void Execute_SheetRowColumnException(int worldId, int stageId)
+        {
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = worldId,
+                stageId = stageId,
+            };
+
+            Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Fact]
+        public void Execute_StageClearedException()
+        {
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = 1,
+                stageId = 50,
+            };
+
+            Assert.Throws<StageNotClearedException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_InvalidStageException(bool backward)
+        {
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = 1,
+                stageId = 50,
+            };
+            var worldSheet = _initialState.GetSheet<WorldSheet>();
+            var worldUnlockSheet = _initialState.GetSheet<WorldUnlockSheet>();
+
+            _avatarState.worldInformation.ClearStage(1, 2, 1, worldSheet, worldUnlockSheet);
+
+            var state = _initialState;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        _avatarState.worldInformation.Serialize());
+            }
+
+            Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Theory]
+        [InlineData(GameConfig.MimisbrunnrWorldId, true)]
+        [InlineData(GameConfig.MimisbrunnrWorldId, false)]
+        public void Execute_InvalidWorldException(int worldId, bool backward)
+        {
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _initialState.GetAvatarSheets(),
+                gameConfigState,
+                _rankingMapAddress)
+            {
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 10000001),
+            };
+
+            IAccountStateDelta state;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress, avatarState.SerializeV2())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize());
+            }
+
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = worldId,
+                stageId = 10000001,
+            };
+
+            Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Theory]
+        [InlineData(99, true)]
+        [InlineData(99, false)]
+        public void Execute_UsageLimitExceedException(int apStoneCount, bool backward)
+        {
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _initialState.GetAvatarSheets(),
+                gameConfigState,
+                _rankingMapAddress)
+            {
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+            };
+
+            IAccountStateDelta state;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress, avatarState.SerializeV2())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize());
+            }
+
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = apStoneCount,
+                avatarAddress = _avatarAddress,
+                worldId = 1,
+                stageId = 2,
+            };
+
+            Assert.Throws<UsageLimitExceedException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Theory]
+        [InlineData(3, 2, true)]
+        [InlineData(7, 5, false)]
+        public void Execute_NotEnoughMaterialException(int useApStoneCount, int holdingApStoneCount, bool backward)
+        {
+            var gameConfigState = _initialState.GetGameConfigState();
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _initialState.GetAvatarSheets(),
+                gameConfigState,
+                _rankingMapAddress)
+            {
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+                level = 400,
+            };
+
+            var row = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            var apStone = ItemFactory.CreateTradableMaterial(row);
+            avatarState.inventory.AddItem(apStone, holdingApStoneCount);
+
+            IAccountStateDelta state;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress, avatarState.SerializeV2())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize());
+            }
+
+            var stageSheet = _initialState.GetSheet<StageSheet>();
+            var (expectedLevel, expectedExp) = (0, 0L);
+            if (stageSheet.TryGetValue(2, out var stageRow))
+            {
+                var itemPlayCount =
+                    gameConfigState.ActionPointMax / stageRow.CostAP * useApStoneCount;
+                var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
+                var playCount = apPlayCount + itemPlayCount;
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
+                    _tableSheets.CharacterLevelSheet,
+                    2,
+                    playCount);
+
+                var (equipments, costumes) = GetDummyItems(avatarState);
+
+                var action = new HackAndSlashSweep3
+                {
+                    equipments = equipments,
+                    costumes = costumes,
+                    avatarAddress = _avatarAddress,
+                    actionPoint = avatarState.actionPoint,
+                    apStoneCount = useApStoneCount,
+                    worldId = 1,
+                    stageId = 2,
+                };
+
+                Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    Random = new TestRandom(),
+                }));
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_NotEnoughActionPointException(bool backward)
+        {
+            var gameConfigState = _initialState.GetGameConfigState();
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _initialState.GetAvatarSheets(),
+                gameConfigState,
+                _rankingMapAddress)
+            {
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+                level = 400,
+                actionPoint = 0,
+            };
+
+            IAccountStateDelta state;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress, avatarState.SerializeV2())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize());
+            }
+
+            var stageSheet = _initialState.GetSheet<StageSheet>();
+            var (expectedLevel, expectedExp) = (0, 0L);
+            if (stageSheet.TryGetValue(2, out var stageRow))
+            {
+                var itemPlayCount =
+                    gameConfigState.ActionPointMax / stageRow.CostAP * 1;
+                var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
+                var playCount = apPlayCount + itemPlayCount;
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
+                    _tableSheets.CharacterLevelSheet,
+                    2,
+                    playCount);
+
+                var (equipments, costumes) = GetDummyItems(avatarState);
+                var action = new HackAndSlashSweep3
+                {
+                    costumes = costumes,
+                    equipments = equipments,
+                    avatarAddress = _avatarAddress,
+                    actionPoint = 999999,
+                    apStoneCount = 0,
+                    worldId = 1,
+                    stageId = 2,
+                };
+
+                Assert.Throws<NotEnoughActionPointException>(() =>
+                    action.Execute(new ActionContext()
                     {
                         PreviousStates = state,
                         Signer = _agentAddress,
-                        Random = _random,
-                    });
-                });
+                        Random = new TestRandom(),
+                    }));
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_PlayCountIsZeroException(bool backward)
+        {
+            var gameConfigState = _initialState.GetGameConfigState();
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _initialState.GetAvatarSheets(),
+                gameConfigState,
+                _rankingMapAddress)
+            {
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+                level = 400,
+                actionPoint = 0,
+            };
+
+            IAccountStateDelta state;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress, avatarState.SerializeV2())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize());
+            }
+
+            var stageSheet = _initialState.GetSheet<StageSheet>();
+            var (expectedLevel, expectedExp) = (0, 0L);
+            if (stageSheet.TryGetValue(2, out var stageRow))
+            {
+                var itemPlayCount =
+                    gameConfigState.ActionPointMax / stageRow.CostAP * 1;
+                var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
+                var playCount = apPlayCount + itemPlayCount;
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
+                    _tableSheets.CharacterLevelSheet,
+                    2,
+                    playCount);
+
+                var (equipments, costumes) = GetDummyItems(avatarState);
+                var action = new HackAndSlashSweep3
+                {
+                    costumes = costumes,
+                    equipments = equipments,
+                    avatarAddress = _avatarAddress,
+                    actionPoint = 0,
+                    apStoneCount = 0,
+                    worldId = 1,
+                    stageId = 2,
+                };
+
+                Assert.Throws<PlayCountIsZeroException>(() =>
+                    action.Execute(new ActionContext()
+                    {
+                        PreviousStates = state,
+                        Signer = _agentAddress,
+                        Random = new TestRandom(),
+                    }));
+            }
+        }
+
+        [Theory]
+        [InlineData(1, 3, true)]
+        [InlineData(1, 3, false)]
+        public void Execute_NotEnoughCombatPointException(int worldId, int stageId, bool backward)
+        {
+            var gameConfigState = _initialState.GetGameConfigState();
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _initialState.GetAvatarSheets(),
+                gameConfigState,
+                _rankingMapAddress)
+            {
+                worldInformation =
+                    new WorldInformation(0, _initialState.GetSheet<WorldSheet>(), 25),
+                actionPoint = 0,
+                level = 1,
+            };
+
+            IAccountStateDelta state;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress, avatarState.SerializeV2())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyInventoryKey),
+                        avatarState.inventory.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyQuestListKey),
+                        avatarState.questList.Serialize());
+            }
+
+            var stageSheet = _initialState.GetSheet<StageSheet>();
+            var (expectedLevel, expectedExp) = (0, 0L);
+            if (stageSheet.TryGetValue(stageId, out var stageRow))
+            {
+                var itemPlayCount =
+                    gameConfigState.ActionPointMax / stageRow.CostAP * 1;
+                var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
+                var playCount = apPlayCount + itemPlayCount;
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
+                    _tableSheets.CharacterLevelSheet,
+                    stageId,
+                    playCount);
+
+                var action = new HackAndSlashSweep3
+                {
+                    costumes = new List<Guid>(),
+                    equipments = new List<Guid>(),
+                    avatarAddress = _avatarAddress,
+                    actionPoint = avatarState.actionPoint,
+                    apStoneCount = 1,
+                    worldId = worldId,
+                    stageId = stageId,
+                };
+
+                Assert.Throws<NotEnoughCombatPointException>(() =>
+                    action.Execute(new ActionContext()
+                    {
+                        PreviousStates = state,
+                        Signer = _agentAddress,
+                        Random = new TestRandom(),
+                    }));
             }
         }
     }
