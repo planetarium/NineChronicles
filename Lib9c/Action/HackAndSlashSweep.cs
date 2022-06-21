@@ -17,7 +17,7 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/994
-    /// Updated at https://github.com/planetarium/lib9c/pull/994
+    /// Updated at https://github.com/planetarium/lib9c/pull/1167
     /// </summary>
     [Serializable]
     /// <summary>
@@ -67,11 +67,7 @@ namespace Nekoyume.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
-                return states
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(context.Signer, MarkChanged);
+                return states;
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);

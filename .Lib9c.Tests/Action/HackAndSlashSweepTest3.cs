@@ -179,6 +179,7 @@ namespace Lib9c.Tests.Action
                     costumes = costumes,
                     equipments = equipments,
                     avatarAddress = _avatarAddress,
+                    apStoneCount = apStoneCount,
                     worldId = worldId,
                     stageId = stageId,
                 };
