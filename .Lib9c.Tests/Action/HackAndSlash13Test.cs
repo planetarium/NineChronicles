@@ -86,6 +86,9 @@ namespace Lib9c.Tests.Action
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            _initialState = _initialState.SetState(arenaSheetAddress, null);
+
             foreach (var address in _avatarState.combinationSlotAddresses)
             {
                 var slotState = new CombinationSlotState(
@@ -424,7 +427,6 @@ namespace Lib9c.Tests.Action
 
             IAccountStateDelta state = backward ? new State() : _initialState;
 
-            state = state.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
             if (!backward)
             {
                 state = _initialState
@@ -915,7 +917,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            var state = new State();
+            var state = _initialState.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
             var exec = Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
