@@ -57,15 +57,59 @@ _250001,속도 증가(전체),Normal,Buff,SpeedBuff,Ally,1,1 // 미구현
 250004,속도 증가,Normal,Buff,SpeedBuff,Self,1,10
 300000,힐,Normal,Heal,Heal,Self,1,10
 _300001,힐(전체),Normal,Heal,Heal,Ally,1,1 // 미구현
-400000,SS 올스탯(테스트),Normal,Buff,Buff,Self,1,999
-400001,SS 스피드 체력(테스트),Normal,Buff,SpeedBuff,Self,1,999
-400002,SS 공격력 명중(테스트),Normal,Buff,AttackBuff,Self,1,999
-400003,S 체력(테스트),Normal,Buff,HPBuff,Self,1,999
-400004,S 공격력(테스트),Normal,Buff,AttackBuff,Self,1,999
-400005,S 속도(테스트),Normal,Buff,SpeedBuff,Self,1,999
-400006,A 방어력(테스트),Normal,Buff,DefenseBuff,Self,1,999
-400007,A 치명(테스트),Normal,Buff,CriticalBuff,Self,1,999
-400008,A 명중(테스트),Normal,Buff,HitBuff,Self,1,999
-400009,B 방어력(테스트),Normal,Buff,DefenseBuff,Self,1,999
-400010,B 명중(테스트),Normal,Buff,HitBuff,Self,1,999
-400011,B 체력(테스트),Normal,Buff,HPBuff,Self,1,999
+400000,SS 올스텟,Normal,Buff,Buff,Self,1,999
+400001,SS 공격 치명,Normal,Buff,AttackBuff,Self,1,999
+400002,SS 방어 치명,Normal,Buff,DefenseBuff,Self,1,999
+400003,SS 속도 치명,Normal,Buff,SpeedBuff,Self,1,999
+400004,SS 명중 치명,Normal,Buff,HitBuff,Self,1,999
+400005,S 올스텟,Normal,Buff,Buff,Self,1,999
+400006,S 공격 치명,Normal,Buff,AttackBuff,Self,1,999
+400007,S 방어 치명,Normal,Buff,DefenseBuff,Self,1,999
+400008,S 속도 치명,Normal,Buff,SpeedBuff,Self,1,999
+400009,S 명중 치명,Normal,Buff,HitBuff,Self,1,999
+400010,S 공격 방어 치명,Normal,Buff,AttackBuff,Self,1,999
+400011,S 공격 속도 치명,Normal,Buff,AttackBuff,Self,1,999
+400012,S 공격 명중 치명,Normal,Buff,AttackBuff,Self,1,999
+400013,S 방어 속도 치명,Normal,Buff,DefenseBuff,Self,1,999
+400014,S 방어 명중 치명,Normal,Buff,DefenseBuff,Self,1,999
+400015,A 올스텟,Normal,Buff,Buff,Self,1,999
+400016,A 공격,Normal,Buff,AttackBuff,Self,1,999
+400017,A 방어,Normal,Buff,DefenseBuff,Self,1,999
+400018,A 속도,Normal,Buff,SpeedBuff,Self,1,999
+400019,A 명중,Normal,Buff,HitBuff,Self,1,999
+400020,A 공격 방어,Normal,Buff,AttackBuff,Self,1,999
+400021,A 공격 명중,Normal,Buff,AttackBuff,Self,1,999
+400022,A 공격 속도,Normal,Buff,AttackBuff,Self,1,999
+400023,A 방어 명중,Normal,Buff,DefenseBuff,Self,1,999
+400024,A 방어 속도,Normal,Buff,DefenseBuff,Self,1,999
+400025,A 명중 속도,Normal,Buff,HitBuff,Self,1,999
+400026,A 공격 방어 명중,Normal,Buff,AttackBuff,Self,1,999
+400027,A 공격 방어 속도,Normal,Buff,AttackBuff,Self,1,999
+400028,A 공격 명중 속도,Normal,Buff,AttackBuff,Self,1,999
+400029,A 방어 명중 속도,Normal,Buff,DefenseBuff,Self,1,999
+400030,B 올스텟,Normal,Buff,Buff,Self,1,999
+400031,B 공격,Normal,Buff,AttackBuff,Self,1,999
+400032,B 방어,Normal,Buff,DefenseBuff,Self,1,999
+400033,B 속도,Normal,Buff,SpeedBuff,Self,1,999
+400034,B 명중,Normal,Buff,HitBuff,Self,1,999
+400035,B 치명,Normal,Buff,CriticalBuff,Self,1,999
+400036,B 공격 방어,Normal,Buff,AttackBuff,Self,1,999
+400037,B 공격 명중,Normal,Buff,AttackBuff,Self,1,999
+400038,B 공격 속도,Normal,Buff,AttackBuff,Self,1,999
+400039,B 공격 치명,Normal,Buff,AttackBuff,Self,1,999
+400040,B 방어 명중,Normal,Buff,DefenseBuff,Self,1,999
+400041,B 방어 속도,Normal,Buff,DefenseBuff,Self,1,999
+400042,B 방어 치명,Normal,Buff,DefenseBuff,Self,1,999
+400043,B 명중 속도,Normal,Buff,HitBuff,Self,1,999
+400044,B 명중 치명,Normal,Buff,HitBuff,Self,1,999
+400045,B 속도 치명,Normal,Buff,SpeedBuff,Self,1,999
+400046,B 공격 방어 명중,Normal,Buff,AttackBuff,Self,1,999
+400047,B 공격 방어 속도,Normal,Buff,AttackBuff,Self,1,999
+400048,B 공격 방어 치명,Normal,Buff,AttackBuff,Self,1,999
+400049,B 공격 명중 속도,Normal,Buff,AttackBuff,Self,1,999
+400050,B 공격 명중 치명,Normal,Buff,AttackBuff,Self,1,999
+400051,B 공격 속도 치명,Normal,Buff,AttackBuff,Self,1,999
+400052,B 방어 명중 속도,Normal,Buff,DefenseBuff,Self,1,999
+400053,B 방어명중 치명,Normal,Buff,DefenseBuff,Self,1,999
+400054,B 방어 속도 치명,Normal,Buff,DefenseBuff,Self,1,999
+400055,B 명중 속도 치명,Normal,Buff,SpeedBuff,Self,1,999
