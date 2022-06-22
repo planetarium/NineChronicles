@@ -179,11 +179,11 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 1, 1)]
-        [InlineData(0, 1, 2)]
-        [InlineData(7, 1, 2)]
-        [InlineData(100, 1, 8)]
-        public void Execute(long blockIndex, int championshipId, int round)
+        [InlineData(0, 1, 1, "0")]
+        [InlineData(4_479_999L, 1, 2, "499000.5")]
+        [InlineData(4_480_001L, 1, 2, "998001")]
+        [InlineData(100, 1, 8, "1996002")]
+        public void Execute(long blockIndex, int championshipId, int round, string balance)
         {
             var arenaSheet = _state.GetSheet<ArenaSheet>();
             if (!arenaSheet.TryGetValue(championshipId, out var row))
@@ -194,10 +194,9 @@ namespace Lib9c.Tests.Action
 
             var avatarState = _state.GetAvatarStateV2(_avatarAddress);
             avatarState = GetAvatarState(avatarState, out var equipments, out var costumes);
-            avatarState = AddMedal(avatarState, row, 20);
+            avatarState = AddMedal(avatarState, row, 80);
 
-            var preCurrency = 99800100000 * _currency;
-            var state = _state.MintAsset(_signer, preCurrency);
+            var state = _state.MintAsset(_signer, FungibleAssetValue.Parse(_currency, balance));
 
             var action = new JoinArena()
             {
@@ -265,16 +264,7 @@ namespace Lib9c.Tests.Action
                 throw new RoundNotFoundException($"{nameof(JoinArena)} : {row.ChampionshipId} / {round}");
             }
 
-            if (roundData.IsTheRoundOpened(blockIndex))
-            {
-                var curCurrency = preCurrency - (roundData.EntranceFee * _currency * avatarState.level * avatarState.level);
-                Assert.Equal(curCurrency, state.GetBalance(_signer, _currency));
-            }
-            else
-            {
-                var curCurrency = preCurrency - (roundData.EntranceFee / 2 * _currency * avatarState.level * avatarState.level);
-                Assert.Equal(curCurrency, state.GetBalance(_signer, _currency));
-            }
+            Assert.Equal(0 * _currency, state.GetBalance(_signer, _currency));
         }
 
         [Theory]
