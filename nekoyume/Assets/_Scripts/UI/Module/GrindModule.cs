@@ -455,7 +455,18 @@ namespace Nekoyume.UI.Module
             });
             ActionManager.Instance
                 .Grinding(equipments, chargeAp)
-                .Subscribe(_ => Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false));
+                .Subscribe(eval =>
+                {
+                    Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+                    if (eval.Exception != null)
+                    {
+                        Debug.LogException(eval.Exception.InnerException);
+                        OneLineSystem.Push(
+                            MailType.Grinding,
+                            L10nManager.Localize("ERROR_UNKNOWN"),
+                            NotificationCell.NotificationType.Alert);
+                    }
+                });
             _selectedItemsForGrind.Clear();
             if (animator)
             {
