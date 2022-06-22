@@ -476,7 +476,7 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _state,
                 Signer = _agent1Address,
                 Random = new TestRandom(),
-                BlockIndex = 1000,
+                BlockIndex = 4480001,
             }));
         }
 

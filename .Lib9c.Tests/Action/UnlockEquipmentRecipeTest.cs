@@ -56,14 +56,14 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(new[] { 2, 3 }, true, false, false, true, 38, null)]
-        [InlineData(new[] { 2 }, true, false, false, true, 19, null)]
+        [InlineData(new[] { 2, 3 }, true, false, false, true, 4, null)]
+        [InlineData(new[] { 2 }, true, false, false, true, 2, null)]
         // Unlock Belt without Armor unlock.
-        [InlineData(new[] { 83 }, true, false, false, true, 10, null)]
+        [InlineData(new[] { 83 }, true, false, false, true, 1, null)]
         // Unlock Weapon & Ring
-        [InlineData(new[] { 2, 133 }, true, false, false, true, 29, null)]
+        [InlineData(new[] { 2, 133 }, true, false, false, true, 3, null)]
         // AvatarState migration.
-        [InlineData(new[] { 2 }, true, true, false, true, 19, null)]
+        [InlineData(new[] { 2 }, true, true, false, true, 2, null)]
         // Invalid recipe id.
         [InlineData(new[] { -1 }, true, false, false, false, 100, typeof(InvalidRecipeIdException))]
         [InlineData(new[] { 1 }, true, false, false, true, 100, typeof(InvalidRecipeIdException))]

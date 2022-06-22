@@ -76,10 +76,10 @@ namespace Lib9c.Tests.Action
         [InlineData(true, true, 120, false, false, true, 1, 2, false, false, false, 0, 40, 1, null)]
         // Multiply by StakeState.
         [InlineData(true, true, 120, false, false, true, 1, 2, false, true, false, 0, 40, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 0, false, true, false, 1, 12, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, true, false, 2, 15, 1, null)]
         // Multiply by legacy MonsterCollectionState.
         [InlineData(true, true, 120, false, false, true, 1, 2, false, false, true, 0, 40, 1, null)]
-        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, true, 1, 12, 1, null)]
+        [InlineData(true, true, 120, false, false, true, 1, 0, false, false, true, 2, 15, 1, null)]
         // Charge AP.
         [InlineData(true, true, 0, true, true, true, 1, 0, false, false, false, 0, 10, 1, null)]
         // Invalid equipment count.
@@ -162,7 +162,7 @@ namespace Lib9c.Tests.Action
                 var stakeStateAddress = StakeState.DeriveAddress(_agentAddress);
                 var stakeState = new StakeState(stakeStateAddress, 1);
                 var requiredGold = _tableSheets.StakeRegularRewardSheet.OrderedRows
-                    .First(r => r.Level == monsterCollectLevel).RequiredGold;
+                    .FirstOrDefault(r => r.Level == monsterCollectLevel)?.RequiredGold ?? 0;
 
                 if (stake)
                 {
