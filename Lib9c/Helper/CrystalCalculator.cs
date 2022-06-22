@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
@@ -46,14 +47,24 @@ namespace Nekoyume.Helper
         public static FungibleAssetValue CalculateCrystal(
             Address agentAddress,
             IEnumerable<Equipment> equipmentList,
-            FungibleAssetValue balance,
+            FungibleAssetValue stakedAmount,
             bool enhancementFailed,
             CrystalEquipmentGrindingSheet crystalEquipmentGrindingSheet,
             CrystalMonsterCollectionMultiplierSheet crystalMonsterCollectionMultiplierSheet,
             StakeRegularRewardSheet stakeRegularRewardSheet
         )
         {
-            var monsterCollectionLevel = stakeRegularRewardSheet.FindLevelByStakedAmount(agentAddress, balance);
+            int monsterCollectionLevel = 0;
+            try
+            {
+                monsterCollectionLevel = stakeRegularRewardSheet.FindLevelByStakedAmount(agentAddress, stakedAmount);
+            }
+            catch (InsufficientBalanceException)
+            {
+                // Ignore exception from update table data.
+                // https://github.com/planetarium/lib9c/commit/c2f65b9f603ba2e0433df7eaf00224865063f666
+            }
+
             return CalculateCrystal(
                 equipmentList,
                 enhancementFailed,
