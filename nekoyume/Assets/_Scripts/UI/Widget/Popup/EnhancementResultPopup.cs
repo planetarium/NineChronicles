@@ -292,9 +292,9 @@ namespace Nekoyume.UI
                     _titleGreatSuccessObject.SetActive(false);
                     _titleFailSuccessObject.SetActive(true);
                     var gainCrystal = !crystal.Equals("0");
+                    gainCrystalText.text = $"{crystal} {L10nManager.Localize("OBTAIN")}";
                     gainCrystalObject.SetActive(gainCrystal);
                     legacyFailText.SetActive(!gainCrystal);
-                    gainCrystalText.text = $"{crystal} {L10nManager.Localize("OBTAIN")}";
                     Animator.SetTrigger(AnimatorHashFail);
                     break;
                 default:
