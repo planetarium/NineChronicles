@@ -438,13 +438,22 @@ namespace Nekoyume.BlockChain
                     is Dictionary stakeDict)
                 {
                     var stakingState = new StakeState(stakeDict);
-                    var balance = await GetBalanceAsync(stakingState.address,
-                        goldCurrency);
-                    var level =
-                        Game.TableSheets.Instance.StakeRegularRewardSheet
+                    var balance = new FungibleAssetValue(goldCurrency);
+                    var level = 0;
+                    try
+                    {
+                        balance = await GetBalanceAsync(stakingState.address,
+                            goldCurrency);
+                        level = Game.TableSheets.Instance.StakeRegularRewardSheet
                             .FindLevelByStakedAmount(
                                 Address,
                                 balance);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+
                     States.Instance.SetStakeState(stakingState,
                         new GoldBalanceState(stakingState.address, balance),
                         level);
@@ -458,13 +467,23 @@ namespace Nekoyume.BlockChain
                     if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
                     {
                         var monsterCollectionState = new MonsterCollectionState(mcDict);
-                        var balance = await GetBalanceAsync(monsterCollectionAddress,
-                            goldCurrency);
-                        var level =
-                            Game.TableSheets.Instance.StakeRegularRewardSheet
-                                .FindLevelByStakedAmount(
-                                    Address,
-                                    balance);
+                        var balance = new FungibleAssetValue(goldCurrency);
+                        var level = 0;
+                        try
+                        {
+                            balance = await GetBalanceAsync(monsterCollectionAddress,
+                                goldCurrency);
+                            level =
+                                Game.TableSheets.Instance.StakeRegularRewardSheet
+                                    .FindLevelByStakedAmount(
+                                        Address,
+                                        balance);
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+
                         States.Instance.SetMonsterCollectionState(monsterCollectionState,
                             new GoldBalanceState(monsterCollectionAddress, balance),
                             level);
