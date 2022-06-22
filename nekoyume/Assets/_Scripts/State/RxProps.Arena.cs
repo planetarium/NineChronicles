@@ -89,6 +89,8 @@ namespace Nekoyume.State
             }
         }
 
+        private static Address? _avatarAddressForArenaProps;
+        
         // TODO!!!! Remove [`_arenaInfoTuple`] and use [`_playersArenaParticipant`] instead.
         private static readonly
             AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
@@ -147,19 +149,33 @@ namespace Nekoyume.State
 
         private static void StartArena()
         {
-            // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
-            // ReactiveAvatarState.Address
-            //     .Subscribe(addr =>
-            //     {
-            //         if (_playersArenaParticipant.HasValue &&
-            //             _playersArenaParticipant.Value.AvatarAddr == addr)
-            //         {
-            //             return;
-            //         }
-            //
-            //         _playersArenaParticipant.Value = null;
-            //     })
-            //     .AddTo(_disposables);
+            ReactiveAvatarState.Address
+                .Subscribe(addr =>
+                {
+                    
+                    // NOTE: Reset all of cached block indexes for rx props when current avatar state changed.
+                    if (!_avatarAddressForArenaProps.HasValue)
+                    {
+                        _avatarAddressForArenaProps = _states.CurrentAvatarState.address;
+                    }
+                    else if (!_avatarAddressForArenaProps.Value.Equals(
+                                 _states.CurrentAvatarState.address))
+                    {
+                        _avatarAddressForArenaProps = _states.CurrentAvatarState.address;
+                        _arenaInfoTupleUpdatedBlockIndex = 0;
+                        _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = 0;
+                    }
+
+                    // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
+                    // if (_playersArenaParticipant.HasValue &&
+                    //     _playersArenaParticipant.Value.AvatarAddr == addr)
+                    // {
+                    //     return;
+                    // }
+                    //
+                    // _playersArenaParticipant.Value = null;
+                })
+                .AddTo(_disposables);
 
             ArenaInfoTuple
                 .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
@@ -415,6 +431,7 @@ namespace Nekoyume.State
             var playerArenaInfo = stateBulk[playerArenaInfoAddr] is List arenaInfoList
                 ? new ArenaInformation(arenaInfoList)
                 : null;
+            // NOTE: There is players `ArenaParticipant` in chain.
             if (playersArenaParticipant is null)
             {
                 var ap = result.FirstOrDefault(e =>
@@ -441,17 +458,36 @@ namespace Nekoyume.State
 
             var orderedTuples = tuples
                 .OrderByDescending(tuple => tuple.score)
-                .Select(tuple => (avatarAddr: tuple.avatarAddr, tuple.score, 0))
+                .Select(tuple => (tuple.avatarAddr, tuple.score, 0))
                 .ToArray();
             var rank = 1;
             var cachedScore = orderedTuples[0].score;
-            for (var i = 1; i < orderedTuples.Length; i++)
+            var orderedTuplesLength = orderedTuples.Length;
+            for (var i = 1; i < orderedTuplesLength; i++)
             {
                 var tuple = orderedTuples[i];
                 if (cachedScore == tuple.score)
                 {
                     rank++;
-                    continue;
+                    if (i < orderedTuplesLength - 1)
+                    {
+                        continue;
+                    }
+
+                    for (var j = i; j >= 0; j--)
+                    {
+                        var previousTuple = orderedTuples[j];
+                        if (previousTuple.score == cachedScore)
+                        {
+                            previousTuple.Item3 = rank;
+                            orderedTuples[j] = previousTuple;
+                            continue;
+                        }
+
+                        break;
+                    }
+
+                    break;
                 }
 
                 for (var j = i - 1; j >= 0; j--)
@@ -460,6 +496,7 @@ namespace Nekoyume.State
                     if (previousTuple.score == cachedScore)
                     {
                         previousTuple.Item3 = rank;
+                        orderedTuples[j] = previousTuple;
                         continue;
                     }
 
@@ -467,6 +504,7 @@ namespace Nekoyume.State
                 }
 
                 cachedScore = tuple.score;
+                rank++;
             }
 
             return orderedTuples;
