@@ -1677,6 +1677,8 @@ namespace Nekoyume.BlockChain
                     arenaBattlePreparation.OnRenderBattleArena(eval);
                 }
 
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
+
                 return;
             }
 
