@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
@@ -80,7 +81,7 @@ namespace Nekoyume.BlockChain
                         agentAddress, balance);
                 return (new MonsterCollectionState(mcDict), level, balance);
             }
-            catch (BalanceDoesNotExistsException)
+            catch (Exception)
             {
                 return (null, 0, new FungibleAssetValue());
             }
@@ -108,7 +109,7 @@ namespace Nekoyume.BlockChain
                     balance);
                 return (state, level, balance);
             }
-            catch (BalanceDoesNotExistsException)
+            catch (Exception)
             {
                 return (null, 0, new FungibleAssetValue());
             }
