@@ -29,12 +29,15 @@ namespace Lib9c.Tests.Action
         private readonly Address _agent1Address;
         private readonly Address _agent2Address;
         private readonly Address _agent3Address;
+        private readonly Address _agent4Address;
         private readonly Address _avatar1Address;
         private readonly Address _avatar2Address;
         private readonly Address _avatar3Address;
+        private readonly Address _avatar4Address;
         private readonly AvatarState _avatar1;
         private readonly AvatarState _avatar2;
         private readonly AvatarState _avatar3;
+        private readonly AvatarState _avatar4;
         private readonly Currency _crystal;
         private readonly Currency _ncg;
         private IAccountStateDelta _state;
@@ -96,6 +99,17 @@ namespace Lib9c.Tests.Action
             _avatar3 = avatar3State;
             _avatar3Address = avatar3State.address;
 
+            // account 4
+            var (agent4State, avatar4State) = GetAgentStateWithAvatarState(
+                _sheets,
+                _tableSheets,
+                rankingMapAddress,
+                1);
+
+            _agent4Address = agent4State.address;
+            _avatar4 = avatar4State;
+            _avatar4Address = avatar4State.address;
+
             _state = _state
                 .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize())
                 .SetState(_agent1Address, agent1State.Serialize())
@@ -105,8 +119,13 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatar1Address, _avatar1.Serialize())
                 .SetState(_agent2Address, agent2State.Serialize())
                 .SetState(_avatar2Address, avatar2State.Serialize())
-                .SetState(_agent3Address, agent2State.Serialize())
-                .SetState(_avatar3Address, avatar2State.Serialize())
+                .SetState(_agent3Address, agent3State.Serialize())
+                .SetState(_avatar3Address, avatar3State.Serialize())
+                .SetState(_agent4Address, agent4State.Serialize())
+                .SetState(_avatar4Address.Derive(LegacyInventoryKey), _avatar4.inventory.Serialize())
+                .SetState(_avatar4Address.Derive(LegacyWorldInformationKey), _avatar4.worldInformation.Serialize())
+                .SetState(_avatar4Address.Derive(LegacyQuestListKey), _avatar4.questList.Serialize())
+                .SetState(_avatar4Address, avatar4State.Serialize())
                 .SetState(Addresses.GameConfig, new GameConfigState(_sheets[nameof(GameConfigSheet)]).Serialize());
 
             Log.Logger = new LoggerConfiguration()
@@ -398,7 +417,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new BattleArena()
             {
-                myAvatarAddress = _avatar3Address,
+                myAvatarAddress = _avatar4Address,
                 enemyAvatarAddress = _avatar2Address,
                 championshipId = 1,
                 round = 1,
@@ -407,11 +426,12 @@ namespace Lib9c.Tests.Action
                 equipments = new List<Guid>(),
             };
 
-            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
+            Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = _state,
-                Signer = _agent3Address,
+                Signer = _agent4Address,
                 Random = new TestRandom(),
+                BlockIndex = 1,
             }));
         }
 
