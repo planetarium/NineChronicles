@@ -11,6 +11,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Arena;
+    using Nekoyume.Model;
     using Nekoyume.Model.Arena;
     using Nekoyume.Model.EnumType;
     using Nekoyume.Model.Item;
@@ -26,7 +27,9 @@ namespace Lib9c.Tests.Action
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
         private readonly Address _signer;
+        private readonly Address _signer2;
         private readonly Address _avatarAddress;
+        private readonly Address _avatar2Address;
         private readonly IRandom _random;
         private readonly Currency _currency;
         private IAccountStateDelta _state;
@@ -42,9 +45,10 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _signer = default;
-            _avatarAddress = _signer.Derive("avatar");
             _state = new State();
+
+            _signer = new PrivateKey().ToAddress();
+            _avatarAddress = _signer.Derive("avatar");
             var sheets = TableSheetsImporter.ImportSheets();
             var tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
@@ -55,9 +59,34 @@ namespace Lib9c.Tests.Action
                 0,
                 tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
-                rankingMapAddress);
+                rankingMapAddress)
+            {
+                worldInformation = new WorldInformation(
+                    0,
+                    tableSheets.WorldSheet,
+                    GameConfig.RequireClearedStageLevel.ActionsInRankingBoard),
+            };
             agentState.avatarAddresses[0] = _avatarAddress;
+            avatarState.level = GameConfig.RequireClearedStageLevel.ActionsInRankingBoard;
 
+            _signer2 = new PrivateKey().ToAddress();
+            _avatar2Address = _signer2.Derive("avatar");
+            var agent2State = new AgentState(_signer2);
+
+            var avatar2State = new AvatarState(
+                _avatar2Address,
+                _signer2,
+                0,
+                tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                rankingMapAddress)
+            {
+                worldInformation = new WorldInformation(
+                    0,
+                    tableSheets.WorldSheet,
+                    1),
+            };
+            agent2State.avatarAddresses[0] = _avatar2Address;
             var currency = new Currency("NCG", 2, minters: null);
             var goldCurrencyState = new GoldCurrencyState(currency);
             _currency = new Currency("CRYSTAL", 18, minters: null);
@@ -68,6 +97,11 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
                 .SetState(_avatarAddress, avatarState.SerializeV2())
+                .SetState(_signer2, agent2State.Serialize())
+                .SetState(_avatar2Address.Derive(LegacyInventoryKey), avatar2State.inventory.Serialize())
+                .SetState(_avatar2Address.Derive(LegacyWorldInformationKey), avatar2State.worldInformation.Serialize())
+                .SetState(_avatar2Address.Derive(LegacyQuestListKey), avatar2State.questList.Serialize())
+                .SetState(_avatar2Address, avatar2State.SerializeV2())
                 .SetState(Addresses.GoldCurrency, goldCurrencyState.Serialize());
 
             foreach ((string key, string value) in sheets)
@@ -443,6 +477,26 @@ namespace Lib9c.Tests.Action
                 Signer = _signer,
                 Random = new TestRandom(),
                 BlockIndex = 1,
+            }));
+        }
+
+        [Fact]
+        public void Execute_NotEnoughClearedStageLevelException()
+        {
+            var action = new JoinArena()
+            {
+                championshipId = 1,
+                round = 1,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                avatarAddress = _avatar2Address,
+            };
+
+            Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = _state,
+                Signer = _signer2,
+                Random = new TestRandom(),
             }));
         }
     }
