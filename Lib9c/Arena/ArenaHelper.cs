@@ -65,10 +65,10 @@ namespace Nekoyume.Arena
             long currentBlockIndex,
             int avatarLevel)
         {
-            var fee = roundData.EntranceFee * avatarLevel * avatarLevel;
+            var fee = roundData.EntranceFee * avatarLevel * avatarLevel * CrystalCalculator.CRYSTAL;
             return roundData.IsTheRoundOpened(currentBlockIndex)
-                ? fee * CrystalCalculator.CRYSTAL
-                : fee / 2 * CrystalCalculator.CRYSTAL;
+                ? fee
+                : fee.DivRem(100, out _) * 50;
         }
 
         public static bool ValidateScoreDifference(
