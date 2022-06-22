@@ -367,9 +367,7 @@ namespace Nekoyume.UI
             if (subKey != null)
             {
                 var value = subKey.GetValue("SkipSynopsis");
-                skipPrologue |= value != null ?
-                    (int)value == 1 :
-                    false;
+                skipPrologue |= value is int i && i == 1;
             }
 #else
             var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
