@@ -24,6 +24,8 @@ namespace Nekoyume.State
 
         private static readonly List<IDisposable> _disposables = new List<IDisposable>();
 
+        private static Address? _currentAvatarAddress;
+
         public static void Start(IAgent agent, States states, TableSheets tableSheets)
         {
             if (agent is null)
@@ -45,11 +47,14 @@ namespace Nekoyume.State
             _agent = agent;
             _states = states;
             _tableSheets = tableSheets;
+
             _disposables.DisposeAllAndClear();
             _agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(OnBlockIndex)
                 .AddTo(_disposables);
+
+            StartArena();
         }
 
         public static void Stop()
