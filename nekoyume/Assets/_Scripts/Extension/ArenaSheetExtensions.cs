@@ -67,6 +67,14 @@ namespace Nekoyume
                 .TryGetSeasonNumber(round, out seasonNumber);
 
         public static int GetSeasonNumber(
+            this ArenaSheet.RoundData roundData,
+            ArenaSheet arenaSheet,
+            int defaultValue = 0) =>
+            arenaSheet.TryGetValue(roundData.ChampionshipId, out var row)
+                ? row.GetSeasonNumber(roundData.Round)
+                : defaultValue;
+
+        public static int GetSeasonNumber(
             this ArenaSheet.Row row,
             int round,
             int defaultValue = 0) =>
@@ -145,14 +153,15 @@ namespace Nekoyume
                 return false;
             }
 
+            // NOTE: id = 700{championship id % 4:N1}{round:N2}
+            //       e.g., 700102, 700406
             // NOTE: The season number is beginning from 4 when the championship id is 1 or 2.
-            var round = roundData.ChampionshipId == 1 || roundData.ChampionshipId == 2
-                ? roundData.Round + 3
-                : roundData.Round;
-
-            // NOTE: The name of the medal item resource is
-            // prepared only for championship id 1.
-            medalItemId = ArenaHelper.GetMedalItemId(1, round);
+            //       So `championshipNumber` should +1 like below
+            //       because every championship has 3 seasons.
+            var championshipNumber = roundData.ChampionshipId == 1 || roundData.ChampionshipId == 2
+                ? roundData.ChampionshipId % 4 + 1
+                : roundData.ChampionshipId % 4;
+            medalItemId = ArenaHelper.GetMedalItemId(championshipNumber, roundData.Round);
             return true;
         }
 
