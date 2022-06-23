@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private bool isTitleFrame = false;
 
-        public Subject<AvatarState> OnClickCharacterIcon = new Subject<AvatarState>();
+        public readonly Subject<AvatarState> OnClickCharacterIcon = new Subject<AvatarState>();
 
         private AvatarState _avatarStateToDisplay;
 

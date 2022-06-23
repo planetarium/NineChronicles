@@ -68,6 +68,10 @@ namespace Nekoyume.UI.Module.Arena.Board
 
         private void Awake()
         {
+            _characterView.OnClickCharacterIcon
+                .Subscribe(_ => Context.onClickCharacterView?.Invoke(Index))
+                .AddTo(gameObject);
+            
             _choiceButton.OnClickSubject
                 .Subscribe(_ => Context.onClickChoice?.Invoke(Index))
                 .AddTo(gameObject);
@@ -127,6 +131,7 @@ namespace Nekoyume.UI.Module.Arena.Board
     public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
     {
         public int selectedIndex = -1;
+        public Action<int> onClickCharacterView;
         public Action<int> onClickChoice;
     }
 }

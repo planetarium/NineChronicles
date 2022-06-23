@@ -964,6 +964,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2e91801453c4133a9481a311e963471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _rankImage: {fileID: 8275281152053513665}
+  _rankImageContainer: {fileID: 4405504630770143376}
+  _rankText: {fileID: 2583316994446040918}
+  _rankTextContainer: {fileID: 1971819857439392836}
   _characterView: {fileID: 8585630210565637522}
   _nameText: {fileID: 5113335764272237336}
   _ratingText: {fileID: 2468895205858989245}
