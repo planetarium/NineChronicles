@@ -548,7 +548,7 @@ namespace Nekoyume.UI
             return completeCondition && CheckJoinCost();
         }
 
-        private (int max, int current) GetConditions()
+        private (int required, int current) GetConditions()
         {
 #if UNITY_EDITOR
             if (_useSo && _so)
