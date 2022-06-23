@@ -1779,6 +1779,8 @@ namespace Nekoyume.BlockChain
             await UniTask.WhenAll(
                 RxProps.ArenaInfoTuple.UpdateAsync(),
                 RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync());
+            // NOTE: The `RxProps.PlayersArenaParticipant` updated when
+            //       the `RxProps.ArenaParticipantsOrderedWithScore` update.
             log.Score = RxProps.PlayersArenaParticipant.HasValue
                 ? RxProps.PlayersArenaParticipant.Value.Score
                 : ArenaScore.ArenaScoreDefault;
