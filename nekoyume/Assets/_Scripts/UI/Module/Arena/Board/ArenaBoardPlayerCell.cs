@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Globalization;
+using Nekoyume.Helper;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Module.Arena.Board
@@ -17,30 +19,43 @@ namespace Nekoyume.UI.Module.Arena.Board
         public int? titleId;
         public int cp;
         public int score;
+        public int rank;
         public int expectWinDeltaScore;
         public bool interactableChoiceButton;
-    }
-
-    public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
-    {
-        public int selectedIndex = -1;
-        public Action<int> onClickChoice;
     }
 
     public class ArenaBoardPlayerCell
         : FancyScrollRectCell<ArenaBoardPlayerItemData, ArenaBoardPlayerScrollContext>
     {
-        [SerializeField] private DetailedCharacterView _characterView;
+        [SerializeField]
+        private Image _rankImage;
 
-        [SerializeField] private TextMeshProUGUI _nameText;
+        [SerializeField]
+        private GameObject _rankImageContainer;
 
-        [SerializeField] private TextMeshProUGUI _ratingText;
+        [SerializeField]
+        private TextMeshProUGUI _rankText;
 
-        [SerializeField] private TextMeshProUGUI _cpText;
+        [SerializeField]
+        private GameObject _rankTextContainer;
 
-        [SerializeField] private TextMeshProUGUI _plusRatingText;
+        [SerializeField]
+        private DetailedCharacterView _characterView;
 
-        [SerializeField] private ConditionalButton _choiceButton;
+        [SerializeField]
+        private TextMeshProUGUI _nameText;
+
+        [SerializeField]
+        private TextMeshProUGUI _ratingText;
+
+        [SerializeField]
+        private TextMeshProUGUI _cpText;
+
+        [SerializeField]
+        private TextMeshProUGUI _plusRatingText;
+
+        [SerializeField]
+        private ConditionalButton _choiceButton;
 
         private ArenaBoardPlayerItemData _currentData;
 
@@ -75,6 +90,7 @@ namespace Nekoyume.UI.Module.Arena.Board
                     "N0",
                     CultureInfo.CurrentCulture);
             _choiceButton.Interactable = _currentData.interactableChoiceButton;
+            UpdateRank();
         }
 
         protected override void UpdatePosition(float normalizedPosition, float localPosition)
@@ -82,5 +98,35 @@ namespace Nekoyume.UI.Module.Arena.Board
             _normalizedPosition = normalizedPosition;
             base.UpdatePosition(_normalizedPosition, localPosition);
         }
+
+        private void UpdateRank()
+        {
+            switch (_currentData.rank)
+            {
+                case -1:
+                    _rankImageContainer.SetActive(false);
+                    _rankText.text = "-";
+                    _rankTextContainer.SetActive(true);
+                    break;
+                case 1:
+                case 2:
+                case 3:
+                    _rankImage.overrideSprite = SpriteHelper.GetRankIcon(_currentData.rank);
+                    _rankImageContainer.SetActive(true);
+                    _rankTextContainer.SetActive(false);
+                    break;
+                default:
+                    _rankImageContainer.SetActive(false);
+                    _rankText.text = _currentData.rank.ToString();
+                    _rankTextContainer.SetActive(true);
+                    break;
+            }
+        }
+    }
+
+    public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
+    {
+        public int selectedIndex = -1;
+        public Action<int> onClickChoice;
     }
 }

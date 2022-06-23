@@ -188,6 +188,7 @@ namespace Nekoyume.UI
                         .Id,
                     cp = e.AvatarState.GetCP(),
                     score = e.Score,
+                    rank = e.Rank,
                     expectWinDeltaScore = e.ExpectDeltaScore.win,
                     interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
                 };
