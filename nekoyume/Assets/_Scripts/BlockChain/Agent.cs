@@ -62,8 +62,6 @@ namespace Nekoyume.BlockChain
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
         public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
-
-        private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
         private static IEnumerator _swarmRunner;
         private static IEnumerator _autoPlayer;
@@ -222,6 +220,8 @@ namespace Nekoyume.BlockChain
                 host: host,
                 listenPort: port,
                 iceServers: iceServers,
+                nodeId: 0,
+                consensusPrivateKey: new PrivateKey(),
                 differentAppProtocolVersionEncountered: DifferentAppProtocolVersionEncountered,
                 trustedAppProtocolVersionSigners: trustedAppProtocolVersionSigners);
 
@@ -454,7 +454,6 @@ namespace Nekoyume.BlockChain
                 ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
                 // 그리고 마이닝을 시작한다.
-                StartNullableCoroutine(_miner);
                 StartCoroutine(CoCheckBlockTip());
 
                 StartNullableCoroutine(_autoPlayer);
@@ -463,7 +462,6 @@ namespace Nekoyume.BlockChain
                 TipChanged += (___, index) => { BlockIndexSubject.OnNext(index); };
             };
 
-            _miner = options.NoMiner ? null : CoMiner();
             _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
 
             if (development)
@@ -868,20 +866,6 @@ namespace Nekoyume.BlockChain
                     1,
                     1).StartAsCoroutine();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
-            }
-        }
-
-        private IEnumerator CoMiner()
-        {
-            var miner = new Miner(blocks, _swarm, PrivateKey);
-            var sleepInterval = new WaitForSeconds(15);
-            while (true)
-            {
-                var task = Task.Run(async() => await miner.MineBlockAsync(_cancellationTokenSource.Token));
-                yield return new WaitUntil(() => task.IsCompleted);
-#if UNITY_EDITOR
-                yield return sleepInterval;
-#endif
             }
         }
 
