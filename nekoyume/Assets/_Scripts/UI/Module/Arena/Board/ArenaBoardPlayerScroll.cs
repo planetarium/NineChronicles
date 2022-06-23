@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
-using UnityEngine.UI.Extensions.EasingCore;
 
 namespace Nekoyume.UI.Module.Arena.Board
 {
