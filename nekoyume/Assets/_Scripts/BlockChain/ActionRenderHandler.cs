@@ -1705,7 +1705,6 @@ namespace Nekoyume.BlockChain
             ArenaPlayerDigest? myDigest = null;
             ArenaPlayerDigest? enemyDigest = null;
             int? previousMyScore = null;
-            // TODO!!!! lib9c와 headless 쪽에 이전 Score 추가하기
             if (eval.Extra is { })
             {
                 myDigest = eval.Extra.TryGetValue(
