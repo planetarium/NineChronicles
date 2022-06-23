@@ -1724,7 +1724,13 @@ namespace Nekoyume.BlockChain
                         : (ArenaPlayerDigest?)null
                     : null;
 
-                previousMyScore = null;
+                previousMyScore = eval.Extra.TryGetValue(
+                    nameof(BattleArena.ExtraPreviousMyScore),
+                    out var previousMyScoreValue)
+                    ? previousMyScoreValue is Text previousMyScoreText
+                        ? previousMyScoreText.ToInteger()
+                        : ArenaScore.ArenaScoreDefault
+                    : ArenaScore.ArenaScoreDefault;
             }
 
             if (!myDigest.HasValue)
@@ -1757,18 +1763,9 @@ namespace Nekoyume.BlockChain
                     = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             }
 
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (!previousMyScore.HasValue)
-            {
-                var myScoreAddress = ArenaScore.DeriveAddress(
-                    eval.Action.myAvatarAddress,
-                    eval.Action.championshipId,
-                    eval.Action.round);
-                previousMyScore = await Game.Game.instance.Agent.GetStateAsync(myScoreAddress)
-                    is List list
-                    ? (int)(Integer)list[1]
-                    : ArenaScore.ArenaScoreDefault;
-            }
+            previousMyScore ??= RxProps.PlayersArenaParticipant.HasValue
+                ? RxProps.PlayersArenaParticipant.Value.Score
+                : ArenaScore.ArenaScoreDefault;
 
             var random = new LocalRandom(eval.RandomSeed);
             // TODO!!!! ticket 수 만큼 돌려서 마지막 전투 결과를 띄운다.
