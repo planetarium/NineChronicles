@@ -152,16 +152,14 @@ namespace Nekoyume.State
             ReactiveAvatarState.Address
                 .Subscribe(addr =>
                 {
-                    
                     // NOTE: Reset all of cached block indexes for rx props when current avatar state changed.
                     if (!_avatarAddressForArenaProps.HasValue)
                     {
-                        _avatarAddressForArenaProps = _states.CurrentAvatarState.address;
+                        _avatarAddressForArenaProps = addr;
                     }
-                    else if (!_avatarAddressForArenaProps.Value.Equals(
-                                 _states.CurrentAvatarState.address))
+                    else if (!_avatarAddressForArenaProps.Value.Equals(addr))
                     {
-                        _avatarAddressForArenaProps = _states.CurrentAvatarState.address;
+                        _avatarAddressForArenaProps = addr;
                         _arenaInfoTupleUpdatedBlockIndex = 0;
                         _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = 0;
                     }
