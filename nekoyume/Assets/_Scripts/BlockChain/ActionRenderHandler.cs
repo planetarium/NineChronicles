@@ -1661,7 +1661,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
+        private async UniTaskVoid ResponseBattleArena(ActionBase.ActionEvaluation<BattleArena> eval)
         {
             if (!ActionManager.IsLastBattleActionId(eval.Action.Id) ||
                 eval.Action.myAvatarAddress != States.Instance.CurrentAvatarState.address)
@@ -1705,7 +1705,6 @@ namespace Nekoyume.BlockChain
             ArenaPlayerDigest? myDigest = null;
             ArenaPlayerDigest? enemyDigest = null;
             int? previousMyScore = null;
-            int? previousEnemyScore = null;
             // TODO!!!! lib9c와 headless 쪽에 이전 Score 추가하기
             if (eval.Extra is { })
             {
@@ -1726,7 +1725,6 @@ namespace Nekoyume.BlockChain
                     : null;
 
                 previousMyScore = null;
-                previousEnemyScore = null;
             }
 
             if (!myDigest.HasValue)
@@ -1760,28 +1758,16 @@ namespace Nekoyume.BlockChain
             }
 
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (!previousMyScore.HasValue ||
-                !previousEnemyScore.HasValue)
+            if (!previousMyScore.HasValue)
             {
-                var scoreAddrList = new[]
-                {
-                    ArenaScore.DeriveAddress(
-                        eval.Action.myAvatarAddress,
-                        eval.Action.championshipId,
-                        eval.Action.round),
-                    ArenaScore.DeriveAddress(
-                        eval.Action.enemyAvatarAddress,
-                        eval.Action.championshipId,
-                        eval.Action.round),
-                };
-                var previousScores = eval.PreviousStates
-                    .GetStates(scoreAddrList)
-                    .Select(scoreValue => scoreValue is List list
-                        ? (int)(Integer)list[1]
-                        : ArenaScore.ArenaScoreDefault)
-                    .ToArray();
-                previousMyScore = previousScores[0];
-                previousEnemyScore = previousScores[1];
+                var myScoreAddress = ArenaScore.DeriveAddress(
+                    eval.Action.myAvatarAddress,
+                    eval.Action.championshipId,
+                    eval.Action.round);
+                previousMyScore = await Game.Game.instance.Agent.GetStateAsync(myScoreAddress)
+                    is List list
+                    ? (int)(Integer)list[1]
+                    : ArenaScore.ArenaScoreDefault;
             }
 
             var random = new LocalRandom(eval.RandomSeed);
@@ -1792,25 +1778,20 @@ namespace Nekoyume.BlockChain
                 myDigest.Value,
                 enemyDigest.Value,
                 tableSheets.GetArenaSimulatorSheets());
+
+            await UniTask.WhenAll(
+                RxProps.ArenaInfoTuple.UpdateAsync(),
+                RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync());
+            log.Score = RxProps.PlayersArenaParticipant.HasValue
+                ? RxProps.PlayersArenaParticipant.Value.Score
+                : ArenaScore.ArenaScoreDefault;
+
             var rewards = RewardSelector.Select(
                 random,
                 tableSheets.WeeklyArenaRewardSheet,
                 tableSheets.MaterialItemSheet,
                 myDigest.Value.Level,
                 maxCount: ArenaHelper.GetRewardCount(previousMyScore.Value));
-            var (myWinPoint, myDefeatPoint, _) =
-                ArenaHelper.GetScores(previousMyScore.Value, previousEnemyScore.Value);
-            var currentMyScore = log.Result switch
-            {
-                ArenaLog.ArenaResult.Win => math.max(
-                    ArenaScore.ArenaScoreDefault,
-                    previousMyScore.Value + myWinPoint),
-                ArenaLog.ArenaResult.Lose => math.max(
-                    ArenaScore.ArenaScoreDefault,
-                    previousMyScore.Value + myDefeatPoint),
-                _ => throw new ArgumentOutOfRangeException()
-            };
-            log.Score = currentMyScore;
 
             if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
             {
@@ -1819,10 +1800,8 @@ namespace Nekoyume.BlockChain
                     log,
                     rewards,
                     myDigest.Value,
-                    enemyDigest.Value);}
-
-            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
-            RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
+                    enemyDigest.Value);
+            }
         }
     }
 }
