@@ -128,7 +128,8 @@ namespace Nekoyume.UI.Module.Arena.Board
                     break;
                 default:
                     _rankImageContainer.SetActive(false);
-                    _rankText.text = _currentData.rank.ToString();
+                    _rankText.text =
+                        _currentData.rank.ToString("N0", CultureInfo.CurrentCulture);
                     _rankTextContainer.SetActive(true);
                     break;
             }
