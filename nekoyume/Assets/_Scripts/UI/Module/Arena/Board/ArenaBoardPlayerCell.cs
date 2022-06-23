@@ -24,6 +24,13 @@ namespace Nekoyume.UI.Module.Arena.Board
         public bool interactableChoiceButton;
     }
 
+    public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
+    {
+        public int selectedIndex = -1;
+        public Action<int> onClickCharacterView;
+        public Action<int> onClickChoice;
+    }
+
     public class ArenaBoardPlayerCell
         : FancyScrollRectCell<ArenaBoardPlayerItemData, ArenaBoardPlayerScrollContext>
     {
@@ -126,12 +133,5 @@ namespace Nekoyume.UI.Module.Arena.Board
                     break;
             }
         }
-    }
-
-    public class ArenaBoardPlayerScrollContext : FancyScrollRectContext
-    {
-        public int selectedIndex = -1;
-        public Action<int> onClickCharacterView;
-        public Action<int> onClickChoice;
     }
 }
