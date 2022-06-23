@@ -37,6 +37,7 @@ namespace Nekoyume.Action
 
         public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
         public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
+        public int ExtraPreviousMyScore;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>()
@@ -232,6 +233,7 @@ namespace Nekoyume.Action
             var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
             ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(avatarState, myArenaAvatarState);
             ExtraEnemyArenaPlayerDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+            ExtraPreviousMyScore = myArenaScore.Score;
             var arenaSheets = sheets.GetArenaSimulatorSheets();
             var winCount = 0;
             var defeatCount = 0;
@@ -255,7 +257,7 @@ namespace Nekoyume.Action
                     sheets.GetSheet<WeeklyArenaRewardSheet>(),
                     sheets.GetSheet<MaterialItemSheet>(),
                     ExtraMyArenaPlayerDigest.Level,
-                    maxCount: ArenaHelper.GetRewardCount(myArenaScore.Score));
+                    maxCount: ArenaHelper.GetRewardCount(ExtraPreviousMyScore));
                 rewards.AddRange(reward);
             }
 
@@ -276,7 +278,7 @@ namespace Nekoyume.Action
 
             // update record
             var (myWinScore, myDefeatScore, enemyWinScore) =
-                ArenaHelper.GetScores(myArenaScore.Score, enemyArenaScore.Score);
+                ArenaHelper.GetScores(ExtraPreviousMyScore, enemyArenaScore.Score);
             var myScore = (myWinScore * winCount) + (myDefeatScore * defeatCount);
             myArenaScore.AddScore(myScore);
             enemyArenaScore.AddScore(enemyWinScore * winCount);
