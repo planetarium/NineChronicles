@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Module
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>
             {
-                if (CanGoToAcquisitionPlace(model.Type))
+                if (CanGoToAcquisitionPlace(model.Type) && enableObject.activeSelf)
                 {
                     model.OnClick?.Invoke();
                 }
