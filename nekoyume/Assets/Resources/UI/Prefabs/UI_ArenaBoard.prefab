@@ -664,32 +664,6 @@ RectTransform:
   m_AnchoredPosition: {x: -290, y: 0}
   m_SizeDelta: {x: 100, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &3817439698638222882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6800840163972871922}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 2
-  m_ChildForceExpandWidth: 0
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!1 &7092482151523666421
 GameObject:
   m_ObjectHideFlags: 0
@@ -1333,21 +1307,6 @@ PrefabInstance:
       propertyPath: scrollOffset
       value: -1
       objectReference: {fileID: 0}
-    - target: {fileID: 2375455473132548762, guid: 8d092c7f6cfd94980a23968ed3c3ae8f,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2500508187469603625, guid: 8d092c7f6cfd94980a23968ed3c3ae8f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3279444513719287270, guid: 8d092c7f6cfd94980a23968ed3c3ae8f,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 3890140228391562467, guid: 8d092c7f6cfd94980a23968ed3c3ae8f,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -1358,20 +1317,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4065355216500744791, guid: 8d092c7f6cfd94980a23968ed3c3ae8f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5324934003889234099, guid: 8d092c7f6cfd94980a23968ed3c3ae8f,
         type: 3}
       propertyPath: m_Name
       value: ArenaBoardPlayerScroll
-      objectReference: {fileID: 0}
-    - target: {fileID: 5324934003889234099, guid: 8d092c7f6cfd94980a23968ed3c3ae8f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7228783620708839766, guid: 8d092c7f6cfd94980a23968ed3c3ae8f,
         type: 3}
@@ -1480,12 +1429,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8d092c7f6cfd94980a23968ed3c3ae8f, type: 3}
---- !u!1 &6800840163972871922 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5836890677920887409, guid: 8d092c7f6cfd94980a23968ed3c3ae8f,
-    type: 3}
-  m_PrefabInstance: {fileID: 1108375056113501315}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7723797994567349717 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7228783620708839766, guid: 8d092c7f6cfd94980a23968ed3c3ae8f,
