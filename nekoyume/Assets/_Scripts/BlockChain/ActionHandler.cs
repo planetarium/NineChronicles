@@ -181,13 +181,15 @@ namespace Nekoyume.BlockChain
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
+            try
             {
-                await UpdateCurrentAvatarStateAsync(avatarState);
+                await UpdateCurrentAvatarStateAsync(
+                    States.Instance.CurrentAvatarState
+                        .UpdateAvatarStateV2(avatarAddress, evaluation.OutputStates));
             }
-            else
+            catch (Exception e)
             {
-                Debug.LogError($"Failed to get AvatarState: {agentAddress}, {avatarAddress}");
+                Debug.LogError($"Failed to Update AvatarState: {agentAddress}, {avatarAddress}\n{e.Message}");
             }
         }
 
