@@ -65,9 +65,12 @@ namespace Nekoyume.UI.Module
             gradeHsv.saturation = data.GradeHsvSaturation;
             gradeHsv.value = data.GradeHsvValue;
 
-            var itemSprite = SpriteHelper.GetItemIcon(itemRow.Id);
+            var iconResourceId = itemRow.GetIconResourceId();
+            var itemSprite = SpriteHelper.GetItemIcon(iconResourceId);
             if (itemSprite is null)
-                throw new FailedToLoadResourceException<Sprite>(itemRow.Id.ToString());
+            {
+                throw new FailedToLoadResourceException<Sprite>(iconResourceId.ToString());
+            }
 
             iconImage.enabled = true;
             iconImage.overrideSprite = itemSprite;
