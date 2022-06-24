@@ -1,12 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -64,9 +61,7 @@ namespace Nekoyume.UI
 
             scoreText.text = $"{log.Score}";
 
-            var items = rewardItems
-                .Select(e => new CountableItem(e, 1))
-                .ToList();
+            var items = rewardItems.ToCountableItems();
             for (var i = 0; i < rewards.Count; i++)
             {
                 var view = rewards[i];

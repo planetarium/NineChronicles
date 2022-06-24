@@ -135,10 +135,25 @@ namespace Nekoyume.UI
 
         private void InitializeScrolls()
         {
+            _playerScroll.OnClickCharacterView.Subscribe(index =>
+                {
+#if UNITY_EDITOR
+                    if (_useSo && _so)
+                    {
+                        NotificationSystem.Push(
+                            MailType.System,
+                            "Cannot open when use mock data in editor mode",
+                            NotificationCell.NotificationType.Alert);
+                        return;
+                    }
+#endif
+                    var data = _boundedData[index];
+                    Find<FriendInfoPopup>().Show(data.AvatarState);
+                })
+                .AddTo(gameObject);
+
             _playerScroll.OnClickChoice.Subscribe(index =>
                 {
-                    Debug.Log($"{index} choose!");
-
 #if UNITY_EDITOR
                     if (_useSo && _so)
                     {
@@ -188,6 +203,7 @@ namespace Nekoyume.UI
                         .Id,
                     cp = e.AvatarState.GetCP(),
                     score = e.Score,
+                    rank = e.Rank,
                     expectWinDeltaScore = e.ExpectDeltaScore.win,
                     interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
                 };
