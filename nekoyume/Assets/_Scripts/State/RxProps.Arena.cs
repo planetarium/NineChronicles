@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
@@ -446,7 +447,7 @@ namespace Nekoyume.State
             return result;
         }
 
-        private static (Address avatarAddr, int score, int rank)[] AddRank(
+        public static (Address avatarAddr, int score, int rank)[] AddRank(
             (Address avatarAddr, int score)[] tuples)
         {
             if (tuples.Length == 0)
@@ -456,56 +457,70 @@ namespace Nekoyume.State
 
             var orderedTuples = tuples
                 .OrderByDescending(tuple => tuple.score)
+                .ThenBy(tuple => tuple.avatarAddr)
                 .Select(tuple => (tuple.avatarAddr, tuple.score, 0))
                 .ToArray();
-            var rank = 1;
-            var cachedScore = orderedTuples[0].score;
-            var orderedTuplesLength = orderedTuples.Length;
-            for (var i = 1; i < orderedTuplesLength; i++)
+
+            var result = new List<(Address avatarAddr, int score, int rank)>();
+            var trunk = new List<(Address avatarAddr, int score, int rank)>();
+            int? currentScore = null;
+            var currentRank = 1;
+            for (var i = 0; i < orderedTuples.Length; i++)
             {
                 var tuple = orderedTuples[i];
-                if (cachedScore == tuple.score)
+                if (!currentScore.HasValue)
                 {
-                    rank++;
-                    if (i < orderedTuplesLength - 1)
+                    currentScore = tuple.score;
+                    trunk.Add(tuple);
+                    continue;
+                }
+
+                if (currentScore.Value == tuple.score)
+                {
+                    trunk.Add(tuple);
+                    currentRank++;
+                    if (i < orderedTuples.Length - 1)
                     {
                         continue;
                     }
 
-                    for (var j = i; j >= 0; j--)
+                    foreach (var tupleInTrunk in trunk)
                     {
-                        var previousTuple = orderedTuples[j];
-                        if (previousTuple.score == cachedScore)
-                        {
-                            previousTuple.Item3 = rank;
-                            orderedTuples[j] = previousTuple;
-                            continue;
-                        }
-
-                        break;
+                        result.Add((
+                            tupleInTrunk.avatarAddr,
+                            tupleInTrunk.score,
+                            currentRank));
                     }
 
-                    break;
+                    trunk.Clear();
+
+                    continue;
                 }
 
-                for (var j = i - 1; j >= 0; j--)
+                foreach (var tupleInTrunk in trunk)
                 {
-                    var previousTuple = orderedTuples[j];
-                    if (previousTuple.score == cachedScore)
-                    {
-                        previousTuple.Item3 = rank;
-                        orderedTuples[j] = previousTuple;
-                        continue;
-                    }
-
-                    break;
+                    result.Add((
+                        tupleInTrunk.avatarAddr,
+                        tupleInTrunk.score,
+                        currentRank));
                 }
 
-                cachedScore = tuple.score;
-                rank++;
+                trunk.Clear();
+                if (i < orderedTuples.Length - 1)
+                {
+                    trunk.Add(tuple);
+                    currentScore = tuple.score;
+                    currentRank++;
+                    continue;
+                }
+
+                result.Add((
+                    tuple.avatarAddr,
+                    tuple.score,
+                    currentRank + 1));
             }
 
-            return orderedTuples;
+            return result.ToArray();
         }
 
         private static (Address avatarAddr, int score, int rank)[] GetBoundsWithPlayer(
