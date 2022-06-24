@@ -30,7 +30,7 @@ jobs:
           elif [ "$targetPlatform" == "macOS" ]; then
             echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-mac-mono-0.11" >> $GITHUB_ENV
           elif [ "$targetPlatform" == "Linux" ]; then
-            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-linux-mono-0.11" >> $GITHUB_ENV
+            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-linux-il2cpp-1.0" >> $GITHUB_ENV
           fi
 
       - uses: actions/checkout@v2
