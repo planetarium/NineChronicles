@@ -1790,6 +1790,15 @@ namespace Nekoyume.BlockChain
                 tableSheets.MaterialItemSheet,
                 myDigest.Value.Level,
                 maxCount: ArenaHelper.GetRewardCount(previousMyScore.Value));
+            if (log.Result == ArenaLog.ArenaResult.Win)
+            {
+                var medalItemId = ArenaHelper.GetMedalItemId(
+                    eval.Action.championshipId,
+                    eval.Action.round);
+                rewards.Add(ItemFactory.CreateMaterial(
+                    tableSheets.MaterialItemSheet,
+                    medalItemId));    
+            }
 
             if (arenaBattlePreparation && arenaBattlePreparation.IsActive())
             {

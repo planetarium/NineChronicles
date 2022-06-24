@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Coffee.UIEffects;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
@@ -141,7 +142,8 @@ namespace Nekoyume
 
         public static Sprite GetItemIcon(ItemBase itemBase)
         {
-            var iconResourceId = itemBase.Id.GetIconResourceId();
+            var iconResourceId =
+                itemBase.Id.GetIconResourceId(TableSheets.Instance.ArenaSheet);
             var icon = SpriteHelper.GetItemIcon(iconResourceId);
             if (icon is null)
             {

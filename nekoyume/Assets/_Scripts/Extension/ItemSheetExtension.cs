@@ -32,10 +32,14 @@ namespace Nekoyume
                 value.ElementalType, value.Id, useElementalIcon);
         }
 
-        public static int GetIconResourceId(this ItemSheet.Row row) =>
-            row.Id.GetIconResourceId();
+        public static int GetIconResourceId(
+            this ItemSheet.Row row,
+            ArenaSheet arenaSheet) =>
+            row.Id.GetIconResourceId(arenaSheet);
         
-        public static int GetIconResourceId(this int itemSheetRowId)
+        public static int GetIconResourceId(
+            this int itemSheetRowId,
+            ArenaSheet arenaSheet)
         {
             // NOTE: `700_102` is new arena medal item id.
             if (itemSheetRowId < 700_102 ||
@@ -44,12 +48,9 @@ namespace Nekoyume
                 return itemSheetRowId;
             }
 
-            var championshipId = itemSheetRowId % 100_000 / 100;
-            var round = itemSheetRowId % 10;
-            var championshipNumber = championshipId == 1 || championshipId == 2
-                ? championshipId % 4 + 1
-                : championshipId % 4;
-            return ArenaHelper.GetMedalItemId(championshipNumber, round);
+            return itemSheetRowId
+                .ToArenaNumbers(arenaSheet)
+                .ToItemIconResourceId();
         }
     }
 }

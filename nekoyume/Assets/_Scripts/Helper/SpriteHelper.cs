@@ -52,13 +52,8 @@ namespace Nekoyume.Helper
 
         public static Sprite GetItemIcon(int itemId)
         {
-            var path = ItemIconDefaultPath;
-            if (Game.Game.instance.TableSheets.ItemSheet.ContainsKey(itemId))
-            {
-                path = string.Format(ItemIconPathFormat, itemId);
-            }
-
-            return Resources.Load<Sprite>(path);
+            return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, itemId)) ??
+                   Resources.Load<Sprite>(ItemIconDefaultPath);
         }
 
         public static Sprite GetItemBackground(int grade)
