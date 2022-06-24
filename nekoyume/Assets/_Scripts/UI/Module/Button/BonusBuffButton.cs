@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Module
 
             if (skillState is null ||
                 States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(currentStageId) ||
-                !tableSheets.CrystalStageBuffGachaSheet.TryGetValue(skillState.StageId, out var row))
+                !tableSheets.CrystalStageBuffGachaSheet.TryGetValue(currentStageId, out var row))
             {
                 gameObject.SetActive(false);
                 return;
