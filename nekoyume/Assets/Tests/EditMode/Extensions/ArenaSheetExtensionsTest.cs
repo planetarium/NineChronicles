@@ -9,10 +9,51 @@ namespace Tests.EditMode.Extensions
     {
         [DatapointSource]
         public (
+            int medalItemId,
+            int expectChampionshipNumber,
+            int expectSeasonNumber)[] valuesFor_ToArenaNumbers =
+            {
+                (int.MaxValue, 0, 0),
+                (int.MinValue, 0, 0),
+                (700_000, 0, 0),
+                (700_100, 0, 0),
+                (700_101, 0, 0),
+                (700_102, 1, 4),
+                (700_103, 1, 0),
+                (700_104, 1, 5),
+                (700_105, 1, 0),
+                (700_106, 1, 6),
+                (700_107, 1, 0),
+                (700_108, 1, 0),
+                (700_202, 2, 7),
+                (700_204, 2, 8),
+                (700_206, 2, 9),
+                (700_208, 2, 0),
+                // NOTE: Uncomment below after championship data extended.
+                // (700_302, 1, 1),
+                // (700_304, 1, 2),
+                // (700_306, 1, 3),
+                // (700_308, 1, 0),
+                // (700_402, 2, 4),
+                // (700_404, 2, 5),
+                // (700_406, 2, 6),
+                // (700_408, 2, 0),
+                // (700_502, 3, 7),
+                // (700_504, 3, 8),
+                // (700_506, 3, 9),
+                // (700_508, 3, 0),
+                // (700_602, 4, 10),
+                // (700_604, 4, 11),
+                // (700_606, 4, 12),
+                // (700_608, 4, 0),
+            };
+
+        [DatapointSource]
+        public (
             int championshipId,
             int round,
             bool expectResult,
-            int? expectSeasonNumber)[] valuesForTryGetSeasonNumberTest =
+            int? expectSeasonNumber)[] valuesFor_TryGetSeasonNumberTest =
             {
                 (1, 1, false, null),
                 (1, 2, true, 1),
@@ -62,7 +103,8 @@ namespace Tests.EditMode.Extensions
             int championshipId,
             int round,
             bool expectResult,
-            int expectMedalItemResourceId)[] valuesForTryGetMedalItemResourceIdTest =
+            int expectMedalItemResourceId)[]
+            valuesFor_TryGetMedalItemResourceIdTest =
             {
                 (1, 1, false, 700101),
                 (1, 2, true, 700102),
@@ -84,7 +126,7 @@ namespace Tests.EditMode.Extensions
 
         [DatapointSource]
         public (int championshipId, int year)[]
-            valuesForGetChampionshipYearTest =
+            valuesFor_GetChampionshipYearTest =
             {
                 (1, 2022),
                 (2, 2022),
@@ -102,6 +144,22 @@ namespace Tests.EditMode.Extensions
         public void SetUp()
         {
             _arenaSheet = TableSheetsHelper.MakeTableSheets().ArenaSheet;
+        }
+
+        [Theory]
+        public void ToArenaNumbers((
+            int medalItemId,
+            int expectChampionshipNumber,
+            int expectSeasonNumber) tuple)
+        {
+            var (
+                medalItemId,
+                expectChampionshipNumber,
+                expectSeasonNumber) = tuple;
+            var (championshipNumber, seasonNumber) =
+                medalItemId.ToArenaNumbers(_arenaSheet);
+            Assert.AreEqual(expectChampionshipNumber, championshipNumber);
+            Assert.AreEqual(expectSeasonNumber, seasonNumber);
         }
 
         [Theory]
@@ -145,14 +203,14 @@ namespace Tests.EditMode.Extensions
             if (expectResult)
             {
                 Assert.True(roundData.TryGetMedalItemResourceId(out var medalItemResourceId));
-                Assert.AreEqual(expectMedalItemResourceId, medalItemResourceId);    
+                Assert.AreEqual(expectMedalItemResourceId, medalItemResourceId);
             }
             else
             {
                 Assert.False(roundData.TryGetMedalItemResourceId(out _));
             }
         }
-        
+
         [Theory]
         public void GetChampionshipYear((int championshipId, int year) tuple)
         {

@@ -587,6 +587,7 @@ namespace Nekoyume.UI
                     ArenaJoinSeasonInfo.RewardType.NCG,
                 ArenaType.Championship =>
                     ArenaJoinSeasonInfo.RewardType.Food |
+                    ArenaJoinSeasonInfo.RewardType.Medal |
                     ArenaJoinSeasonInfo.RewardType.NCG,
                     // NOTE: Enable costume when championship rewards contains one.
                     // ArenaJoinSeasonInfo.RewardType.Costume,
