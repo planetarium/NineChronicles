@@ -15,6 +15,10 @@ if [ "$build_target" == "macOS" ]; then
   build_target="MacOS"
 fi
 
+if [ "$build_target" == "Linux" ]; then
+  build_target="Linux"
+fi
+
 # shellcheck disable=SC1090
 source "$(dirname "$0")/_common.sh"
 

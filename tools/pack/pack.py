@@ -19,6 +19,7 @@ from commentjson import dump, load
 
 
 DOWNLOAD_URL_BASE = 'https://download.nine-chronicles.com'
+LINUX_DOWNLOAD_URL_FORMAT = DOWNLOAD_URL_BASE + "/v{version}/Linux.tar.gz"
 MACOS_DOWNLOAD_URL_FORMAT = DOWNLOAD_URL_BASE + "/v{version}/macOS.tar.gz"
 WINDOWS_DOWNLOAD_URL_FORMAT = DOWNLOAD_URL_BASE + "/v{version}/Windows.zip"
 
@@ -30,7 +31,7 @@ S3_OBJECT_PATTERN = re.compile(r'^v(\d+)$')
 
 parser = argparse.ArgumentParser(description=__doc__.replace('\n', ' '))
 parser.add_argument('out_dir')
-parser.add_argument('platform', choices={'macOS', 'Windows'})
+parser.add_argument('platform', choices={'macOS', 'Windows', 'Linux'})
 parser.add_argument('game_dir')
 parser.add_argument('private_key')
 parser.add_argument('timestamp')
@@ -60,6 +61,7 @@ def main() -> None:
     # 아직 실제로 올라가 있지 않더라도, 이쪽으로 올려야 함. 서명을 하기 위해 미리 URL을 결정해 둠.
     next_version = latest_version() + 1
     macos_url = MACOS_DOWNLOAD_URL_FORMAT.format(version=next_version)
+    linux_url = LINUX_DOWNLOAD_URL_FORMAT.format(version=next_version)
     windows_url = WINDOWS_DOWNLOAD_URL_FORMAT.format(version=next_version)
 
     # 임시로 키 가져오기
