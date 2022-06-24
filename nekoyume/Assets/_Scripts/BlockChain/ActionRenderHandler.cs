@@ -28,6 +28,7 @@ using Nekoyume.Arena;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
+using Nekoyume.Model.EnumType;
 using Unity.Mathematics;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
@@ -1792,12 +1793,28 @@ namespace Nekoyume.BlockChain
                 maxCount: ArenaHelper.GetRewardCount(previousMyScore.Value));
             if (log.Result == ArenaLog.ArenaResult.Win)
             {
-                var medalItemId = ArenaHelper.GetMedalItemId(
-                    eval.Action.championshipId,
-                    eval.Action.round);
-                rewards.Add(ItemFactory.CreateMaterial(
-                    tableSheets.MaterialItemSheet,
-                    medalItemId));    
+                var championshipId = eval.Action.championshipId;
+                var round = eval.Action.round;
+                var hasMedalReward =
+                    tableSheets.ArenaSheet.TryGetValue(
+                        championshipId,
+                        out var row) &&
+                    row.Round.Any(e =>
+                        e.Round == round &&
+                        e.ArenaType != ArenaType.OffSeason);
+                if (hasMedalReward)
+                {
+                    var medalItemId = ArenaHelper.GetMedalItemId(
+                        eval.Action.championshipId,
+                        eval.Action.round);
+                    var medalItem = ItemFactory.CreateMaterial(
+                        tableSheets.MaterialItemSheet,
+                        medalItemId);
+                    if (medalItem is { })
+                    {
+                        rewards.Add(medalItem);
+                    }
+                }
             }
 
             if (arenaBattlePreparation && arenaBattlePreparation.IsActive())

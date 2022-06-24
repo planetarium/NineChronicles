@@ -76,12 +76,17 @@ namespace Nekoyume
             var result = new List<CountableItem>();
             foreach (var itemBase in items)
             {
+                if (itemBase is null)
+                {
+                    continue;
+                }
+
                 if (itemBase is IFungibleItem fi)
                 {
                     var ci = result.FirstOrDefault(e =>
                         e.ItemBase.HasValue &&
                         e.ItemBase.Value is IFungibleItem fi2 &&
-                        fi2.Equals(fi));
+                        fi2.FungibleId.Equals(fi.FungibleId));
                     if (ci is { })
                     {
                         ci.Count.Value++;
