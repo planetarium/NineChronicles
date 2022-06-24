@@ -19,10 +19,10 @@ namespace Nekoyume.Model.Arena
         public Address Address;
         public int Score { get; private set; }
 
-        public ArenaScore(Address avatarAddress, int championshipId, int round)
+        public ArenaScore(Address avatarAddress, int championshipId, int round, int score = ArenaScoreDefault)
         {
             Address = DeriveAddress(avatarAddress, championshipId, round);
-            Score = ArenaScoreDefault;
+            Score = score;
         }
 
         public ArenaScore(List serialized)
