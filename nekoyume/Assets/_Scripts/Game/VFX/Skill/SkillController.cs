@@ -1,5 +1,6 @@
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
+using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
@@ -23,7 +24,48 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public T Get<T>(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skillInfo)
+        public T Get<T>(Character.Character target, Model.BattleStatus.Skill.SkillInfo skillInfo)
+            where T : SkillVFX
+        {
+            if (target is null)
+            {
+                return null;
+            }
+
+            var position = target.transform.position;
+            var size = target.SizeType == SizeType.XS ? SizeType.S : SizeType.M;
+            var elemental = skillInfo.ElementalType;
+            if (skillInfo.SkillCategory == SkillCategory.AreaAttack)
+            {
+                size = SizeType.L;
+                //FIXME 현재 무속성 범위공격 이펙트는 존재하지 않기때문에 임시처리.
+                if (elemental == ElementalType.Normal)
+                    elemental = ElementalType.Fire;
+                var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
+                    new Vector2((float) Screen.width / 2, 0));
+                position.x = pos.x + 0.5f;
+                position.y = Stage.StageStartPosition;
+            }
+
+            var skillName = $"{skillInfo.SkillCategory}_{size}_{elemental}".ToLower();
+            if (skillInfo.SkillCategory == SkillCategory.BlowAttack &&
+                skillInfo.SkillTargetType == SkillTargetType.Enemies)
+            {
+                skillName = $"{skillInfo.SkillCategory}_m_{elemental}_area".ToLower();
+            }
+            else
+            {
+                position.x -= 0.2f;
+                position.y += 0.32f;
+            }
+
+            var go = _pool.Get(skillName, false, position) ??
+                     _pool.Get(skillName, true, position);
+
+            return GetEffect<T>(go, target);
+        }
+
+        public T Get<T>(Character.Character target, ArenaSkill.ArenaSkillInfo skillInfo)
             where T : SkillVFX
         {
             if (target is null)
@@ -86,7 +128,7 @@ namespace Nekoyume.Game.VFX.Skill
             return GetEffect<SkillCastingVFX>(go);
         }
 
-        private static T GetEffect<T>(GameObject go, CharacterBase target = null)
+        private static T GetEffect<T>(GameObject go, Character.Character target = null)
             where T : SkillVFX
         {
             var effect = go.GetComponent<T>();

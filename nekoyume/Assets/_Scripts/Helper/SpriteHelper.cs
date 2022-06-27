@@ -1,7 +1,10 @@
 using System;
 using Nekoyume.Data;
 using Nekoyume.Model.Mail;
+using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -28,7 +31,7 @@ namespace Nekoyume.Helper
 
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
 
-        private const string TitleFramePathFormat = "UI/Textures/TitleFrames/{0}";
+        private const string TitleFramePathFormat = "UI/Textures/00_TitleFrames/{0}";
         private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 49900001);
 
         private const string MenuIllustratePathFormat = "UI/Textures/MenuIllustrates/{0}";
@@ -49,13 +52,8 @@ namespace Nekoyume.Helper
 
         public static Sprite GetItemIcon(int itemId)
         {
-            var path = ItemIconDefaultPath;
-            if (Game.Game.instance.TableSheets.ItemSheet.ContainsKey(itemId))
-            {
-                path = string.Format(ItemIconPathFormat, itemId);
-            }
-
-            return Resources.Load<Sprite>(path);
+            return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, itemId)) ??
+                   Resources.Load<Sprite>(ItemIconDefaultPath);
         }
 
         public static Sprite GetItemBackground(int grade)
@@ -109,15 +107,14 @@ namespace Nekoyume.Helper
             Sprite result = null;
             switch (menuName)
             {
-                case nameof(RankingBoard):
+                case nameof(ArenaJoin):
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_ranking"));
                     break;
-                case "Shop":
+                case nameof(Shop):
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_shop"));
                     break;
-
                 case "Mimisbrunnr":
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_mimisbrunnr"));
@@ -144,11 +141,22 @@ namespace Nekoyume.Helper
                     result = Resources.Load<Sprite>(
                         string.Format(MailIconPathFormat, "icon_mail_system"));
                     break;
+                case MailType.Grinding:
+                    result = Resources.Load<Sprite>(
+                        string.Format(MailIconPathFormat, "icon_mail_grind"));
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mailType), mailType, null);
             }
 
             return result ? result : Resources.Load<Sprite>(MailIconDefaultPath);
+        }
+
+        public static Sprite GetStakingIcon(int level, bool smallIcon = false)
+        {
+            var data = Resources.Load<StakeIconDataScriptableObject>(
+                        "ScriptableObject/UI_StakeIconData");
+            return data.GetIcon(level, smallIcon);
         }
     }
 }

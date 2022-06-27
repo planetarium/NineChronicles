@@ -37,13 +37,13 @@ namespace Nekoyume.UI.Module
             baseItemView.NotificationObject.SetActive(false);
             baseItemView.FocusObject.SetActive(false);
             baseItemView.TradableObject.SetActive(false);
-            baseItemView.ElementalDisableObject.SetActive(false);
+            baseItemView.DimObject.SetActive(false);
             baseItemView.EquippedObject.SetActive(false);
             baseItemView.SelectObject.SetActive(false);
             baseItemView.ExpiredObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
 
-            baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(model.ItemBase);
+            baseItemView.ItemImage.overrideSprite = BaseItemView.GetItemIcon(model.ItemBase);
 
             var data = baseItemView.GetItemViewData(model.ItemBase);
             baseItemView.GradeImage.overrideSprite = data.GradeBackground;

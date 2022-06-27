@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.UI.Module;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -383,6 +384,29 @@ namespace Nekoyume.UI
 
             gameObject.SetActive(false);
             AnimationState.Value = AnimationStateType.Closed;
+        }
+
+        public void CloseWithOtherWidgets()
+        {
+            var deletableWidgets = FindWidgets().Where(widget =>
+                !(widget is SystemWidget) &&
+                !(widget is MessageCatTooltip) &&
+                !(widget is HeaderMenuStatic) &&
+                !(widget is MaterialTooltip) &&
+                !(widget is ShopBuy) &&
+                !(widget is ShopSell) &&
+                widget.IsActive());
+            foreach (var widget in deletableWidgets)
+            {
+                widget.Close(true);
+            }
+
+            Find<Menu>().Close(true);
+            Find<ShopBuy>().Close(true, true);
+            Find<ShopSell>().Close(true, true);
+            Find<EventBanner>().Close(true);
+            Find<Status>().Close(true);
+            Close(true);
         }
 
         private IEnumerator CoCompleteCloseAnimation()

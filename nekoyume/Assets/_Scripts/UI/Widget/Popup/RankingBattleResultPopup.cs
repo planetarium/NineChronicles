@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
-using Nekoyume.L10n;
-using Nekoyume.Model.BattleStatus;
-using Nekoyume.State;
-using Nekoyume.UI.Model;
+using Nekoyume.Model.BattleStatus.Arena;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -31,6 +29,8 @@ namespace Nekoyume.UI
 
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, .25f, 10f);
 
+        private System.Action _onClose;
+
         protected override void Awake()
         {
             base.Awake();
@@ -39,12 +39,17 @@ namespace Nekoyume.UI
             submitButton.OnClick = BackToRanking;
         }
 
-        public void Show(BattleLog log, IReadOnlyList<CountableItem> reward)
+        public void Show(
+            ArenaLog log,
+            IReadOnlyList<ItemBase> rewardItems,
+            System.Action onClose)
         {
             base.Show();
 
-            var win = log.result == BattleLog.Result.Win;
-            var code = win ? AudioController.MusicCode.PVPWin : AudioController.MusicCode.PVPLose;
+            var win = log.Result == ArenaLog.ArenaResult.Win;
+            var code = win
+                ? AudioController.MusicCode.PVPWin
+                : AudioController.MusicCode.PVPLose;
             AudioController.instance.PlayMusic(code);
             victoryImageContainer.SetActive(win);
             defeatImageContainer.SetActive(!win);
@@ -54,27 +59,27 @@ namespace Nekoyume.UI
                     ActionCamera.instance.transform, VfxBattleWinOffset);
             }
 
-            scoreText.text = $"{log.score}";
+            scoreText.text = $"{log.Score}";
+
+            var items = rewardItems.ToCountableItems();
             for (var i = 0; i < rewards.Count; i++)
             {
                 var view = rewards[i];
                 view.gameObject.SetActive(false);
-                if (i < reward.Count)
+                if (i < items.Count)
                 {
-                    view.SetData(reward[i]);
+                    view.SetData(items[i]);
                     view.gameObject.SetActive(true);
                 }
             }
+
+            _onClose = onClose;
         }
 
         private void BackToRanking()
         {
-            Game.Game.instance.Stage.objectPool.ReleaseAll();
-            Game.Game.instance.Stage.IsInStage = false;
-            ActionCamera.instance.SetPosition(0f, 0f);
-            ActionCamera.instance.Idle();
             Close();
-            Find<RankingBoard>().Show(States.Instance.WeeklyArenaState);
+            _onClose?.Invoke();
         }
     }
 }

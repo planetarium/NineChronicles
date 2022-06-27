@@ -1,5 +1,6 @@
 using Coffee.UIEffects;
 using DG.Tweening;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
 using UnityEngine;
@@ -65,9 +66,13 @@ namespace Nekoyume.UI.Module
             gradeHsv.saturation = data.GradeHsvSaturation;
             gradeHsv.value = data.GradeHsvValue;
 
-            var itemSprite = SpriteHelper.GetItemIcon(itemRow.Id);
+            var iconResourceId =
+                itemRow.GetIconResourceId(TableSheets.Instance.ArenaSheet);
+            var itemSprite = SpriteHelper.GetItemIcon(iconResourceId);
             if (itemSprite is null)
-                throw new FailedToLoadResourceException<Sprite>(itemRow.Id.ToString());
+            {
+                throw new FailedToLoadResourceException<Sprite>(iconResourceId.ToString());
+            }
 
             iconImage.enabled = true;
             iconImage.overrideSprite = itemSprite;

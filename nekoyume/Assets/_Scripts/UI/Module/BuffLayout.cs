@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Buff;
@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Module
 
         public void SetBuff(IReadOnlyDictionary<int, Buff> buffs)
         {
-            foreach (var icon in pool.Where(icon => icon.image.enabled))
+            foreach (var icon in pool.Where(icon => icon.gameObject.activeSelf))
             {
                 icon.Hide();
             }
@@ -67,7 +67,7 @@ namespace Nekoyume.UI.Module
 
         private BuffIcon GetDisabledIcon()
         {
-            var icon = pool.First(i => i.image.enabled == false);
+            var icon = pool.First(i => !i.gameObject.activeSelf);
             return icon;
         }
     }

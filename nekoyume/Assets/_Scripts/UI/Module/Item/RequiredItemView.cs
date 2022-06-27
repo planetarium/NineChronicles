@@ -21,7 +21,9 @@ namespace Nekoyume.UI.Module
         private const string CountTextFormatEnough = "{0}/{1}";
         private const string CountTextFormatNotEnough = "<#ff5a5a>{0}</color>/{1}";
 
-        public int RequiredCount { get; set; } = 1;
+        public int RequiredCount { get; protected set; } = 1;
+
+        public bool HideEnoughObject { get; set; } = false;
 
         public void SetData(CountableItem model, int requiredCount)
         {
@@ -47,7 +49,7 @@ namespace Nekoyume.UI.Module
 
             countText.gameObject.SetActive(true);
             requiredText.gameObject.SetActive(false);
-            enoughObject.SetActive(isEnough);
+            enoughObject.SetActive(!HideEnoughObject && isEnough);
         }
 
         public void SetRequiredText()

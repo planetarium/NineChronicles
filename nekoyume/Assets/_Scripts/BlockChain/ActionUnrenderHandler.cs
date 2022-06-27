@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Lib9c.Renderer;
 using Libplanet;
@@ -79,7 +80,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryUnrender<RewardGold>()
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(onNext: eval =>
+                .Subscribe(eval =>
                 {
                     // NOTE: 잘 들어오는지 확인하기 위해서 당분간 로그를 남깁니다.(2020.11.02)
                     try
@@ -92,7 +93,7 @@ namespace Nekoyume.BlockChain
                         Debug.Log($"Action unrender: {nameof(RewardGold)} | {e}");
                     }
 
-                    UpdateAgentStateAsync(eval);
+                    UpdateAgentStateAsync(eval).Forget();
                 })
                 .AddTo(_disposables);
         }
@@ -167,7 +168,7 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private async void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private async UniTaskVoid ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -196,7 +197,7 @@ namespace Nekoyume.BlockChain
                     var price = purchaseInfo.Price;
                     var order = await Util.GetOrder(purchaseInfo.OrderId);
                     var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-                    LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
+                    LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, -price).Forget();
                     LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
                     LocalLayerModifier.RemoveNewMail(avatarAddress, purchaseInfo.OrderId);
                 }
@@ -214,13 +215,13 @@ namespace Nekoyume.BlockChain
 
                     var order = await Util.GetOrder(purchaseInfo.OrderId);
                     var taxedPrice = order.Price - order.GetTax();
-                    LocalLayerModifier.ModifyAgentGold(agentAddress, taxedPrice);
+                    LocalLayerModifier.ModifyAgentGoldAsync(agentAddress, taxedPrice).Forget();
                     LocalLayerModifier.RemoveNewMail(avatarAddress, purchaseInfo.OrderId);
                 }
             }
 
-            UpdateAgentStateAsync(eval);
-            UpdateCurrentAvatarStateAsync(eval);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -236,8 +237,8 @@ namespace Nekoyume.BlockChain
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var count = eval.Action.count;
             LocalLayerModifier.RemoveItem(avatarAddress, itemId, blockIndex, count);
-            UpdateCurrentAvatarStateAsync(eval);
-            ReactiveShopState.UpdateSellDigests();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            ReactiveShopState.UpdateSellDigestsAsync().Forget();
         }
 
         private async void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
@@ -251,8 +252,8 @@ namespace Nekoyume.BlockChain
             var order = await Util.GetOrder(eval.Action.orderId);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
-            UpdateCurrentAvatarStateAsync(eval);
-            ReactiveShopState.UpdateSellDigests();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            ReactiveShopState.UpdateSellDigestsAsync().Forget();
         }
 
         private void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
@@ -262,10 +263,9 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            UpdateCurrentAvatarStateAsync(eval);
-            ReactiveShopState.UpdateSellDigests();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+            ReactiveShopState.UpdateSellDigestsAsync().Forget();
         }
-
 
         private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)
         {
@@ -294,7 +294,7 @@ namespace Nekoyume.BlockChain
             }
 
             ReactiveAvatarState.UpdateDailyRewardReceivedIndex(avatarState.dailyRewardReceivedIndex);
-            UpdateCurrentAvatarStateAsync(avatarState);
+            UpdateCurrentAvatarStateAsync(avatarState).Forget();
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
@@ -320,8 +320,8 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            UpdateAgentStateAsync(eval);
-            UpdateCurrentAvatarStateAsync(eval);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -376,8 +376,8 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
             // ~LocalLayer
 
-            UpdateAgentStateAsync(eval);
-            UpdateCurrentAvatarStateAsync(eval);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -395,11 +395,11 @@ namespace Nekoyume.BlockChain
             if (recipientAddress == currentAgentAddress ||
                 senderAddress == currentAgentAddress)
             {
-                UpdateAgentStateAsync(eval);
+                UpdateAgentStateAsync(eval).Forget();
             }
         }
 
-        public static void UnrenderQuest(Address avatarAddress, IEnumerable<int> ids)
+        private static void UnrenderQuest(Address avatarAddress, IEnumerable<int> ids)
         {
             if (avatarAddress != States.Instance.CurrentAvatarState.address)
             {

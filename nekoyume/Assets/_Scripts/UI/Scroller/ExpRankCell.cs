@@ -99,7 +99,7 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 //FIXME 현재 코스튬대응이 안되있음 lib9c쪽과 함께 고쳐야함
-                characterView.SetByArmorId(rankingInfo.ArmorId);
+                characterView.SetByFullCostumeOrArmorId(rankingInfo.ArmorId);
             }
         }
     }

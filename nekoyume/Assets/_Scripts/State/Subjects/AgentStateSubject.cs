@@ -1,5 +1,6 @@
 using System;
 using Libplanet.Assets;
+using Nekoyume.Helper;
 using UniRx;
 
 namespace Nekoyume.State.Subjects
@@ -13,15 +14,32 @@ namespace Nekoyume.State.Subjects
             
         public static readonly IObservable<FungibleAssetValue> Gold;
 
+        private static readonly Subject<FungibleAssetValue> _crystal;
+
+        public static readonly IObservable<FungibleAssetValue> Crystal;
+
         static AgentStateSubject()
         {
             _gold = new Subject<FungibleAssetValue>();
             Gold = _gold.ObserveOnMainThread();
+            _crystal = new Subject<FungibleAssetValue>();
+            Crystal = _crystal.ObserveOnMainThread();
         }
 
         public static void OnNextGold(FungibleAssetValue gold)
         {
-            _gold.OnNext(gold);
+            if (gold.Currency.Equals(States.Instance.GoldBalanceState.Gold.Currency))
+            {
+                _gold.OnNext(gold);
+            }
+        }
+
+        public static void OnNextCrystal(FungibleAssetValue crystal)
+        {
+            if (crystal.Currency.Equals(CrystalCalculator.CRYSTAL))
+            {
+                _crystal.OnNext(crystal);
+            }
         }
     }
 }

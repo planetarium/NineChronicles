@@ -5,12 +5,17 @@ using Nekoyume.Model;
 using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
 using UnityEngine;
-using mixpanel;
+using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
+using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using mixpanel;
     using UniRx;
 
     public class WorldMap : Widget
@@ -22,6 +27,7 @@ namespace Nekoyume.UI
             public readonly ReactiveProperty<int> SelectedStageId = new ReactiveProperty<int>(1);
 
             public WorldInformation WorldInformation;
+            public List<int> UnlockedWorldIds;
         }
 
         [SerializeField] private GameObject worldMapRoot = null;
@@ -72,8 +78,13 @@ namespace Nekoyume.UI
         {
             base.Initialize();
             var firstStageId = Game.Game.instance.TableSheets.StageWaveSheet.First?.StageId ?? 1;
-            SharedViewModel = new ViewModel();
-            SharedViewModel.SelectedStageId.Value = firstStageId;
+            SharedViewModel = new ViewModel
+            {
+                SelectedStageId =
+                {
+                    Value = firstStageId
+                }
+            };
             var sheet = Game.Game.instance.TableSheets.WorldSheet;
             foreach (var worldButton in _worldButtons)
             {
@@ -86,8 +97,34 @@ namespace Nekoyume.UI
                 worldButton.Set(row);
                 worldButton.Show();
                 worldButton.OnClickSubject
-                    .Subscribe(_ => ShowWorld(row.Id));
+                    .Subscribe(world =>
+                    {
+                        if (world.IsUnlockable)
+                        {
+                            if (!ShowManyWorldUnlockPopup(SharedViewModel.WorldInformation))
+                            {
+                                ShowWorldUnlockPopup(row.Id);
+                            }
+                        }
+                        else
+                        {
+                            ShowWorld(row.Id);
+                        }
+                    }).AddTo(gameObject);
             }
+
+            AgentStateSubject.Crystal.Subscribe(crystal =>
+            {
+                foreach (var worldButton in _worldButtons)
+                {
+                    worldButton.SetOpenCostTextColor(crystal.MajorUnit);
+                }
+            }).AddTo(gameObject);
+
+            ReactiveAvatarState.WorldInformation.Subscribe(worldInformation =>
+            {
+                SharedViewModel.WorldInformation = worldInformation;
+            }).AddTo(gameObject);
         }
 
         #endregion
@@ -99,8 +136,10 @@ namespace Nekoyume.UI
 
             var status = Find<Status>();
             status.Close(true);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
             Show(true);
             HelpTooltip.HelpMe(100002, true);
+            ShowManyWorldUnlockPopup(worldInformation);
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
@@ -141,7 +180,7 @@ namespace Nekoyume.UI
                 if (worldIsUnlocked)
                 {
                     worldButton.HasNotification.Value = isIncludedInQuest;
-                    worldButton.Unlock();
+                    worldButton.Unlock(!SharedViewModel.UnlockedWorldIds.Contains(worldButton.Id));
                 }
                 else
                 {
@@ -207,6 +246,79 @@ namespace Nekoyume.UI
             var status = Find<Status>();
             status.Close(true);
             worldMapRoot.SetActive(true);
+        }
+
+        private void OnAttractInPaymentPopup()
+        {
+            Close(true);
+            Find<Grind>().Show();
+        }
+
+        private void ShowWorldUnlockPopup(int worldId)
+        {
+            var cost = CrystalCalculator.CalculateWorldUnlockCost(new[] {worldId},
+                    Game.TableSheets.Instance.WorldUnlockSheet)
+                .MajorUnit;
+            var balance = States.Instance.CrystalBalance;
+            var usageMessage = L10nManager.Localize(
+                "UI_UNLOCK_WORLD_FORMAT",
+                L10nManager.LocalizeWorldName(worldId));
+            Find<PaymentPopup>().Show(
+                CostType.Crystal,
+                balance.MajorUnit,
+                cost,
+                balance.GetPaymentFormatText(usageMessage, cost),
+                L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
+                () =>
+                {
+                    Find<UnlockWorldLoadingScreen>().Show();
+                    Analyzer.Instance.Track("Unity/UnlockWorld", new Value
+                    {
+                        ["BurntCrystal"] = (long)cost,
+                    });
+                    ActionManager.Instance.UnlockWorld(new List<int> {worldId}).Subscribe();
+                },
+                OnAttractInPaymentPopup);
+        }
+
+        private bool ShowManyWorldUnlockPopup(WorldInformation worldInformation)
+        {
+            if (worldInformation.TryGetLastClearedStageId(out var stageId))
+            {
+                var tableSheets = Game.TableSheets.Instance;
+                var countOfCanUnlockWorld = Math.Min(stageId / 50,
+                    tableSheets.WorldUnlockSheet.Count - 1);
+                var worldIdListForUnlock = Enumerable.Range(2, countOfCanUnlockWorld)
+                    .Where(i => !SharedViewModel.UnlockedWorldIds.Contains(i))
+                    .ToList();
+
+                if (worldIdListForUnlock.Count > 1)
+                {
+                    var paymentPopup = Find<PaymentPopup>();
+                    var cost = CrystalCalculator.CalculateWorldUnlockCost(worldIdListForUnlock,
+                        tableSheets.WorldUnlockSheet).MajorUnit;
+                    paymentPopup.Show(
+                        CostType.Crystal,
+                        States.Instance.CrystalBalance.MajorUnit,
+                        cost,
+                        L10nManager.Localize(
+                            "CRYSTAL_MIGRATION_WORLD_ALL_OPEN_FORMAT", cost),
+                        L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL"),
+                        () =>
+                        {
+                            Find<UnlockWorldLoadingScreen>().Show();
+                            Analyzer.Instance.Track("Unity/UnlockWorld", new Value
+                            {
+                                ["BurntCrystal"] = (long)cost,
+                            });
+                            ActionManager.Instance.UnlockWorld(worldIdListForUnlock).Subscribe();
+                        },
+                        OnAttractInPaymentPopup);
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

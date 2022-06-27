@@ -72,22 +72,6 @@ public class TestbedTool : EditorWindow
         EditorQueryHelper.FindByName<Button>(root, "create-avatar-import-button").clickable
                 .clicked +=
             OnClickCreateAvatarImport;
-        
-        // for testbed weekly arena
-        var weeklyArenaObjectField =
-            EditorQueryHelper.FindByName<ObjectField>(root, "weekly-arena-field");
-        weeklyArenaObjectField.allowSceneObjects = true;
-        weeklyArenaObjectField.objectType = typeof(TestbedWeeklyArenaScriptableObject);
-        var weeklyArena =
-            AssetDatabase.LoadAssetAtPath<TestbedWeeklyArenaScriptableObject>(
-                "Assets/Editor/Testbed/TestbedWeeklyArena.asset");
-        weeklyArenaObjectField.value = weeklyArena;
-        EditorQueryHelper.FindByName<Button>(root, "weekly-arena-export-button").clickable
-                .clicked +=
-            OnClickWeeklyArenaExport;
-        EditorQueryHelper.FindByName<Button>(root, "weekly-arena-import-button").clickable
-                .clicked +=
-            OnClickWeeklyArenaImport;
     }
 
     private void OnClickSellExport()
@@ -103,13 +87,6 @@ public class TestbedTool : EditorWindow
             "TestbedCreateAvatar", "create-avatar-field");
     }
 
-    private void OnClickWeeklyArenaExport()
-    {
-        Debug.Log("[OnClickWeeklyArenaExport]");
-        Export<TestbedWeeklyArenaScriptableObject, TestbedWeeklyArena>(
-            "TestbedWeeklyArena", "weekly-arena-field");
-    }
-
     private void OnClickSellImport()
     {
         Debug.Log("[OnClickImport]");
@@ -120,12 +97,6 @@ public class TestbedTool : EditorWindow
     {
         Debug.Log("[OnClickImport]");
         Import<TestbedCreateAvatarScriptableObject, TestbedCreateAvatar>("create-avatar-field");
-    }
-
-    private void OnClickWeeklyArenaImport()
-    {
-        Debug.Log("[OnClickImport]");
-        Import<TestbedWeeklyArenaScriptableObject, TestbedWeeklyArena>("weekly-arena-field");
     }
 
     private void Export<T1, T2>(string fileName, string objectFieldName)

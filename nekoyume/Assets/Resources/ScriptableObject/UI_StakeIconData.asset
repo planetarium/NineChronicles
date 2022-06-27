@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d8638eb414bbfe4b82382d90aa32ab2, type: 3}
+  m_Name: UI_StakeIconData
+  m_EditorClassIdentifier: 
+  fallbackIconSprite: {fileID: 21300000, guid: 0fd932e603eb03049a100b49a122e8ea, type: 3}
+  fallbackSmallIconSprite: {fileID: 21300000, guid: 6b91210c23919614c818c79210422a62,
+    type: 3}
+  iconList:
+  - Level: 0
+    IconSprite: {fileID: 21300000, guid: 6b91210c23919614c818c79210422a62, type: 3}
+  - Level: 1
+    IconSprite: {fileID: 21300000, guid: 0fd932e603eb03049a100b49a122e8ea, type: 3}
+  - Level: 2
+    IconSprite: {fileID: 21300000, guid: a6b977a974d7e424f84d886a19008f87, type: 3}
+  - Level: 3
+    IconSprite: {fileID: 21300000, guid: b294ca5dc9d360f4083e55046e22eb77, type: 3}
+  - Level: 4
+    IconSprite: {fileID: 21300000, guid: 71c2af3ba3eb3fd4d86758894b695e1c, type: 3}
+  - Level: 5
+    IconSprite: {fileID: 21300000, guid: d0d333d99f2ce394f841e9ac89a71ef9, type: 3}
+  smallIconList:
+  - Level: 0
+    IconSprite: {fileID: 21300000, guid: 6b91210c23919614c818c79210422a62, type: 3}
+  - Level: 1
+    IconSprite: {fileID: 21300000, guid: 5af89b6c917d1e841b447f41c3736268, type: 3}
+  - Level: 2
+    IconSprite: {fileID: 21300000, guid: 05a67b00d3cda4f439b7eed00fd9676f, type: 3}
+  - Level: 3
+    IconSprite: {fileID: 21300000, guid: 122232f24f0b4704587f82c6a997b99e, type: 3}
+  - Level: 4
+    IconSprite: {fileID: 21300000, guid: 200261b24f352954aae6fafcc4975ba2, type: 3}
+  - Level: 5
+    IconSprite: {fileID: 21300000, guid: b235196af13ed7a4e9f665e072233413, type: 3}

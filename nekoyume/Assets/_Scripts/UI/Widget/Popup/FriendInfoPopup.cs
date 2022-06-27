@@ -21,7 +21,6 @@ namespace Nekoyume.UI
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 
         private static readonly Vector3 NPCPosition = new Vector3(2000f, 1999.2f, 2.15f);
-        private static readonly Vector3 NPCPositionInLobbyCamera = new Vector3(5000f, 4999.13f, 0f);
 
         [SerializeField]
         private TextMeshProUGUI nicknameText = null;
@@ -85,23 +84,7 @@ namespace Nekoyume.UI
 
         private void InitializePlayer(AvatarState avatarState)
         {
-            _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
-            var t = _player.transform;
-            t.localScale = Vector3.one;
-
-            var playerInLobby = Find<Menu>().isActiveAndEnabled;
-            if (playerInLobby)
-            {
-                t.position = NPCPosition;
-                playerRawImage.gameObject.SetActive(true);
-                playerRawImageInLobbyCamera.gameObject.SetActive(false);
-            }
-            else
-            {
-                t.position = NPCPositionInLobbyCamera;
-                playerRawImage.gameObject.SetActive(false);
-                playerRawImageInLobbyCamera.gameObject.SetActive(true);
-            }
+            _player = Util.CreatePlayer(avatarState, NPCPosition);
         }
 
         private void TerminatePlayer()

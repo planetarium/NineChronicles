@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Character
         private Vector3 HUDPosition { get; set; }
         public Vector3 HealPosition { get; private set; }
 
-        protected CharacterAnimator(CharacterBase root) : base(root.gameObject)
+        protected CharacterAnimator(Character root) : base(root.gameObject)
         {
         }
 
@@ -293,6 +293,16 @@ namespace Nekoyume.Game.Character
         public bool IsIdle()
         {
             return Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).IsName(nameof(CharacterAnimation.Type.Idle));
+        }
+
+        public bool IsHit()
+        {
+            return Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).IsName(nameof(CharacterAnimation.Type.Hit));
+        }
+
+        public float PlayTime()
+        {
+            return Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).length;
         }
     }
 }

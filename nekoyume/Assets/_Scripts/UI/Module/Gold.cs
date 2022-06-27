@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Libplanet.Assets;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -54,7 +55,10 @@ namespace Nekoyume.UI.Module
 
         private void SetGold(FungibleAssetValue gold)
         {
-            text.text = gold.GetQuantityString();
+            var str = gold.GetQuantityString();
+            text.text = decimal.TryParse(str, out var num)
+                ? num.ToString("N0", CultureInfo.CurrentCulture)
+                : str;
         }
 
         private void OnClickOnlineShopButton()

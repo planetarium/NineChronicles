@@ -39,7 +39,8 @@ namespace Nekoyume.UI.Module
             baseItemView.ShadowObject.SetActive(false);
             baseItemView.PriceText.gameObject.SetActive(false);
 
-            baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(model.ItemBase);
+            baseItemView.ItemImage.overrideSprite =
+                BaseItemView.GetItemIcon(model.ItemBase);
 
             var data = baseItemView.GetItemViewData(model.ItemBase);
             baseItemView.GradeImage.overrideSprite = data.GradeBackground;
@@ -76,11 +77,22 @@ namespace Nekoyume.UI.Module
 
             model.Equipped.Subscribe(b => baseItemView.EquippedObject.SetActive(b)).AddTo(_disposables);
             model.LevelLimited.Subscribe(b => baseItemView.LevelLimitObject.SetActive(b)).AddTo(_disposables);
-            model.ElementalTypeDisabled.Subscribe(b => baseItemView.ElementalDisableObject.SetActive(b)).AddTo(_disposables);
+            model.DimObjectEnabled.Subscribe(b => baseItemView.DimObject.SetActive(b)).AddTo(_disposables);
             model.Tradable.Subscribe(b => baseItemView.TradableObject.SetActive(b)).AddTo(_disposables);
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
             model.Focused.Subscribe(b => baseItemView.FocusObject.SetActive(b)).AddTo(_disposables);
             model.HasNotification.Subscribe(b => baseItemView.NotificationObject.SetActive(b)).AddTo(_disposables);
+            model.GrindingCount.Subscribe(count =>
+            {
+                baseItemView.GrindingCountObject.SetActive(count > 0);
+                if (count > 0)
+                {
+                    baseItemView.GrindingCountText.text = count.ToString();
+                }
+            }).AddTo(_disposables);
+            model.GrindingCountEnabled
+                .Subscribe(b => baseItemView.GrindingCountObject.SetActive(b))
+                .AddTo(_disposables);
             model.View = GetComponent<RectTransform>();
 
             baseItemView.TouchHandler.OnClick.Select(_ => model)
