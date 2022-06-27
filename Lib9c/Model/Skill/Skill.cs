@@ -9,9 +9,9 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Skill
 {
     [Serializable]
-    public abstract class Skill : IState
+    public abstract class Skill : IState, ISkill
     {
-        public readonly SkillSheet.Row SkillRow;
+        public SkillSheet.Row SkillRow { get; }
         public int Power { get; private set; }
         public int Chance { get; private set; }
 

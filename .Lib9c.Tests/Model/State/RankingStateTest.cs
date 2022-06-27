@@ -11,7 +11,7 @@ namespace Lib9c.Tests.Model.State
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class RankingStateTest
     {

@@ -10,7 +10,7 @@ namespace Lib9c.Tests.Model.State
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class MonsterCollectionState0Test
     {

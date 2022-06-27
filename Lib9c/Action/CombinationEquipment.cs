@@ -6,20 +6,25 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Arena;
+using Nekoyume.Extensions;
+using Nekoyume.Helper;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Crystal;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Updated at https://github.com/planetarium/lib9c/pull/1069
+    /// Updated at https://github.com/planetarium/lib9c/pull/1164
     /// </summary>
     [Serializable]
-    [ActionType("combination_equipment11")]
+    [ActionType("combination_equipment12")]
     public class CombinationEquipment : GameAction
     {
         public const string AvatarAddressKey = "a";
@@ -33,6 +38,8 @@ namespace Nekoyume.Action
 
         public const string SubRecipeIdKey = "i";
         public int? subRecipeId;
+        public const string PayByCrystalKey = "p";
+        public bool payByCrystal;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -41,6 +48,7 @@ namespace Nekoyume.Action
                 [SlotIndexKey] = slotIndex.Serialize(),
                 [RecipeIdKey] = recipeId.Serialize(),
                 [SubRecipeIdKey] = subRecipeId.Serialize(),
+                [PayByCrystalKey] = payByCrystal.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
@@ -50,6 +58,7 @@ namespace Nekoyume.Action
             slotIndex = plainValue[SlotIndexKey].ToInteger();
             recipeId = plainValue[RecipeIdKey].ToInteger();
             subRecipeId = plainValue[SubRecipeIdKey].ToNullableInteger();
+            payByCrystal = plainValue[PayByCrystalKey].ToBoolean();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -67,26 +76,33 @@ namespace Nekoyume.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
-                return states
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(slotAddress, MarkChanged)
-                    .SetState(context.Signer, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, ItemEnhancement.GetFeeStoreAddress());
+                return states;
+            }
+
+            if (recipeId != 1)
+            {
+                var unlockedRecipeIdsAddress = avatarAddress.Derive("recipe_ids");
+                if (!states.TryGetState(unlockedRecipeIdsAddress, out List rawIds))
+                {
+                    throw new FailedLoadStateException("can't find UnlockedRecipeList.");
+                }
+
+                List<int> unlockedIds = rawIds.ToList(StateExtensions.ToInteger);
+                if (!unlockedIds.Contains(recipeId))
+                {
+                    throw new InvalidRecipeIdException($"unlock {recipeId} first.");
+                }
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
-
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out var agentState,
-                out var avatarState))
+                out var avatarState, out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
-            // Validate Required Cleared Stage
+            // Validate Required Cleared Tutorial Stage
             if (!avatarState.worldInformation.IsStageCleared(
                 GameConfig.RequireClearedStageLevel.CombinationEquipmentAction))
             {
@@ -96,7 +112,7 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.CombinationEquipmentAction,
                     current);
             }
-            // ~Validate Required Cleared Stage
+            // ~Validate Required Cleared Tutorial Stage
 
             // Validate SlotIndex
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
@@ -118,9 +134,22 @@ namespace Nekoyume.Action
             var costNCG = 0L;
             var endBlockIndex = context.BlockIndex;
             var requiredFungibleItems = new Dictionary<int, int>();
+            var costCrystal = 0 * CrystalCalculator.CRYSTAL;
+
+            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
+            {
+                typeof(EquipmentItemRecipeSheet),
+                typeof(EquipmentItemSheet),
+                typeof(MaterialItemSheet),
+                typeof(EquipmentItemSubRecipeSheetV2),
+                typeof(EquipmentItemOptionSheet),
+                typeof(SkillSheet),
+                typeof(CrystalMaterialCostSheet),
+                typeof(CrystalFluctuationSheet),
+            });
 
             // Validate RecipeId
-            var equipmentItemRecipeSheet = states.GetSheet<EquipmentItemRecipeSheet>();
+            var equipmentItemRecipeSheet = sheets.GetSheet<EquipmentItemRecipeSheet>();
             if (!equipmentItemRecipeSheet.TryGetValue(recipeId, out var recipeRow))
             {
                 throw new SheetRowNotFoundException(
@@ -142,7 +171,7 @@ namespace Nekoyume.Action
             // ~Validate Recipe Unlocked
 
             // Validate Recipe ResultEquipmentId
-            var equipmentItemSheet = states.GetSheet<EquipmentItemSheet>();
+            var equipmentItemSheet = sheets.GetSheet<EquipmentItemSheet>();
             if (!equipmentItemSheet.TryGetValue(recipeRow.ResultEquipmentId, out var equipmentRow))
             {
                 throw new SheetRowNotFoundException(
@@ -153,7 +182,7 @@ namespace Nekoyume.Action
             // ~Validate Recipe ResultEquipmentId
 
             // Validate Recipe Material
-            var materialItemSheet = states.GetSheet<MaterialItemSheet>();
+            var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             if (!materialItemSheet.TryGetValue(recipeRow.MaterialId, out var materialRow))
             {
                 throw new SheetRowNotFoundException(
@@ -183,7 +212,7 @@ namespace Nekoyume.Action
                     );
                 }
 
-                var equipmentItemSubRecipeSheetV2 = states.GetSheet<EquipmentItemSubRecipeSheetV2>();
+                var equipmentItemSubRecipeSheetV2 = sheets.GetSheet<EquipmentItemSubRecipeSheetV2>();
                 if (!equipmentItemSubRecipeSheetV2.TryGetValue(subRecipeId.Value, out subRecipeRow))
                 {
                     throw new SheetRowNotFoundException(
@@ -228,16 +257,64 @@ namespace Nekoyume.Action
 
             // Remove Required Materials
             var inventory = avatarState.inventory;
+            var crystalMaterialSheet = sheets.GetSheet<CrystalMaterialCostSheet>();
             foreach (var pair in requiredFungibleItems.OrderBy(pair => pair.Key))
             {
-                if (!materialItemSheet.TryGetValue(pair.Key, out materialRow) ||
-                    !inventory.RemoveFungibleItem(materialRow.ItemId, context.BlockIndex, pair.Value))
+                var itemId = pair.Key;
+                var requiredCount = pair.Value;
+                if (materialItemSheet.TryGetValue(itemId, out materialRow))
                 {
-                    throw new NotEnoughMaterialException(
-                        $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
+                    int itemCount = inventory.TryGetItem(itemId, out Inventory.Item item)
+                        ? item.count
+                        : 0;
+                    if (itemCount < requiredCount && payByCrystal)
+                    {
+                        costCrystal += CrystalCalculator.CalculateMaterialCost(
+                            itemId,
+                            requiredCount - itemCount,
+                            crystalMaterialSheet);
+                        requiredCount = itemCount;
+                    }
+
+                    if (requiredCount > 0 && !inventory.RemoveFungibleItem(materialRow.ItemId, context.BlockIndex,
+                            requiredCount))
+                    {
+                        throw new NotEnoughMaterialException(
+                            $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
+                    }
+                }
+                else
+                {
+                    throw new SheetRowNotFoundException(nameof(MaterialItemSheet), itemId);
                 }
             }
             // ~Remove Required Materials
+            if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
+            {
+                var crystalFluctuationSheet = sheets.GetSheet<CrystalFluctuationSheet>();
+                var row = crystalFluctuationSheet.Values
+                    .First(r => r.Type == CrystalFluctuationSheet.ServiceType.Combination);
+                var (dailyCostState, weeklyCostState, _, _) = states.GetCrystalCostStates(context.BlockIndex, row.BlockInterval);
+                // 1x fixed crystal cost.
+                costCrystal = CrystalCalculator.CalculateCombinationCost(costCrystal, row: row, prevWeeklyCostState: null, beforePrevWeeklyCostState: null);
+                // Update Daily Formula.
+                dailyCostState.Count++;
+                dailyCostState.CRYSTAL += costCrystal;
+                // Update Weekly Formula.
+                weeklyCostState.Count++;
+                weeklyCostState.CRYSTAL += costCrystal;
+
+                var crystalBalance = states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
+                if (costCrystal > crystalBalance)
+                {
+                    throw new NotEnoughFungibleAssetValueException($"required {costCrystal}, but balance is {crystalBalance}");
+                }
+
+                states = states
+                    .SetState(dailyCostState.Address, dailyCostState.Serialize())
+                    .SetState(weeklyCostState.Address, weeklyCostState.Serialize())
+                    .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
+            }
 
             // Subtract Required ActionPoint
             if (costActionPoint > 0)
@@ -256,9 +333,13 @@ namespace Nekoyume.Action
             // Transfer Required NCG
             if (costNCG > 0L)
             {
+                var arenaSheet = states.GetSheet<ArenaSheet>();
+                var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
+                var feeStoreAddress = Addresses.GetBlacksmithFeeAddress(arenaData.ChampionshipId, arenaData.Round);
+
                 states = states.TransferAsset(
                     context.Signer,
-                    ItemEnhancement.GetFeeStoreAddress(),
+                    feeStoreAddress,
                     states.GetGoldCurrency() * costNCG
                 );
             }
@@ -278,8 +359,8 @@ namespace Nekoyume.Action
                     equipment,
                     context.Random,
                     subRecipeRow,
-                    states.GetSheet<EquipmentItemOptionSheet>(),
-                    states.GetSheet<SkillSheet>()
+                    sheets.GetSheet<EquipmentItemOptionSheet>(),
+                    sheets.GetSheet<SkillSheet>()
                 );
                 endBlockIndex = equipment.RequiredBlockIndex;
             }

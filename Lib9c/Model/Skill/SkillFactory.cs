@@ -1,4 +1,5 @@
 using Bencodex.Types;
+using Nekoyume.Model.Skill.Arena;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
@@ -30,6 +31,36 @@ namespace Nekoyume.Model.Skill
                 case SkillType.Buff:
                 case SkillType.Debuff:
                     return new BuffSkill(skillRow, power, chance);
+            }
+
+            throw new UnexpectedOperationException(
+                $"{skillRow.Id}, {skillRow.SkillType}, {skillRow.SkillTargetType}, {skillRow.SkillCategory}");
+        }
+
+        // Convert skill to arena skill
+        public static ArenaSkill GetForArena(SkillSheet.Row skillRow, int power, int chance)
+        {
+            switch (skillRow.SkillType)
+            {
+                case SkillType.Attack:
+                    switch (skillRow.SkillCategory)
+                    {
+                        case SkillCategory.NormalAttack:
+                            return new ArenaNormalAttack(skillRow, power, chance);
+                        case SkillCategory.DoubleAttack:
+                            return new ArenaDoubleAttack(skillRow, power, chance);
+                        case SkillCategory.BlowAttack:
+                            return new ArenaBlowAttack(skillRow, power, chance);
+                        case SkillCategory.AreaAttack:
+                            return new ArenaAreaAttack(skillRow, power, chance);
+                        default:
+                            return new ArenaNormalAttack(skillRow, power, chance);
+                    }
+                case SkillType.Heal:
+                    return new ArenaHealSkill(skillRow, power, chance);
+                case SkillType.Buff:
+                case SkillType.Debuff:
+                    return new ArenaBuffSkill(skillRow, power, chance);
             }
 
             throw new UnexpectedOperationException(

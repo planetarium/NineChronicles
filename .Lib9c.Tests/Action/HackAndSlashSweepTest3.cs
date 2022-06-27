@@ -82,6 +82,9 @@ namespace Lib9c.Tests.Action
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            _initialState = _initialState.SetState(arenaSheetAddress, null);
+
             foreach (var address in _avatarState.combinationSlotAddresses)
             {
                 var slotState = new CombinationSlotState(
@@ -747,6 +750,26 @@ namespace Lib9c.Tests.Action
                         Random = new TestRandom(),
                     }));
             }
+        }
+
+        [Fact]
+        public void Execute_ActionObsoletedException()
+        {
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = 1,
+                stageId = 50,
+            };
+
+            var state = _initialState.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
         }
     }
 }

@@ -135,19 +135,6 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_Throws_WhenStakeLessThanMinimumRequiredGold()
-        {
-            Assert.True(_tableSheets.StakeRegularRewardSheet.Min(x => x.Value.RequiredGold) > 10);
-            var action = new Stake(10);
-            Assert.Throws<ArgumentOutOfRangeException>(() => action.Execute(new ActionContext
-            {
-                PreviousStates = _initialState,
-                Signer = _signerAddress,
-                BlockIndex = 1,
-            }));
-        }
-
-        [Fact]
         public void Execute()
         {
             var action = new Stake(100);

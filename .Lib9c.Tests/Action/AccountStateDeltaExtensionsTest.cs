@@ -8,13 +8,16 @@ namespace Lib9c.Tests.Action
     using Lib9c.Tests.Extensions;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Nekoyume.TableData.Crystal;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class AccountStateDeltaExtensionsTest
     {
@@ -22,6 +25,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly AgentState _agentState;
         private readonly AvatarState _avatarState;
+        private readonly TableSheets _tableSheets;
 
         public AccountStateDeltaExtensionsTest()
         {
@@ -29,12 +33,12 @@ namespace Lib9c.Tests.Action
             _avatarAddress = _agentAddress.Derive(string.Format(CultureInfo.InvariantCulture, CreateAvatar2.DeriveFormat, 0));
             _agentState = new AgentState(_agentAddress);
             _agentState.avatarAddresses[0] = _avatarAddress;
-            var sheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
-                sheets.GetAvatarSheets(),
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
                 default
             );
@@ -174,7 +178,8 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize());
             }
 
-            Assert.True(states.TryGetAgentAvatarStatesV2(_agentAddress, _avatarAddress, out _, out _));
+            Assert.True(states.TryGetAgentAvatarStatesV2(_agentAddress, _avatarAddress, out _, out _, out bool avatarMigrationRequired));
+            Assert.Equal(backward, avatarMigrationRequired);
         }
 
         [Fact]
@@ -226,6 +231,71 @@ namespace Lib9c.Tests.Action
                 var expectedSheet = (ISheet)constructor.Invoke(Array.Empty<object>());
                 expectedSheet.Set(sheetsAddressAndValues[address].ToDotnetString());
                 Assert.Equal(sheet, expectedSheet);
+            }
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void GetCrystalCostState(bool exist)
+        {
+            IAccountStateDelta state = new State();
+            int expectedCount = exist ? 1 : 0;
+            FungibleAssetValue expectedCrystal = exist
+                ? 100 * CrystalCalculator.CRYSTAL
+                : 0 * CrystalCalculator.CRYSTAL;
+            Address address = default;
+            var crystalCostState = new CrystalCostState(address, expectedCrystal);
+            crystalCostState.Count = expectedCount;
+            if (exist)
+            {
+                state = state.SetState(address, crystalCostState.Serialize());
+            }
+
+            CrystalCostState actual = state.GetCrystalCostState(address);
+            Assert.Equal(expectedCount, actual.Count);
+            Assert.Equal(expectedCrystal, actual.CRYSTAL);
+        }
+
+        [Theory]
+        [InlineData(0L, false)]
+        [InlineData(14_400L, false)]
+        [InlineData(100_800L, true)]
+        [InlineData(151_200L, true)]
+        public void GetCrystalCostStates(long blockIndex, bool previousWeeklyExist)
+        {
+            long interval = _tableSheets.CrystalFluctuationSheet.Values.First(r => r.Type == CrystalFluctuationSheet.ServiceType.Combination).BlockInterval;
+            var weeklyIndex = (int)(blockIndex / interval);
+            Address dailyCostAddress =
+                Addresses.GetDailyCrystalCostAddress((int)(blockIndex / CrystalCostState.DailyIntervalIndex));
+            Address weeklyCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex);
+            Address previousCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex - 1);
+            Address beforePreviousCostAddress = Addresses.GetWeeklyCrystalCostAddress(weeklyIndex - 2);
+            var crystalCostState = new CrystalCostState(default, 100 * CrystalCalculator.CRYSTAL);
+            IAccountStateDelta state = new State()
+                .SetState(dailyCostAddress, crystalCostState.Serialize())
+                .SetState(weeklyCostAddress, crystalCostState.Serialize())
+                .SetState(previousCostAddress, crystalCostState.Serialize())
+                .SetState(Addresses.GetSheetAddress<CrystalFluctuationSheet>(), _tableSheets.CrystalFluctuationSheet.Serialize())
+                .SetState(beforePreviousCostAddress, crystalCostState.Serialize());
+            var (daily, weekly, previousWeekly, beforePreviousWeekly) =
+                state.GetCrystalCostStates(blockIndex, interval);
+
+            Assert.NotNull(daily);
+            Assert.NotNull(weekly);
+            Assert.Equal(100 * CrystalCalculator.CRYSTAL, daily.CRYSTAL);
+            Assert.Equal(100 * CrystalCalculator.CRYSTAL, weekly.CRYSTAL);
+            if (previousWeeklyExist)
+            {
+                Assert.NotNull(previousWeekly);
+                Assert.NotNull(beforePreviousWeekly);
+                Assert.Equal(100 * CrystalCalculator.CRYSTAL, previousWeekly.CRYSTAL);
+                Assert.Equal(100 * CrystalCalculator.CRYSTAL, beforePreviousWeekly.CRYSTAL);
+            }
+            else
+            {
+                Assert.Null(previousWeekly);
+                Assert.Null(beforePreviousWeekly);
             }
         }
     }

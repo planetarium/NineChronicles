@@ -11,7 +11,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class DailyReward5Test
     {
@@ -107,7 +107,7 @@ namespace Lib9c.Tests.Action
             {
                 1 => nextState.GetAvatarState(_avatarAddress),
                 2 => nextState.GetAvatarStateV2(_avatarAddress),
-                _ => null
+                _ => null,
             };
             if (nextAvatarState is null)
             {

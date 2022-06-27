@@ -10,10 +10,11 @@ namespace Lib9c.Tests.Action
     using Libplanet.Assets;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class CreateAvatarTest
     {
@@ -39,8 +40,6 @@ namespace Lib9c.Tests.Action
                 name = "test",
             };
 
-            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
-
             var sheets = TableSheetsImporter.ImportSheets();
             var state = new State()
                 .SetState(
@@ -52,6 +51,8 @@ namespace Lib9c.Tests.Action
             {
                 state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
+
+            Assert.Equal(0 * CrystalCalculator.CRYSTAL, state.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
 
             var nextState = action.Execute(new ActionContext()
             {
@@ -71,10 +72,12 @@ namespace Lib9c.Tests.Action
                 default,
                 avatarAddress,
                 out var agentState,
-                out var nextAvatarState)
+                out var nextAvatarState,
+                out _)
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
+            Assert.Equal(50 * CrystalCalculator.CRYSTAL, nextState.GetBalance(_agentAddress, CrystalCalculator.CRYSTAL));
         }
 
         [Theory]

@@ -17,6 +17,9 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Updated at https://github.com/planetarium/lib9c/pull/1176
+    /// </summary>
     [Serializable]
     [ActionType("ranking_battle11")]
     public class RankingBattle11 : GameAction
@@ -59,6 +62,13 @@ namespace Nekoyume.Action
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
             {
                 return states;
+            }
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            var arenaSheetState = states.GetState(arenaSheetAddress);
+            if (arenaSheetState != null)
+            {
+                throw new ActionObsoletedException(nameof(RankingBattle11));
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress, enemyAddress);
