@@ -14,12 +14,14 @@ namespace Nekoyume.Model.Arena
             avatarAddress.Derive($"arena_information_{championshipId}_{round}");
 
         public const int MaxTicketCount = 8;
+        public const int MaxPurchasedTicketCount = 80;
 
         public Address Address;
         public int Win { get; private set; }
         public int Lose { get; private set; }
         public int Ticket { get; private set; }
         public int TicketResetCount { get; private set; }
+        public int PurchasedTicketCount { get; private set; }
 
         public ArenaInformation(Address avatarAddress, int championshipId, int round)
         {
@@ -34,6 +36,7 @@ namespace Nekoyume.Model.Arena
             Lose = (Integer)serialized[2];
             Ticket = (Integer)serialized[3];
             TicketResetCount = (Integer)serialized[4];
+            PurchasedTicketCount = (Integer)serialized[5];
         }
 
         public IValue Serialize()
@@ -43,7 +46,8 @@ namespace Nekoyume.Model.Arena
                 .Add(Win)
                 .Add(Lose)
                 .Add(Ticket)
-                .Add(TicketResetCount);
+                .Add(TicketResetCount)
+                .Add(PurchasedTicketCount);
         }
 
         public void UseTicket(int ticketCount)

@@ -67,6 +67,21 @@ namespace Nekoyume.Action
                     $"[{nameof(JoinArena)}] Aborted as the avatar state of the signer failed to load.");
             }
 
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
+                    out var world))
+            {
+                throw new NotEnoughClearedStageLevelException(
+                    $"{addressesHex}Aborted as NotEnoughClearedStageLevelException");
+            }
+
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
+            {
+                throw new NotEnoughClearedStageLevelException(
+                    addressesHex,
+                    GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
+                    world.StageClearedId);
+            }
+
             var sheets = states.GetSheets(
                 sheetTypes: new[]
                 {

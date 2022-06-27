@@ -20,6 +20,8 @@ namespace Lib9c.Tests.Model.Arena
             Assert.Equal(state.Win, deserialized.Win);
             Assert.Equal(state.Lose, deserialized.Lose);
             Assert.Equal(state.Ticket, deserialized.Ticket);
+            Assert.Equal(state.TicketResetCount, deserialized.TicketResetCount);
+            Assert.Equal(state.PurchasedTicketCount, deserialized.PurchasedTicketCount);
         }
     }
 }

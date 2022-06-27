@@ -30,16 +30,16 @@ namespace Lib9c.Tests
         }
 
         [Theory]
-        [InlineData(new[] { 2 }, 19)]
-        [InlineData(new[] { 2, 3 }, 38)]
+        [InlineData(new[] { 2 }, 2)]
+        [InlineData(new[] { 2, 3 }, 4)]
         public void CalculateRecipeUnlockCost(IEnumerable<int> recipeIds, int expected)
         {
             Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateRecipeUnlockCost(recipeIds, _equipmentItemRecipeSheet));
         }
 
         [Theory]
-        [InlineData(new[] { 2 }, 250)]
-        [InlineData(new[] { 2, 3 }, 20250)]
+        [InlineData(new[] { 2 }, 500)]
+        [InlineData(new[] { 2, 3 }, 3000)]
         public void CalculateWorldUnlockCost(IEnumerable<int> worldIds, int expected)
         {
             Assert.Equal(expected * CrystalCalculator.CRYSTAL, CrystalCalculator.CalculateWorldUnlockCost(worldIds, _worldUnlockSheet));
@@ -120,8 +120,8 @@ namespace Lib9c.Tests
         }
 
         [Theory]
-        [InlineData(302000, 1, 30, null)]
-        [InlineData(302003, 2, 60, null)]
+        [InlineData(303000, 1, 75, null)]
+        [InlineData(303003, 2, 90000, null)]
         [InlineData(306068, 1, 100, typeof(ArgumentException))]
         public void CalculateMaterialCost(int materialId, int materialCount, int expected, Type exc)
         {
@@ -140,10 +140,10 @@ namespace Lib9c.Tests
         {
             private readonly List<object[]> _data = new List<object[]>
             {
-                // 1000 + (2^0 - 1) * 100 = 1000
+                // 10 + ((2^0 - 1) * 10) = 10
                 // enchant level 2
-                // 10 + (2^2 - 1) * 10 = 40
-                // total 1040
+                // 10 + ((2^2 - 1) * 10) = 40
+                // total 50
                 new object[]
                 {
                     new[]
@@ -153,43 +153,43 @@ namespace Lib9c.Tests
                     },
                     10,
                     false,
-                    1040,
+                    50,
                 },
                 new object[]
                 {
                     // enchant failed
-                    // (1000 + (2^0 -1) * 1000) / 2 = 500
-                    // total 500
+                    // (10 + (2^0 -1) * 10) / 2 = 5
+                    // total 5
                     new[]
                     {
                         (10100000, 0),
                     },
                     10,
                     true,
-                    500,
+                    5,
                 },
                 // enchant level 3 & failed
-                // (10 + (2^3 - 1) * 10) / 2 = 450
-                // multiply by staking
-                // 40 * 0.2 = 8
-                // total 48
+                // (10 + (2^3 - 1) * 10) / 2 = 40
+                // multiply by staking level 2
+                // 40 * 0.5 = 20
+                // total 60
                 new object[]
                 {
                     new[]
                     {
                         (10110000, 3),
                     },
-                    100,
+                    500,
                     true,
-                    48,
+                    60,
                 },
                 // enchant level 1
-                // 1000 + (2^1 - 1) * 1000 = 2000
+                // 10 + (2^1 - 1) * 10 = 20
                 // enchant level 2
                 // 10 + (2^2 - 1) * 10 = 40
-                // multiply by staking
-                // 2040 * 0.2 = 408
-                // total 2448
+                // multiply by staking level 2
+                // 60 * 0.5 = 30
+                // total 90
                 new object[]
                 {
                     new[]
@@ -197,9 +197,9 @@ namespace Lib9c.Tests
                         (10100000, 1),
                         (10110000, 2),
                     },
-                    100,
+                    500,
                     false,
-                    2448,
+                    90,
                 },
                 // enchant level 1
                 // 10 + (2^1 - 1) * 10 = 20
