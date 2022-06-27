@@ -541,16 +541,17 @@ namespace Nekoyume.UI
 
         private void OnClickBattle()
         {
+            var cost = startButton.ArenaTicketCost;
             var hasEnoughTickets =
                 RxProps.ArenaTicketProgress.HasValue &&
-                RxProps.ArenaTicketProgress.Value.currentTicketCount > 0;
+                RxProps.ArenaTicketProgress.Value.currentTicketCount >= cost;
             if (!hasEnoughTickets)
             {
                 var message =
                     L10nManager.Localize("UI_NOT_ENOUGH_ARENA_TICKETS");
                 // TODO!!!! Use `PaymentPopup` instead of `Notification`
                 // Find<PaymentPopup>().ShowAttract(
-                //     startButton.ArenaTicketCost,
+                //     cost,
                 //     message,
                 //     L10nManager.Localize("UI_GO_GRINDING"),
                 //     () =>
