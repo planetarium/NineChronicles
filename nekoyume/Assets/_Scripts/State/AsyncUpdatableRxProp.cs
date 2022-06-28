@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.State
@@ -27,14 +28,14 @@ namespace Nekoyume.State
         ReactiveProperty<T>,
         IAsyncUpdatableRxProp<T>
     {
-        private readonly Func<T, UniTask<T>> _updateAsyncFunc;
+        private readonly Func<T, Task<T>> _updateAsyncFunc;
 
-        public AsyncUpdatableRxProp(Func<T, UniTask<T>> updateAsyncFunc) :
+        public AsyncUpdatableRxProp(Func<T, Task<T>> updateAsyncFunc) :
             this(default, updateAsyncFunc)
         {
         }
 
-        public AsyncUpdatableRxProp(T defaultValue, Func<T, UniTask<T>> updateAsyncFunc)
+        public AsyncUpdatableRxProp(T defaultValue, Func<T, Task<T>> updateAsyncFunc)
         {
             Value = defaultValue;
             _updateAsyncFunc = updateAsyncFunc
@@ -43,7 +44,8 @@ namespace Nekoyume.State
 
         public async UniTask<T> UpdateAsync(bool forceNotify = false)
         {
-            var t = await _updateAsyncFunc(Value);
+            var t = await Task.Run(async () =>
+                await _updateAsyncFunc(Value));
             if (forceNotify)
             {
                 SetValueAndForceNotify(t);
