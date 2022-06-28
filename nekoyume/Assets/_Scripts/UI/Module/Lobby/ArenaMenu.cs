@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using Nekoyume.Game;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
 using TMPro;
@@ -14,12 +12,6 @@ namespace Nekoyume.UI.Module.Lobby
 
     public class ArenaMenu : MainMenu
     {
-        public enum ViewState
-        {
-            Idle,
-            LoadingArenaData
-        }
-
         [SerializeField]
         private TextMeshProUGUI _ticketCount;
 
@@ -37,11 +29,8 @@ namespace Nekoyume.UI.Module.Lobby
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        public ViewState State { get; private set; }
-
         private void OnEnable()
         {
-            State = ViewState.LoadingArenaData;
             var agent = Game.Game.instance.Agent;
             UpdateArenaSeasonTitle(agent.BlockIndex);
             agent.BlockIndexSubject
@@ -49,20 +38,7 @@ namespace Nekoyume.UI.Module.Lobby
                 .AddTo(_disposables);
             RxProps.ArenaTicketProgress
                 .SubscribeOnMainThread()
-                .Subscribe(UpdateTicketResetTime)
-                .AddTo(_disposables);
-            UniTask.WhenAll(
-                    RxProps.ArenaInfoTuple.UpdateAsync(),
-                    RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync())
-                .ToObservable()
-                .First()
-                .SubscribeOnMainThread()
-                .Subscribe(tuple =>
-                {
-                    var ((current, _), _) = tuple;
-                    UpdateTicketCount(current);
-                    State = ViewState.Idle;
-                })
+                .Subscribe(UpdateTicket)
                 .AddTo(_disposables);
         }
 
@@ -71,33 +47,16 @@ namespace Nekoyume.UI.Module.Lobby
             _disposables.DisposeAllAndClear();
         }
 
-        private void UpdateTicketCount(ArenaInformation arenaInformation)
-        {
-            if (arenaInformation is null)
-            {
-                _ticketCount.text = ArenaInformation.MaxTicketCount.ToString();
-                _ticketResetTime.text = string.Empty;
-                return;
-            }
-
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var currentRoundData =
-                TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
-            var ticket = arenaInformation.GetTicketCount(
-                blockIndex,
-                currentRoundData.StartBlockIndex,
-                States.Instance.GameConfigState.DailyArenaInterval);
-            _ticketCount.text = ticket.ToString();
-        }
-
-        private void UpdateTicketResetTime((
+        private void UpdateTicket((
             int currentTicketCount,
             int maxTicketCount,
             int progressedBlockRange,
             int totalBlockRange,
             string remainTimespanToReset) tuple)
         {
-            var (_, _, _, _, remainTimespan) = tuple;
+            var (currentTicketCount, _, _, _, remainTimespan) =
+                tuple;
+            _ticketCount.text = currentTicketCount.ToString();
             _ticketResetTime.text = remainTimespan;
         }
 
