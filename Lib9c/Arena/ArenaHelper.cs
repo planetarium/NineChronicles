@@ -138,11 +138,6 @@ namespace Nekoyume.Arena
             return 1;
         }
 
-        public static int GetInitScore()
-        {
-            return ArenaScore.ArenaScoreDefault;
-        }
-
         public static FungibleAssetValue GetTicketPrice(
             ArenaSheet.RoundData roundData,
             ArenaInformation arenaInformation,
