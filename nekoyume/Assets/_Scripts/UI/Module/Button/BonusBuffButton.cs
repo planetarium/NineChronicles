@@ -52,23 +52,26 @@ namespace Nekoyume.UI.Module
         {
             _disposableForOnDisabled?.Dispose();
             _disposableForOnDisabled = null;
+            _stageId = currentStageId;
 
             var tableSheets = Game.Game.instance.TableSheets;
-
-            if (skillState is null ||
-                States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(currentStageId) ||
+            if (States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(currentStageId) ||
                 !tableSheets.CrystalStageBuffGachaSheet.TryGetValue(currentStageId, out var row))
             {
                 gameObject.SetActive(false);
                 return;
             }
 
-            _stageId = currentStageId;
+            if (skillState is null)
+            {
+                _hasEnoughStars = false;
+                starCountText.text = $"0/{row.MaxStar}";
+                gameObject.SetActive(true);
+                return;
+            }
+
             _hasEnoughStars = skillState.StarCount >= row.MaxStar;
             starCountText.text = $"{skillState.StarCount}/{row.MaxStar}";
-            _disposableForOnDisabled = Widget.Find<BuffBonusResultPopup>().OnBuffSelectedSubject
-                .Subscribe(_ => SetIcon(skillState))
-                .AddTo(gameObject);
             SetIcon(skillState);
             gameObject.SetActive(true);
         }
@@ -124,7 +127,16 @@ namespace Nekoyume.UI.Module
         {
             var skillState = States.Instance.CrystalRandomSkillState;
 
-            if (!skillState.SkillIds.Any())
+            if (_hasEnoughStars)
+            {
+                _disposableForOnDisabled?.Dispose(); 
+                _disposableForOnDisabled = Widget.Find<BuffBonusResultPopup>().OnBuffSelectedSubject
+                    .Subscribe(_ => SetIcon(skillState))
+                    .AddTo(gameObject);
+            }
+
+            if (skillState is null ||
+                !skillState.SkillIds.Any())
             {
                 Widget.Find<BuffBonusPopup>().Show(_stageId, _hasEnoughStars);
             }
