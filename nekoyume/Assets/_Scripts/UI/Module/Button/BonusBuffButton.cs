@@ -29,7 +29,13 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI starCountText = null;
 
         [SerializeField]
-        private List<GameObject> objectsOnBuffAvailable = null;
+        private GameObject normalObject = null;
+
+        [SerializeField]
+        private GameObject availableObject = null;
+
+        [SerializeField]
+        private GameObject buffSelectedObject = null;
 
         private IDisposable _disposableForOnDisabled = null;
 
@@ -62,23 +68,16 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (skillState is null)
-            {
-                _hasEnoughStars = false;
-                starCountText.text = $"0/{row.MaxStar}";
-                gameObject.SetActive(true);
-                return;
-            }
-
-            _hasEnoughStars = skillState.StarCount >= row.MaxStar;
-            starCountText.text = $"{skillState.StarCount}/{row.MaxStar}";
+            var starCount = skillState != null ? skillState.StarCount : 0;
+            _hasEnoughStars = starCount >= row.MaxStar;
+            starCountText.text = $"{starCount}/{row.MaxStar}";
             SetIcon(skillState);
             gameObject.SetActive(true);
         }
 
         private void SetIcon(CrystalRandomSkillState skillState)
         {
-            var isBuffAvailable = _hasEnoughStars;
+            var isBuffAvailable = skillState != null && _hasEnoughStars;
             var selectedId = Widget.Find<BuffBonusResultPopup>().SelectedSkillId;
 
             var tableSheets = Game.Game.instance.TableSheets;
@@ -112,15 +111,10 @@ namespace Nekoyume.UI.Module
                     bgImage.sprite = gradeData.SmallBgSprite;
                 }
             }
-            else
-            {
-                isBuffAvailable = false;
-            }
 
-            foreach (var obj in objectsOnBuffAvailable)
-            {
-                obj.SetActive(isBuffAvailable);
-            }
+            normalObject.SetActive(!isBuffAvailable);
+            availableObject.SetActive(isBuffAvailable && !selectedId.HasValue);
+            buffSelectedObject.SetActive(selectedId.HasValue);
         }
 
         private void OnClickButton()
