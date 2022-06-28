@@ -55,10 +55,7 @@ namespace Nekoyume.UI.Module
 
         private void SetGold(FungibleAssetValue gold)
         {
-            var str = gold.GetQuantityString();
-            text.text = decimal.TryParse(str, out var num)
-                ? num.ToString("N0", CultureInfo.CurrentCulture)
-                : str;
+            text.text = gold.GetQuantityString();
         }
 
         private void OnClickOnlineShopButton()
