@@ -309,6 +309,7 @@ namespace Nekoyume.UI
                 {
                     Close();
                     Find<ArenaBoard>().Show(
+                        _scroll.SelectedItemData.RoundData,
                         RxProps.ArenaParticipantsOrderedWithScore.Value);
                     return;
                 }
