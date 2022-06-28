@@ -163,7 +163,9 @@ namespace Nekoyume.UI.Module
                     grayImage.enabled = false;
                     colorImage.enabled = true;
                     lockImage.SetActive(false);
-                    unlockImage.SetActive(true);
+                    var isFirstUnlock = unlockableImage.activeSelf;
+                    unlockImage.SetActive(isFirstUnlock);
+                    unlockableImage.SetActive(isFirstUnlock);
                     _animationState.SetValueAndForceNotify(AnimationState.OpenLock);
                     break;
                 case State.Locked:
