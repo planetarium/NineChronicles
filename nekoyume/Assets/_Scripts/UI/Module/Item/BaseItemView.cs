@@ -1,12 +1,9 @@
-using System;
-using System.Linq;
 using Coffee.UIEffects;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
-using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
