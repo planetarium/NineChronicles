@@ -61,6 +61,18 @@ namespace Nekoyume.Model.Arena
             Ticket -= ticketCount;
         }
 
+        public void BuyTicket()
+        {
+            if (PurchasedTicketCount >= MaxPurchasedTicketCount)
+            {
+                throw new ExceedTicketPurchaseLimitException(
+                    $"[{nameof(ArenaInformation)}] PurchasedTicketCount({PurchasedTicketCount}) >= " +
+                                                             $"MaxPurchasedTicketCount({MaxPurchasedTicketCount})");
+            }
+
+            PurchasedTicketCount++;
+        }
+
         public void UpdateRecord(int win, int lose)
         {
             Win += win;

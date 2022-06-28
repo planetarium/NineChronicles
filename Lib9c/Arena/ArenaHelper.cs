@@ -4,6 +4,7 @@ using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -135,6 +136,24 @@ namespace Nekoyume.Arena
             }
 
             return 1;
+        }
+
+        public static int GetInitScore()
+        {
+            return ArenaScore.ArenaScoreDefault;
+        }
+
+        public static FungibleAssetValue GetTicketPrice(
+            ArenaSheet.RoundData roundData,
+            ArenaInformation arenaInformation,
+            Currency currency)
+        {
+            var price = roundData.TicketPrice * 0.01m
+                        + (roundData.AdditionalTicketPrice * 0.01m * arenaInformation.PurchasedTicketCount);
+            var major = (long)price;
+            var miner = (int)((price - major) * 100m);
+            var ticketPrice = new FungibleAssetValue(currency, major, miner);
+            return ticketPrice;
         }
     }
 }
