@@ -48,7 +48,18 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<GameObject> costParents = null;
 
-        private readonly Dictionary<CostType, long> _costMap = new Dictionary<CostType, long>();
+        private readonly Dictionary<CostType, long> _costMap =
+            new Dictionary<CostType, long>();
+
+        public long CrystalCost =>
+            _costMap.TryGetValue(CostType.Crystal, out var cost)
+                ? cost
+                : 0L;
+
+        public int ArenaTicketCost =>
+            _costMap.TryGetValue(CostType.ArenaTicket, out var cost)
+                ? (int)cost
+                : 0;
 
         public void SetCost(params CostParam[] costs)
         {

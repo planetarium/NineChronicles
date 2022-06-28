@@ -432,18 +432,28 @@ namespace Nekoyume.BlockChain
                     await GetBalanceAsync(Address, goldCurrency)));
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
+
                 if (await GetStateAsync(
                         StakeState.DeriveAddress(States.Instance.AgentState.address))
                     is Dictionary stakeDict)
                 {
                     var stakingState = new StakeState(stakeDict);
-                    var balance = await GetBalanceAsync(stakingState.address,
-                        goldCurrency);
-                    var level =
-                        Game.TableSheets.Instance.StakeRegularRewardSheet
+                    var balance = new FungibleAssetValue(goldCurrency);
+                    var level = 0;
+                    try
+                    {
+                        balance = await GetBalanceAsync(stakingState.address,
+                            goldCurrency);
+                        level = Game.TableSheets.Instance.StakeRegularRewardSheet
                             .FindLevelByStakedAmount(
                                 Address,
                                 balance);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+
                     States.Instance.SetStakeState(stakingState,
                         new GoldBalanceState(stakingState.address, balance),
                         level);
@@ -457,13 +467,23 @@ namespace Nekoyume.BlockChain
                     if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
                     {
                         var monsterCollectionState = new MonsterCollectionState(mcDict);
-                        var balance = await GetBalanceAsync(monsterCollectionAddress,
-                            goldCurrency);
-                        var level =
-                            Game.TableSheets.Instance.StakeRegularRewardSheet
-                                .FindLevelByStakedAmount(
-                                    Address,
-                                    balance);
+                        var balance = new FungibleAssetValue(goldCurrency);
+                        var level = 0;
+                        try
+                        {
+                            balance = await GetBalanceAsync(monsterCollectionAddress,
+                                goldCurrency);
+                            level =
+                                Game.TableSheets.Instance.StakeRegularRewardSheet
+                                    .FindLevelByStakedAmount(
+                                        Address,
+                                        balance);
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+
                         States.Instance.SetMonsterCollectionState(monsterCollectionState,
                             new GoldBalanceState(monsterCollectionAddress, balance),
                             level);
@@ -479,14 +499,6 @@ namespace Nekoyume.BlockChain
                 {
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
-
-                var weeklyArenaState = await ArenaHelperOld.GetThisWeekStateAsync(BlockIndex);
-                if (weeklyArenaState is null)
-                {
-                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
-                }
-
-                States.Instance.SetWeeklyArenaState(weeklyArenaState);
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 BlockRenderHandler.Instance.Start(BlockRenderer);
@@ -547,9 +559,8 @@ namespace Nekoyume.BlockChain
         private static IceServer LoadIceServer(string iceServerInfo)
         {
             var uri = new Uri(iceServerInfo);
-            string[] userInfo = uri.UserInfo.Split(':');
-
-            return new IceServer(new[] { uri }, userInfo[0], userInfo[1]);
+            var userInfo = uri.UserInfo.Split(':');
+            return new IceServer(uri, userInfo[0], userInfo[1]);
         }
 
         private static BaseStore LoadStore(string path, string storageType)
@@ -709,7 +720,8 @@ namespace Nekoyume.BlockChain
                     {
                         await _swarm.BootstrapAsync(
                             seedPeers: _seedPeers,
-                            depth: 1,
+                            dialTimeout: null,
+                            searchDepth: 1,
                             cancellationToken: _cancellationTokenSource.Token
                         );
                     }
@@ -753,6 +765,7 @@ namespace Nekoyume.BlockChain
                 {
                     await _swarm.PreloadAsync(
                         TimeSpan.FromMilliseconds(SwarmDialTimeout),
+                        25,
                         new Progress<PreloadState>(state =>
                             PreloadProcessed?.Invoke(this, state)
                         ),

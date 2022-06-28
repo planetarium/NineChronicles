@@ -395,9 +395,9 @@ RectTransform:
   m_Father: {fileID: 110356661446350768}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 25, y: -20}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &2142137546562995813
@@ -468,8 +468,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -175.5, y: -2.5}
-  m_SizeDelta: {x: -369, y: -11}
+  m_AnchoredPosition: {x: -133, y: -2.5}
+  m_SizeDelta: {x: -284, y: -11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8334204449753796047
 CanvasRenderer:
@@ -751,7 +751,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 137, y: -60}
+  m_AnchoredPosition: {x: 193, y: -60}
   m_SizeDelta: {x: 130, y: 28}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &4773362018820704564
@@ -964,6 +964,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2e91801453c4133a9481a311e963471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _rankImage: {fileID: 8275281152053513665}
+  _rankImageContainer: {fileID: 4405504630770143376}
+  _rankText: {fileID: 2583316994446040918}
+  _rankTextContainer: {fileID: 1971819857439392836}
   _characterView: {fileID: 8585630210565637522}
   _nameText: {fileID: 5113335764272237336}
   _ratingText: {fileID: 2468895205858989245}
@@ -1081,7 +1085,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 107, y: -27}
+  m_AnchoredPosition: {x: 163, y: -27}
   m_SizeDelta: {x: 200, y: 26}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &2897317299076981174
@@ -1455,7 +1459,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &110356661446350768
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1474,7 +1478,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 32, y: -50}
+  m_AnchoredPosition: {x: 18.2, y: -50}
   m_SizeDelta: {x: 50, y: 30}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &4576994428232467272
@@ -1775,9 +1779,9 @@ RectTransform:
   m_Father: {fileID: 1826116120235129100}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 2, y: -10}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4086063035325899074
@@ -1808,17 +1812,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 234
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 33edc2626444d664b85126c972076f37, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4285039788
-  m_fontColor: {r: 0.6745098, g: 0.5176471, b: 0.40784314, a: 1}
+    rgba: 4285694618
+  m_fontColor: {r: 0.6037736, g: 0.5086711, b: 0.44713423, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1894,7 +1898,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 9
+  fontMaterialType: 1
   l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
@@ -2200,7 +2204,7 @@ PrefabInstance:
     - target: {fileID: 2656173852145778065, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 37
+      value: 93
       objectReference: {fileID: 0}
     - target: {fileID: 2656173852145778065, guid: 2a68c5685c2668a4c8e9ff8c45bab175,
         type: 3}

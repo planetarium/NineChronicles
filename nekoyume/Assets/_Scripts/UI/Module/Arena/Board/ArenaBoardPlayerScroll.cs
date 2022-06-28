@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI.Extensions;
-using UnityEngine.UI.Extensions.EasingCore;
 
 namespace Nekoyume.UI.Module.Arena.Board
 {
@@ -11,13 +10,16 @@ namespace Nekoyume.UI.Module.Arena.Board
     public class ArenaBoardPlayerScroll
         : FancyScrollRect<ArenaBoardPlayerItemData, ArenaBoardPlayerScrollContext>
     {
-        [SerializeField] private UnityEngine.UI.Extensions.Scroller _scroller;
+        [SerializeField]
+        private UnityEngine.UI.Extensions.Scroller _scroller;
 
-        [SerializeField] private GameObject _cellPrefab;
+        [SerializeField]
+        private GameObject _cellPrefab;
 
         protected override GameObject CellPrefab => _cellPrefab;
 
-        [SerializeField] private float _cellSize;
+        [SerializeField]
+        private float _cellSize;
 
         protected override float CellSize => _cellSize;
 
@@ -30,6 +32,10 @@ namespace Nekoyume.UI.Module.Arena.Board
         private readonly Subject<int> _onSelectionChanged = new Subject<int>();
 
         public IObservable<int> OnSelectionChanged => _onSelectionChanged;
+
+        private readonly Subject<int> _onClickCharacterView = new Subject<int>();
+
+        public IObservable<int> OnClickCharacterView => _onClickCharacterView;
 
         private readonly Subject<int> _onClickChoice = new Subject<int>();
 
@@ -79,6 +85,7 @@ namespace Nekoyume.UI.Module.Arena.Board
         {
             base.Initialize();
 
+            Context.onClickCharacterView = _onClickCharacterView.OnNext;
             Context.onClickChoice = _onClickChoice.OnNext;
             _scroller.OnSelectionChanged(index => UpdateSelection(index, true));
         }

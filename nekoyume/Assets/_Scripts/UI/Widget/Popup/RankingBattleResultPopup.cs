@@ -1,12 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.Item;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -15,15 +12,20 @@ namespace Nekoyume.UI
 {
     public class RankingBattleResultPopup : PopupWidget
     {
-        [SerializeField] private GameObject victoryImageContainer = null;
+        [SerializeField]
+        private GameObject victoryImageContainer = null;
 
-        [SerializeField] private GameObject defeatImageContainer = null;
+        [SerializeField]
+        private GameObject defeatImageContainer = null;
 
-        [SerializeField] private TextButton submitButton = null;
+        [SerializeField]
+        private TextButton submitButton = null;
 
-        [SerializeField] private TextMeshProUGUI scoreText = null;
+        [SerializeField]
+        private TextMeshProUGUI scoreText = null;
 
-        [SerializeField] private List<SimpleCountableItemView> rewards = null;
+        [SerializeField]
+        private List<SimpleCountableItemView> rewards = null;
 
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, .25f, 10f);
 
@@ -37,12 +39,17 @@ namespace Nekoyume.UI
             submitButton.OnClick = BackToRanking;
         }
 
-        public void Show(ArenaLog log, IReadOnlyList<ItemBase> rewardItems, System.Action onClose)
+        public void Show(
+            ArenaLog log,
+            IReadOnlyList<ItemBase> rewardItems,
+            System.Action onClose)
         {
             base.Show();
 
             var win = log.Result == ArenaLog.ArenaResult.Win;
-            var code = win ? AudioController.MusicCode.PVPWin : AudioController.MusicCode.PVPLose;
+            var code = win
+                ? AudioController.MusicCode.PVPWin
+                : AudioController.MusicCode.PVPLose;
             AudioController.instance.PlayMusic(code);
             victoryImageContainer.SetActive(win);
             defeatImageContainer.SetActive(!win);
@@ -54,7 +61,7 @@ namespace Nekoyume.UI
 
             scoreText.text = $"{log.Score}";
 
-            var items = rewardItems.Select(e => new CountableItem(e, 1)).ToList();
+            var items = rewardItems.ToCountableItems();
             for (var i = 0; i < rewards.Count; i++)
             {
                 var view = rewards[i];

@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
             _disposables.DisposeAllAndClear();
             baseItemView.Container.SetActive(true);
             baseItemView.TouchHandler.gameObject.SetActive(true);
-            baseItemView.ItemImage.sprite = baseItemView.GetItemIcon(itemBase);
+            baseItemView.ItemImage.sprite = BaseItemView.GetItemIcon(itemBase);
             baseItemView.CountText.text = count.ToString();
 
             baseItemView.TouchHandler.OnClick

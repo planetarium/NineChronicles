@@ -19,6 +19,7 @@ using UnityEngine;
 namespace Nekoyume.UI.Module
 {
     using Libplanet.Assets;
+    using mixpanel;
     using System.Collections;
     using UniRx;
     using Vector3 = UnityEngine.Vector3;
@@ -446,9 +447,26 @@ namespace Nekoyume.UI.Module
         {
             StartCoroutine(CoCombineNPCAnimation(_cachedGrindingRewardCrystal.MajorUnit));
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
+
+            Analyzer.Instance.Track("Unity/Grinding", new Value
+            {
+                ["EquipmentCount"] = equipments.Count,
+                ["GainedCrystal"] = (long) _cachedGrindingRewardCrystal.MajorUnit,
+            });
             ActionManager.Instance
                 .Grinding(equipments, chargeAp)
-                .Subscribe(_ => Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false));
+                .Subscribe(eval =>
+                {
+                    Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
+                    if (eval.Exception != null)
+                    {
+                        Debug.LogException(eval.Exception.InnerException);
+                        OneLineSystem.Push(
+                            MailType.Grinding,
+                            L10nManager.Localize("ERROR_UNKNOWN"),
+                            NotificationCell.NotificationType.Alert);
+                    }
+                });
             _selectedItemsForGrind.Clear();
             if (animator)
             {

@@ -26,11 +26,17 @@ namespace Nekoyume.UI
         private ArenaBoardSO _so;
 #endif
 
-        [SerializeField] private ArenaBoardBillboard _billboard;
+        [SerializeField]
+        private ArenaBoardBillboard _billboard;
 
-        [SerializeField] private ArenaBoardPlayerScroll _playerScroll;
+        [SerializeField]
+        private ArenaBoardPlayerScroll _playerScroll;
 
-        [SerializeField] private Button _backButton;
+        [SerializeField]
+        private GameObject _noJoinedPlayersGameObject;
+
+        [SerializeField]
+        private Button _backButton;
 
         private ArenaSheet.RoundData _roundData;
 
@@ -79,6 +85,12 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.Arena);
             UpdateBillboard();
             UpdateScrolls();
+
+            // NOTE: If `_playerScroll.Data` does not contains player, fix below.
+            //       Not use `_boundedData` here because there is the case to
+            //       use the mock data from `_so`.
+            _noJoinedPlayersGameObject.SetActive(_playerScroll.Data.Count == 1);
+
             base.Show(ignoreShowAnimation);
         }
 
@@ -101,6 +113,14 @@ namespace Nekoyume.UI
             if (player is null)
             {
                 Debug.Log($"{nameof(RxProps.PlayersArenaParticipant)} is null");
+                _billboard.SetData();
+                return;
+            }
+
+            if (player.CurrentArenaInfo is null)
+            {
+                Debug.Log($"{nameof(player.CurrentArenaInfo)} is null");
+                _billboard.SetData();
                 return;
             }
 
@@ -115,10 +135,25 @@ namespace Nekoyume.UI
 
         private void InitializeScrolls()
         {
+            _playerScroll.OnClickCharacterView.Subscribe(index =>
+                {
+#if UNITY_EDITOR
+                    if (_useSo && _so)
+                    {
+                        NotificationSystem.Push(
+                            MailType.System,
+                            "Cannot open when use mock data in editor mode",
+                            NotificationCell.NotificationType.Alert);
+                        return;
+                    }
+#endif
+                    var data = _boundedData[index];
+                    Find<FriendInfoPopup>().Show(data.AvatarState);
+                })
+                .AddTo(gameObject);
+
             _playerScroll.OnClickChoice.Subscribe(index =>
                 {
-                    Debug.Log($"{index} choose!");
-
 #if UNITY_EDITOR
                     if (_useSo && _so)
                     {
@@ -168,6 +203,7 @@ namespace Nekoyume.UI
                         .Id,
                     cp = e.AvatarState.GetCP(),
                     score = e.Score,
+                    rank = e.Rank,
                     expectWinDeltaScore = e.ExpectDeltaScore.win,
                     interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
                 };

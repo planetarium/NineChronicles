@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -96,7 +95,7 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
 
             MonsterCollectionStateSubject.Level.Subscribe(level =>
-                stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(level)).AddTo(gameObject);
+                stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(level, true)).AddTo(gameObject);
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
@@ -296,6 +295,15 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (btnRanking is ArenaMenu { State: ArenaMenu.ViewState.LoadingArenaData })
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_LOBBY_ARENA_MENU_LOADING_DATA"),
+                    NotificationCell.NotificationType.Information);
+                return;
+            }
+
             Close(true);
             Find<ArenaJoin>().Show();
             Analyzer.Instance.Track("Unity/Enter arena page");
@@ -406,11 +414,7 @@ namespace Nekoyume.UI
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
-
-            // Update once when show this menu UI.
-            // Because the current avatar has been selected in this context.
-            RxProps.ArenaInfoTuple.UpdateAsync().Forget();
-            RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync().Forget();
+            stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(States.Instance.StakingLevel, true);
         }
 
         protected override void OnCompleteOfShowAnimationInternal()

@@ -1714,10 +1714,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8032183764374797593}
     m_Modifications:
+    - target: {fileID: 2377870305244666012, guid: fc39f5fd3e407ef44bc1fe8e6070b25f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5324934003889234099, guid: fc39f5fd3e407ef44bc1fe8e6070b25f,
         type: 3}
       propertyPath: m_Name
       value: ArenaJoinSeasonScroll
+      objectReference: {fileID: 0}
+    - target: {fileID: 5324934003889234099, guid: fc39f5fd3e407ef44bc1fe8e6070b25f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7228783620708839766, guid: fc39f5fd3e407ef44bc1fe8e6070b25f,
         type: 3}
@@ -2059,12 +2069,12 @@ PrefabInstance:
     - target: {fileID: 2785377843829604703, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: l10nKey
-      value: UI_ARENA_JOIN
+      value: UI_ARENA_JOIN_BACK_BUTTON
       objectReference: {fileID: 0}
     - target: {fileID: 6950815306001856415, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_text
-      value: ARENA JOIN
+      value: Arena
       objectReference: {fileID: 0}
     - target: {fileID: 7126975939112497894, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
@@ -2226,8 +2236,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2785377843829604703, guid: 29c5c99555c2b5f40a6f757cea5554b3, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 29c5c99555c2b5f40a6f757cea5554b3, type: 3}
 --- !u!1 &4648628370874371322 stripped
 GameObject:
@@ -2369,6 +2378,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ArenaJoinSeasonBarScroll
+      objectReference: {fileID: 0}
+    - target: {fileID: 4026959687730850518, guid: 7234fd34c7c4fed4095ec78762f68339,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7234fd34c7c4fed4095ec78762f68339, type: 3}
@@ -2561,6 +2575,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ArenaJoinSeasonInfo
+      objectReference: {fileID: 0}
+    - target: {fileID: 8870756036581559017, guid: cc962a46f90dc234c8b0ae136474a8a6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9196715674172059435, guid: cc962a46f90dc234c8b0ae136474a8a6,
         type: 3}

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Arena;
+using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;
@@ -88,13 +90,8 @@ namespace Nekoyume.State
             }
         }
 
-        private static readonly ReactiveProperty<(long beginning, long end, long progress)>
-            _arenaTicketProgress
-                = new ReactiveProperty<(long beginning, long end, long progress)>();
-
-        public static IReadOnlyReactiveProperty<(long beginning, long end, long progress)>
-            ArenaTicketProgress => _arenaTicketProgress;
-
+        private static Address? _avatarAddressForArenaProps;
+        
         // TODO!!!! Remove [`_arenaInfoTuple`] and use [`_playersArenaParticipant`] instead.
         private static readonly
             AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
@@ -107,6 +104,27 @@ namespace Nekoyume.State
         public static
             IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
             ArenaInfoTuple => _arenaInfoTuple;
+
+        private static readonly ReactiveProperty<(
+            int currentTicketCount,
+            int maxTicketCount,
+            int progressedBlockRange,
+            int totalBlockRange,
+            string remainTimespanToReset)> _arenaTicketProgress =
+            new ReactiveProperty<(
+                int currentTicketCount,
+                int maxTicketCount,
+                int progressedBlockRange,
+                int totalBlockRange,
+                string remainTimespanToReset)>();
+
+        public static IReadOnlyReactiveProperty<(
+            int currentTicketCount,
+            int maxTicketCount,
+            int progressedBlockRange,
+            int totalBlockRange,
+            string remainTimespanToReset)> ArenaTicketProgress =>
+            _arenaTicketProgress;
 
         private static readonly ReactiveProperty<PlayerArenaParticipant>
             _playersArenaParticipant
@@ -132,19 +150,35 @@ namespace Nekoyume.State
 
         private static void StartArena()
         {
-            // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
-            // ReactiveAvatarState.Address
-            //     .Subscribe(addr =>
-            //     {
-            //         if (_playersArenaParticipant.HasValue &&
-            //             _playersArenaParticipant.Value.AvatarAddr == addr)
-            //         {
-            //             return;
-            //         }
-            //
-            //         _playersArenaParticipant.Value = null;
-            //     })
-            //     .AddTo(_disposables);
+            ReactiveAvatarState.Address
+                .Subscribe(addr =>
+                {
+                    // NOTE: Reset all of cached block indexes for rx props when current avatar state changed.
+                    if (!_avatarAddressForArenaProps.HasValue)
+                    {
+                        _avatarAddressForArenaProps = addr;
+                    }
+                    else if (!_avatarAddressForArenaProps.Value.Equals(addr))
+                    {
+                        _avatarAddressForArenaProps = addr;
+                        _arenaInfoTupleUpdatedBlockIndex = 0;
+                        _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = 0;
+                    }
+
+                    // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
+                    // if (_playersArenaParticipant.HasValue &&
+                    //     _playersArenaParticipant.Value.AvatarAddr == addr)
+                    // {
+                    //     return;
+                    // }
+                    //
+                    // _playersArenaParticipant.Value = null;
+                })
+                .AddTo(_disposables);
+
+            ArenaInfoTuple
+                .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
+                .AddTo(_disposables);
         }
 
         private static void OnBlockIndexArena(long blockIndex)
@@ -152,17 +186,38 @@ namespace Nekoyume.State
             UpdateArenaTicketProgress(blockIndex);
         }
 
-        private static void UpdateArenaTicketProgress(
-            long blockIndex)
+        private static void UpdateArenaTicketProgress(long blockIndex)
         {
-            var beginningBlockIndex = _states.WeeklyArenaState.ResetIndex;
-            var endBlockIndex
-                = beginningBlockIndex + _states.GameConfigState.DailyArenaInterval;
-            var progressBlockIndex = blockIndex - beginningBlockIndex;
+            const int maxTicketCount = ArenaInformation.MaxTicketCount;
+            var ticketResetInterval =
+                States.Instance.GameConfigState.DailyArenaInterval;
+            var currentArenaInfo = _arenaInfoTuple.HasValue
+                ? _arenaInfoTuple.Value.current
+                : null;
+            if (currentArenaInfo is null)
+            {
+                _arenaTicketProgress.SetValueAndForceNotify((
+                    maxTicketCount,
+                    maxTicketCount,
+                    0,
+                    0,
+                    ""));
+                return;
+            }
+
+            var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
+            var currentTicketCount = currentArenaInfo.GetTicketCount(
+                blockIndex,
+                currentRoundData.StartBlockIndex,
+                ticketResetInterval);
+            var progressedBlockRange =
+                (blockIndex - currentRoundData.StartBlockIndex) % ticketResetInterval;
             _arenaTicketProgress.SetValueAndForceNotify((
-                beginningBlockIndex,
-                endBlockIndex,
-                progressBlockIndex));
+                currentTicketCount,
+                maxTicketCount,
+                (int)progressedBlockRange,
+                ticketResetInterval,
+                Util.GetBlockToTime(ticketResetInterval - progressedBlockRange)));
         }
 
         private static async UniTask<(ArenaInformation current, ArenaInformation next)>
@@ -375,6 +430,7 @@ namespace Nekoyume.State
             var playerArenaInfo = stateBulk[playerArenaInfoAddr] is List arenaInfoList
                 ? new ArenaInformation(arenaInfoList)
                 : null;
+            // NOTE: There is players `ArenaParticipant` in chain.
             if (playersArenaParticipant is null)
             {
                 var ap = result.FirstOrDefault(e =>
@@ -391,7 +447,7 @@ namespace Nekoyume.State
             return result;
         }
 
-        private static (Address avatarAddr, int score, int rank)[] AddRank(
+        public static (Address avatarAddr, int score, int rank)[] AddRank(
             (Address avatarAddr, int score)[] tuples)
         {
             if (tuples.Length == 0)
@@ -401,35 +457,70 @@ namespace Nekoyume.State
 
             var orderedTuples = tuples
                 .OrderByDescending(tuple => tuple.score)
-                .Select(tuple => (avatarAddr: tuple.avatarAddr, tuple.score, 0))
+                .ThenBy(tuple => tuple.avatarAddr)
+                .Select(tuple => (tuple.avatarAddr, tuple.score, 0))
                 .ToArray();
-            var rank = 1;
-            var cachedScore = orderedTuples[0].score;
-            for (var i = 1; i < orderedTuples.Length; i++)
+
+            var result = new List<(Address avatarAddr, int score, int rank)>();
+            var trunk = new List<(Address avatarAddr, int score, int rank)>();
+            int? currentScore = null;
+            var currentRank = 1;
+            for (var i = 0; i < orderedTuples.Length; i++)
             {
                 var tuple = orderedTuples[i];
-                if (cachedScore == tuple.score)
+                if (!currentScore.HasValue)
                 {
-                    rank++;
+                    currentScore = tuple.score;
+                    trunk.Add(tuple);
                     continue;
                 }
 
-                for (var j = i - 1; j >= 0; j--)
+                if (currentScore.Value == tuple.score)
                 {
-                    var previousTuple = orderedTuples[j];
-                    if (previousTuple.score == cachedScore)
+                    trunk.Add(tuple);
+                    currentRank++;
+                    if (i < orderedTuples.Length - 1)
                     {
-                        previousTuple.Item3 = rank;
                         continue;
                     }
 
-                    break;
+                    foreach (var tupleInTrunk in trunk)
+                    {
+                        result.Add((
+                            tupleInTrunk.avatarAddr,
+                            tupleInTrunk.score,
+                            currentRank));
+                    }
+
+                    trunk.Clear();
+
+                    continue;
                 }
 
-                cachedScore = tuple.score;
+                foreach (var tupleInTrunk in trunk)
+                {
+                    result.Add((
+                        tupleInTrunk.avatarAddr,
+                        tupleInTrunk.score,
+                        currentRank));
+                }
+
+                trunk.Clear();
+                if (i < orderedTuples.Length - 1)
+                {
+                    trunk.Add(tuple);
+                    currentScore = tuple.score;
+                    currentRank++;
+                    continue;
+                }
+
+                result.Add((
+                    tuple.avatarAddr,
+                    tuple.score,
+                    currentRank + 1));
             }
 
-            return orderedTuples;
+            return result.ToArray();
         }
 
         private static (Address avatarAddr, int score, int rank)[] GetBoundsWithPlayer(

@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -40,6 +41,10 @@ namespace Nekoyume.UI.Module.Arena.Join
         private int _championshipId;
         private int _round;
         private long _cost;
+        
+        private readonly Subject<Unit> _onGoToGrinding = new Subject<Unit>();
+        public IObservable<Unit> OnGoToGrinding => _onGoToGrinding;
+
 
         private readonly Subject<Unit> _onJoinArenaAction = new Subject<Unit>();
         public IObservable<Unit> OnJoinArenaAction => _onJoinArenaAction;
@@ -49,32 +54,19 @@ namespace Nekoyume.UI.Module.Arena.Join
             _button.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
-                var costFav =
-                    _cost * States.Instance.CrystalBalance.Currency;
-                if (States.Instance.CrystalBalance < costFav)
-                {
-                    NotificationSystem.Push(
-                        MailType.System,
-                        "Not enough crystal.",
-                        NotificationCell.NotificationType.Information);
-                    return;
-                }
-
-                var inventory = States.Instance.CurrentAvatarState.inventory;
-                ActionManager.Instance
-                    .JoinArena(
-                        inventory.Costumes
-                            .Where(e => e.Equipped)
-                            .Select(e => e.NonFungibleId)
-                            .ToList(),
-                        inventory.Equipments
-                            .Where(e => e.Equipped)
-                            .Select(e => e.NonFungibleId)
-                            .ToList(),
-                        _championshipId,
-                        _round)
-                    .Subscribe();
-                _onJoinArenaAction.OnNext(Unit.Default);
+                var balance = States.Instance.CrystalBalance;
+                var enoughMessageFormat =
+                    L10nManager.Localize("UI_ARENA_EARLY_REGISTRATION_Q");
+                var notEnoughMessage =
+                    L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
+                Widget.Find<PaymentPopup>().Show(
+                    CostType.Crystal,
+                    balance.MajorUnit,
+                    _cost,
+                    string.Format(enoughMessageFormat, _cost),
+                    notEnoughMessage,
+                    JoinArenaAction,
+                    () => _onGoToGrinding.OnNext(Unit.Default));
             });
         }
 
@@ -95,12 +87,10 @@ namespace Nekoyume.UI.Module.Arena.Join
                     Hide();
                     return;
                 case ArenaType.Season:
-                    var seasonNumber = TableSheets.Instance.ArenaSheet.TryGetSeasonNumber(
-                        Game.Game.instance.Agent.BlockIndex,
-                        _round,
-                        out var outSeasonNumber)
-                        ? outSeasonNumber
-                        : throw new Exception($"Failed to get season number: {_championshipId}, {round}");
+                    var seasonNumber = TableSheets.Instance.ArenaSheet
+                        .GetSeasonNumber(
+                            Game.Game.instance.Agent.BlockIndex,
+                            _round);
                     _seasonArenaEmblem.Show(seasonNumber, !isRegistered);
                     _championshipArenaEmblem.Hide();
                     break;
@@ -130,6 +120,36 @@ namespace Nekoyume.UI.Module.Arena.Join
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        private void JoinArenaAction()
+        {
+            var costFav =
+                _cost * States.Instance.CrystalBalance.Currency;
+            if (States.Instance.CrystalBalance < costFav)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    "Not enough crystal.",
+                    NotificationCell.NotificationType.Information);
+                return;
+            }
+
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            ActionManager.Instance
+                .JoinArena(
+                    inventory.Costumes
+                        .Where(e => e.Equipped)
+                        .Select(e => e.NonFungibleId)
+                        .ToList(),
+                    inventory.Equipments
+                        .Where(e => e.Equipped)
+                        .Select(e => e.NonFungibleId)
+                        .ToList(),
+                    _championshipId,
+                    _round)
+                .Subscribe();
+            _onJoinArenaAction.OnNext(Unit.Default);
         }
     }
 }
