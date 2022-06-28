@@ -541,6 +541,35 @@ namespace Nekoyume.UI
 
         private void OnClickBattle()
         {
+            var cost = startButton.ArenaTicketCost;
+            var hasEnoughTickets =
+                RxProps.ArenaTicketProgress.HasValue &&
+                RxProps.ArenaTicketProgress.Value.currentTicketCount >= cost;
+            if (!hasEnoughTickets)
+            {
+                var message =
+                    L10nManager.Localize("UI_NOT_ENOUGH_ARENA_TICKETS");
+                // TODO!!!! Use `PaymentPopup` instead of `Notification`
+                // Find<PaymentPopup>().ShowAttract(
+                //     cost,
+                //     message,
+                //     L10nManager.Localize("UI_GO_GRINDING"),
+                //     () =>
+                //     {
+                //         Close(true);
+                //         Find<Menu>().Close();
+                //         Find<WorldMap>().Close();
+                //         Find<StageInformation>().Close();
+                //         Find<BattlePreparation>().Close();
+                //         Find<Grind>().Show();
+                //     });
+                NotificationSystem.Push(
+                    MailType.System,
+                    message,
+                    NotificationCell.NotificationType.Notification);
+                return;
+            }
+
             var game = Game.Game.instance;
             if (game.IsInWorld)
             {

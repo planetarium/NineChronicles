@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -96,7 +95,7 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
 
             MonsterCollectionStateSubject.Level.Subscribe(level =>
-                stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(level)).AddTo(gameObject);
+                stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(level, true)).AddTo(gameObject);
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
@@ -415,6 +414,7 @@ namespace Nekoyume.UI
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
+            stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(States.Instance.StakingLevel, true);
         }
 
         protected override void OnCompleteOfShowAnimationInternal()

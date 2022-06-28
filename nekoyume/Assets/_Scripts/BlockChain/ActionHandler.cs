@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
@@ -66,7 +67,12 @@ namespace Nekoyume.BlockChain
                 agentAddress,
                 States.Instance.AgentState.MonsterCollectionRound
             );
-            if (evaluation.OutputStates.GetState(monsterCollectionAddress) is Bencodex.Types.Dictionary mcDict)
+            if (!(evaluation.OutputStates.GetState(monsterCollectionAddress) is Bencodex.Types.Dictionary mcDict))
+            {
+                return (null, 0, new FungibleAssetValue());
+            }
+
+            try
             {
                 var balance =
                     evaluation.OutputStates.GetBalance(monsterCollectionAddress, GoldCurrency);
@@ -75,31 +81,38 @@ namespace Nekoyume.BlockChain
                         agentAddress, balance);
                 return (new MonsterCollectionState(mcDict), level, balance);
             }
-
-            return (null, 0, new FungibleAssetValue());
+            catch (Exception)
+            {
+                return (null, 0, new FungibleAssetValue());
+            }
         }
 
         protected (StakeState, int, FungibleAssetValue) GetStakeState<T>(
-            ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+            ActionBase.ActionEvaluation<T> evaluation)
+            where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
-            if (evaluation.OutputStates.GetState(
-                    StakeState.DeriveAddress(agentAddress)) is
-                Bencodex.Types.Dictionary serialized)
+            var stakeAddress = StakeState.DeriveAddress(agentAddress);
+            if (!(evaluation.OutputStates.GetState(stakeAddress) is Bencodex.Types.Dictionary serialized))
+            {
+                return (null, 0, new FungibleAssetValue());
+            }
+
+            try
             {
                 var state = new StakeState(serialized);
                 var balance = evaluation.OutputStates.GetBalance(
                     state.address,
                     GoldCurrency);
-                return (
-                    state,
-                    TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
-                        agentAddress,
-                        balance),
+                var level = TableSheets.Instance.StakeRegularRewardSheet.FindLevelByStakedAmount(
+                    agentAddress,
                     balance);
+                return (state, level, balance);
             }
-
-            return (null, 0, new FungibleAssetValue());
+            catch (Exception)
+            {
+                return (null, 0, new FungibleAssetValue());
+            }
         }
 
         protected static CrystalRandomSkillState GetCrystalRandomSkillState<T>(
@@ -168,13 +181,15 @@ namespace Nekoyume.BlockChain
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState, out _))
+            try
             {
-                await UpdateCurrentAvatarStateAsync(avatarState);
+                await UpdateCurrentAvatarStateAsync(
+                    States.Instance.CurrentAvatarState
+                        .UpdateAvatarStateV2(avatarAddress, evaluation.OutputStates));
             }
-            else
+            catch (Exception e)
             {
-                Debug.LogError($"Failed to get AvatarState: {agentAddress}, {avatarAddress}");
+                Debug.LogError($"Failed to Update AvatarState: {agentAddress}, {avatarAddress}\n{e.Message}");
             }
         }
 
@@ -251,10 +266,23 @@ namespace Nekoyume.BlockChain
 
         protected static void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var crystal = evaluation.OutputStates.GetBalance(evaluation.Signer, CrystalCalculator.CRYSTAL);
-            var agentState = States.Instance.AgentState;
-            if (evaluation.Signer.Equals(agentState.address))
+            if (!evaluation.Signer.Equals(States.Instance.AgentState.address))
             {
+                return;
+            }
+
+            try
+            {
+                var crystal = evaluation.OutputStates.GetBalance(
+                    evaluation.Signer,
+                    CrystalCalculator.CRYSTAL);
+                States.Instance.SetCrystalBalance(crystal);
+            }
+            catch (BalanceDoesNotExistsException)
+            {
+                var crystal = FungibleAssetValue.FromRawValue(
+                    CrystalCalculator.CRYSTAL,
+                    0);
                 States.Instance.SetCrystalBalance(crystal);
             }
         }

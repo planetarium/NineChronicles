@@ -59,7 +59,7 @@ namespace Nekoyume.UI.Module
             baseItemView.ItemImage.gameObject.SetActive(true);
             baseItemView.SpineItemImage.gameObject.SetActive(false);
 
-            baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(itemBase);
+            baseItemView.ItemImage.overrideSprite = BaseItemView.GetItemIcon(itemBase);
 
             var data = baseItemView.GetItemViewData(itemBase);
             baseItemView.GradeImage.overrideSprite = data.GradeBackground;

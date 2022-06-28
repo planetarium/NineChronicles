@@ -114,6 +114,8 @@ namespace Nekoyume
 
                             break;
                         case ItemEnhancement7.ResultModel _:
+                        case ItemEnhancement9.ResultModel _:
+                        case ItemEnhancement10.ResultModel _:
                             formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
                             break;
                         default:

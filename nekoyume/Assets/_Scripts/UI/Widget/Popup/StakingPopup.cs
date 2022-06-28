@@ -64,7 +64,7 @@ namespace Nekoyume.UI
             var regularSheet = TableSheets.Instance.StakeRegularRewardSheet;
             var regularFixedSheet = TableSheets.Instance.StakeRegularFixedRewardSheet;
 
-            stepImage.sprite = SpriteHelper.GetStakingIcon(level, true);
+            stepImage.sprite = SpriteHelper.GetStakingIcon(level);
             stepText.text = $"Step {level}";
 
             if (regularSheet.TryGetValue(level, out var regular)

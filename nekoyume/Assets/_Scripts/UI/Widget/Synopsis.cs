@@ -358,9 +358,17 @@ namespace Nekoyume.UI
             Analyzer.Instance.Track("Unity/Synopsis Start");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
 #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            var skipPrologueReg = (int) Registry.CurrentUser.OpenSubKey("Software\\Planetarium\\9c")
-                .GetValue("SkipSynopsis") == 1;
-            var skipPrologue = States.Instance.AgentState.avatarAddresses.Any() || skipPrologueReg;
+            var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
+            var baseKey = RegistryKey.OpenBaseKey(
+                RegistryHive.CurrentUser,
+                Environment.Is64BitOperatingSystem ? RegistryView.Registry64 : RegistryView.Registry32);
+
+            var subKey = baseKey.OpenSubKey(@"Software\Planetarium\9c");
+            if (subKey != null)
+            {
+                var value = subKey.GetValue("SkipSynopsis");
+                skipPrologue |= value is int i && i == 1;
+            }
 #else
             var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
 #endif

@@ -1,17 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume
 {
-    public static class ItemExtension
+    public static class ItemExtensions
     {
         public static Sprite GetIconSprite(this ItemBase item) => SpriteHelper.GetItemIcon(item.Id);
 
@@ -68,6 +69,35 @@ namespace Nekoyume
             return equipment.optionCountFromCombination > 0
                 ? equipment.optionCountFromCombination
                 : additionalStats.Count + equipment.Skills.Count;
+        }
+
+        public static List<CountableItem> ToCountableItems(this IEnumerable<ItemBase> items)
+        {
+            var result = new List<CountableItem>();
+            foreach (var itemBase in items)
+            {
+                if (itemBase is null)
+                {
+                    continue;
+                }
+
+                if (itemBase is IFungibleItem fi)
+                {
+                    var ci = result.FirstOrDefault(e =>
+                        e.ItemBase.HasValue &&
+                        e.ItemBase.Value is IFungibleItem fi2 &&
+                        fi2.FungibleId.Equals(fi.FungibleId));
+                    if (ci is { })
+                    {
+                        ci.Count.Value++;
+                        continue;
+                    }
+                }
+
+                result.Add(new CountableItem(itemBase, 1));
+            }
+
+            return result;
         }
     }
 }

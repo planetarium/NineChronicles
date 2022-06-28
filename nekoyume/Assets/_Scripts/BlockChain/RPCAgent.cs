@@ -20,6 +20,8 @@ using MagicOnion.Client;
 using MessagePack;
 using Nekoyume.Action;
 using Nekoyume.BlockChain.Policy;
+using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
@@ -36,7 +38,6 @@ using NCTx = Libplanet.Tx.Transaction<Libplanet.Action.PolymorphicAction<Nekoyum
 
 namespace Nekoyume.BlockChain
 {
-    using System.Threading;
     using UniRx;
 
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
@@ -342,7 +343,61 @@ namespace Nekoyume.BlockChain
                 States.Instance.SetCrystalBalance(
                     await GetBalanceAsync(Address, CrystalCalculator.CRYSTAL));
 
-                // 상점의 상태를 한 번 동기화 한다.
+                if (await GetStateAsync(
+                        StakeState.DeriveAddress(States.Instance.AgentState.address))
+                    is Dictionary stakeDict)
+                {
+                    var stakingState = new StakeState(stakeDict);
+                    var balance = new FungibleAssetValue(goldCurrency);
+                    var level = 0;
+                    try
+                    {
+                        balance = await GetBalanceAsync(stakingState.address,
+                            goldCurrency);
+                        level = Game.TableSheets.Instance.StakeRegularRewardSheet
+                            .FindLevelByStakedAmount(
+                                Address,
+                                balance);
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+
+                    States.Instance.SetStakeState(stakingState,
+                        new GoldBalanceState(stakingState.address, balance),
+                        level);
+                }
+                else
+                {
+                    var monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
+                        Address,
+                        States.Instance.AgentState.MonsterCollectionRound
+                    );
+                    if (await GetStateAsync(monsterCollectionAddress) is Dictionary mcDict)
+                    {
+                        var monsterCollectionState = new MonsterCollectionState(mcDict);
+                        var balance = new FungibleAssetValue(goldCurrency);
+                        var level = 0;
+                        try
+                        {
+                            balance = await GetBalanceAsync(monsterCollectionAddress,
+                                goldCurrency);
+                            level = TableSheets.Instance.StakeRegularRewardSheet
+                                .FindLevelByStakedAmount(
+                                    Address,
+                                    balance);
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
+
+                        States.Instance.SetMonsterCollectionState(monsterCollectionState,
+                            new GoldBalanceState(monsterCollectionAddress, balance),
+                            level);
+                    }
+                }
 
                 if (await GetStateAsync(GameConfigState.Address) is Dictionary configDict)
                 {

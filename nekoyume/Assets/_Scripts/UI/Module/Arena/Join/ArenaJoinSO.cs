@@ -70,12 +70,12 @@ namespace Nekoyume.UI.Module.Arena.Join
         public IList<ArenaData> ArenaDataList => _arenaDataList;
 
         [SerializeField]
-        private int _conditionMax;
+        private int _conditionRequired;
 
         [SerializeField]
         private int _conditionCurrent;
 
-        public (int max, int current) Conditions => (_conditionMax, _conditionCurrent);
+        public (int required, int current) Conditions => (_conditionRequired, _conditionCurrent);
 
         public ArenaJoinSO()
         {
@@ -212,7 +212,7 @@ namespace Nekoyume.UI.Module.Arena.Join
                 },
             };
 
-            _conditionMax = 100;
+            _conditionRequired = 100;
             _conditionCurrent = 0;
         }
     }

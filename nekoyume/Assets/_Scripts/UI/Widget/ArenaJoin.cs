@@ -461,14 +461,9 @@ namespace Nekoyume.UI
                     {
                         if (RxProps.ArenaInfoTuple.Value.current is null)
                         {
-                            var cost = (long)ArenaHelper.GetEntranceFee(
-                                _scroll.SelectedItemData.RoundData,
-                                Game.Game.instance.Agent.BlockIndex,
-                                States.Instance.CurrentAvatarState.level).MajorUnit;
                             _joinButton.gameObject.SetActive(false);
-
                             if (arenaType == ArenaType.Championship &&
-                                CheckChampionshipConditions(false))
+                                !CheckChampionshipConditions(false))
                             {
                                 _bottomButtonText.text =
                                     L10nManager.Localize("UI_NOT_ENOUGH_ARENA_MEDALS");
@@ -479,6 +474,11 @@ namespace Nekoyume.UI
                             }
 
                             _bottomButtonText.enabled = false;
+
+                            var cost = (long)ArenaHelper.GetEntranceFee(
+                                _scroll.SelectedItemData.RoundData,
+                                Game.Game.instance.Agent.BlockIndex,
+                                States.Instance.CurrentAvatarState.level).MajorUnit;
                             _paymentButton.SetCost(CostType.Crystal, cost);
                             _paymentButton.UpdateObjects();
                             _paymentButton.Interactable = true;
@@ -548,7 +548,7 @@ namespace Nekoyume.UI
             return completeCondition && CheckJoinCost();
         }
 
-        private (int max, int current) GetConditions()
+        private (int required, int current) GetConditions()
         {
 #if UNITY_EDITOR
             if (_useSo && _so)
@@ -587,8 +587,10 @@ namespace Nekoyume.UI
                     ArenaJoinSeasonInfo.RewardType.NCG,
                 ArenaType.Championship =>
                     ArenaJoinSeasonInfo.RewardType.Food |
-                    ArenaJoinSeasonInfo.RewardType.NCG |
-                    ArenaJoinSeasonInfo.RewardType.Costume,
+                    ArenaJoinSeasonInfo.RewardType.Medal |
+                    ArenaJoinSeasonInfo.RewardType.NCG,
+                    // NOTE: Enable costume when championship rewards contains one.
+                    // ArenaJoinSeasonInfo.RewardType.Costume,
                 _ => throw new ArgumentOutOfRangeException()
             };
         }

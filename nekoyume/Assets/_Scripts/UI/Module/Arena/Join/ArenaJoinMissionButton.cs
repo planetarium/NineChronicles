@@ -24,10 +24,10 @@ namespace Nekoyume.UI.Module.Arena.Join
             _originalProgressRectMaskPadding = _progressRectMask.padding;
         }
 
-        public void SetConditions((int max, int current) conditions)
+        public void SetConditions((int required, int current) conditions)
         {
-            var (max, current) = conditions;
-            if (current == max)
+            var (required, current) = conditions;
+            if (current >= required)
             {
                 _completedObject.SetActive(true);
                 _originalProgressRectMaskPadding.z = 0f;
@@ -38,11 +38,11 @@ namespace Nekoyume.UI.Module.Arena.Join
                 _completedObject.SetActive(false);
                 _originalProgressRectMaskPadding.z = current == 0f
                     ? _originalRectWidth
-                    : _originalRectWidth * (1f - (float)current / max);
+                    : _originalRectWidth * (1f - (float)current / required);
                 _progressRectMask.padding = _originalProgressRectMaskPadding;
             }
 
-            _progressText.text = $"{current}/{max}";
+            _progressText.text = $"{current}/{required}";
         }
     }
 }

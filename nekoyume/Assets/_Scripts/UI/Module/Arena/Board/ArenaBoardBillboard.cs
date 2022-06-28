@@ -30,7 +30,9 @@ namespace Nekoyume.UI.Module.Arena.Board
             int score = 0)
         {
             _seasonText.text = season;
-            _rankValueText.text = rank.ToString("N0", CultureInfo.CurrentCulture);
+            _rankValueText.text = rank == 0
+                ? "-"
+                : rank.ToString("N0", CultureInfo.CurrentCulture);
             _winLoseValueText.text = string.Format(
                 CultureInfo.CurrentCulture,
                 "{0:N0}/{1:N0}",
