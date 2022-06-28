@@ -69,7 +69,7 @@ namespace Nekoyume
                 var serializedValue = serializedValues[i + 1];
                 if (serializedValue is null)
                 {
-                    Debug.LogException(new FailedLoadStateException($"failed to load {key}."));
+                    Debug.Log($"\"{key}\" is empty in \"{address.ToHex()}\"");
                     continue;
                 }
 
