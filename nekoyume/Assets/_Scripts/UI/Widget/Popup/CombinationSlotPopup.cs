@@ -359,6 +359,9 @@ namespace Nekoyume.UI
                         ? CraftType.CombineEquipment
                         : CraftType.CombineConsumable;
 
+                case ItemEnhancement7.ResultModel _:
+                case ItemEnhancement9.ResultModel _:
+                case ItemEnhancement10.ResultModel _:
                 case ItemEnhancement.ResultModel _:
                     return CraftType.Enhancement;
                 default:
