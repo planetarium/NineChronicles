@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
@@ -60,12 +61,15 @@ namespace Nekoyume.UI
             ArenaSheet.RoundData roundData,
             bool ignoreShowAnimation = false)
         {
-            var data = await UniTask.Run(async () =>
-                await RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync());
+            var loading = Find<DataLoadingScreen>();
+            loading.Show();
+            var data =
+                await RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync();
             Show(
                 roundData,
                 data,
                 ignoreShowAnimation);
+            loading.Close();
         }
 
         public void Show(

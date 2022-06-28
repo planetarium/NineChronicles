@@ -76,18 +76,7 @@ namespace Nekoyume.UI.Module
 
         private void SetCrystal(FungibleAssetValue crystal)
         {
-            var quantityString = crystal.GetQuantityString();
-            if (double.TryParse(quantityString, out var quantity))
-            {
-                text.text = string.Format(
-                    CultureInfo.CurrentCulture,
-                    "{0:N0}",
-                    quantity);
-            }
-            else
-            {
-                text.text = quantityString;
-            }
+            text.text = crystal.GetQuantityString();
         }
     }
 }

@@ -93,6 +93,19 @@ namespace Nekoyume.UI
             };
         }
 
+        public async UniTaskVoid ShowAsync(
+            bool ignoreShowAnimation = false)
+        {
+            var loading = Find<DataLoadingScreen>();
+            loading.Show();
+            await UniTask.WhenAll(
+                    RxProps.ArenaInfoTuple.UpdateAsync(),
+                    RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync())
+                .AsUniTask();
+            loading.Close();
+            Show(ignoreShowAnimation);
+        }
+
         public override void Show(bool ignoreShowAnimation = false)
         {
             _innerState = InnerState.Idle;
@@ -295,9 +308,8 @@ namespace Nekoyume.UI
                     RxProps.ArenaInfoTuple.Value.current is { })
                 {
                     Close();
-                    Find<ArenaBoard>()
-                        .ShowAsync(_scroll.SelectedItemData.RoundData)
-                        .Forget();
+                    Find<ArenaBoard>().Show(
+                        RxProps.ArenaParticipantsOrderedWithScore.Value);
                     return;
                 }
 
