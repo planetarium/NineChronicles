@@ -350,6 +350,10 @@ namespace Nekoyume.State
                         var skillState = new CrystalRandomSkillState(skillStateAddress, serialized);
                         SetCrystalRandomSkillState(skillState);
                     }
+                    else
+                    {
+                        CrystalRandomSkillState = null;
+                    }
 
                     await SetCombinationSlotStatesAsync(curAvatarState);
                     await AddOrReplaceAvatarStateAsync(curAvatarState, CurrentAvatarKey);
