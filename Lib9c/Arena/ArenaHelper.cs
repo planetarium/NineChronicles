@@ -143,12 +143,11 @@ namespace Nekoyume.Arena
             ArenaInformation arenaInformation,
             Currency currency)
         {
-            var price = roundData.TicketPrice * 0.01m
-                        + (roundData.AdditionalTicketPrice * 0.01m * arenaInformation.PurchasedTicketCount);
-            var major = (long)price;
-            var miner = (int)((price - major) * 100m);
-            var ticketPrice = new FungibleAssetValue(currency, major, miner);
-            return ticketPrice;
+            var ticketPrice = new FungibleAssetValue(currency, roundData.TicketPrice, 0);
+            var addTicketPrice = new FungibleAssetValue(currency, roundData.AdditionalTicketPrice, 0);
+            var price = ticketPrice.DivRem(100, out _) +
+                       (addTicketPrice.DivRem(100, out _) * arenaInformation.PurchasedTicketCount);
+            return price;
         }
 
         public static long GetMaxPurchasedTicketCount(ArenaSheet.RoundData roundData)

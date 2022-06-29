@@ -2,7 +2,6 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Numerics;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
