@@ -95,8 +95,7 @@ GameObject:
 --- !u!224 &5195533366357829962
 RectTransform:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 6958537852528115551, guid: cffe2525fef3643e595e516531862b51,
-    type: 3}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1136947362655195812}
@@ -878,8 +877,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4283588765
-  m_fontColor: {r: 0.6156863, g: 0.3764706, b: 0.32156864, a: 1}
+    rgba: 4286090469
+  m_fontColor: {r: 0.8980392, g: 0.54901963, b: 0.47058824, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2592,8 +2591,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4283588765
-  m_fontColor: {r: 0.6156863, g: 0.3764706, b: 0.32156864, a: 1}
+    rgba: 4286090469
+  m_fontColor: {r: 0.8962264, g: 0.54895276, b: 0.46925062, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
