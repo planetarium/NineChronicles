@@ -20,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - DisplacementPack_1:
-        m_Texture: {fileID: 2800000, guid: 58de83be232656345a3eaa1aaf271131, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - DisplacementPack_2:
@@ -48,7 +48,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 30a8fd2b2dee8e54090ff5b729909db2, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -125,7 +125,7 @@ Material:
     - OffsetUV_ZoomY_1: 1
     - PinchUV_Size_1: 0.25
     - PixelSnap: 0
-    - PositionUV_X_1: 1.15
+    - PositionUV_X_1: -1.17
     - PositionUV_Y_1: 0
     - ResizeUV_X_1: -1
     - ResizeUV_X_2: 0
@@ -259,7 +259,7 @@ Material:
     - _Outline_Color_1: {r: 1, g: 1, b: 1, a: 1}
     - _ShadowLight_Color_1: {r: 1, g: 0.7728195, b: 0.1764706, a: 1}
     - _TintRGBA_Color_1: {r: 0, g: 0, b: 0, a: 1}
-    - _TintRGBA_Color_2: {r: 0.99215686, g: 0.55522823, b: 0.30196083, a: 1}
-    - _TintRGBA_Color_3: {r: 0.65882355, g: 0.31868622, b: 0, a: 0.972549}
+    - _TintRGBA_Color_2: {r: 1, g: 0.5924368, b: 0.3537736, a: 1}
+    - _TintRGBA_Color_3: {r: 0.509434, g: 0.2626929, b: 0.2042542, a: 1}
     - _TintRGBA_Color_4: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
