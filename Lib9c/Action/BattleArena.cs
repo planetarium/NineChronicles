@@ -224,26 +224,25 @@ namespace Nekoyume.Action
                 arenaInformation.ResetTicket(currentTicketResetCount);
             }
 
+            if (roundData.ArenaType != ArenaType.OffSeason && ticket > 1)
+            {
+                throw new ExceedPlayCountException($"[{nameof(BattleArena)}] " +
+                                                   $"ticket : {ticket} / arenaType : {roundData.ArenaType}");
+            }
+
             if (arenaInformation.Ticket > 0)
             {
-                if (roundData.ArenaType != ArenaType.OffSeason && ticket > 1)
-                {
-                    throw new ExceedPlayCountException($"[{nameof(BattleArena)}] ticket : {ticket}");
-                }
-
                 arenaInformation.UseTicket(ticket);
             }
             else
             {
-                if (ticket > 1)
+                for (var i = 0; i < ticket; i++)
                 {
-                    throw new ExceedTicketPurchaseCountException($"[{nameof(BattleArena)}] ticket : {ticket}");
+                    var ticketBalance = ArenaHelper.GetTicketPrice(roundData, arenaInformation, states.GetGoldCurrency());
+                    var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
+                    states = states.TransferAsset(context.Signer, arenaAdr, ticketBalance);
+                    arenaInformation.BuyTicket(roundData);
                 }
-
-                var ticketBalance = ArenaHelper.GetTicketPrice(roundData, arenaInformation, states.GetGoldCurrency());
-                var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
-                states = states.TransferAsset(context.Signer, arenaAdr, ticketBalance);
-                arenaInformation.BuyTicket(roundData);
             }
 
             // update arena avatar state

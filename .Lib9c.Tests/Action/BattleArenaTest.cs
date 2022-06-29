@@ -221,6 +221,7 @@ namespace Lib9c.Tests.Action
         [InlineData(1, 1, 1, false, 1, 2, 4)]
         [InlineData(1, 1, 1, false, 5, 2, 3)]
         [InlineData(1, 1, 1, true, 1, 2, 3)]
+        [InlineData(1, 1, 1, true, 3, 2, 3)]
         [InlineData(1, 1, 2, false, 1, 2, 3)]
         [InlineData(1, 1, 2, true, 1, 2, 3)]
         public void Execute(
@@ -259,8 +260,12 @@ namespace Lib9c.Tests.Action
             {
                 beforeInfo.UseTicket(beforeInfo.Ticket);
                 _state = _state.SetState(arenaInfoAdr, beforeInfo.Serialize());
-                var price = ArenaHelper.GetTicketPrice(roundData, beforeInfo, _state.GetGoldCurrency());
-                _state = _state.MintAsset(_agent1Address, price);
+                for (var i = 0; i < ticket; i++)
+                {
+                    var price = ArenaHelper.GetTicketPrice(roundData, beforeInfo, _state.GetGoldCurrency());
+                    _state = _state.MintAsset(_agent1Address, price);
+                    beforeInfo.BuyTicket(roundData);
+                }
             }
 
             var beforeBalance = _state.GetBalance(_agent1Address, _state.GetGoldCurrency());
@@ -339,9 +344,7 @@ namespace Lib9c.Tests.Action
             var balance = _state.GetBalance(_agent1Address, _state.GetGoldCurrency());
             if (isPurchased)
             {
-                var price = ArenaHelper.GetTicketPrice(roundData, beforeInfo, _state.GetGoldCurrency());
-                Assert.Equal(beforeBalance - price, balance);
-                Assert.Equal(1, afterInfo.PurchasedTicketCount);
+                Assert.Equal(ticket, afterInfo.PurchasedTicketCount);
             }
 
             Assert.Equal(0, balance.RawValue);
@@ -713,58 +716,6 @@ namespace Lib9c.Tests.Action
 
             var blockIndex = roundData.StartBlockIndex + 1;
             Assert.Throws<ExceedPlayCountException>(() => action.Execute(new ActionContext()
-            {
-                BlockIndex = blockIndex,
-                PreviousStates = _state,
-                Signer = _agent1Address,
-                Random = new TestRandom(),
-            }));
-        }
-
-        [Fact]
-        public void Execute_ExceedTicketPurchaseCountException()
-        {
-            var championshipId = 1;
-            var round = 2;
-            var arenaSheet = _state.GetSheet<ArenaSheet>();
-            if (!arenaSheet.TryGetValue(championshipId, out var row))
-            {
-                throw new SheetRowNotFoundException(
-                    nameof(ArenaSheet), $"championship Id : {championshipId}");
-            }
-
-            if (!row.TryGetRound(round, out var roundData))
-            {
-                throw new RoundNotFoundException(
-                    $"[{nameof(BattleArena)}] ChampionshipId({row.ChampionshipId}) - round({round})");
-            }
-
-            var random = new TestRandom();
-            _state = JoinArena(_agent1Address, _avatar1Address, roundData.StartBlockIndex, championshipId, round, random);
-            _state = JoinArena(_agent2Address, _avatar2Address, roundData.StartBlockIndex, championshipId, round, random);
-
-            var arenaInfoAdr = ArenaInformation.DeriveAddress(_avatar1Address, championshipId, round);
-            if (!_state.TryGetArenaInformation(arenaInfoAdr, out var beforeInfo))
-            {
-                throw new ArenaInformationNotFoundException($"arenaInfoAdr : {arenaInfoAdr}");
-            }
-
-            beforeInfo.UseTicket(beforeInfo.Ticket);
-            _state = _state.SetState(arenaInfoAdr, beforeInfo.Serialize());
-
-            var action = new BattleArena()
-            {
-                myAvatarAddress = _avatar1Address,
-                enemyAvatarAddress = _avatar2Address,
-                championshipId = championshipId,
-                round = round,
-                ticket = 2,
-                costumes = new List<Guid>(),
-                equipments = new List<Guid>(),
-            };
-
-            var blockIndex = roundData.StartBlockIndex + 1;
-            Assert.Throws<ExceedTicketPurchaseCountException>(() => action.Execute(new ActionContext()
             {
                 BlockIndex = blockIndex,
                 PreviousStates = _state,

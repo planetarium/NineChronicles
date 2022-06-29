@@ -168,20 +168,6 @@ namespace Nekoyume.Model.Arena
     }
 
     [Serializable]
-    public class ExceedTicketPurchaseCountException : Exception
-    {
-        public ExceedTicketPurchaseCountException(string message) : base(message)
-        {
-        }
-
-        protected ExceedTicketPurchaseCountException(SerializationInfo info,
-            StreamingContext context) :
-            base(info, context)
-        {
-        }
-    }
-
-    [Serializable]
     public class ExceedTicketPurchaseLimitException : Exception
     {
         public ExceedTicketPurchaseLimitException(string message) : base(message)
