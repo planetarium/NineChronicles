@@ -52,11 +52,11 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField] private List<ToggleInfo> toggles = new List<ToggleInfo>();
-        [SerializeField] private GameObject ncg;
+        [SerializeField] private Gold ncg;
         [SerializeField] private ActionPoint actionPoint;
         [SerializeField] private Crystal crystal;
         [SerializeField] private GameObject dailyBonus;
-        [SerializeField] private GameObject hourglass;
+        [SerializeField] private Hourglass hourglass;
         [SerializeField] private ArenaTickets arenaTickets;
         [SerializeField] private VFX inventoryVFX;
         [SerializeField] private VFX workshopVFX;
@@ -92,11 +92,15 @@ namespace Nekoyume.UI.Module
 
         private long _blockIndex;
 
-        public Image ActionPointImage => actionPoint.Image;
-
         public bool ChargingAP => actionPoint.NowCharging;
 
+        public Gold Gold => ncg;
+
+        public ActionPoint ActionPoint => actionPoint;
+
         public Crystal Crystal => crystal;
+
+        public Hourglass Hourglass => hourglass;
 
         public ArenaTickets ArenaTickets => arenaTickets;
 
@@ -278,10 +282,10 @@ namespace Nekoyume.UI.Module
             bool isHourglassActive = false,
             bool isArenaTicketsActive = false)
         {
-            ncg.SetActive(isNcgActive);
+            ncg.gameObject.SetActive(isNcgActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             dailyBonus.SetActive(isDailyBonusActive);
-            hourglass.SetActive(isHourglassActive);
+            hourglass.gameObject.SetActive(isHourglassActive);
             arenaTickets.gameObject.SetActive(isArenaTicketsActive);
         }
 

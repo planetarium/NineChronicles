@@ -217,9 +217,9 @@ namespace Nekoyume.UI.Module
 
             if (actionPoint != null)
             {
-                ItemMoveAnimation.Show(actionPoint.Image.sprite,
+                ItemMoveAnimation.Show(actionPoint.IconImage.sprite,
                     boxImageTransform.position,
-                    actionPoint.Image.transform.position,
+                    actionPoint.IconImage.transform.position,
                     Vector2.one,
                     true,
                     true,
