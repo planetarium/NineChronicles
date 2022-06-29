@@ -171,8 +171,7 @@ namespace Nekoyume.UI
                     var data = _boundedData[index];
                     Close();
                     Find<ArenaBattlePreparation>().Show(
-                        _roundData.ChampionshipId,
-                        _roundData.Round,
+                        _roundData,
                         data.AvatarState);
                 })
                 .AddTo(gameObject);
