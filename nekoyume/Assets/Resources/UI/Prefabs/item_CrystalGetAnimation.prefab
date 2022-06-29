@@ -30,7 +30,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7717509562299059971}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -53,7 +53,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 0
@@ -253,8 +253,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.0125
-      minScalar: 0.025
+      scalar: 0.025
+      minScalar: 0.5
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -528,7 +528,7 @@ ParticleSystem:
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 1, y: 1, z: 1}
+    m_Scale: {x: 80, y: 80, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -4766,10 +4766,10 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
+  - {fileID: 7245743195772855343}
   - {fileID: 4471015550948740215}
   - {fileID: 872859481237156696}
   - {fileID: 8412958349842605309}
-  - {fileID: 7245743195772855343}
   m_Father: {fileID: 5452556414740308292}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9462,7 +9462,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 463d8e32ef2353845836c645292fb189, type: 2}
+  - {fileID: 2100000, guid: d37fa2b5ace854514ab5208343258822, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -9539,7 +9539,7 @@ MonoBehaviour:
   m_IsTrail: 0
   m_IgnoreCanvasScaler: 1
   m_Scale: 100
-  m_Scale3D: {x: 800, y: 800, z: 800}
+  m_Scale3D: {x: 100, y: 100, z: 100}
   m_AnimatableProperties: []
   m_Particles:
   - {fileID: 338722306799989694}
@@ -9577,7 +9577,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7717509562299059971}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -9600,7 +9600,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -9837,7 +9837,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0.25
-      minScalar: 0.15
+      minScalar: 3.6
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -14235,7 +14235,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7717509562299059971}
-  m_RootOrder: 3
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -14262,7 +14262,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 62432e04e3fa1614390554f704a95b31, type: 2}
+  - {fileID: 2100000, guid: d846ae78e214b4c7db2ca0b65341f6fb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -14394,7 +14394,7 @@ RectTransform:
   m_GameObject: {fileID: 1974293732692372025}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_Children:
   - {fileID: 5452556414740308292}
   m_Father: {fileID: 0}
@@ -14604,7 +14604,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7717509562299059971}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -14864,7 +14864,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0.25
-      minScalar: 0.5
+      minScalar: 10
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -15828,24 +15828,24 @@ ParticleSystem:
       maxColor: {r: 1, g: 1, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
-        key0: {r: 1, g: 0.27058825, b: 0, a: 1}
-        key1: {r: 1, g: 0.68235296, b: 0, a: 1}
-        key2: {r: 0, g: 0, b: 0, a: 0}
+        key0: {r: 0.6406398, g: 0, b: 1, a: 0.03529412}
+        key1: {r: 0.94275045, g: 0, b: 1, a: 1}
+        key2: {r: 0.94275045, g: 0, b: 1, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 0
+        ctime0: 10216
         ctime1: 65535
-        ctime2: 0
+        ctime2: 65535
         ctime3: 0
         ctime4: 0
         ctime5: 0
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 26214
+        atime1: 10409
         atime2: 65535
         atime3: 0
         atime4: 0
