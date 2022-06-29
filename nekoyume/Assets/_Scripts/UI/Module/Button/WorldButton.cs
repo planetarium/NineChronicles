@@ -126,6 +126,9 @@ namespace Nekoyume.UI.Module
         {
             _tweener?.Kill();
             _tweener = null;
+            lockImage.SetActive(false);
+            unlockableImage.SetActive(false);
+            unlockImage.SetActive(false);
         }
 
         public void Show()
@@ -163,9 +166,7 @@ namespace Nekoyume.UI.Module
                     grayImage.enabled = false;
                     colorImage.enabled = true;
                     lockImage.SetActive(false);
-                    var isFirstUnlock = unlockableImage.activeSelf;
-                    unlockImage.SetActive(isFirstUnlock);
-                    unlockableImage.SetActive(isFirstUnlock);
+                    unlockImage.SetActive(true);
                     _animationState.SetValueAndForceNotify(AnimationState.OpenLock);
                     break;
                 case State.Locked:
