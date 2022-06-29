@@ -243,7 +243,7 @@ namespace Nekoyume.Action
                 var ticketBalance = ArenaHelper.GetTicketPrice(roundData, arenaInformation, states.GetGoldCurrency());
                 var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
                 states = states.TransferAsset(context.Signer, arenaAdr, ticketBalance);
-                arenaInformation.BuyTicket();
+                arenaInformation.BuyTicket(roundData);
             }
 
             // update arena avatar state

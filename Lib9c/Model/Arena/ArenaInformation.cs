@@ -1,7 +1,9 @@
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Arena;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Arena
 {
@@ -14,7 +16,6 @@ namespace Nekoyume.Model.Arena
             avatarAddress.Derive($"arena_information_{championshipId}_{round}");
 
         public const int MaxTicketCount = 8;
-        public const int MaxPurchasedTicketCount = 80;
 
         public Address Address;
         public int Win { get; private set; }
@@ -61,13 +62,13 @@ namespace Nekoyume.Model.Arena
             Ticket -= ticketCount;
         }
 
-        public void BuyTicket()
+        public void BuyTicket(ArenaSheet.RoundData roundData)
         {
-            if (PurchasedTicketCount >= MaxPurchasedTicketCount)
+            var max = ArenaHelper.GetMaxPurchasedTicketCount(roundData);
+            if (PurchasedTicketCount >= max)
             {
                 throw new ExceedTicketPurchaseLimitException(
-                    $"[{nameof(ArenaInformation)}] PurchasedTicketCount({PurchasedTicketCount}) >= " +
-                                                             $"MaxPurchasedTicketCount({MaxPurchasedTicketCount})");
+                    $"[{nameof(ArenaInformation)}] PurchasedTicketCount({PurchasedTicketCount}) >= MAX({{max}})");
             }
 
             PurchasedTicketCount++;

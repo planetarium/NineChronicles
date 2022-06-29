@@ -802,9 +802,10 @@ namespace Lib9c.Tests.Action
             }
 
             beforeInfo.UseTicket(ArenaInformation.MaxTicketCount);
-            for (var i = 0; i < ArenaInformation.MaxPurchasedTicketCount; i++)
+            var max = ArenaHelper.GetMaxPurchasedTicketCount(roundData);
+            for (var i = 0; i < max; i++)
             {
-                beforeInfo.BuyTicket();
+                beforeInfo.BuyTicket(roundData);
             }
 
             _state = _state.SetState(arenaInfoAdr, beforeInfo.Serialize());

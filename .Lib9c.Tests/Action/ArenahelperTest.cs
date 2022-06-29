@@ -128,9 +128,10 @@ namespace Lib9c.Tests.Action
                     }
 
                     var arenaInformation = new ArenaInformation(_avatar1Address, roundData.ChampionshipId, roundData.Round);
-                    for (var i = 0; i < ArenaInformation.MaxPurchasedTicketCount; i++)
+                    var max = ArenaHelper.GetMaxPurchasedTicketCount(roundData);
+                    for (var i = 0; i < max; i++)
                     {
-                        arenaInformation.BuyTicket();
+                        arenaInformation.BuyTicket(roundData);
 
                         var ticketPrice = 0;
                         var additionalTicketPrice = 0;

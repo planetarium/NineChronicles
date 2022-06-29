@@ -150,5 +150,11 @@ namespace Nekoyume.Arena
             var ticketPrice = new FungibleAssetValue(currency, major, miner);
             return ticketPrice;
         }
+
+        public static long GetMaxPurchasedTicketCount(ArenaSheet.RoundData roundData)
+        {
+            var result = (roundData.EndBlockIndex - roundData.StartBlockIndex + 1) / 1260;
+            return result;
+        }
     }
 }
