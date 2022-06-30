@@ -565,18 +565,6 @@ namespace Nekoyume.BlockChain
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
 
-                if (eval.Action.payByCrystal)
-                {
-                    try
-                    {
-                        UpdateCrystalBalance(eval);
-                    }
-                    catch (BalanceDoesNotExistsException e)
-                    {
-                        Debug.LogError("Failed to update crystal balance : " + e);
-                    }
-                }
-
                 if (!(nextQuest is null))
                 {
                     var isRecipeMatch = nextQuest.RecipeId == eval.Action.recipeId;
@@ -712,17 +700,6 @@ namespace Nekoyume.BlockChain
                 UpdateAgentStateAsync(eval).Forget();
                 UpdateCurrentAvatarStateAsync(eval).Forget();
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-                if (result.CRYSTAL.MajorUnit > 0)
-                {
-                    try
-                    {
-                        UpdateCrystalBalance(eval);
-                    }
-                    catch (BalanceDoesNotExistsException e)
-                    {
-                        Debug.LogError("Failed to update crystal balance : " + e);
-                    }
-                }
 
                 // Notify
                 string formatKey;
@@ -1403,14 +1380,6 @@ namespace Nekoyume.BlockChain
                 NotificationCell.NotificationType.Information);
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
-            try
-            {
-                UpdateCrystalBalance(eval);
-            }
-            catch (BalanceDoesNotExistsException e)
-            {
-                Debug.LogError("Failed to update crystal balance : " + e);
-            }
         }
 
         private async UniTaskVoid ResponseUnlockEquipmentRecipeAsync(
@@ -1439,14 +1408,6 @@ namespace Nekoyume.BlockChain
                     cost.MajorUnit),
                 UpdateCurrentAvatarStateAsync(eval),
                 UpdateAgentStateAsync(eval));
-            try
-            {
-                UpdateCrystalBalance(eval);
-            }
-            catch (BalanceDoesNotExistsException e)
-            {
-                Debug.LogError("Failed to update crystal balance : " + e);
-            }
 
             foreach (var id in recipeIds)
             {
@@ -1475,14 +1436,6 @@ namespace Nekoyume.BlockChain
 
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
-            try
-            {
-                UpdateCrystalBalance(eval);
-            }
-            catch (BalanceDoesNotExistsException e)
-            {
-                Debug.LogError("Failed to update crystal balance : " + e);
-            }
         }
 
         private void ResponseHackAndSlashRandomBuff(ActionBase.ActionEvaluation<HackAndSlashRandomBuff> eval)
@@ -1496,14 +1449,6 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarStateAsync(eval).Forget();
             UpdateAgentStateAsync(eval).Forget();
             UpdateCrystalRandomSkillState(eval);
-            try
-            {
-                UpdateCrystalBalance(eval);
-            }
-            catch (BalanceDoesNotExistsException e)
-            {
-                Debug.LogError("Failed to update crystal balance : " + e);
-            }
 
             Widget.Find<BuffBonusLoadingScreen>().Close();
             Widget.Find<HeaderMenuStatic>().Crystal.SetProgressCircle(false);
