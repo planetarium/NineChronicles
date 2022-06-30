@@ -1349,6 +1349,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 352dfb0af9c0491099ed4fae1b7c8184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _progressBarBackgroundGO: {fileID: 8441018078711687884}
+  _progressBarGO: {fileID: 3364216890290586682}
   _progressRectMask: {fileID: 1831193608576715588}
   _progressText: {fileID: 4785695156778257525}
   _completedObject: {fileID: 660114234198070767}
@@ -2360,7 +2362,7 @@ GameObject:
   - component: {fileID: 7247378745761074694}
   - component: {fileID: 5802472760442774495}
   m_Layer: 5
-  m_Name: ButtonBg
+  m_Name: ProgressBarBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
