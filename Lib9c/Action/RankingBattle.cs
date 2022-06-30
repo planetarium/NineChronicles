@@ -54,8 +54,9 @@ namespace Nekoyume.Action
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress, enemyAddress);
 
-            var arenaSheet = states.GetSheet<ArenaSheet>();
-            if (arenaSheet != null)
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            var arenaSheetState = states.GetState(arenaSheetAddress);
+            if (arenaSheetState != null)
             {
                 throw new ActionObsoletedException(nameof(RankingBattle));
             }
