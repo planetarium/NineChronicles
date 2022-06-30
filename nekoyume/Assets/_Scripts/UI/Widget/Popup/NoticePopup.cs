@@ -47,11 +47,20 @@ namespace Nekoyume.UI
 
         private static bool CanShowNoticePopup(NoticeInfo notice)
         {
-            if (notice == null) return false;
-            
-            if (!Game.Game.instance.Stage.TutorialController.IsCompleted) return false;
-            
-            if (!Util.IsInTime(notice.beginTime, notice.endTime, false)) return false;
+            if (notice == null)
+            {
+                return false;
+            }
+
+            if (!Game.Game.instance.Stage.TutorialController.IsCompleted)
+            {
+                return false;
+            }
+
+            if (!Util.IsInTime(notice.beginTime, notice.endTime, false))
+            {
+                return false;
+            }
 
             var lastNoticeDayKey = string.Format(LastNoticeDayKeyFormat, notice.name);
             var lastNoticeDay = DateTime.ParseExact(
@@ -60,7 +69,10 @@ namespace Nekoyume.UI
                 null);
             var now = DateTime.UtcNow;
             var isNewDay = now.Year != lastNoticeDay.Year || now.Month != lastNoticeDay.Month || now.Day != lastNoticeDay.Day;
-            if (isNewDay) PlayerPrefs.SetString(lastNoticeDayKey, now.ToString("yyyy/MM/dd HH:mm:ss"));
+            if (isNewDay)
+            {
+                PlayerPrefs.SetString(lastNoticeDayKey, now.ToString("yyyy/MM/dd HH:mm:ss"));
+            }
 
             return isNewDay;
         }
@@ -90,7 +102,9 @@ namespace Nekoyume.UI
                 return;
             }
 
-            contentImage.sprite = firstNotice.contentImage;
+            contentImage.sprite = firstNotice?.contentImage
+                ? firstNotice.contentImage
+                : contentImage.sprite;
             base.Show(ignoreStartAnimation);
         }
 
