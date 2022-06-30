@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
 
         public bool IsRemained => _currentActionPoint > 0;
 
-        public Image Image => image;
+        public Image IconImage => image;
 
         public bool NowCharging => loading.activeSelf;
 

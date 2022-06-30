@@ -649,7 +649,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoBattleStart(StageType stageType, bool repeat)
         {
-            var actionPointImage = Find<HeaderMenuStatic>().ActionPointImage;
+            var actionPointImage = Find<HeaderMenuStatic>().ActionPoint.IconImage;
             var itemMoveAnimation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,

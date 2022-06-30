@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image _image;
 
-        public Image Image => _image;
+        public Image IconImage => _image;
 
         public bool NowLoading => loadingObject.activeSelf;
 

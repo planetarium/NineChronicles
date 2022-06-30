@@ -54,10 +54,17 @@ namespace Nekoyume.UI
             BigInteger cost,
             string content,
             string attractMessage,
+            System.Action onAttract) =>
+            ShowAttract(cost.ToString(), content, attractMessage, onAttract);
+
+        public void ShowAttract(
+            string cost,
+            string content,
+            string attractMessage,
             System.Action onAttract)
         {
             var title = L10nManager.Localize("UI_TOTAL_COST");
-            costText.text = cost.ToString();
+            costText.text = cost;
             var no = L10nManager.Localize("UI_NO");
             CloseCallback = result =>
             {
@@ -67,6 +74,17 @@ namespace Nekoyume.UI
                 }
             };
             Show(title, content, attractMessage, no, false);
+        }
+
+        public void ShowAttract(
+            CostType costType,
+            string cost,
+            string content,
+            string attractMessage,
+            System.Action onAttract)
+        {
+            costIcon.overrideSprite = costIconData.GetIcon(costType);
+            ShowAttract(cost, content, attractMessage, onAttract);
         }
     }
 }
