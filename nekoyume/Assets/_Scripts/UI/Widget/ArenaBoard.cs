@@ -57,21 +57,6 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
         }
 
-        public async UniTaskVoid ShowAsync(
-            ArenaSheet.RoundData roundData,
-            bool ignoreShowAnimation = false)
-        {
-            var loading = Find<DataLoadingScreen>();
-            loading.Show();
-            var data =
-                await RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync();
-            Show(
-                roundData,
-                data,
-                ignoreShowAnimation);
-            loading.Close();
-        }
-
         public void Show(
             RxProps.ArenaParticipant[] arenaParticipants,
             bool ignoreShowAnimation = false) =>
@@ -180,38 +165,53 @@ namespace Nekoyume.UI
 
         private void UpdateScrolls()
         {
-            _playerScroll.SetData(GetScrollData(), 0);
+            var (scrollData, playerIndex) =
+                GetScrollData();
+            _playerScroll.SetData(scrollData, playerIndex);
         }
 
-        private List<ArenaBoardPlayerItemData> GetScrollData()
+        private (List<ArenaBoardPlayerItemData> scrollData, int playerIndex)
+            GetScrollData()
         {
 #if UNITY_EDITOR
             if (_useSo && _so)
             {
-                return _so.ArenaBoardPlayerScrollData;
+                return (_so.ArenaBoardPlayerScrollData, 0);
             }
 #endif
 
             var currentAvatarAddr = States.Instance.CurrentAvatarState.address;
-            return RxProps.ArenaParticipantsOrderedWithScore.Value.Select(e =>
-            {
-                return new ArenaBoardPlayerItemData
+            var scrollData =
+                _boundedData.Select(e =>
                 {
-                    name = e.AvatarState.NameWithHash,
-                    level = e.AvatarState.level,
-                    fullCostumeOrArmorId = e.AvatarState.inventory.GetEquippedFullCostumeOrArmorId(),
-                    titleId = e.AvatarState.inventory.Costumes
-                        .FirstOrDefault(costume =>
-                            costume.ItemSubType == ItemSubType.Title
-                            && costume.Equipped)?
-                        .Id,
-                    cp = e.AvatarState.GetCP(),
-                    score = e.Score,
-                    rank = e.Rank,
-                    expectWinDeltaScore = e.ExpectDeltaScore.win,
-                    interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
-                };
-            }).ToList();
+                    return new ArenaBoardPlayerItemData
+                    {
+                        name = e.AvatarState.NameWithHash,
+                        level = e.AvatarState.level,
+                        fullCostumeOrArmorId =
+                            e.AvatarState.inventory.GetEquippedFullCostumeOrArmorId(),
+                        titleId = e.AvatarState.inventory.Costumes
+                            .FirstOrDefault(costume =>
+                                costume.ItemSubType == ItemSubType.Title
+                                && costume.Equipped)?
+                            .Id,
+                        cp = e.AvatarState.GetCP(),
+                        score = e.Score,
+                        rank = e.Rank,
+                        expectWinDeltaScore = e.ExpectDeltaScore.win,
+                        interactableChoiceButton = !e.AvatarAddr.Equals(currentAvatarAddr),
+                    };
+                }).ToList();
+            for (var i = 0; i < _boundedData.Length; i++)
+            {
+                var data = _boundedData[i];
+                if (data.AvatarAddr.Equals(currentAvatarAddr))
+                {
+                    return (scrollData, i);
+                }
+            }
+
+            return (scrollData, 0);
         }
     }
 }

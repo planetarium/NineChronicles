@@ -7,6 +7,12 @@ namespace Nekoyume.UI.Module.Arena.Join
     public class ArenaJoinMissionButton : MonoBehaviour
     {
         [SerializeField]
+        private GameObject _progressBarBackgroundGO;
+
+        [SerializeField]
+        private GameObject _progressBarGO;
+
+        [SerializeField]
         private RectMask2D _progressRectMask;
 
         [SerializeField]
@@ -29,17 +35,19 @@ namespace Nekoyume.UI.Module.Arena.Join
             var (required, current) = conditions;
             if (current >= required)
             {
+                _progressBarBackgroundGO.SetActive(false);
+                _progressBarGO.SetActive(false);
                 _completedObject.SetActive(true);
-                _originalProgressRectMaskPadding.z = 0f;
-                _progressRectMask.padding = _originalProgressRectMaskPadding;
             }
             else
             {
-                _completedObject.SetActive(false);
                 _originalProgressRectMaskPadding.z = current == 0f
                     ? _originalRectWidth
                     : _originalRectWidth * (1f - (float)current / required);
                 _progressRectMask.padding = _originalProgressRectMaskPadding;
+                _progressBarBackgroundGO.SetActive(true);
+                _progressBarGO.SetActive(true);
+                _completedObject.SetActive(false);
             }
 
             _progressText.text = $"{current}/{required}";
