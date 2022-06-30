@@ -74,8 +74,7 @@ namespace Nekoyume.UI.Module
             {
                 _disposableForOnDisabled?.Dispose();
                 _disposableForOnDisabled = Widget.Find<BuffBonusResultPopup>().OnBuffSelectedSubject
-                    .Subscribe(_ => SetIcon(skillState))
-                    .AddTo(gameObject);
+                    .Subscribe(_ => SetIcon(skillState));
             }
 
             starCountText.text = $"{starCount}/{row.MaxStar}";
