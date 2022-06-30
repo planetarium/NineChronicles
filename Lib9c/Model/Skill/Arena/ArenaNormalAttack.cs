@@ -24,5 +24,19 @@ namespace Nekoyume.Model.Skill.Arena
 
             return new BattleStatus.Arena.ArenaNormalAttack(clone, damage, buff);
         }
+
+        [Obsolete("Use Use")]
+        public override BattleStatus.Arena.ArenaSkill UseV1(
+            ArenaCharacter caster,
+            ArenaCharacter target,
+            int turn,
+            IEnumerable<Buff.Buff> buffs)
+        {
+            var clone = (ArenaCharacter)caster.Clone();
+            var damage = ProcessDamage(caster, target, turn, true);
+            var buff = ProcessBuffV1(caster, target, turn, buffs);
+
+            return new BattleStatus.Arena.ArenaNormalAttack(clone, damage, buff);
+        }
     }
 }
