@@ -31,17 +31,7 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         [SerializeField]
-        private NoticeInfo[] noticeList =
-        {
-            new NoticeInfo
-            {
-                name = "ItemLevelRequirement",
-                contentImage = null,
-                beginTime = "2022/03/17 15:00:00",
-                endTime = "2022/04/18 14:59:59",
-                pageUrlFormat = "https://ninechronicles.medium.com/item-level-requirements-3f5936733007"
-            }
-        };
+        private NoticeInfo[] noticeList;
 
         private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
 
