@@ -236,10 +236,11 @@ namespace Nekoyume.Action
             }
             else
             {
+                var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
+                var goldCurrency = states.GetGoldCurrency();
                 for (var i = 0; i < ticket; i++)
                 {
-                    var ticketBalance = ArenaHelper.GetTicketPrice(roundData, arenaInformation, states.GetGoldCurrency());
-                    var arenaAdr = ArenaHelper.DeriveArenaAddress(roundData.ChampionshipId, roundData.Round);
+                    var ticketBalance = ArenaHelper.GetTicketPrice(roundData, arenaInformation, goldCurrency);
                     states = states.TransferAsset(context.Signer, arenaAdr, ticketBalance);
                     arenaInformation.BuyTicket(roundData);
                 }
