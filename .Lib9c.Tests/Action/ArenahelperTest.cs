@@ -24,7 +24,6 @@ namespace Lib9c.Tests.Action
     {
         private IAccountStateDelta _state;
         private Currency _crystal;
-        // private readonly Currency _ncg;
         private Address _agent1Address;
         private Address _avatar1Address;
         private AvatarState _avatar1;
