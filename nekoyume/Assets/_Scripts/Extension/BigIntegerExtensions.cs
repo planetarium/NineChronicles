@@ -8,7 +8,7 @@ namespace Nekoyume
         public static string ToCurrencyNotation(this BigInteger num)
         {
             var absoluteValue = BigInteger.Abs(num);
-            var exponent = BigInteger.Log10(BigInteger.Abs(num));
+            var exponent = BigInteger.Log10(absoluteValue);
             if (absoluteValue >= BigInteger.One)
             {
                 switch ((long) Math.Floor(exponent))
