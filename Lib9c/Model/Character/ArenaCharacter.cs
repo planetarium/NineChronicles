@@ -214,6 +214,15 @@ namespace Nekoyume.Model
             );
         }
 
+        [Obsolete("Use InitAI")]
+        private void InitAIV1()
+        {
+            _root = new Root();
+            _root.OpenBranch(
+                BT.Call(ActV1)
+            );
+        }
+
         private void Act()
         {
             if (IsDead)
@@ -225,6 +234,20 @@ namespace Nekoyume.Model
             ReduceSkillCooldown();
             UseSkill();
             RemoveBuffs();
+        }
+
+        [Obsolete("Use Act")]
+        private void ActV1()
+        {
+            if (IsDead)
+            {
+                return;
+            }
+
+            ReduceDurationOfBuffs();
+            ReduceSkillCooldown();
+            UseSkillV1();
+            RemoveBuffsV1();
         }
 
         private void ReduceDurationOfBuffs()
@@ -261,7 +284,51 @@ namespace Nekoyume.Model
             _skills.SetCooldown(selectedSkill.SkillRow.Id, row.Cooldown);
         }
 
+        [Obsolete("Use UseSkill")]
+        private void UseSkillV1()
+        {
+            var selectedSkill = _skills.Select(_simulator.Random);
+            SkillLog = selectedSkill.UseV1(
+                this,
+                _target,
+                _simulator.Turn,
+                BuffFactory.GetBuffs(selectedSkill, _skillBuffSheet, _buffSheet)
+            );
+
+            if (!_skillSheet.TryGetValue(selectedSkill.SkillRow.Id, out var row))
+            {
+                throw new KeyNotFoundException(
+                    selectedSkill.SkillRow.Id.ToString(CultureInfo.InvariantCulture));
+            }
+
+            _skills.SetCooldown(selectedSkill.SkillRow.Id, row.Cooldown);
+        }
+
         private void RemoveBuffs()
+        {
+            var isApply = false;
+
+            foreach (var key in Buffs.Keys.ToList())
+            {
+                var buff = Buffs[key];
+                if (buff.remainedDuration > 0)
+                {
+                    continue;
+                }
+
+                Buffs.Remove(key);
+                isApply = true;
+            }
+
+            if (isApply)
+            {
+                _stats.SetBuffs(Buffs.Values);
+                _stats.IncreaseHpForArena();
+            }
+        }
+
+        [Obsolete("Use RemoveBuffs")]
+        private void RemoveBuffsV1()
         {
             var isApply = false;
 
@@ -295,7 +362,27 @@ namespace Nekoyume.Model
             InitAI();
         }
 
+        [Obsolete("Use Spawn")]
+        public void SpawnV1(ArenaCharacter target)
+        {
+            _target = target;
+            InitAIV1();
+        }
+
         public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
+        {
+            if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
+                outBuff.RowData.Id > buff.RowData.Id)
+                return;
+
+            var clone = (Buff.Buff) buff.Clone();
+            Buffs[buff.RowData.GroupId] = clone;
+            _stats.AddBuff(clone, updateImmediate);
+            _stats.IncreaseHpForArena();
+        }
+
+        [Obsolete("Use AddBuff")]
+        public void AddBuffV1(Buff.Buff buff, bool updateImmediate = true)
         {
             if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
                 outBuff.RowData.Id > buff.RowData.Id)
