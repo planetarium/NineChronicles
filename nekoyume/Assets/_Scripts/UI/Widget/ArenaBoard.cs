@@ -57,21 +57,6 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
         }
 
-        public async UniTaskVoid ShowAsync(
-            ArenaSheet.RoundData roundData,
-            bool ignoreShowAnimation = false)
-        {
-            var loading = Find<DataLoadingScreen>();
-            loading.Show();
-            var data =
-                await RxProps.ArenaParticipantsOrderedWithScore.UpdateAsync();
-            Show(
-                roundData,
-                data,
-                ignoreShowAnimation);
-            loading.Close();
-        }
-
         public void Show(
             RxProps.ArenaParticipant[] arenaParticipants,
             bool ignoreShowAnimation = false) =>
