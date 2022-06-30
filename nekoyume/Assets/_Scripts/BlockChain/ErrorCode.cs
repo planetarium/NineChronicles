@@ -196,6 +196,14 @@ namespace Nekoyume.BlockChain
                     code = "39";
                     key = "THIS_ARENA_IS_CLOSED_EXCEPTION";
                     break;
+                case ExceedPlayCountException _:
+                    code = "40";
+                    key = "EXCEED_PLAY_COUNT_EXCEPTION";
+                    break;
+                case ExceedTicketPurchaseLimitException _:
+                    code = "41";
+                    key = "EXCEED_TICKET_PURCHASE_LIMIT_EXCEPTION";
+                    break;
             }
 
             Analyzer.Instance.Track(
