@@ -70,6 +70,14 @@ namespace Nekoyume.UI.Module
 
             var starCount = skillState != null ? skillState.StarCount : 0;
             _hasEnoughStars = starCount >= row.MaxStar;
+            if (_hasEnoughStars)
+            {
+                _disposableForOnDisabled?.Dispose();
+                _disposableForOnDisabled = Widget.Find<BuffBonusResultPopup>().OnBuffSelectedSubject
+                    .Subscribe(_ => SetIcon(skillState))
+                    .AddTo(gameObject);
+            }
+
             starCountText.text = $"{starCount}/{row.MaxStar}";
             SetIcon(skillState);
             gameObject.SetActive(true);
@@ -113,21 +121,15 @@ namespace Nekoyume.UI.Module
             }
 
             normalObject.SetActive(!isBuffAvailable);
-            availableObject.SetActive(isBuffAvailable && !selectedId.HasValue);
-            buffSelectedObject.SetActive(selectedId.HasValue);
+
+            var hasSkillId = skillState != null && skillState.SkillIds.Any();
+            availableObject.SetActive(isBuffAvailable && !hasSkillId);
+            buffSelectedObject.SetActive(isBuffAvailable && hasSkillId);
         }
 
         private void OnClickButton()
         {
             var skillState = States.Instance.CrystalRandomSkillState;
-
-            if (_hasEnoughStars)
-            {
-                _disposableForOnDisabled?.Dispose(); 
-                _disposableForOnDisabled = Widget.Find<BuffBonusResultPopup>().OnBuffSelectedSubject
-                    .Subscribe(_ => SetIcon(skillState))
-                    .AddTo(gameObject);
-            }
 
             if (skillState is null ||
                 !skillState.SkillIds.Any())
