@@ -69,7 +69,7 @@ namespace Nekoyume.UI.Module
 
         private void SetCrystal(FungibleAssetValue crystal)
         {
-            text.text = crystal.GetQuantityString();
+            text.text = crystal.ToCurrencyNotation();
         }
     }
 }
