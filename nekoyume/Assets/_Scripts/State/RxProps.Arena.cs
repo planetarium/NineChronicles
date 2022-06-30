@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Libplanet;
@@ -220,7 +221,7 @@ namespace Nekoyume.State
                 Util.GetBlockToTime(ticketResetInterval - progressedBlockRange)));
         }
 
-        private static async UniTask<(ArenaInformation current, ArenaInformation next)>
+        private static async Task<(ArenaInformation current, ArenaInformation next)>
             UpdateArenaInfoTupleAsync(
                 (ArenaInformation current, ArenaInformation next) previous)
         {
@@ -273,7 +274,7 @@ namespace Nekoyume.State
             return (currentArenaInfo, nextArenaInfo);
         }
 
-        private static async UniTask<ArenaParticipant[]>
+        private static async Task<ArenaParticipant[]>
             UpdateArenaParticipantsOrderedWithScoreAsync(ArenaParticipant[] previous)
         {
             var avatarAddress = _states.CurrentAvatarState?.address;

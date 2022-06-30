@@ -295,17 +295,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (btnRanking is ArenaMenu { State: ArenaMenu.ViewState.LoadingArenaData })
-            {
-                NotificationSystem.Push(
-                    MailType.System,
-                    L10nManager.Localize("UI_LOBBY_ARENA_MENU_LOADING_DATA"),
-                    NotificationCell.NotificationType.Information);
-                return;
-            }
-
             Close(true);
-            Find<ArenaJoin>().Show();
+            Find<ArenaJoin>().ShowAsync().Forget();
             Analyzer.Instance.Track("Unity/Enter arena page");
             AudioController.PlayClick();
         }

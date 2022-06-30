@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Nekoyume.State;
 using NUnit.Framework;
@@ -88,7 +89,7 @@ namespace Tests.EditMode.State
             disposable.Dispose();
         });
 
-        private static async UniTask<int> UpdateValueAsync(int previous)
+        private static async Task<int> UpdateValueAsync(int previous)
         {
             await UniTask.Delay(10);
             return previous + 1;
