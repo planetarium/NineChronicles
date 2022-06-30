@@ -143,8 +143,8 @@ namespace Nekoyume.Arena
             ArenaInformation arenaInformation,
             Currency currency)
         {
-            var ticketPrice = new FungibleAssetValue(currency, roundData.TicketPrice, 0);
-            var addTicketPrice = new FungibleAssetValue(currency, roundData.AdditionalTicketPrice, 0);
+            var ticketPrice = currency * roundData.TicketPrice;
+            var addTicketPrice = currency * roundData.AdditionalTicketPrice;
             var price = ticketPrice.DivRem(100, out _) +
                        (addTicketPrice.DivRem(100, out _) * arenaInformation.PurchasedTicketCount);
             return price;
