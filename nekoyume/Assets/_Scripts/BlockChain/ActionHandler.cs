@@ -147,6 +147,8 @@ namespace Nekoyume.BlockChain
             {
                 UpdateGoldBalanceState(null);
             }
+
+            UpdateCrystalBalance(evaluation);
         }
 
         protected static async UniTask UpdateAvatarState<T>(

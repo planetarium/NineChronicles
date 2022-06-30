@@ -64,7 +64,7 @@ namespace Nekoyume.BlockChain
             }).AddTo(_disposables);
             if (Game.Game.instance.Agent is RPCAgent rpcAgent)
             {
-                rpcAgent.OnRetryStarted.Subscribe(_ =>
+                rpcAgent.OnRetryEnded.Subscribe(_ =>
                 {
                     _balanceUpdateRequired = true;
                     _avatarUpdateRequired = true;
