@@ -153,4 +153,31 @@ namespace Nekoyume.Model.Arena
         }
     }
 
+    [Serializable]
+    public class ExceedPlayCountException : Exception
+    {
+        public ExceedPlayCountException(string message) : base(message)
+        {
+        }
+
+        protected ExceedPlayCountException(SerializationInfo info,
+            StreamingContext context) :
+            base(info, context)
+        {
+        }
+    }
+
+    [Serializable]
+    public class ExceedTicketPurchaseLimitException : Exception
+    {
+        public ExceedTicketPurchaseLimitException(string message) : base(message)
+        {
+        }
+
+        protected ExceedTicketPurchaseLimitException(SerializationInfo info,
+            StreamingContext context) :
+            base(info, context)
+        {
+        }
+    }
 }

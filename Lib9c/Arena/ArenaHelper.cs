@@ -4,6 +4,7 @@ using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Helper;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -135,6 +136,24 @@ namespace Nekoyume.Arena
             }
 
             return 1;
+        }
+
+        public static FungibleAssetValue GetTicketPrice(
+            ArenaSheet.RoundData roundData,
+            ArenaInformation arenaInformation,
+            Currency currency)
+        {
+            var ticketPrice = currency * roundData.TicketPrice;
+            var addTicketPrice = currency * roundData.AdditionalTicketPrice;
+            var price = ticketPrice.DivRem(100, out _) +
+                       (addTicketPrice.DivRem(100, out _) * arenaInformation.PurchasedTicketCount);
+            return price;
+        }
+
+        public static long GetMaxPurchasedTicketCount(ArenaSheet.RoundData roundData)
+        {
+            var result = (roundData.EndBlockIndex - roundData.StartBlockIndex + 1) / 1260;
+            return result;
         }
     }
 }
