@@ -15,11 +15,10 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/682
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1194
     /// </summary>
     [Serializable]
-    [ActionType("rapid_combination6")]
+    [ActionType("rapid_combination7")]
     public class RapidCombination : GameAction
     {
         public Address avatarAddress;
