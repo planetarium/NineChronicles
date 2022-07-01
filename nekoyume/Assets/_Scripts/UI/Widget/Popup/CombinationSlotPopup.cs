@@ -314,10 +314,10 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (skillName, _, _) = itemOptionInfo.SkillOptions[i];
+                var (skillRow, _, _) = itemOptionInfo.SkillOptions[i];
                 var text = string.Format(
                     format,
-                    skillName,
+                    skillRow.GetLocalizedName(),
                     row.ExtraSkillDamageGrowthMin.NormalizeFromTenThousandths() * 100,
                     row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths() * 100,
                     row.ExtraSkillChanceGrowthMin.NormalizeFromTenThousandths() * 100,
