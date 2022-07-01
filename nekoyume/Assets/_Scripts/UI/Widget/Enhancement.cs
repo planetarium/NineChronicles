@@ -24,44 +24,62 @@ namespace Nekoyume.UI
 
     public class Enhancement : Widget
     {
-        [SerializeField] private EnhancementInventory enhancementInventory;
+        [SerializeField]
+        private EnhancementInventory enhancementInventory;
 
-        [SerializeField] private ConditionalCostButton upgradeButton;
+        [SerializeField]
+        private ConditionalCostButton upgradeButton;
 
-        [SerializeField] private Button closeButton;
+        [SerializeField]
+        private Button closeButton;
 
-        [SerializeField] private UpgradeEquipmentSlot baseSlot;
+        [SerializeField]
+        private UpgradeEquipmentSlot baseSlot;
 
-        [SerializeField] private UpgradeEquipmentSlot materialSlot;
+        [SerializeField]
+        private UpgradeEquipmentSlot materialSlot;
 
-        [SerializeField] private TextMeshProUGUI successRatioText;
+        [SerializeField]
+        private TextMeshProUGUI successRatioText;
 
-        [SerializeField] private TextMeshProUGUI requiredBlockIndexText;
+        [SerializeField]
+        private TextMeshProUGUI requiredBlockIndexText;
 
-        [SerializeField] private TextMeshProUGUI itemNameText;
+        [SerializeField]
+        private TextMeshProUGUI itemNameText;
 
-        [SerializeField] private TextMeshProUGUI currentLevelText;
+        [SerializeField]
+        private TextMeshProUGUI currentLevelText;
 
-        [SerializeField] private TextMeshProUGUI nextLevelText;
+        [SerializeField]
+        private TextMeshProUGUI nextLevelText;
 
-        [SerializeField] private TextMeshProUGUI materialGuideText;
+        [SerializeField]
+        private TextMeshProUGUI materialGuideText;
 
-        [SerializeField] private EnhancementOptionView mainStatView;
+        [SerializeField]
+        private EnhancementOptionView mainStatView;
 
-        [SerializeField] private List<EnhancementOptionView> statViews;
+        [SerializeField]
+        private List<EnhancementOptionView> statViews;
 
-        [SerializeField] private List<EnhancementOptionView> skillViews;
+        [SerializeField]
+        private List<EnhancementOptionView> skillViews;
 
-        [SerializeField] private TextMeshProUGUI levelText;
+        [SerializeField]
+        private TextMeshProUGUI levelText;
 
-        [SerializeField] private GameObject noneContainer;
+        [SerializeField]
+        private GameObject noneContainer;
 
-        [SerializeField] private GameObject itemInformationContainer;
+        [SerializeField]
+        private GameObject itemInformationContainer;
 
-        [SerializeField] private Animator animator;
+        [SerializeField]
+        private Animator animator;
 
-        private static readonly int HashToShow = Animator.StringToHash("Show");
-        private static readonly int HashToEnchantSelect = Animator.StringToHash("EnchantSelect");
+        private static readonly int HashToRegisterBase =
+            Animator.StringToHash("RegisterBase");
 
         private static readonly int HashToPostRegisterBase =
             Animator.StringToHash("PostRegisterBase");
@@ -72,12 +90,13 @@ namespace Nekoyume.UI
         private static readonly int HashToUnregisterMaterial =
             Animator.StringToHash("UnregisterMaterial");
 
-        private static readonly int HashToClose = Animator.StringToHash("Close");
+        private static readonly int HashToClose =
+            Animator.StringToHash("Close");
 
 
         private EnhancementCostSheetV2 _costSheet;
         private BigInteger _costNcg = 0;
-        private string errorMessage;
+        private string _errorMessage;
 
         protected override void Awake()
         {
@@ -105,7 +124,6 @@ namespace Nekoyume.UI
             Clear();
             HelpTooltip.HelpMe(100017, true);
             enhancementInventory.Set(ShowItemTooltip, UpdateInformation);
-            //animator.Play(HashToShow);
             base.Show(ignoreShowAnimation);
         }
 
@@ -134,15 +152,15 @@ namespace Nekoyume.UI
             var (baseItem, materialItem) = enhancementInventory.GetSelectedModels();
             if (!IsInteractableButton(baseItem, materialItem))
             {
-                NotificationSystem.Push(MailType.System, errorMessage,
+                NotificationSystem.Push(MailType.System, _errorMessage,
                     NotificationCell.NotificationType.Alert);
                 return;
             }
 
             if (States.Instance.GoldBalanceState.Gold.MajorUnit < _costNcg)
             {
-                errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
-                NotificationSystem.Push(MailType.System, errorMessage,
+                _errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
+                NotificationSystem.Push(MailType.System, _errorMessage,
                     NotificationCell.NotificationType.Alert);
                 return;
             }
@@ -183,19 +201,19 @@ namespace Nekoyume.UI
         {
             if (item is null || material is null)
             {
-                errorMessage = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
+                _errorMessage = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
                 return false;
             }
 
             if (States.Instance.CurrentAvatarState.actionPoint < GameConfig.EnhanceEquipmentCostAP)
             {
-                errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_ACTION_POWER");
+                _errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_ACTION_POWER");
                 return false;
             }
 
             if (!Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _))
             {
-                errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");
+                _errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");
                 return false;
             }
 
@@ -248,7 +266,7 @@ namespace Nekoyume.UI
                 materialSlot.RemoveMaterial();
                 noneContainer.SetActive(true);
                 itemInformationContainer.SetActive(false);
-                animator.SetTrigger(HashToEnchantSelect);
+                animator.Play(HashToRegisterBase);
                 closeButton.interactable = true;
             }
             else
