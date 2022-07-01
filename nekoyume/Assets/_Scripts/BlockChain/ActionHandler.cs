@@ -268,7 +268,11 @@ namespace Nekoyume.BlockChain
 
         protected static void UpdateCrystalBalance<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            if (!evaluation.Signer.Equals(States.Instance.AgentState.address))
+            if (!evaluation.Signer.Equals(States.Instance.AgentState.address) ||
+                !evaluation.OutputStates.UpdatedFungibleAssets.TryGetValue(
+                    evaluation.Signer,
+                    out var currencies) ||
+                !currencies.Contains(CrystalCalculator.CRYSTAL))
             {
                 return;
             }
