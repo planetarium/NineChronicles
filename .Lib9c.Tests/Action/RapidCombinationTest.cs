@@ -533,13 +533,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(7, false)]
-        [InlineData(9, false)]
-        [InlineData(10, false)]
-        [InlineData(11, false)]
+        [InlineData(7)]
+        [InlineData(9)]
+        [InlineData(10)]
+        [InlineData(11)]
         public void Execute_NotThrow_InvalidOperationException_When_TargetSlotCreatedBy(
-            int itemEnhancementResultModelNumber,
-            bool shouldThrow)
+            int itemEnhancementResultModelNumber)
         {
             const int slotStateUnlockStage = 1;
 
@@ -696,27 +695,12 @@ namespace Lib9c.Tests.Action
                 slotIndex = 0,
             };
 
-            if (shouldThrow)
+            action.Execute(new ActionContext
             {
-                Assert.Throws<InvalidOperationException>(() =>
-                {
-                    action.Execute(new ActionContext
-                    {
-                        PreviousStates = tempState,
-                        Signer = _agentAddress,
-                        BlockIndex = 51,
-                    });
-                });
-            }
-            else
-            {
-                action.Execute(new ActionContext
-                {
-                    PreviousStates = tempState,
-                    Signer = _agentAddress,
-                    BlockIndex = 51,
-                });
-            }
+                PreviousStates = tempState,
+                Signer = _agentAddress,
+                BlockIndex = 51,
+            });
         }
     }
 }
