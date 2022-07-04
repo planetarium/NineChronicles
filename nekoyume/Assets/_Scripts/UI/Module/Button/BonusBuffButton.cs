@@ -29,7 +29,13 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI starCountText = null;
 
         [SerializeField]
-        private List<GameObject> objectsOnBuffAvailable = null;
+        private GameObject normalObject = null;
+
+        [SerializeField]
+        private GameObject availableObject = null;
+
+        [SerializeField]
+        private GameObject buffSelectedObject = null;
 
         private IDisposable _disposableForOnDisabled = null;
 
@@ -52,30 +58,33 @@ namespace Nekoyume.UI.Module
         {
             _disposableForOnDisabled?.Dispose();
             _disposableForOnDisabled = null;
+            _stageId = currentStageId;
 
             var tableSheets = Game.Game.instance.TableSheets;
-
-            if (skillState is null ||
-                States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(currentStageId) ||
+            if (States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(currentStageId) ||
                 !tableSheets.CrystalStageBuffGachaSheet.TryGetValue(currentStageId, out var row))
             {
                 gameObject.SetActive(false);
                 return;
             }
 
-            _stageId = currentStageId;
-            _hasEnoughStars = skillState.StarCount >= row.MaxStar;
-            starCountText.text = $"{skillState.StarCount}/{row.MaxStar}";
-            _disposableForOnDisabled = Widget.Find<BuffBonusResultPopup>().OnBuffSelectedSubject
-                .Subscribe(_ => SetIcon(skillState))
-                .AddTo(gameObject);
+            var starCount = skillState != null ? skillState.StarCount : 0;
+            _hasEnoughStars = starCount >= row.MaxStar;
+            if (_hasEnoughStars)
+            {
+                _disposableForOnDisabled?.Dispose();
+                _disposableForOnDisabled = Widget.Find<BuffBonusResultPopup>().OnBuffSelectedSubject
+                    .Subscribe(_ => SetIcon(skillState));
+            }
+
+            starCountText.text = $"{starCount}/{row.MaxStar}";
             SetIcon(skillState);
             gameObject.SetActive(true);
         }
 
         private void SetIcon(CrystalRandomSkillState skillState)
         {
-            var isBuffAvailable = _hasEnoughStars;
+            var isBuffAvailable = skillState != null && _hasEnoughStars;
             var selectedId = Widget.Find<BuffBonusResultPopup>().SelectedSkillId;
 
             var tableSheets = Game.Game.instance.TableSheets;
@@ -109,22 +118,20 @@ namespace Nekoyume.UI.Module
                     bgImage.sprite = gradeData.SmallBgSprite;
                 }
             }
-            else
-            {
-                isBuffAvailable = false;
-            }
 
-            foreach (var obj in objectsOnBuffAvailable)
-            {
-                obj.SetActive(isBuffAvailable);
-            }
+            normalObject.SetActive(!isBuffAvailable);
+
+            var hasSkillId = skillState != null && skillState.SkillIds.Any();
+            availableObject.SetActive(isBuffAvailable && !hasSkillId);
+            buffSelectedObject.SetActive(isBuffAvailable && hasSkillId);
         }
 
         private void OnClickButton()
         {
             var skillState = States.Instance.CrystalRandomSkillState;
 
-            if (!skillState.SkillIds.Any())
+            if (skillState is null ||
+                !skillState.SkillIds.Any())
             {
                 Widget.Find<BuffBonusPopup>().Show(_stageId, _hasEnoughStars);
             }

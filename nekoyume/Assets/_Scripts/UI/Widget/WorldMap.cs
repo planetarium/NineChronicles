@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet.Assets;
 using Nekoyume.Model;
 using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
@@ -113,13 +114,7 @@ namespace Nekoyume.UI
                     }).AddTo(gameObject);
             }
 
-            AgentStateSubject.Crystal.Subscribe(crystal =>
-            {
-                foreach (var worldButton in _worldButtons)
-                {
-                    worldButton.SetOpenCostTextColor(crystal.MajorUnit);
-                }
-            }).AddTo(gameObject);
+            AgentStateSubject.Crystal.Subscribe(SetWorldOpenCostTextColor).AddTo(gameObject);
 
             ReactiveAvatarState.WorldInformation.Subscribe(worldInformation =>
             {
@@ -175,7 +170,8 @@ namespace Nekoyume.UI
 
                 UpdateNotificationInfo();
 
-                var isIncludedInQuest = StageIdToNotify >= worldButton.StageBegin && StageIdToNotify <= worldButton.StageEnd;
+                var isIncludedInQuest = StageIdToNotify >= worldButton.StageBegin &&
+                                        StageIdToNotify <= worldButton.StageEnd;
 
                 if (worldIsUnlocked)
                 {
@@ -186,6 +182,8 @@ namespace Nekoyume.UI
                 {
                     worldButton.Lock();
                 }
+
+                SetWorldOpenCostTextColor(States.Instance.CrystalBalance);
             }
 
             if (!worldInformation.TryGetFirstWorld(out var firstWorld))
@@ -220,7 +218,9 @@ namespace Nekoyume.UI
             }
 
             SelectedWorldId = worldId;
-            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SelectedWorldId, out var worldRow, true);
+            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SelectedWorldId,
+                out var worldRow,
+                true);
             SelectedWorldStageBegin = worldRow.StageBegin;
             SelectedStageId = stageId;
 
@@ -274,7 +274,7 @@ namespace Nekoyume.UI
                     Find<UnlockWorldLoadingScreen>().Show();
                     Analyzer.Instance.Track("Unity/UnlockWorld", new Value
                     {
-                        ["BurntCrystal"] = (long)cost,
+                        ["BurntCrystal"] = (long) cost,
                     });
                     ActionManager.Instance.UnlockWorld(new List<int> {worldId}).Subscribe();
                 },
@@ -309,7 +309,7 @@ namespace Nekoyume.UI
                             Find<UnlockWorldLoadingScreen>().Show();
                             Analyzer.Instance.Track("Unity/UnlockWorld", new Value
                             {
-                                ["BurntCrystal"] = (long)cost,
+                                ["BurntCrystal"] = (long) cost,
                             });
                             ActionManager.Instance.UnlockWorld(worldIdListForUnlock).Subscribe();
                         },
@@ -319,6 +319,14 @@ namespace Nekoyume.UI
             }
 
             return false;
+        }
+
+        private void SetWorldOpenCostTextColor(FungibleAssetValue crystal)
+        {
+            foreach (var worldButton in _worldButtons)
+            {
+                worldButton.SetOpenCostTextColor(crystal.MajorUnit);
+            }
         }
     }
 }

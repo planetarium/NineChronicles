@@ -19,6 +19,7 @@ jobs:
         targetPlatform:
           - Windows
           - macOS
+          - Linux
     steps:
       - name: Set environment variables
         run: |
@@ -28,6 +29,8 @@ jobs:
             echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-windows-mono-0.11" >> $GITHUB_ENV
           elif [ "$targetPlatform" == "macOS" ]; then
             echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-mac-mono-0.11" >> $GITHUB_ENV
+          elif [ "$targetPlatform" == "Linux" ]; then
+            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-linux-il2cpp-1.0" >> $GITHUB_ENV
           fi
 
       - uses: actions/checkout@v2
@@ -89,6 +92,7 @@ jobs:
         targetPlatform:
           - Windows
           - macOS
+          - Linux
     needs: build-unity
     if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
     steps:

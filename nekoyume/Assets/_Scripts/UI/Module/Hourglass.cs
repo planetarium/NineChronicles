@@ -6,6 +6,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -19,7 +20,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private RectTransform tooltipArea = null;
 
+        [SerializeField]
+        private Image _iconImage;
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
+        public Image IconImage => _iconImage;
 
         protected override void OnEnable()
         {

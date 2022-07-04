@@ -1,8 +1,5 @@
 using System;
-using Nekoyume.Data;
 using Nekoyume.Model.Mail;
-using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using UnityEngine;

@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image _image;
 
-        public Image Image => _image;
+        public Image IconImage => _image;
 
         public bool NowLoading => loadingObject.activeSelf;
 
@@ -64,19 +64,12 @@ namespace Nekoyume.UI.Module
             text.enabled = _loadingCount <= 0;
         }
 
-        private void UpdateCrystal()
-        {
-            if (AgentStateSubject.Crystal is null)
-            {
-                return;
-            }
-
+        private void UpdateCrystal() =>
             SetCrystal(States.Instance.CrystalBalance);
-        }
 
         private void SetCrystal(FungibleAssetValue crystal)
         {
-            text.text = crystal.GetQuantityString();
+            text.text = crystal.ToCurrencyNotation();
         }
     }
 }

@@ -20,6 +20,7 @@ from commentjson import dump, load
 
 DOWNLOAD_URL_BASE = 'https://download.nine-chronicles.com'
 MACOS_DOWNLOAD_URL_FORMAT = DOWNLOAD_URL_BASE + "/v{version}/macOS.tar.gz"
+LINUX_DOWNLOAD_URL_FORMAT = DOWNLOAD_URL_BASE + "/v{version}/Linux.tar.gz"
 WINDOWS_DOWNLOAD_URL_FORMAT = DOWNLOAD_URL_BASE + "/v{version}/Windows.zip"
 
 S3_BUCKET = '9c-test'
@@ -30,7 +31,7 @@ S3_OBJECT_PATTERN = re.compile(r'^v(\d+)$')
 
 parser = argparse.ArgumentParser(description=__doc__.replace('\n', ' '))
 parser.add_argument('out_dir')
-parser.add_argument('platform', choices={'macOS', 'Windows'})
+parser.add_argument('platform', choices={'macOS', 'Windows', 'Linux'})
 parser.add_argument('game_dir')
 parser.add_argument('private_key')
 parser.add_argument('timestamp')
@@ -60,6 +61,7 @@ def main() -> None:
     # 아직 실제로 올라가 있지 않더라도, 이쪽으로 올려야 함. 서명을 하기 위해 미리 URL을 결정해 둠.
     next_version = latest_version() + 1
     macos_url = MACOS_DOWNLOAD_URL_FORMAT.format(version=next_version)
+    linux_url = LINUX_DOWNLOAD_URL_FORMAT.format(version=next_version)
     windows_url = WINDOWS_DOWNLOAD_URL_FORMAT.format(version=next_version)
 
     # 임시로 키 가져오기
@@ -82,6 +84,7 @@ def main() -> None:
         '--passphrase', passphrase,
         '--extra', f'timestamp={args.timestamp}',
         '--extra', f'macOSBinaryUrl={macos_url}',
+        '--extra', f'LinuxBinaryUrl={linux_url}',
         '--extra', f'WindowsBinaryUrl={windows_url}',
         key_id,
         str(next_version),
@@ -140,6 +143,13 @@ def main() -> None:
                 name = os.path.join(temp_dir, arcname)
                 archive.add(name, arcname=arcname)
                 logging.info('Added: %s <- %s', arcname, name)
+    elif args.platform.lower() == 'linux':
+        archive_path = os.path.join(args.out_dir, 'Linux.tar.gz')
+        with tarfile.open(archive_path, 'w:gz') as archive:
+            for arcname in os.listdir(temp_dir):
+                name = os.path.join(temp_dir, arcname)
+                archive.add(name, arcname=arcname)
+                logging.info('Added: %s <- %s', arcname, name)
     elif args.platform.lower() == 'windows':
         archive_path = os.path.join(args.out_dir, 'Windows.zip')
         with zipfile.ZipFile(archive_path, 'w', ZIP_DEFLATED) as archive:
@@ -173,7 +183,8 @@ def latest_version() -> int:
             **cont,
         )
         prefixes = (
-            p[:-len(S3_OBJECT_DELIMITER)] if p.endswith(S3_OBJECT_DELIMITER) else p
+            p[:-len(S3_OBJECT_DELIMITER)
+              ] if p.endswith(S3_OBJECT_DELIMITER) else p
             for d in resp.get('CommonPrefixes', [])
             for p in (d['Prefix'],)
         )

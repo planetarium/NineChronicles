@@ -22,7 +22,7 @@ namespace Nekoyume
             ArenaSheet arenaSheet)
         {
             // NOTE: `700_102` is new arena medal item id.
-            if (medalItemId < 700_102 ||
+            if (medalItemId < 700_000 ||
                 medalItemId >= 800_000)
             {
                 return (0, 0);
@@ -32,12 +32,11 @@ namespace Nekoyume
             var championshipId = medalItemId % 100_000 / 100;
             if (!arenaSheet.TryGetValue(championshipId, out var row))
             {
-                Debug.LogError($"No found key({championshipId}) in ArenaSheet.");
                 return (0, 0);
             }
 
             // `round`: 1 ~ 99
-            var round = medalItemId % 10;
+            var round = medalItemId % 100;
             var seasonNumber = 0;
             var isSeason = false;
             foreach (var roundData in row.Round)

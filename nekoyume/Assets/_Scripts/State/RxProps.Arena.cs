@@ -337,7 +337,7 @@ namespace Nekoyume.State
             // NOTE: If addresses is too large, and split and get separately.
             var scores = await _agent.GetStateBulk(
                 avatarAndScoreAddrList.Select(tuple => tuple.Item2));
-            var avatarAndScores = avatarAndScoreAddrList
+            var avatarAddrAndScores = avatarAndScoreAddrList
                 .Select(tuple =>
                 {
                     var (avatarAddr, scoreAddr) = tuple;
@@ -349,16 +349,17 @@ namespace Nekoyume.State
                     );
                 })
                 .ToArray();
-            var avatarAndScoresWithRank = AddRank(avatarAndScores);
+            var avatarAddrAndScoresWithRank =
+                AddRank(avatarAddrAndScores);
             PlayerArenaParticipant playersArenaParticipant = null;
             int playerScore;
             try
             {
-                var playerTuple = avatarAndScoresWithRank.First(tuple =>
+                var playerTuple = avatarAddrAndScoresWithRank.First(tuple =>
                     tuple.avatarAddr.Equals(currentAvatarAddr));
                 playerScore = playerTuple.score;
-                avatarAndScoresWithRank = GetBoundsWithPlayer(
-                    avatarAndScoresWithRank,
+                avatarAddrAndScoresWithRank = GetBoundsWithPlayerScore(
+                    avatarAddrAndScoresWithRank,
                     currentRoundData.ArenaType,
                     playerScore);
             }
@@ -374,8 +375,8 @@ namespace Nekoyume.State
                     default,
                     null);
                 playerScore = playersArenaParticipant.Score;
-                avatarAndScoresWithRank = GetBoundsWithPlayer(
-                    avatarAndScoresWithRank,
+                avatarAddrAndScoresWithRank = GetBoundsWithPlayerScore(
+                    avatarAddrAndScoresWithRank,
                     currentRoundData.ArenaType,
                     playerScore);
             }
@@ -384,7 +385,7 @@ namespace Nekoyume.State
                 currentAvatarAddr,
                 currentRoundData.ChampionshipId,
                 currentRoundData.Round);
-            var addrBulk = avatarAndScoresWithRank
+            var addrBulk = avatarAddrAndScoresWithRank
                 .SelectMany(tuple => new[]
                 {
                     tuple.avatarAddr,
@@ -395,7 +396,7 @@ namespace Nekoyume.State
             addrBulk.Add(playerArenaInfoAddr);
             // NOTE: If the [`addrBulk`] is too large, and split and get separately.
             var stateBulk = await _agent.GetStateBulk(addrBulk);
-            var result = avatarAndScoresWithRank.Select(tuple =>
+            var result = avatarAddrAndScoresWithRank.Select(tuple =>
             {
                 var (avatarAddr, score, rank) = tuple;
                 var avatar = stateBulk[avatarAddr] is Dictionary avatarDict
@@ -524,7 +525,7 @@ namespace Nekoyume.State
             return result.ToArray();
         }
 
-        private static (Address avatarAddr, int score, int rank)[] GetBoundsWithPlayer(
+        private static (Address avatarAddr, int score, int rank)[] GetBoundsWithPlayerScore(
             (Address avatarAddr, int score, int rank)[] tuples,
             ArenaType arenaType,
             int playerScore)

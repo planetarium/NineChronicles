@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Libplanet.Assets;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -20,9 +19,14 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button onlineShopButton = null;
 
+        [SerializeField]
+        private Image _iconImage;
+
         private IDisposable _disposable;
 
         private const string OnlineShopLink = "https://shop.nine-chronicles.com/";
+
+        public Image IconImage => _iconImage;
 
         protected void Awake()
         {

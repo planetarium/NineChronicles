@@ -42,7 +42,7 @@ namespace Nekoyume
             ArenaSheet arenaSheet)
         {
             // NOTE: `700_102` is new arena medal item id.
-            if (itemSheetRowId < 700_102 ||
+            if (itemSheetRowId < 700_000 ||
                 itemSheetRowId >= 800_000)
             {
                 return itemSheetRowId;

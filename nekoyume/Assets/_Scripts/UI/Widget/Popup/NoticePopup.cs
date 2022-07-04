@@ -31,27 +31,26 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         [SerializeField]
-        private NoticeInfo[] noticeList =
-        {
-            new NoticeInfo
-            {
-                name = "ItemLevelRequirement",
-                contentImage = null,
-                beginTime = "2022/03/17 15:00:00",
-                endTime = "2022/04/18 14:59:59",
-                pageUrlFormat = "https://ninechronicles.medium.com/item-level-requirements-3f5936733007"
-            }
-        };
+        private NoticeInfo[] noticeList;
 
         private const string LastNoticeDayKeyFormat = "LAST_NOTICE_DAY_{0}";
 
         private static bool CanShowNoticePopup(NoticeInfo notice)
         {
-            if (notice == null) return false;
-            
-            if (!Game.Game.instance.Stage.TutorialController.IsCompleted) return false;
-            
-            if (!Util.IsInTime(notice.beginTime, notice.endTime, false)) return false;
+            if (notice == null)
+            {
+                return false;
+            }
+
+            if (!Game.Game.instance.Stage.TutorialController.IsCompleted)
+            {
+                return false;
+            }
+
+            if (!Util.IsInTime(notice.beginTime, notice.endTime, false))
+            {
+                return false;
+            }
 
             var lastNoticeDayKey = string.Format(LastNoticeDayKeyFormat, notice.name);
             var lastNoticeDay = DateTime.ParseExact(
@@ -60,7 +59,10 @@ namespace Nekoyume.UI
                 null);
             var now = DateTime.UtcNow;
             var isNewDay = now.Year != lastNoticeDay.Year || now.Month != lastNoticeDay.Month || now.Day != lastNoticeDay.Day;
-            if (isNewDay) PlayerPrefs.SetString(lastNoticeDayKey, now.ToString("yyyy/MM/dd HH:mm:ss"));
+            if (isNewDay)
+            {
+                PlayerPrefs.SetString(lastNoticeDayKey, now.ToString("yyyy/MM/dd HH:mm:ss"));
+            }
 
             return isNewDay;
         }
@@ -90,7 +92,9 @@ namespace Nekoyume.UI
                 return;
             }
 
-            contentImage.sprite = firstNotice.contentImage;
+            contentImage.sprite = firstNotice?.contentImage
+                ? firstNotice.contentImage
+                : contentImage.sprite;
             base.Show(ignoreStartAnimation);
         }
 
