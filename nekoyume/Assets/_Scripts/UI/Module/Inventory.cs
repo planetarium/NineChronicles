@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Module
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesOnSet = new List<IDisposable>();
         private readonly List<InventoryItem> _cachedNotificationItems = new List<InventoryItem>();
         private readonly List<InventoryItem> _cachedFocusItems = new List<InventoryItem>();
         private readonly List<InventoryItem> _cachedBestItems = new List<InventoryItem>();
@@ -138,7 +138,7 @@ namespace Nekoyume.UI.Module
             List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null,
             bool isArena = false)
         {
-            _disposables.DisposeAllAndClear();
+            _disposablesOnSet.DisposeAllAndClear();
             foreach (var type in ItemTypes)
             {
                 _dimConditionFuncsByItemType[type].Clear();
@@ -156,12 +156,12 @@ namespace Nekoyume.UI.Module
             {
                 ReactiveAvatarState.Inventory
                     .Subscribe(e => SetInventory(e, onUpdateInventory))
-                    .AddTo(_disposables);
+                    .AddTo(_disposablesOnSet);
             }
 
             SetToggle(equipmentButton, ItemType.Equipment);
-            scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposables);
-            scroll.OnDoubleClick.Subscribe(OnDoubleClick).AddTo(_disposables);
+            scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposablesOnSet);
+            scroll.OnDoubleClick.Subscribe(OnDoubleClick).AddTo(_disposablesOnSet);
         }
 
         private void SetToggle(IToggleable toggle, ItemType itemType)
