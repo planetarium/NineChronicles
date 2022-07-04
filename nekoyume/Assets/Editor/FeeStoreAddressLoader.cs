@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.IO;
+using System.Text;
 using Nekoyume;
 using UnityEditor;
 using UnityEngine;
@@ -7,36 +9,61 @@ namespace Editor
 {
     public static class FeeStoreAddressLoader
     {
-
         [MenuItem("Tools/Get Fee Store Address")]
         public static void LoadAddress()
         {
+            GetAddress(FeeType.Shop);
+            GetAddress(FeeType.BlackSmith);
+        }
+
+        private enum FeeType
+        {
+            Shop,
+            BlackSmith,
+        }
+
+        private static void GetAddress(FeeType feeType)
+        {
+            var path = $"{Application.dataPath}/_Scripts/Lib9c/lib9c/Lib9c/TableCSV/Arena/ArenaSheet.csv";
+            var sr = new StreamReader(path);
+            var eof = false;
+            var isFirst = true;
             var sb = new StringBuilder();
-            var shopZero = Addresses.GetShopFeeAddress(0, 0);
-            sb.Append("<SHOP>\n");
-            sb.Append($"Shop_0_0 : {shopZero}\n");
-            for (var i = 1; i < 10; i++)
-            {
-                for (var j = 1; j < 8; j++)
-                {
-                    var address = Addresses.GetShopFeeAddress(i, j);
-                    sb.Append($"Shop_{i}_{j} : {address}\n");
-                }
-            }
 
-            Debug.Log(sb);
+            sb.Append($"<{feeType.ToString()}>\n");
 
-            sb.Length = 0;
-            var blacksmithZero = Addresses.GetBlacksmithFeeAddress(0, 0);
-            sb.Append("<BLACKSMITH>\n");
-            sb.Append($"Blacksmith_0_0 : {blacksmithZero}");
-            for (var i = 0; i < 10; i++)
+            while (!eof)
             {
-                for (var j = 0; j < 8; j++)
+                var line = sr.ReadLine();
+                if(line == null)
                 {
-                    var address = Addresses.GetBlacksmithFeeAddress(i, j);
-                    sb.Append($"Blacksmith{i}_{j} : {address}");
+                    eof = true;
+                    break;
                 }
+
+                if (isFirst)
+                {
+                    var firstAddress = feeType switch
+                    {
+                        FeeType.Shop => Addresses.GetShopFeeAddress(0, 0),
+                        FeeType.BlackSmith => Addresses.GetBlacksmithFeeAddress(0, 0),
+                        _ => throw new ArgumentOutOfRangeException(nameof(feeType), feeType, null)
+                    };
+                    sb.Append($"{feeType.ToString()}{0}_{0} : {firstAddress}\n");
+                    isFirst = false;
+                    continue;
+                }
+
+                var values = line.Split(',');
+                var championshipId = Convert.ToInt16(values[0]);
+                var round = Convert.ToInt16(values[1]);
+                var address = feeType switch
+                {
+                    FeeType.Shop => Addresses.GetShopFeeAddress(championshipId, round),
+                    FeeType.BlackSmith => Addresses.GetBlacksmithFeeAddress(championshipId, round),
+                    _ => throw new ArgumentOutOfRangeException(nameof(feeType), feeType, null)
+                };
+                sb.Append($"{feeType.ToString()}{championshipId}_{round} : {address}\n");
             }
 
             Debug.Log(sb);
