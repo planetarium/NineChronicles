@@ -75,7 +75,6 @@ namespace Nekoyume.UI.Module
         private bool _reverseOrder;
         private bool _allowMoveTab;
         private string _notAllowedMoveTabMessage;
-        private bool _isArena;
 
         public bool HasNotification => _equipments.Any(x =>
             x.Value.Any(item => item.HasNotification.Value));
@@ -136,7 +135,8 @@ namespace Nekoyume.UI.Module
 
         private void Set(
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
-            List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null)
+            List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null,
+            bool isArena = false)
         {
             _disposables.DisposeAllAndClear();
             foreach (var type in ItemTypes)
@@ -147,7 +147,7 @@ namespace Nekoyume.UI.Module
             itemSetDimPredicates?.ForEach(tuple =>
                 _dimConditionFuncsByItemType[tuple.type].Add(tuple.predicate));
 
-            if (_isArena)
+            if (isArena)
             {
                 var inventory = RxProps.PlayersArenaParticipant.Value.AvatarState.inventory;
                 SetInventory(inventory, onUpdateInventory);
@@ -491,7 +491,6 @@ namespace Nekoyume.UI.Module
             IEnumerable<ElementalType> elementalTypes,
             bool isArena = false)
         {
-            _isArena = isArena;
             _reverseOrder = false;
             SetAction(clickItem, doubleClickItem, clickEquipmentToggle, clickCostumeToggle);
             var predicateByElementalType =
@@ -500,7 +499,9 @@ namespace Nekoyume.UI.Module
                 ? new List<(ItemType type, Predicate<InventoryItem>)>
                     { (ItemType.Equipment, predicateByElementalType) }
                 : null;
-            Set(itemSetDimPredicates: predicateList);
+            Set(
+                itemSetDimPredicates: predicateList,
+                isArena: isArena);
             _allowMoveTab = true;
         }
 
