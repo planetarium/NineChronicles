@@ -100,7 +100,10 @@ namespace Nekoyume.Action
                 throw new StakeExistingClaimableException();
             }
 
-            if (!stakeState.IsCancellable(context.BlockIndex) && targetStakeBalance < stakedBalance)
+            if (!stakeState.IsCancellable(context.BlockIndex) &&
+                (context.BlockIndex >= 4611070
+                    ? targetStakeBalance <= stakedBalance
+                    : targetStakeBalance < stakedBalance))
             {
                 throw new RequiredBlockIndexException();
             }

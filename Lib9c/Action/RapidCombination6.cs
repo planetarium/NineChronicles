@@ -15,11 +15,13 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1194
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/682
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Updated at https://github.com/planetarium/lib9c/pull/1194
     /// </summary>
     [Serializable]
-    [ActionType("rapid_combination7")]
-    public class RapidCombination : GameAction
+    [ActionType("rapid_combination6")]
+    public class RapidCombination6 : GameAction
     {
         public Address avatarAddress;
         public int slotIndex;
@@ -101,9 +103,9 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");
             }
 
-            if (slotState.TryGetResultId(out var resultId) &&
+            if (slotState.TryGetResultIdV1(out var resultId) &&
                 avatarState.mailBox.All(mail => mail.id != resultId) &&
-                slotState.TryGetMail(
+                slotState.TryGetMailV1(
                     context.BlockIndex,
                     context.BlockIndex,
                     out var combinationMail,

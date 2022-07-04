@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class RapidCombinationTest
+    public class RapidCombination6Test
     {
         private readonly IAccountStateDelta _initialState;
 
@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
-        public RapidCombinationTest()
+        public RapidCombination6Test()
         {
             _initialState = new State();
 
@@ -130,7 +130,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, avatarState.SerializeV2());
             }
 
-            var action = new RapidCombination
+            var action = new RapidCombination6
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -164,7 +164,7 @@ namespace Lib9c.Tests.Action
             var tempState = _initialState
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination
+            var action = new RapidCombination6
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -218,7 +218,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination
+            var action = new RapidCombination6
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -274,7 +274,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination
+            var action = new RapidCombination6
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -350,7 +350,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination
+            var action = new RapidCombination6
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -386,7 +386,7 @@ namespace Lib9c.Tests.Action
 
             var state = new State();
 
-            var action = new RapidCombination
+            var action = new RapidCombination6
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -518,7 +518,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination
+            var action = new RapidCombination6
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -533,12 +533,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(7)]
-        [InlineData(9)]
-        [InlineData(10)]
-        [InlineData(11)]
-        public void Execute_NotThrow_InvalidOperationException_When_TargetSlotCreatedBy(
-            int itemEnhancementResultModelNumber)
+        [InlineData(7, false)]
+        [InlineData(9, true)]
+        [InlineData(10, true)]
+        [InlineData(11, false)]
+        public void Execute_Throw_InvalidOperationException_When_TargetSlotCreatedBy(
+            int itemEnhancementResultModelNumber,
+            bool shouldThrow)
         {
             const int slotStateUnlockStage = 1;
 
@@ -689,18 +690,33 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
                 .SetState(_avatarAddress, avatarState.SerializeV2());
 
-            var action = new RapidCombination
+            var action = new RapidCombination6
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
             };
 
-            action.Execute(new ActionContext
+            if (shouldThrow)
             {
-                PreviousStates = tempState,
-                Signer = _agentAddress,
-                BlockIndex = 51,
-            });
+                Assert.Throws<InvalidOperationException>(() =>
+                {
+                    action.Execute(new ActionContext
+                    {
+                        PreviousStates = tempState,
+                        Signer = _agentAddress,
+                        BlockIndex = 51,
+                    });
+                });
+            }
+            else
+            {
+                action.Execute(new ActionContext
+                {
+                    PreviousStates = tempState,
+                    Signer = _agentAddress,
+                    BlockIndex = 51,
+                });
+            }
         }
     }
 }

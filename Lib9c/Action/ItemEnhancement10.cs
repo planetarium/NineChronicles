@@ -39,6 +39,7 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public int slotIndex;
 
+        // NOTE: This is equals to [`ItemEnhancement9.ResultModel`].
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {

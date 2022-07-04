@@ -25,6 +25,20 @@ namespace Nekoyume.Model.Skill.Arena
             return new BattleStatus.Arena.ArenaHeal(clone, heal, buff);
         }
 
+        [Obsolete("Use Use")]
+        public override BattleStatus.Arena.ArenaSkill UseV1(
+            ArenaCharacter caster,
+            ArenaCharacter target,
+            int turn,
+            IEnumerable<Buff.Buff> buffs)
+        {
+            var clone = (ArenaCharacter)caster.Clone();
+            var heal = ProcessHeal(caster, turn);
+            var buff = ProcessBuffV1(caster, target, turn, buffs);
+
+            return new BattleStatus.Arena.ArenaHeal(clone, heal, buff);
+        }
+
         private IEnumerable<BattleStatus.Arena.ArenaSkill.ArenaSkillInfo> ProcessHeal(
             ArenaCharacter caster,
             int turn)
