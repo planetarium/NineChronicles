@@ -29,7 +29,14 @@ namespace Nekoyume.UI
 
         [SerializeField] private RectTransform tooltipRectTransform;
 
-        [SerializeField] private TextMeshProUGUI tooltipText;
+        [SerializeField]
+        private StakingItemView systemRewardView;
+
+        [SerializeField]
+        private TextMeshProUGUI tooltipText;
+
+        [SerializeField]
+        private GameObject systemRewardArea;
 
         private const string StepScoreFormat = "{0}<size=18><color=#A36F56>/{1}</color></size>";
 
@@ -63,9 +70,12 @@ namespace Nekoyume.UI
             var deposit = States.Instance.StakedBalanceState?.Gold.MajorUnit ?? 0;
             var regularSheet = TableSheets.Instance.StakeRegularRewardSheet;
             var regularFixedSheet = TableSheets.Instance.StakeRegularFixedRewardSheet;
+            var sheets = TableSheets.Instance;
+            var stakingMultiplierSheet = sheets.CrystalMonsterCollectionMultiplierSheet;
 
             stepImage.sprite = SpriteHelper.GetStakingIcon(level);
             stepText.text = $"Step {level}";
+            systemRewardArea.SetActive(false);
 
             if (regularSheet.TryGetValue(level, out var regular)
                 && regularFixedSheet.TryGetValue(level, out var regularFixed))
@@ -94,14 +104,31 @@ namespace Nekoyume.UI
                 stepScoreText.text = string.Format(StepScoreFormat, deposit, nextRequired);
             }
 
+            if (stakingMultiplierSheet.TryGetValue(level, out var row))
+            {
+                if (row.Multiplier > 0)
+                {
+                    systemRewardArea.SetActive(true);
+                    systemRewardView.Set(
+                        $"{row.Multiplier}%",
+                        () => ShowToolTip(L10nManager.Localize("UI_STAKING_BONUS_CRYSTAL"),
+                            systemRewardView.transform));
+                }
+            }
+
             base.Show(ignoreStartAnimation);
         }
 
         private void ShowToolTip(ItemBase itemBase, Transform target)
         {
-            tooltipRectTransform.gameObject.SetActive(true);
-            tooltipText.text = itemBase.GetLocalizedDescription();
+            ShowToolTip(itemBase.GetLocalizedDescription(), target);
+        }
+
+        private void ShowToolTip(string message, Transform target)
+        {
+            tooltipText.text = message;
             tooltipRectTransform.position = target.position;
+            tooltipRectTransform.gameObject.SetActive(true);
         }
     }
 }
