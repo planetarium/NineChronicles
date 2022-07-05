@@ -72,18 +72,18 @@ namespace Nekoyume.UI.Module
             _hasEnoughStars = starCount >= row.MaxStar;
             if (_hasEnoughStars)
             {
-                _disposableForOnDisabled?.Dispose();
                 _disposableForOnDisabled = Widget.Find<BuffBonusResultPopup>().OnBuffSelectedSubject
-                    .Subscribe(_ => SetIcon(skillState));
+                    .Subscribe(_ => SetIcon());
             }
 
             starCountText.text = $"{starCount}/{row.MaxStar}";
-            SetIcon(skillState);
+            SetIcon();
             gameObject.SetActive(true);
         }
 
-        private void SetIcon(CrystalRandomSkillState skillState)
+        private void SetIcon()
         {
+            var skillState = States.Instance.CrystalRandomSkillState;
             var isBuffAvailable = skillState != null && _hasEnoughStars;
             var selectedId = Widget.Find<BuffBonusResultPopup>().SelectedSkillId;
 

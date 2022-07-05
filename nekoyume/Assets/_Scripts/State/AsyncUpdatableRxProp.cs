@@ -8,6 +8,8 @@ namespace Nekoyume.State
 
     public interface IReadOnlyAsyncUpdatableRxProp<T> : IReadOnlyReactiveProperty<T>
     {
+        bool IsUpdating { get; }
+
         UniTask<T> UpdateAsync(bool forceNotify = false);
 
         IObservable<T> UpdateAsObservable(bool forceNotify = false);
@@ -30,6 +32,8 @@ namespace Nekoyume.State
     {
         private readonly Func<T, Task<T>> _updateAsyncFunc;
 
+        public bool IsUpdating { get; private set; } = false;
+
         public AsyncUpdatableRxProp(Func<T, Task<T>> updateAsyncFunc) :
             this(default, updateAsyncFunc)
         {
@@ -44,8 +48,10 @@ namespace Nekoyume.State
 
         public async UniTask<T> UpdateAsync(bool forceNotify = false)
         {
+            IsUpdating = true;
             var t = await Task.Run(async () =>
                 await _updateAsyncFunc(Value));
+            IsUpdating = false;
             if (forceNotify)
             {
                 SetValueAndForceNotify(t);

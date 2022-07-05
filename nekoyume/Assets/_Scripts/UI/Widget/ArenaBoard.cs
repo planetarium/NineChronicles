@@ -57,6 +57,18 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
         }
 
+        public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
+        {
+            var loading = Find<DataLoadingScreen>();
+            loading.Show();
+            await UniTask.WaitWhile(() =>
+                RxProps.ArenaParticipantsOrderedWithScore.IsUpdating);
+            loading.Close();
+            Show(
+                RxProps.ArenaParticipantsOrderedWithScore.Value,
+                ignoreShowAnimation);
+        }
+
         public void Show(
             RxProps.ArenaParticipant[] arenaParticipants,
             bool ignoreShowAnimation = false) =>
