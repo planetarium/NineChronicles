@@ -158,7 +158,7 @@ namespace Nekoyume.Game
             Game.instance.IsInWorld = false;
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
-            Widget.Find<ArenaBoard>().Show(RxProps.ArenaParticipantsOrderedWithScore.Value);
+            Widget.Find<ArenaBoard>().ShowAsync().Forget();
             _isPlaying = false;
         }
 
