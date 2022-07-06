@@ -24,6 +24,7 @@ namespace Nekoyume
             if (itemRow is null ||
                 !(itemRow is MaterialItemSheet.Row materialRow))
             {
+                tradableId = default(Guid);
                 return false;
             }
 
@@ -37,6 +38,7 @@ namespace Nekoyume
             if (itemRow is null ||
                 !(itemRow is MaterialItemSheet.Row materialRow))
             {
+                fungibleId = default(HashDigest<SHA256>);
                 return false;
             }
 
