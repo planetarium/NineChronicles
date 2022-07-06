@@ -17,6 +17,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Libplanet.Action;
+using Nekoyume.TableData;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Tools.SubCommand
@@ -137,6 +138,17 @@ namespace Lib9c.Tools.SubCommand
             Console.Error.Write("\n----------------\n");
             var tableCsv = File.ReadAllText(tablePath);
             Console.Error.Write(tableCsv);
+
+            var type = typeof(ISheet).Assembly
+                .GetTypes()
+                .First(type => type.Namespace is { } @namespace &&
+                               @namespace.StartsWith($"{nameof(Nekoyume)}.{nameof(Nekoyume.TableData)}") &&
+                               !type.IsAbstract &&
+                               typeof(ISheet).IsAssignableFrom(type) &&
+                               type.Name == tableName);
+            var sheet = (ISheet) Activator.CreateInstance(type);
+            sheet!.Set(tableCsv);
+
             var action = new PatchTableSheet
             {
                 TableName = tableName,
