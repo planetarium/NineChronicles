@@ -31,5 +31,8 @@ title "Build binary"
   -batchmode \
   -nographics \
   -logFile \
+  -username "$UNITY_EMAIL" \
+  -password "$UNITY_PASSWORD" \
+  -serial "$UNITY_SERIAL" \
   -projectPath nekoyume \
   -executeMethod "Editor.Builder.Build""$build_target"

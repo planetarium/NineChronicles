@@ -15,7 +15,7 @@ jobs:
         projectPath:
           - nekoyume
         unityVersion:
-          - 2020.3.4f1
+          - 2021.3.5f1
         targetPlatform:
           - Windows
           - macOS
@@ -26,11 +26,11 @@ jobs:
           targetPlatform=${{ matrix.targetPlatform }}
 
           if [ "$targetPlatform" == "Windows" ]; then
-            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-windows-mono-0.11" >> $GITHUB_ENV
+            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-windows-mono-1" >> $GITHUB_ENV
           elif [ "$targetPlatform" == "macOS" ]; then
-            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-mac-mono-0.11" >> $GITHUB_ENV
+            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-mac-mono-1" >> $GITHUB_ENV
           elif [ "$targetPlatform" == "Linux" ]; then
-            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-linux-il2cpp-1.0" >> $GITHUB_ENV
+            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-linux-il2cpp-1" >> $GITHUB_ENV
           fi
 
       - uses: actions/checkout@v2
@@ -71,7 +71,10 @@ jobs:
       - name: Build Unity Player using docker
         run: |
           docker run \
-            --env ULF="${{ secrets.ULF_2020_3_0_F1 }}" \
+            --env UNITY_LICENSE="${{ secrets.UNITY_LICENSE }}" \
+            --env UNITY_EMAIL="${{ secrets.UNITY_EMAIL }}" \
+            --env UNITY_PASSWORD="${{ secrets.UNITY_PASSWORD }}" \
+            --env UNITY_SERIAL="${{ secrets.UNITY_SERIAL }}" \
             -w "${{ github.workspace }}" \
             -v "${{ github.workspace }}":"${{ github.workspace }}" \
             unityci/editor:${DOCKER_IMAGE_TAG} \
