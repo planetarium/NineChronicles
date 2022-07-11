@@ -251,10 +251,7 @@ namespace Nekoyume.Action
                     }
                     else
                     {
-                        selectedId = skillState.SkillIds
-                            .OrderBy(id => crystalRandomBuffSheet[id].Rank)
-                            .ThenBy(id => id)
-                            .First();
+                        selectedId = skillState.GetHighestRankSkill(crystalRandomBuffSheet);
                     }
 
                     var skill = CrystalRandomSkillState.GetSkill(
