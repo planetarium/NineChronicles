@@ -770,9 +770,37 @@ namespace Nekoyume.UI
                 case StageType.HackAndSlash:
                     var skillState = States.Instance.CrystalRandomSkillState;
                     var buffResult = Find<BuffBonusResultPopup>();
-                    var skillId = skillState != null && skillState.SkillIds.Any() ?
-                        buffResult.SelectedSkillId : null;
-                    buffResult.SelectedSkillId = null;
+                    var skillId = PlayerPrefs.GetInt("HackAndSlash.SelectedBonusSkillId", 0);
+                    if (skillId == 0)
+                    {
+                        if (skillState == null ||
+                            !skillState.SkillIds.Any())
+                        {
+                            Game.Game.instance.ActionManager.HackAndSlash(
+                                costumes,
+                                equipments,
+                                consumables,
+                                _worldId,
+                                _stageId.Value
+                            ).Subscribe();
+                            break;
+                        }
+
+                        skillId = skillState.SkillIds
+                            .Select(buffId =>
+                            {
+                                var randomBuffSheet = Game.Game.instance.TableSheets.CrystalRandomBuffSheet;
+                                if (!randomBuffSheet.TryGetValue(buffId, out var bonusBuffRow))
+                                {
+                                    return null;
+                                }
+                                return bonusBuffRow;
+                            })
+                            .OrderBy(x => x.Rank)
+                            .ThenBy(x => x.Id)
+                            .First()
+                            .Id;
+                    }
 
                     Game.Game.instance.ActionManager.HackAndSlash(
                         costumes,
@@ -782,6 +810,7 @@ namespace Nekoyume.UI
                         _stageId.Value,
                         skillId
                     ).Subscribe();
+                    PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", 0);
                     break;
                 case StageType.Mimisbrunnr:
                     Game.Game.instance.ActionManager.MimisbrunnrBattle(

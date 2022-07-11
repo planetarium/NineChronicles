@@ -81,6 +81,7 @@ namespace Nekoyume.UI
             {
                 var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
                 Find<PaymentPopup>().ShowAttract(
+                    CostType.Crystal,
                     _normalCost,
                     message,
                     L10nManager.Localize("UI_GO_GRINDING"),
