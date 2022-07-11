@@ -32,8 +32,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<GameObject> buffViewParents = null;
 
-        public int? SelectedSkillId { get; set; }
-
         private int _stageId;
 
         private readonly Dictionary<GameObject, BonusBuffView> buffViewMap
@@ -69,7 +67,7 @@ namespace Nekoyume.UI
                         selectedBuffText.text = view.CurrentSkillName;
                         selectedBuffIcon.sprite = view.CurrentIcon;
                         selectedBuffBg.sprite = view.CurrentGradeData.BgSprite;
-                        SelectedSkillId = row.Id;
+                        PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", row.Id);
                     }
                 }
             })
@@ -106,9 +104,15 @@ namespace Nekoyume.UI
                 viewParent.SetActive(true);
             }
 
-            var selectedBuff = SelectedSkillId.HasValue ?
-                buffs.First(x => x.Id == SelectedSkillId) : buffs.First();
-            SelectedSkillId = selectedBuff.Id;
+            var selectedId = PlayerPrefs.GetInt("HackAndSlash.SelectedBonusSkillId", 0);
+            var contains = buffs.Any(x => x.Id == selectedId);
+            var selectedBuff = contains ?
+                buffs.First(x => x.Id == selectedId) : buffs.First();
+            if (!contains)
+            {
+                PlayerPrefs.SetFloat("HackAndSlash.SelectedBonusSkillId", selectedBuff.Id);
+            }
+
             OnBuffSelectedSubject.OnNext(selectedBuff);
             base.Show();
         }
@@ -116,7 +120,7 @@ namespace Nekoyume.UI
         private void Retry()
         {
             Close();
-            SelectedSkillId = null;
+            PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", 0);
             var hasEnoughStar =
                 Game.Game.instance.TableSheets.CrystalStageBuffGachaSheet.TryGetValue(_stageId, out var row)
                 && States.Instance.CrystalRandomSkillState.StarCount >= row.MaxStar;
