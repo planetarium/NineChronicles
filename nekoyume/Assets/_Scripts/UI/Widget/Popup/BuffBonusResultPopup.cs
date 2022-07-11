@@ -110,7 +110,7 @@ namespace Nekoyume.UI
                 buffs.First(x => x.Id == selectedId) : buffs.First();
             if (!contains)
             {
-                PlayerPrefs.SetFloat("HackAndSlash.SelectedBonusSkillId", selectedBuff.Id);
+                PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", selectedBuff.Id);
             }
 
             OnBuffSelectedSubject.OnNext(selectedBuff);
