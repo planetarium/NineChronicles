@@ -17,6 +17,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.Quest;
+    using Nekoyume.Model.Skill;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -1017,20 +1018,26 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(false, false, false)]
-        [InlineData(false, true, true)]
-        [InlineData(false, true, false)]
-        [InlineData(true, false, false)]
-        [InlineData(true, true, false)]
-        [InlineData(true, true, true)]
-        public void CheckCrystalRandomSkillState(bool clear, bool skillStateExist, bool hasCrystalSkill)
+        [InlineData(false, false, false, false)]
+        [InlineData(false, true, true, false)]
+        [InlineData(false, true, true, true)]
+        [InlineData(false, true, false, false)]
+        [InlineData(true, false, false, false)]
+        [InlineData(true, true, false, false)]
+        [InlineData(true, true, true, false)]
+        [InlineData(true, true, true, true)]
+        public void CheckCrystalRandomSkillState(
+            bool clear,
+            bool skillStateExist,
+            bool useCrystalSkill,
+            bool setSkillByArgument)
         {
             const int worldId = 1;
-            const int stageId = 5;
-            const int clearedStageId = 4;
+            const int stageId = 10;
+            const int clearedStageId = 9;
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.actionPoint = 999999;
-            previousAvatarState.level = clear ? 400 : 3;
+            previousAvatarState.level = clear ? 400 : 1;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
@@ -1094,12 +1101,21 @@ namespace Lib9c.Tests.Action
             if (skillStateExist)
             {
                 skillState = new CrystalRandomSkillState(skillStateAddress, stageId);
-                if (hasCrystalSkill)
+                if (useCrystalSkill)
                 {
                     skillState.Update(int.MaxValue, _tableSheets.CrystalStageBuffGachaSheet);
+                    skillState.Update(_tableSheets.CrystalRandomBuffSheet
+                        .Select(pair => pair.Value.Id).ToList());
                 }
 
                 state = state.SetState(skillStateAddress, skillState.Serialize());
+            }
+
+            int? stageBuffId = null;
+            if (useCrystalSkill)
+            {
+                stageBuffId = skillState?.GetHighestRankSkill(_tableSheets.CrystalRandomBuffSheet);
+                Assert.NotNull(stageBuffId);
             }
 
             var action = new HackAndSlash
@@ -1112,9 +1128,9 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                stageBuffId = skillState?.SkillIds
-                    .OrderBy(key => _tableSheets.CrystalRandomBuffSheet[key].Rank)
-                    .FirstOrDefault(),
+                stageBuffId = setSkillByArgument
+                    ? stageBuffId
+                    : null,
             };
 
             var ctx = new ActionContext
@@ -1126,10 +1142,24 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
             };
             var nextState = action.Execute(ctx);
+            var skillsOnWaveStart = new List<Skill>();
+            if (useCrystalSkill)
+            {
+                var skill = _tableSheets
+                    .SkillSheet
+                    .FirstOrDefault(pair => pair.Key == _tableSheets
+                        .CrystalRandomBuffSheet[stageBuffId.Value].SkillId);
+                if (skill.Value != null)
+                {
+                    skillsOnWaveStart.Add(SkillFactory.Get(skill.Value, default, 100));
+                }
+            }
+
             var simulator = new StageSimulator(
                 new TestRandom(ctx.Random.Seed),
                 previousAvatarState,
                 new List<Guid>(),
+                skillsOnWaveStart,
                 worldId,
                 stageId,
                 _tableSheets.GetStageSimulatorSheets(),
@@ -1152,11 +1182,7 @@ namespace Lib9c.Tests.Action
             else
             {
                 Assert.Equal(stageId, nextSkillState.StageId);
-                Assert.Equal(
-                    hasCrystalSkill
-                        ? _tableSheets.CrystalStageBuffGachaSheet[stageId].MaxStar
-                        : log.clearedWaveNumber,
-                    nextSkillState.StarCount);
+                Assert.Equal(log.clearedWaveNumber, nextSkillState.StarCount);
             }
 
             Assert.Empty(nextSkillState.SkillIds);
