@@ -77,7 +77,8 @@ namespace Nekoyume.Model.State
         public int GetHighestRankSkill(CrystalRandomBuffSheet crystalRandomBuffSheet)
         {
             return SkillIds
-                .OrderBy(key => crystalRandomBuffSheet[key].Rank)
+                .OrderBy(id => crystalRandomBuffSheet[id].Rank)
+                .ThenBy(id => id)
                 .FirstOrDefault();
         }
     }
