@@ -13,6 +13,9 @@ namespace Nekoyume.UI.Module.Lobby
     public class ArenaMenu : MainMenu
     {
         [SerializeField]
+        private GameObject _ticketCountGO;
+
+        [SerializeField]
         private TextMeshProUGUI _ticketCount;
 
         [SerializeField]
@@ -56,6 +59,7 @@ namespace Nekoyume.UI.Module.Lobby
         {
             var (currentTicketCount, _, _, _, remainTimespan) =
                 tuple;
+            _ticketCountGO.SetActive(currentTicketCount > 0);
             _ticketCount.text = currentTicketCount.ToString();
             _ticketResetTime.text = remainTimespan;
         }

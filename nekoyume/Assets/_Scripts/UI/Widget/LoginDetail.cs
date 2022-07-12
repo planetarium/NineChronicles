@@ -11,6 +11,7 @@ using Nekoyume.Model.State;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Action;
 using Nekoyume.Game;
 using Nekoyume.Helper;
@@ -113,6 +114,7 @@ namespace Nekoyume.UI
 
         public void CreateClick()
         {
+            AudioController.PlayClick();
             Analyzer.Instance.Track("Unity/Create Click");
             var inputBox = Find<InputBoxPopup>();
             inputBox.CloseCallback = result =>
@@ -148,7 +150,6 @@ namespace Nekoyume.UI
                     Find<GrayLoadingScreen>().Close();
                 })
                 .Subscribe();
-            AudioController.PlayClick();
         }
 
         public void OnRenderCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
@@ -179,10 +180,15 @@ namespace Nekoyume.UI
 
         public async void LoginClick()
         {
-            btnLogin.SetActive(false);
-            var avatarState = await States.Instance.SelectAvatarAsync(_selectedIndex);
-            OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
+            btnLogin.SetActive(false);
+            var loadingScreen = Find<GrayLoadingScreen>();
+            loadingScreen.Show();
+            var results = await UniTask.WhenAll(
+                States.Instance.SelectAvatarAsync(_selectedIndex),
+                RxProps.ArenaInfoTuple.UpdateAsync());
+            loadingScreen.Close();
+            OnDidAvatarStateLoaded(results.Item1);
         }
 
         public void BackToLogin()
