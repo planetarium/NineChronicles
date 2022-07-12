@@ -41,6 +41,9 @@ namespace Nekoyume.Helper
         private static readonly string MailIconDefaultPath =
             string.Format(MailIconPathFormat, "icon_mail_system");
 
+        private const string WorldmapBackgroundPath = "UI/Textures/00_WorldMap/battle_UI_BG_{0}_{1:D2}";
+        private const string WorldmapBackgroundDefaultPath = "UI/Textures/00_WorldMap/battle_UI_BG_01_{0:D2}";
+
         public static Sprite GetCharacterIcon(int characterId)
         {
             return Resources.Load<Sprite>(string.Format(CharacterIconPathFormat, characterId)) ??
@@ -154,6 +157,20 @@ namespace Nekoyume.Helper
             var data = Resources.Load<StakeIconDataScriptableObject>(
                         "ScriptableObject/UI_StakeIconData");
             return data.GetIcon(level, smallIcon);
+        }
+
+        public static Sprite GetWorldMapBackground(string imageKey, int pageIndex)
+        {
+            var path = string.Format(WorldmapBackgroundPath, imageKey, pageIndex);
+            var sprite = Resources.Load<Sprite>(path);
+            if (sprite)
+            {
+                return sprite;
+            }
+
+            var defaultPath = string.Format(WorldmapBackgroundDefaultPath, pageIndex);
+            var defaultSprite = Resources.Load<Sprite>(defaultPath);
+            return defaultSprite;
         }
     }
 }
