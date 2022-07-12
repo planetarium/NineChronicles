@@ -175,8 +175,8 @@ namespace Nekoyume.UI
             if (Game.Game.instance.TableSheets.CharacterSheet.TryGetValue(_characterId, out var characterData))
             {
                 var localizedName = L10nManager.LocalizeCharacterName(_characterId);
-                var res = Resources.Load<Sprite>($"Images/character_{characterData.Id}");
-                imgCharacter.overrideSprite = res;
+                var sprite = SpriteHelper.GetDialogPortrait(_characterId.ToString(), false);
+                imgCharacter.overrideSprite = sprite;
                 imgCharacter.SetNativeSize();
                 imgCharacter.enabled = imgCharacter.sprite != null;
                 txtName.text = localizedName;
@@ -195,8 +195,8 @@ namespace Nekoyume.UI
                     localizedName = "???";
                 }
 
-                var res = Resources.Load<Sprite>($"Images/npc/NPC_{_npc}");
-                imgCharacter.overrideSprite = res;
+                var sprite = SpriteHelper.GetDialogPortrait(_npc);
+                imgCharacter.overrideSprite = sprite;
                 imgCharacter.SetNativeSize();
                 imgCharacter.enabled = imgCharacter.overrideSprite != null;
                 txtName.text = localizedName;
