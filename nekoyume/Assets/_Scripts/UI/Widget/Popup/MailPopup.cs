@@ -64,8 +64,6 @@ namespace Nekoyume.UI
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
-        private static Sprite _selectedButtonSprite;
-
         private const int TutorialEquipmentId = 10110000;
 
         public MailBox MailBox { get; private set; }
@@ -89,7 +87,6 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
 
             ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject

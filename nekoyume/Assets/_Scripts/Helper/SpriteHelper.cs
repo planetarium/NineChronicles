@@ -41,6 +41,12 @@ namespace Nekoyume.Helper
         private static readonly string MailIconDefaultPath =
             string.Format(MailIconPathFormat, "icon_mail_system");
 
+        private const string WorldmapBackgroundPathFormat = "UI/Textures/00_WorldMap/battle_UI_BG_{0}_{1:D2}";
+        private const string WorldmapBackgroundDefaultPathFormat = "UI/Textures/00_WorldMap/battle_UI_BG_01_{0:D2}";
+
+        private const string DialogNPCPortaitPathFormat = "Images/npc/NPC_{0}";
+        private const string DialogCharacterPortaitPathFormat = "Images/character_{0}";
+
         public static Sprite GetCharacterIcon(int characterId)
         {
             return Resources.Load<Sprite>(string.Format(CharacterIconPathFormat, characterId)) ??
@@ -154,6 +160,27 @@ namespace Nekoyume.Helper
             var data = Resources.Load<StakeIconDataScriptableObject>(
                         "ScriptableObject/UI_StakeIconData");
             return data.GetIcon(level, smallIcon);
+        }
+
+        public static Sprite GetWorldMapBackground(string imageKey, int pageIndex)
+        {
+            var path = string.Format(WorldmapBackgroundPathFormat, imageKey, pageIndex);
+            var sprite = Resources.Load<Sprite>(path);
+            if (sprite)
+            {
+                return sprite;
+            }
+
+            var defaultPath = string.Format(WorldmapBackgroundDefaultPathFormat, pageIndex);
+            var defaultSprite = Resources.Load<Sprite>(defaultPath);
+            return defaultSprite;
+        }
+
+        public static Sprite GetDialogPortrait(string key, bool isNPC = true)
+        {
+            var path = string.Format(isNPC ?
+                DialogNPCPortaitPathFormat : DialogCharacterPortaitPathFormat, key);
+            return Resources.Load<Sprite>(path);
         }
     }
 }
