@@ -237,7 +237,7 @@ namespace Nekoyume.State
 
             _arenaInfoTupleUpdatedBlockIndex = _agent.BlockIndex;
 
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var blockIndex = _agent.BlockIndex;
             var sheet = _tableSheets.ArenaSheet;
             if (!sheet.TryGetCurrentRound(blockIndex, out var currentRoundData))
             {
@@ -255,7 +255,7 @@ namespace Nekoyume.State
                     nextRoundData.ChampionshipId,
                     nextRoundData.Round)
                 : default;
-            var dict = await Game.Game.instance.Agent.GetStateBulk(
+            var dict = await _agent.GetStateBulk(
                 new[]
                 {
                     currentArenaInfoAddress,
@@ -291,7 +291,7 @@ namespace Nekoyume.State
 
             _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = _agent.BlockIndex;
 
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var blockIndex = _agent.BlockIndex;
             var currentAvatar = _states.CurrentAvatarState;
             var currentAvatarAddr = currentAvatar.address;
             var currentRoundData = _tableSheets.ArenaSheet.GetRoundByBlockIndex(blockIndex);
