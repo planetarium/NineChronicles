@@ -164,7 +164,7 @@ namespace Nekoyume.Model
         {
         }
 
-        public Player(ArenaPlayerDigest enemyPlayerDigest, ArenaSimulatorSheets simulatorSheets)
+        public Player(PlayerDigest enemyPlayerDigest, ArenaSimulatorSheets simulatorSheets)
              : base(null,
                  simulatorSheets.CharacterSheet,
                  enemyPlayerDigest.CharacterId,

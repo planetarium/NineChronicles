@@ -5,11 +5,11 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Assets;
 using Nekoyume.Arena;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
+using Nekoyume.Model;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
@@ -36,8 +36,8 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
 
-        public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
-        public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
+        public PlayerDigest ExtraMyPlayerDigest;
+        public PlayerDigest ExtraEnemyPlayerDigest;
         public int ExtraPreviousMyScore;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -252,8 +252,8 @@ namespace Nekoyume.Action
 
             // simulate
             var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
-            ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(avatarState, myArenaAvatarState);
-            ExtraEnemyArenaPlayerDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+            ExtraMyPlayerDigest = new PlayerDigest(avatarState, myArenaAvatarState);
+            ExtraEnemyPlayerDigest = new PlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             ExtraPreviousMyScore = myArenaScore.Score;
             var arenaSheets = sheets.GetArenaSimulatorSheets();
             var winCount = 0;
@@ -262,7 +262,7 @@ namespace Nekoyume.Action
             for (var i = 0; i < ticket; i++)
             {
                 var simulator = new ArenaSimulator(context.Random);
-                var log = simulator.Simulate(ExtraMyArenaPlayerDigest, ExtraEnemyArenaPlayerDigest, arenaSheets);
+                var log = simulator.Simulate(ExtraMyPlayerDigest, ExtraEnemyPlayerDigest, arenaSheets);
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {
                     winCount++;
@@ -276,7 +276,7 @@ namespace Nekoyume.Action
                     context.Random,
                     sheets.GetSheet<WeeklyArenaRewardSheet>(),
                     sheets.GetSheet<MaterialItemSheet>(),
-                    ExtraMyArenaPlayerDigest.Level,
+                    ExtraMyPlayerDigest.Level,
                     maxCount: ArenaHelper.GetRewardCount(ExtraPreviousMyScore));
                 rewards.AddRange(reward);
             }
