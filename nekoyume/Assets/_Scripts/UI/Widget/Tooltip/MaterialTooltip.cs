@@ -292,6 +292,8 @@ namespace Nekoyume.UI
                                 worldMap.SharedViewModel.SelectedStageId.Value,
                                 $"{L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}")} {stageNum}",
                                 true);
+                            Find<HeaderMenuStatic>()
+                                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
                         },
                         $"{L10nManager.LocalizeWorldName(worldId)} {stageRow.Id % 10_000_000}",
                         itemBase,
