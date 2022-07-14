@@ -157,6 +157,8 @@ namespace Lib9c.Tests
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
+        public WorldBossListSheet WorldBossListSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();

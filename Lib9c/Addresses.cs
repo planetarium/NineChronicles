@@ -28,6 +28,7 @@ namespace Nekoyume
         public static readonly Address MaterialCost          = new Address("0000000000000000000000000000000000000010");
         public static readonly Address StageRandomBuff       = new Address("0000000000000000000000000000000000000011");
         public static readonly Address Arena                 = new Address("0000000000000000000000000000000000000012");
+        public static readonly Address Raid                  = new Address("0000000000000000000000000000000000000013");
 
         public static Address GetSheetAddress<T>() where T : ISheet => GetSheetAddress(typeof(T).Name);
 
@@ -53,5 +54,9 @@ namespace Nekoyume
 
         public static Address GetBlacksmithFeeAddress(int championshipId, int round) =>
             Addresses.Blacksmith.Derive($"_{championshipId}_{round}");
+
+        public static Address GetWorldBossAddress(int raidId) => Raid.Derive($"{raidId}");
+        public static Address GetRaidersAddress(int raidId) => Raid.Derive($"raiders_{raidId}");
+        public static Address GetRaiderAddress(Address avatarAddress, int raidId) => avatarAddress.Derive($"{raidId}");
     }
 }
