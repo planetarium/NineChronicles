@@ -159,6 +159,10 @@ namespace Lib9c.Tests
 
         public WorldBossListSheet WorldBossListSheet { get; private set; }
 
+        public WorldBossRankRewardSheet WorldBossRankRewardSheet { get; private set; }
+
+        public RuneWeightSheet RuneWeightSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
