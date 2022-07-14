@@ -135,6 +135,9 @@ namespace Nekoyume.BlockChain
 
             // Arena
             InitializeArenaActions();
+
+            // World Boss
+            Raid();
         }
 
         public void Stop()
@@ -388,6 +391,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBattleArena)
+                .AddTo(_disposables);
+        }
+
+        private void Raid()
+        {
+            _actionRenderer.EveryRender<Raid>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRaid)
                 .AddTo(_disposables);
         }
 
@@ -1779,6 +1791,14 @@ namespace Nekoyume.BlockChain
                     rewards,
                     myDigest.Value,
                     enemyDigest.Value);
+            }
+        }
+
+        private void ResponseRaid(ActionBase.ActionEvaluation<Raid> eval)
+        {
+            if (eval.Exception != null)
+            {
+               Debug.Log("[RENDER_RAID]");
             }
         }
     }

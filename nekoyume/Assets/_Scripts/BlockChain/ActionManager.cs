@@ -928,6 +928,30 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
+        public IObservable<ActionBase.ActionEvaluation<Raid>> Raid(List<Guid> costumes, List<Guid> equipments, int raidId)
+        {
+            var action = new Raid
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                EquipmentIds = costumes,
+                CostumeIds = equipments,
+                RaidId = raidId,
+            };
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<Raid>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
         {

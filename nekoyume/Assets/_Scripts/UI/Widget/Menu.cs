@@ -47,6 +47,8 @@ namespace Nekoyume.UI
 
         [SerializeField] private MainMenu btnStaking = null;
 
+        [SerializeField] private MainMenu btnWorldBoss = null;
+
         [SerializeField] private SpeechBubble[] speechBubbles = null;
 
         [SerializeField] private GameObject shopExclamationMark = null;
@@ -385,6 +387,20 @@ namespace Nekoyume.UI
             {
                 Find<StakingPopup>().Show();
             }
+        }
+
+        public void WorldBossClick()
+        {
+            // if (!btnWorldBoss.IsUnlocked)
+            // {
+            //     btnWorldBoss.JingleTheCat();
+            //     return;
+            // }
+
+            Close(true);
+            Find<WorldBoss>().ShowAsync().Forget();
+            Analyzer.Instance.Track("Unity/Enter world boss page");
+            AudioController.PlayClick();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
