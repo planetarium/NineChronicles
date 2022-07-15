@@ -11,6 +11,7 @@ namespace Nekoyume.Extensions
         {
             if (state?.Result is null)
             {
+                resultId = default(Guid);
                 return false;
             }
 
@@ -56,6 +57,7 @@ namespace Nekoyume.Extensions
                     resultId = r.id;
                     break;
                 default:
+                    resultId = default(Guid);
                     return false;
             }
 
@@ -67,6 +69,7 @@ namespace Nekoyume.Extensions
         {
             if (state?.Result is null)
             {
+                resultId = default(Guid);
                 return false;
             }
 
@@ -106,6 +109,7 @@ namespace Nekoyume.Extensions
                     resultId = r.id;
                     break;
                 default:
+                    resultId = default(Guid);
                     return false;
             }
 
