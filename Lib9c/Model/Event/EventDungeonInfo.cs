@@ -40,14 +40,36 @@ namespace Nekoyume.Model.Event
             .Add(_remainingTickets.Serialize())
             .Add(_clearedStageId.Serialize());
 
-        public void ResetTickets(int tickets) =>
-            _remainingTickets = tickets;
-
-        public bool HasTickets(int tickets) =>
-            _remainingTickets >= tickets;
-
-        public bool TryUseTicket(int tickets)
+        public void ResetTickets(int tickets)
         {
+            if (tickets < 0)
+            {
+                throw new ArgumentException(
+                    $"{nameof(tickets)} must be greater than or equal to 0.");
+            }
+
+            _remainingTickets = tickets;
+        }
+
+        public bool HasTickets(int tickets)
+        {
+            if (tickets < 0)
+            {
+                throw new ArgumentException(
+                    $"{nameof(tickets)} must be greater than or equal to 0.");
+            }
+
+            return _remainingTickets >= tickets;
+        }
+
+        public bool TryUseTickets(int tickets)
+        {
+            if (tickets < 0)
+            {
+                throw new ArgumentException(
+                    $"{nameof(tickets)} must be greater than or equal to 0.");
+            }
+
             if (_remainingTickets < tickets)
             {
                 return false;

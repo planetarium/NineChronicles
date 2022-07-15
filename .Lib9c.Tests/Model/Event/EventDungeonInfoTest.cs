@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Model
 {
+    using System;
     using Nekoyume.Model.Event;
     using Xunit;
 
@@ -15,6 +16,36 @@ namespace Lib9c.Tests.Model
             Assert.Equal(eventDungeonClearState, deserialized);
             var reSerialized = deserialized.Serialize();
             Assert.Equal(serialized, reSerialized);
+        }
+
+        [Fact]
+        public void ResetTickets_Throw_ArgumentException()
+        {
+            var eventDungeonClearState = new EventDungeonInfo();
+            Assert.Throws<ArgumentException>(() =>
+                eventDungeonClearState.ResetTickets(int.MinValue));
+            Assert.Throws<ArgumentException>(() =>
+                eventDungeonClearState.ResetTickets(-1));
+        }
+
+        [Fact]
+        public void HasTickets_Throw_ArgumentException()
+        {
+            var eventDungeonClearState = new EventDungeonInfo();
+            Assert.Throws<ArgumentException>(() =>
+                eventDungeonClearState.HasTickets(int.MinValue));
+            Assert.Throws<ArgumentException>(() =>
+                eventDungeonClearState.HasTickets(-1));
+        }
+
+        [Fact]
+        public void TryUseTickets_Throw_ArgumentException()
+        {
+            var eventDungeonClearState = new EventDungeonInfo();
+            Assert.Throws<ArgumentException>(() =>
+                eventDungeonClearState.TryUseTickets(int.MinValue));
+            Assert.Throws<ArgumentException>(() =>
+                eventDungeonClearState.TryUseTickets(-1));
         }
 
         [Fact]
@@ -35,18 +66,18 @@ namespace Lib9c.Tests.Model
         {
             var eventDungeonClearState = new EventDungeonInfo();
             eventDungeonClearState.ResetTickets(1);
-            Assert.True(eventDungeonClearState.TryUseTicket(1));
-            Assert.False(eventDungeonClearState.TryUseTicket(1));
+            Assert.True(eventDungeonClearState.TryUseTickets(1));
+            Assert.False(eventDungeonClearState.TryUseTickets(1));
             eventDungeonClearState.ResetTickets(2);
-            Assert.True(eventDungeonClearState.TryUseTicket(1));
-            Assert.True(eventDungeonClearState.TryUseTicket(1));
-            Assert.False(eventDungeonClearState.TryUseTicket(1));
+            Assert.True(eventDungeonClearState.TryUseTickets(1));
+            Assert.True(eventDungeonClearState.TryUseTickets(1));
+            Assert.False(eventDungeonClearState.TryUseTickets(1));
             eventDungeonClearState.ResetTickets(3);
-            Assert.True(eventDungeonClearState.TryUseTicket(2));
+            Assert.True(eventDungeonClearState.TryUseTickets(2));
             eventDungeonClearState.ResetTickets(3);
-            Assert.True(eventDungeonClearState.TryUseTicket(3));
+            Assert.True(eventDungeonClearState.TryUseTickets(3));
             eventDungeonClearState.ResetTickets(3);
-            Assert.False(eventDungeonClearState.TryUseTicket(4));
+            Assert.False(eventDungeonClearState.TryUseTickets(4));
         }
 
         [Fact]
