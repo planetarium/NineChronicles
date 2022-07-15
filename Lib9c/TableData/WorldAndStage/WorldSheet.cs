@@ -31,5 +31,9 @@ namespace Nekoyume.TableData
         public WorldSheet() : base(nameof(WorldSheet))
         {
         }
+
+        protected WorldSheet(string name) : base(name)
+        {
+        }
     }
 }

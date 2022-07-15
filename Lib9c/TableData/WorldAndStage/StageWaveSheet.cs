@@ -94,6 +94,10 @@ namespace Nekoyume.TableData
         {
         }
 
+        protected StageWaveSheet(string name) : base(name)
+        {
+        }
+
         protected override void AddRow(int key, Row value)
         {
             if (!TryGetValue(key, out var row))

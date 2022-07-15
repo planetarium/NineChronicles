@@ -11,9 +11,7 @@
     <CodeAnalysisRuleSet>.\Lib9c.Tests.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
-  <PropertyGroup Condition="
-    '$([System.Runtime.InteropServices.RuntimeInformation]::
-      OSArchitecture.ToString())' == 'Arm64' ">
+  <PropertyGroup Condition="&#xD;&#xA;    '$([System.Runtime.InteropServices.RuntimeInformation]::&#xD;&#xA;      OSArchitecture.ToString())' == 'Arm64' ">
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 

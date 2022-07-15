@@ -106,5 +106,9 @@ namespace Nekoyume.TableData
         public StageSheet() : base(nameof(StageSheet))
         {
         }
+
+        protected StageSheet(string name) : base(name)
+        {
+        }
     }
 }
