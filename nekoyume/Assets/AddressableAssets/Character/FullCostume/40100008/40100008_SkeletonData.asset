@@ -22,8 +22,6 @@ MonoBehaviour:
     applyAdditiveMaterial: 0
     additiveMaterials: []
     multiplyMaterials:
-    - pageName: 40100009.png
-      material: {fileID: 2100000, guid: 03cb432780184084fb710b7f59ba4636, type: 2}
     - pageName: 40100008.png
       material: {fileID: 2100000, guid: ffb345c9270560f46a4105686a773dd9, type: 2}
     screenMaterials: []

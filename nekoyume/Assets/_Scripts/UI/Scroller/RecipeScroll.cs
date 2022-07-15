@@ -127,6 +127,7 @@ namespace Nekoyume.UI.Scroller
             {
                 var message = L10nManager.Localize("UI_NOT_ENOUGH_CRYSTAL");
                 Widget.Find<PaymentPopup>().ShowAttract(
+                    CostType.Crystal,
                     _openCost,
                     message,
                     L10nManager.Localize("UI_GO_GRINDING"),

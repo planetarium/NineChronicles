@@ -10,11 +10,11 @@ namespace Nekoyume
 {
     static class ElementalTypeUIExtension
     {
-        private const string FireIconResourcePath = "UI/Textures/icon_elemental_fire";
-        private const string WaterIconResourcePath = "UI/Textures/icon_elemental_water";
-        private const string LandIconResourcePath = "UI/Textures/icon_elemental_land";
-        private const string WindIconResourcePath = "UI/Textures/icon_elemental_wind";
-        private const string NormalIconResourcePath = "UI/Textures/icon_element_normal";
+        private const string FireIconResourcePath = "UI/Icons/ElementalType/icon_elemental_fire";
+        private const string WaterIconResourcePath = "UI/Icons/ElementalType/icon_elemental_water";
+        private const string LandIconResourcePath = "UI/Icons/ElementalType/icon_elemental_land";
+        private const string WindIconResourcePath = "UI/Icons/ElementalType/icon_elemental_wind";
+        private const string NormalIconResourcePath = "UI/Icons/ElementalType/icon_element_normal";
 
         private static readonly Dictionary<ElementalType, Dictionary<StatType, List<string>>> GetOptionsCache =
             new Dictionary<ElementalType, Dictionary<StatType, List<string>>>(ElementalTypeComparer.Instance);

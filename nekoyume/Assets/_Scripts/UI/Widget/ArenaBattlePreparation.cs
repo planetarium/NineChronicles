@@ -354,6 +354,7 @@ namespace Nekoyume.UI
             }
 
             equippableItem.Equip();
+            inventoryItem.Equipped.Value = true;
             switch (equippableItem)
             {
                 default:
@@ -398,28 +399,20 @@ namespace Nekoyume.UI
 
         private void Unequip(EquipmentSlot slot, bool considerInventoryOnly)
         {
-            if (slot.IsEmpty ||
-                !(slot.Item is INonFungibleItem nonFungibleItem))
+            if (slot.IsEmpty)
+            {
+                return;
+            }
+
+            if (!inventory.TryGetModel(slot.Item, out var targetInventoryItem) ||
+                !(targetInventoryItem.ItemBase is IEquippableItem equippableItem))
             {
                 return;
             }
 
             slot.Clear();
-
-            var arenaPlayer = RxProps.PlayersArenaParticipant.Value;
-            var targetItem =
-                arenaPlayer.AvatarState.inventory.Items
-                    .Select(e => e.item)
-                    .OfType<INonFungibleItem>()
-                    .FirstOrDefault(e =>
-                        e.NonFungibleId == nonFungibleItem.NonFungibleId);
-            if (!(targetItem is IEquippableItem equippableItem))
-            {
-                return;
-            }
-
             equippableItem.Unequip();
-
+            targetInventoryItem.Equipped.Value = false;
             if (!considerInventoryOnly)
             {
                 switch (equippableItem)

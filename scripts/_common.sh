@@ -9,14 +9,19 @@ title() {
 }
 
 install_license() {
-    if [[ -f Unity_v2020.x.ulf ]]; then
+    temp_filename="$(mktemp --suffix .ulf)"
+    if [[ -f Unity_v2021.x.ulf ]]; then
         # for local debugging
-        cp Unity_v2020.x.ulf /tmp/Unity_v2020.x.ulf
-    elif [[ "$ULF" = "" ]]; then
+        cp Unity_v2021.x.ulf "$temp_filename"
+    elif [[ "$UNITY_LICENSE" = "" ]]; then
         echo "The ULF environment variable is missing." > /dev/stderr
         exit 1
+    elif [[ "$UNITY_LICENSE" = \<* ]]; then
+        # Bare XML
+        echo -n "$UNITY_LICENSE" > "$temp_filename"
     else
-        echo -n "$ULF" | base64 -d > /tmp/Unity_v2020.x.ulf
+        # Base64-encoded XML
+        echo -n "$UNITY_LICENSE" | base64 -d > "$temp_filename"
     fi
 
     /opt/unity/Editor/Unity \
@@ -24,5 +29,8 @@ install_license() {
         -batchmode \
         -nographics \
         -logFile \
-        -manualLicenseFile /tmp/Unity_v2020.x.ulf || true
+        -username "$UNITY_EMAIL" \
+        -password "$UNITY_PASSWORD" \
+        -serial "$UNITY_SERIAL" \
+        -manualLicenseFile "$temp_filename" || true
 }

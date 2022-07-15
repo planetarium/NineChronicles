@@ -40,6 +40,7 @@ SpriteAtlas:
       allowAlphaSplitting: 0
       enableRotation: 1
       enableTightPacking: 0
+      enableAlphaDilation: 0
     secondaryTextureSettings: {}
     variantMultiplier: 1
     packables:
@@ -57,7 +58,6 @@ SpriteAtlas:
     - {fileID: 102900000, guid: 9bc80a3d80eb8448ca722faa16cc1c4d, type: 3}
     - {fileID: 102900000, guid: 5de5d741dd95f4b109fcb2db189fadfa, type: 3}
     - {fileID: 102900000, guid: c15853f15215b484d92ffecf46906877, type: 3}
-    totalSpriteSurfaceArea: 1721747
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -155,6 +155,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 617e91245acdc47dbb4ec8b5ed043adb, type: 3}
   - {fileID: 21300000, guid: b032f12462df64e2dbaf188fb8300b0e, type: 3}
   - {fileID: 21300000, guid: a4e70e24b9d9342c9bc6f16b1793a235, type: 3}
+  - {fileID: 21300000, guid: ac99fe3459fa74dd7836c615e9c24c84, type: 3}
   - {fileID: 21300000, guid: d3d41544605804dfca63dd045c25a62b, type: 3}
   - {fileID: 21300000, guid: 9f75d744293854a12a5c5c347fa4a366, type: 3}
   - {fileID: 21300000, guid: f62d2c4415a334243a0218c3db3cd69e, type: 3}
@@ -198,6 +199,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0c12d6d5f6830614ba97d8ee279ec8e9, type: 3}
   - {fileID: 21300000, guid: 34b1f9d5da41744ac9a6cb0e25431394, type: 3}
   - {fileID: 21300000, guid: 4ce5d5e573d21409bb1dec6720f6a9b1, type: 3}
+  - {fileID: 21300000, guid: e5fc96e56a10d7841806464b6daf7207, type: 3}
   - {fileID: 21300000, guid: 30a478f5996bd4def816264c5de37758, type: 3}
   - {fileID: 21300000, guid: 8b00ecf5590ff4124a931a3d1066af98, type: 3}
   - {fileID: 21300000, guid: df311ef54d18b4783b08992537b2c5a0, type: 3}
@@ -442,7 +444,7 @@ SpriteAtlas:
   - Common_Tooltipbg6
   - button_gold_close
   - characterselect_mage_00
-  - UI_Tooltip_01
+  - UI_Tooltip_Desc_01
   - UI_Popup_bg_06
   - Grind_buff_bg_05
   - item_bg_Active
@@ -518,6 +520,7 @@ SpriteAtlas:
   - button_tab_bg_Press
   - Common_pattan
   - Icon_Staking_Buff_04
+  - Common_Prrogressbar_thumbBg
   - UI_popup_icon_08_b
   - UI_Popup_bg_02
   - characterselect_acolyte_00
@@ -561,6 +564,7 @@ SpriteAtlas:
   - UI_icon_item_bg_10
   - UI_stage_bar
   - Common_Arrow_s
+  - icon_ticket_pvp
   - Common_bg_Arrow
   - UI_popup_title_bg_04
   - Ani_Workshop_11
@@ -713,7 +717,7 @@ SpriteAtlas:
   - UI_icon_Mainmenu_03
   - UI_Popup_bg_10
   - icon_Combination_equip
-  - UI_Tooltip_02
+  - UI_Tooltip_Desc_02
   - UI_mail_popup_02
   - UI_icon_Block2
   - Common_Tooltipbg2

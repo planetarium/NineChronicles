@@ -43,7 +43,7 @@ namespace Nekoyume.UI
                         var attractMessage = costType == CostType.Crystal
                             ? L10nManager.Localize("UI_GO_GRINDING")
                             : L10nManager.Localize("UI_YES");
-                        ShowAttract(cost, insufficientMessage, attractMessage, onAttract);
+                        ShowAttract(costType, cost, insufficientMessage, attractMessage, onAttract);
                     }
                 }
             };
@@ -51,18 +51,21 @@ namespace Nekoyume.UI
         }
 
         public void ShowAttract(
+            CostType costType,
             BigInteger cost,
             string content,
             string attractMessage,
             System.Action onAttract) =>
-            ShowAttract(cost.ToString(), content, attractMessage, onAttract);
+            ShowAttract(costType, cost.ToString(), content, attractMessage, onAttract);
 
         public void ShowAttract(
+            CostType costType,
             string cost,
             string content,
             string attractMessage,
             System.Action onAttract)
         {
+            costIcon.overrideSprite = costIconData.GetIcon(costType);
             var title = L10nManager.Localize("UI_TOTAL_COST");
             costText.text = cost;
             var no = L10nManager.Localize("UI_NO");
@@ -74,17 +77,6 @@ namespace Nekoyume.UI
                 }
             };
             Show(title, content, attractMessage, no, false);
-        }
-
-        public void ShowAttract(
-            CostType costType,
-            string cost,
-            string content,
-            string attractMessage,
-            System.Action onAttract)
-        {
-            costIcon.overrideSprite = costIconData.GetIcon(costType);
-            ShowAttract(cost, content, attractMessage, onAttract);
         }
     }
 }

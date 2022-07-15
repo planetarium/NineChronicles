@@ -10,7 +10,8 @@ namespace Nekoyume.UI.Module
     [RequireComponent(typeof(BaseItemView))]
     public class StakingItemView : MonoBehaviour
     {
-        [SerializeField] private BaseItemView baseItemView;
+        [SerializeField]
+        private BaseItemView baseItemView;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -20,14 +21,28 @@ namespace Nekoyume.UI.Module
             {
                 return;
             }
+
+            Set(BaseItemView.GetItemIcon(itemBase),
+                count.ToString(),
+                () => onClick(itemBase));
+        }
+
+        public void Set(Sprite sprite, string description, System.Action onClick)
+        {
+            baseItemView.ItemImage.sprite = sprite;
+            Set(description, onClick);
+        }
+
+        public void Set(string description, System.Action onClick)
+        {
             _disposables.DisposeAllAndClear();
             baseItemView.Container.SetActive(true);
             baseItemView.TouchHandler.gameObject.SetActive(true);
-            baseItemView.ItemImage.sprite = BaseItemView.GetItemIcon(itemBase);
-            baseItemView.CountText.text = count.ToString();
+            baseItemView.CountText.text = description;
 
             baseItemView.TouchHandler.OnClick
-                .Select(_ => itemBase).Subscribe(onClick).AddTo(_disposables);
+                .Subscribe(_ => onClick())
+                .AddTo(_disposables);
         }
     }
 }
