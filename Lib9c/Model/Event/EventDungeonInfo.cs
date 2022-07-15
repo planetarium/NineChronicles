@@ -22,18 +22,15 @@ namespace Nekoyume.Model.Event
             _clearedStageId = 0;
         }
 
-        public EventDungeonInfo(Bencodex.Types.IValue serialized)
+        public EventDungeonInfo(Bencodex.Types.List serialized)
         {
-            if (serialized is Bencodex.Types.List list)
-            {
-                _remainingTickets = list[0].ToInteger();
-                _clearedStageId = list[1].ToInteger();
-            }
-            else
-            {
-                throw new ArgumentException(
-                    $"{nameof(serialized)} must be a {typeof(Bencodex.Types.List).FullName}.");
-            }
+            _remainingTickets = serialized[0].ToInteger();
+            _clearedStageId = serialized[1].ToInteger();
+        }
+
+        public EventDungeonInfo(Bencodex.Types.IValue serialized)
+            : this((Bencodex.Types.List)serialized)
+        {
         }
 
         public IValue Serialize() => Bencodex.Types.List.Empty
