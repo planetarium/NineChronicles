@@ -30,19 +30,16 @@ namespace Nekoyume.UI
         public Image bossImage;
 
         [SerializeField]
-        public Image informationButton;
-
-        [SerializeField]
-        public Image previousButton;
-
-        [SerializeField]
-        public Image rankButton;
-
-        [SerializeField]
-        public Image rewardButton;
-
-        [SerializeField]
         private Button backButton;
+
+        [SerializeField]
+        public Button informationButton;
+
+        [SerializeField]
+        public Button rankButton;
+
+        [SerializeField]
+        public Button rewardButton;
 
         [SerializeField]
         private Button joinButton;
@@ -75,27 +72,24 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            backButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
-            }).AddTo(gameObject);
-
             CloseWidget = () =>
             {
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             };
 
-            joinButton.OnClickAsObservable().Subscribe(_ =>
+            backButton.OnClickAsObservable().Subscribe(_ =>
             {
-                Raid();
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
             }).AddTo(gameObject);
 
-            viewButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                View();
-            }).AddTo(gameObject);
+            informationButton.OnClickAsObservable().Subscribe(_ => ShowInformation()).AddTo(gameObject);
+            rankButton.OnClickAsObservable().Subscribe(_ => ShowRank()).AddTo(gameObject);
+            rewardButton.OnClickAsObservable().Subscribe(_ => ShowReward()).AddTo(gameObject);
+
+            joinButton.OnClickAsObservable().Subscribe(_ => Raid()).AddTo(gameObject);
+            viewButton.OnClickAsObservable().Subscribe(_ => View()).AddTo(gameObject);
         }
 
         public override void Initialize()
@@ -144,22 +138,21 @@ namespace Nekoyume.UI
             }
             else // practice mode
             {
-                if(!WorldBossHelper.TryGetNextRow(_currentBlockIndex, out var nextRow))
+                if (!WorldBossHelper.TryGetNextRow(_currentBlockIndex, out var nextRow))
                 {
                     return;
                 }
 
-                var begin = WorldBossHelper.TryGetPreviousRow(_currentBlockIndex, out var previousRow)
-                        ? previousRow.EndedBlockIndex : 0;
+                var begin =
+                    WorldBossHelper.TryGetPreviousRow(_currentBlockIndex, out var previousRow)
+                        ? previousRow.EndedBlockIndex
+                        : 0;
 
                 UpdateRemainTimer(begin, nextRow.StartedBlockIndex, _currentBlockIndex);
                 UpdateBossPrefab(nextRow);
             }
 
-            var task = Task.Run(async () =>
-            {
-                return true;
-            });
+            var task = Task.Run(async () => { return true; });
 
             await task;
 
@@ -193,6 +186,21 @@ namespace Nekoyume.UI
             timerSlider.NormalizedValue = (float)progress / range;
         }
 
+        private void ShowInformation()
+        {
+            Find<WorldBossInformation>().Show();
+        }
+
+        private void ShowRank()
+        {
+            Find<WorldBossRank>().Show();
+        }
+
+        private void ShowReward()
+        {
+            Find<WorldBossReward>().Show();
+        }
+
         private void Raid()
         {
             var inventory = States.Instance.CurrentAvatarState.inventory;
@@ -222,7 +230,7 @@ namespace Nekoyume.UI
             var state = await Game.Game.instance.Agent.GetStateAsync(address);
             if (state is Bencodex.Types.List list)
             {
-                var result =  new WorldBossState(list);
+                var result = new WorldBossState(list);
                 Debug.Log($"[WORLD_BOSS_STATE]" +
                           $"Id: {result.Id} / " +
                           $"Level: {result.Level} / " +
@@ -264,7 +272,7 @@ namespace Nekoyume.UI
             var state = await Game.Game.instance.Agent.GetStateAsync(address);
             if (state is Bencodex.Types.List list)
             {
-                var result =  new RaiderState(list);
+                var result = new RaiderState(list);
                 Debug.Log($"[RAIDER_STATE] TotalScore: {result.TotalScore} / " +
                           $"HighScore: {result.HighScore} / " +
                           $"TotalChallengeCount: {result.TotalChallengeCount} / " +

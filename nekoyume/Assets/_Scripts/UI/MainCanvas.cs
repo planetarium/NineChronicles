@@ -239,13 +239,19 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaJoin>());
             yield return null;
-            secondWidgets.Add(Widget.Create<WorldBoss>());
-            yield return null;
             secondWidgets.Add(Widget.Create<ArenaBoard>());
             yield return null;
             secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
             secondWidgets.Add(Widget.Create<NoticePopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<WorldBoss>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<WorldBossInformation>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<WorldBossRank>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<WorldBossReward>());
             yield return null;
 
             // loading
