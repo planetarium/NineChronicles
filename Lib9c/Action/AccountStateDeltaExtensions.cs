@@ -980,5 +980,22 @@ namespace Nekoyume.Action
                 }
             }
         }
+
+        public static RaiderState GetRaiderState(this IAccountStateDelta states,
+            Address avatarAddress, int raidId)
+        {
+            return GetRaiderState(states, Addresses.GetRaiderAddress(avatarAddress, raidId));
+        }
+
+        public static RaiderState GetRaiderState(this IAccountStateDelta states,
+            Address raiderAddress)
+        {
+            if (states.TryGetState(raiderAddress, out List rawRaider))
+            {
+                return new RaiderState(rawRaider);
+            }
+
+            throw new FailedLoadStateException("can't find RaiderState.");
+        }
     }
 }
