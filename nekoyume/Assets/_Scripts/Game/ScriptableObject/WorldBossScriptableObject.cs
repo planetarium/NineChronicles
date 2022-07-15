@@ -6,9 +6,13 @@ using UnityEngine;
 
 namespace Nekoyume
 {
+    [CreateAssetMenu(fileName = "UI_WorldBossData", menuName = "Scriptable Object/World Boss Data",
+        order = int.MaxValue)]
     public class WorldBossScriptableObject : ScriptableObject
     {
-        public List<MonsterData> MonsterDatas;
+        public List<MonsterData> Monsters;
+
+        public List<GradeData> Grades;
 
         [Serializable]
         public class GradeData

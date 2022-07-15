@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 815d8c9e4741267489cf27b98dde2b01, type: 3}
+  m_Name: UI_WorldBossData
+  m_EditorClassIdentifier: 
+  Monsters:
+  - id: 205005
+    prefab: {fileID: 5962325251847051045, guid: 3e77a6145b798334b8d15d784f67338e,
+      type: 3}
+  - id: 205007
+    prefab: {fileID: 2947644544520400929, guid: 7662b9eae68281e46a77a9024ff0c101,
+      type: 3}
+  Grades: []

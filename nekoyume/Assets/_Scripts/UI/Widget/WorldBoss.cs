@@ -1,12 +1,17 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
+using Nekoyume.ValueControlComponents.Shader;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,10 +50,26 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button viewButton;
 
+        [SerializeField]
+        private Transform bossContainer;
+
+        [SerializeField]
+        private TextMeshProUGUI timerText;
+
+        [SerializeField]
+        private ShaderPropertySlider timerSlider;
+
+        private GameObject _bossPrefab;
+        private WorldBossListSheet.Row _selectedRow;
+
         // 랭킹팝업
         // 월드보상
         // 월드보스 상세
         // 설명
+
+        private long _currentBlockIndex;
+
+        private readonly List<IDisposable> _disposables = new();
 
         protected override void Awake()
         {
@@ -76,18 +97,65 @@ namespace Nekoyume.UI
                 View();
             }).AddTo(gameObject);
         }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            Game.Game.instance.Agent.BlockIndexSubject
+                .ObserveOnMainThread()
+                .Subscribe(SubscribeBlockIndex)
+                .AddTo(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            Game.Game.instance.Agent.BlockIndexSubject.Subscribe(UpdateBlockIndex)
+                .AddTo(_disposables);
+        }
+
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
+        }
+
+        private void UpdateBlockIndex(long blockIndex)
+        {
+            _currentBlockIndex = blockIndex;
+        }
+
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
-            foreach (var row in sheet)
+            foreach (var sheetValue in sheet)
             {
-                Debug.Log($"[ID : {row.Id}] / " +
-                          $"BOSS ID : {row.BossId} / " +
-                          $"STARTEDBLOCKINDEX : {row.StartedBlockIndex} / " +
-                          $"ENDEDBLOCKINDEX : {row.EndedBlockIndex}");
+                Debug.Log($"[ID : {sheetValue.Id}] / " +
+                          $"BOSS ID : {sheetValue.BossId} / " +
+                          $"STARTEDBLOCKINDEX : {sheetValue.StartedBlockIndex} / " +
+                          $"ENDEDBLOCKINDEX : {sheetValue.EndedBlockIndex}");
             }
+
             var loading = Find<DataLoadingScreen>();
             loading.Show();
+
+            if (WorldBossHelper.TryGetCurrentRow(_currentBlockIndex, out var row)) // season
+            {
+                UpdateRemainTimer(row.StartedBlockIndex, row.EndedBlockIndex, _currentBlockIndex);
+                UpdateBossPrefab(row);
+            }
+            else // practice mode
+            {
+                if(!WorldBossHelper.TryGetNextRow(_currentBlockIndex, out var nextRow))
+                {
+                    return;
+                }
+
+                var begin = WorldBossHelper.TryGetPreviousRow(_currentBlockIndex, out var previousRow)
+                        ? previousRow.EndedBlockIndex : 0;
+
+                UpdateRemainTimer(begin, nextRow.StartedBlockIndex, _currentBlockIndex);
+                UpdateBossPrefab(nextRow);
+            }
+
             var task = Task.Run(async () =>
             {
                 return true;
@@ -97,6 +165,32 @@ namespace Nekoyume.UI
 
             loading.Close();
             Show(ignoreShowAnimation);
+        }
+
+        private void SubscribeBlockIndex(long blockIndex)
+        {
+            _currentBlockIndex = blockIndex;
+        }
+
+        private void UpdateBossPrefab(WorldBossListSheet.Row row)
+        {
+            if (bossContainer != null)
+            {
+                Destroy(_bossPrefab);
+            }
+
+            if (WorldBossHelper.TryGetBossPrefab(row.BossId, out var prefab))
+            {
+                _bossPrefab = Instantiate(prefab, bossContainer);
+            }
+        }
+
+        private void UpdateRemainTimer(long begin, long end, long current)
+        {
+            var range = end - begin;
+            var progress = current - begin;
+            timerText.text = $"{Util.GetBlockToTime(end - current)} ({current}/{end})";
+            timerSlider.NormalizedValue = (float)progress / range;
         }
 
         private void Raid()
