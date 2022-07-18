@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Nekoyume.Action
+namespace Nekoyume.Exceptions
 {
     [Serializable]
     public class InvalidActionFieldException : Exception
