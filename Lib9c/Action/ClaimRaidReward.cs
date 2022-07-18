@@ -18,12 +18,10 @@ namespace Nekoyume.Action
     public class ClaimRaidReward: GameAction
     {
         public Address AvatarAddress;
-        public int RaidId;
 
-        public ClaimRaidReward(Address avatarAddress, int raidId)
+        public ClaimRaidReward(Address avatarAddress)
         {
             AvatarAddress = avatarAddress;
-            RaidId = raidId;
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -39,8 +37,19 @@ namespace Nekoyume.Action
                 typeof(WorldBossRankRewardSheet),
                 typeof(WorldBossListSheet),
             });
-            var row = sheets.GetSheet<WorldBossListSheet>().Values.First(r => r.Id == RaidId);
-            var raiderAddress = Addresses.GetRaiderAddress(AvatarAddress, RaidId);
+            var worldBossListSheet = sheets.GetSheet<WorldBossListSheet>();
+            int raidId;
+            try
+            {
+                raidId = worldBossListSheet.FindRaidIdByBlockIndex(context.BlockIndex);
+            }
+            catch (InvalidOperationException)
+            {
+                // Find Latest raidId.
+                raidId = worldBossListSheet.FindPreviousRaidIdByBlockIndex(context.BlockIndex);
+            }
+            var row = sheets.GetSheet<WorldBossListSheet>().Values.First(r => r.Id == raidId);
+            var raiderAddress = Addresses.GetRaiderAddress(AvatarAddress, raidId);
             RaiderState raiderState = states.GetRaiderState(raiderAddress);
             int rank = WorldBossHelper.CalculateRank(raiderState.HighScore);
             if (raiderState.LatestRewardRank < rank)
@@ -73,13 +82,11 @@ namespace Nekoyume.Action
             new Dictionary<string, IValue>
                 {
                     ["a"] = AvatarAddress.Serialize(),
-                    ["r"] = RaidId.Serialize(),
                 }
                 .ToImmutableDictionary();
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["a"].ToAddress();
-            RaidId = plainValue["r"].ToInteger();
         }
     }
 }

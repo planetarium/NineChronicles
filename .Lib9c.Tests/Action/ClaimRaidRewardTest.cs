@@ -45,7 +45,7 @@ namespace Lib9c.Tests.Action
             };
             state = state.SetState(raiderAddress, raiderState.Serialize());
 
-            var action = new ClaimRaidReward(avatarAddress, 1);
+            var action = new ClaimRaidReward(avatarAddress);
             if (exc is null)
             {
                 var nextState = action.Execute(new ActionContext
