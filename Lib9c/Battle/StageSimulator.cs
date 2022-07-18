@@ -17,9 +17,9 @@ namespace Nekoyume.Battle
 {
     public class StageSimulator : Simulator
     {
-        private readonly List<Wave> _waves;
-        private readonly List<ItemBase> _waveRewards;
-        private readonly List<Model.Skill.Skill> _skillsOnWaveStart = new List<Model.Skill.Skill>();
+        protected readonly List<Wave> _waves;
+        protected readonly List<ItemBase> _waveRewards;
+        protected readonly List<Model.Skill.Skill> _skillsOnWaveStart = new List<Model.Skill.Skill>();
         public CollectionMap ItemMap = new CollectionMap();
         public readonly EnemySkillSheet EnemySkillSheet;
 
@@ -27,11 +27,11 @@ namespace Nekoyume.Battle
         public const int ConstructorVersionV100025 = 2;
         public const int ConstructorVersionV100080 = 3;
 
-        private int WorldId { get; }
+        protected int WorldId { get; }
         public int StageId { get; }
-        private bool IsCleared { get; }
-        private int Exp { get; }
-        private int TurnLimit { get; }
+        protected bool IsCleared { get; set; }
+        protected int Exp { get; set; }
+        protected int TurnLimit { get; }
         public override IEnumerable<ItemBase> Reward => _waveRewards;
 
         public StageSimulator(
@@ -302,7 +302,7 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
         }
         
-        public Player Simulate(int playCount)
+        public virtual Player Simulate(int playCount)
         {
             Log.worldId = WorldId;
             Log.stageId = StageId;
