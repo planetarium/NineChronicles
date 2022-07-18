@@ -77,9 +77,9 @@ namespace Nekoyume.Action
                 throw new ArgumentException("'l' must be a bencodex list");
             }
 
-            if (list.Count < 8)
+            if (list.Count < 7)
             {
-                throw new ArgumentException("'l' must contain at least 8 items");
+                throw new ArgumentException("'l' must contain at least 7 items");
             }
 
             avatarAddress = list[0].ToAddress();
