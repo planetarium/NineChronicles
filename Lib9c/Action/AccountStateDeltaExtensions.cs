@@ -532,6 +532,7 @@ namespace Nekoyume.Action
             bool containRankingSimulatorSheets = false,
             bool containArenaSimulatorSheets = false,
             bool containEventDungeonSimulatorSheets = false,
+            bool containValidateItemRequirementSheets = false,
             IEnumerable<Type> sheetTypes = null)
         {
             var sheetTypeList = sheetTypes?.ToList() ?? new List<Type>();
@@ -621,6 +622,14 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(EventDungeonStageWaveSheet));
                 sheetTypeList.Add(typeof(EnemySkillSheet));
                 sheetTypeList.Add(typeof(CostumeStatSheet));
+            }
+
+            if (containValidateItemRequirementSheets)
+            {
+                sheetTypeList.Add(typeof(ItemRequirementSheet));
+                sheetTypeList.Add(typeof(EquipmentItemRecipeSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSubRecipeSheetV2));
+                sheetTypeList.Add(typeof(EquipmentItemOptionSheet));
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());
