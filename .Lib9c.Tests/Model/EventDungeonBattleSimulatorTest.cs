@@ -53,7 +53,6 @@ namespace Lib9c.Tests.Model
             }
 
             Assert.Equal(2, player.Level);
-            Assert.Equal(1, player.eventMap[(int)QuestEventType.Level]);
             Assert.True(simulator.Log.OfType<GetExp>().Any());
         }
     }
