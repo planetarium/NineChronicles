@@ -13,7 +13,7 @@ namespace Nekoyume.TableData.Event
             public int Id { get; private set; }
             public string Name { get; private set; }
             public long StartBlockIndex { get; private set; }
-            public long WorldEndBlockIndex { get; private set; }
+            public long DungeonEndBlockIndex { get; private set; }
             public long RecipeEndBlockIndex { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
@@ -21,7 +21,7 @@ namespace Nekoyume.TableData.Event
                 Id = ParseInt(fields[0], 0);
                 Name = fields[1];
                 StartBlockIndex = ParseLong(fields[2], 0L);
-                WorldEndBlockIndex = ParseLong(fields[3], 0L);
+                DungeonEndBlockIndex = ParseLong(fields[3], 0L);
                 RecipeEndBlockIndex = ParseLong(fields[4], 0L);
             }
         }
