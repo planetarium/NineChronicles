@@ -7,7 +7,6 @@ using Libplanet.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Buff;
-using Nekoyume.Model.Event;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Priority_Queue;
@@ -24,9 +23,9 @@ namespace Nekoyume.Battle
             int eventDungeonStageId,
             EventDungeonBattleSimulatorSheets eventDungeonBattleSimulatorSheets,
             int constructorVersion,
+            int playCount,
             bool isCleared,
-            int exp,
-            int playCount
+            int exp
         )
             : base(
                 random,

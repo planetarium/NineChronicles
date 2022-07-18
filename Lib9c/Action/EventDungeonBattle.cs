@@ -101,7 +101,10 @@ namespace Nekoyume.Action
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
+            Log.Verbose(
+                "[{ActionTypeString}] Execute() start [{AddressesHex}]",
+                ActionTypeString,
+                addressesHex);
 
             var sw = new Stopwatch();
             // Get AvatarState
@@ -113,7 +116,10 @@ namespace Nekoyume.Action
                     out var migrationRequired))
             {
                 throw new FailedLoadStateException(
-                    $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
+                    ActionTypeString,
+                    typeof(AvatarState),
+                    avatarAddress,
+                    addressesHex);
             }
 
             sw.Stop();
@@ -143,24 +149,24 @@ namespace Nekoyume.Action
             // ~Get sheets
 
             // Validate fields.
-            var eventSheet = sheets.GetSheet<EventScheduleSheet>();
-            if (!eventSheet.TryGetValue(eventScheduleId, out var eventRow))
+            var scheduleSheet = sheets.GetSheet<EventScheduleSheet>();
+            if (!scheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow))
             {
                 throw new SheetRowNotFoundException(
                     addressesHex,
-                    eventSheet.Name,
+                    scheduleSheet.Name,
                     eventScheduleId);
             }
 
-            if (context.BlockIndex < eventRow.StartBlockIndex ||
-                context.BlockIndex > eventRow.DungeonEndBlockIndex)
+            if (context.BlockIndex < scheduleRow.StartBlockIndex ||
+                context.BlockIndex > scheduleRow.DungeonEndBlockIndex)
             {
                 throw new InvalidActionFieldException(
                     ActionTypeString,
-                    nameof(eventDungeonId),
+                    nameof(eventScheduleId),
                     addressesHex,
-                    "Aborted as the block index is out of the range of the event dungeon." +
-                    $"current({context.BlockIndex}), start({eventRow.StartBlockIndex}), end({eventRow.DungeonEndBlockIndex})");
+                    "Aborted as the block index is out of the range of the event schedule." +
+                    $"current({context.BlockIndex}), start({scheduleRow.StartBlockIndex}), end({scheduleRow.DungeonEndBlockIndex})");
             }
 
             if (eventDungeonId.ToEventScheduleId() != eventScheduleId)
@@ -221,12 +227,13 @@ namespace Nekoyume.Action
                 eventDungeonId);
             var eventDungeonInfo =
                 new EventDungeonInfo(states.GetState(eventDungeonInfoAddr));
-            if (!eventDungeonInfo.TryUseTickets(1))
+            const int playCount = 1;
+            if (!eventDungeonInfo.TryUseTickets(playCount))
             {
                 throw new NotEnoughEventDungeonTicketsException(
                     ActionTypeString,
                     addressesHex,
-                    1,
+                    playCount,
                     eventDungeonInfo.RemainingTickets);
             }
 
@@ -250,7 +257,6 @@ namespace Nekoyume.Action
 
             // Simulate
             sw.Restart();
-            const int playCount = 1;
             var simulator = new EventDungeonBattleSimulator(
                 context.Random,
                 avatarState,

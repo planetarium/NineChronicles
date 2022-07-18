@@ -15,8 +15,19 @@ namespace Nekoyume.Action
             base($"address: {address.ToHex()}, state type: {stateType.FullName}")
         {
         }
+        
+        public FailedLoadStateException(
+            string actionType,
+            Type stateType,
+            Address address,
+            string addressesHex)
+            : base($"[{actionType}] type({stateType.FullName}) at address({address.ToHex()}) [{addressesHex}]")
+        {
+        }
 
-        protected FailedLoadStateException(SerializationInfo info, StreamingContext context)
+        protected FailedLoadStateException(
+            SerializationInfo info,
+            StreamingContext context)
             : base(info, context)
         {
         }
