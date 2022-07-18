@@ -17,10 +17,20 @@ namespace Nekoyume.Model.Event
 
         public int ClearedStageId { get; private set; }
 
-        public EventDungeonInfo()
+        public EventDungeonInfo(int remainingTickets = 0, int clearedStageId = 0)
         {
-            RemainingTickets = 0;
-            ClearedStageId = 0;
+            if (remainingTickets < 0)
+            {
+                throw new ArgumentException($"{nameof(remainingTickets)} must be greater than or equal to 0.");
+            }
+
+            if (clearedStageId < 0)
+            {
+                throw new ArgumentException($"{nameof(clearedStageId)} must be greater than or equal to 0.");
+            }
+
+            RemainingTickets = remainingTickets;
+            ClearedStageId = clearedStageId;
         }
 
         public EventDungeonInfo(Bencodex.Types.List serialized)
