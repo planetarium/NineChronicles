@@ -286,6 +286,15 @@ namespace Nekoyume.Model.State
             UpdateStageQuest(stageSimulator.Reward);
         }
 
+        public void Apply(Player player, long blockIndex)
+        {
+            characterId = player.RowData.Id;
+            level = player.Level;
+            exp = player.Exp.Current;
+            inventory = player.Inventory;
+            updatedAt = blockIndex;
+        }
+
         public object Clone()
         {
             return MemberwiseClone();
