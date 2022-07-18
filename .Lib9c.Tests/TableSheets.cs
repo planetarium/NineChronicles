@@ -207,6 +207,23 @@ namespace Lib9c.Tests
             );
         }
 
+        public EventDungeonBattleSimulatorSheets GetEventDungeonBattleSimulatorSheets()
+        {
+            return new EventDungeonBattleSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                EventDungeonStageSheet,
+                EventDungeonStageWaveSheet,
+                EnemySkillSheet,
+                CostumeStatSheet
+            );
+        }
+
         public RankingSimulatorSheets GetRankingSimulatorSheets()
         {
             return new RankingSimulatorSheets(

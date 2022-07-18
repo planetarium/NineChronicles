@@ -14,6 +14,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.TableData.Event;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
@@ -530,6 +531,7 @@ namespace Nekoyume.Action
             bool containStageSimulatorSheets = false,
             bool containRankingSimulatorSheets = false,
             bool containArenaSimulatorSheets = false,
+            bool containEventDungeonSimulatorSheets = false,
             IEnumerable<Type> sheetTypes = null)
         {
             var sheetTypeList = sheetTypes?.ToList() ?? new List<Type>();
@@ -603,6 +605,21 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
+                sheetTypeList.Add(typeof(CostumeStatSheet));
+            }
+
+            if (containEventDungeonSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(BuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(EventDungeonStageSheet));
+                sheetTypeList.Add(typeof(EventDungeonStageWaveSheet));
+                sheetTypeList.Add(typeof(EnemySkillSheet));
                 sheetTypeList.Add(typeof(CostumeStatSheet));
             }
 

@@ -6,6 +6,7 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Event;
 
 namespace Nekoyume.Extensions
 {
@@ -176,6 +177,24 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<StageSheet>(),
                 sheets.GetSheet<StageWaveSheet>(),
                 sheets.GetSheet<EnemySkillSheet>()
+            );
+        }
+
+        public static EventDungeonBattleSimulatorSheets GetEventDungeonBattleSimulatorSheets(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new EventDungeonBattleSimulatorSheets(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<BuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<EventDungeonStageSheet>(),
+                sheets.GetSheet<EventDungeonStageWaveSheet>(),
+                sheets.GetSheet<EnemySkillSheet>(),
+                sheets.GetSheet<CostumeStatSheet>()
             );
         }
 
