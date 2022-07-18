@@ -952,6 +952,24 @@ namespace Nekoyume.BlockChain
                 });
         }
 
+        public IObservable<ActionBase.ActionEvaluation<ClaimRaidReward>> ClaimRaidReward(int raidId)
+        {
+            var action = new ClaimRaidReward(States.Instance.CurrentAvatarState.address, raidId);
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<ClaimRaidReward>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
         public IObservable<ActionBase.ActionEvaluation<CreateTestbed>> CreateTestbed()
         {

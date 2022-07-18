@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Cysharp.Threading.Tasks;
+using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
@@ -45,7 +46,13 @@ namespace Nekoyume.UI
         private Button joinButton;
 
         [SerializeField]
+        private Button claimRaidRewardButton;
+
+        [SerializeField]
         private Button viewButton;
+
+        [SerializeField]
+        private Button viewRuneButton;
 
         [SerializeField]
         private Transform bossContainer;
@@ -89,7 +96,9 @@ namespace Nekoyume.UI
             rewardButton.OnClickAsObservable().Subscribe(_ => ShowReward()).AddTo(gameObject);
 
             joinButton.OnClickAsObservable().Subscribe(_ => Raid()).AddTo(gameObject);
+            claimRaidRewardButton.OnClickAsObservable().Subscribe(_ => ClaimRaidReward()).AddTo(gameObject);
             viewButton.OnClickAsObservable().Subscribe(_ => View()).AddTo(gameObject);
+            viewRuneButton.OnClickAsObservable().Subscribe(_ => ViewRune()).AddTo(gameObject);
         }
 
         public override void Initialize()
@@ -119,14 +128,7 @@ namespace Nekoyume.UI
 
         public async UniTaskVoid ShowAsync(bool ignoreShowAnimation = false)
         {
-            var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
-            foreach (var sheetValue in sheet)
-            {
-                Debug.Log($"[ID : {sheetValue.Id}] / " +
-                          $"BOSS ID : {sheetValue.BossId} / " +
-                          $"STARTEDBLOCKINDEX : {sheetValue.StartedBlockIndex} / " +
-                          $"ENDEDBLOCKINDEX : {sheetValue.EndedBlockIndex}");
-            }
+            ShowSheetValues();
 
             var loading = Find<DataLoadingScreen>();
             loading.Show();
@@ -158,6 +160,45 @@ namespace Nekoyume.UI
 
             loading.Close();
             Show(ignoreShowAnimation);
+        }
+
+        private static void ShowSheetValues()
+        {
+            Debug.Log("---- [WorldBossListSheet] ----");
+            var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
+            foreach (var sheetValue in sheet)
+            {
+                Debug.Log($"[ID : {sheetValue.Id}] / " +
+                          $"BOSS ID : {sheetValue.BossId} / " +
+                          $"STARTEDBLOCKINDEX : {sheetValue.StartedBlockIndex} / " +
+                          $"ENDEDBLOCKINDEX : {sheetValue.EndedBlockIndex}");
+            }
+
+            Debug.Log("---- [WorldBossRankRewardSheet] ----");
+            var rewardSheet = Game.Game.instance.TableSheets.WorldBossRankRewardSheet;
+            foreach (var sheetValue in rewardSheet)
+            {
+                Debug.Log($"[ID : {sheetValue.Id}] / " +
+                          $"BOSS ID : {sheetValue.BossId} / " +
+                          $"RANK : {sheetValue.Rank} / " +
+                          $"RANK : {sheetValue.Rune} / " +
+                          $"CRYSTAL : {sheetValue.Crystal}");
+            }
+
+            Debug.Log("---- [RuneWeightSheet] ----");
+            var runeSheet = Game.Game.instance.TableSheets.RuneWeightSheet;
+            foreach (var sheetValue in runeSheet)
+            {
+                Debug.Log($"[ID : {sheetValue.Id}] / " +
+                          $"BOSS ID : {sheetValue.BossId} / " +
+                          $"CRYSTAL : {sheetValue.Rank}");
+
+                foreach (var runeInfo in sheetValue.RuneInfos)
+                {
+                    Debug.Log($"runeInfo.RuneId : {runeInfo.RuneId} / " +
+                              $"runeInfo.Weight : {runeInfo.Weight}");
+                }
+            }
         }
 
         private void SubscribeBlockIndex(long blockIndex)
@@ -213,6 +254,11 @@ namespace Nekoyume.UI
                     .Select(e => e.NonFungibleId)
                     .ToList(),
                 1);
+        }
+
+        private void ClaimRaidReward()
+        {
+            ActionManager.Instance.ClaimRaidReward(1);
         }
 
         private void View()
@@ -276,11 +322,31 @@ namespace Nekoyume.UI
                 Debug.Log($"[RAIDER_STATE] TotalScore: {result.TotalScore} / " +
                           $"HighScore: {result.HighScore} / " +
                           $"TotalChallengeCount: {result.TotalChallengeCount} / " +
-                          $"RemainChallengeCount: {result.RemainChallengeCount}");
+                          $"TotalChallengeCount: {result.RemainChallengeCount} / " +
+                          $"TotalChallengeCount: {result.LatestRewardRank} / " +
+                          $"RemainChallengeCount: {result.ClaimedBlockIndex}");
             }
             else
             {
                 Debug.Log("RaiderState is null");
+            }
+        }
+
+        private async void ViewRune()
+        {
+
+            var runeId = 1;
+            var agentAddress = States.Instance.AgentState.address;
+            var rune = RuneHelper.ToCurrency(runeId);
+            var state = await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, rune);
+
+            if (state != null)
+            {
+                Debug.Log($"{state.ToString()}");
+            }
+            else
+            {
+                Debug.Log("Balance is null!");
             }
         }
     }

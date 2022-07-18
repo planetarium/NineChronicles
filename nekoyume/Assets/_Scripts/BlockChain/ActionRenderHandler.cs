@@ -138,6 +138,7 @@ namespace Nekoyume.BlockChain
 
             // World Boss
             Raid();
+            ClaimRaidReward();
         }
 
         public void Stop()
@@ -400,6 +401,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRaid)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimRaidReward()
+        {
+            _actionRenderer.EveryRender<ClaimRaidReward>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimRaidReward)
                 .AddTo(_disposables);
         }
 
@@ -1693,7 +1703,7 @@ namespace Nekoyume.BlockChain
                         ? previousMyScoreText.ToInteger()
                         : ArenaScore.ArenaScoreDefault
                     : ArenaScore.ArenaScoreDefault;
-                
+
                 // TODO: Add `ExtraOutputMyScore` to `BattleArena`
                 outputMyScore = null;
             }
@@ -1799,6 +1809,14 @@ namespace Nekoyume.BlockChain
             if (eval.Exception != null)
             {
                Debug.Log("[RENDER_RAID]");
+            }
+        }
+
+        private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)
+        {
+            if (eval.Exception != null)
+            {
+                Debug.Log("[RENDER_CLAIM_RAID_REWARD]");
             }
         }
     }
