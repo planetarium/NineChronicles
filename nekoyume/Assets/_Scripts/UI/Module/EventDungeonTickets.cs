@@ -9,7 +9,7 @@ namespace Nekoyume.UI.Module
 {
     using UniRx;
 
-    public class ArenaTickets : MonoBehaviour
+    public class EventDungeonTickets : MonoBehaviour
     {
         [SerializeField]
         private Image _iconImage;
@@ -29,10 +29,11 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            RxProps.ArenaTicketProgress
-                .SubscribeOnMainThread()
-                .Subscribe(UpdateTimespanText)
-                .AddTo(_disposables);
+            // TODO: Implement this on the `feature/event-dungeons` branch.
+            // RxProps.EventDungeonInfo.Subscribe(info =>
+            //     .SubscribeOnMainThread()
+            //     .Subscribe(UpdateTimespanText)
+            //     .AddTo(_disposables);
         }
 
         private void OnDestroy()
