@@ -19,36 +19,55 @@ namespace Lib9c.Tests.Model
         }
 
         [Theory]
-        [InlineData(0, 0)]
-        [InlineData(int.MaxValue, int.MaxValue)]
-        public void Constructor(int remainingTickets, int clearedStageId)
+        [InlineData(0, 0, 0)]
+        [InlineData(int.MaxValue, int.MaxValue, int.MaxValue)]
+        public void Constructor(
+            int resetTicketsInterval,
+            int remainingTickets,
+            int clearedStageId)
         {
             var eventDungeonInfo = new EventDungeonInfo(
+                resetTicketsInterval,
                 remainingTickets,
                 clearedStageId);
-            Assert.Equal(remainingTickets, eventDungeonInfo.RemainingTickets);
-            Assert.Equal(clearedStageId, eventDungeonInfo.ClearedStageId);
+            Assert.Equal(
+                resetTicketsInterval,
+                eventDungeonInfo.ResetTicketsInterval);
+            Assert.Equal(
+                remainingTickets,
+                eventDungeonInfo.RemainingTickets);
+            Assert.Equal(
+                clearedStageId,
+                eventDungeonInfo.ClearedStageId);
         }
 
         [Theory]
-        [InlineData(-1, 0)]
-        [InlineData(0, -1)]
-        [InlineData(-1, -1)]
-        [InlineData(int.MinValue, int.MinValue)]
+        [InlineData(-1, 0, 0)]
+        [InlineData(0, -1, 0)]
+        [InlineData(0, 0, -1)]
+        [InlineData(int.MinValue, int.MinValue, int.MinValue)]
         public void Constructor_Throw_ArgumentException(
+            int resetTicketsInterval,
             int remainingTickets,
             int clearedStageId) =>
             Assert.Throws<ArgumentException>(() =>
-                new EventDungeonInfo(remainingTickets, clearedStageId));
+                new EventDungeonInfo(
+                    resetTicketsInterval,
+                    remainingTickets,
+                    clearedStageId));
 
         [Theory]
-        [InlineData(int.MinValue)]
-        [InlineData(-1)]
-        public void ResetTickets_Throw_ArgumentException(int tickets)
+        [InlineData(-1, 0)]
+        [InlineData(0, 0)]
+        [InlineData(0, -1)]
+        [InlineData(int.MinValue, int.MinValue)]
+        public void ResetTickets_Throw_ArgumentException(
+            int resetTicketsInterval,
+            int tickets)
         {
             var eventDungeonInfo = new EventDungeonInfo();
             Assert.Throws<ArgumentException>(() =>
-                eventDungeonInfo.ResetTickets(tickets));
+                eventDungeonInfo.ResetTickets(resetTicketsInterval, tickets));
         }
 
         [Theory]
@@ -77,7 +96,7 @@ namespace Lib9c.Tests.Model
         public void ResetTickets_And_HasTickets(int tickets)
         {
             var eventDungeonInfo = new EventDungeonInfo();
-            eventDungeonInfo.ResetTickets(tickets);
+            eventDungeonInfo.ResetTickets(1, tickets);
             for (var i = 0; i < tickets + 2; i++)
             {
                 if (i < tickets + 1)
@@ -97,7 +116,7 @@ namespace Lib9c.Tests.Model
         public void ResetTickets_And_TryUseTickets(int tickets)
         {
             var eventDungeonInfo = new EventDungeonInfo();
-            eventDungeonInfo.ResetTickets(tickets);
+            eventDungeonInfo.ResetTickets(1, tickets);
             for (var i = 0; i < tickets + 1; i++)
             {
                 if (i < tickets)
@@ -110,7 +129,7 @@ namespace Lib9c.Tests.Model
                 }
             }
 
-            eventDungeonInfo.ResetTickets(tickets);
+            eventDungeonInfo.ResetTickets(2, tickets);
             Assert.True(eventDungeonInfo.TryUseTickets(tickets));
             Assert.False(eventDungeonInfo.TryUseTickets(1));
         }

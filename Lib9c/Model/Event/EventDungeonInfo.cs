@@ -13,30 +13,45 @@ namespace Nekoyume.Model.Event
             return address.Derive($"event_dungeon_info_{dungeonId}");
         }
 
+        public int ResetTicketsInterval { get; private set; }
+
         public int RemainingTickets { get; private set; }
 
         public int ClearedStageId { get; private set; }
 
-        public EventDungeonInfo(int remainingTickets = 0, int clearedStageId = 0)
+        public EventDungeonInfo(
+            int resetTicketsInterval = 0,
+            int remainingTickets = 0,
+            int clearedStageId = 0)
         {
+            if (resetTicketsInterval < 0)
+            {
+                throw new ArgumentException(
+                    $"{nameof(resetTicketsInterval)} must be greater than or equal to 0.");
+            }
+
             if (remainingTickets < 0)
             {
-                throw new ArgumentException($"{nameof(remainingTickets)} must be greater than or equal to 0.");
+                throw new ArgumentException(
+                    $"{nameof(remainingTickets)} must be greater than or equal to 0.");
             }
 
             if (clearedStageId < 0)
             {
-                throw new ArgumentException($"{nameof(clearedStageId)} must be greater than or equal to 0.");
+                throw new ArgumentException(
+                    $"{nameof(clearedStageId)} must be greater than or equal to 0.");
             }
 
+            ResetTicketsInterval = resetTicketsInterval;
             RemainingTickets = remainingTickets;
             ClearedStageId = clearedStageId;
         }
 
         public EventDungeonInfo(Bencodex.Types.List serialized)
         {
-            RemainingTickets = serialized[0].ToInteger();
-            ClearedStageId = serialized[1].ToInteger();
+            ResetTicketsInterval = serialized[0].ToInteger();
+            RemainingTickets = serialized[1].ToInteger();
+            ClearedStageId = serialized[2].ToInteger();
         }
 
         public EventDungeonInfo(Bencodex.Types.IValue serialized)
@@ -45,17 +60,25 @@ namespace Nekoyume.Model.Event
         }
 
         public IValue Serialize() => Bencodex.Types.List.Empty
+            .Add(ResetTicketsInterval.Serialize())
             .Add(RemainingTickets.Serialize())
             .Add(ClearedStageId.Serialize());
 
-        public void ResetTickets(int tickets)
+        public void ResetTickets(int interval, int tickets)
         {
+            if (interval <= ResetTicketsInterval)
+            {
+                throw new ArgumentException(
+                    $"{nameof(interval)} must be greater than {nameof(ResetTicketsInterval)}.");
+            }
+
             if (tickets < 0)
             {
                 throw new ArgumentException(
                     $"{nameof(tickets)} must be greater than or equal to 0.");
             }
 
+            ResetTicketsInterval = interval;
             RemainingTickets = tickets;
         }
 
@@ -100,11 +123,10 @@ namespace Nekoyume.Model.Event
         public bool IsCleared(int stageId) =>
             ClearedStageId >= stageId;
 
-        protected bool Equals(EventDungeonInfo other)
-        {
-            return RemainingTickets == other.RemainingTickets &&
-                   ClearedStageId == other.ClearedStageId;
-        }
+        protected bool Equals(EventDungeonInfo other) =>
+            ResetTicketsInterval == other.ResetTicketsInterval &&
+            RemainingTickets == other.RemainingTickets &&
+            ClearedStageId == other.ClearedStageId;
 
         public override bool Equals(object obj)
         {
@@ -114,9 +136,10 @@ namespace Nekoyume.Model.Event
             return Equals((EventDungeonInfo)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(RemainingTickets, ClearedStageId);
-        }
+        public override int GetHashCode() =>
+            HashCode.Combine(
+                ResetTicketsInterval,
+                RemainingTickets,
+                ClearedStageId);
     }
 }
