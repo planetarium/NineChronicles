@@ -24,7 +24,7 @@ namespace Nekoyume.State
 
         private static readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private static Address? _currentAvatarAddress;
+        private static Address? _currentAvatarAddr;
 
         public static void Start(IAgent agent, States states, TableSheets tableSheets)
         {
@@ -54,6 +54,10 @@ namespace Nekoyume.State
                 .Subscribe(OnBlockIndex)
                 .AddTo(_disposables);
 
+            ReactiveAvatarState.Address
+                .Subscribe(OnAvatarChanged)
+                .AddTo(_disposables);
+
             StartArena();
         }
 
@@ -66,6 +70,18 @@ namespace Nekoyume.State
         private static void OnBlockIndex(long blockIndex)
         {
             OnBlockIndexArena(blockIndex);
+        }
+
+        private static void OnAvatarChanged(Address avatarAddr)
+        {
+            if (_currentAvatarAddr.HasValue &&
+                _currentAvatarAddr.Value.Equals(avatarAddr))
+            {
+                return;
+            }
+
+            _currentAvatarAddr = avatarAddr;
+            OnAvatarChangedArena();
         }
     }
 }

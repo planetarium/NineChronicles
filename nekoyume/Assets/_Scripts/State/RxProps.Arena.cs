@@ -90,14 +90,10 @@ namespace Nekoyume.State
             }
         }
 
-        private static Address? _avatarAddressForArenaProps;
-        
         // TODO!!!! Remove [`_arenaInfoTuple`] and use [`_playersArenaParticipant`] instead.
         private static readonly
             AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
-            _arenaInfoTuple
-                = new AsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>(
-                    UpdateArenaInfoTupleAsync);
+            _arenaInfoTuple = new(UpdateArenaInfoTupleAsync);
 
         private static long _arenaInfoTupleUpdatedBlockIndex;
 
@@ -110,13 +106,7 @@ namespace Nekoyume.State
             int maxTicketCount,
             int progressedBlockRange,
             int totalBlockRange,
-            string remainTimespanToReset)> _arenaTicketProgress =
-            new ReactiveProperty<(
-                int currentTicketCount,
-                int maxTicketCount,
-                int progressedBlockRange,
-                int totalBlockRange,
-                string remainTimespanToReset)>();
+            string remainTimespanToReset)> _arenaTicketProgress = new();
 
         public static IReadOnlyReactiveProperty<(
             int currentTicketCount,
@@ -127,14 +117,13 @@ namespace Nekoyume.State
             _arenaTicketProgress;
 
         private static readonly ReactiveProperty<PlayerArenaParticipant>
-            _playersArenaParticipant
-                = new ReactiveProperty<PlayerArenaParticipant>(null);
+            _playersArenaParticipant = new(null);
 
         public static IReadOnlyReactiveProperty<PlayerArenaParticipant>
             PlayersArenaParticipant => _playersArenaParticipant;
 
         private static readonly AsyncUpdatableRxProp<ArenaParticipant[]>
-            _arenaParticipantsOrderedWithScore = new AsyncUpdatableRxProp<ArenaParticipant[]>(
+            _arenaParticipantsOrderedWithScore = new(
                 Array.Empty<ArenaParticipant>(),
                 UpdateArenaParticipantsOrderedWithScoreAsync);
 
@@ -150,40 +139,33 @@ namespace Nekoyume.State
 
         private static void StartArena()
         {
-            ReactiveAvatarState.Address
-                .Subscribe(addr =>
-                {
-                    // NOTE: Reset all of cached block indexes for rx props when current avatar state changed.
-                    if (!_avatarAddressForArenaProps.HasValue)
-                    {
-                        _avatarAddressForArenaProps = addr;
-                    }
-                    else if (!_avatarAddressForArenaProps.Value.Equals(addr))
-                    {
-                        _avatarAddressForArenaProps = addr;
-                        _arenaInfoTupleUpdatedBlockIndex = 0;
-                        _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = 0;
-                    }
-
-                    // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
-                    // if (_playersArenaParticipant.HasValue &&
-                    //     _playersArenaParticipant.Value.AvatarAddr == addr)
-                    // {
-                    //     return;
-                    // }
-                    //
-                    // _playersArenaParticipant.Value = null;
-                })
-                .AddTo(_disposables);
-
             ArenaInfoTuple
                 .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
                 .AddTo(_disposables);
+
+            OnBlockIndex(_agent.BlockIndex);
+            OnAvatarChangedArena();
         }
 
         private static void OnBlockIndexArena(long blockIndex)
         {
             UpdateArenaTicketProgress(blockIndex);
+        }
+
+        private static void OnAvatarChangedArena()
+        {
+            // NOTE: Reset all of cached block indexes for rx props when current avatar state changed.
+            _arenaInfoTupleUpdatedBlockIndex = 0;
+            _arenaParticipantsOrderedWithScoreUpdatedBlockIndex = 0;
+
+            // TODO!!!! Update [`_playersArenaParticipant`] when current avatar changed.
+            // if (_playersArenaParticipant.HasValue &&
+            //     _playersArenaParticipant.Value.AvatarAddr == addr)
+            // {
+            //     return;
+            // }
+            //
+            // _playersArenaParticipant.Value = null;
         }
 
         private static void UpdateArenaTicketProgress(long blockIndex)
