@@ -59,6 +59,7 @@ namespace Nekoyume.State
                 .AddTo(_disposables);
 
             StartArena();
+            StartEvent();
         }
 
         public static void Stop()
@@ -70,6 +71,7 @@ namespace Nekoyume.State
         private static void OnBlockIndex(long blockIndex)
         {
             OnBlockIndexArena(blockIndex);
+            OnBlockIndexEvent(blockIndex);
         }
 
         private static void OnAvatarChanged(Address avatarAddr)
@@ -82,6 +84,7 @@ namespace Nekoyume.State
 
             _currentAvatarAddr = avatarAddr;
             OnAvatarChangedArena();
+            OnAvatarChangedEvent();
         }
     }
 }
