@@ -235,5 +235,28 @@ namespace Nekoyume.Extensions
             // Return maximum level when balance > maximum RequiredGold
             return orderedRows.Last().Level;
         }
+
+        public static WorldBossListSheet.Row FindRowByBlockIndex(this WorldBossListSheet sheet,
+            long blockIndex)
+        {
+            return sheet.OrderedList
+                .First(r =>
+                    r.StartedBlockIndex <= blockIndex &&
+                    blockIndex <= r.EndedBlockIndex
+                );
+        }
+        public static int FindRaidIdByBlockIndex(this WorldBossListSheet sheet, long blockIndex)
+        {
+            WorldBossListSheet.Row row = sheet.FindRowByBlockIndex(blockIndex);
+            return row.Id;
+        }
+
+        public static int FindPreviousRaidIdByBlockIndex(this WorldBossListSheet sheet,
+            long blockIndex)
+        {
+            return sheet.OrderedList.Last(
+                r => r.EndedBlockIndex < blockIndex
+            ).Id;
+        }
     }
 }

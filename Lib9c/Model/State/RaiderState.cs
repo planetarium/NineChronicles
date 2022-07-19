@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Bencodex.Types;
 
 namespace Nekoyume.Model.State
@@ -10,6 +11,8 @@ namespace Nekoyume.Model.State
         public int HighScore;
         public int TotalChallengeCount;
         public int RemainChallengeCount;
+        public int LatestRewardRank;
+        public long ClaimedBlockIndex;
 
         public RaiderState()
         {
@@ -25,6 +28,8 @@ namespace Nekoyume.Model.State
             HighScore = rawState[1].ToInteger();
             TotalChallengeCount = rawState[2].ToInteger();
             RemainChallengeCount = rawState[3].ToInteger();
+            LatestRewardRank = rawState[4].ToInteger();
+            ClaimedBlockIndex = rawState[5].ToLong();
         }
 
         public IValue Serialize()
@@ -33,7 +38,9 @@ namespace Nekoyume.Model.State
                 .Add(TotalScore.Serialize())
                 .Add(HighScore.Serialize())
                 .Add(TotalChallengeCount.Serialize())
-                .Add(RemainChallengeCount.Serialize());
+                .Add(RemainChallengeCount.Serialize())
+                .Add(LatestRewardRank.Serialize())
+                .Add(ClaimedBlockIndex.Serialize());
         }
     }
 }
