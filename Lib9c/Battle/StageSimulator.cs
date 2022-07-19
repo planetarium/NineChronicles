@@ -15,23 +15,23 @@ using Priority_Queue;
 
 namespace Nekoyume.Battle
 {
-    public class StageSimulator : Simulator
+    public class StageSimulator : Simulator, IEnemySkillSheetContainedSimulator
     {
-        protected readonly List<Wave> _waves;
-        protected readonly List<ItemBase> _waveRewards;
-        protected readonly List<Model.Skill.Skill> _skillsOnWaveStart = new List<Model.Skill.Skill>();
+        private readonly List<Wave> _waves;
+        private readonly List<ItemBase> _waveRewards;
+        private readonly List<Model.Skill.Skill> _skillsOnWaveStart = new List<Model.Skill.Skill>();
         public CollectionMap ItemMap = new CollectionMap();
-        public readonly EnemySkillSheet EnemySkillSheet;
+        public EnemySkillSheet EnemySkillSheet { get; }
 
         public const int ConstructorVersionDefault = 1;
         public const int ConstructorVersionV100025 = 2;
         public const int ConstructorVersionV100080 = 3;
 
-        protected int WorldId { get; }
+        private int WorldId { get; }
         public int StageId { get; }
-        protected bool IsCleared { get; set; }
-        protected int Exp { get; set; }
-        protected int TurnLimit { get; }
+        private bool IsCleared { get; }
+        private int Exp { get; }
+        private int TurnLimit { get; }
         public override IEnumerable<ItemBase> Reward => _waveRewards;
 
         public StageSimulator(
@@ -42,8 +42,7 @@ namespace Nekoyume.Battle
             int stageId,
             StageSimulatorSheets stageSimulatorSheets,
             int constructorVersion,
-            int playCount
-            )
+            int playCount)
             : base(
                 random,
                 avatarState,

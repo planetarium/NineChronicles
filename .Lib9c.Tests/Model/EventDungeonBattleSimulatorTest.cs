@@ -7,7 +7,6 @@ namespace Lib9c.Tests.Model
     using Libplanet.Action;
     using Nekoyume.Battle;
     using Nekoyume.Model.BattleStatus;
-    using Nekoyume.Model.Quest;
     using Nekoyume.Model.State;
     using Xunit;
 
@@ -41,7 +40,6 @@ namespace Lib9c.Tests.Model
                 10010001,
                 10010001,
                 _tableSheets.GetEventDungeonBattleSimulatorSheets(),
-                2,
                 1,
                 false,
                 10);

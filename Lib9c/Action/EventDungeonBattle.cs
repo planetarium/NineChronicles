@@ -289,7 +289,6 @@ namespace Nekoyume.Action
                 eventDungeonId,
                 eventDungeonStageId,
                 sheets.GetEventDungeonBattleSimulatorSheets(),
-                StageSimulator.ConstructorVersionV100080,
                 playCount,
                 eventDungeonInfo.IsCleared(eventDungeonStageId),
                 0);

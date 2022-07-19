@@ -6,15 +6,29 @@ using System.Linq;
 using Libplanet.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Buff;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Priority_Queue;
 
 namespace Nekoyume.Battle
 {
-    public class EventDungeonBattleSimulator : StageSimulator
+    public class EventDungeonBattleSimulator : Simulator, IEnemySkillSheetContainedSimulator
     {
+        private readonly int _eventDungeonId;
+        private readonly int _eventDungeonStageId;
+        private readonly bool _isCleared;
+        private readonly int _exp;
+        private readonly int _turnLimit;
+
+        private readonly List<Wave> _waves;
+        private readonly List<ItemBase> _waveRewards;
+
+        public EnemySkillSheet EnemySkillSheet { get; }
+
+        public override IEnumerable<ItemBase> Reward => _waveRewards;
+
         public EventDungeonBattleSimulator(
             IRandom random,
             AvatarState avatarState,
@@ -22,31 +36,65 @@ namespace Nekoyume.Battle
             int eventDungeonId,
             int eventDungeonStageId,
             EventDungeonBattleSimulatorSheets eventDungeonBattleSimulatorSheets,
-            int constructorVersion,
             int playCount,
             bool isCleared,
-            int exp
-        )
+            int exp)
             : base(
                 random,
                 avatarState,
                 foods,
-                eventDungeonId,
-                eventDungeonStageId,
-                eventDungeonBattleSimulatorSheets,
-                eventDungeonBattleSimulatorSheets.CostumeStatSheet,
-                constructorVersion,
-                playCount
+                eventDungeonBattleSimulatorSheets
             )
         {
-            IsCleared = isCleared;
-            Exp = exp;
+            _waves = new List<Wave>();
+
+            _eventDungeonId = eventDungeonId;
+            _eventDungeonStageId = eventDungeonStageId;
+            _isCleared = isCleared;
+            _exp = exp;
+            EnemySkillSheet = eventDungeonBattleSimulatorSheets.EnemySkillSheet;
+
+            var stageSheet = eventDungeonBattleSimulatorSheets.EventDungeonStageSheet;
+            if (!stageSheet.TryGetValue(eventDungeonStageId, out var stageRow))
+            {
+                throw new SheetRowNotFoundException(nameof(stageSheet), eventDungeonStageId);
+            }
+
+            _turnLimit = stageRow.TurnLimit;
+
+            var stageWaveSheet = eventDungeonBattleSimulatorSheets.EventDungeonStageWaveSheet;
+            if (!stageWaveSheet.TryGetValue(eventDungeonStageId, out var stageWaveRow))
+            {
+                throw new SheetRowNotFoundException(nameof(stageWaveSheet), eventDungeonStageId);
+            }
+
+            SetWave(stageRow, stageWaveRow);
+            var maxCount = Random.Next(
+                stageRow.DropItemMin,
+                stageRow.DropItemMax + 1);
+            _waveRewards = new List<ItemBase>();
+            for (var i = 0; i < playCount; i++)
+            {
+                var rewards = SetRewardV2(
+                    SetItemSelector(stageRow, Random),
+                    maxCount,
+                    Random,
+                    MaterialItemSheet
+                );
+
+                foreach (var reward in rewards)
+                {
+                    _waveRewards.Add(reward);
+                }
+            }
+            
+            Player.SetCostumeStat(eventDungeonBattleSimulatorSheets.CostumeStatSheet);
         }
 
-        public override Player Simulate(int playCount)
+        public void Simulate(int playCount)
         {
-            Log.worldId = WorldId;
-            Log.stageId = StageId;
+            Log.worldId = _eventDungeonId;
+            Log.stageId = _eventDungeonStageId;
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
@@ -61,30 +109,15 @@ namespace Nekoyume.Battle
                 WaveTurn = 1;
                 _waves[i].Spawn(this);
 
-                foreach (var skill in _skillsOnWaveStart)
-                {
-                    var buffs = BuffFactory.GetBuffs(
-                        skill,
-                        SkillBuffSheet,
-                        BuffSheet
-                    );
-
-                    var usedSkill = skill.Use(Player, 0, buffs);
-                    Log.Add(usedSkill);
-                }
-
                 while (true)
                 {
                     // NOTE: Break when the turn is over. 
-                    if (TurnNumber > TurnLimit)
+                    if (TurnNumber > _turnLimit)
                     {
                         if (i == 0)
                         {
                             Result = BattleLog.Result.Lose;
-                            if (StageId < GameConfig.MimisbrunnrStartStageId)
-                            {
-                                Player.GetExp((int)(Exp * 0.3m * playCount), true);
-                            }
+                            Player.GetExp((int)(_exp * 0.3m * playCount), true);
                         }
                         else
                         {
@@ -108,10 +141,7 @@ namespace Nekoyume.Battle
                         if (i == 0)
                         {
                             Result = BattleLog.Result.Lose;
-                            if (StageId < GameConfig.MimisbrunnrStartStageId)
-                            {
-                                Player.GetExp((int)(Exp * 0.3m * playCount), true);
-                            }
+                            Player.GetExp((int)(_exp * 0.3m * playCount), true);
                         }
                         else
                         {
@@ -131,12 +161,12 @@ namespace Nekoyume.Battle
                         {
                             case 1:
                             {
-                                Player.GetExp(Exp * playCount, true);
+                                Player.GetExp(_exp * playCount, true);
                                 break;
                             }
                             case 2:
                             {
-                                ItemMap = Player.GetRewards(_waveRewards);
+                                Player.GetRewards(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
                                 var getReward = new GetReward(null, _waveRewards);
@@ -147,7 +177,7 @@ namespace Nekoyume.Battle
                             {
                                 if (WaveNumber == _waves.Count)
                                 {
-                                    if (!IsCleared)
+                                    if (!_isCleared)
                                     {
                                         Log.newlyCleared = true;
                                     }
@@ -171,7 +201,7 @@ namespace Nekoyume.Battle
                 }
 
                 // NOTE: Break when the turn is over or the player is dead.
-                if (TurnNumber > TurnLimit ||
+                if (TurnNumber > _turnLimit ||
                     Player.IsDead)
                 {
                     break;
@@ -179,7 +209,58 @@ namespace Nekoyume.Battle
             }
 
             Log.result = Result;
-            return Player;
+        }
+
+        private void SetWave(
+            StageSheet.Row stageRow,
+            StageWaveSheet.Row stageWaveRow)
+        {
+            var enemyStatModifiers = stageRow.EnemyOptionalStatModifiers;
+            var waves = stageWaveRow.Waves;
+            foreach (var wave in waves.Select(e => SpawnWave(e, enemyStatModifiers)))
+            {
+                _waves.Add(wave);
+            }
+        }
+
+        private Wave SpawnWave(
+            StageWaveSheet.WaveData waveData,
+            IReadOnlyList<StatModifier> optionalStatModifiers)
+        {
+            var wave = new Wave();
+            foreach (var monsterData in waveData.Monsters)
+            {
+                for (var i = 0; i < monsterData.Count; i++)
+                {
+                    CharacterSheet.TryGetValue(
+                        monsterData.CharacterId,
+                        out var row,
+                        true);
+                    var enemyModel = new Enemy(
+                        Player,
+                        row,
+                        monsterData.Level,
+                        optionalStatModifiers);
+
+                    wave.Add(enemyModel);
+                    wave.HasBoss = waveData.HasBoss;
+                }
+            }
+
+            return wave;
+        }
+
+        private static WeightedSelector<StageSheet.RewardData> SetItemSelector(
+            StageSheet.Row stageRow,
+            IRandom random)
+        {
+            var itemSelector = new WeightedSelector<StageSheet.RewardData>(random);
+            foreach (var r in stageRow.Rewards)
+            {
+                itemSelector.Add(r, r.Ratio);
+            }
+
+            return itemSelector;
         }
     }
 }
