@@ -56,7 +56,12 @@ namespace Nekoyume.Model
             base.SetSkill();
 
             var dmg = (int)(ATK * 0.3m);
-            var skillIds = GetSkillIds();
+            var skillIds = Simulator is IEnemySkillSheetContainedSimulator simulator
+                ? simulator.EnemySkillSheet.OrderedList
+                    .Where(r => r.characterId == RowData.Id)
+                    .Select(r => r.skillId)
+                    .ToList()
+                : new List<int>();
             var enemySkills = Simulator.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
                 .ToList();
             foreach (var skillRow in enemySkills)
@@ -65,19 +70,6 @@ namespace Nekoyume.Model
                 Skills.Add(skill);
             }
         }
-
-        private List<int> GetSkillIds() => Simulator switch
-        {
-            StageSimulator stageSimulator => stageSimulator.EnemySkillSheet.OrderedList
-                .Where(r => r.characterId == RowData.Id)
-                .Select(r => r.skillId)
-                .ToList(),
-            EventDungeonBattleSimulator eventDungeonBattleSimulator => eventDungeonBattleSimulator.EnemySkillSheet
-                .OrderedList.Where(r => r.characterId == RowData.Id)
-                .Select(r => r.skillId)
-                .ToList(),
-            _ => new List<int>()
-        };
 
         public override object Clone()
         {
