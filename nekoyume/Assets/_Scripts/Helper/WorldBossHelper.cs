@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Nekoyume.TableData;
+using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -22,9 +23,9 @@ namespace Nekoyume.Helper
             }
         }
 
-        public static bool TryGetBossPrefab(int bossId, out GameObject prefab)
+        public static bool TryGetGrade(WorldBossGrade grade, out GameObject prefab)
         {
-            var result = ScriptableObject.Monsters.FirstOrDefault(x => x.id == bossId);
+            var result = ScriptableObject.Grades.FirstOrDefault(x => x.grade == grade);
             if (result is null)
             {
                 prefab = null;
@@ -33,6 +34,41 @@ namespace Nekoyume.Helper
 
             prefab = result.prefab;
             return true;
+        }
+
+        public static bool TryGetBossPrefab(int bossId, out GameObject namePrefab, out GameObject spinePrefab)
+        {
+            var result = ScriptableObject.Monsters.FirstOrDefault(x => x.id == bossId);
+            if (result is null)
+            {
+                namePrefab = null;
+                spinePrefab = null;
+                return false;
+            }
+
+            namePrefab = result.namePrefab;
+            spinePrefab = result.spinePrefab;
+            return true;
+        }
+
+        public static bool TryGetBossName(int bossId, out string name)
+        {
+            var result = ScriptableObject.Monsters.FirstOrDefault(x => x.id == bossId);
+            if (result is null)
+            {
+                name = string.Empty;
+                return false;
+            }
+
+            name = result.name;
+            return true;
+        }
+
+        public static bool IsItInSeason(long currentBlockIndex)
+        {
+            var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
+            return sheet.Values.Any(x => x.StartedBlockIndex <= currentBlockIndex &&
+                                                   currentBlockIndex <= x.EndedBlockIndex);
         }
 
         public static bool TryGetCurrentRow(long currentBlockIndex, out WorldBossListSheet.Row row)

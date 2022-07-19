@@ -18,14 +18,16 @@ namespace Nekoyume
         public class GradeData
         {
             public WorldBossGrade grade;
-            public Sprite icon;
+            public GameObject prefab;
         }
 
         [Serializable]
         public class MonsterData
         {
             public int id;
-            public GameObject prefab;
+            public string name;
+            public GameObject namePrefab;
+            public GameObject spinePrefab;
         }
     }
 }

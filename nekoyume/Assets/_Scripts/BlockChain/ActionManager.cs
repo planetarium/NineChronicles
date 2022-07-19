@@ -928,14 +928,19 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Raid>> Raid(List<Guid> costumes, List<Guid> equipments, int raidId)
+        public IObservable<ActionBase.ActionEvaluation<Raid>> Raid(
+            List<Guid> costumes,
+            List<Guid> equipments,
+            List<Guid> foods,
+            bool payNcg)
         {
             var action = new Raid
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 EquipmentIds = costumes,
                 CostumeIds = equipments,
-                RaidId = raidId,
+                FoodIds = foods,
+                PayNcg = payNcg,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -952,9 +957,9 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ClaimRaidReward>> ClaimRaidReward(int raidId)
+        public IObservable<ActionBase.ActionEvaluation<ClaimRaidReward>> ClaimRaidReward()
         {
-            var action = new ClaimRaidReward(States.Instance.CurrentAvatarState.address, raidId);
+            var action = new ClaimRaidReward(States.Instance.CurrentAvatarState.address);
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);

@@ -2,10 +2,11 @@
 {
     public enum WorldBossGrade
     {
-        S = 0,
-        A = 1,
-        B = 2,
-        C = 4,
-        D = 5,
+        None = 0,
+        D = 1,
+        C = 2,
+        B = 3,
+        A = 4,
+        S = 5,
     }
 }

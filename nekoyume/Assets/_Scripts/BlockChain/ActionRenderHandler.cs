@@ -1808,7 +1808,7 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception != null)
             {
-               Debug.Log("[RENDER_RAID]");
+                Widget.Find<WorldBoss>().UpdateView(Game.Game.instance.Agent.BlockIndex, true);
             }
         }
 
