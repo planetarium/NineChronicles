@@ -250,8 +250,28 @@ namespace Nekoyume.Action
             var eventDungeonInfoAddr = EventDungeonInfo.DeriveAddress(
                 avatarAddress,
                 eventDungeonId);
-            var eventDungeonInfo =
-                new EventDungeonInfo(states.GetState(eventDungeonInfoAddr));
+            var eventDungeonInfo = states.GetState(eventDungeonInfoAddr)
+                is Bencodex.Types.List serializedEventDungeonInfoList
+                ? new EventDungeonInfo(serializedEventDungeonInfoList)
+                : new EventDungeonInfo(remainingTickets: scheduleRow.DungeonTicketsMax);
+
+            // Update tickets.
+            {
+                var blockRange = context.BlockIndex - scheduleRow.StartBlockIndex;
+                if (blockRange > 0)
+                {
+                    var interval =
+                        (int)(blockRange / scheduleRow.DungeonTicketsResetIntervalBlockRange);
+                    if (interval > eventDungeonInfo.ResetTicketsInterval)
+                    {
+                        eventDungeonInfo.ResetTickets(
+                            interval,
+                            scheduleRow.DungeonTicketsMax);
+                    }
+                }
+            }
+            // ~Update tickets.
+
             const int playCount = 1;
             if (!eventDungeonInfo.TryUseTickets(playCount))
             {
@@ -282,6 +302,8 @@ namespace Nekoyume.Action
 
             // Simulate
             sw.Restart();
+            // NOTE: This is a temporary solution. The formula is not yet decided.
+            var exp = scheduleRow.DungeonExpSeedValue;
             var simulator = new EventDungeonBattleSimulator(
                 context.Random,
                 avatarState,
@@ -291,7 +313,7 @@ namespace Nekoyume.Action
                 sheets.GetEventDungeonBattleSimulatorSheets(),
                 playCount,
                 eventDungeonInfo.IsCleared(eventDungeonStageId),
-                0);
+                exp);
             simulator.Simulate(playCount);
             sw.Stop();
             Log.Verbose(
