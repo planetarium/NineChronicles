@@ -42,9 +42,9 @@ namespace Lib9c.Tests.Model
                 10010001,
                 _tableSheets.GetEventDungeonBattleSimulatorSheets(),
                 2,
+                1,
                 false,
-                10,
-                1);
+                10);
 
             var player = simulator.Player;
             while (player.Level == 1)
