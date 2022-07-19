@@ -16,48 +16,48 @@ namespace Nekoyume.Battle
             _enemies.Add(enemy);
         }
 
-        public void Spawn(StageSimulator stageSimulator)
+        public void Spawn(Simulator simulator)
         {
             foreach (var enemy in _enemies)
             {
-                stageSimulator.Player.Targets.Add(enemy);
-                stageSimulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
+                simulator.Player.Targets.Add(enemy);
+                simulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
                 enemy.InitAI();
             }
 
             var enemies = _enemies.Select(enemy => new Enemy(enemy)).ToList();
-            var spawnWave = new SpawnWave(null, stageSimulator.WaveNumber, stageSimulator.WaveTurn, enemies, HasBoss);
-            stageSimulator.Log.Add(spawnWave);
+            var spawnWave = new SpawnWave(null, simulator.WaveNumber, simulator.WaveTurn, enemies, HasBoss);
+            simulator.Log.Add(spawnWave);
         }
 
         [Obsolete("Use Spawn")]
-        public void SpawnV1(StageSimulator stageSimulator)
+        public void SpawnV1(Simulator simulator)
         {
             foreach (var enemy in _enemies)
             {
-                stageSimulator.Player.Targets.Add(enemy);
-                stageSimulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
+                simulator.Player.Targets.Add(enemy);
+                simulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
                 enemy.InitAIV1();
             }
 
             var enemies = _enemies.Select(enemy => new Enemy(enemy)).ToList();
-            var spawnWave = new SpawnWave(null, stageSimulator.WaveNumber, stageSimulator.WaveTurn, enemies, HasBoss);
-            stageSimulator.Log.Add(spawnWave);
+            var spawnWave = new SpawnWave(null, simulator.WaveNumber, simulator.WaveTurn, enemies, HasBoss);
+            simulator.Log.Add(spawnWave);
         }
 
         [Obsolete("Use Spawn")]
-        public void SpawnV2(StageSimulator stageSimulator)
+        public void SpawnV2(Simulator simulator)
         {
             foreach (var enemy in _enemies)
             {
-                stageSimulator.Player.Targets.Add(enemy);
-                stageSimulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
+                simulator.Player.Targets.Add(enemy);
+                simulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
                 enemy.InitAIV2();
             }
 
             var enemies = _enemies.Select(enemy => new Enemy(enemy)).ToList();
-            var spawnWave = new SpawnWave(null, stageSimulator.WaveNumber, stageSimulator.WaveTurn, enemies, HasBoss);
-            stageSimulator.Log.Add(spawnWave);
+            var spawnWave = new SpawnWave(null, simulator.WaveNumber, simulator.WaveTurn, enemies, HasBoss);
+            simulator.Log.Add(spawnWave);
         }
     }
 }

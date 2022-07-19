@@ -13,10 +13,10 @@ namespace Nekoyume.Model
     {
         public int spawnIndex = -1;
 
-        [NonSerialized]
-        public StageSimulator StageSimulator;
-
-        public Enemy(CharacterBase player, CharacterSheet.Row rowData, int monsterLevel,
+        public Enemy(
+            CharacterBase player,
+            CharacterSheet.Row rowData,
+            int monsterLevel,
             IEnumerable<StatModifier> optionalStatModifiers = null)
             : base(
                 player.Simulator,
@@ -26,7 +26,6 @@ namespace Nekoyume.Model
                 optionalStatModifiers)
         {
             Targets.Add(player);
-            StageSimulator = (StageSimulator) Simulator;
             PostConstruction();
         }
 
@@ -40,7 +39,6 @@ namespace Nekoyume.Model
         {
         }
 
-
         private void PostConstruction()
         {
             AttackCountMax = 1;
@@ -49,7 +47,7 @@ namespace Nekoyume.Model
         protected override void OnDead()
         {
             base.OnDead();
-            var player = (Player) Targets[0];
+            var player = (Player)Targets[0];
             player.RemoveTarget(this);
         }
 
@@ -57,9 +55,8 @@ namespace Nekoyume.Model
         {
             base.SetSkill();
 
-            var dmg = (int) (ATK * 0.3m);
-            var skillIds = StageSimulator.EnemySkillSheet.Values.Where(r => r.characterId == RowData.Id)
-                .Select(r => r.skillId).ToList();
+            var dmg = (int)(ATK * 0.3m);
+            var skillIds = GetSkillIds();
             var enemySkills = Simulator.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
                 .ToList();
             foreach (var skillRow in enemySkills)
@@ -68,6 +65,19 @@ namespace Nekoyume.Model
                 Skills.Add(skill);
             }
         }
+
+        private List<int> GetSkillIds() => Simulator switch
+        {
+            StageSimulator stageSimulator => stageSimulator.EnemySkillSheet.OrderedList
+                .Where(r => r.characterId == RowData.Id)
+                .Select(r => r.skillId)
+                .ToList(),
+            EventDungeonBattleSimulator eventDungeonBattleSimulator => eventDungeonBattleSimulator.EnemySkillSheet
+                .OrderedList.Where(r => r.characterId == RowData.Id)
+                .Select(r => r.skillId)
+                .ToList(),
+            _ => new List<int>()
+        };
 
         public override object Clone()
         {
