@@ -265,9 +265,9 @@ namespace Nekoyume.Action
                 eventDungeonStageId,
                 sheets.GetEventDungeonBattleSimulatorSheets(),
                 StageSimulator.ConstructorVersionV100080,
+                playCount,
                 eventDungeonInfo.IsCleared(eventDungeonStageId),
-                0,
-                playCount);
+                0);
             simulator.Simulate(playCount);
             sw.Stop();
             Log.Verbose(
