@@ -56,13 +56,13 @@ namespace Nekoyume.Model
             base.SetSkill();
 
             var dmg = (int)(ATK * 0.3m);
-            var skillIds = Simulator is IEnemySkillSheetContainedSimulator simulator
-                ? simulator.EnemySkillSheet.OrderedList
-                    .Where(r => r.characterId == RowData.Id)
-                    .Select(r => r.skillId)
-                    .ToList()
-                : new List<int>();
-            var enemySkills = Simulator.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
+            var skillIds = ((IEnemySkillSheetContainedSimulator)Simulator)
+                .EnemySkillSheet.Values
+                .Where(r => r.characterId == RowData.Id)
+                .Select(r => r.skillId)
+                .ToList();
+            var enemySkills = Simulator.SkillSheet.Values
+                .Where(r => skillIds.Contains(r.Id))
                 .ToList();
             foreach (var skillRow in enemySkills)
             {
