@@ -49,6 +49,7 @@ namespace Nekoyume.Action
 
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new [] {
                 typeof(WorldBossListSheet),
+                typeof(WorldBossGlobalHpSheet),
             });
             var worldBossListSheet = sheets.GetSheet<WorldBossListSheet>();
             var row = worldBossListSheet.FindRowByBlockIndex(context.BlockIndex);
@@ -123,19 +124,23 @@ namespace Nekoyume.Action
             raiderState.TotalChallengeCount++;
             // Reward.
             WorldBossState bossState;
+            WorldBossGlobalHpSheet hpSheet = sheets.GetSheet<WorldBossGlobalHpSheet>();
             if (states.TryGetState(worldBossAddress, out List rawBossState))
             {
                 bossState = new WorldBossState(rawBossState);
             }
             else
             {
-                bossState = new WorldBossState(row);
+                bossState = new WorldBossState(row, hpSheet[1]);
             }
-            bossState.CurrentHP -= score;
-            if (bossState.CurrentHP <= 0)
+            bossState.CurrentHp -= score;
+            if (bossState.CurrentHp <= 0)
             {
-                bossState.Level++;
-                bossState.CurrentHP = 20_000 + Math.Max(bossState.Level - 1, 1) * 10_000;
+                if (bossState.Level < hpSheet.OrderedList.Last().Level)
+                {
+                    bossState.Level++;
+                }
+                bossState.CurrentHp = hpSheet[bossState.Level].Hp;
             }
             // Update State.
             return states

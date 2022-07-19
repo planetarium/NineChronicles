@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
@@ -34,24 +35,28 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         // Join new raid.
-        [InlineData(null, true, true, 0L, true, false, 0, 0L, false, false, 0)]
+        [InlineData(null, true, true, 0L, true, false, 0, 0L, false, false, 0, false, false)]
         // Refill by interval.
-        [InlineData(null, true, true, 200L, false, true, 0, 100L, false, false, 0)]
+        [InlineData(null, true, true, 200L, false, true, 0, 100L, false, false, 0, false, false)]
         // Refill by NCG.
-        [InlineData(null, true, true, 200L, false, true, 0, 200L, true, true, 0)]
-        [InlineData(null, true, true, 200L, false, true, 0, 200L, true, true, 1)]
+        [InlineData(null, true, true, 200L, false, true, 0, 200L, true, true, 0, false, false)]
+        [InlineData(null, true, true, 200L, false, true, 0, 200L, true, true, 1, false, false)]
+        // Boss level up.
+        [InlineData(null, true, true, 200L, false, true, 0, 100L, false, false, 0, true, true)]
+        // Boss skip level up.
+        [InlineData(null, true, true, 200L, false, true, 0, 100L, false, false, 0, true, false)]
         // AvatarState null.
-        [InlineData(typeof(FailedLoadStateException), false, false, 0L, false, false, 0, 0L, false, false, 0)]
+        [InlineData(typeof(FailedLoadStateException), false, false, 0L, false, false, 0, 0L, false, false, 0, false, false)]
         // Stage not cleared.
-        [InlineData(typeof(NotEnoughClearedStageLevelException), true, false, 0L, false, false, 0, 0L, false, false, 0)]
+        [InlineData(typeof(NotEnoughClearedStageLevelException), true, false, 0L, false, false, 0, 0L, false, false, 0, false, false)]
         // Insufficient CRYSTAL.
-        [InlineData(typeof(InsufficientBalanceException), true, true, 0L, false, false, 0, 0L, false, false, 0)]
+        [InlineData(typeof(InsufficientBalanceException), true, true, 0L, false, false, 0, 0L, false, false, 0, false, false)]
         // Insufficient NCG.
-        [InlineData(typeof(InsufficientBalanceException), true, true, 0L, false, true, 0, 10L, true, false, 0)]
+        [InlineData(typeof(InsufficientBalanceException), true, true, 0L, false, true, 0, 10L, true, false, 0, false, false)]
         // Exceed purchase limit.
-        [InlineData(typeof(ExceedTicketPurchaseLimitException), true, true, 0L, false, true, 0, 10L, true, false, 1_000)]
+        [InlineData(typeof(ExceedTicketPurchaseLimitException), true, true, 0L, false, true, 0, 10L, true, false, 1_000, false, false)]
         // Exceed challenge count.
-        [InlineData(typeof(ExceedPlayCountException), true, true, 0L, false, true, 0, 0L, false, false, 0)]
+        [InlineData(typeof(ExceedPlayCountException), true, true, 0L, false, true, 0, 0L, false, false, 0, false, false)]
         public void Execute(
             Type exc,
             bool avatarExist,
@@ -63,7 +68,9 @@ namespace Lib9c.Tests.Action
             long refillBlockIndex,
             bool payNcg,
             bool ncgExist,
-            int purchaseCount
+            int purchaseCount,
+            bool kill,
+            bool levelUp
         )
         {
             var action = new Raid
@@ -78,8 +85,18 @@ namespace Lib9c.Tests.Action
             int raidId = _tableSheets.WorldBossListSheet.FindRaidIdByBlockIndex(blockIndex);
             Address raiderAddress = Addresses.GetRaiderAddress(_avatarAddress, raidId);
             var goldCurrencyState = new GoldCurrencyState(_goldCurrency);
+            WorldBossListSheet.Row worldBossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(blockIndex);
+            var hpSheet = _tableSheets.WorldBossGlobalHpSheet;
+            Address bossAddress = Addresses.GetWorldBossAddress(raidId);
+            int level = 1;
+            if (kill & !levelUp)
+            {
+                level = hpSheet.OrderedList.Last().Level;
+            }
+
             IAccountStateDelta state = new State()
                 .SetState(Addresses.GetSheetAddress<WorldBossListSheet>(), _tableSheets.WorldBossListSheet.Serialize())
+                .SetState(Addresses.GetSheetAddress<WorldBossGlobalHpSheet>(), hpSheet.Serialize())
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -132,6 +149,17 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize());
             }
 
+            if (kill)
+            {
+                var bossState =
+                    new WorldBossState(worldBossRow, _tableSheets.WorldBossGlobalHpSheet[level])
+                        {
+                            CurrentHp = 1,
+                            Level = level,
+                        };
+                state = state.SetState(bossAddress, bossState.Serialize());
+            }
+
             if (exc is null)
             {
                 var nextState = action.Execute(new ActionContext
@@ -143,7 +171,6 @@ namespace Lib9c.Tests.Action
                     Signer = _agentAddress,
                 });
 
-                Address bossAddress = Addresses.GetWorldBossAddress(raidId);
                 Assert.Equal(0 * crystal, nextState.GetBalance(_agentAddress, crystal));
                 if (crystalExist)
                 {
@@ -162,8 +189,21 @@ namespace Lib9c.Tests.Action
 
                 Assert.True(nextState.TryGetState(bossAddress, out List rawBoss));
                 var bossState = new WorldBossState(rawBoss);
-                Assert.Equal(10_000, bossState.CurrentHP);
-                Assert.Equal(1, bossState.Level);
+                int expectedLevel = level;
+                if (kill & levelUp)
+                {
+                    expectedLevel++;
+                }
+
+                Assert.Equal(expectedLevel, bossState.Level);
+                if (kill)
+                {
+                    Assert.Equal(hpSheet[expectedLevel].Hp, bossState.CurrentHp);
+                }
+                else
+                {
+                    Assert.True(bossState.CurrentHp < hpSheet[level].Hp);
+                }
 
                 if (payNcg)
                 {
