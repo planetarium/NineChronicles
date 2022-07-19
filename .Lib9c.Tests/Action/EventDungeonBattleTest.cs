@@ -8,15 +8,17 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Exceptions;
     using Nekoyume.Model.Event;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Nekoyume.TableData.Event;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
     public class EventDungeonBattleTest
     {
-        private readonly IAccountStateDelta _initialState;
+        private readonly IAccountStateDelta _initialStates;
         private readonly TableSheets _tableSheets;
 
         private readonly Address _agentAddress;
@@ -24,11 +26,11 @@ namespace Lib9c.Tests.Action
 
         public EventDungeonBattleTest()
         {
-            _initialState = new State();
+            _initialStates = new State();
             var sheets = TableSheetsImporter.ImportSheets();
             foreach (var (key, value) in sheets)
             {
-                _initialState = _initialState
+                _initialStates = _initialStates
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
@@ -56,7 +58,7 @@ namespace Lib9c.Tests.Action
                 level = 100,
             };
 
-            _initialState = _initialState
+            _initialStates = _initialStates
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddr, avatarState.inventory.Serialize())
@@ -67,18 +69,92 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(1001, 10010001, 10010001)]
-        public void Execute(
+        public void Execute_Success(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId) =>
+            Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId);
+
+        [Theory]
+        [InlineData(10000001, 10010001, 10010001)]
+        [InlineData(10010001, 10010001, 10010001)]
+        public void Execute_Throw_InvalidActionFieldException_By_EventScheduleId(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId) =>
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId));
+
+        [Theory]
+        [InlineData(1001, 10010001, 10010001)]
+        public void Execute_Throw_InvalidActionFieldException_By_ContextBlockIndex(
             int eventScheduleId,
             int eventDungeonId,
             int eventDungeonStageId)
         {
-            Assert.True(_tableSheets.EventDungeonSheet.TryGetValue(eventDungeonId, out var eventDungeonRow));
-            Assert.True(eventDungeonStageId >= eventDungeonRow.StageBegin);
-            Assert.True(eventDungeonStageId <= eventDungeonRow.StageEnd);
-            Assert.True(_tableSheets.EventDungeonStageSheet.TryGetValue(eventDungeonStageId, out _));
+            Assert.True(_tableSheets.EventScheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow));
+            var contextBlockIndex = scheduleRow.StartBlockIndex - 1;
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId, contextBlockIndex));
+            contextBlockIndex = scheduleRow.DungeonEndBlockIndex + 1;
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId, contextBlockIndex));
+        }
 
-            var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
+        [Theory]
+        [InlineData(1001, 10020001, 10010001)]
+        [InlineData(1001, 1001, 10010001)]
+        public void Execute_Throw_InvalidActionFieldException_By_EventDungeonId(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId) =>
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId));
 
+        [Theory]
+        [InlineData(1001, 10010001, 10020001)]
+        [InlineData(1001, 10010001, 1001)]
+        public void Execute_Throw_InvalidActionFieldException_By_EventDungeonStageId(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId) =>
+            Assert.Throws<InvalidActionFieldException>(() =>
+                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId));
+
+        [Theory]
+        [InlineData(1001, 10010001, 10010001)]
+        public void Execute_Throw_NotEnoughEventDungeonTicketsException(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId)
+        {
+            var previousState = _initialStates;
+            var eventDungeonInfoAddr =
+                EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
+            var eventDungeonInfo = new EventDungeonInfo(0, 0);
+            previousState = previousState
+                .SetState(eventDungeonInfoAddr, eventDungeonInfo.Serialize());
+            Assert.Throws<NotEnoughEventDungeonTicketsException>(() =>
+                Execute(previousState, eventScheduleId, eventDungeonId, eventDungeonStageId));
+        }
+
+        [Theory]
+        [InlineData(1001, 10010001, 10010002)]
+        public void Execute_Throw_StageNotClearedException(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId) =>
+            Assert.Throws<StageNotClearedException>(() =>
+                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId));
+
+        private void Execute(
+            IAccountStateDelta previousStates,
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId,
+            long blockIndex = 0)
+        {
+            var previousAvatarState = previousStates.GetAvatarStateV2(_avatarAddress);
             var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
             foreach (var equipment in equipments)
             {
@@ -86,13 +162,9 @@ namespace Lib9c.Tests.Action
             }
 
             var inventoryAddr = _avatarAddress.Derive(LegacyInventoryKey);
-            var eventDungeonInfoAddr = EventDungeonInfo.DeriveAddress(_avatarAddress, 1001);
-            var previousStates = _initialState
-                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
-                .SetState(inventoryAddr, previousAvatarState.inventory.Serialize())
-                .SetState(eventDungeonInfoAddr, new EventDungeonInfo().Serialize());
+            previousStates = previousStates
+                .SetState(inventoryAddr, previousAvatarState.inventory.Serialize());
 
-            ////
             var action = new EventDungeonBattle
             {
                 avatarAddress = _avatarAddress,
@@ -110,12 +182,21 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
-                BlockIndex = 1,
+                BlockIndex = blockIndex,
             });
 
+            Assert.True(nextState.GetSheet<EventScheduleSheet>().TryGetValue(
+                eventScheduleId,
+                out var scheduleRow));
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-            // 경험치..
-            // EventDungeonInfo..
+            // NOTE: This is a temporary test. The formula should be changed.
+            Assert.Equal(
+                previousAvatarState.exp + scheduleRow.DungeonExpSeedValue,
+                nextAvatarState.exp);
+            var eventDungeonInfoAddr =
+                EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
+            var eventDungeonInfo = new EventDungeonInfo(nextState.GetState(eventDungeonInfoAddr));
+            Assert.Equal(scheduleRow.DungeonTicketsMax - 1, eventDungeonInfo.RemainingTickets);
         }
     }
 }

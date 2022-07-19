@@ -10,7 +10,8 @@ namespace Nekoyume.Extensions
                 eventDungeonId > 99_999_999)
             {
                 throw new ArgumentException(
-                    "DungeonId must be between 10000000 and 99999999.");
+                    $"{nameof(eventDungeonId)}({eventDungeonId}) must be" +
+                    " between 10,000,000 and 99,999,999.");
             }
 
             return eventDungeonId / 10_000;

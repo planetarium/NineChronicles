@@ -171,18 +171,35 @@ namespace Nekoyume.Action
                     ActionTypeString,
                     addressesHex,
                     nameof(eventScheduleId),
-                    "Aborted as the block index is out of the range of the event schedule." +
-                    $"current({context.BlockIndex}), start({scheduleRow.StartBlockIndex}), end({scheduleRow.DungeonEndBlockIndex})");
+                    $"Aborted as the block index({context.BlockIndex}) is" +
+                    " out of the range of the event schedule" +
+                    $"({scheduleRow.StartBlockIndex} ~ {scheduleRow.DungeonEndBlockIndex}).");
             }
 
-            if (eventDungeonId.ToEventScheduleId() != eventScheduleId)
+            try
+            {
+                var eventScheduleIdDerivedFromEventDungeonId =
+                    eventDungeonId.ToEventScheduleId();
+                if (eventScheduleIdDerivedFromEventDungeonId != eventScheduleId)
+                {
+                    throw new InvalidActionFieldException(
+                        ActionTypeString,
+                        addressesHex,
+                        nameof(eventDungeonId),
+                        $"Aborted as the derive event schedule" +
+                        $" id({eventScheduleIdDerivedFromEventDungeonId}) from event dungeon" +
+                        $" id({eventDungeonId}) is not matched with the event schedule" +
+                        $" id({eventScheduleId}).");
+                }
+            }
+            catch (ArgumentException e)
             {
                 throw new InvalidActionFieldException(
                     ActionTypeString,
                     addressesHex,
                     nameof(eventDungeonId),
-                    "Aborted as the event dungeon id is not matched with the event schedule id." +
-                    $"event dungeon id: {eventDungeonId}, event schedule id: {eventScheduleId}");
+                    eventDungeonId.ToString(CultureInfo.InvariantCulture),
+                    e);
             }
 
             var dungeonSheet = sheets.GetSheet<EventDungeonSheet>();
@@ -192,7 +209,8 @@ namespace Nekoyume.Action
                     ActionTypeString,
                     addressesHex,
                     nameof(eventScheduleId),
-                    " Aborted because the event dungeon is not found.", new SheetRowNotFoundException(
+                    " Aborted because the event dungeon is not found.",
+                    new SheetRowNotFoundException(
                         addressesHex,
                         dungeonSheet.Name,
                         eventDungeonId));
@@ -205,8 +223,9 @@ namespace Nekoyume.Action
                     ActionTypeString,
                     addressesHex,
                     nameof(eventDungeonStageId),
-                    "Aborted as the event dungeon stage id is out of the range of the event dungeon." +
-                    $"stage id: {eventDungeonStageId}, stage begin: {dungeonRow.StageBegin}, stage end: {dungeonRow.StageEnd}");
+                    $"Aborted as the event dungeon stage id({eventDungeonStageId})" +
+                    " is out of the range of the event dungeon" +
+                    $"({dungeonRow.StageBegin} ~ {dungeonRow.StageEnd}).");
             }
 
             var stageSheet = sheets.GetSheet<EventDungeonStageSheet>();
