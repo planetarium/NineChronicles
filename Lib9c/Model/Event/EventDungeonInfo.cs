@@ -69,7 +69,7 @@ namespace Nekoyume.Model.Event
             if (interval <= ResetTicketsInterval)
             {
                 throw new ArgumentException(
-                    $"{nameof(interval)} must be greater than {nameof(ResetTicketsInterval)}.");
+                    $"{nameof(interval)}({interval}) must be greater than {nameof(ResetTicketsInterval)}({ResetTicketsInterval}).");
             }
 
             if (tickets < 0)
@@ -136,10 +136,15 @@ namespace Nekoyume.Model.Event
             return Equals((EventDungeonInfo)obj);
         }
 
-        public override int GetHashCode() =>
-            HashCode.Combine(
-                ResetTicketsInterval,
-                RemainingTickets,
-                ClearedStageId);
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = ResetTicketsInterval.GetHashCode();
+                hashCode = (hashCode * 397) ^ RemainingTickets.GetHashCode();
+                hashCode = (hashCode * 397) ^ ClearedStageId.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 }

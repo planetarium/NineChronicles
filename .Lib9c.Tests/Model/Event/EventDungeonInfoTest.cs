@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Model
         public void Serialize()
         {
             var eventDungeonInfo = new EventDungeonInfo();
+            eventDungeonInfo.ResetTickets(1, 10);
             eventDungeonInfo.ClearStage(1);
             var serialized = eventDungeonInfo.Serialize();
             var deserialized = new EventDungeonInfo(serialized);
