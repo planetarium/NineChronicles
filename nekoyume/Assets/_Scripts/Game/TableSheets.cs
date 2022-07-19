@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.TableData.Event;
 
 namespace Nekoyume.Game
 {
@@ -156,6 +157,14 @@ namespace Nekoyume.Game
         public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
+
+        public EventScheduleSheet EventScheduleSheet { get; private set; }
+
+        public EventDungeonSheet EventDungeonSheet { get; private set; }
+
+        public EventDungeonStageSheet EventDungeonStageSheet { get; private set; }
+
+        public EventDungeonStageWaveSheet EventDungeonStageWaveSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
