@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -19,7 +20,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1218
     /// </summary>
     [Serializable]
     [ActionType(ActionTypeString)]
@@ -102,7 +103,7 @@ namespace Nekoyume.Action
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Verbose(
-                "[{ActionTypeString}] Execute() start [{AddressesHex}]",
+                "[{ActionTypeString}][{AddressesHex}] Execute() start",
                 ActionTypeString,
                 addressesHex);
 
@@ -124,10 +125,10 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose(
-                "[{ActionTypeString}] TryGetAvatarStateV2: {Elapsed} [{AddressesHex}]",
+                "[{ActionTypeString}][{AddressesHex}] TryGetAvatarStateV2: {Elapsed}",
                 ActionTypeString,
-                sw.Elapsed,
-                addressesHex);
+                addressesHex,
+                sw.Elapsed);
             // ~Get AvatarState
 
             // Get sheets
@@ -142,20 +143,25 @@ namespace Nekoyume.Action
                 });
             sw.Stop();
             Log.Verbose(
-                "[{ActionTypeString}] Get sheets: {Elapsed} [{AddressesHex}]",
+                "[{ActionTypeString}][{AddressesHex}] Get sheets: {Elapsed}",
                 ActionTypeString,
-                sw.Elapsed,
-                addressesHex);
+                addressesHex,
+                sw.Elapsed);
             // ~Get sheets
 
             // Validate fields.
             var scheduleSheet = sheets.GetSheet<EventScheduleSheet>();
             if (!scheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow))
             {
-                throw new SheetRowNotFoundException(
+                throw new InvalidActionFieldException(
+                    ActionTypeString,
                     addressesHex,
-                    scheduleSheet.Name,
-                    eventScheduleId);
+                    nameof(eventScheduleId),
+                    eventScheduleId.ToString(CultureInfo.InvariantCulture),
+                    new SheetRowNotFoundException(
+                        addressesHex,
+                        scheduleSheet.Name,
+                        eventScheduleId));
             }
 
             if (context.BlockIndex < scheduleRow.StartBlockIndex ||
@@ -163,8 +169,8 @@ namespace Nekoyume.Action
             {
                 throw new InvalidActionFieldException(
                     ActionTypeString,
-                    nameof(eventScheduleId),
                     addressesHex,
+                    nameof(eventScheduleId),
                     "Aborted as the block index is out of the range of the event schedule." +
                     $"current({context.BlockIndex}), start({scheduleRow.StartBlockIndex}), end({scheduleRow.DungeonEndBlockIndex})");
             }
@@ -173,8 +179,8 @@ namespace Nekoyume.Action
             {
                 throw new InvalidActionFieldException(
                     ActionTypeString,
-                    nameof(eventDungeonId),
                     addressesHex,
+                    nameof(eventDungeonId),
                     "Aborted as the event dungeon id is not matched with the event schedule id." +
                     $"event dungeon id: {eventDungeonId}, event schedule id: {eventScheduleId}");
             }
@@ -182,10 +188,14 @@ namespace Nekoyume.Action
             var dungeonSheet = sheets.GetSheet<EventDungeonSheet>();
             if (!dungeonSheet.TryGetValue(eventDungeonId, out var dungeonRow))
             {
-                throw new SheetRowNotFoundException(
+                throw new InvalidActionFieldException(
+                    ActionTypeString,
                     addressesHex,
-                    dungeonSheet.Name,
-                    eventDungeonId);
+                    nameof(eventScheduleId),
+                    " Aborted because the event dungeon is not found.", new SheetRowNotFoundException(
+                        addressesHex,
+                        dungeonSheet.Name,
+                        eventDungeonId));
             }
 
             if (eventDungeonStageId < dungeonRow.StageBegin ||
@@ -193,19 +203,24 @@ namespace Nekoyume.Action
             {
                 throw new InvalidActionFieldException(
                     ActionTypeString,
-                    nameof(eventDungeonStageId),
                     addressesHex,
+                    nameof(eventDungeonStageId),
                     "Aborted as the event dungeon stage id is out of the range of the event dungeon." +
                     $"stage id: {eventDungeonStageId}, stage begin: {dungeonRow.StageBegin}, stage end: {dungeonRow.StageEnd}");
             }
 
             var stageSheet = sheets.GetSheet<EventDungeonStageSheet>();
-            if (!stageSheet.TryGetValue(eventDungeonStageId, out var stageRow))
+            if (!stageSheet.TryGetValue(eventDungeonStageId, out _))
             {
-                throw new SheetRowNotFoundException(
+                throw new InvalidActionFieldException(
+                    ActionTypeString,
                     addressesHex,
-                    stageSheet.Name,
-                    eventDungeonStageId);
+                    nameof(eventDungeonStageId),
+                    eventDungeonStageId.ToString(CultureInfo.InvariantCulture),
+                    new SheetRowNotFoundException(
+                        addressesHex,
+                        stageSheet.Name,
+                        eventDungeonStageId));
             }
 
             var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
@@ -222,6 +237,16 @@ namespace Nekoyume.Action
                 sheets.GetSheet<EquipmentItemOptionSheet>(),
                 addressesHex);
 
+            sw.Stop();
+            Log.Verbose(
+                "[{ActionTypeString}][{AddressesHex}] Validate fields: {Elapsed}",
+                ActionTypeString,
+                addressesHex,
+                sw.Elapsed);
+            // ~Validate fields.
+
+            // Validate avatar's event dungeon info.
+            sw.Restart();
             var eventDungeonInfoAddr = EventDungeonInfo.DeriveAddress(
                 avatarAddress,
                 eventDungeonId);
@@ -240,20 +265,20 @@ namespace Nekoyume.Action
             if (eventDungeonStageId != dungeonRow.StageBegin &&
                 !eventDungeonInfo.IsCleared(eventDungeonStageId - 1))
             {
-                throw new InvalidActionFieldException(
+                throw new StageNotClearedException(
                     ActionTypeString,
-                    nameof(eventDungeonStageId),
                     addressesHex,
-                    $"Aborted as the eventDungeonStageId({eventDungeonStageId}) cannot play before the previous stage({eventDungeonStageId - 1}) is cleared.");
+                    eventDungeonStageId - 1,
+                    eventDungeonInfo.ClearedStageId);
             }
 
             sw.Stop();
             Log.Verbose(
-                "[{ActionTypeString}] Validate fields: {Elapsed} [{AddressesHex}]",
+                "[{ActionTypeString}][{AddressesHex}] Validate fields: {Elapsed}",
                 ActionTypeString,
-                sw.Elapsed,
-                addressesHex);
-            // ~Validate fields.
+                addressesHex,
+                sw.Elapsed);
+            // ~Validate avatar's event dungeon info.
 
             // Simulate
             sw.Restart();
@@ -271,10 +296,10 @@ namespace Nekoyume.Action
             simulator.Simulate(playCount);
             sw.Stop();
             Log.Verbose(
-                "[{ActionTypeString}] Simulate: {Elapsed} [{AddressesHex}]",
+                "[{ActionTypeString}][{AddressesHex}] Simulate: {Elapsed}",
                 ActionTypeString,
-                sw.Elapsed,
-                addressesHex);
+                addressesHex,
+                sw.Elapsed);
             // ~Simulate
 
             // Update avatar's event dungeon info.
@@ -284,10 +309,10 @@ namespace Nekoyume.Action
                 eventDungeonInfo.ClearStage(eventDungeonStageId);
                 sw.Stop();
                 Log.Verbose(
-                    "[{ActionTypeString}] Update event dungeon info: {Elapsed} [{AddressesHex}]",
+                    "[{ActionTypeString}][{AddressesHex}] Update event dungeon info: {Elapsed}",
                     ActionTypeString,
-                    sw.Elapsed,
-                    addressesHex);
+                    addressesHex,
+                    sw.Elapsed);
             }
             // ~Update avatar's event dungeon info.
 
@@ -296,10 +321,10 @@ namespace Nekoyume.Action
             avatarState.Apply(simulator.Player, context.BlockIndex);
             sw.Stop();
             Log.Verbose(
-                "[{ActionTypeString}] Apply player to avatar state: {Elapsed} [{AddressesHex}]",
+                "[{ActionTypeString}][{AddressesHex}] Apply player to avatar state: {Elapsed}",
                 ActionTypeString,
-                sw.Elapsed,
-                addressesHex);
+                addressesHex,
+                sw.Elapsed);
             // ~Apply player to avatar state
 
             // Set states
@@ -331,17 +356,17 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose(
-                "[{ActionTypeString}] Set states: {Elapsed} [{AddressesHex}]",
+                "[{ActionTypeString}][{AddressesHex}] Set states: {Elapsed}",
                 ActionTypeString,
-                sw.Elapsed,
-                addressesHex);
+                addressesHex,
+                sw.Elapsed);
             // ~Set states
 
             Log.Verbose(
-                "[{ActionTypeString}] Total elapsed: {Elapsed} [{AddressesHex}]",
+                "[{ActionTypeString}][{AddressesHex}] Total elapsed: {Elapsed}",
                 ActionTypeString,
-                DateTimeOffset.UtcNow - started,
-                addressesHex);
+                addressesHex,
+                DateTimeOffset.UtcNow - started);
             return states;
         }
     }

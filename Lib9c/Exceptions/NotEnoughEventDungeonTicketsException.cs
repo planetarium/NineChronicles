@@ -27,7 +27,7 @@ namespace Nekoyume.Exceptions
             string addressesHex,
             int requiredAmount,
             int currentAmount)
-            : base($"[{actionType}] required({requiredAmount}), current({currentAmount}) [{addressesHex}]")
+            : base($"[{actionType}][{addressesHex}] required({requiredAmount}), current({currentAmount})")
         {
         }
 

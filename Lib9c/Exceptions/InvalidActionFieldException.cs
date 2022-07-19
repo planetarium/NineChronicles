@@ -24,10 +24,21 @@ namespace Nekoyume.Exceptions
 
         public InvalidActionFieldException(
             string actionType,
-            string fieldName,
             string addressesHex,
-            string message = "")
-            : base($"[{actionType}] {fieldName} [{addressesHex}]: {message}")
+            string fieldName,
+            string message)
+            : base($"[{actionType}][{addressesHex}] Invalid field({fieldName}): {message}")
+        {
+        }
+
+        public InvalidActionFieldException(string actionType,
+            string addressesHex,
+            string fieldName,
+            string message,
+            Exception innerException)
+            : base(
+                $"[{actionType}][{addressesHex}] Invalid field({fieldName}): {message}",
+                innerException)
         {
         }
 

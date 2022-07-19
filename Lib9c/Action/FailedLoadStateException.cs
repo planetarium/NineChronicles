@@ -21,7 +21,7 @@ namespace Nekoyume.Action
             Type stateType,
             Address address,
             string addressesHex)
-            : base($"[{actionType}] type({stateType.FullName}) at address({address.ToHex()}) [{addressesHex}]")
+            : base($"[{actionType}][{addressesHex}] type({stateType.FullName}) at address({address.ToHex()})")
         {
         }
 
