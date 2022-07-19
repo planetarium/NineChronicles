@@ -65,15 +65,12 @@ namespace Nekoyume.TableData
         }
     }
 
-    public class EventDungeonBattleSimulatorSheets : StageSimulatorSheets
+    public class EventDungeonBattleSimulatorSheets : SimulatorSheets
     {
+        public readonly EventDungeonStageSheet EventDungeonStageSheet;
+        public readonly EventDungeonStageWaveSheet EventDungeonStageWaveSheet;
+        public readonly EnemySkillSheet EnemySkillSheet;
         public readonly CostumeStatSheet CostumeStatSheet;
-
-        // NOTE: Same ref with `base.StageSheet`
-        public EventDungeonStageSheet EventDungeonStageSheet { get; }
-
-        // NOTE: Same ref with `base.StageWaveSheet`
-        public EventDungeonStageWaveSheet EventDungeonStageWaveSheet { get; }
 
         public EventDungeonBattleSimulatorSheets(
             MaterialItemSheet materialItemSheet,
@@ -94,15 +91,13 @@ namespace Nekoyume.TableData
             buffSheet,
             characterSheet,
             characterLevelSheet,
-            equipmentItemSetEffectSheet,
-            eventDungeonStageSheet,
-            eventDungeonStageWaveSheet,
-            enemySkillSheet
+            equipmentItemSetEffectSheet
         )
         {
-            CostumeStatSheet = costumeStatSheet;
             EventDungeonStageSheet = eventDungeonStageSheet;
             EventDungeonStageWaveSheet = eventDungeonStageWaveSheet;
+            EnemySkillSheet = enemySkillSheet;
+            CostumeStatSheet = costumeStatSheet;
         }
     }
 
