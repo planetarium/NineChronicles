@@ -39,6 +39,7 @@ namespace Nekoyume.UI.Module
             Shop,
             Battle,
             Arena,
+            EventDungeon,
         }
 
         [Serializable]
@@ -51,16 +52,38 @@ namespace Nekoyume.UI.Module
             public TextMeshProUGUI LockText;
         }
 
-        [SerializeField] private List<ToggleInfo> toggles = new List<ToggleInfo>();
-        [SerializeField] private Gold ncg;
-        [SerializeField] private ActionPoint actionPoint;
-        [SerializeField] private Crystal crystal;
-        [SerializeField] private GameObject dailyBonus;
-        [SerializeField] private Hourglass hourglass;
-        [SerializeField] private ArenaTickets arenaTickets;
-        [SerializeField] private VFX inventoryVFX;
-        [SerializeField] private VFX workshopVFX;
-        [SerializeField] private ToggleDropdown menuToggleDropdown;
+        [SerializeField]
+        private List<ToggleInfo> toggles = new List<ToggleInfo>();
+
+        [SerializeField]
+        private Gold ncg;
+
+        [SerializeField]
+        private ActionPoint actionPoint;
+
+        [SerializeField]
+        private Crystal crystal;
+
+        [SerializeField]
+        private GameObject dailyBonus;
+
+        [SerializeField]
+        private Hourglass hourglass;
+
+        [SerializeField]
+        private ArenaTickets arenaTickets;
+
+        [SerializeField]
+        private EventDungeonTickets eventDungeonTickets;
+
+        [SerializeField]
+        private VFX inventoryVFX;
+
+        [SerializeField]
+        private VFX workshopVFX;
+
+        [SerializeField]
+        private ToggleDropdown menuToggleDropdown;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
@@ -70,24 +93,24 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ToggleType, ReactiveProperty<bool>> _toggleNotifications =
             new Dictionary<ToggleType, ReactiveProperty<bool>>()
             {
-                {ToggleType.Quest, new ReactiveProperty<bool>(false)},
-                {ToggleType.AvatarInfo, new ReactiveProperty<bool>(false)},
-                {ToggleType.CombinationSlots, new ReactiveProperty<bool>(false)},
-                {ToggleType.Mail, new ReactiveProperty<bool>(false)},
-                {ToggleType.Rank, new ReactiveProperty<bool>(false)},
+                { ToggleType.Quest, new ReactiveProperty<bool>(false) },
+                { ToggleType.AvatarInfo, new ReactiveProperty<bool>(false) },
+                { ToggleType.CombinationSlots, new ReactiveProperty<bool>(false) },
+                { ToggleType.Mail, new ReactiveProperty<bool>(false) },
+                { ToggleType.Rank, new ReactiveProperty<bool>(false) },
             };
 
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
             new Dictionary<ToggleType, int>()
             {
-                {ToggleType.Quest, GameConfig.RequireClearedStageLevel.UIBottomMenuQuest},
-                {ToggleType.AvatarInfo, GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter},
-                {ToggleType.CombinationSlots, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction},
-                {ToggleType.Mail, GameConfig.RequireClearedStageLevel.UIBottomMenuMail},
-                {ToggleType.Rank, 1},
-                {ToggleType.Chat, GameConfig.RequireClearedStageLevel.UIBottomMenuChat},
-                {ToggleType.Settings, 1},
-                {ToggleType.Quit, 1},
+                { ToggleType.Quest, GameConfig.RequireClearedStageLevel.UIBottomMenuQuest },
+                { ToggleType.AvatarInfo, GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter },
+                { ToggleType.CombinationSlots, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction },
+                { ToggleType.Mail, GameConfig.RequireClearedStageLevel.UIBottomMenuMail },
+                { ToggleType.Rank, 1 },
+                { ToggleType.Chat, GameConfig.RequireClearedStageLevel.UIBottomMenuChat },
+                { ToggleType.Settings, 1 },
+                { ToggleType.Quit, 1 },
             };
 
         private long _blockIndex;
@@ -103,6 +126,8 @@ namespace Nekoyume.UI.Module
         public Hourglass Hourglass => hourglass;
 
         public ArenaTickets ArenaTickets => arenaTickets;
+
+        public EventDungeonTickets EventDungeonTickets => eventDungeonTickets;
 
         public override bool CanHandleInputEvent => false;
 
@@ -272,6 +297,9 @@ namespace Nekoyume.UI.Module
                 case AssetVisibleState.Arena:
                     SetActiveAssets(isNcgActive: true, isActionPointActive: true, isArenaTicketsActive: true);
                     break;
+                case AssetVisibleState.EventDungeon:
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isEventDungeonTicketsActive: true);
+                    break;
             }
         }
 
@@ -280,13 +308,15 @@ namespace Nekoyume.UI.Module
             bool isActionPointActive = false,
             bool isDailyBonusActive = false,
             bool isHourglassActive = false,
-            bool isArenaTicketsActive = false)
+            bool isArenaTicketsActive = false,
+            bool isEventDungeonTicketsActive = false)
         {
             ncg.gameObject.SetActive(isNcgActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             dailyBonus.SetActive(isDailyBonusActive);
             hourglass.gameObject.SetActive(isHourglassActive);
             arenaTickets.gameObject.SetActive(isArenaTicketsActive);
+            eventDungeonTickets.gameObject.SetActive(isEventDungeonTicketsActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)
@@ -364,7 +394,8 @@ namespace Nekoyume.UI.Module
             var cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
             var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.Hourglass);
-            var isEnough =  States.Instance.CurrentAvatarState.inventory.HasFungibleItem(row.ItemId, currentBlockIndex, cost);
+            var isEnough =
+                States.Instance.CurrentAvatarState.inventory.HasFungibleItem(row.ItemId, currentBlockIndex, cost);
             return isEnough;
         }
 
