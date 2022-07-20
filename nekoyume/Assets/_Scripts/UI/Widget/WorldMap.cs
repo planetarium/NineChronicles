@@ -23,18 +23,26 @@ namespace Nekoyume.UI
     {
         public class ViewModel
         {
-            public readonly ReactiveProperty<bool> IsWorldShown = new ReactiveProperty<bool>(false);
-            public readonly ReactiveProperty<int> SelectedWorldId = new ReactiveProperty<int>(1);
-            public readonly ReactiveProperty<int> SelectedStageId = new ReactiveProperty<int>(1);
+            public readonly ReactiveProperty<bool> IsWorldShown = new(false);
+            public readonly ReactiveProperty<int> SelectedWorldId = new(1);
+            public readonly ReactiveProperty<int> SelectedStageId = new(1);
 
             public WorldInformation WorldInformation;
             public List<int> UnlockedWorldIds;
         }
 
-        [SerializeField] private GameObject worldMapRoot = null;
-        [SerializeField] private Button closeButton;
+        [SerializeField]
+        private GameObject worldMapRoot = null;
 
+        [SerializeField]
+        private Button closeButton;
+
+        [SerializeField]
         private WorldButton[] _worldButtons;
+
+        [SerializeField]
+        private WorldButton _eventDungeonButton;
+
         public ViewModel SharedViewModel { get; private set; }
 
         public int SelectedWorldId
@@ -72,7 +80,6 @@ namespace Nekoyume.UI
                 Close();
                 Game.Event.OnRoomEnter.Invoke(true);
             };
-            _worldButtons = GetComponentsInChildren<WorldButton>();
         }
 
         public override void Initialize()
@@ -256,7 +263,7 @@ namespace Nekoyume.UI
 
         private void ShowWorldUnlockPopup(int worldId)
         {
-            var cost = CrystalCalculator.CalculateWorldUnlockCost(new[] {worldId},
+            var cost = CrystalCalculator.CalculateWorldUnlockCost(new[] { worldId },
                     Game.TableSheets.Instance.WorldUnlockSheet)
                 .MajorUnit;
             var balance = States.Instance.CrystalBalance;
@@ -274,9 +281,9 @@ namespace Nekoyume.UI
                     Find<UnlockWorldLoadingScreen>().Show();
                     Analyzer.Instance.Track("Unity/UnlockWorld", new Value
                     {
-                        ["BurntCrystal"] = (long) cost,
+                        ["BurntCrystal"] = (long)cost,
                     });
-                    ActionManager.Instance.UnlockWorld(new List<int> {worldId}).Subscribe();
+                    ActionManager.Instance.UnlockWorld(new List<int> { worldId }).Subscribe();
                 },
                 OnAttractInPaymentPopup);
         }
@@ -309,7 +316,7 @@ namespace Nekoyume.UI
                             Find<UnlockWorldLoadingScreen>().Show();
                             Analyzer.Instance.Track("Unity/UnlockWorld", new Value
                             {
-                                ["BurntCrystal"] = (long) cost,
+                                ["BurntCrystal"] = (long)cost,
                             });
                             ActionManager.Instance.UnlockWorld(worldIdListForUnlock).Subscribe();
                         },

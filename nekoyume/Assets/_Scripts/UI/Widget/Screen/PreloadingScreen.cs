@@ -2,6 +2,7 @@ using Libplanet;
 using Nekoyume.Game.Factory;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Helper;
 using Nekoyume.State;
 using UnityEngine;
@@ -63,7 +64,9 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        await States.Instance.SelectAvatarAsync(slotIndex);
+                        await UniTask.WhenAll(
+                            States.Instance.SelectAvatarAsync(slotIndex),
+                            RxProps.ArenaInfoTuple.UpdateAsync());
                         Game.Event.OnRoomEnter.Invoke(false);
                         Game.Event.OnUpdateAddresses.Invoke();
                     }
