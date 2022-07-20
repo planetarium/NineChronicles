@@ -6,4 +6,5 @@ public enum CostType
     Hourglass,
     Crystal,
     ArenaTicket,
+    WorldBossTicket,
 }
