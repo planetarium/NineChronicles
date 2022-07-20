@@ -7,4 +7,5 @@ public enum CostType
     Crystal,
     ArenaTicket,
     WorldBossTicket,
+    EventDungeonTicket,
 }
