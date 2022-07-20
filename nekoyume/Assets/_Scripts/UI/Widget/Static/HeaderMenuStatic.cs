@@ -40,6 +40,7 @@ namespace Nekoyume.UI.Module
             Battle,
             Arena,
             EventDungeon,
+            WorldBoss,
         }
 
         [Serializable]
@@ -75,6 +76,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private EventDungeonTickets eventDungeonTickets;
+
+        [SerializeField]
+        private WorldBossTickets worldBossTickets;
 
         [SerializeField]
         private VFX inventoryVFX;
@@ -126,8 +130,8 @@ namespace Nekoyume.UI.Module
         public Hourglass Hourglass => hourglass;
 
         public ArenaTickets ArenaTickets => arenaTickets;
-
         public EventDungeonTickets EventDungeonTickets => eventDungeonTickets;
+        public WorldBossTickets WorldBossTickets => worldBossTickets;
 
         public override bool CanHandleInputEvent => false;
 
@@ -300,6 +304,9 @@ namespace Nekoyume.UI.Module
                 case AssetVisibleState.EventDungeon:
                     SetActiveAssets(isNcgActive: true, isActionPointActive: true, isEventDungeonTicketsActive: true);
                     break;
+                case AssetVisibleState.WorldBoss:
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isEventWorldBossTicketsActive: true);
+                    break;
             }
         }
 
@@ -309,7 +316,8 @@ namespace Nekoyume.UI.Module
             bool isDailyBonusActive = false,
             bool isHourglassActive = false,
             bool isArenaTicketsActive = false,
-            bool isEventDungeonTicketsActive = false)
+            bool isEventDungeonTicketsActive = false,
+            bool isEventWorldBossTicketsActive = false)
         {
             ncg.gameObject.SetActive(isNcgActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
@@ -317,6 +325,7 @@ namespace Nekoyume.UI.Module
             hourglass.gameObject.SetActive(isHourglassActive);
             arenaTickets.gameObject.SetActive(isArenaTicketsActive);
             eventDungeonTickets.gameObject.SetActive(isEventDungeonTicketsActive);
+            worldBossTickets.gameObject.SetActive(isEventWorldBossTicketsActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)
