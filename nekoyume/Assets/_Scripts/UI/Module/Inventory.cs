@@ -136,7 +136,7 @@ namespace Nekoyume.UI.Module
         private void Set(
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null,
-            bool isArena = false)
+            bool isArena = false, bool useConsumable = false)
         {
             _disposablesOnSet.DisposeAllAndClear();
             foreach (var type in ItemTypes)
@@ -159,7 +159,14 @@ namespace Nekoyume.UI.Module
                     .AddTo(_disposablesOnSet);
             }
 
-            SetToggle(equipmentButton, ItemType.Equipment);
+            if (useConsumable && _consumables.Any())
+            {
+                SetToggle(consumableButton, ItemType.Consumable);
+            }
+            else
+            {
+                SetToggle(equipmentButton, ItemType.Equipment);
+            }
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposablesOnSet);
             scroll.OnDoubleClick.Subscribe(OnDoubleClick).AddTo(_disposablesOnSet);
         }
@@ -489,7 +496,8 @@ namespace Nekoyume.UI.Module
             System.Action clickEquipmentToggle,
             System.Action clickCostumeToggle,
             IEnumerable<ElementalType> elementalTypes,
-            bool isArena = false)
+            bool isArena = false,
+            bool useConsumable = false)
         {
             _reverseOrder = false;
             SetAction(clickItem, doubleClickItem, clickEquipmentToggle, clickCostumeToggle);
@@ -501,7 +509,8 @@ namespace Nekoyume.UI.Module
                 : null;
             Set(
                 itemSetDimPredicates: predicateList,
-                isArena: isArena);
+                isArena: isArena,
+                useConsumable: useConsumable);
             _allowMoveTab = true;
         }
 
