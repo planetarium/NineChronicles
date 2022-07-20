@@ -68,16 +68,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Animator animator;
 
-        private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Locked);
+        private readonly ReactiveProperty<State> _state = new(State.Locked);
 
-        private readonly ReactiveProperty<AnimationState> _animationState =
-            new ReactiveProperty<AnimationState>(AnimationState.None);
+        private readonly ReactiveProperty<AnimationState> _animationState = new(AnimationState.None);
 
         private Tweener _tweener;
         private BigInteger _openCost;
 
-        public readonly Subject<WorldButton> OnClickSubject = new Subject<WorldButton>();
-        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+        public readonly Subject<WorldButton> OnClickSubject = new();
+        public readonly ReactiveProperty<bool> HasNotification = new(false);
 
         public bool IsShown => gameObject.activeSelf;
         private bool IsLocked => _state.Value == State.Locked;

@@ -109,6 +109,8 @@ namespace Nekoyume.UI.Module
 
         private GuidedQuestCell CombinationEquipmentQuestCell => cells[1];
 
+        private GuidedQuestCell EventDungeonCell => cells[2];
+
         #region Events
 
         public IObservable<(GuidedQuestCell cell, WorldQuest quest)>
@@ -123,8 +125,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            // NOTE: 지금은 딱 두 줄만 표시합니다.
-            Assert.AreEqual(cells.Count, 2);
+            Assert.AreEqual(cells.Count, 3);
 
             // 뷰 모델을 구독합니다.
             SharedViewModel.worldQuest
@@ -175,7 +176,8 @@ namespace Nekoyume.UI.Module
             {
                 default:
                     Debug.LogWarning(
-                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.None}, {ViewState.Hidden} or {ViewState.Shown}");
+                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}." +
+                        $" Try when state is {ViewState.None}, {ViewState.Hidden} or {ViewState.Shown}");
                     break;
                 case ViewState.None:
                 case ViewState.Hidden:
