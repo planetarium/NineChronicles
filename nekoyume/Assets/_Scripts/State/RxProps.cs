@@ -9,6 +9,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Event;
 using Nekoyume.Model.State;
 using UnityEngine;
 
@@ -67,6 +68,15 @@ namespace Nekoyume.State
             Debug.Log($"{nameof(RxProps)} stop");
             _disposables.DisposeAllAndClear();
         }
+
+        public static async UniTask<(
+            AvatarState selectedAvatarState,
+            (ArenaInformation current, ArenaInformation next) arenaInfoTuple,
+            EventDungeonInfo eventDungeonInfo)> SelectAvatarAsync(int avatarIndexToSelect) =>
+            await UniTask.WhenAll(
+                States.Instance.SelectAvatarAsync(avatarIndexToSelect),
+                ArenaInfoTuple.UpdateAsync(),
+                EventDungeonInfo.UpdateAsync());
 
         private static void OnBlockIndex(long blockIndex)
         {
