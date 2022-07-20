@@ -125,7 +125,6 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            // NOTE: 지금은 딱 두 줄만 표시합니다.
             Assert.AreEqual(cells.Count, 3);
 
             // 뷰 모델을 구독합니다.
