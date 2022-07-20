@@ -18,5 +18,6 @@ namespace Nekoyume.EnumType
 	TextElement02,
 	TextElement04,
 	TextElement05,
+	TextCount,
     }
 }
