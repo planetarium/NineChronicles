@@ -34,7 +34,11 @@ namespace Nekoyume.Game
                     throw new Exception(sb.ToString());
                 }
 
-                iSheet.Set(pair.Value);
+                if (pair.Value is not null)
+                {
+                    iSheet.Set(pair.Value);
+                }
+
                 sheetPropertyInfo.SetValue(this, sheetObject);
             }
 
