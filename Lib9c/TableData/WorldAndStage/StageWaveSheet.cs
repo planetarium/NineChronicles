@@ -89,12 +89,8 @@ namespace Nekoyume.TableData
                     .Distinct());
             }
         }
-        
-        public StageWaveSheet() : base(nameof(StageWaveSheet))
-        {
-        }
 
-        protected StageWaveSheet(string name) : base(name)
+        public StageWaveSheet() : base(nameof(StageWaveSheet))
         {
         }
 
