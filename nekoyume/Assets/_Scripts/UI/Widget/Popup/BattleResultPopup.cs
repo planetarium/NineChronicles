@@ -112,6 +112,9 @@ namespace Nekoyume.UI
         private Button closeButton = null;
 
         [SerializeField]
+        private Button stageButton = null;
+
+        [SerializeField]
         private Button nextButton = null;
 
         [SerializeField]
@@ -164,6 +167,11 @@ namespace Nekoyume.UI
                     }
                 }).AddTo(gameObject);
 
+            stageButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                OnClickStage();
+            }).AddTo(gameObject);
+
             nextButton.OnClickAsObservable().Subscribe(_ =>
                 {
                     StartCoroutine(OnClickNext());
@@ -190,6 +198,13 @@ namespace Nekoyume.UI
                 yield return CoDialog(SharedModel.StageID);
             }
             GoToMain();
+        }
+
+        private void OnClickStage()
+        {
+            _IsAlreadyOut = true;
+            AudioController.PlayClick();
+            GoToPreparation();
         }
 
         private IEnumerator OnClickNext()
@@ -251,6 +266,7 @@ namespace Nekoyume.UI
 
             base.Show();
             closeButton.gameObject.SetActive(model.StageID >= 3 || model.LastClearedStageId >= 3);
+            stageButton.gameObject.SetActive(false);
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
 
@@ -411,6 +427,12 @@ namespace Nekoyume.UI
             string fullFormat = string.Empty;
             closeButton.interactable = true;
 
+            if (!SharedModel.IsClear)
+            {
+                stageButton.gameObject.SetActive(true);
+                stageButton.interactable = true;
+            }
+
             if (!SharedModel.ActionPointNotEnough)
             {
                 var value = SharedModel.StageID >= 3 || SharedModel.LastClearedStageId >= 3;
@@ -440,6 +462,9 @@ namespace Nekoyume.UI
                     SubmitWidget = nextButton.onClick.Invoke;
                     fullFormat = L10nManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
                     break;
+                default:
+                    bottomText.text = string.Empty;
+                    yield break;
             }
 
             // for tutorial
@@ -447,6 +472,7 @@ namespace Nekoyume.UI
                 SharedModel.LastClearedStageId == 3 &&
                 SharedModel.State == BattleLog.Result.Win)
             {
+                stageButton.gameObject.SetActive(false);
                 nextButton.gameObject.SetActive(false);
                 repeatButton.gameObject.SetActive(false);
                 bottomText.text = string.Empty;
@@ -502,6 +528,7 @@ namespace Nekoyume.UI
             }
 
             closeButton.interactable = false;
+            stageButton.interactable = false;
             repeatButton.interactable = false;
             nextButton.interactable = false;
             actionPoint.SetEventTriggerEnabled(false);
@@ -556,6 +583,7 @@ namespace Nekoyume.UI
             }
 
             closeButton.interactable = false;
+            stageButton.interactable = false;
             repeatButton.interactable = false;
             nextButton.interactable = false;
             actionPoint.SetEventTriggerEnabled(false);
@@ -673,6 +701,12 @@ namespace Nekoyume.UI
                     });
                 }
             }
+        }
+
+        private void GoToPreparation()
+        {
+            // Todo : Fill
+            Debug.LogError("Go to preparation");
         }
 
         private void StopCoUpdateBottomText()
