@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 
-namespace Nekoyume.Model.Arena
+namespace Nekoyume.Model
 {
     /// <summary>
     /// Introduced at https://github.com/planetarium/lib9c/pull/1156
     /// </summary>
-    public readonly struct ArenaPlayerDigest : IState
+    public readonly struct PlayerDigest : IState
     {
         public readonly string NameWithHash;
         public readonly int CharacterId;
@@ -23,7 +23,7 @@ namespace Nekoyume.Model.Arena
         public readonly List<Costume> Costumes;
         public readonly List<Equipment> Equipments;
 
-        public ArenaPlayerDigest(AvatarState avatarState, ArenaAvatarState arenaAvatarState)
+        public PlayerDigest(AvatarState avatarState, ArenaAvatarState arenaAvatarState)
         {
             NameWithHash = avatarState.NameWithHash;
             CharacterId = avatarState.characterId;
@@ -37,7 +37,27 @@ namespace Nekoyume.Model.Arena
             Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);;
         }
 
-        public ArenaPlayerDigest(List serialized)
+        public PlayerDigest(AvatarState avatarState)
+        {
+            NameWithHash = avatarState.NameWithHash;
+            CharacterId = avatarState.characterId;
+            HairIndex = avatarState.hair;
+            LensIndex = avatarState.lens;
+            EarIndex = avatarState.ear;
+            TailIndex = avatarState.tail;
+            Level = avatarState.level;
+
+            var costumes = avatarState.inventory.Costumes
+                .Where(x => x.equipped)
+                .ToList();
+            Costumes = costumes;
+            var equipments = avatarState.inventory.Equipments
+                .Where(x => x.equipped)
+                .ToList();
+            Equipments = equipments;
+        }
+
+        public PlayerDigest(List serialized)
         {
             NameWithHash = serialized[0].ToDotnetString();
             CharacterId = serialized[1].ToInteger();

@@ -14,13 +14,13 @@ namespace Lib9c.Tests.Model.Arena
     using Nekoyume.Model.State;
     using Xunit;
 
-    public class ArenaPlayerDigestTest
+    public class PlayerDigestTest
     {
         private readonly AvatarState _avatarState;
         private readonly ArenaAvatarState _arenaAvatarState;
         private readonly TableSheets _tableSheets;
 
-        public ArenaPlayerDigestTest()
+        public PlayerDigestTest()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             var avatarState = new AvatarState(
@@ -66,7 +66,7 @@ namespace Lib9c.Tests.Model.Arena
         [Fact]
         public void Constructor()
         {
-            var digest = new ArenaPlayerDigest(_avatarState, _arenaAvatarState);
+            var digest = new PlayerDigest(_avatarState, _arenaAvatarState);
 
             Assert.Equal(_avatarState.NameWithHash, digest.NameWithHash);
             Assert.Equal(_avatarState.characterId, digest.CharacterId);
@@ -91,9 +91,9 @@ namespace Lib9c.Tests.Model.Arena
         [Fact]
         public void Serialize()
         {
-            var digest = new ArenaPlayerDigest(_avatarState, _arenaAvatarState);
+            var digest = new PlayerDigest(_avatarState, _arenaAvatarState);
             var serialized = digest.Serialize();
-            var deserialized = new ArenaPlayerDigest((List)serialized);
+            var deserialized = new PlayerDigest((List)serialized);
 
             Assert.Equal(serialized, deserialized.Serialize());
         }
