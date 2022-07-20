@@ -73,8 +73,8 @@ namespace Nekoyume.Game
         public void Enter(
             ArenaLog log,
             List<ItemBase> rewards,
-            ArenaPlayerDigest myDigest,
-            ArenaPlayerDigest enemyDigest)
+            PlayerDigest myDigest,
+            PlayerDigest enemyDigest)
         {
             if (!_isPlaying)
             {
@@ -101,8 +101,8 @@ namespace Nekoyume.Game
         private IEnumerator CoEnter(
             ArenaLog log,
             IReadOnlyList<ItemBase> rewards,
-            ArenaPlayerDigest myDigest,
-            ArenaPlayerDigest enemyDigest)
+            PlayerDigest myDigest,
+            PlayerDigest enemyDigest)
         {
             yield return StartCoroutine(CoStart(myDigest, enemyDigest));
 
@@ -114,7 +114,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoEnd(log, rewards));
         }
 
-        private IEnumerator CoStart(ArenaPlayerDigest myDigest, ArenaPlayerDigest enemyDigest)
+        private IEnumerator CoStart(PlayerDigest myDigest, PlayerDigest enemyDigest)
         {
             container.SetActive(true);
             me.Init(myDigest, enemy, false);

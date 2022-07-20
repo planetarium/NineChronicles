@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,6 @@ using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.UI;
 using UnityEngine;
@@ -17,6 +16,7 @@ using Nekoyume.Model.Item;
 
 namespace Nekoyume.Game.Character
 {
+    using Nekoyume.Model;
     using UniRx;
 
     public class ArenaCharacter : Character
@@ -65,7 +65,7 @@ namespace Nekoyume.Game.Character
             _speechBubble.UpdatePosition(gameObject, HUDOffset);
         }
 
-        public void Init(ArenaPlayerDigest digest, ArenaCharacter target, bool isEnemy)
+        public void Init(PlayerDigest digest, ArenaCharacter target, bool isEnemy)
         {
             gameObject.SetActive(true);
             transform.localPosition = new Vector3(isEnemy ? StartPos : -StartPos, -1.2f, 0);
@@ -81,8 +81,8 @@ namespace Nekoyume.Game.Character
             _equipments.AddRange(digest.Equipments);
             _target = target;
             appearance.Set(digest, Animator, _hudContainer);
-            AttackTime = GetAnimationDuration("Attack");
-            CriticalAttackTime = GetAnimationDuration("CriticalAttack");
+            AttackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "Attack");
+            CriticalAttackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "CriticalAttack");
         }
 
         public void Spawn(Model.ArenaCharacter model)
@@ -284,7 +284,7 @@ namespace Nekoyume.Game.Character
             }
 
             var buff = info.Buff;
-            var effect = Game.instance.Arena.BuffController.Get<BuffVFX>(target, buff);
+            var effect = Game.instance.Arena.BuffController.Get<ArenaCharacter, BuffVFX>(target, buff);
             effect.Play();
         }
 
@@ -615,13 +615,6 @@ namespace Nekoyume.Game.Character
             gameObject.SetActive(false);
             _root = null;
             _runningAction = null;
-        }
-
-        private float GetAnimationDuration(string stateName)
-        {
-            var state = appearance.SpineController.statesAndAnimations
-                .FirstOrDefault(x => x.stateName == stateName);
-            return state != null ? state.animation.Animation.Duration : 2f;
         }
     }
 }

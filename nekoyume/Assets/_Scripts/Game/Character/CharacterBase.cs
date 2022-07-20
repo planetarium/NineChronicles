@@ -521,7 +521,7 @@ namespace Nekoyume.Game.Character
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
                 var buff = info.Buff;
-                var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target, buff);
+                var effect = Game.instance.Stage.BuffController.Get<CharacterBase, BuffVFX>(target, buff);
                 effect.Play();
                 target.UpdateHpBar();
 //                Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");

@@ -918,14 +918,9 @@ namespace Nekoyume.Game
                 yield return new WaitForSeconds(2.0f);
                 var boss = enemies.Last();
                 Boss = boss;
-                var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
                 var battle = Widget.Find<UI.Battle>();
                 battle.BossStatus.Show();
-                battle.BossStatus.SetHp(boss.HP, boss.HP);
-                battle.BossStatus.SetProfile(
-                    boss.Level,
-                    L10nManager.LocalizeCharacterName(boss.RowData.Id),
-                    sprite);
+                battle.BossStatus.SetProfile(boss);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
 
