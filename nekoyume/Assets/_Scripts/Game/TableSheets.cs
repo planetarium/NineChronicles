@@ -157,6 +157,11 @@ namespace Nekoyume.Game
 
         public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
+        public WorldBossListSheet WorldBossListSheet { get; private set; }
+        public WorldBossRankRewardSheet WorldBossRankRewardSheet { get; private set; }
+        public WorldBossGlobalHpSheet WorldBossGlobalHpSheet { get; private set; }
+        public RuneWeightSheet RuneWeightSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();

@@ -135,6 +135,10 @@ namespace Nekoyume.BlockChain
 
             // Arena
             InitializeArenaActions();
+
+            // World Boss
+            Raid();
+            ClaimRaidReward();
         }
 
         public void Stop()
@@ -388,6 +392,24 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBattleArena)
+                .AddTo(_disposables);
+        }
+
+        private void Raid()
+        {
+            _actionRenderer.EveryRender<Raid>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRaid)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimRaidReward()
+        {
+            _actionRenderer.EveryRender<ClaimRaidReward>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimRaidReward)
                 .AddTo(_disposables);
         }
 
@@ -1681,7 +1703,7 @@ namespace Nekoyume.BlockChain
                         ? previousMyScoreText.ToInteger()
                         : ArenaScore.ArenaScoreDefault
                     : ArenaScore.ArenaScoreDefault;
-                
+
                 // TODO: Add `ExtraOutputMyScore` to `BattleArena`
                 outputMyScore = null;
             }
@@ -1779,6 +1801,22 @@ namespace Nekoyume.BlockChain
                     rewards,
                     myDigest.Value,
                     enemyDigest.Value);
+            }
+        }
+
+        private void ResponseRaid(ActionBase.ActionEvaluation<Raid> eval)
+        {
+            if (eval.Exception != null)
+            {
+                Widget.Find<WorldBoss>().UpdateView(Game.Game.instance.Agent.BlockIndex, true);
+            }
+        }
+
+        private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)
+        {
+            if (eval.Exception != null)
+            {
+                Debug.Log("[RENDER_CLAIM_RAID_REWARD]");
             }
         }
     }

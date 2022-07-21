@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 815d8c9e4741267489cf27b98dde2b01, type: 3}
+  m_Name: UI_WorldBossData
+  m_EditorClassIdentifier: 
+  Monsters:
+  - id: 205007
+    name: fenrir of the abyss
+    namePrefab: {fileID: 7177679302177427472, guid: 9077ce1b0e2a349479de63699ea19926,
+      type: 3}
+    spinePrefab: {fileID: 7353096591528320530, guid: ba316703c4bf8134f8a8ebea259de773,
+      type: 3}
+  - id: 203007
+    name: serimnir of the abyss
+    namePrefab: {fileID: 8173047061470112773, guid: 02d0bdb57bfdd1d45b1d67f46ca666ea,
+      type: 3}
+    spinePrefab: {fileID: 9063561474706172066, guid: e1c34daccc27ab84b8fb301d0fc87d41,
+      type: 3}
+  Grades:
+  - grade: 0
+    prefab: {fileID: 2544424707153549116, guid: 4c9186057d81d974c9fbafe8e56645d5,
+      type: 3}
+  - grade: 1
+    prefab: {fileID: 7825031141907631365, guid: 6f0ad2be7f708d04ea9b9f3c4fbec7be,
+      type: 3}
+  - grade: 2
+    prefab: {fileID: 7777030125085106758, guid: 7de5f8246c39c6a459983d3ca713d0cd,
+      type: 3}
+  - grade: 3
+    prefab: {fileID: 28927322215549232, guid: 71f125d730d72364cb292b8d8b338f7f, type: 3}
+  - grade: 4
+    prefab: {fileID: 6119651842402142078, guid: c6fa71d5b67de79418607e248d8566ba,
+      type: 3}
+  - grade: 5
+    prefab: {fileID: 2013082671546982576, guid: e43cb968e8032c44db2988c1ee1c1117,
+      type: 3}

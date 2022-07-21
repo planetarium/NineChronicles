@@ -204,6 +204,11 @@ namespace Nekoyume.BlockChain
                     code = "41";
                     key = "EXCEED_TICKET_PURCHASE_LIMIT_EXCEPTION";
                     break;
+
+                case NotEnoughRankException _:
+                    code = "42";
+                    key = "NOT_ENOUGH_RANK_EXCEPTION";
+                    break;
             }
 
             Analyzer.Instance.Track(
