@@ -10,6 +10,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -101,10 +102,7 @@ namespace Nekoyume.UI
                 .Subscribe(tuple => GoToCombinationEquipmentRecipe(tuple.quest.RecipeId))
                 .AddTo(gameObject);
             guidedQuest.OnClickEventDungeonQuestCell
-                .Subscribe(tuple =>
-                {
-                    // TODO!!!! 이벤트 던전 전투 시작.
-                })
+                .Subscribe(tuple => EventDungeonBattle(tuple.quest.Goal))
                 .AddTo(gameObject);
             AnimationState.Subscribe(stateType =>
             {
@@ -125,7 +123,7 @@ namespace Nekoyume.UI
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
-        private void HackAndSlash(int stageId)
+        private static void HackAndSlash(int stageId)
         {
             var sheets = Game.Game.instance.TableSheets;
             var stageRow = sheets.StageSheet.OrderedList.FirstOrDefault(row => row.Id == stageId);
@@ -160,7 +158,6 @@ namespace Nekoyume.UI
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
             ActionRenderHandler.Instance.Pending = true;
-
             Game.Game.instance.ActionManager
                 .HackAndSlash(player, worldId, stageId)
                 .Subscribe();
@@ -172,6 +169,40 @@ namespace Nekoyume.UI
                 ["StageID"] = stageId,
             };
             Analyzer.Instance.Track("Unity/Click Guided Quest Enter Dungeon", props);
+        }
+
+        private static void EventDungeonBattle(int eventDungeonStageId)
+        {
+            if (!TableSheets.Instance.EventDungeonSheet
+                    .TryGetRowByEventDungeonStageId(
+                        eventDungeonStageId,
+                        out var eventDungeonRow))
+            {
+                return;
+            }
+
+            Find<LoadingScreen>().Show();
+
+            var stage = Game.Game.instance.Stage;
+            stage.IsExitReserved = false;
+            stage.IsRepeatStage = false;
+            var player = stage.GetPlayer();
+            player.StartRun();
+            ActionCamera.instance.ChaseX(player.transform);
+            ActionRenderHandler.Instance.Pending = true;
+
+            Game.Game.instance.ActionManager
+                .EventDungeonBattle(
+                    RxProps.EventScheduleRowForDungeon.Id,
+                    eventDungeonRow.Id,
+                    eventDungeonStageId,
+                    player)
+                .Subscribe();
+            var props = new Value
+            {
+                ["EventDungeonStageID"] = eventDungeonStageId,
+            };
+            Analyzer.Instance.Track("Unity/Click Guided Quest Enter Event Dungeon", props);
         }
 
         public void GoToStage(BattleLog battleLog)

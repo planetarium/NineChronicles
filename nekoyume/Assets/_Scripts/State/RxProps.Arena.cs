@@ -139,12 +139,12 @@ namespace Nekoyume.State
 
         private static void StartArena()
         {
+            OnBlockIndexArena(_agent.BlockIndex);
+            OnAvatarChangedArena();
+
             ArenaInfoTuple
                 .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
                 .AddTo(_disposables);
-
-            OnBlockIndexArena(_agent.BlockIndex);
-            OnAvatarChangedArena();
         }
 
         private static void OnBlockIndexArena(long blockIndex)

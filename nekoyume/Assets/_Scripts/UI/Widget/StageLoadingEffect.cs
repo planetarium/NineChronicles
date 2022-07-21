@@ -65,7 +65,13 @@ namespace Nekoyume.UI
             return spriteAtlas;
         }
 
-        public void Show(string background, string worldName, int stageId, bool isNext, int clearedStageId)
+        public void Show(
+            StageType stageType,
+            string background,
+            string worldName,
+            int stageId,
+            bool isNext,
+            int clearedStageId)
         {
             _shouldClose = false;
             _rects = new List<RectTransform>();
@@ -86,11 +92,17 @@ namespace Nekoyume.UI
 
             base.Show();
             Find<HeaderMenuStatic>().Close();
-            StartCoroutine(ShowSequence(worldName, stageId, isNext, clearedStageId));
+            StartCoroutine(
+                ShowSequence(stageType, worldName, stageId, isNext, clearedStageId));
             StartCoroutine(CoRun());
         }
 
-        private IEnumerator ShowSequence(string worldName, int stageId, bool isNext, int clearedStageId)
+        private IEnumerator ShowSequence(
+            StageType stageType,
+            string worldName,
+            int stageId,
+            bool isNext,
+            int clearedStageId)
         {
             indicator.Close();
             dialogEnd = true;
@@ -99,9 +111,10 @@ namespace Nekoyume.UI
                 yield return CoDialog(clearedStageId);
             }
 
-            var message = string.Format(L10nManager.Localize("STAGE_BLOCK_CHAIN_MINING_TX"),
+            var message = string.Format(
+                L10nManager.Localize("STAGE_BLOCK_CHAIN_MINING_TX"),
                 worldName,
-                StageInformation.GetStageIdString(stageId, true));
+                StageInformation.GetStageIdString(stageType, stageId, true));
             indicator.Show(message);
         }
 

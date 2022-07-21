@@ -25,33 +25,33 @@ namespace Nekoyume.UI.Scroller
     {
         // NOTE: 콘텐츠 텍스트의 길이가 UI를 넘어갈 수 있기 때문에 flowing text 처리를 해주는 것이 좋겠습니다.
         [SerializeField]
-        private TextMeshProUGUI contentText = null;
+        private TextMeshProUGUI contentText;
 
         // NOTE: 콘텐츠 텍스트의 길이가 UI를 넘어갈 수 있기 때문에 flowing text 처리를 해주는 것이 좋겠습니다.
         [SerializeField]
-        private TextMeshProUGUI effectedContentText = null;
+        private TextMeshProUGUI effectedContentText;
 
         [SerializeField]
-        private Image effectedBodyImage = null;
+        private Image effectedBodyImage;
 
         // NOTE: 가이드 퀘스트 보상 아이콘의 연출 스펙에 따라서 별도로 XxxItemView를 만들어서 사용합니다.
         [SerializeField]
-        private List<StageRewardItemView> rewards = null;
+        private List<StageRewardItemView> rewards;
 
         [SerializeField]
-        private Button bodyButton = null;
+        private Button bodyButton;
 
         // NOTE: 셀이 더해지고 빠지는 연출이 정해지면 더욱 개선됩니다.
         [SerializeField]
-        private AnchoredPositionSingleTweener showingAndHidingTweener = null;
+        private AnchoredPositionSingleTweener showingAndHidingTweener;
 
         [SerializeField]
-        private TransformLocalScaleTweener inProgressTweener = null;
+        private TransformLocalScaleTweener inProgressTweener;
 
-        private bool _inProgress = false;
+        private bool _inProgress;
 
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         public Nekoyume.Model.Quest.Quest Quest { get; private set; }
 
@@ -80,7 +80,7 @@ namespace Nekoyume.UI.Scroller
 
         public void ShowAsNew(
             Nekoyume.Model.Quest.Quest quest,
-            System.Action<GuidedQuestCell> onComplete = null,
+            Action<GuidedQuestCell> onComplete = null,
             bool ignoreAnimation = false)
         {
             if (quest is null)
@@ -95,7 +95,7 @@ namespace Nekoyume.UI.Scroller
 
             if (ignoreAnimation)
             {
-                SetRewards(quest.Reward.ItemMap, true);
+                SetRewards(Quest.Reward.ItemMap, true);
                 onComplete?.Invoke(this);
             }
             else
@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Scroller
                     .OnPlay(() => gameObject.SetActive(true))
                     .OnComplete(() =>
                     {
-                        SetRewards(quest.Reward.ItemMap);
+                        SetRewards(Quest.Reward.ItemMap);
                         onComplete?.Invoke(this);
                     });
             }
@@ -139,7 +139,7 @@ namespace Nekoyume.UI.Scroller
         }
 
         public void HideAsClear(
-            System.Action<GuidedQuestCell> onComplete = null,
+            Action<GuidedQuestCell> onComplete = null,
             bool ignoreAnimation = false,
             bool ignoreQuestResult = false)
         {

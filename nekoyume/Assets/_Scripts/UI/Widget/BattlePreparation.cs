@@ -663,6 +663,7 @@ namespace Nekoyume.UI
                 }
                 case StageType.EventDungeon:
                 {
+                    _requiredCost = 1;
                     startButton.SetCost(CostType.EventDungeonTicket, _requiredCost);
                     break;
                 }

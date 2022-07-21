@@ -55,7 +55,7 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         private WorldMap.ViewModel _sharedViewModel;
-        private static StageType _stageType;
+        private StageType _stageType;
         private readonly List<IDisposable> _disposablesOnShow = new();
 
         protected override void Awake()
@@ -112,6 +112,8 @@ namespace Nekoyume.UI
             WorldSheet.Row worldRow,
             StageType stageType)
         {
+            _stageType = stageType;
+
             _disposablesOnShow.DisposeAllAndClear();
             _sharedViewModel = viewModel;
             _sharedViewModel.WorldInformation.TryGetWorld(worldRow.Id, out var worldModel);
@@ -133,9 +135,7 @@ namespace Nekoyume.UI
                 stageHelpButton.Hide();
             }
 
-            _stageType = stageType;
-
-            world.Set(worldRow);
+            world.Set(worldRow, _stageType);
             var questStageId = Game.Game.instance.States
                 .CurrentAvatarState.questList
                 .OfType<WorldQuest>()
@@ -172,12 +172,12 @@ namespace Nekoyume.UI
             int openedStageId,
             int nextStageId)
         {
+            _stageType = StageType.EventDungeon;
             _disposablesOnShow.DisposeAllAndClear();
             _sharedViewModel = viewModel;
             _sharedViewModel.SelectedStageId
                 .Subscribe(UpdateStageInformationForEventDungeon)
                 .AddTo(_disposablesOnShow);
-            _stageType = StageType.EventDungeon;
 
             closeButtonText.text = eventDungeonRow.GetLocalizedName();
             stageHelpButton.Hide();
@@ -198,7 +198,7 @@ namespace Nekoyume.UI
         {
             var worldInfo = _sharedViewModel.WorldInformation;
             var isSubmittable = false;
-            if (!(worldInfo is null))
+            if (worldInfo is not null)
             {
                 if (worldInfo.TryGetWorldByStageId(stageId, out var innerWorld))
                 {
@@ -292,7 +292,11 @@ namespace Nekoyume.UI
 
             var stageWaveSheet = TableSheets.Instance.StageWaveSheet;
             stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);
-            titleText.text = $"Stage {GetStageIdString(stageWaveRow.StageId, true)}";
+            var stageText = GetStageIdString(
+                _stageType,
+                stageWaveRow.StageId,
+                true);
+            titleText.text = $"Stage {stageText}";
             UpdateStageInfoMonsters(stageWaveRow.TotalMonsterIds);
 
             var stageSheet = TableSheets.Instance.StageSheet;
@@ -373,9 +377,12 @@ namespace Nekoyume.UI
             }
         }
 
-        public static string GetStageIdString(int stageId, bool isTitle = false)
+        public static string GetStageIdString(
+            StageType stageType,
+            int stageId,
+            bool isTitle = false)
         {
-            switch (_stageType)
+            switch (stageType)
             {
                 case StageType.HackAndSlash:
                     return stageId.ToString()

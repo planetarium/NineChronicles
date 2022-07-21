@@ -8,6 +8,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
@@ -561,7 +562,7 @@ namespace Nekoyume.UI.Module
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
             QuestList questList)
         {
-            var info = SharedViewModel.avatarState?.worldInformation; 
+            var info = SharedViewModel.avatarState?.worldInformation;
             if (info is null ||
                 !info.TryGetLastClearedStageId(out var lastClearedStageId) ||
                 lastClearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
@@ -584,23 +585,22 @@ namespace Nekoyume.UI.Module
 
         private static WorldQuest GetTargetEventDungeonQuest()
         {
-            // NOTE: This is temporary.
             string goal;
+            var info = RxProps.EventDungeonInfo.Value;
+            if (info is null)
             {
-                // if (!RxProps.EventDungeonInfo.HasValue)
-                // {
-                //     return null;
-                // }
-                //
-                // var info = RxProps.EventDungeonInfo.Value;
-                // if (info.ClearedStageId == RxProps.EventDungeonRow.StageEnd)
-                // {
-                //     return null;
-                // }
-                //
-                // var goal = (info.ClearedStageId + 1).ToString(CultureInfo.InvariantCulture);
-                goal = 10010001.ToString(CultureInfo.InvariantCulture);
+                goal = RxProps.EventDungeonRow.StageBegin.ToString(CultureInfo.InvariantCulture);
             }
+            else if (info.ClearedStageId == RxProps.EventDungeonRow.StageEnd)
+            {
+                return null;
+            }
+            else
+            {
+                goal = (info.ClearedStageId + 1).ToString(CultureInfo.InvariantCulture);
+            }
+
+            // goal = 10010001.ToString(CultureInfo.InvariantCulture);
             var row = new WorldQuestSheet.Row();
             row.Set(new[]
             {
@@ -682,7 +682,7 @@ namespace Nekoyume.UI.Module
                 }
             }
         }
-        
+
         private void SubscribeEventDungeonQuest(WorldQuest eventDungeonQuest)
         {
             var state = _state.Value;

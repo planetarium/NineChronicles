@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -23,21 +24,26 @@ namespace Nekoyume.UI.Module
 
         public class ViewModel : IDisposable
         {
+            public readonly StageType stageType;
             public readonly int stageId;
-            public readonly string stageNumber;
             public readonly bool hasBoss;
             public readonly ReactiveProperty<State> State = new();
             public readonly ReactiveProperty<bool> Selected = new();
             public readonly ReactiveProperty<bool> HasNotification = new(false);
 
-            public ViewModel(State state) : this(-1, "0", false, state)
+            public ViewModel(StageType stageType, State state)
+                : this(stageType, -1, false, state)
             {
             }
 
-            public ViewModel(int stageId, string stageNumber, bool hasBoss, State state)
+            public ViewModel(
+                StageType stageType,
+                int stageId,
+                bool hasBoss,
+                State state)
             {
+                this.stageType = stageType;
                 this.stageId = stageId;
-                this.stageNumber = stageNumber;
                 this.hasBoss = hasBoss;
                 State.Value = state;
             }
@@ -52,25 +58,25 @@ namespace Nekoyume.UI.Module
         public float bossScale = 1f;
 
         [SerializeField]
-        private Image normalImage = null;
+        private Image normalImage;
 
         [SerializeField]
-        private Image disabledImage = null;
+        private Image disabledImage;
 
         [SerializeField]
-        private Image selectedImage = null;
+        private Image selectedImage;
 
         [SerializeField]
-        private Image bossImage = null;
+        private Image bossImage;
 
         [SerializeField]
-        private Button button = null;
+        private Button button;
 
         [SerializeField]
-        private TextMeshProUGUI buttonText = null;
+        private TextMeshProUGUI buttonText;
 
         [SerializeField]
-        private GameObject hasNotificationImage = null;
+        private GameObject hasNotificationImage;
 
         private Vector3 _normalImageScale;
 
@@ -127,10 +133,9 @@ namespace Nekoyume.UI.Module
             SharedViewModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(_disposablesForModel);
             Set(SharedViewModel.hasBoss, imageKey);
 
-            if (int.TryParse(SharedViewModel.stageNumber, out var stageId))
-            {
-                buttonText.text = StageInformation.GetStageIdString(stageId);
-            }
+            buttonText.text = StageInformation.GetStageIdString(
+                SharedViewModel.stageType,
+                SharedViewModel.stageId);
         }
 
         public void Hide()

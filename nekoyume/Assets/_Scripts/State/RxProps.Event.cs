@@ -38,19 +38,15 @@ namespace Nekoyume.State
             EventDungeonRow = null;
             EventDungeonStageRows = new List<EventDungeonStageSheet.Row>();
             EventDungeonStageWaveRows = new List<EventDungeonStageWaveSheet.Row>();
-            // NOTE: This is temporary.
+            var blockIndex = _agent.BlockIndex;
+            if (!_tableSheets.EventScheduleSheet.TryGetRowForDungeon(
+                    blockIndex,
+                    out var scheduleRow))
             {
-                // var blockIndex = _agent.BlockIndex;
-                // if (!_tableSheets.EventScheduleSheet.TryGetRowForDungeon(
-                //         blockIndex,
-                //         out var scheduleRow))
-                // {
-                //     return;
-                // }
-                //
-                // EventScheduleRowForDungeon = scheduleRow;
-                EventScheduleRowForDungeon = _tableSheets.EventScheduleSheet.First;
+                return;
             }
+
+            EventScheduleRowForDungeon = scheduleRow;
             if (!_tableSheets.EventDungeonSheet.TryGetRowByEventScheduleId(
                     EventScheduleRowForDungeon.Id,
                     out var dungeonRow))
@@ -67,7 +63,11 @@ namespace Nekoyume.State
                 EventDungeonRow.StageEnd);
 
             OnBlockIndexEvent(_agent.BlockIndex);
-            OnAvatarChangedArena();
+            OnAvatarChangedEvent();
+
+            EventDungeonInfo
+                .Subscribe(_ => UpdateRemainingEventTicketsConsiderReset(_agent.BlockIndex))
+                .AddTo(_disposables);
         }
 
         private static void OnBlockIndexEvent(long blockIndex)

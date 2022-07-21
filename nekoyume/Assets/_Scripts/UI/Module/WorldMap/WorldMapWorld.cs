@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Quest;
@@ -24,13 +26,15 @@ namespace Nekoyume.UI.Module
         public class ViewModel : IDisposable
         {
             public readonly WorldSheet.Row RowData;
+            public readonly StageType StageType;
             public readonly ReactiveProperty<int> StageIdToShow = new ReactiveProperty<int>(0);
             public readonly ReactiveProperty<int> PageCount = new ReactiveProperty<int>(0);
             public readonly ReactiveProperty<int> CurrentPageNumber = new ReactiveProperty<int>(0);
 
-            public ViewModel(WorldSheet.Row rowData)
+            public ViewModel(WorldSheet.Row rowData, StageType stageType)
             {
                 RowData = rowData;
+                StageType = stageType;
             }
 
             public void Dispose()
@@ -103,7 +107,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void Set(WorldSheet.Row worldRow)
+        public void Set(WorldSheet.Row worldRow, StageType stageType)
         {
             if (worldRow is null)
             {
@@ -111,14 +115,11 @@ namespace Nekoyume.UI.Module
             }
 
             _disposablesForModel.DisposeAllAndClear();
-            SharedViewModel = new ViewModel(worldRow);
+            SharedViewModel = new ViewModel(worldRow, stageType);
             var stageTuples = TableSheets.Instance.StageWaveSheet.OrderedList
                 .Where(row => row.StageId >= worldRow.StageBegin &&
                               row.StageId <= worldRow.StageEnd)
-                .Select(row => (
-                    row.StageId,
-                    row.StageId.ToString(CultureInfo.InvariantCulture),
-                    row.HasBoss))
+                .Select(row => (row.StageId, row.HasBoss))
                 .ToList();
             if (worldRow.StagesCount != stageTuples.Count)
             {
@@ -129,7 +130,7 @@ namespace Nekoyume.UI.Module
 
             Set(worldRow, stageTuples);
         }
-        
+
         public void Set(EventDungeonSheet.Row eventDungeonRow)
         {
             if (eventDungeonRow is null)
@@ -138,12 +139,9 @@ namespace Nekoyume.UI.Module
             }
 
             _disposablesForModel.DisposeAllAndClear();
-            SharedViewModel = new ViewModel(eventDungeonRow);
+            SharedViewModel = new ViewModel(eventDungeonRow, StageType.EventDungeon);
             var eventDungeonStageTuples = RxProps.EventDungeonStageWaveRows
-                .Select(row => (
-                    row.StageId,
-                    row.StageId.ToString(CultureInfo.InvariantCulture),
-                    row.HasBoss))
+                .Select(row => (row.StageId, row.HasBoss))
                 .ToList();
             if (eventDungeonRow.StagesCount != eventDungeonStageTuples.Count)
             {
@@ -157,7 +155,7 @@ namespace Nekoyume.UI.Module
 
         private void Set(
             WorldSheet.Row worldRow,
-            List<(int stageId, string stageNumber, bool hasBoss)> stageTuples)
+            List<(int stageId, bool hasBoss)> stageTuples)
         {
             var imageKey = worldRow.Id == GameConfig.MimisbrunnrWorldId
                 ? "mimisbrunnr"
@@ -185,7 +183,9 @@ namespace Nekoyume.UI.Module
                 {
                     if (nextPageShouldHide)
                     {
-                        stageModels.Add(new WorldMapStage.ViewModel(WorldMapStage.State.Hidden));
+                        stageModels.Add(new WorldMapStage.ViewModel(
+                            SharedViewModel.StageType,
+                            WorldMapStage.State.Hidden));
 
                         continue;
                     }
@@ -195,8 +195,8 @@ namespace Nekoyume.UI.Module
                     {
                         var stageTuple = stageTuples[stageWaveRowsIndex];
                         var stageModel = new WorldMapStage.ViewModel(
+                            SharedViewModel.StageType,
                             stageTuple.stageId,
-                            stageTuple.stageNumber,
                             stageTuple.hasBoss,
                             WorldMapStage.State.Normal);
 
@@ -205,7 +205,9 @@ namespace Nekoyume.UI.Module
                     else
                     {
                         nextPageShouldHide = true;
-                        stageModels.Add(new WorldMapStage.ViewModel(WorldMapStage.State.Hidden));
+                        stageModels.Add(new WorldMapStage.ViewModel(
+                            SharedViewModel.StageType,
+                            WorldMapStage.State.Hidden));
                     }
                 }
 
@@ -246,8 +248,8 @@ namespace Nekoyume.UI.Module
         public void Set(int openedStageId = -1, int selectedStageId = -1)
         {
             foreach (var stage in pages
-                .SelectMany(page => page.Stages)
-                .Where(stage => !(stage.SharedViewModel is null)))
+                         .SelectMany(page => page.Stages)
+                         .Where(stage => !(stage.SharedViewModel is null)))
             {
                 var stageId = stage.SharedViewModel.stageId;
                 var stageState = WorldMapStage.State.Normal;
@@ -300,7 +302,7 @@ namespace Nekoyume.UI.Module
         private void SetSelectedStageId(int value, int stageIdToNotify)
         {
             foreach (var stage in pages.Where(p => p.gameObject.activeSelf)
-                .SelectMany(page => page.Stages))
+                         .SelectMany(page => page.Stages))
             {
                 var stageId = stage.SharedViewModel.stageId;
                 stage.SharedViewModel.Selected.Value = stageId == value;
