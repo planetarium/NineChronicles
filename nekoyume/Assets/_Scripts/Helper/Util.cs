@@ -271,7 +271,7 @@ namespace Nekoyume.Helper
                 return false;
             }
 
-            bool isValidated = false;
+            var isValidated = false;
             var tableSheets = Game.Game.instance.TableSheets;
             try
             {

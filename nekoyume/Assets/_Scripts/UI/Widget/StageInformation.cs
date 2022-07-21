@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
@@ -54,7 +55,7 @@ namespace Nekoyume.UI
         private Button closeButton;
 
         private WorldMap.ViewModel _sharedViewModel;
-        private StageType _stageType = StageType.None;
+        private static StageType _stageType;
         private readonly List<IDisposable> _disposablesOnShow = new();
 
         protected override void Awake()
@@ -336,39 +337,58 @@ namespace Nekoyume.UI
             switch (_stageType)
             {
                 case StageType.HackAndSlash:
+                {
+                    var stageNumber = _sharedViewModel.SelectedStageId.Value;
                     Find<BattlePreparation>().Show(
                         StageType.HackAndSlash,
                         _sharedViewModel.SelectedWorldId.Value,
                         _sharedViewModel.SelectedStageId.Value,
-                        $"{closeButtonText.text} {_sharedViewModel.SelectedStageId.Value}",
+                        $"{closeButtonText.text} {stageNumber}",
                         true);
                     break;
-
+                }
                 case StageType.Mimisbrunnr:
+                {
+                    var stageNumber = _sharedViewModel.SelectedStageId.Value % 10000000;
                     Find<BattlePreparation>().Show(
                         StageType.Mimisbrunnr,
                         GameConfig.MimisbrunnrWorldId,
                         _sharedViewModel.SelectedStageId.Value,
-                        $"{closeButtonText.text} {_sharedViewModel.SelectedStageId.Value % 10000000}",
+                        $"{closeButtonText.text} {stageNumber}",
                         true);
                     break;
+                }
                 case StageType.EventDungeon:
+                {
+                    var stageNumber = _sharedViewModel.SelectedStageId.Value
+                        .ToEventDungeonStageNumber();
                     Find<BattlePreparation>().Show(
                         StageType.EventDungeon,
                         _sharedViewModel.SelectedWorldId.Value,
                         _sharedViewModel.SelectedStageId.Value,
-                        $"{closeButtonText.text} {_sharedViewModel.SelectedStageId.Value.ToEventDungeonStageNumber()}",
+                        $"{closeButtonText.text} {stageNumber}",
                         true);
                     break;
+                }
             }
         }
 
         public static string GetStageIdString(int stageId, bool isTitle = false)
         {
-            var enter = isTitle ? string.Empty : "\n";
-            return stageId > 10000000
-                ? $"<sprite name=icon_Element_1>{enter}{stageId % 10000000}"
-                : stageId.ToString();
+            switch (_stageType)
+            {
+                case StageType.HackAndSlash:
+                    return stageId.ToString()
+                        .ToString(CultureInfo.InvariantCulture);
+                case StageType.Mimisbrunnr:
+                    var enter = isTitle ? string.Empty : "\n";
+                    return $"<sprite name=icon_Element_1>{enter}{stageId % 10000000}";
+                case StageType.EventDungeon:
+                    return stageId.ToEventDungeonStageNumber()
+                        .ToString(CultureInfo.InvariantCulture);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

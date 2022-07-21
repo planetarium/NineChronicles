@@ -4,7 +4,6 @@ using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,7 +39,7 @@ namespace Nekoyume.UI.Module
                 this.stageId = stageId;
                 this.stageNumber = stageNumber;
                 this.hasBoss = hasBoss;
-                this.State.Value = state;
+                State.Value = state;
             }
 
             public void Dispose()
