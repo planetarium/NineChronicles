@@ -121,6 +121,12 @@ PrefabInstance:
       propertyPath: m_VerticalAlignment
       value: 512
       objectReference: {fileID: 0}
+    - target: {fileID: 3068299724612639539, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0c69c5f633fde4fe99fdfb2c6c01aa6f,
+        type: 3}
     - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: playAtStart
@@ -131,10 +137,21 @@ PrefabInstance:
       propertyPath: startWithPlay
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3765675580913142185, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0c69c5f633fde4fe99fdfb2c6c01aa6f,
+        type: 3}
     - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_Name
       value: GuidedQuestCell
+      objectReference: {fileID: 0}
+    - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
@@ -298,6 +315,17 @@ PrefabInstance:
       propertyPath: m_VerticalAlignment
       value: 512
       objectReference: {fileID: 0}
+    - target: {fileID: 434882145445599597, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3068299724612639539, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 799eb006e60e04e8489d8430e89485b2,
+        type: 3}
     - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: playAtStart
@@ -307,6 +335,27 @@ PrefabInstance:
         type: 3}
       propertyPath: startWithPlay
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3765675580913142185, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 799eb006e60e04e8489d8430e89485b2,
+        type: 3}
+    - target: {fileID: 3765675580913142185, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 0.23137254
+      objectReference: {fileID: 0}
+    - target: {fileID: 3765675580913142185, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0.4569977
+      objectReference: {fileID: 0}
+    - target: {fileID: 3765675580913142185, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
@@ -485,6 +534,12 @@ PrefabInstance:
       propertyPath: m_VerticalAlignment
       value: 512
       objectReference: {fileID: 0}
+    - target: {fileID: 3068299724612639539, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b0bc18011301e43ed853765538153551,
+        type: 3}
     - target: {fileID: 3449533287891893891, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: playAtStart
@@ -495,10 +550,21 @@ PrefabInstance:
       propertyPath: startWithPlay
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3765675580913142185, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b0bc18011301e43ed853765538153551,
+        type: 3}
     - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_Name
       value: GuidedQuestCell (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
