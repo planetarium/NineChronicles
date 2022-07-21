@@ -5,6 +5,7 @@ using System.Linq;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -706,7 +707,50 @@ namespace Nekoyume.UI
         private void GoToPreparation()
         {
             // Todo : Fill
-            Debug.LogError("Go to preparation");
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+
+            var worldMapLoading = Find<WorldMapLoadingScreen>();
+            worldMapLoading.Show();
+            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            {
+                CloseWithOtherWidgets();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+                worldMapLoading.Close(true);
+
+                if (SharedModel.WorldID > 10000)
+                {
+                    var viewModel = new WorldMap.ViewModel
+                    {
+                        WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
+                    };
+                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.WorldID);
+                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.StageID);
+                    Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SharedModel.WorldID, out var worldRow);
+
+                    Find<StageInformation>().Show(viewModel, worldRow, StageType.Mimisbrunnr);
+
+                    Find<BattlePreparation>().Show(
+                        StageType.Mimisbrunnr,
+                        GameConfig.MimisbrunnrWorldId,
+                        SharedModel.StageID,
+                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID % 10000000}",
+                        true);
+                }
+                else
+                {
+                    Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
+
+                    Find<BattlePreparation>().Show(
+                        StageType.HackAndSlash,
+                        SharedModel.WorldID,
+                        SharedModel.StageID,
+                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID}",
+                        true);
+                }
+            });
         }
 
         private void StopCoUpdateBottomText()
