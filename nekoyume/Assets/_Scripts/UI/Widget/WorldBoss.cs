@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
@@ -13,6 +15,7 @@ using Nekoyume.ValueControlComponents.Shader;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using StateExtensions = Nekoyume.Model.State.StateExtensions;
 
 namespace Nekoyume.UI
 {
@@ -20,7 +23,7 @@ namespace Nekoyume.UI
 
     public class WorldBoss : Widget
     {
-        private enum UIState
+        private enum Status
         {
             None,
             OffSeason,
@@ -69,7 +72,7 @@ namespace Nekoyume.UI
         private GameObject _bossNamePrefab;
         private GameObject _bossSpinePrefab;
         private (long, long) _period;
-        private int _ticket;
+        private RaiderState _cachedRaiderState;
 
         // for test
         [SerializeField]
@@ -84,7 +87,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button viewRuneButton;
 
-        private UIState _state = UIState.None;
+        private Status _status = Status.None;
         private readonly List<IDisposable> _disposables = new();
 
         protected override void Awake()
@@ -109,7 +112,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             rewardButton.OnClickAsObservable().Subscribe(_ => ShowReward()).AddTo(gameObject);
 
-            enterButton.OnSubmitSubject.Subscribe(_ => Raid()).AddTo(gameObject);
+            enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
 
             // claimRaidRewardButton.OnClickAsObservable().Subscribe(_ => ClaimRaidReward()).AddTo(gameObject);
             // viewButton.OnClickAsObservable().Subscribe(_ => View()).AddTo(gameObject);
@@ -123,7 +126,7 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             Game.Game.instance.Agent.BlockIndexSubject
-                .Subscribe(x => UpdateView(x))
+                .Subscribe(x => UpdateViewAsync(x))
                 .AddTo(_disposables);
         }
 
@@ -138,39 +141,40 @@ namespace Nekoyume.UI
             loading.Show();
 
             ShowSheetValues();
-            UpdateView(Game.Game.instance.Agent.BlockIndex, true);
 
-            var task = Task.Run(async () => { return true; });
-            await task;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            await UpdateViewAsync(currentBlockIndex);
 
             loading.Close();
-            Show(ignoreShowAnimation);
+            base.Show(ignoreShowAnimation);
         }
 
-        public void UpdateView(long currentBlockIndex, bool forceUpdate = false)
+        public async Task UpdateViewAsync(long currentBlockIndex, bool forceUpdate = false)
         {
-            Debug.Log("[WorldBoss] UpdateView");
             if (forceUpdate)
             {
-                _state = UIState.None;
+                _status = Status.None;
             }
 
-            var currentState = WorldBossHelper.IsItInSeason(currentBlockIndex)
-                ? UIState.Season
-                : UIState.OffSeason;
-            if (currentState != _state)
+            var curStatus = GetStatus(currentBlockIndex);
+            if (_status != curStatus)
             {
-                _state = currentState;
-
-                switch (_state)
+                _status = curStatus;
+                switch (_status)
                 {
-                    case UIState.OffSeason:
+                    case Status.OffSeason:
                         UpdateOffSeason(currentBlockIndex);
                         break;
-                    case UIState.Season:
-                        UpdateSeason(currentBlockIndex);
+                    case Status.Season:
+                        if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
+                        {
+                            return;
+                        }
+
+                        var (worldBoss, raider, userCount) = await GetStatesAsync(row);
+                        UpdateSeason(row, worldBoss, raider, userCount);
                         break;
-                    case UIState.None:
+                    case Status.None:
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -179,9 +183,47 @@ namespace Nekoyume.UI
             UpdateRemainTimer(_period, currentBlockIndex);
         }
 
+        private Status GetStatus(long currentBlockIndex)
+        {
+            return WorldBossFrontHelper.IsItInSeason(currentBlockIndex)
+                ? Status.Season
+                : Status.OffSeason;
+        }
+        // public void UpdateView(long currentBlockIndex, bool forceUpdate = false)
+        // {
+        //     // Debug.Log("[WorldBoss] UpdateView");
+        //     // if (forceUpdate)
+        //     // {
+        //     //     _status = Status.None;
+        //     // }
+        //     //
+        //     // var currentState = WorldBossFrontHelper.IsItInSeason(currentBlockIndex)
+        //     //     ? Status.Season
+        //     //     : Status.OffSeason;
+        //     // if (currentState != _status)
+        //     // {
+        //     //     _status = currentState;
+        //     //
+        //     //     switch (_status)
+        //     //     {
+        //     //         case Status.OffSeason:
+        //     //             UpdateOffSeason(currentBlockIndex);
+        //     //             break;
+        //     //         case Status.Season:
+        //     //             UpdateSeason(row);
+        //     //             break;
+        //     //         case Status.None:
+        //     //         default:
+        //     //             throw new ArgumentOutOfRangeException();
+        //     //     }
+        //     // }
+        //
+        //     UpdateRemainTimer(_period, currentBlockIndex);
+        // }
+
         private void UpdateOffSeason(long currentBlockIndex)
         {
-            if (!WorldBossHelper.TryGetNextRow(currentBlockIndex, out var nextRow))
+            if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var nextRow))
             {
                 return;
             }
@@ -191,21 +233,21 @@ namespace Nekoyume.UI
             rankButton.gameObject.SetActive(false);
             enterButton.Text = "Practice";
 
-            var begin = WorldBossHelper.TryGetPreviousRow(currentBlockIndex, out var previousRow)
-                ? previousRow.EndedBlockIndex
-                : 0;
+            var begin =
+                WorldBossFrontHelper.TryGetPreviousRow(currentBlockIndex, out var previousRow)
+                    ? previousRow.EndedBlockIndex
+                    : 0;
             _period = (begin, nextRow.StartedBlockIndex);
 
             UpdateBossPrefab(nextRow, true);
         }
 
-        private void UpdateSeason(long currentBlockIndex)
+        private void UpdateSeason(
+            WorldBossListSheet.Row row,
+            WorldBossState worldBoss,
+            RaiderState raider,
+            int userCount)
         {
-            if (!WorldBossHelper.TryGetCurrentRow(currentBlockIndex, out var row)) // season
-            {
-                return;
-            }
-
             offSeasonContainer.SetActive(true);
             seasonContainer.SetActive(false);
             rankButton.gameObject.SetActive(true);
@@ -213,10 +255,9 @@ namespace Nekoyume.UI
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
 
             UpdateBossPrefab(row);
-
-            UpdateUserCountAsync(row.Id);
-            UpdateBossInformationAsync(row);
-            UpdateMyInformationAsync(row.Id);
+            UpdateBossInformationAsync(worldBoss);
+            UpdateMyInformation(raider);
+            UpdateUserCount(userCount);
         }
 
         private void UpdateBossPrefab(WorldBossListSheet.Row row, bool isOffSeason = false)
@@ -231,7 +272,7 @@ namespace Nekoyume.UI
                 Destroy(_bossSpinePrefab);
             }
 
-            if (WorldBossHelper.TryGetBossPrefab(row.BossId, out var namePrefab,
+            if (WorldBossFrontHelper.TryGetBossPrefab(row.BossId, out var namePrefab,
                     out var spinePrefab))
             {
                 if (isOffSeason)
@@ -272,7 +313,29 @@ namespace Nekoyume.UI
             Find<WorldBossReward>().Show();
         }
 
-        private void Raid()
+        private void OnClickEnter()
+        {
+            switch (_status)
+            {
+                case Status.OffSeason:
+                    break;
+                case Status.Season:
+                    if (_cachedRaiderState == null || _cachedRaiderState.RemainChallengeCount > 0)
+                    {
+                        Raid(false);
+                    }
+                    else
+                    {
+                        ShowTicketPurchasePopup();
+                    }
+                    break;
+                case Status.None:
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void Raid(bool payNcg)
         {
             var inventory = States.Instance.CurrentAvatarState.inventory;
             ActionManager.Instance.Raid(inventory.Costumes
@@ -284,7 +347,34 @@ namespace Nekoyume.UI
                     .Select(e => e.NonFungibleId)
                     .ToList(),
                 new List<Guid>(),
-                _ticket <= 0);
+                payNcg);
+        }
+
+        private async void ShowTicketPurchasePopup()
+        {
+            var state = await Game.Game.instance.Agent.GetStateAsync(GoldCurrencyState.Address);
+            if (state is not Bencodex.Types.Dictionary dic)
+            {
+                return;
+            }
+
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
+            {
+                return;
+            }
+
+            var cur = new GoldCurrencyState(dic).Currency;
+            var cost = WorldBossHelper.CalculateTicketPrice(row, _cachedRaiderState, cur);
+            var balance = States.Instance.GoldBalanceState;
+            Find<TicketPurchasePopup>().Show(
+                CostType.WorldBossTicket,
+                CostType.NCG,
+                balance.Gold,
+                cost,
+                _cachedRaiderState.PurchaseCount,
+                row.MaxPurchaseCount,
+                () => Raid(true));
         }
 
         private void ClaimRaidReward()
@@ -292,57 +382,64 @@ namespace Nekoyume.UI
             ActionManager.Instance.ClaimRaidReward();
         }
 
-        private async void UpdateUserCountAsync(int raidId)
+        private async Task<(WorldBossState worldBoss, RaiderState raider, int userCount)> GetStatesAsync(WorldBossListSheet.Row row)
         {
-            var address = Addresses.GetRaidersAddress(raidId);
-            var state = await Game.Game.instance.Agent.GetStateAsync(address);
-            var count = state is Bencodex.Types.List list ? list.Count : 0;
+            var task = Task.Run(async () =>
+            {
+                var worldBossAddress = Addresses.GetWorldBossAddress(row.Id);
+                var worldBossState = await Game.Game.instance.Agent.GetStateAsync(worldBossAddress);
+                var worldBoss = worldBossState is Bencodex.Types.List worldBossList
+                    ? new WorldBossState(worldBossList)
+                    : null;
+
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, row.Id);
+                var raiderState = await Game.Game.instance.Agent.GetStateAsync(raiderAddress);
+                var raider = raiderState is Bencodex.Types.List raiderList
+                    ? new RaiderState(raiderList)
+                    : null;
+
+                var raidersAddress = Addresses.GetRaidersAddress(row.Id);
+                var raidersState = await Game.Game.instance.Agent.GetStateAsync(raidersAddress);
+                var raiders = raidersState is Bencodex.Types.List raidersList
+                    ? raidersList.ToList(StateExtensions.ToAddress)
+                    : new List<Address>();
+
+                return (worldBoss, raider, raiders.Count);
+            });
+
+            await task;
+            return task.Result;
+        }
+
+        private async void UpdateUserCount(int count)
+        {
             season.UpdateUserCount(count);
         }
 
-        private async void UpdateBossInformationAsync(WorldBossListSheet.Row row)
+        private void UpdateBossInformationAsync(WorldBossState state)
         {
-            var address = Addresses.GetWorldBossAddress(row.Id);
-            var state = await Game.Game.instance.Agent.GetStateAsync(address);
-            var bossName = WorldBossHelper.TryGetBossName(row.BossId, out var n)
-                                ? n : string.Empty; var level = 1;
-
+            var level = state?.Level ?? 1;
             var hpSheet = Game.Game.instance.TableSheets.WorldBossGlobalHpSheet;
+            var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
             var baseHp = hpSheet.Values.FirstOrDefault(x => x.Level == 1)!.Hp;
-            var curHp = baseHp;
-            var maxHp = baseHp;
-
-            if (state is Bencodex.Types.List list)
-            {
-                Debug.Log("");
-                var result = new WorldBossState(list);
-                level = result.Level;
-                curHp = result.CurrentHp;
-                maxHp = hpSheet.Values.FirstOrDefault(x => x.Level == result.Level)!.Hp;
-            }
+            var curHp = state?.CurrentHp ?? baseHp;
+            var maxHp = hpSheet.Values.FirstOrDefault(x => x.Level == level)!.Hp;
+            var bossId = state?.Id ?? bossSheet.Values.First().BossId;
+            var bossName = WorldBossFrontHelper.TryGetBossName(bossId, out var n)
+                ? n : string.Empty;
 
             season.UpdateBossInformation(bossName, level, curHp, maxHp);
         }
 
-        private async void UpdateMyInformationAsync(int raidId)
+        private void UpdateMyInformation(RaiderState state)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var address = Addresses.GetRaiderAddress(avatarAddress, raidId);
-            var state = await Game.Game.instance.Agent.GetStateAsync(address);
-
-            var totalScore = 0;
-            var highScore = 0;
-            if (state is Bencodex.Types.List list)
-            {
-                var result = new RaiderState(list);
-                totalScore = result.TotalScore;
-                highScore = result.HighScore;
-                _ticket = result.RemainChallengeCount;
-
-                ticketText.text = $"남은티켓:{result.RemainChallengeCount}\n" +
-                                  $"총 도전 횟 수: {result.TotalChallengeCount}\n" +
-                                  $"티켓 구매 횟 수: {result.PurchaseCount}\n";
-            }
+            _cachedRaiderState = state;
+            var totalScore = state?.TotalScore ?? 0;
+            var highScore = state?.HighScore ?? 0;
+            ticketText.text = $"남은티켓:{state?.RemainChallengeCount ?? 0}\n" +
+                              $"총 도전 횟 수: {state?.TotalChallengeCount ?? 0}\n" +
+                              $"티켓 구매 횟 수: {state?.PurchaseCount ?? 0}\n";
 
             season.UpdateMyInformation(highScore, totalScore);
         }

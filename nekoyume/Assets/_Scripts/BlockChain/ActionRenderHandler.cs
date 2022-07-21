@@ -1806,18 +1806,24 @@ namespace Nekoyume.BlockChain
 
         private void ResponseRaid(ActionBase.ActionEvaluation<Raid> eval)
         {
-            if (eval.Exception != null)
+            if (eval.Exception is not null)
             {
-                Widget.Find<WorldBoss>().UpdateView(Game.Game.instance.Agent.BlockIndex, true);
+                Game.Game.BackToMainAsync(eval.Exception.InnerException, false).Forget();
+                return;
             }
+
+            Debug.Log("[RENDER_RAID]");
+            Widget.Find<WorldBoss>().UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true);
         }
 
         private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)
         {
-            if (eval.Exception != null)
+            if (eval.Exception is not null)
             {
-                Debug.Log("[RENDER_CLAIM_RAID_REWARD]");
+                return;
             }
+
+            Debug.Log("[RENDER_CLAIM_RAID_REWARD]");
         }
     }
 }
