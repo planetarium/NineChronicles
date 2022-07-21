@@ -159,14 +159,17 @@ namespace Nekoyume.UI.Module
                     .AddTo(_disposablesOnSet);
             }
 
-            if (useConsumable && _consumables.Any())
+            SetToggle(equipmentButton, ItemType.Equipment);
+            if (useConsumable)
             {
-                SetToggle(consumableButton, ItemType.Consumable);
+                ReactiveAvatarState.Inventory.First().Subscribe(e =>
+                    {
+                        SetInventory(e, onUpdateInventory);
+                        if (_consumables.Any()) SetToggle(consumableButton, ItemType.Consumable);
+                    })
+                    .AddTo(_disposablesOnSet);
             }
-            else
-            {
-                SetToggle(equipmentButton, ItemType.Equipment);
-            }
+
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposablesOnSet);
             scroll.OnDoubleClick.Subscribe(OnDoubleClick).AddTo(_disposablesOnSet);
         }
