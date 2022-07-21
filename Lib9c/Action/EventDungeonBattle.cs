@@ -27,6 +27,7 @@ namespace Nekoyume.Action
     public class EventDungeonBattle : GameAction
     {
         private const string ActionTypeString = "event_dungeon_battle";
+        public const int PlayCount = 1;
 
         public Address avatarAddress;
         public int eventScheduleId;
@@ -291,13 +292,12 @@ namespace Nekoyume.Action
             }
             // ~Update tickets.
 
-            const int playCount = 1;
-            if (!eventDungeonInfo.TryUseTickets(playCount))
+            if (!eventDungeonInfo.TryUseTickets(PlayCount))
             {
                 throw new NotEnoughEventDungeonTicketsException(
                     ActionTypeString,
                     addressesHex,
-                    playCount,
+                    PlayCount,
                     eventDungeonInfo.RemainingTickets);
             }
 
@@ -330,10 +330,10 @@ namespace Nekoyume.Action
                 eventDungeonId,
                 eventDungeonStageId,
                 sheets.GetEventDungeonBattleSimulatorSheets(),
-                playCount,
+                PlayCount,
                 eventDungeonInfo.IsCleared(eventDungeonStageId),
                 exp);
-            simulator.Simulate(playCount);
+            simulator.Simulate(PlayCount);
             sw.Stop();
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Simulate: {Elapsed}",
