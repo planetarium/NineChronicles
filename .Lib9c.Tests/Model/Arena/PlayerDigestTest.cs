@@ -66,7 +66,7 @@ namespace Lib9c.Tests.Model.Arena
         [Fact]
         public void Constructor()
         {
-            var digest = new PlayerDigest(_avatarState, _arenaAvatarState);
+            var digest = new ArenaPlayerDigest(_avatarState, _arenaAvatarState);
 
             Assert.Equal(_avatarState.NameWithHash, digest.NameWithHash);
             Assert.Equal(_avatarState.characterId, digest.CharacterId);
@@ -91,9 +91,9 @@ namespace Lib9c.Tests.Model.Arena
         [Fact]
         public void Serialize()
         {
-            var digest = new PlayerDigest(_avatarState, _arenaAvatarState);
+            var digest = new ArenaPlayerDigest(_avatarState, _arenaAvatarState);
             var serialized = digest.Serialize();
-            var deserialized = new PlayerDigest((List)serialized);
+            var deserialized = new ArenaPlayerDigest((List)serialized);
 
             Assert.Equal(serialized, deserialized.Serialize());
         }

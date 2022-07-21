@@ -67,7 +67,7 @@ namespace Nekoyume.Model
 
         public ArenaCharacter(
             ArenaSimulator simulator,
-            PlayerDigest digest,
+            ArenaPlayerDigest digest,
             ArenaSimulatorSheets sheets,
             bool isEnemy = false)
         {
@@ -139,7 +139,7 @@ namespace Nekoyume.Model
         }
 
 
-        private static CharacterStats GetStat(PlayerDigest digest, ArenaSimulatorSheets sheets)
+        private static CharacterStats GetStat(ArenaPlayerDigest digest, ArenaSimulatorSheets sheets)
         {
             var row = CharacterRow(digest.CharacterId, sheets);
             var stats = new CharacterStats(row, digest.Level);

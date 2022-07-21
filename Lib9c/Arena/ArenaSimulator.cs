@@ -28,8 +28,8 @@ namespace Nekoyume.Arena
         }
 
         public ArenaLog Simulate(
-            PlayerDigest challenger,
-            PlayerDigest enemy,
+            ArenaPlayerDigest challenger,
+            ArenaPlayerDigest enemy,
             ArenaSimulatorSheets sheets)
         {
             var log = new ArenaLog();
@@ -86,8 +86,8 @@ namespace Nekoyume.Arena
 
         [Obsolete("Use Simulate")]
         public ArenaLog SimulateV1(
-            PlayerDigest challenger,
-            PlayerDigest enemy,
+            ArenaPlayerDigest challenger,
+            ArenaPlayerDigest enemy,
             ArenaSimulatorSheets sheets)
         {
             var log = new ArenaLog();
@@ -158,8 +158,8 @@ namespace Nekoyume.Arena
 
         private static SimplePriorityQueue<ArenaCharacter, decimal> SpawnPlayers(
             ArenaSimulator simulator,
-            PlayerDigest challengerDigest,
-            PlayerDigest enemyDigest,
+            ArenaPlayerDigest challengerDigest,
+            ArenaPlayerDigest enemyDigest,
             ArenaSimulatorSheets simulatorSheets,
             ArenaLog log)
         {
@@ -181,8 +181,8 @@ namespace Nekoyume.Arena
         [Obsolete("Use SpawnPlayers")]
         private static SimplePriorityQueue<ArenaCharacter, decimal> SpawnPlayersV1(
             ArenaSimulator simulator,
-            PlayerDigest challengerDigest,
-            PlayerDigest enemyDigest,
+            ArenaPlayerDigest challengerDigest,
+            ArenaPlayerDigest enemyDigest,
             ArenaSimulatorSheets simulatorSheets,
             ArenaLog log)
         {

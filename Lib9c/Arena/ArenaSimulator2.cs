@@ -20,8 +20,8 @@ namespace Nekoyume.Arena
         private readonly EnemyPlayer _enemyPlayer;
 
         public ArenaSimulator2(IRandom random,
-            PlayerDigest myDigest,
-            PlayerDigest enemyDigest,
+            ArenaPlayerDigest myDigest,
+            ArenaPlayerDigest enemyDigest,
             ArenaSimulatorSheets simulatorSheets
         ) : base(
             random,

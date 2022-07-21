@@ -87,10 +87,10 @@ namespace Nekoyume.Model
             NameWithHash = value.NameWithHash;
         }
 
-        public EnemyPlayer(PlayerDigest playerDigest, ArenaSimulatorSheets simulatorSheets)
-            : base(playerDigest, simulatorSheets)
+        public EnemyPlayer(ArenaPlayerDigest arenaPlayerDigest, ArenaSimulatorSheets simulatorSheets)
+            : base(arenaPlayerDigest, simulatorSheets)
         {
-            NameWithHash = playerDigest.NameWithHash;
+            NameWithHash = arenaPlayerDigest.NameWithHash;
         }
 
         public override void Spawn()

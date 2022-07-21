@@ -36,8 +36,8 @@ namespace Nekoyume.Action
         public List<Guid> costumes;
         public List<Guid> equipments;
 
-        public PlayerDigest ExtraMyPlayerDigest;
-        public PlayerDigest ExtraEnemyPlayerDigest;
+        public ArenaPlayerDigest ExtraMyArenaPlayerDigest;
+        public ArenaPlayerDigest ExtraEnemyArenaPlayerDigest;
         public int ExtraPreviousMyScore;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -252,8 +252,8 @@ namespace Nekoyume.Action
 
             // simulate
             var enemyAvatarState = states.GetEnemyAvatarState(enemyAvatarAddress);
-            ExtraMyPlayerDigest = new PlayerDigest(avatarState, myArenaAvatarState);
-            ExtraEnemyPlayerDigest = new PlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+            ExtraMyArenaPlayerDigest = new ArenaPlayerDigest(avatarState, myArenaAvatarState);
+            ExtraEnemyArenaPlayerDigest = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             ExtraPreviousMyScore = myArenaScore.Score;
             var arenaSheets = sheets.GetArenaSimulatorSheets();
             var winCount = 0;
@@ -262,7 +262,7 @@ namespace Nekoyume.Action
             for (var i = 0; i < ticket; i++)
             {
                 var simulator = new ArenaSimulator(context.Random);
-                var log = simulator.Simulate(ExtraMyPlayerDigest, ExtraEnemyPlayerDigest, arenaSheets);
+                var log = simulator.Simulate(ExtraMyArenaPlayerDigest, ExtraEnemyArenaPlayerDigest, arenaSheets);
                 if (log.Result.Equals(ArenaLog.ArenaResult.Win))
                 {
                     winCount++;
@@ -276,7 +276,7 @@ namespace Nekoyume.Action
                     context.Random,
                     sheets.GetSheet<WeeklyArenaRewardSheet>(),
                     sheets.GetSheet<MaterialItemSheet>(),
-                    ExtraMyPlayerDigest.Level,
+                    ExtraMyArenaPlayerDigest.Level,
                     maxCount: ArenaHelper.GetRewardCount(ExtraPreviousMyScore));
                 rewards.AddRange(reward);
             }

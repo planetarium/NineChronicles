@@ -10,7 +10,7 @@ namespace Nekoyume.Model
     /// <summary>
     /// Introduced at https://github.com/planetarium/lib9c/pull/1156
     /// </summary>
-    public readonly struct PlayerDigest : IState
+    public readonly struct ArenaPlayerDigest : IState
     {
         public readonly string NameWithHash;
         public readonly int CharacterId;
@@ -23,7 +23,7 @@ namespace Nekoyume.Model
         public readonly List<Costume> Costumes;
         public readonly List<Equipment> Equipments;
 
-        public PlayerDigest(AvatarState avatarState, ArenaAvatarState arenaAvatarState)
+        public ArenaPlayerDigest(AvatarState avatarState, ArenaAvatarState arenaAvatarState)
         {
             NameWithHash = avatarState.NameWithHash;
             CharacterId = avatarState.characterId;
@@ -37,7 +37,7 @@ namespace Nekoyume.Model
             Equipments = avatarState.GetNonFungibleItems<Equipment>(arenaAvatarState.Equipments);;
         }
 
-        public PlayerDigest(AvatarState avatarState)
+        public ArenaPlayerDigest(AvatarState avatarState)
         {
             NameWithHash = avatarState.NameWithHash;
             CharacterId = avatarState.characterId;
@@ -57,7 +57,7 @@ namespace Nekoyume.Model
             Equipments = equipments;
         }
 
-        public PlayerDigest(List serialized)
+        public ArenaPlayerDigest(List serialized)
         {
             NameWithHash = serialized[0].ToDotnetString();
             CharacterId = serialized[1].ToInteger();
