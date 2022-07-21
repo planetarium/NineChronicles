@@ -79,7 +79,7 @@ namespace Nekoyume
                 Destroy(_gradePrefab);
             }
 
-            if (WorldBossHelper.TryGetGrade(WorldBossGrade.S, out var prefab))
+            if (WorldBossFrontHelper.TryGetGrade(WorldBossGrade.S, out var prefab))
             {
                 _gradePrefab = Instantiate(prefab, gradeContainer);
             }

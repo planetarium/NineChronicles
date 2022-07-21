@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Nekoyume.Helper
 {
-    public static class WorldBossHelper
+    public static class WorldBossFrontHelper
     {
         private static WorldBossScriptableObject _scriptableObject;
 
