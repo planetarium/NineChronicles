@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using Bencodex.Types;
 using Nekoyume.TableData;
 
@@ -9,16 +10,16 @@ namespace Nekoyume.Model.State
     {
         public int Id;
         public int Level;
-        public int CurrentHP;
+        public BigInteger CurrentHp;
         public long StartedBlockIndex;
         public long EndedBlockIndex;
 
-        public WorldBossState(WorldBossListSheet.Row row)
+        public WorldBossState(WorldBossListSheet.Row row, WorldBossGlobalHpSheet.Row hpRow)
         {
             // Fenrir Id.
             Id = row.BossId;
             Level = 1;
-            CurrentHP = 20_000;
+            CurrentHp = hpRow.Hp;
             StartedBlockIndex = row.StartedBlockIndex;
             EndedBlockIndex = row.EndedBlockIndex;
         }
@@ -27,7 +28,7 @@ namespace Nekoyume.Model.State
         {
             Id = serialized[0].ToInteger();
             Level = serialized[1].ToInteger();
-            CurrentHP = serialized[2].ToInteger();
+            CurrentHp = serialized[2].ToBigInteger();
             StartedBlockIndex = serialized[3].ToLong();
             EndedBlockIndex = serialized[4].ToLong();
         }
@@ -37,7 +38,7 @@ namespace Nekoyume.Model.State
             return List.Empty
                 .Add(Id.Serialize())
                 .Add(Level.Serialize())
-                .Add(CurrentHP.Serialize())
+                .Add(CurrentHp.Serialize())
                 .Add(StartedBlockIndex.Serialize())
                 .Add(EndedBlockIndex.Serialize());
         }

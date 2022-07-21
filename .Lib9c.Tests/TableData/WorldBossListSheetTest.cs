@@ -7,15 +7,16 @@ namespace Lib9c.Tests.TableData
 
     public class WorldBossListSheetTest
     {
+        private const string Csv = @"id,boss_id,started_block_index,ended_block_index,fee,ticket_price,additional_ticket_price,max_purchase_count
+1,205005,0,100,300,200,100,10
+2,203007,200,300,300,200,100,10
+";
+
         [Fact]
         public void FindRowByBlockIndex()
         {
-            const string csv = @"id,boss_id,started_block_index,ended_block_index
-            1,205005,0,100
-            ";
-
             var sheet = new WorldBossListSheet();
-            sheet.Set(csv);
+            sheet.Set(Csv);
 
             Assert.NotNull(sheet.FindRowByBlockIndex(0));
             Assert.NotNull(sheet.FindRowByBlockIndex(1));
@@ -23,19 +24,14 @@ namespace Lib9c.Tests.TableData
             Assert.NotNull(sheet.FindRowByBlockIndex(100));
 
             Assert.Throws<InvalidOperationException>(() => sheet.FindRowByBlockIndex(-1));
-            Assert.Throws<InvalidOperationException>(() => sheet.FindRowByBlockIndex(200));
+            Assert.Throws<InvalidOperationException>(() => sheet.FindRowByBlockIndex(400));
         }
 
         [Fact]
         public void FindRaidIdByBlockIndex()
         {
-            const string csv = @"id,boss_id,started_block_index,ended_block_index
-            1,205005,0,100
-            2,205005,200,300
-            ";
-
             var sheet = new WorldBossListSheet();
-            sheet.Set(csv);
+            sheet.Set(Csv);
 
             Assert.Equal(1, sheet.FindRaidIdByBlockIndex(0));
             Assert.Equal(1, sheet.FindRaidIdByBlockIndex(1));
@@ -50,13 +46,8 @@ namespace Lib9c.Tests.TableData
         [Fact]
         public void FindPreviousRaidIdByBlockIndex()
         {
-            const string csv = @"id,boss_id,started_block_index,ended_block_index
-            1,205005,0,100
-            2,205005,200,300
-            ";
-
             var sheet = new WorldBossListSheet();
-            sheet.Set(csv);
+            sheet.Set(Csv);
 
             Assert.Equal(1, sheet.FindPreviousRaidIdByBlockIndex(150));
             Assert.Equal(2, sheet.FindPreviousRaidIdByBlockIndex(350));

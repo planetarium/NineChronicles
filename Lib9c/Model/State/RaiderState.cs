@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
+using Libplanet.Assets;
 
 namespace Nekoyume.Model.State
 {
@@ -13,6 +14,8 @@ namespace Nekoyume.Model.State
         public int RemainChallengeCount;
         public int LatestRewardRank;
         public long ClaimedBlockIndex;
+        public long RefillBlockIndex;
+        public int PurchaseCount;
 
         public RaiderState()
         {
@@ -30,6 +33,8 @@ namespace Nekoyume.Model.State
             RemainChallengeCount = rawState[3].ToInteger();
             LatestRewardRank = rawState[4].ToInteger();
             ClaimedBlockIndex = rawState[5].ToLong();
+            RefillBlockIndex = rawState[6].ToLong();
+            PurchaseCount = rawState[7].ToInteger();
         }
 
         public IValue Serialize()
@@ -40,7 +45,9 @@ namespace Nekoyume.Model.State
                 .Add(TotalChallengeCount.Serialize())
                 .Add(RemainChallengeCount.Serialize())
                 .Add(LatestRewardRank.Serialize())
-                .Add(ClaimedBlockIndex.Serialize());
+                .Add(ClaimedBlockIndex.Serialize())
+                .Add(RefillBlockIndex.Serialize())
+                .Add(PurchaseCount.Serialize());
         }
     }
 }
