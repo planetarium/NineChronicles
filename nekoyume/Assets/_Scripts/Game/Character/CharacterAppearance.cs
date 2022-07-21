@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 using Nekoyume.Helper;
+using Nekoyume.Model;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
@@ -22,7 +23,7 @@ namespace Nekoyume.Game.Character
         public BoxCollider BoxCollider => boxCollider;
 
         public void Set(
-            ArenaPlayerDigest digest,
+            PlayerDigest digest,
             CharacterAnimator animator,
             HudContainer hudContainer)
         {
@@ -41,7 +42,7 @@ namespace Nekoyume.Game.Character
             UpdateCostumes(digest);
         }
 
-        private void UpdateArmor(ArenaPlayerDigest digest)
+        private void UpdateArmor(PlayerDigest digest)
         {
             var armor = digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
@@ -49,7 +50,7 @@ namespace Nekoyume.Game.Character
             ChangeSpineObject(spineResourcePath, false);
         }
 
-        private void UpdateWeapon(ArenaPlayerDigest digest)
+        private void UpdateWeapon(PlayerDigest digest)
         {
             var weapon = (Weapon)digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Weapon);
             var id = weapon?.Id ?? 0;
@@ -110,7 +111,7 @@ namespace Nekoyume.Game.Character
             _cachedCharacterTitle.transform.SetAsFirstSibling();
         }
 
-        private void UpdateCostumes(ArenaPlayerDigest digest)
+        private void UpdateCostumes(PlayerDigest digest)
         {
             if (digest.Costumes == null)
             {

@@ -221,6 +221,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaBattle>());
             yield return null;
+            secondWidgets.Add(Widget.Create<RaidBattle>());
+            yield return null;
             secondWidgets.Add(Widget.Create<Blind>());
             yield return null;
             secondWidgets.Add(Widget.Create<ShopSell>());

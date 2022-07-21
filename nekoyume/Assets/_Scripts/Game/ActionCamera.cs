@@ -3,7 +3,6 @@ using System.Collections;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Util;
 using Nekoyume.Pattern;
-using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;

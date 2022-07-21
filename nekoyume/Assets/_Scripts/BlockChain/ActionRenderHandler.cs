@@ -37,6 +37,7 @@ using Lib9c.DevExtensions.Action;
 
 namespace Nekoyume.BlockChain
 {
+    using Nekoyume.Model;
     using UI.Scroller;
     using UniRx;
 
@@ -1674,26 +1675,26 @@ namespace Nekoyume.BlockChain
                 });
 
             var tableSheets = Game.Game.instance.TableSheets;
-            ArenaPlayerDigest? myDigest = null;
-            ArenaPlayerDigest? enemyDigest = null;
+            PlayerDigest? myDigest = null;
+            PlayerDigest? enemyDigest = null;
             int? previousMyScore = null;
             int? outputMyScore = null;
             if (eval.Extra is { })
             {
                 myDigest = eval.Extra.TryGetValue(
-                    nameof(BattleArena.ExtraMyArenaPlayerDigest),
+                    nameof(BattleArena.ExtraMyPlayerDigest),
                     out var myDigestValue)
                     ? myDigestValue is List myDigestList
-                        ? new ArenaPlayerDigest(myDigestList)
-                        : (ArenaPlayerDigest?)null
+                        ? new PlayerDigest(myDigestList)
+                        : (PlayerDigest?)null
                     : null;
 
                 enemyDigest = eval.Extra.TryGetValue(
-                    nameof(BattleArena.ExtraEnemyArenaPlayerDigest),
+                    nameof(BattleArena.ExtraEnemyPlayerDigest),
                     out var enemyDigestValue)
                     ? enemyDigestValue is List enemyDigestList
-                        ? new ArenaPlayerDigest(enemyDigestList)
-                        : (ArenaPlayerDigest?)null
+                        ? new PlayerDigest(enemyDigestList)
+                        : (PlayerDigest?)null
                     : null;
 
                 previousMyScore = eval.Extra.TryGetValue(
@@ -1720,7 +1721,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 myDigest
-                    = new ArenaPlayerDigest(myAvatarState, myArenaAvatarState);
+                    = new PlayerDigest(myAvatarState, myArenaAvatarState);
             }
 
             if (!enemyDigest.HasValue)
@@ -1735,7 +1736,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 enemyDigest
-                    = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+                    = new PlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             }
 
             previousMyScore ??= RxProps.PlayersArenaParticipant.HasValue
