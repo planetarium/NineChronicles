@@ -143,7 +143,7 @@ namespace Nekoyume.State
                 .Subscribe(_ => UpdateArenaTicketProgress(_agent.BlockIndex))
                 .AddTo(_disposables);
 
-            OnBlockIndex(_agent.BlockIndex);
+            OnBlockIndexArena(_agent.BlockIndex);
             OnAvatarChangedArena();
         }
 

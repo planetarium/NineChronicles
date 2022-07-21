@@ -199,13 +199,16 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(Player player, int worldId,
-            int stageId) => HackAndSlash(
-            player.Costumes,
-            player.Equipments,
-            null,
-            worldId,
-            stageId);
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
+            Player player,
+            int worldId,
+            int stageId) =>
+            HackAndSlash(
+                player.Costumes,
+                player.Equipments,
+                null,
+                worldId,
+                stageId);
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<Costume> costumes,
@@ -242,6 +245,70 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
             _lastBattleActionId = action.Id;
             return _agent.ActionRenderer.EveryRender<HackAndSlash>()
+                .Timeout(ActionTimeout)
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e =>
+                {
+                    if (_lastBattleActionId == action.Id)
+                    {
+                        _lastBattleActionId = null;
+                    }
+
+                    Game.Game.BackToMainAsync(HandleException(action.Id, e)).Forget();
+                });
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<EventDungeonBattle>> EventDungeonBattle(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId,
+            Player player) =>
+            EventDungeonBattle(
+                eventScheduleId,
+                eventDungeonId,
+                eventDungeonStageId,
+                player.Equipments,
+                player.Costumes,
+                null);
+
+        public IObservable<ActionBase.ActionEvaluation<EventDungeonBattle>> EventDungeonBattle(
+            int eventScheduleId,
+            int eventDungeonId,
+            int eventDungeonStageId,
+            List<Equipment> equipments,
+            List<Costume> costumes,
+            List<Consumable> foods)
+        {
+            Analyzer.Instance.Track("Unity/EventDungeonBattle", new Value
+            {
+                ["EventScheduleId"] = eventScheduleId,
+                ["EventDungeonId"] = eventDungeonId,
+                ["EventDungeonStageId"] = eventDungeonStageId,
+                ["PlayCount"] = 1,
+            });
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            costumes ??= new List<Costume>();
+            equipments ??= new List<Equipment>();
+            foods ??= new List<Consumable>();
+
+            var action = new EventDungeonBattle
+            {
+                avatarAddress = avatarAddress,
+                eventScheduleId = eventScheduleId,
+                eventDungeonId = eventDungeonId,
+                eventDungeonStageId = eventDungeonStageId,
+                equipments = equipments.Select(e => e.ItemId).ToList(),
+                costumes = costumes.Select(c => c.ItemId).ToList(),
+                foods = foods.Select(f => f.ItemId).ToList(),
+            };
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+            _lastBattleActionId = action.Id;
+            return _agent.ActionRenderer.EveryRender<EventDungeonBattle>()
                 .Timeout(ActionTimeout)
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()

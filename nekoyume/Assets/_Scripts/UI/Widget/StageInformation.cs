@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Model;
+using Nekoyume.TableData.Event;
 using Nekoyume.UI.Module;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -53,6 +55,7 @@ namespace Nekoyume.UI
 
         private WorldMap.ViewModel _sharedViewModel;
         private StageType _stageType = StageType.None;
+        private readonly List<IDisposable> _disposablesOnShow = new();
 
         protected override void Awake()
         {
@@ -100,21 +103,23 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             }
 
-            base.Close(true);
+            Close(true);
         }
 
-        public void Show(WorldMap.ViewModel viewModel, WorldSheet.Row worldRow, StageType stageType)
+        public void Show(
+            WorldMap.ViewModel viewModel,
+            WorldSheet.Row worldRow,
+            StageType stageType)
         {
+            _disposablesOnShow.DisposeAllAndClear();
             _sharedViewModel = viewModel;
-            UpdateStageInformation(_sharedViewModel.SelectedStageId.Value,
-                States.Instance.CurrentAvatarState.level);
             _sharedViewModel.WorldInformation.TryGetWorld(worldRow.Id, out var worldModel);
-            _sharedViewModel.SelectedStageId
-                .Subscribe(stageId => UpdateStageInformation(
-                    stageId,
-                    States.Instance.CurrentAvatarState?.level ?? 1)
-                )
-                .AddTo(gameObject);
+            _sharedViewModel.SelectedStageId.Subscribe(selectedStageId =>
+            {
+                UpdateStageInformationForWorld(
+                    selectedStageId,
+                    States.Instance.CurrentAvatarState?.level ?? 1);
+            }).AddTo(_disposablesOnShow);
 
             closeButtonText.text = L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}");
 
@@ -148,11 +153,11 @@ namespace Nekoyume.UI
                     openedStageId += 1;
                 }
 
-                UnlockWorld(openedStageId, worldModel.GetNextStageId());
+                world.Set(openedStageId, worldModel.GetNextStageId());
             }
             else
             {
-                LockWorld();
+                world.Set(-1, world.SharedViewModel.RowData.StageBegin);
             }
 
             base.Show(true);
@@ -160,7 +165,35 @@ namespace Nekoyume.UI
             HelpTooltip.HelpMe(100003, true);
         }
 
-        private void UpdateStageInformation(int stageId, int characterLevel)
+        public void Show(
+            WorldMap.ViewModel viewModel,
+            EventDungeonSheet.Row eventDungeonRow,
+            int openedStageId,
+            int nextStageId)
+        {
+            _disposablesOnShow.DisposeAllAndClear();
+            _sharedViewModel = viewModel;
+            _sharedViewModel.SelectedStageId
+                .Subscribe(UpdateStageInformationForEventDungeon)
+                .AddTo(_disposablesOnShow);
+            _stageType = StageType.EventDungeon;
+
+            closeButtonText.text = eventDungeonRow.GetLocalizedName();
+            stageHelpButton.Hide();
+
+            world.Set(eventDungeonRow);
+            world.Set(openedStageId, nextStageId);
+            world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, nextStageId);
+            base.Show(true);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            _disposablesOnShow.DisposeAllAndClear();
+            base.Close(ignoreCloseAnimation);
+        }
+
+        private void UpdateStageInfoSubmitButtonForWorld(int stageId)
         {
             var worldInfo = _sharedViewModel.WorldInformation;
             var isSubmittable = false;
@@ -173,7 +206,8 @@ namespace Nekoyume.UI
                 else
                 {
                     // NOTE: Consider expanding the world.
-                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId,
+                    if (TableSheets.Instance.WorldSheet.TryGetByStageId(
+                            stageId,
                             out var worldRow))
                     {
                         worldInfo.UpdateWorld(worldRow);
@@ -194,29 +228,48 @@ namespace Nekoyume.UI
             }
 
             submitButton.Interactable = isSubmittable;
+        }
 
-            var stageWaveSheet = Game.Game.instance.TableSheets.StageWaveSheet;
-            stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);
-            titleText.text = $"Stage {GetStageIdString(stageWaveRow.StageId, true)}";
+        private void UpdateStageInfoSubmitButtonForEventDungeon(int eventDungeonStageId)
+        {
+            if (RxProps.EventDungeonRow is null)
+            {
+                submitButton.Interactable = false;
+                return;
+            }
 
-            var monsterCount = stageWaveRow.TotalMonsterIds.Count;
+            if (RxProps.EventDungeonInfo.Value is null)
+            {
+                submitButton.Interactable =
+                    eventDungeonStageId == RxProps.EventDungeonRow.StageBegin;
+                return;
+            }
+
+            submitButton.Interactable =
+                eventDungeonStageId <=
+                math.min(RxProps.EventDungeonInfo.Value.ClearedStageId + 1, RxProps.EventDungeonRow.StageEnd);
+        }
+
+        private void UpdateStageInfoMonsters(List<int> monsterIds)
+        {
+            var monsterCount = monsterIds.Count;
             for (var i = 0; i < monstersAreaCharacterViews.Count; i++)
             {
                 var characterView = monstersAreaCharacterViews[i];
                 if (i < monsterCount)
                 {
                     characterView.Show();
-                    characterView.SetByCharacterId(stageWaveRow.TotalMonsterIds[i]);
+                    characterView.SetByCharacterId(monsterIds[i]);
 
                     continue;
                 }
 
                 characterView.Hide();
             }
+        }
 
-            var stageSheet = Game.Game.instance.TableSheets.StageSheet;
-            stageSheet.TryGetValue(stageId, out var stageRow, true);
-            var rewardItemRows = stageRow.GetRewardItemRows();
+        private void UpdateStageInfoRewards(List<MaterialItemSheet.Row> rewardItemRows)
+        {
             var rewardItemCount = rewardItemRows.Count;
             for (var i = 0; i < rewardsAreaItemViews.Count; i++)
             {
@@ -230,6 +283,20 @@ namespace Nekoyume.UI
 
                 itemView.Hide();
             }
+        }
+
+        private void UpdateStageInformationForWorld(int stageId, int characterLevel)
+        {
+            UpdateStageInfoSubmitButtonForWorld(stageId);
+
+            var stageWaveSheet = TableSheets.Instance.StageWaveSheet;
+            stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);
+            titleText.text = $"Stage {GetStageIdString(stageWaveRow.StageId, true)}";
+            UpdateStageInfoMonsters(stageWaveRow.TotalMonsterIds);
+
+            var stageSheet = TableSheets.Instance.StageSheet;
+            stageSheet.TryGetValue(stageId, out var stageRow, true);
+            UpdateStageInfoRewards(stageRow.GetRewardItemRows());
 
             var exp = StageRewardExpHelper.GetExp(characterLevel, stageId);
             expText.text = $"EXP +{exp}";
@@ -237,12 +304,40 @@ namespace Nekoyume.UI
             buttonNotification.SetActive(stageId == Find<WorldMap>().StageIdToNotify);
         }
 
+        private void UpdateStageInformationForEventDungeon(int eventDungeonStageId)
+        {
+            UpdateStageInfoSubmitButtonForEventDungeon(eventDungeonStageId);
+
+            var stageRow = RxProps.EventDungeonStageRows.FirstOrDefault(e =>
+                e.Id == eventDungeonStageId);
+            if (stageRow is null)
+            {
+                titleText.text = string.Empty;
+                UpdateStageInfoMonsters(new List<int>());
+
+                return;
+            }
+
+            titleText.text = $"Stage {stageRow.GetStageNumber()}";
+            TableSheets.Instance.EventDungeonStageWaveSheet
+                .TryGetValue(stageRow.Id, out var stageWaveRow, true);
+            UpdateStageInfoMonsters(stageWaveRow.TotalMonsterIds);
+            UpdateStageInfoRewards(stageRow.GetRewardItemRows());
+
+            // TODO!!!! This is temporary.
+            var exp = RxProps.EventScheduleRowForDungeon.DungeonExpSeedValue;
+            expText.text = $"?EXP +{exp}?";
+
+            buttonNotification.SetActive(false);
+        }
+
         private void GoToPreparation()
         {
             switch (_stageType)
             {
                 case StageType.HackAndSlash:
-                    Find<BattlePreparation>().Show(StageType.HackAndSlash,
+                    Find<BattlePreparation>().Show(
+                        StageType.HackAndSlash,
                         _sharedViewModel.SelectedWorldId.Value,
                         _sharedViewModel.SelectedStageId.Value,
                         $"{closeButtonText.text} {_sharedViewModel.SelectedStageId.Value}",
@@ -250,23 +345,22 @@ namespace Nekoyume.UI
                     break;
 
                 case StageType.Mimisbrunnr:
-                    Find<BattlePreparation>().Show(StageType.Mimisbrunnr,
+                    Find<BattlePreparation>().Show(
+                        StageType.Mimisbrunnr,
                         GameConfig.MimisbrunnrWorldId,
                         _sharedViewModel.SelectedStageId.Value,
                         $"{closeButtonText.text} {_sharedViewModel.SelectedStageId.Value % 10000000}",
                         true);
                     break;
+                case StageType.EventDungeon:
+                    Find<BattlePreparation>().Show(
+                        StageType.EventDungeon,
+                        _sharedViewModel.SelectedWorldId.Value,
+                        _sharedViewModel.SelectedStageId.Value,
+                        $"{closeButtonText.text} {_sharedViewModel.SelectedStageId.Value.ToEventDungeonStageNumber()}",
+                        true);
+                    break;
             }
-        }
-
-        private void LockWorld()
-        {
-            world.Set(-1, world.SharedViewModel.RowData.StageBegin);
-        }
-
-        private void UnlockWorld(int openedStageId = -1, int selectedStageId = -1)
-        {
-            world.Set(openedStageId, selectedStageId);
         }
 
         public static string GetStageIdString(int stageId, bool isTitle = false)

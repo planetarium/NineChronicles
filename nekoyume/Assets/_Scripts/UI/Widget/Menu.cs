@@ -100,6 +100,12 @@ namespace Nekoyume.UI
             guidedQuest.OnClickCombinationEquipmentQuestCell
                 .Subscribe(tuple => GoToCombinationEquipmentRecipe(tuple.quest.RecipeId))
                 .AddTo(gameObject);
+            guidedQuest.OnClickEventDungeonQuestCell
+                .Subscribe(tuple =>
+                {
+                    // TODO!!!! 이벤트 던전 전투 시작.
+                })
+                .AddTo(gameObject);
             AnimationState.Subscribe(stateType =>
             {
                 var buttonList = new List<Button>

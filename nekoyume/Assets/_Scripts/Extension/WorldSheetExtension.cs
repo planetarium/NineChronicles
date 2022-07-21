@@ -19,7 +19,9 @@ namespace Nekoyume
             return false;
         }
 
-        public static bool TryGetByStageId(this WorldSheet sheet, int stageId,
+        public static bool TryGetByStageId(
+            this WorldSheet sheet,
+            int stageId,
             out WorldSheet.Row worldRow)
         {
             foreach (var row in sheet.OrderedList)

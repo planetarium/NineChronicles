@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Quest;
+using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Event;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -108,18 +112,57 @@ namespace Nekoyume.UI.Module
 
             _disposablesForModel.DisposeAllAndClear();
             SharedViewModel = new ViewModel(worldRow);
-
-            var stageRows = Game.Game.instance.TableSheets.StageWaveSheet.Values
-                .Where(stageRow => stageRow.StageId >= worldRow.StageBegin &&
-                                   stageRow.StageId <= worldRow.StageEnd)
+            var stageTuples = TableSheets.Instance.StageWaveSheet.OrderedList
+                .Where(row => row.StageId >= worldRow.StageBegin &&
+                              row.StageId <= worldRow.StageEnd)
+                .Select(row => (
+                    row.StageId,
+                    row.StageId.ToString(CultureInfo.InvariantCulture),
+                    row.HasBoss))
                 .ToList();
-            var stageRowsCount = stageRows.Count;
-            if (worldRow.StagesCount != stageRowsCount)
+            if (worldRow.StagesCount != stageTuples.Count)
             {
                 throw new SheetRowValidateException(
-                    $"{worldRow.Id}: worldRow.StagesCount({worldRow.StagesCount}) != stageRowsCount({stageRowsCount})");
+                    $"{worldRow.Id}:" +
+                    $" worldRow.StagesCount({worldRow.StagesCount}) != stageRowsCount({stageTuples.Count})");
             }
 
+            Set(worldRow, stageTuples);
+        }
+        
+        public void Set(EventDungeonSheet.Row eventDungeonRow)
+        {
+            if (eventDungeonRow is null)
+            {
+                throw new ArgumentNullException(nameof(eventDungeonRow));
+            }
+
+            _disposablesForModel.DisposeAllAndClear();
+            SharedViewModel = new ViewModel(eventDungeonRow);
+            var eventDungeonStageTuples = RxProps.EventDungeonStageWaveRows
+                .Select(row => (
+                    row.StageId,
+                    row.StageId.ToString(CultureInfo.InvariantCulture),
+                    row.HasBoss))
+                .ToList();
+            if (eventDungeonRow.StagesCount != eventDungeonStageTuples.Count)
+            {
+                throw new SheetRowValidateException(
+                    $"{eventDungeonRow.Id}:" +
+                    $" worldRow.StagesCount({eventDungeonRow.StagesCount}) != stageRowsCount({eventDungeonStageTuples.Count})");
+            }
+
+            Set(eventDungeonRow, eventDungeonStageTuples);
+        }
+
+        private void Set(
+            WorldSheet.Row worldRow,
+            List<(int stageId, string stageNumber, bool hasBoss)> stageTuples)
+        {
+            var imageKey = worldRow.Id == GameConfig.MimisbrunnrWorldId
+                ? "mimisbrunnr"
+                : $"{worldRow.Id:D2}";
+            var stageWaveRowsCount = stageTuples.Count;
             var stageOffset = 0;
             var nextPageShouldHide = false;
             var pageIndex = 1;
@@ -147,13 +190,14 @@ namespace Nekoyume.UI.Module
                         continue;
                     }
 
-                    var stageRowsIndex = stageOffset + i;
-                    if (stageRowsIndex < stageRowsCount)
+                    var stageWaveRowsIndex = stageOffset + i;
+                    if (stageWaveRowsIndex < stageWaveRowsCount)
                     {
-                        var stageRow = stageRows[stageRowsIndex];
+                        var stageTuple = stageTuples[stageWaveRowsIndex];
                         var stageModel = new WorldMapStage.ViewModel(
-                            stageRow,
-                            stageRow.StageId.ToString(),
+                            stageTuple.stageId,
+                            stageTuple.stageNumber,
+                            stageTuple.hasBoss,
                             WorldMapStage.State.Normal);
 
                         stageModels.Add(stageModel);
@@ -165,20 +209,21 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
-                var imageKey = worldRow.Id == GameConfig.MimisbrunnrWorldId
-                    ? "mimisbrunnr"
-                    : $"{worldRow.Id:D2}";
-                page.Show(stageModels, imageKey,
-                    worldRow.Id == GameConfig.MimisbrunnrWorldId ? 1 : pageIndex);
+                page.Show(
+                    stageModels,
+                    imageKey,
+                    worldRow.Id == GameConfig.MimisbrunnrWorldId
+                        ? 1
+                        : pageIndex);
                 pageIndex += 1;
                 stageOffset += stageModels.Count;
-                if (stageOffset >= stageRowsCount)
+                if (stageOffset >= stageWaveRowsCount)
                 {
                     nextPageShouldHide = true;
                 }
             }
 
-            SharedViewModel.StageIdToShow.Value = worldRow.StageBegin + stageRowsCount - 1;
+            SharedViewModel.StageIdToShow.Value = worldRow.StageBegin + stageWaveRowsCount - 1;
             SharedViewModel.PageCount.Value = pages.Count(p => p.gameObject.activeSelf);
 
             for (var i = 0; i < toggles.Count; i++)

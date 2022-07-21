@@ -137,7 +137,7 @@ namespace Nekoyume.UI
                     break;
                 }
 
-                if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(rowList[i].Id, out _))
+                if (TableSheets.Instance.WorldSheet.TryGetByStageId(rowList[i].Id, out _))
                 {
                     if (!result.Contains(rowList[i]))
                     {
@@ -159,7 +159,7 @@ namespace Nekoyume.UI
                 case ItemSubType.EquipmentMaterial:
                 case ItemSubType.MonsterPart:
                 case ItemSubType.NormalMaterial:
-                    var stageRowList = Game.Game.instance.TableSheets.StageSheet
+                    var stageRowList = TableSheets.Instance.StageSheet
                         .GetStagesContainsReward(itemBase.Id)
                         .OrderByDescending(s => s.Key);
                     var stages = GetStageByOrder(stageRowList, itemBase.Id);
@@ -168,7 +168,7 @@ namespace Nekoyume.UI
                     {
                         acquisitionPlaceList.AddRange(stages.Select(stage =>
                         {
-                            if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stage.Id,
+                            if (TableSheets.Instance.WorldSheet.TryGetByStageId(stage.Id,
                                 out var row))
                             {
                                 return MakeAcquisitionPlaceModelByType(
@@ -188,6 +188,8 @@ namespace Nekoyume.UI
                         MakeAcquisitionPlaceModelByType(
                             AcquisitionPlaceButton.PlaceType.Arena,
                             itemBase));
+
+                    // TODO!!!! Consider event recipe.
 
                     break;
                 case ItemSubType.Hourglass:
@@ -224,7 +226,7 @@ namespace Nekoyume.UI
                     model.Type != AcquisitionPlaceButton.PlaceType.Arena) ||
                 acquisitionPlaceList.Count == 0)
             {
-                if (Game.Game.instance.TableSheets.WeeklyArenaRewardSheet.Any(pair =>
+                if (TableSheets.Instance.WeeklyArenaRewardSheet.Any(pair =>
                     pair.Value.Reward.ItemId == itemBase.Id))
                 {
                     acquisitionPlaceList.Add(MakeAcquisitionPlaceModelByType(

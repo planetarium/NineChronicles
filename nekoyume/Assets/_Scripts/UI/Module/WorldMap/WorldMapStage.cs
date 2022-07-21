@@ -27,14 +27,9 @@ namespace Nekoyume.UI.Module
             public readonly int stageId;
             public readonly string stageNumber;
             public readonly bool hasBoss;
-            public readonly ReactiveProperty<State> State = new ReactiveProperty<State>();
-            public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>();
-            public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
-
-            public ViewModel(StageWaveSheet.Row stageRow, string stageNumber, State state) :
-                this(stageRow.StageId, stageNumber, stageRow.HasBoss, state)
-            {
-            }
+            public readonly ReactiveProperty<State> State = new();
+            public readonly ReactiveProperty<bool> Selected = new();
+            public readonly ReactiveProperty<bool> HasNotification = new(false);
 
             public ViewModel(State state) : this(-1, "0", false, state)
             {
@@ -84,11 +79,11 @@ namespace Nekoyume.UI.Module
 
         private Vector3 _selectedImageScale;
 
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForModel = new();
 
         private Tweener _tweener;
 
-        public readonly Subject<WorldMapStage> onClick = new Subject<WorldMapStage>();
+        public readonly Subject<WorldMapStage> onClick = new();
 
         public ViewModel SharedViewModel { get; private set; }
 

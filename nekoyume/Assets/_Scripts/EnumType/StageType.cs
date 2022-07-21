@@ -5,5 +5,6 @@
         None,
         HackAndSlash,
         Mimisbrunnr,
+        EventDungeon,
     }
 }

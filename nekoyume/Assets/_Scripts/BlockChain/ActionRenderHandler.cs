@@ -105,6 +105,7 @@ namespace Nekoyume.BlockChain
             MimisbrunnrBattle();
             HackAndSlashSweep();
             HackAndSlashRandomBuff();
+            EventDungeonBattle();
 
             // Craft
             CombinationConsumable();
@@ -177,6 +178,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMimisbrunnr)
+                .AddTo(_disposables);
+        }
+
+        private void EventDungeonBattle()
+        {
+            _actionRenderer.EveryRender<EventDungeonBattle>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseEventDungeonBattle)
                 .AddTo(_disposables);
         }
 
@@ -1177,6 +1187,11 @@ namespace Nekoyume.BlockChain
             }
         }
 
+        private void ResponseEventDungeonBattle(ActionBase.ActionEvaluation<EventDungeonBattle> eval)
+        {
+            // TODO!!!!
+        }
+        
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
         {
             var key = "UI_REDEEM_CODE_INVALID_CODE";

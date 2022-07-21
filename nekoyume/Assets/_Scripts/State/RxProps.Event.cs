@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
-using Nekoyume.Exceptions;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Event;
 using Nekoyume.TableData.Event;
+using UniRx;
 
 namespace Nekoyume.State
 {
@@ -15,26 +16,41 @@ namespace Nekoyume.State
 
         public static List<EventDungeonStageSheet.Row> EventDungeonStageRows { get; private set; }
 
+        public static List<EventDungeonStageWaveSheet.Row> EventDungeonStageWaveRows { get; private set; }
+
         private static readonly AsyncUpdatableRxProp<EventDungeonInfo>
             _eventDungeonInfo = new(UpdateEventDungeonInfoAsync);
+
         private static long _eventDungeonInfoUpdatedBlockIndex;
+
         public static IReadOnlyAsyncUpdatableRxProp<EventDungeonInfo>
             EventDungeonInfo => _eventDungeonInfo;
+
+        private static readonly ReactiveProperty<int>
+            _remainingEventTicketsConsiderReset = new(0);
+
+        public static IReadOnlyReactiveProperty<int>
+            RemainingEventTicketsConsiderReset => _remainingEventTicketsConsiderReset;
 
         private static void StartEvent()
         {
             EventScheduleRowForDungeon = null;
             EventDungeonRow = null;
             EventDungeonStageRows = new List<EventDungeonStageSheet.Row>();
-            var blockIndex = _agent.BlockIndex;
-            if (!_tableSheets.EventScheduleSheet.TryGetRowForDungeon(
-                    blockIndex,
-                    out var scheduleRow))
+            EventDungeonStageWaveRows = new List<EventDungeonStageWaveSheet.Row>();
+            // NOTE: This is temporary.
             {
-                return;
+                // var blockIndex = _agent.BlockIndex;
+                // if (!_tableSheets.EventScheduleSheet.TryGetRowForDungeon(
+                //         blockIndex,
+                //         out var scheduleRow))
+                // {
+                //     return;
+                // }
+                //
+                // EventScheduleRowForDungeon = scheduleRow;
+                EventScheduleRowForDungeon = _tableSheets.EventScheduleSheet.First;
             }
-
-            EventScheduleRowForDungeon = scheduleRow;
             if (!_tableSheets.EventDungeonSheet.TryGetRowByEventScheduleId(
                     EventScheduleRowForDungeon.Id,
                     out var dungeonRow))
@@ -46,18 +62,30 @@ namespace Nekoyume.State
             EventDungeonStageRows = _tableSheets.EventDungeonStageSheet.GetStageRows(
                 EventDungeonRow.StageBegin,
                 EventDungeonRow.StageEnd);
+            EventDungeonStageWaveRows = _tableSheets.EventDungeonStageWaveSheet.GetStageWaveRows(
+                EventDungeonRow.StageBegin,
+                EventDungeonRow.StageEnd);
 
-            OnBlockIndex(_agent.BlockIndex);
+            OnBlockIndexEvent(_agent.BlockIndex);
             OnAvatarChangedArena();
         }
 
         private static void OnBlockIndexEvent(long blockIndex)
         {
+            UpdateRemainingEventTicketsConsiderReset(blockIndex);
         }
 
         private static void OnAvatarChangedEvent()
         {
             _eventDungeonInfo.UpdateAsync().Forget();
+        }
+
+        private static void UpdateRemainingEventTicketsConsiderReset(long blockIndex)
+        {
+            _remainingEventTicketsConsiderReset.Value =
+                EventDungeonInfo.Value.GetRemainingTicketsConsiderReset(
+                    EventScheduleRowForDungeon,
+                    blockIndex);
         }
 
         private static async Task<EventDungeonInfo>
@@ -68,7 +96,8 @@ namespace Nekoyume.State
                 return previous;
             }
 
-            if (!_currentAvatarAddr.HasValue)
+            if (!_currentAvatarAddr.HasValue ||
+                EventDungeonRow is null)
             {
                 return null;
             }
