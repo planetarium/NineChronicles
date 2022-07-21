@@ -3754,6 +3754,7 @@ MonoBehaviour:
   combinationExclamationMark: {fileID: 553648111215811443}
   questExclamationMark: {fileID: 6874452977321091153}
   mimisbrunnrExclamationMark: {fileID: 2756443376085606677}
+  eventDungeonExclamationMark: {fileID: 1854817884059021972}
   stakingLevelIcon: {fileID: 4456344417387748107}
   guidedQuest: {fileID: 8354548078518022176}
   playerButton: {fileID: 1107625710520463300}
@@ -6711,6 +6712,12 @@ MonoBehaviour:
 --- !u!224 &553648111353541290 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2673266939117811253, guid: e6d7b535158669e49bc77f0431126854,
+    type: 3}
+  m_PrefabInstance: {fileID: 2501659536266527903}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1854817884059021972 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4254227167996786187, guid: e6d7b535158669e49bc77f0431126854,
     type: 3}
   m_PrefabInstance: {fileID: 2501659536266527903}
   m_PrefabAsset: {fileID: 0}
