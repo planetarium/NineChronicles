@@ -64,10 +64,10 @@ namespace Nekoyume.UI
         private Transform bossSpineContainer;
 
         [SerializeField]
-        private TextMeshProUGUI timerText;
+        private ShaderPropertySlider timerSlider;
 
         [SerializeField]
-        private ShaderPropertySlider timerSlider;
+        private TimeBlock timeBlock;
 
         private GameObject _bossNamePrefab;
         private GameObject _bossSpinePrefab;
@@ -189,37 +189,6 @@ namespace Nekoyume.UI
                 ? Status.Season
                 : Status.OffSeason;
         }
-        // public void UpdateView(long currentBlockIndex, bool forceUpdate = false)
-        // {
-        //     // Debug.Log("[WorldBoss] UpdateView");
-        //     // if (forceUpdate)
-        //     // {
-        //     //     _status = Status.None;
-        //     // }
-        //     //
-        //     // var currentState = WorldBossFrontHelper.IsItInSeason(currentBlockIndex)
-        //     //     ? Status.Season
-        //     //     : Status.OffSeason;
-        //     // if (currentState != _status)
-        //     // {
-        //     //     _status = currentState;
-        //     //
-        //     //     switch (_status)
-        //     //     {
-        //     //         case Status.OffSeason:
-        //     //             UpdateOffSeason(currentBlockIndex);
-        //     //             break;
-        //     //         case Status.Season:
-        //     //             UpdateSeason(row);
-        //     //             break;
-        //     //         case Status.None:
-        //     //         default:
-        //     //             throw new ArgumentOutOfRangeException();
-        //     //     }
-        //     // }
-        //
-        //     UpdateRemainTimer(_period, currentBlockIndex);
-        // }
 
         private void UpdateOffSeason(long currentBlockIndex)
         {
@@ -289,8 +258,8 @@ namespace Nekoyume.UI
             var (begin, end) = time;
             var range = end - begin;
             var progress = current - begin;
-            timerText.text = $"{Util.GetBlockToTime(end - current)} ({current}/{end})";
             timerSlider.NormalizedValue = (float)progress / range;
+            timeBlock.SetTimeBlock(Util.GetBlockToTime(end - current), $"{current}/{end}");
         }
 
         private void ShowPrevRank()
@@ -412,7 +381,7 @@ namespace Nekoyume.UI
             return task.Result;
         }
 
-        private async void UpdateUserCount(int count)
+        private void UpdateUserCount(int count)
         {
             season.UpdateUserCount(count);
         }
