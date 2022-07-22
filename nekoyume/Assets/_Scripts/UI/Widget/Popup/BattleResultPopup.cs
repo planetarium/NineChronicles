@@ -113,7 +113,7 @@ namespace Nekoyume.UI
         private Button closeButton = null;
 
         [SerializeField]
-        private Button stageButton = null;
+        private Button stagePreparationButton = null;
 
         [SerializeField]
         private Button nextButton = null;
@@ -168,7 +168,7 @@ namespace Nekoyume.UI
                     }
                 }).AddTo(gameObject);
 
-            stageButton.OnClickAsObservable().Subscribe(_ =>
+            stagePreparationButton.OnClickAsObservable().Subscribe(_ =>
             {
                 OnClickStage();
             }).AddTo(gameObject);
@@ -267,7 +267,7 @@ namespace Nekoyume.UI
 
             base.Show();
             closeButton.gameObject.SetActive(model.StageID >= 3 || model.LastClearedStageId >= 3);
-            stageButton.gameObject.SetActive(false);
+            stagePreparationButton.gameObject.SetActive(false);
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
 
@@ -430,8 +430,8 @@ namespace Nekoyume.UI
 
             if (!SharedModel.IsClear && SharedModel.WorldID <= 10000)
             {
-                stageButton.gameObject.SetActive(true);
-                stageButton.interactable = true;
+                stagePreparationButton.gameObject.SetActive(true);
+                stagePreparationButton.interactable = true;
             }
 
             if (!SharedModel.ActionPointNotEnough)
@@ -473,7 +473,7 @@ namespace Nekoyume.UI
                 SharedModel.LastClearedStageId == 3 &&
                 SharedModel.State == BattleLog.Result.Win)
             {
-                stageButton.gameObject.SetActive(false);
+                stagePreparationButton.gameObject.SetActive(false);
                 nextButton.gameObject.SetActive(false);
                 repeatButton.gameObject.SetActive(false);
                 bottomText.text = string.Empty;
@@ -529,7 +529,7 @@ namespace Nekoyume.UI
             }
 
             closeButton.interactable = false;
-            stageButton.interactable = false;
+            stagePreparationButton.interactable = false;
             repeatButton.interactable = false;
             nextButton.interactable = false;
             actionPoint.SetEventTriggerEnabled(false);
@@ -584,7 +584,7 @@ namespace Nekoyume.UI
             }
 
             closeButton.interactable = false;
-            stageButton.interactable = false;
+            stagePreparationButton.interactable = false;
             repeatButton.interactable = false;
             nextButton.interactable = false;
             actionPoint.SetEventTriggerEnabled(false);

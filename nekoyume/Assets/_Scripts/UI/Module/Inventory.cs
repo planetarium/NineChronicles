@@ -136,7 +136,8 @@ namespace Nekoyume.UI.Module
         private void Set(
             Action<Inventory, Nekoyume.Model.Item.Inventory> onUpdateInventory = null,
             List<(ItemType type, Predicate<InventoryItem> predicate)> itemSetDimPredicates = null,
-            bool isArena = false, bool useConsumable = false)
+            bool isArena = false,
+            bool useConsumable = false)
         {
             _disposablesOnSet.DisposeAllAndClear();
             foreach (var type in ItemTypes)
@@ -163,11 +164,10 @@ namespace Nekoyume.UI.Module
             if (useConsumable)
             {
                 ReactiveAvatarState.Inventory.First().Subscribe(e =>
-                    {
-                        SetInventory(e, onUpdateInventory);
-                        if (_consumables.Any()) SetToggle(consumableButton, ItemType.Consumable);
-                    })
-                    .AddTo(_disposablesOnSet);
+                {
+                    SetInventory(e, onUpdateInventory);
+                    if (_consumables.Any()) SetToggle(consumableButton, ItemType.Consumable);
+                });
             }
 
             scroll.OnClick.Subscribe(OnClickItem).AddTo(_disposablesOnSet);

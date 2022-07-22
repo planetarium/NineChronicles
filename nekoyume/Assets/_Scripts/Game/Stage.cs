@@ -548,7 +548,7 @@ namespace Nekoyume.Game
                             }
                         }
                     }
-                    else if(_battleResultModel.WorldID <= 10000)
+                    else if (_battleResultModel.WorldID <= 10000)
                     {
                         _battleResultModel.NextState = IsRepeatStage
                             ? BattleResultPopup.NextState.RepeatStage

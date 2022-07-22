@@ -237,7 +237,7 @@ namespace Nekoyume.UI
             _worldId = worldId;
             _stageId.Value = stageId;
 
-            UpdateInventory(stageType == StageType.HackAndSlash);
+            UpdateInventory(stageType is StageType.HackAndSlash);
             UpdateBackground(stageType);
             UpdateTitle();
             UpdateStat(currentAvatarState);
