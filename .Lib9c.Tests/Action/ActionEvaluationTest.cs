@@ -100,6 +100,7 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(Grinding))]
         [InlineData(typeof(UnlockEquipmentRecipe))]
         [InlineData(typeof(UnlockWorld))]
+        [InlineData(typeof(Raid))]
         public void Serialize_With_MessagePack(Type actionType)
         {
             var action = GetAction(actionType);
@@ -273,6 +274,13 @@ namespace Lib9c.Tests.Action
                         2,
                         3,
                     },
+                },
+                Raid _ => new Raid
+                {
+                    AvatarAddress = new PrivateKey().ToAddress(),
+                    CostumeIds = new List<Guid>(),
+                    EquipmentIds = new List<Guid>(),
+                    FoodIds = new List<Guid>(),
                 },
                 _ => throw new InvalidCastException(),
             };
