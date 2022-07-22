@@ -16,11 +16,11 @@ namespace Nekoyume.Model.State
         public int StarCount { get; private set; }
         public List<int> SkillIds { get; private set; }
 
-        public CrystalRandomSkillState(Address address, int stageId, int starCount = 0)
+        public CrystalRandomSkillState(Address address, int stageId)
         {
             Address = address;
             StageId = stageId;
-            StarCount = starCount;
+            StarCount = 0;
             SkillIds = new List<int>();
         }
 

@@ -19,6 +19,7 @@ namespace Nekoyume.Action
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/967
     /// Updated at https://github.com/planetarium/lib9c/pull/1167
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1222
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash15")]
@@ -324,16 +325,11 @@ namespace Nekoyume.Action
             {
                 if (isNotClearedStage)
                 {
-                    if (skillsOnWaveStart.Any())
-                    {
-                        // clear current skill id.
-                        skillState = new CrystalRandomSkillState(skillStateAddress, stageId,
-                            skillState.StarCount);
-                    }
-
                     // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
                     skillState!.Update(simulator.Log.clearedWaveNumber,
                         sheets.GetSheet<CrystalStageBuffGachaSheet>());
+                    // clear current skill id.
+                    skillState!.Update(new List<int>());
                     states = states.SetState(skillStateAddress, skillState!.Serialize());
                 }
             }
