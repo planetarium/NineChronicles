@@ -680,7 +680,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 072e78027e754fda82b33d3b8385f7eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _iconImage: {fileID: 4816246877754014400}
-  _slider: {fileID: 2975714072037801675}
-  _fillText: {fileID: 5594045113621246599}
-  _timespanText: {fileID: 6294135629855661303}
+  iconImage: {fileID: 4816246877754014400}
+  slider: {fileID: 2975714072037801675}
+  fillText: {fileID: 5594045113621246599}
+  timespanText: {fileID: 6294135629855661303}

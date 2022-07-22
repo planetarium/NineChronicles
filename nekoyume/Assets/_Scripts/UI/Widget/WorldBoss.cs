@@ -73,6 +73,7 @@ namespace Nekoyume.UI
         private GameObject _bossSpinePrefab;
         private (long, long) _period;
         private RaiderState _cachedRaiderState;
+        private int _remainTicket;
 
         // for test
         [SerializeField]
@@ -89,6 +90,7 @@ namespace Nekoyume.UI
 
         private Status _status = Status.None;
         private readonly List<IDisposable> _disposables = new();
+        private HeaderMenuStatic _headerMenu;
 
         protected override void Awake()
         {
@@ -141,12 +143,18 @@ namespace Nekoyume.UI
             loading.Show();
 
             ShowSheetValues();
-
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            await UpdateViewAsync(currentBlockIndex);
+            ShowHeaderMenu();
+            await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true);
 
             loading.Close();
             base.Show(ignoreShowAnimation);
+        }
+
+        private void ShowHeaderMenu()
+        {
+            _headerMenu = Find<HeaderMenuStatic>();
+            _headerMenu.Show(HeaderMenuStatic.AssetVisibleState.WorldBoss);
+
         }
 
         public async Task UpdateViewAsync(long currentBlockIndex, bool forceUpdate = false)
@@ -172,7 +180,7 @@ namespace Nekoyume.UI
                         }
 
                         var (worldBoss, raider, userCount) = await GetStatesAsync(row);
-                        UpdateSeason(row, worldBoss, raider, userCount);
+                        UpdateSeason(row, worldBoss, raider, userCount, currentBlockIndex);
                         break;
                     case Status.None:
                     default:
@@ -180,6 +188,7 @@ namespace Nekoyume.UI
                 }
             }
 
+            UpdateTicket(currentBlockIndex);
             UpdateRemainTimer(_period, currentBlockIndex);
         }
 
@@ -215,8 +224,10 @@ namespace Nekoyume.UI
             WorldBossListSheet.Row row,
             WorldBossState worldBoss,
             RaiderState raider,
-            int userCount)
+            int userCount,
+            long currentBlockIndex)
         {
+            Debug.Log("[UpdateSeason]");
             offSeasonContainer.SetActive(true);
             seasonContainer.SetActive(false);
             rankButton.gameObject.SetActive(true);
@@ -225,7 +236,7 @@ namespace Nekoyume.UI
 
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
-            UpdateMyInformation(raider);
+            UpdateMyInformation(raider, currentBlockIndex);
             UpdateUserCount(userCount);
         }
 
@@ -262,6 +273,31 @@ namespace Nekoyume.UI
             timeBlock.SetTimeBlock(Util.GetBlockToTime(end - current), $"{current}/{end}");
         }
 
+        private void UpdateTicket(long currentBlockIndex)
+        {
+            Debug.Log("[UpdateTicket]");
+            var maxTicket = 3;
+            var refillBlockIndex = _cachedRaiderState?.RefillBlockIndex ?? 0;
+            var remainTicket = _cachedRaiderState?.RemainChallengeCount ?? maxTicket;
+
+            if (_cachedRaiderState is { RefillBlockIndex: 0 } && _cachedRaiderState.RemainChallengeCount != 0) // temp
+            {
+                _remainTicket = remainTicket;
+            }
+            else
+            {
+                _remainTicket = currentBlockIndex - refillBlockIndex >= WorldBossHelper.RefillInterval
+                    ? maxTicket
+                    : remainTicket;
+            }
+
+            var remainder = (currentBlockIndex - refillBlockIndex) % WorldBossHelper.RefillInterval;
+            var remain = WorldBossHelper.RefillInterval - remainder;
+            Debug.Log($"[remain] {remain} / [remainTicket] {remainTicket} / [maxTicket] {maxTicket}");
+
+            _headerMenu.WorldBossTickets.Set(remain,_remainTicket, maxTicket);
+        }
+
         private void ShowPrevRank()
         {
             // Find<WorldBossRank>().Show();
@@ -289,7 +325,7 @@ namespace Nekoyume.UI
                 case Status.OffSeason:
                     break;
                 case Status.Season:
-                    if (_cachedRaiderState == null || _cachedRaiderState.RemainChallengeCount > 0)
+                    if (_remainTicket > 0)
                     {
                         Raid(false);
                     }
@@ -401,16 +437,14 @@ namespace Nekoyume.UI
             season.UpdateBossInformation(bossName, level, curHp, maxHp);
         }
 
-        private void UpdateMyInformation(RaiderState state)
+        private void UpdateMyInformation(RaiderState state, long currentBlockIndex)
         {
             _cachedRaiderState = state;
             var totalScore = state?.TotalScore ?? 0;
             var highScore = state?.HighScore ?? 0;
-            ticketText.text = $"남은티켓:{state?.RemainChallengeCount ?? 0}\n" +
-                              $"총 도전 횟 수: {state?.TotalChallengeCount ?? 0}\n" +
-                              $"티켓 구매 횟 수: {state?.PurchaseCount ?? 0}\n";
-
             season.UpdateMyInformation(highScore, totalScore);
+            ticketText.text = $"총 도전 횟 수: {state?.TotalChallengeCount ?? 0}\n" +
+                              $"티켓 구매 횟 수: {state?.PurchaseCount ?? 0}\n";
         }
 
         private async void ViewRune(int runeId)

@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Nekoyume.Helper;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class WorldBossTickets : MonoBehaviour
     {
-        [SerializeField]
-        private Image iconImage;
-
-        public Image IconImage => iconImage;
-
         [SerializeField]
         private Slider slider;
 
@@ -22,11 +18,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI timespanText;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
-
-        private void OnDestroy()
+        public void Set(long remainBlockIndex, int remainTicket, int maxTicket)
         {
-            _disposables.DisposeAllAndClear();
+            timespanText.text = Util.GetBlockToTime(remainBlockIndex);
+
+            fillText.text = $"{remainTicket}/{maxTicket}";
+            slider.normalizedValue = remainTicket / (float)maxTicket;
         }
     }
 }
