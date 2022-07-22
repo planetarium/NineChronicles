@@ -749,8 +749,11 @@ namespace Nekoyume.BlockChain
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
             var diff = state.UnlockBlockIndex - Game.Game.instance.Agent.BlockIndex;
             var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
-
             LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
+            Analyzer.Instance.Track("Unity/Rapid Combination", new Value
+            {
+                ["HourglassCount"] = cost,
+            });
 
             var action = new RapidCombination
             {
