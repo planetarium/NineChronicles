@@ -18,5 +18,10 @@ namespace Nekoyume.Helper
         {
             return (row.TicketPrice + row.AdditionalTicketPrice * raiderState.PurchaseCount) * currency;
         }
+
+        public static bool CanRefillTicket(long blockIndex, long refilledIndex, long startedIndex)
+        {
+            return blockIndex - startedIndex - refilledIndex >= RefillInterval;
+        }
     }
 }

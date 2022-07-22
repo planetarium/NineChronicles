@@ -80,7 +80,7 @@ namespace Nekoyume.Action
 
             if (raiderState.RemainChallengeCount < 1)
             {
-                if (context.BlockIndex - raiderState.RefillBlockIndex >= WorldBossHelper.RefillInterval)
+                if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
                 {
                     raiderState.RemainChallengeCount = 3;
                     raiderState.RefillBlockIndex = context.BlockIndex;
