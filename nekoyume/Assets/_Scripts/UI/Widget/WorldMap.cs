@@ -52,6 +52,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI _eventDungeonTicketsText;
 
+        private readonly List<IDisposable> _disposablesAtShow = new();
+
         public ViewModel SharedViewModel { get; private set; }
 
         public bool HasNotification { get; private set; }
@@ -138,14 +140,13 @@ namespace Nekoyume.UI
 
         public void Show(WorldInformation worldInformation)
         {
+            SubscribeAtShow();
+
             HasNotification = false;
             SetWorldInformation(worldInformation);
-            UpdateEventDungeonButton();
 
             var status = Find<Status>();
             status.Close(true);
-            // Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-            Find<HeaderMenuStatic>().Close();
             Show(true);
             HelpTooltip.HelpMe(100002, true);
             ShowManyWorldUnlockPopup(worldInformation);
@@ -153,12 +154,43 @@ namespace Nekoyume.UI
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
+            SubscribeAtShow();
             ShowWorld(worldId, stageId, showWorld, callByShow);
             Show(true);
         }
 
+        private void SubscribeAtShow()
+        {
+            _disposablesAtShow.DisposeAllAndClear();
+            RxProps.EventScheduleRowForDungeon.Subscribe(value =>
+            {
+                if (value is null)
+                {
+                    Find<HeaderMenuStatic>().UpdateAssets(
+                        HeaderMenuStatic.AssetVisibleState.Battle);
+                    _eventDungeonButton.Hide();
+                    return;
+                }
+
+                Find<HeaderMenuStatic>().UpdateAssets(
+                    HeaderMenuStatic.AssetVisibleState.EventDungeon);
+                _eventDungeonTicketsText.text =
+                    RxProps.EventDungeonTicketProgress.Value
+                        .currentTickets.ToString(CultureInfo.InvariantCulture);
+                _eventDungeonButton.HasNotification.Value = true;
+                _eventDungeonButton.Unlock();
+                _eventDungeonButton.Show();
+            }).AddTo(_disposablesAtShow);
+            RxProps.EventDungeonTicketProgress.Subscribe(value =>
+            {
+                _eventDungeonTicketsText.text =
+                    value.currentTickets.ToString(CultureInfo.InvariantCulture);
+            }).AddTo(_disposablesAtShow);
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _disposablesAtShow.DisposeAllAndClear();
             base.Close(true);
         }
 
@@ -204,22 +236,6 @@ namespace Nekoyume.UI
             {
                 throw new Exception("worldInformation.TryGetFirstWorld() failed!");
             }
-        }
-
-        private void UpdateEventDungeonButton()
-        {
-            if (RxProps.EventScheduleRowForDungeon is null)
-            {
-                _eventDungeonButton.Hide();
-                return;
-            }
-
-            _eventDungeonTicketsText.text =
-                RxProps.EventDungeonTicketProgress.Value
-                    .currentTickets.ToString(CultureInfo.InvariantCulture);
-            _eventDungeonButton.HasNotification.Value = true;
-            _eventDungeonButton.Unlock();
-            _eventDungeonButton.Show();
         }
 
         private void ShowWorld(int worldId)

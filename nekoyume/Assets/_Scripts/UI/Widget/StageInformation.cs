@@ -331,7 +331,7 @@ namespace Nekoyume.UI
             UpdateStageInfoRewards(stageRow.GetRewardItemRows());
 
             // TODO!!!! This is temporary.
-            var exp = RxProps.EventScheduleRowForDungeon.DungeonExpSeedValue;
+            var exp = RxProps.EventScheduleRowForDungeon.Value.DungeonExpSeedValue;
             expText.text = $"?EXP +{exp}?";
 
             buttonNotification.SetActive(false);

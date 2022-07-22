@@ -10,7 +10,11 @@ namespace Nekoyume.State
 {
     public static partial class RxProps
     {
-        public static EventScheduleSheet.Row EventScheduleRowForDungeon { get; private set; }
+        private static readonly ReactiveProperty<EventScheduleSheet.Row>
+            _eventScheduleRowForDungeon = new(null);
+
+        public static IReadOnlyReactiveProperty<EventScheduleSheet.Row>
+            EventScheduleRowForDungeon => _eventScheduleRowForDungeon;
 
         public static EventDungeonSheet.Row EventDungeonRow { get; private set; }
 
@@ -26,12 +30,6 @@ namespace Nekoyume.State
         public static IReadOnlyAsyncUpdatableRxProp<EventDungeonInfo>
             EventDungeonInfo => _eventDungeonInfo;
 
-        // private static readonly ReactiveProperty<int>
-        //     _remainingEventTicketsConsiderReset = new(0);
-        //
-        // public static IReadOnlyReactiveProperty<int>
-        //     RemainingEventTicketsConsiderReset => _remainingEventTicketsConsiderReset;
-        
         private static readonly ReactiveProperty<TicketProgress>
             _eventDungeonTicketProgress = new(new TicketProgress());
 
@@ -65,22 +63,22 @@ namespace Nekoyume.State
                     blockIndex,
                     out var scheduleRow))
             {
-                EventScheduleRowForDungeon = null;
+                _eventScheduleRowForDungeon.Value = null;
                 EventDungeonRow = null;
                 EventDungeonStageRows = new List<EventDungeonStageSheet.Row>();
                 EventDungeonStageWaveRows = new List<EventDungeonStageWaveSheet.Row>();
                 return;
             }
 
-            if (EventScheduleRowForDungeon is not null &&
-                EventScheduleRowForDungeon.Id == scheduleRow.Id)
+            if (_eventScheduleRowForDungeon.Value is not null &&
+                _eventScheduleRowForDungeon.Value.Id == scheduleRow.Id)
             {
                 return;
             }
 
-            EventScheduleRowForDungeon = scheduleRow;
+            _eventScheduleRowForDungeon.Value = scheduleRow;
             if (!_tableSheets.EventDungeonSheet.TryGetRowByEventScheduleId(
-                    EventScheduleRowForDungeon.Id,
+                    _eventScheduleRowForDungeon.Value.Id,
                     out var dungeonRow))
             {
                 EventDungeonRow = null;
@@ -104,17 +102,9 @@ namespace Nekoyume.State
                 EventDungeonRow.StageEnd);
         }
 
-        // private static void UpdateRemainingEventTicketsConsiderReset(long blockIndex)
-        // {
-        //     _remainingEventTicketsConsiderReset.Value =
-        //         EventDungeonInfo.Value.GetRemainingTicketsConsiderReset(
-        //             EventScheduleRowForDungeon,
-        //             blockIndex);
-        // }
-        
         private static void UpdateEventDungeonTicketProgress(long blockIndex)
         {
-            if (EventScheduleRowForDungeon is null)
+            if (_eventScheduleRowForDungeon.Value is null)
             {
                 _eventDungeonTicketProgress.Value.Reset();
                 _eventDungeonTicketProgress.SetValueAndForceNotify(
@@ -124,17 +114,17 @@ namespace Nekoyume.State
 
             var current = EventDungeonInfo.Value
                 .GetRemainingTicketsConsiderReset(
-                    EventScheduleRowForDungeon,
+                    _eventScheduleRowForDungeon.Value,
                     blockIndex);
             var resetIntervalBlockRange =
-                EventScheduleRowForDungeon.DungeonTicketsResetIntervalBlockRange;
+                _eventScheduleRowForDungeon.Value.DungeonTicketsResetIntervalBlockRange;
             var progressedBlockRange =
-                (blockIndex - EventScheduleRowForDungeon.StartBlockIndex)
+                (blockIndex - _eventScheduleRowForDungeon.Value.StartBlockIndex)
                 % resetIntervalBlockRange;
 
             _eventDungeonTicketProgress.Value.Reset(
                 current,
-                EventScheduleRowForDungeon.DungeonTicketsMax,
+                _eventScheduleRowForDungeon.Value.DungeonTicketsMax,
                 (int)progressedBlockRange,
                 resetIntervalBlockRange);
             _eventDungeonTicketProgress.SetValueAndForceNotify(

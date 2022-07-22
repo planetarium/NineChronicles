@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using DG.Tweening;
-using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
@@ -111,6 +110,8 @@ namespace Nekoyume.UI.Module
         #endregion
 
         private readonly ReactiveProperty<ViewState> _state = new(ViewState.None);
+        
+        private readonly List<IDisposable> _disposablesAtShow = new();
 
         public static WorldQuest WorldQuest =>
             SharedViewModel.worldQuest.Value;
@@ -201,11 +202,6 @@ namespace Nekoyume.UI.Module
 
             switch (_state.Value)
             {
-                default:
-                    Debug.LogWarning(
-                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}." +
-                        $" Try when state is {ViewState.None}, {ViewState.Hidden} or {ViewState.Shown}");
-                    break;
                 case ViewState.None:
                 case ViewState.Hidden:
                     EnterToShowing(onComplete, ignoreAnimation);
@@ -217,11 +213,26 @@ namespace Nekoyume.UI.Module
                     }
 
                     break;
+                default:
+                    Debug.LogWarning(
+                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}." +
+                        $" Try when state is {ViewState.None}, {ViewState.Hidden} or {ViewState.Shown}");
+                    break;
             }
+
+            // Subscribe
+            _disposablesAtShow.DisposeAllAndClear();
+            RxProps.EventDungeonTicketProgress
+                .Where(_ => gameObject.activeSelf)
+                .Subscribe(_ =>
+                    StartCoroutine(CoUpdateEventDungeonQuest()))
+                .AddTo(_disposablesAtShow);
+            // ~Subscribe
         }
 
         public void Hide(bool ignoreAnimation = false)
         {
+            _disposablesAtShow.DisposeAllAndClear();
             EnterToHiding(ignoreAnimation);
         }
 
@@ -420,34 +431,53 @@ namespace Nekoyume.UI.Module
         private IEnumerator CoUpdateList(System.Action onComplete)
         {
             var questList = SharedViewModel.avatarState?.questList;
+            yield return StartCoroutine(CoUpdateWorldQuest(questList));
+            yield return StartCoroutine(CoUpdateCombinationEquipmentQuest(questList));
+            yield return StartCoroutine(CoUpdateEventDungeonQuest());
+            onComplete?.Invoke();
+        }
+
+        private IEnumerator CoUpdateWorldQuest(QuestList questList)
+        {
             var newWorldQuest = GetTargetWorldQuest(questList);
             if (TryEnterToAddNewGuidedQuest(
                     SharedViewModel.worldQuest,
                     newWorldQuest,
-                    !(WorldQuestCell.Quest is null)))
+                    WorldQuestCell.Quest is not null))
             {
                 yield return new WaitUntil(() => _state.Value == ViewState.Shown);
             }
+        }
 
+        private IEnumerator CoUpdateCombinationEquipmentQuest(QuestList questList)
+        {
             var newCombinationEquipmentQuest = GetTargetCombinationEquipmentQuest(questList);
             if (TryEnterToAddNewGuidedQuest(
                     SharedViewModel.combinationEquipmentQuest,
                     newCombinationEquipmentQuest,
-                    !(CombinationEquipmentQuestCell.Quest is null)))
+                    CombinationEquipmentQuestCell.Quest is not null))
             {
                 yield return new WaitUntil(() => _state.Value == ViewState.Shown);
             }
+        }
 
+        private IEnumerator CoUpdateEventDungeonQuest()
+        {
             var newEventDungeonQuest = GetTargetEventDungeonQuest();
+            if (newEventDungeonQuest is not null &&
+                SharedViewModel.eventDungeonQuest.Value is not null &&
+                newEventDungeonQuest.Id == SharedViewModel.eventDungeonQuest.Value.Id)
+            {
+                yield break;
+            }
+
             if (TryEnterToAddNewGuidedQuest(
                     SharedViewModel.eventDungeonQuest,
                     newEventDungeonQuest,
-                    !(EventDungeonQuestCell.Quest is null)))
+                    EventDungeonQuestCell.Quest is not null))
             {
                 yield return new WaitUntil(() => _state.Value == ViewState.Shown);
             }
-
-            onComplete?.Invoke();
         }
 
         private bool TryEnterToAddNewGuidedQuest<TQuestModel>(
@@ -535,6 +565,9 @@ namespace Nekoyume.UI.Module
         private void EnterToHidden()
         {
             _state.Value = ViewState.Hidden;
+            SharedViewModel.worldQuest.Value = null;
+            SharedViewModel.combinationEquipmentQuest.Value = null;
+            SharedViewModel.eventDungeonQuest.Value = null;
         }
 
         #endregion
@@ -585,17 +618,17 @@ namespace Nekoyume.UI.Module
 
         private static WorldQuest GetTargetEventDungeonQuest()
         {
-            if (RxProps.EventScheduleRowForDungeon is null ||
+            if (RxProps.EventScheduleRowForDungeon.Value is null ||
                 RxProps.EventDungeonRow is null)
             {
                 return null;
             }
 
-            string goal;
+            int goal;
             var info = RxProps.EventDungeonInfo.Value;
             if (info is null)
             {
-                goal = RxProps.EventDungeonRow.StageBegin.ToString(CultureInfo.InvariantCulture);
+                goal = RxProps.EventDungeonRow.StageBegin;
             }
             else if (info.ClearedStageId == RxProps.EventDungeonRow.StageEnd)
             {
@@ -603,16 +636,23 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                goal = (info.ClearedStageId + 1).ToString(CultureInfo.InvariantCulture);
+                goal = info.ClearedStageId + 1;
+            }
+
+            if (SharedViewModel.eventDungeonQuest.Value is not null &&
+                SharedViewModel.eventDungeonQuest.Value.Id == goal)
+            {
+                return SharedViewModel.eventDungeonQuest.Value;
             }
 
             // NOTE: Make fake world quest.
+            var goalText = goal.ToString(CultureInfo.InvariantCulture);
             var row = new WorldQuestSheet.Row();
             row.Set(new[]
             {
-                goal,
-                goal,
-                goal,
+                goalText,
+                goalText,
+                goalText,
             });
             var reward = new QuestReward(new Dictionary<int, int>());
             return new WorldQuest(row, reward);

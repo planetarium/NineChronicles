@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module.Lobby
         [SerializeField]
         private GameObject _championshipGameObject;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private readonly List<IDisposable> _disposables = new();
 
         private void OnEnable()
         {

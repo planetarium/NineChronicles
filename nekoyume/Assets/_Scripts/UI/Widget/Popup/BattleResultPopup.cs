@@ -632,7 +632,7 @@ namespace Nekoyume.UI
                     .StartAsCoroutine(),
                 StageType.EventDungeon => Game.Game.instance.ActionManager
                     .EventDungeonBattle(
-                        RxProps.EventScheduleRowForDungeon.Id,
+                        RxProps.EventScheduleRowForDungeon.Value.Id,
                         SharedModel.WorldID,
                         SharedModel.StageID + stageIdOffset,
                         equipments,

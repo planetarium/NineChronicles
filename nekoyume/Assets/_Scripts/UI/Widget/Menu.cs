@@ -89,6 +89,8 @@ namespace Nekoyume.UI
 
         private Coroutine _coLazyClose;
 
+        private readonly List<IDisposable> _disposablesAtShow = new();
+
         protected override void Awake()
         {
             base.Awake();
@@ -198,7 +200,7 @@ namespace Nekoyume.UI
 
             Game.Game.instance.ActionManager
                 .EventDungeonBattle(
-                    RxProps.EventScheduleRowForDungeon.Id,
+                    RxProps.EventScheduleRowForDungeon.Value.Id,
                     eventDungeonRow.Id,
                     eventDungeonStageId,
                     player)
@@ -261,11 +263,6 @@ namespace Nekoyume.UI
             mimisbrunnrExclamationMark.gameObject.SetActive(
                 btnMimisbrunnr.IsUnlocked
                 && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0);
-            eventDungeonExclamationMark.gameObject.SetActive(
-                RxProps.EventScheduleRowForDungeon is not null);
-            eventDungeonTicketsText.text =
-                RxProps.EventDungeonTicketProgress.Value
-                    .currentTickets.ToString(CultureInfo.InvariantCulture);
         }
 
         private void HideButtons()
@@ -464,6 +461,8 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            SubscribeAtShow();
+
             if (!(_coLazyClose is null))
             {
                 StopCoroutine(_coLazyClose);
@@ -476,6 +475,24 @@ namespace Nekoyume.UI
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
             stakingLevelIcon.sprite = SpriteHelper.GetStakingIcon(States.Instance.StakingLevel, true);
+        }
+
+        private void SubscribeAtShow()
+        {
+            _disposablesAtShow.DisposeAllAndClear();
+            RxProps.EventScheduleRowForDungeon.Subscribe(value =>
+            {
+                eventDungeonTicketsText.text =
+                    RxProps.EventDungeonTicketProgress.Value
+                        .currentTickets.ToString(CultureInfo.InvariantCulture);
+                eventDungeonExclamationMark.gameObject
+                    .SetActive(value is not null);
+            }).AddTo(_disposablesAtShow);
+            RxProps.EventDungeonTicketProgress.Subscribe(value =>
+            {
+                eventDungeonTicketsText.text =
+                    value.currentTickets.ToString(CultureInfo.InvariantCulture);
+            }).AddTo(_disposablesAtShow);
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -511,6 +528,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _disposablesAtShow.DisposeAllAndClear();
             Find<NoticePopup>().Close(true);
             StopSpeeches();
             guidedQuest.Hide(true);

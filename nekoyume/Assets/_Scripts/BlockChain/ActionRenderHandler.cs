@@ -1237,7 +1237,7 @@ namespace Nekoyume.BlockChain
 
             var playCount = Action.EventDungeonBattle.PlayCount;
             // NOTE: This is a temporary solution. The formula is not yet decided.
-            var exp = RxProps.EventScheduleRowForDungeon.DungeonExpSeedValue;
+            var exp = RxProps.EventScheduleRowForDungeon.Value.DungeonExpSeedValue;
             var simulator = new EventDungeonBattleSimulator(
                 new LocalRandom(eval.RandomSeed),
                 States.Instance.CurrentAvatarState,

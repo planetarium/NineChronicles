@@ -939,7 +939,7 @@ namespace Nekoyume.UI
                 case StageType.EventDungeon:
                 {
                     ActionManager.Instance.EventDungeonBattle(
-                            RxProps.EventScheduleRowForDungeon.Id,
+                            RxProps.EventScheduleRowForDungeon.Value.Id,
                             _worldId,
                             _stageId,
                             equipments,
