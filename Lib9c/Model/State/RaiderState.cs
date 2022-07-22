@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
+using Libplanet;
 using Libplanet.Assets;
+using Nekoyume.Battle;
+using Nekoyume.Helper;
 
 namespace Nekoyume.Model.State
 {
@@ -16,6 +19,11 @@ namespace Nekoyume.Model.State
         public long ClaimedBlockIndex;
         public long RefillBlockIndex;
         public int PurchaseCount;
+        public int Cp;
+        public int Level;
+        public int IconId;
+        public Address AvatarAddress;
+        public string AvatarNameWithHash;
 
         public RaiderState()
         {
@@ -23,6 +31,7 @@ namespace Nekoyume.Model.State
             HighScore = 0;
             TotalChallengeCount = 0;
             RemainChallengeCount = 3;
+            AvatarNameWithHash = "";
         }
 
         public RaiderState(List rawState)
@@ -35,6 +44,31 @@ namespace Nekoyume.Model.State
             ClaimedBlockIndex = rawState[5].ToLong();
             RefillBlockIndex = rawState[6].ToLong();
             PurchaseCount = rawState[7].ToInteger();
+            Cp = rawState[8].ToInteger();
+            Level = rawState[9].ToInteger();
+            IconId = rawState[10].ToInteger();
+            AvatarAddress = rawState[11].ToAddress();
+            AvatarNameWithHash = rawState[12].ToDotnetString();
+        }
+
+        public void Update(AvatarState avatarState, int cp, int score, bool payNcg)
+        {
+            Level = avatarState.level;
+            AvatarAddress = avatarState.address;
+            AvatarNameWithHash = avatarState.NameWithHash;
+            Cp = cp;
+            if (HighScore < score)
+            {
+                HighScore = score;
+            }
+
+            TotalScore += score;
+            if (!payNcg)
+            {
+                RemainChallengeCount--;
+            }
+            TotalChallengeCount++;
+            IconId = avatarState.inventory.GetEquippedFullCostumeOrArmorId();
         }
 
         public IValue Serialize()
@@ -47,7 +81,12 @@ namespace Nekoyume.Model.State
                 .Add(LatestRewardRank.Serialize())
                 .Add(ClaimedBlockIndex.Serialize())
                 .Add(RefillBlockIndex.Serialize())
-                .Add(PurchaseCount.Serialize());
+                .Add(PurchaseCount.Serialize())
+                .Add(Cp.Serialize())
+                .Add(Level.Serialize())
+                .Add(IconId.Serialize())
+                .Add(AvatarAddress.Serialize())
+                .Add(AvatarNameWithHash.Serialize());
         }
     }
 }

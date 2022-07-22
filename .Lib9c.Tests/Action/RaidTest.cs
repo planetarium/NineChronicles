@@ -97,6 +97,8 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta state = new State()
                 .SetState(Addresses.GetSheetAddress<WorldBossListSheet>(), _tableSheets.WorldBossListSheet.Serialize())
                 .SetState(Addresses.GetSheetAddress<WorldBossGlobalHpSheet>(), hpSheet.Serialize())
+                .SetState(Addresses.GetSheetAddress<CharacterSheet>(), _tableSheets.CharacterSheet.Serialize())
+                .SetState(Addresses.GetSheetAddress<CostumeStatSheet>(), _tableSheets.CostumeStatSheet.Serialize())
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
@@ -132,6 +134,11 @@ namespace Lib9c.Tests.Action
                     raiderState.TotalScore = 1_000;
                     raiderState.TotalChallengeCount = 1;
                     raiderState.PurchaseCount = purchaseCount;
+                    raiderState.Cp = 0;
+                    raiderState.Level = 0;
+                    raiderState.IconId = 0;
+                    raiderState.AvatarNameWithHash = "hash";
+                    raiderState.AvatarAddress = _avatarAddress;
 
                     state = state.SetState(raiderAddress, raiderState.Serialize());
                 }
@@ -186,6 +193,9 @@ namespace Lib9c.Tests.Action
                 Assert.Equal(expectedTotalScore, raiderState.TotalScore);
                 Assert.Equal(expectedRemainChallenge, raiderState.RemainChallengeCount);
                 Assert.Equal(expectedTotalChallenge, raiderState.TotalChallengeCount);
+                Assert.Equal(1, raiderState.Level);
+                Assert.Equal(GameConfig.DefaultAvatarArmorId, raiderState.IconId);
+                Assert.True(raiderState.Cp > 0);
 
                 Assert.True(nextState.TryGetState(bossAddress, out List rawBoss));
                 var bossState = new WorldBossState(rawBoss);

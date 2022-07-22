@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
@@ -50,6 +51,8 @@ namespace Nekoyume.Action
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new [] {
                 typeof(WorldBossListSheet),
                 typeof(WorldBossGlobalHpSheet),
+                typeof(CharacterSheet),
+                typeof(CostumeStatSheet),
             });
             var worldBossListSheet = sheets.GetSheet<WorldBossListSheet>();
             var row = worldBossListSheet.FindRowByBlockIndex(context.BlockIndex);
@@ -111,17 +114,9 @@ namespace Nekoyume.Action
             avatarState.ValidateCostume(CostumeIds);
             // Simulate.
             int score = 10_000;
-            if (raiderState.HighScore < score)
-            {
-                raiderState.HighScore = score;
-            }
-
-            raiderState.TotalScore += score;
-            if (!PayNcg)
-            {
-                raiderState.RemainChallengeCount--;
-            }
-            raiderState.TotalChallengeCount++;
+            int cp = CPHelper.GetCPV2(avatarState, sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CostumeStatSheet>());
+            raiderState.Update(avatarState, cp, score, PayNcg);
             // Reward.
             WorldBossState bossState;
             WorldBossGlobalHpSheet hpSheet = sheets.GetSheet<WorldBossGlobalHpSheet>();
