@@ -3755,6 +3755,7 @@ MonoBehaviour:
   questExclamationMark: {fileID: 6874452977321091153}
   mimisbrunnrExclamationMark: {fileID: 2756443376085606677}
   eventDungeonExclamationMark: {fileID: 1854817884059021972}
+  eventDungeonTicketsText: {fileID: 7403208001957554874}
   stakingLevelIcon: {fileID: 4456344417387748107}
   guidedQuest: {fileID: 8354548078518022176}
   playerButton: {fileID: 1107625710520463300}
@@ -6739,6 +6740,12 @@ GameObject:
 --- !u!1 &6874452977321091153 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9066124932357498062, guid: e6d7b535158669e49bc77f0431126854,
+    type: 3}
+  m_PrefabInstance: {fileID: 2501659536266527903}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7403208001957554874 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4902964705659776549, guid: e6d7b535158669e49bc77f0431126854,
     type: 3}
   m_PrefabInstance: {fileID: 2501659536266527903}
   m_PrefabAsset: {fileID: 0}
