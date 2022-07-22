@@ -756,7 +756,6 @@ namespace Nekoyume.BlockChain
             });
 
             var action = new RapidCombination
-
             {
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex
