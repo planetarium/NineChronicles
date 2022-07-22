@@ -17,6 +17,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Lobby;
+using TMPro;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -72,7 +73,7 @@ namespace Nekoyume.UI
         private GameObject eventDungeonExclamationMark;
 
         [SerializeField]
-        private GameObject eventDungeonTicketsText;
+        private TextMeshProUGUI eventDungeonTicketsText;
 
         [SerializeField]
         private Image stakingLevelIcon;

@@ -3755,7 +3755,7 @@ MonoBehaviour:
   questExclamationMark: {fileID: 6874452977321091153}
   mimisbrunnrExclamationMark: {fileID: 2756443376085606677}
   eventDungeonExclamationMark: {fileID: 1854817884059021972}
-  eventDungeonTicketsText: {fileID: 7403208001957554874}
+  eventDungeonTicketsText: {fileID: 8094522988443337405}
   stakingLevelIcon: {fileID: 4456344417387748107}
   guidedQuest: {fileID: 8354548078518022176}
   playerButton: {fileID: 1107625710520463300}
@@ -6743,12 +6743,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 2501659536266527903}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &7403208001957554874 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4902964705659776549, guid: e6d7b535158669e49bc77f0431126854,
+--- !u!114 &8094522988443337405 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5972384285918004770, guid: e6d7b535158669e49bc77f0431126854,
     type: 3}
   m_PrefabInstance: {fileID: 2501659536266527903}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2658795992606463683
 PrefabInstance:
   m_ObjectHideFlags: 0
