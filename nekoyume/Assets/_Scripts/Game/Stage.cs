@@ -548,17 +548,11 @@ namespace Nekoyume.Game
                             }
                         }
                     }
-                    else if (_battleResultModel.WorldID <= 10000)
-                    {
-                        _battleResultModel.NextState = IsRepeatStage
-                            ? BattleResultPopup.NextState.RepeatStage
-                            : BattleResultPopup.NextState.None;
-                    }
                     else
                     {
                         _battleResultModel.NextState = IsRepeatStage
                             ? BattleResultPopup.NextState.RepeatStage
-                            : BattleResultPopup.NextState.GoToMain;
+                            : BattleResultPopup.NextState.None;
                     }
                 }
             }

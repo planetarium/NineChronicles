@@ -428,7 +428,7 @@ namespace Nekoyume.UI
             string fullFormat = string.Empty;
             closeButton.interactable = true;
 
-            if (!SharedModel.IsClear && SharedModel.WorldID <= 10000)
+            if (!SharedModel.IsClear)
             {
                 stagePreparationButton.gameObject.SetActive(true);
                 stagePreparationButton.interactable = true;
@@ -706,8 +706,6 @@ namespace Nekoyume.UI
 
         private void GoToPreparation()
         {
-            if (SharedModel.WorldID > 10000) return;
-
             Find<Battle>().Close(true);
             Game.Game.instance.Stage.DestroyBackground();
             Game.Event.OnRoomEnter.Invoke(true);
@@ -719,13 +717,38 @@ namespace Nekoyume.UI
             {
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-                Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
-                Find<BattlePreparation>().Show(
-                    StageType.HackAndSlash,
-                    SharedModel.WorldID,
-                    SharedModel.StageID,
-                    $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID}",
-                    true);
+
+                if (SharedModel.WorldID > 10000)
+                {
+                    var viewModel = new WorldMap.ViewModel
+                    {
+                        WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
+                    };
+                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.WorldID);
+                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.StageID);
+                    Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SharedModel.WorldID,
+                        out var worldRow);
+
+                    Find<StageInformation>().Show(viewModel, worldRow, StageType.Mimisbrunnr);
+
+                    Find<BattlePreparation>().Show(
+                        StageType.Mimisbrunnr,
+                        GameConfig.MimisbrunnrWorldId,
+                        SharedModel.StageID,
+                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID % 10000000}",
+                        true);
+                }
+                else
+                {
+                    Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
+
+                    Find<BattlePreparation>().Show(
+                        StageType.HackAndSlash,
+                        SharedModel.WorldID,
+                        SharedModel.StageID,
+                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID}",
+                        true);
+                }
 
                 worldMapLoading.Close(true);
             });
