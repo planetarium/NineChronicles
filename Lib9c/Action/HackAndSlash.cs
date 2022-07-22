@@ -17,9 +17,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/967
-    /// Updated at https://github.com/planetarium/lib9c/pull/1167
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1222
+    /// Updated at https://github.com/planetarium/lib9c/pull/1167
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash15")]
@@ -72,17 +71,22 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            IActionContext ctx = context;
-            var states = ctx.PreviousStates;
+            return Execute(context.PreviousStates,
+                context.Signer,
+                context.BlockIndex,
+                context.Random);
+        }
+
+        public IAccountStateDelta Execute(IAccountStateDelta states,
+            Address signer,
+            long blockIndex,
+            IRandom random)
+        {
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            if (ctx.Rehearsal)
-            {
-                return states;
-            }
 
-            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            var addressesHex = $"[{signer.ToHex()}, {avatarAddress.ToHex()}]";
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
 
@@ -90,7 +94,7 @@ namespace Nekoyume.Action
 
             var sw = new Stopwatch();
             sw.Start();
-            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out AvatarState avatarState, out _))
+            if (!states.TryGetAvatarStateV2(signer, avatarAddress, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
@@ -152,7 +156,7 @@ namespace Nekoyume.Action
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
                 // NOTE: Add new World from WorldSheet
-                worldInformation.AddAndUnlockNewWorld(worldRow, ctx.BlockIndex, worldSheet);
+                worldInformation.AddAndUnlockNewWorld(worldRow, blockIndex, worldSheet);
             }
 
             if (!world.IsUnlocked)
@@ -179,8 +183,8 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Validate World: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
+            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, blockIndex);
+            var foodIds = avatarState.ValidateConsumable(foods, blockIndex);
             var costumeIds = avatarState.ValidateCostume(costumes);
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Validate Items: {Elapsed}", addressesHex, sw.Elapsed);
@@ -271,7 +275,7 @@ namespace Nekoyume.Action
 
             sw.Restart();
             var simulator = new StageSimulator(
-                ctx.Random,
+                random,
                 avatarState,
                 foods,
                 skillsOnWaveStart,
@@ -307,7 +311,7 @@ namespace Nekoyume.Action
                 simulator.Player.worldInformation.ClearStage(
                     worldId,
                     stageId,
-                    ctx.BlockIndex,
+                    blockIndex,
                     worldSheet,
                     sheets.GetSheet<WorldUnlockSheet>()
                 );
@@ -337,7 +341,7 @@ namespace Nekoyume.Action
             sw.Restart();
             avatarState.Update(simulator);
             avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
-            avatarState.updatedAt = ctx.BlockIndex;
+            avatarState.updatedAt = blockIndex;
             avatarState.mailBox.CleanUp();
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
