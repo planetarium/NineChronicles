@@ -249,7 +249,7 @@ namespace Nekoyume.UI
             _worldId = worldId;
             _stageId = stageId;
 
-            UpdateInventory();
+            UpdateInventory(stageType is StageType.HackAndSlash or StageType.Mimisbrunnr);
             UpdateBackground();
             UpdateTitle();
             UpdateStat(currentAvatarState);
@@ -314,7 +314,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private void UpdateInventory()
+        private void UpdateInventory(bool useConsumable)
         {
             inventory.SetAvatarInfo(
                 clickItem: ShowItemTooltip,
@@ -329,7 +329,8 @@ namespace Nekoyume.UI
                     costumeSlots.gameObject.SetActive(true);
                     equipmentSlots.gameObject.SetActive(false);
                 },
-                GetElementalTypes());
+                GetElementalTypes(),
+                useConsumable: useConsumable);
         }
 
         private void UpdateBackground()
