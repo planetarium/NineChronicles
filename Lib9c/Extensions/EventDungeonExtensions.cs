@@ -90,6 +90,12 @@ namespace Nekoyume.Extensions
             int eventDungeonStageId,
             out EventDungeonSheet.Row row)
         {
+            if (sheet is null)
+            {
+                row = null;
+                return false;
+            }
+
             foreach (var dungeonRow in sheet.OrderedList)
             {
                 if (eventDungeonStageId < dungeonRow.StageBegin || eventDungeonStageId > dungeonRow.StageEnd)
@@ -119,6 +125,7 @@ namespace Nekoyume.Extensions
                 .Where(row =>
                     row.Id >= beginningStageId &&
                     row.Id <= endStageId)
+                .OrderBy(row => row.Id)
                 .ToList();
         }
 
@@ -139,6 +146,7 @@ namespace Nekoyume.Extensions
                 .Where(row =>
                     row.StageId >= beginningStageId &&
                     row.StageId <= endStageId)
+                .OrderBy(row => row.StageId)
                 .ToList();
         }
 
@@ -147,9 +155,19 @@ namespace Nekoyume.Extensions
             EventScheduleSheet.Row eventScheduleRow,
             long currentBlockIndex)
         {
-            if (info is null ||
-                eventScheduleRow is null)
+            if (eventScheduleRow is null)
             {
+                return 0;
+            }
+
+            if (info is null)
+            {
+                if (currentBlockIndex >= eventScheduleRow.StartBlockIndex &&
+                    currentBlockIndex <= eventScheduleRow.DungeonEndBlockIndex)
+                {
+                    return eventScheduleRow.DungeonTicketsMax;
+                }
+
                 return 0;
             }
 
@@ -163,7 +181,7 @@ namespace Nekoyume.Extensions
                 (int)(blockRange / eventScheduleRow.DungeonTicketsResetIntervalBlockRange);
             return interval > info.ResetTicketsInterval
                 ? eventScheduleRow.DungeonTicketsMax
-                : 0;
+                : info.RemainingTickets;
         }
     }
 }
