@@ -21,8 +21,8 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/1167
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash15")]
-    public class HackAndSlash : GameAction
+    [ActionType("hack_and_slash14")]
+    public class HackAndSlash14 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -326,9 +326,8 @@ namespace Nekoyume.Action
                 {
                     if (skillsOnWaveStart.Any())
                     {
-                        // clear current skill id.
-                        skillState = new CrystalRandomSkillState(skillStateAddress, stageId,
-                            skillState.StarCount);
+                        // clear current star count, skill id.
+                        skillState = new CrystalRandomSkillState(skillStateAddress, stageId);
                     }
 
                     // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
