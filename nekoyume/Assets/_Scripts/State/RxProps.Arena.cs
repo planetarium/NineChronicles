@@ -101,20 +101,11 @@ namespace Nekoyume.State
             IReadOnlyAsyncUpdatableRxProp<(ArenaInformation current, ArenaInformation next)>
             ArenaInfoTuple => _arenaInfoTuple;
 
-        private static readonly ReactiveProperty<(
-            int currentTicketCount,
-            int maxTicketCount,
-            int progressedBlockRange,
-            int totalBlockRange,
-            string remainTimespanToReset)> _arenaTicketProgress = new();
+        private static readonly ReactiveProperty<TicketProgress>
+            _arenaTicketProgress = new();
 
-        public static IReadOnlyReactiveProperty<(
-            int currentTicketCount,
-            int maxTicketCount,
-            int progressedBlockRange,
-            int totalBlockRange,
-            string remainTimespanToReset)> ArenaTicketProgress =>
-            _arenaTicketProgress;
+        public static IReadOnlyReactiveProperty<TicketProgress>
+            ArenaTicketProgress => _arenaTicketProgress;
 
         private static readonly ReactiveProperty<PlayerArenaParticipant>
             _playersArenaParticipant = new(null);
@@ -178,12 +169,11 @@ namespace Nekoyume.State
                 : null;
             if (currentArenaInfo is null)
             {
-                _arenaTicketProgress.SetValueAndForceNotify((
+                _arenaTicketProgress.SetValueAndForceNotify(new TicketProgress(
                     maxTicketCount,
                     maxTicketCount,
                     0,
-                    0,
-                    ""));
+                    0));
                 return;
             }
 
@@ -194,12 +184,11 @@ namespace Nekoyume.State
                 ticketResetInterval);
             var progressedBlockRange =
                 (blockIndex - currentRoundData.StartBlockIndex) % ticketResetInterval;
-            _arenaTicketProgress.SetValueAndForceNotify((
+            _arenaTicketProgress.SetValueAndForceNotify(new TicketProgress(
                 currentTicketCount,
                 maxTicketCount,
                 (int)progressedBlockRange,
-                ticketResetInterval,
-                Util.GetBlockToTime(ticketResetInterval - progressedBlockRange)));
+                ticketResetInterval));
         }
 
         private static async Task<(ArenaInformation current, ArenaInformation next)>

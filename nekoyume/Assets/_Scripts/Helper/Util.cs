@@ -25,6 +25,11 @@ namespace Nekoyume.Helper
 
         public static string GetBlockToTime(long block)
         {
+            if (block <= 0)
+            {
+                return string.Empty;
+            }
+
             const int secondsPerBlock = 12;
             var remainSecond = block * secondsPerBlock;
             var timeSpan = TimeSpan.FromSeconds(remainSecond);
