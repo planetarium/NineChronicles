@@ -10,13 +10,14 @@ GameObject:
   m_Component:
   - component: {fileID: 4327618228177602640}
   - component: {fileID: 5395069465491898952}
+  - component: {fileID: 7830239391245559231}
   m_Layer: 5
   m_Name: Tabs_Infomation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4327618228177602640
 RectTransform:
   m_ObjectHideFlags: 0
@@ -24,7 +25,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1286526600792157088}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -45,3 +46,15 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1286526600792157088}
   m_CullTransparentMesh: 0
+--- !u!114 &7830239391245559231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1286526600792157088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9fcb029935b4f0cbf63756e28f41007, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

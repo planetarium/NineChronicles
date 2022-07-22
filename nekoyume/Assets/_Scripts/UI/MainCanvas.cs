@@ -249,11 +249,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<WorldBoss>());
             yield return null;
-            secondWidgets.Add(Widget.Create<WorldBossInformation>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<WorldBossRank>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<WorldBossReward>());
+            secondWidgets.Add(Widget.Create<WorldBossDetail>());
             yield return null;
 
             // loading

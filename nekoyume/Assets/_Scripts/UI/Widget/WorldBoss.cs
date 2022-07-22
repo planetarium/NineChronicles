@@ -108,11 +108,14 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             }).AddTo(gameObject);
 
-            prevRankButton.OnClickAsObservable().Subscribe(_ => ShowPrevRank()).AddTo(gameObject);
-            rankButton.OnClickAsObservable().Subscribe(_ => ShowRank()).AddTo(gameObject);
-            informationButton.OnClickAsObservable().Subscribe(_ => ShowInformation())
-                .AddTo(gameObject);
-            rewardButton.OnClickAsObservable().Subscribe(_ => ShowReward()).AddTo(gameObject);
+            rewardButton.OnClickAsObservable()
+                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Reward)).AddTo(gameObject);
+            rankButton.OnClickAsObservable()
+                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rank)).AddTo(gameObject);
+            informationButton.OnClickAsObservable()
+                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Information)).AddTo(gameObject);
+            prevRankButton.OnClickAsObservable()
+                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.PreviousRank)).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
 
@@ -154,7 +157,6 @@ namespace Nekoyume.UI
         {
             _headerMenu = Find<HeaderMenuStatic>();
             _headerMenu.Show(HeaderMenuStatic.AssetVisibleState.WorldBoss);
-
         }
 
         public async Task UpdateViewAsync(long currentBlockIndex, bool forceUpdate = false)
@@ -280,42 +282,31 @@ namespace Nekoyume.UI
             var refillBlockIndex = _cachedRaiderState?.RefillBlockIndex ?? 0;
             var remainTicket = _cachedRaiderState?.RemainChallengeCount ?? maxTicket;
 
-            if (_cachedRaiderState is { RefillBlockIndex: 0 } && _cachedRaiderState.RemainChallengeCount != 0) // temp
+            if (_cachedRaiderState is { RefillBlockIndex: 0 } &&
+                _cachedRaiderState.RemainChallengeCount != 0) // temp
             {
                 _remainTicket = remainTicket;
             }
             else
             {
-                _remainTicket = currentBlockIndex - refillBlockIndex >= WorldBossHelper.RefillInterval
+                _remainTicket = currentBlockIndex - refillBlockIndex >=
+                                WorldBossHelper.RefillInterval
                     ? maxTicket
                     : remainTicket;
             }
 
             var remainder = (currentBlockIndex - refillBlockIndex) % WorldBossHelper.RefillInterval;
             var remain = WorldBossHelper.RefillInterval - remainder;
-            Debug.Log($"[remain] {remain} / [remainTicket] {remainTicket} / [maxTicket] {maxTicket}");
+            Debug.Log(
+                $"[remain] {remain} / [remainTicket] {remainTicket} / [maxTicket] {maxTicket}");
 
-            _headerMenu.WorldBossTickets.Set(remain,_remainTicket, maxTicket);
+            _headerMenu.WorldBossTickets.Set(remain, _remainTicket, maxTicket);
         }
 
-        private void ShowPrevRank()
+        private void ShowDetail(WorldBossDetail.ToggleType toggleType)
         {
-            // Find<WorldBossRank>().Show();
-        }
-
-        private void ShowRank()
-        {
-            Find<WorldBossRank>().Show();
-        }
-
-        private void ShowInformation()
-        {
-            Find<WorldBossInformation>().Show();
-        }
-
-        private void ShowReward()
-        {
-            Find<WorldBossReward>().Show();
+            _headerMenu.Close(true);
+            Find<WorldBossDetail>().Show(toggleType);
         }
 
         private void OnClickEnter()
@@ -333,6 +324,7 @@ namespace Nekoyume.UI
                     {
                         ShowTicketPurchasePopup();
                     }
+
                     break;
                 case Status.None:
                 default:
@@ -387,7 +379,8 @@ namespace Nekoyume.UI
             ActionManager.Instance.ClaimRaidReward();
         }
 
-        private async Task<(WorldBossState worldBoss, RaiderState raider, int userCount)> GetStatesAsync(WorldBossListSheet.Row row)
+        private async Task<(WorldBossState worldBoss, RaiderState raider, int userCount)>
+            GetStatesAsync(WorldBossListSheet.Row row)
         {
             var task = Task.Run(async () =>
             {
@@ -432,7 +425,8 @@ namespace Nekoyume.UI
             var maxHp = hpSheet.Values.FirstOrDefault(x => x.Level == level)!.Hp;
             var bossId = state?.Id ?? bossSheet.Values.First().BossId;
             var bossName = WorldBossFrontHelper.TryGetBossName(bossId, out var n)
-                ? n : string.Empty;
+                ? n
+                : string.Empty;
 
             season.UpdateBossInformation(bossName, level, curHp, maxHp);
         }
