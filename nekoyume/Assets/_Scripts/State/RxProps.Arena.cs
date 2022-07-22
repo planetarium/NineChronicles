@@ -102,7 +102,7 @@ namespace Nekoyume.State
             ArenaInfoTuple => _arenaInfoTuple;
 
         private static readonly ReactiveProperty<TicketProgress>
-            _arenaTicketProgress = new();
+            _arenaTicketProgress = new(new TicketProgress());
 
         public static IReadOnlyReactiveProperty<TicketProgress>
             ArenaTicketProgress => _arenaTicketProgress;
@@ -169,11 +169,13 @@ namespace Nekoyume.State
                 : null;
             if (currentArenaInfo is null)
             {
-                _arenaTicketProgress.SetValueAndForceNotify(new TicketProgress(
+                _arenaTicketProgress.Value.Reset(
                     maxTicketCount,
                     maxTicketCount,
                     0,
-                    0));
+                    0);
+                _arenaTicketProgress.SetValueAndForceNotify(
+                    _arenaTicketProgress.Value);
                 return;
             }
 
@@ -184,11 +186,13 @@ namespace Nekoyume.State
                 ticketResetInterval);
             var progressedBlockRange =
                 (blockIndex - currentRoundData.StartBlockIndex) % ticketResetInterval;
-            _arenaTicketProgress.SetValueAndForceNotify(new TicketProgress(
+            _arenaTicketProgress.Value.Reset(
                 currentTicketCount,
                 maxTicketCount,
                 (int)progressedBlockRange,
-                ticketResetInterval));
+                ticketResetInterval);
+            _arenaTicketProgress.SetValueAndForceNotify(
+                _arenaTicketProgress.Value);
         }
 
         private static async Task<(ArenaInformation current, ArenaInformation next)>

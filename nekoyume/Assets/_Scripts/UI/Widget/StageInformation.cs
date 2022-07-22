@@ -104,6 +104,7 @@ namespace Nekoyume.UI
                 Game.Event.OnRoomEnter.Invoke(true);
             }
 
+            Find<HeaderMenuStatic>().Close(true);
             Close(true);
         }
 
@@ -315,7 +316,9 @@ namespace Nekoyume.UI
 
             var stageRow = RxProps.EventDungeonStageRows.FirstOrDefault(e =>
                 e.Id == eventDungeonStageId);
-            if (stageRow is null)
+            if (stageRow is null ||
+                !TableSheets.Instance.EventDungeonStageWaveSheet
+                    .TryGetValue(stageRow.Id, out var stageWaveRow))
             {
                 titleText.text = string.Empty;
                 UpdateStageInfoMonsters(new List<int>());
@@ -324,8 +327,6 @@ namespace Nekoyume.UI
             }
 
             titleText.text = $"Stage {stageRow.GetStageNumber()}";
-            TableSheets.Instance.EventDungeonStageWaveSheet
-                .TryGetValue(stageRow.Id, out var stageWaveRow, true);
             UpdateStageInfoMonsters(stageWaveRow.TotalMonsterIds);
             UpdateStageInfoRewards(stageRow.GetRewardItemRows());
 
@@ -349,6 +350,8 @@ namespace Nekoyume.UI
                         _sharedViewModel.SelectedStageId.Value,
                         $"{closeButtonText.text} {stageNumber}",
                         true);
+                    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+                    Find<HeaderMenuStatic>().Show(true);
                     break;
                 }
                 case StageType.Mimisbrunnr:
@@ -360,6 +363,8 @@ namespace Nekoyume.UI
                         _sharedViewModel.SelectedStageId.Value,
                         $"{closeButtonText.text} {stageNumber}",
                         true);
+                    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+                    Find<HeaderMenuStatic>().Show(true);
                     break;
                 }
                 case StageType.EventDungeon:
@@ -372,6 +377,8 @@ namespace Nekoyume.UI
                         _sharedViewModel.SelectedStageId.Value,
                         $"{closeButtonText.text} {stageNumber}",
                         true);
+                    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
+                    Find<HeaderMenuStatic>().Show(true);
                     break;
                 }
             }

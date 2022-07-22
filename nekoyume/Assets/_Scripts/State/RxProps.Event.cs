@@ -26,22 +26,54 @@ namespace Nekoyume.State
         public static IReadOnlyAsyncUpdatableRxProp<EventDungeonInfo>
             EventDungeonInfo => _eventDungeonInfo;
 
-        private static readonly ReactiveProperty<int>
-            _remainingEventTicketsConsiderReset = new(0);
+        // private static readonly ReactiveProperty<int>
+        //     _remainingEventTicketsConsiderReset = new(0);
+        //
+        // public static IReadOnlyReactiveProperty<int>
+        //     RemainingEventTicketsConsiderReset => _remainingEventTicketsConsiderReset;
+        
+        private static readonly ReactiveProperty<TicketProgress>
+            _eventDungeonTicketProgress = new(new TicketProgress());
 
-        public static IReadOnlyReactiveProperty<int>
-            RemainingEventTicketsConsiderReset => _remainingEventTicketsConsiderReset;
+        public static IReadOnlyReactiveProperty<TicketProgress>
+            EventDungeonTicketProgress => _eventDungeonTicketProgress;
 
         private static void StartEvent()
         {
-            EventScheduleRowForDungeon = null;
-            EventDungeonRow = null;
-            EventDungeonStageRows = new List<EventDungeonStageSheet.Row>();
-            EventDungeonStageWaveRows = new List<EventDungeonStageWaveSheet.Row>();
-            var blockIndex = _agent.BlockIndex;
+            OnBlockIndexEvent(_agent.BlockIndex);
+            OnAvatarChangedEvent();
+
+            EventDungeonInfo
+                .Subscribe(_ => UpdateEventDungeonTicketProgress(_agent.BlockIndex))
+                .AddTo(_disposables);
+        }
+
+        private static void OnBlockIndexEvent(long blockIndex)
+        {
+            UpdateEventDungeonSheetData(blockIndex);
+            UpdateEventDungeonTicketProgress(blockIndex);
+        }
+
+        private static void OnAvatarChangedEvent()
+        {
+            _eventDungeonInfo.UpdateAsync().Forget();
+        }
+
+        private static void UpdateEventDungeonSheetData(long blockIndex)
+        {
             if (!_tableSheets.EventScheduleSheet.TryGetRowForDungeon(
                     blockIndex,
                     out var scheduleRow))
+            {
+                EventScheduleRowForDungeon = null;
+                EventDungeonRow = null;
+                EventDungeonStageRows = new List<EventDungeonStageSheet.Row>();
+                EventDungeonStageWaveRows = new List<EventDungeonStageWaveSheet.Row>();
+                return;
+            }
+
+            if (EventScheduleRowForDungeon is not null &&
+                EventScheduleRowForDungeon.Id == scheduleRow.Id)
             {
                 return;
             }
@@ -50,6 +82,15 @@ namespace Nekoyume.State
             if (!_tableSheets.EventDungeonSheet.TryGetRowByEventScheduleId(
                     EventScheduleRowForDungeon.Id,
                     out var dungeonRow))
+            {
+                EventDungeonRow = null;
+                EventDungeonStageRows = new List<EventDungeonStageSheet.Row>();
+                EventDungeonStageWaveRows = new List<EventDungeonStageWaveSheet.Row>();
+                return;
+            }
+
+            if (EventDungeonRow is not null &&
+                EventDungeonRow.Id == dungeonRow.Id)
             {
                 return;
             }
@@ -61,31 +102,43 @@ namespace Nekoyume.State
             EventDungeonStageWaveRows = _tableSheets.EventDungeonStageWaveSheet.GetStageWaveRows(
                 EventDungeonRow.StageBegin,
                 EventDungeonRow.StageEnd);
-
-            OnBlockIndexEvent(_agent.BlockIndex);
-            OnAvatarChangedEvent();
-
-            EventDungeonInfo
-                .Subscribe(_ => UpdateRemainingEventTicketsConsiderReset(_agent.BlockIndex))
-                .AddTo(_disposables);
         }
 
-        private static void OnBlockIndexEvent(long blockIndex)
+        // private static void UpdateRemainingEventTicketsConsiderReset(long blockIndex)
+        // {
+        //     _remainingEventTicketsConsiderReset.Value =
+        //         EventDungeonInfo.Value.GetRemainingTicketsConsiderReset(
+        //             EventScheduleRowForDungeon,
+        //             blockIndex);
+        // }
+        
+        private static void UpdateEventDungeonTicketProgress(long blockIndex)
         {
-            UpdateRemainingEventTicketsConsiderReset(blockIndex);
-        }
+            if (EventScheduleRowForDungeon is null)
+            {
+                _eventDungeonTicketProgress.Value.Reset();
+                _eventDungeonTicketProgress.SetValueAndForceNotify(
+                    _eventDungeonTicketProgress.Value);
+                return;
+            }
 
-        private static void OnAvatarChangedEvent()
-        {
-            _eventDungeonInfo.UpdateAsync().Forget();
-        }
-
-        private static void UpdateRemainingEventTicketsConsiderReset(long blockIndex)
-        {
-            _remainingEventTicketsConsiderReset.Value =
-                EventDungeonInfo.Value.GetRemainingTicketsConsiderReset(
+            var current = EventDungeonInfo.Value
+                .GetRemainingTicketsConsiderReset(
                     EventScheduleRowForDungeon,
                     blockIndex);
+            var resetIntervalBlockRange =
+                EventScheduleRowForDungeon.DungeonTicketsResetIntervalBlockRange;
+            var progressedBlockRange =
+                (blockIndex - EventScheduleRowForDungeon.StartBlockIndex)
+                % resetIntervalBlockRange;
+
+            _eventDungeonTicketProgress.Value.Reset(
+                current,
+                EventScheduleRowForDungeon.DungeonTicketsMax,
+                (int)progressedBlockRange,
+                resetIntervalBlockRange);
+            _eventDungeonTicketProgress.SetValueAndForceNotify(
+                _eventDungeonTicketProgress.Value);
         }
 
         private static async Task<EventDungeonInfo>

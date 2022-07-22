@@ -585,6 +585,12 @@ namespace Nekoyume.UI.Module
 
         private static WorldQuest GetTargetEventDungeonQuest()
         {
+            if (RxProps.EventScheduleRowForDungeon is null ||
+                RxProps.EventDungeonRow is null)
+            {
+                return null;
+            }
+
             string goal;
             var info = RxProps.EventDungeonInfo.Value;
             if (info is null)
@@ -600,7 +606,7 @@ namespace Nekoyume.UI.Module
                 goal = (info.ClearedStageId + 1).ToString(CultureInfo.InvariantCulture);
             }
 
-            // goal = 10010001.ToString(CultureInfo.InvariantCulture);
+            // NOTE: Make fake world quest.
             var row = new WorldQuestSheet.Row();
             row.Set(new[]
             {

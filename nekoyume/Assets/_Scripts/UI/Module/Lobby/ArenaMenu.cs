@@ -53,8 +53,8 @@ namespace Nekoyume.UI.Module.Lobby
 
         private void UpdateTicket(RxProps.TicketProgress ticketProgress)
         {
-            _ticketCountGO.SetActive(ticketProgress.currentTicketCount > 0);
-            _ticketCount.text = ticketProgress.currentTicketCount
+            _ticketCountGO.SetActive(ticketProgress.currentTickets > 0);
+            _ticketCount.text = ticketProgress.currentTickets
                 .ToString(CultureInfo.InvariantCulture);
             _ticketResetTime.text = ticketProgress.remainTimespanToReset;
         }

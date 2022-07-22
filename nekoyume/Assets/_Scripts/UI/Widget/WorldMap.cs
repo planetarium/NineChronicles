@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Libplanet.Assets;
 using Nekoyume.Model;
@@ -8,12 +9,14 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData.Event;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine.UI;
 
@@ -45,6 +48,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private WorldButton _eventDungeonButton;
+        
+        [SerializeField]
+        private TextMeshProUGUI _eventDungeonTicketsText;
 
         public ViewModel SharedViewModel { get; private set; }
 
@@ -138,7 +144,8 @@ namespace Nekoyume.UI
 
             var status = Find<Status>();
             status.Close(true);
-            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+            // Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+            Find<HeaderMenuStatic>().Close();
             Show(true);
             HelpTooltip.HelpMe(100002, true);
             ShowManyWorldUnlockPopup(worldInformation);
@@ -207,6 +214,10 @@ namespace Nekoyume.UI
                 return;
             }
 
+            _eventDungeonTicketsText.text =
+                RxProps.EventDungeonTicketProgress.Value
+                    .currentTickets.ToString(CultureInfo.InvariantCulture);
+            _eventDungeonButton.HasNotification.Value = true;
             _eventDungeonButton.Unlock();
             _eventDungeonButton.Show();
         }
@@ -249,6 +260,8 @@ namespace Nekoyume.UI
             SharedViewModel.SelectedStageId.Value = stageId;
             var stageInfo = Find<StageInformation>();
             stageInfo.Show(SharedViewModel, worldRow, StageType.HackAndSlash);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+            Find<HeaderMenuStatic>().Show();
         }
 
         private void ShowEventDungeonStage(
@@ -282,6 +295,8 @@ namespace Nekoyume.UI
                 eventDungeonRow,
                 openedStageId,
                 nextStageId);
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
+            Find<HeaderMenuStatic>().Show();
         }
 
         public void UpdateNotificationInfo()

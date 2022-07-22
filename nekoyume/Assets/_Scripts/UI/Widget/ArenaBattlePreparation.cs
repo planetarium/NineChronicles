@@ -541,7 +541,7 @@ namespace Nekoyume.UI
             var arenaTicketCost = startButton.ArenaTicketCost;
             var hasEnoughTickets =
                 RxProps.ArenaTicketProgress.HasValue &&
-                RxProps.ArenaTicketProgress.Value.currentTicketCount >= arenaTicketCost;
+                RxProps.ArenaTicketProgress.Value.currentTickets >= arenaTicketCost;
             if (hasEnoughTickets)
             {
                 StartCoroutine(CoBattleStart(CostType.ArenaTicket));

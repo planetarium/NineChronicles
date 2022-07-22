@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
@@ -132,7 +133,7 @@ namespace Nekoyume.UI
         private bool EnoughToPlay => _stageType switch
         {
             StageType.EventDungeon =>
-                RxProps.RemainingEventTicketsConsiderReset.Value >= _requiredCost,
+                RxProps.EventDungeonTicketProgress.Value.currentTickets >= _requiredCost,
             _ =>
                 States.Instance.CurrentAvatarState.actionPoint >= _requiredCost,
         };
@@ -263,18 +264,31 @@ namespace Nekoyume.UI
             coverToBlockClick.SetActive(false);
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
-            ShowHelpTooltip(stageType);
-            ReactiveAvatarState.ActionPoint
-                .Subscribe(OnRenderActionPointOrEventDungeonTickets)
-                .AddTo(_disposables);
+            ShowHelpTooltip(_stageType);
+
+            switch (_stageType)
+            {
+                case StageType.HackAndSlash:
+                case StageType.Mimisbrunnr:
+                    ReactiveAvatarState.ActionPoint
+                        .Subscribe(_ => UpdateStartButton())
+                        .AddTo(_disposables);
+                    break;
+                case StageType.EventDungeon:
+                    RxProps.EventDungeonTicketProgress
+                        .Subscribe(_ => UpdateStartButton())
+                        .AddTo(_disposables);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
             ReactiveAvatarState.Inventory.Subscribe(_ =>
             {
                 UpdateSlot(States.Instance.CurrentAvatarState);
                 UpdateStartButton(States.Instance.CurrentAvatarState);
             }).AddTo(_disposables);
-            RxProps.RemainingEventTicketsConsiderReset
-                .Subscribe(OnRenderActionPointOrEventDungeonTickets)
-                .AddTo(_disposables);
+
             base.Show(ignoreShowAnimation);
         }
 
@@ -632,7 +646,7 @@ namespace Nekoyume.UI
                    States.Instance.GameConfigState.ActionPointMax;
         }
 
-        private void OnRenderActionPointOrEventDungeonTickets(int value)
+        private void UpdateStartButton()
         {
             startButton.UpdateObjects();
             foreach (var particle in particles)

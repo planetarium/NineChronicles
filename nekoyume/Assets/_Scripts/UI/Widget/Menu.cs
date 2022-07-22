@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -18,6 +20,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Lobby;
+using TMPro;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -73,7 +76,7 @@ namespace Nekoyume.UI
         private GameObject eventDungeonExclamationMark;
 
         [SerializeField]
-        private GameObject eventDungeonTicketsText;
+        private TextMeshProUGUI eventDungeonTicketsText;
 
         [SerializeField]
         private Image stakingLevelIcon;
@@ -150,6 +153,7 @@ namespace Nekoyume.UI
             var worldId = worldRow.Id;
 
             Find<LoadingScreen>().Show();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
@@ -182,6 +186,7 @@ namespace Nekoyume.UI
             }
 
             Find<LoadingScreen>().Show();
+            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
 
             var stage = Game.Game.instance.Stage;
             stage.IsExitReserved = false;
@@ -256,7 +261,11 @@ namespace Nekoyume.UI
             mimisbrunnrExclamationMark.gameObject.SetActive(
                 btnMimisbrunnr.IsUnlocked
                 && PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0);
-            eventDungeonExclamationMark.gameObject.SetActive(false);
+            eventDungeonExclamationMark.gameObject.SetActive(
+                RxProps.EventScheduleRowForDungeon is not null);
+            eventDungeonTicketsText.text =
+                RxProps.EventDungeonTicketProgress.Value
+                    .currentTickets.ToString(CultureInfo.InvariantCulture);
         }
 
         private void HideButtons()

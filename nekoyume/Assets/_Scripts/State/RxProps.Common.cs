@@ -6,42 +6,60 @@ namespace Nekoyume.State
     {
         public class TicketProgress
         {
-            public int currentTicketCount;
-            public int maxTicketCount;
+            public int currentTickets;
+            public int maxTickets;
             public int progressedBlockRange;
             public int totalBlockRange;
             public string remainTimespanToReset;
-            
-            public float NormalizedTicketCount => (float)currentTicketCount / maxTicketCount;
-            
-            public string CurrentAndMaxTicketCountText => $"{currentTicketCount}/{maxTicketCount}";
+
+            public float NormalizedTicketCount => (float)currentTickets / maxTickets;
+
+            public string CurrentAndMaxTicketCountText => $"{currentTickets}/{maxTickets}";
 
             public TicketProgress(
-                int currentTicketCount,
-                int maxTicketCount,
+                int currentTickets,
+                int maxTickets,
                 int progressedBlockRange,
                 int totalBlockRange,
                 string remainTimespanToReset)
             {
-                this.currentTicketCount = currentTicketCount;
-                this.maxTicketCount = maxTicketCount;
+                this.currentTickets = currentTickets;
+                this.maxTickets = maxTickets;
                 this.progressedBlockRange = progressedBlockRange;
                 this.totalBlockRange = totalBlockRange;
                 this.remainTimespanToReset = remainTimespanToReset;
             }
 
             public TicketProgress(
-                int currentTicketCount,
-                int maxTicketCount,
+                int currentTickets,
+                int maxTickets,
                 int progressedBlockRange,
                 int totalBlockRange)
                 : this(
-                    currentTicketCount,
-                    maxTicketCount,
+                    currentTickets,
+                    maxTickets,
                     progressedBlockRange,
                     totalBlockRange,
                     Util.GetBlockToTime(totalBlockRange - progressedBlockRange))
             {
+            }
+
+            public TicketProgress()
+                : this(0, 0, 0, 0)
+            {
+            }
+
+            public void Reset(
+                int currentTicketCount = 0,
+                int maxTicketCount = 0,
+                int progressedBlockRange = 0,
+                int totalBlockRange = 0)
+            {
+                this.currentTickets = currentTicketCount;
+                this.maxTickets = maxTicketCount;
+                this.progressedBlockRange = progressedBlockRange;
+                this.totalBlockRange = totalBlockRange;
+                remainTimespanToReset = Util.GetBlockToTime(totalBlockRange - progressedBlockRange);
             }
         }
     }

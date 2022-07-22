@@ -390,7 +390,8 @@ namespace Nekoyume.Game
                 }
                 case StageType.EventDungeon:
                 {
-                    if (!TableSheets.Instance.EventDungeonStageSheet
+                    if (TableSheets.Instance.EventDungeonStageSheet is null ||
+                        !TableSheets.Instance.EventDungeonStageSheet
                             .TryGetValue(stageId, out var eventDungeonStageRow))
                     {
                         yield break;
@@ -534,8 +535,9 @@ namespace Nekoyume.Game
                 }
                 case StageType.EventDungeon:
                 {
-                    if (TableSheets.Instance.EventDungeonSheet
-                        .TryGetValue(log.worldId, out var eventDungeonRow))
+                    if (TableSheets.Instance.EventDungeonSheet is not null &&
+                        TableSheets.Instance.EventDungeonSheet
+                            .TryGetValue(log.worldId, out var eventDungeonRow))
                     {
                         _battleResultModel.WorldName = eventDungeonRow.GetLocalizedName();
                         _battleResultModel.IsEndStage = stageId == eventDungeonRow.StageEnd;
@@ -554,14 +556,14 @@ namespace Nekoyume.Game
                     //         avatarState.actionPoint < eventDungeonStageRow.CostAP;
                     // }
                     _battleResultModel.ActionPointNotEnough =
-                        RxProps.RemainingEventTicketsConsiderReset.Value >= PlayCount;
+                        RxProps.EventDungeonTicketProgress.Value.currentTickets < PlayCount;
 
                     break;
                 }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
             _battleResultModel.WorldID = log.worldId;
             _battleResultModel.StageID = log.stageId;
             avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
@@ -688,6 +690,14 @@ namespace Nekoyume.Game
                 case StageType.EventDungeon:
                 {
                     var sheet = TableSheets.Instance.EventDungeonStageSheet;
+                    if (sheet is null)
+                    {
+                        apCost = 0;
+                        turnLimit = 0;
+
+                        break;
+                    }
+
                     apCost = sheet.OrderedList
                         .FirstOrDefault(row => row.Id == stageId)?
                         .CostAP ?? 0;
