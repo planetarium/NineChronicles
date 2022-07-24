@@ -158,7 +158,7 @@ namespace Nekoyume.Action
             // Validate fields.
             sw.Restart();
             var scheduleSheet = sheets.GetSheet<EventScheduleSheet>();
-            var scheduleRow = scheduleSheet.ValidateFromAction(
+            var scheduleRow = scheduleSheet.ValidateFromActionForDungeon(
                 context.BlockIndex,
                 EventScheduleId,
                 EventDungeonId,

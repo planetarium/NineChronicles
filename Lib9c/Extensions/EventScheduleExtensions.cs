@@ -22,34 +22,25 @@ namespace Nekoyume.Extensions
             return eventDungeonOrRecipeId / 10_000;
         }
 
-
-
         public static int GetStageExp(
             this EventScheduleSheet.Row row,
             int stageNumber,
             int multiplier) =>
             stageNumber / 5 * row.DungeonExpSeedValue * multiplier;
 
-        public static EventScheduleSheet.Row ValidateFromAction(
+        public static EventScheduleSheet.Row ValidateFromActionForDungeon(
             this EventScheduleSheet scheduleSheet,
             long blockIndex,
             int eventScheduleId,
-            int eventDungeonOrRecipeId,
+            int eventDungeonId,
             string actionTypeText,
             string addressesHex)
         {
-            if (!scheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow))
-            {
-                throw new InvalidActionFieldException(
-                    actionTypeText,
-                    addressesHex,
-                    nameof(eventScheduleId),
-                    eventScheduleId.ToString(CultureInfo.InvariantCulture),
-                    new SheetRowNotFoundException(
-                        addressesHex,
-                        scheduleSheet.Name,
-                        eventScheduleId));
-            }
+            var scheduleRow = ValidateFromAction(
+                scheduleSheet,
+                eventScheduleId,
+                actionTypeText,
+                addressesHex);
 
             if (blockIndex < scheduleRow.StartBlockIndex ||
                 blockIndex > scheduleRow.DungeonEndBlockIndex)
@@ -66,16 +57,16 @@ namespace Nekoyume.Extensions
             try
             {
                 var derivedEventScheduleId =
-                    eventDungeonOrRecipeId.ToEventScheduleId();
+                    eventDungeonId.ToEventScheduleId();
                 if (derivedEventScheduleId != eventScheduleId)
                 {
                     throw new InvalidActionFieldException(
                         actionTypeText,
                         addressesHex,
-                        nameof(eventDungeonOrRecipeId),
+                        nameof(eventDungeonId),
                         "Aborted as the derived" +
                         $" event schedule id({derivedEventScheduleId})" +
-                        $" from event dungeon or recipe id({eventDungeonOrRecipeId})" +
+                        $" from event dungeon id({eventDungeonId})" +
                         $" is not matched with the event schedule id({eventScheduleId}).");
                 }
             }
@@ -84,8 +75,63 @@ namespace Nekoyume.Extensions
                 throw new InvalidActionFieldException(
                     actionTypeText,
                     addressesHex,
-                    nameof(eventDungeonOrRecipeId),
-                    eventDungeonOrRecipeId.ToString(CultureInfo.InvariantCulture),
+                    nameof(eventDungeonId),
+                    eventDungeonId.ToString(CultureInfo.InvariantCulture),
+                    e);
+            }
+
+            return scheduleRow;
+        }
+
+        public static EventScheduleSheet.Row ValidateFromActionForRecipe(
+            this EventScheduleSheet scheduleSheet,
+            long blockIndex,
+            int eventScheduleId,
+            int eventRecipeId,
+            string actionTypeText,
+            string addressesHex)
+        {
+            var scheduleRow = ValidateFromAction(
+                scheduleSheet,
+                eventScheduleId,
+                actionTypeText,
+                addressesHex);
+
+            if (blockIndex < scheduleRow.StartBlockIndex ||
+                blockIndex > scheduleRow.RecipeEndBlockIndex)
+            {
+                throw new InvalidActionFieldException(
+                    actionTypeText,
+                    addressesHex,
+                    nameof(eventScheduleId),
+                    $"Aborted as the block index({blockIndex}) is" +
+                    " out of the range of the event schedule" +
+                    $"({scheduleRow.StartBlockIndex} ~ {scheduleRow.RecipeEndBlockIndex}).");
+            }
+
+            try
+            {
+                var derivedEventScheduleId =
+                    eventRecipeId.ToEventScheduleId();
+                if (derivedEventScheduleId != eventScheduleId)
+                {
+                    throw new InvalidActionFieldException(
+                        actionTypeText,
+                        addressesHex,
+                        nameof(eventRecipeId),
+                        "Aborted as the derived" +
+                        $" event schedule id({derivedEventScheduleId})" +
+                        $" from event recipe id({eventRecipeId})" +
+                        $" is not matched with the event schedule id({eventScheduleId}).");
+                }
+            }
+            catch (ArgumentException e)
+            {
+                throw new InvalidActionFieldException(
+                    actionTypeText,
+                    addressesHex,
+                    nameof(eventRecipeId),
+                    eventRecipeId.ToString(CultureInfo.InvariantCulture),
                     e);
             }
 
@@ -124,6 +170,28 @@ namespace Nekoyume.Extensions
                 row.StartBlockIndex <= blockIndex &&
                 row.RecipeEndBlockIndex >= blockIndex);
             return row != null;
+        }
+
+        private static EventScheduleSheet.Row ValidateFromAction(
+            EventScheduleSheet scheduleSheet,
+            int eventScheduleId,
+            string actionTypeText,
+            string addressesHex)
+        {
+            if (!scheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow))
+            {
+                throw new InvalidActionFieldException(
+                    actionTypeText,
+                    addressesHex,
+                    nameof(eventScheduleId),
+                    eventScheduleId.ToString(CultureInfo.InvariantCulture),
+                    new SheetRowNotFoundException(
+                        addressesHex,
+                        scheduleSheet.Name,
+                        eventScheduleId));
+            }
+
+            return scheduleRow;
         }
     }
 }

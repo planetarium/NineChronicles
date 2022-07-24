@@ -229,10 +229,6 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.inventory.AddItem(equipment, iLock: null);
             }
 
-            var inventoryAddr = _avatarAddress.Derive(LegacyInventoryKey);
-            previousStates = previousStates
-                .SetState(inventoryAddr, previousAvatarState.inventory.Serialize());
-
             var action = new EventDungeonBattle
             {
                 AvatarAddress = _avatarAddress,
@@ -246,7 +242,7 @@ namespace Lib9c.Tests.Action
                 Foods = new List<Guid>(),
             };
 
-            var nextState = action.Execute(new ActionContext
+            var nextStates = action.Execute(new ActionContext
             {
                 PreviousStates = previousStates,
                 Signer = _agentAddress,
@@ -255,10 +251,10 @@ namespace Lib9c.Tests.Action
                 BlockIndex = blockIndex,
             });
 
-            Assert.True(nextState.GetSheet<EventScheduleSheet>().TryGetValue(
+            Assert.True(nextStates.GetSheet<EventScheduleSheet>().TryGetValue(
                 eventScheduleId,
                 out var scheduleRow));
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            var nextAvatarState = nextStates.GetAvatarStateV2(_avatarAddress);
             var expectExp = scheduleRow.GetStageExp(
                 eventDungeonStageId.ToEventDungeonStageNumber(),
                 EventDungeonBattle.PlayCount);
@@ -268,7 +264,7 @@ namespace Lib9c.Tests.Action
             var eventDungeonInfoAddr =
                 EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
             var eventDungeonInfo =
-                new EventDungeonInfo(nextState.GetState(eventDungeonInfoAddr));
+                new EventDungeonInfo(nextStates.GetState(eventDungeonInfoAddr));
             Assert.Equal(
                 scheduleRow.DungeonTicketsMax - 1,
                 eventDungeonInfo.RemainingTickets);
