@@ -72,8 +72,25 @@ namespace Lib9c.Tests.Action
         public void Execute_Success(
             int eventScheduleId,
             int eventDungeonId,
-            int eventDungeonStageId) =>
-            Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId);
+            int eventDungeonStageId)
+        {
+            Assert.True(_tableSheets.EventScheduleSheet
+                .TryGetValue(eventScheduleId, out var scheduleRow));
+            var contextBlockIndex = scheduleRow.StartBlockIndex;
+            Execute(
+                _initialStates,
+                eventScheduleId,
+                eventDungeonId,
+                eventDungeonStageId,
+                contextBlockIndex);
+            contextBlockIndex = scheduleRow.DungeonEndBlockIndex;
+            Execute(
+                _initialStates,
+                eventScheduleId,
+                eventDungeonId,
+                eventDungeonStageId,
+                contextBlockIndex);
+        }
 
         [Theory]
         [InlineData(10000001, 10010001, 10010001)]
@@ -83,7 +100,11 @@ namespace Lib9c.Tests.Action
             int eventDungeonId,
             int eventDungeonStageId) =>
             Assert.Throws<InvalidActionFieldException>(() =>
-                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId));
+                Execute(
+                    _initialStates,
+                    eventScheduleId,
+                    eventDungeonId,
+                    eventDungeonStageId));
 
         [Theory]
         [InlineData(1001, 10010001, 10010001)]
@@ -92,13 +113,24 @@ namespace Lib9c.Tests.Action
             int eventDungeonId,
             int eventDungeonStageId)
         {
-            Assert.True(_tableSheets.EventScheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow));
+            Assert.True(_tableSheets.EventScheduleSheet
+                .TryGetValue(eventScheduleId, out var scheduleRow));
             var contextBlockIndex = scheduleRow.StartBlockIndex - 1;
             Assert.Throws<InvalidActionFieldException>(() =>
-                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId, contextBlockIndex));
+                Execute(
+                    _initialStates,
+                    eventScheduleId,
+                    eventDungeonId,
+                    eventDungeonStageId,
+                    contextBlockIndex));
             contextBlockIndex = scheduleRow.DungeonEndBlockIndex + 1;
             Assert.Throws<InvalidActionFieldException>(() =>
-                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId, contextBlockIndex));
+                Execute(
+                    _initialStates,
+                    eventScheduleId,
+                    eventDungeonId,
+                    eventDungeonStageId,
+                    contextBlockIndex));
         }
 
         [Theory]
@@ -107,9 +139,18 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_InvalidActionFieldException_By_EventDungeonId(
             int eventScheduleId,
             int eventDungeonId,
-            int eventDungeonStageId) =>
+            int eventDungeonStageId)
+        {
+            Assert.True(_tableSheets.EventScheduleSheet
+                .TryGetValue(eventScheduleId, out var scheduleRow));
             Assert.Throws<InvalidActionFieldException>(() =>
-                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId));
+                Execute(
+                    _initialStates,
+                    eventScheduleId,
+                    eventDungeonId,
+                    eventDungeonStageId,
+                    scheduleRow.StartBlockIndex));
+        }
 
         [Theory]
         [InlineData(1001, 10010001, 10020001)]
@@ -117,9 +158,18 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_InvalidActionFieldException_By_EventDungeonStageId(
             int eventScheduleId,
             int eventDungeonId,
-            int eventDungeonStageId) =>
+            int eventDungeonStageId)
+        {
+            Assert.True(_tableSheets.EventScheduleSheet
+                .TryGetValue(eventScheduleId, out var scheduleRow));
             Assert.Throws<InvalidActionFieldException>(() =>
-                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId));
+                Execute(
+                    _initialStates,
+                    eventScheduleId,
+                    eventDungeonId,
+                    eventDungeonStageId,
+                    scheduleRow.StartBlockIndex));
+        }
 
         [Theory]
         [InlineData(1001, 10010001, 10010001)]
@@ -134,8 +184,15 @@ namespace Lib9c.Tests.Action
             var eventDungeonInfo = new EventDungeonInfo(0, 0);
             previousState = previousState
                 .SetState(eventDungeonInfoAddr, eventDungeonInfo.Serialize());
+            Assert.True(_tableSheets.EventScheduleSheet
+                .TryGetValue(eventScheduleId, out var scheduleRow));
             Assert.Throws<NotEnoughEventDungeonTicketsException>(() =>
-                Execute(previousState, eventScheduleId, eventDungeonId, eventDungeonStageId));
+                Execute(
+                    previousState,
+                    eventScheduleId,
+                    eventDungeonId,
+                    eventDungeonStageId,
+                    scheduleRow.StartBlockIndex));
         }
 
         [Theory]
@@ -143,9 +200,18 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_StageNotClearedException(
             int eventScheduleId,
             int eventDungeonId,
-            int eventDungeonStageId) =>
+            int eventDungeonStageId)
+        {
+            Assert.True(_tableSheets.EventScheduleSheet
+                .TryGetValue(eventScheduleId, out var scheduleRow));
             Assert.Throws<StageNotClearedException>(() =>
-                Execute(_initialStates, eventScheduleId, eventDungeonId, eventDungeonStageId));
+                Execute(
+                    _initialStates,
+                    eventScheduleId,
+                    eventDungeonId,
+                    eventDungeonStageId,
+                    scheduleRow.StartBlockIndex));
+        }
 
         private void Execute(
             IAccountStateDelta previousStates,
@@ -155,7 +221,8 @@ namespace Lib9c.Tests.Action
             long blockIndex = 0)
         {
             var previousAvatarState = previousStates.GetAvatarStateV2(_avatarAddress);
-            var equipments = Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
+            var equipments =
+                Doomfist.GetAllParts(_tableSheets, previousAvatarState.level);
             foreach (var equipment in equipments)
             {
                 previousAvatarState.inventory.AddItem(equipment, iLock: null);
@@ -171,7 +238,9 @@ namespace Lib9c.Tests.Action
                 eventScheduleId = eventScheduleId,
                 eventDungeonId = eventDungeonId,
                 eventDungeonStageId = eventDungeonStageId,
-                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                equipments = equipments
+                    .Select(e => e.NonFungibleId)
+                    .ToList(),
                 costumes = new List<Guid>(),
                 foods = new List<Guid>(),
             };
@@ -195,8 +264,11 @@ namespace Lib9c.Tests.Action
                 nextAvatarState.exp);
             var eventDungeonInfoAddr =
                 EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
-            var eventDungeonInfo = new EventDungeonInfo(nextState.GetState(eventDungeonInfoAddr));
-            Assert.Equal(scheduleRow.DungeonTicketsMax - 1, eventDungeonInfo.RemainingTickets);
+            var eventDungeonInfo =
+                new EventDungeonInfo(nextState.GetState(eventDungeonInfoAddr));
+            Assert.Equal(
+                scheduleRow.DungeonTicketsMax - 1,
+                eventDungeonInfo.RemainingTickets);
         }
     }
 }

@@ -23,10 +23,10 @@ namespace Nekoyume.Action
     /// Introduced at https://github.com/planetarium/lib9c/pull/1218
     /// </summary>
     [Serializable]
-    [ActionType(ActionTypeString)]
+    [ActionType(ActionTypeText)]
     public class EventDungeonBattle : GameAction
     {
-        private const string ActionTypeString = "event_dungeon_battle";
+        private const string ActionTypeText = "event_dungeon_battle";
         public const int PlayCount = 1;
 
         public Address avatarAddress;
@@ -105,7 +105,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Execute() start",
-                ActionTypeString,
+                ActionTypeText,
                 addressesHex);
 
             var sw = new Stopwatch();
@@ -118,7 +118,7 @@ namespace Nekoyume.Action
                     out var migrationRequired))
             {
                 throw new FailedLoadStateException(
-                    ActionTypeString,
+                    ActionTypeText,
                     typeof(AvatarState),
                     avatarAddress,
                     addressesHex);
@@ -127,7 +127,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] TryGetAvatarStateV2: {Elapsed}",
-                ActionTypeString,
+                ActionTypeText,
                 addressesHex,
                 sw.Elapsed);
             // ~Get AvatarState
@@ -145,7 +145,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Get sheets: {Elapsed}",
-                ActionTypeString,
+                ActionTypeText,
                 addressesHex,
                 sw.Elapsed);
             // ~Get sheets
@@ -155,7 +155,7 @@ namespace Nekoyume.Action
             if (!scheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow))
             {
                 throw new InvalidActionFieldException(
-                    ActionTypeString,
+                    ActionTypeText,
                     addressesHex,
                     nameof(eventScheduleId),
                     eventScheduleId.ToString(CultureInfo.InvariantCulture),
@@ -169,7 +169,7 @@ namespace Nekoyume.Action
                 context.BlockIndex > scheduleRow.DungeonEndBlockIndex)
             {
                 throw new InvalidActionFieldException(
-                    ActionTypeString,
+                    ActionTypeText,
                     addressesHex,
                     nameof(eventScheduleId),
                     $"Aborted as the block index({context.BlockIndex}) is" +
@@ -184,7 +184,7 @@ namespace Nekoyume.Action
                 if (eventScheduleIdDerivedFromEventDungeonId != eventScheduleId)
                 {
                     throw new InvalidActionFieldException(
-                        ActionTypeString,
+                        ActionTypeText,
                         addressesHex,
                         nameof(eventDungeonId),
                         $"Aborted as the derive event schedule" +
@@ -196,7 +196,7 @@ namespace Nekoyume.Action
             catch (ArgumentException e)
             {
                 throw new InvalidActionFieldException(
-                    ActionTypeString,
+                    ActionTypeText,
                     addressesHex,
                     nameof(eventDungeonId),
                     eventDungeonId.ToString(CultureInfo.InvariantCulture),
@@ -207,7 +207,7 @@ namespace Nekoyume.Action
             if (!dungeonSheet.TryGetValue(eventDungeonId, out var dungeonRow))
             {
                 throw new InvalidActionFieldException(
-                    ActionTypeString,
+                    ActionTypeText,
                     addressesHex,
                     nameof(eventScheduleId),
                     " Aborted because the event dungeon is not found.",
@@ -221,7 +221,7 @@ namespace Nekoyume.Action
                 eventDungeonStageId > dungeonRow.StageEnd)
             {
                 throw new InvalidActionFieldException(
-                    ActionTypeString,
+                    ActionTypeText,
                     addressesHex,
                     nameof(eventDungeonStageId),
                     $"Aborted as the event dungeon stage id({eventDungeonStageId})" +
@@ -233,7 +233,7 @@ namespace Nekoyume.Action
             if (!stageSheet.TryGetValue(eventDungeonStageId, out _))
             {
                 throw new InvalidActionFieldException(
-                    ActionTypeString,
+                    ActionTypeText,
                     addressesHex,
                     nameof(eventDungeonStageId),
                     eventDungeonStageId.ToString(CultureInfo.InvariantCulture),
@@ -260,7 +260,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Validate fields: {Elapsed}",
-                ActionTypeString,
+                ActionTypeText,
                 addressesHex,
                 sw.Elapsed);
             // ~Validate fields.
@@ -295,7 +295,7 @@ namespace Nekoyume.Action
             if (!eventDungeonInfo.TryUseTickets(PlayCount))
             {
                 throw new NotEnoughEventDungeonTicketsException(
-                    ActionTypeString,
+                    ActionTypeText,
                     addressesHex,
                     PlayCount,
                     eventDungeonInfo.RemainingTickets);
@@ -305,7 +305,7 @@ namespace Nekoyume.Action
                 !eventDungeonInfo.IsCleared(eventDungeonStageId - 1))
             {
                 throw new StageNotClearedException(
-                    ActionTypeString,
+                    ActionTypeText,
                     addressesHex,
                     eventDungeonStageId - 1,
                     eventDungeonInfo.ClearedStageId);
@@ -314,7 +314,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Validate fields: {Elapsed}",
-                ActionTypeString,
+                ActionTypeText,
                 addressesHex,
                 sw.Elapsed);
             // ~Validate avatar's event dungeon info.
@@ -337,7 +337,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Simulate: {Elapsed}",
-                ActionTypeString,
+                ActionTypeText,
                 addressesHex,
                 sw.Elapsed);
             // ~Simulate
@@ -350,7 +350,7 @@ namespace Nekoyume.Action
                 sw.Stop();
                 Log.Verbose(
                     "[{ActionTypeString}][{AddressesHex}] Update event dungeon info: {Elapsed}",
-                    ActionTypeString,
+                    ActionTypeText,
                     addressesHex,
                     sw.Elapsed);
             }
@@ -362,7 +362,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Apply player to avatar state: {Elapsed}",
-                ActionTypeString,
+                ActionTypeText,
                 addressesHex,
                 sw.Elapsed);
             // ~Apply player to avatar state
@@ -397,14 +397,14 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Set states: {Elapsed}",
-                ActionTypeString,
+                ActionTypeText,
                 addressesHex,
                 sw.Elapsed);
             // ~Set states
 
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Total elapsed: {Elapsed}",
-                ActionTypeString,
+                ActionTypeText,
                 addressesHex,
                 DateTimeOffset.UtcNow - started);
             return states;
