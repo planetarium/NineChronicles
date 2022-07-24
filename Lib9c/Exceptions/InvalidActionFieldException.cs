@@ -27,7 +27,8 @@ namespace Nekoyume.Exceptions
             string addressesHex,
             string fieldName,
             string message)
-            : base($"[{actionType}][{addressesHex}] Invalid field({fieldName}): {message}")
+            : base($"[{actionType}][{addressesHex}]" +
+                   $" Invalid field({fieldName}): {message}")
         {
         }
 
@@ -37,7 +38,8 @@ namespace Nekoyume.Exceptions
             string message,
             Exception innerException)
             : base(
-                $"[{actionType}][{addressesHex}] Invalid field({fieldName}): {message}",
+                $"[{actionType}][{addressesHex}]" +
+                $" Invalid field({fieldName}): {message}",
                 innerException)
         {
         }

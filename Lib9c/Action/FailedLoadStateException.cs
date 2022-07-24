@@ -18,9 +18,9 @@ namespace Nekoyume.Action
         
         public FailedLoadStateException(
             string actionType,
+            string addressesHex,
             Type stateType,
-            Address address,
-            string addressesHex)
+            Address address)
             : base($"[{actionType}][{addressesHex}] type({stateType.FullName}) at address({address.ToHex()})")
         {
         }

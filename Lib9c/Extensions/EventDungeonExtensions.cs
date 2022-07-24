@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Nekoyume.Exceptions;
 using Nekoyume.Model.Event;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
@@ -9,17 +11,61 @@ namespace Nekoyume.Extensions
 {
     public static class EventDungeonExtensions
     {
-        public static int ToEventScheduleId(this int eventDungeonId)
+        public static EventDungeonSheet.Row ValidateFromAction(
+            this EventDungeonSheet sheet,
+            int eventDungeonId,
+            int eventDungeonStageId,
+            string actionTypeText,
+            string addressesHex)
         {
-            if (eventDungeonId < 10_000_000 ||
-                eventDungeonId > 99_999_999)
+            if (!sheet.TryGetValue(eventDungeonId, out var row))
             {
-                throw new ArgumentException(
-                    $"{nameof(eventDungeonId)}({eventDungeonId}) must be" +
-                    " between 10,000,000 and 99,999,999.");
+                throw new InvalidActionFieldException(
+                    actionTypeText,
+                    addressesHex,
+                    nameof(eventDungeonId),
+                    " Aborted because the event dungeon is not found.",
+                    new SheetRowNotFoundException(
+                        addressesHex,
+                        sheet.Name,
+                        eventDungeonId));
             }
 
-            return eventDungeonId / 10_000;
+            if (eventDungeonStageId < row.StageBegin ||
+                eventDungeonStageId > row.StageEnd)
+            {
+                throw new InvalidActionFieldException(
+                    actionTypeText,
+                    addressesHex,
+                    nameof(eventDungeonStageId),
+                    $"Aborted as the event dungeon stage id({eventDungeonStageId})" +
+                    " is out of the range of the event dungeon" +
+                    $"({row.StageBegin} ~ {row.StageEnd}).");
+            }
+
+            return row;
+        }
+
+        public static EventDungeonStageSheet.Row ValidateFromAction(
+            this EventDungeonStageSheet sheet,
+            int eventDungeonStageId,
+            string actionTypeText,
+            string addressesHex)
+        {
+            if (!sheet.TryGetValue(eventDungeonStageId, out var row))
+            {
+                throw new InvalidActionFieldException(
+                    actionTypeText,
+                    addressesHex,
+                    nameof(eventDungeonStageId),
+                    eventDungeonStageId.ToString(CultureInfo.InvariantCulture),
+                    new SheetRowNotFoundException(
+                        addressesHex,
+                        sheet.Name,
+                        eventDungeonStageId));
+            }
+
+            return row;
         }
 
         public static int ToEventDungeonStageNumber(this int eventDungeonStageId)
@@ -33,40 +79,6 @@ namespace Nekoyume.Extensions
             }
 
             return eventDungeonStageId % 10_000;
-        }
-
-        public static bool TryGetRowForDungeon(
-            this EventScheduleSheet sheet,
-            long blockIndex,
-            out EventScheduleSheet.Row row)
-        {
-            if (sheet is null)
-            {
-                row = null;
-                return false;
-            }
-
-            row = sheet.OrderedList.FirstOrDefault(row =>
-                row.StartBlockIndex <= blockIndex &&
-                row.DungeonEndBlockIndex >= blockIndex);
-            return row != null;
-        }
-
-        public static bool TryGetRowForRecipe(
-            this EventScheduleSheet sheet,
-            long blockIndex,
-            out EventScheduleSheet.Row row)
-        {
-            if (sheet is null)
-            {
-                row = null;
-                return false;
-            }
-
-            row = sheet.OrderedList.FirstOrDefault(row =>
-                row.StartBlockIndex <= blockIndex &&
-                row.RecipeEndBlockIndex >= blockIndex);
-            return row != null;
         }
 
         public static bool TryGetRowByEventScheduleId(
@@ -131,7 +143,7 @@ namespace Nekoyume.Extensions
 
         public static int GetStageNumber(this EventDungeonStageSheet.Row row) =>
             row.Id.ToEventDungeonStageNumber();
-        
+
         public static List<EventDungeonStageWaveSheet.Row> GetStageWaveRows(
             this EventDungeonStageWaveSheet sheet,
             int beginningStageId,

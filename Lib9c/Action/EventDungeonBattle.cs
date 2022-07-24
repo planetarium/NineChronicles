@@ -119,9 +119,9 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException(
                     ActionTypeText,
+                    addressesHex,
                     typeof(AvatarState),
-                    avatarAddress,
-                    addressesHex);
+                    avatarAddress);
             }
 
             sw.Stop();
@@ -151,97 +151,27 @@ namespace Nekoyume.Action
             // ~Get sheets
 
             // Validate fields.
+            sw.Restart();
             var scheduleSheet = sheets.GetSheet<EventScheduleSheet>();
-            if (!scheduleSheet.TryGetValue(eventScheduleId, out var scheduleRow))
-            {
-                throw new InvalidActionFieldException(
-                    ActionTypeText,
-                    addressesHex,
-                    nameof(eventScheduleId),
-                    eventScheduleId.ToString(CultureInfo.InvariantCulture),
-                    new SheetRowNotFoundException(
-                        addressesHex,
-                        scheduleSheet.Name,
-                        eventScheduleId));
-            }
-
-            if (context.BlockIndex < scheduleRow.StartBlockIndex ||
-                context.BlockIndex > scheduleRow.DungeonEndBlockIndex)
-            {
-                throw new InvalidActionFieldException(
-                    ActionTypeText,
-                    addressesHex,
-                    nameof(eventScheduleId),
-                    $"Aborted as the block index({context.BlockIndex}) is" +
-                    " out of the range of the event schedule" +
-                    $"({scheduleRow.StartBlockIndex} ~ {scheduleRow.DungeonEndBlockIndex}).");
-            }
-
-            try
-            {
-                var eventScheduleIdDerivedFromEventDungeonId =
-                    eventDungeonId.ToEventScheduleId();
-                if (eventScheduleIdDerivedFromEventDungeonId != eventScheduleId)
-                {
-                    throw new InvalidActionFieldException(
-                        ActionTypeText,
-                        addressesHex,
-                        nameof(eventDungeonId),
-                        $"Aborted as the derive event schedule" +
-                        $" id({eventScheduleIdDerivedFromEventDungeonId}) from event dungeon" +
-                        $" id({eventDungeonId}) is not matched with the event schedule" +
-                        $" id({eventScheduleId}).");
-                }
-            }
-            catch (ArgumentException e)
-            {
-                throw new InvalidActionFieldException(
-                    ActionTypeText,
-                    addressesHex,
-                    nameof(eventDungeonId),
-                    eventDungeonId.ToString(CultureInfo.InvariantCulture),
-                    e);
-            }
+            var scheduleRow = scheduleSheet.ValidateFromAction(
+                context.BlockIndex,
+                eventScheduleId,
+                eventDungeonId,
+                ActionTypeText,
+                addressesHex);
 
             var dungeonSheet = sheets.GetSheet<EventDungeonSheet>();
-            if (!dungeonSheet.TryGetValue(eventDungeonId, out var dungeonRow))
-            {
-                throw new InvalidActionFieldException(
-                    ActionTypeText,
-                    addressesHex,
-                    nameof(eventScheduleId),
-                    " Aborted because the event dungeon is not found.",
-                    new SheetRowNotFoundException(
-                        addressesHex,
-                        dungeonSheet.Name,
-                        eventDungeonId));
-            }
-
-            if (eventDungeonStageId < dungeonRow.StageBegin ||
-                eventDungeonStageId > dungeonRow.StageEnd)
-            {
-                throw new InvalidActionFieldException(
-                    ActionTypeText,
-                    addressesHex,
-                    nameof(eventDungeonStageId),
-                    $"Aborted as the event dungeon stage id({eventDungeonStageId})" +
-                    " is out of the range of the event dungeon" +
-                    $"({dungeonRow.StageBegin} ~ {dungeonRow.StageEnd}).");
-            }
+            var dungeonRow = dungeonSheet.ValidateFromAction(
+                eventDungeonId,
+                eventDungeonStageId,
+                ActionTypeText,
+                addressesHex);
 
             var stageSheet = sheets.GetSheet<EventDungeonStageSheet>();
-            if (!stageSheet.TryGetValue(eventDungeonStageId, out _))
-            {
-                throw new InvalidActionFieldException(
-                    ActionTypeText,
-                    addressesHex,
-                    nameof(eventDungeonStageId),
-                    eventDungeonStageId.ToString(CultureInfo.InvariantCulture),
-                    new SheetRowNotFoundException(
-                        addressesHex,
-                        stageSheet.Name,
-                        eventDungeonStageId));
-            }
+            stageSheet.ValidateFromAction(
+                eventDungeonStageId,
+                ActionTypeText,
+                addressesHex);
 
             var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
             var costumeIds = avatarState.ValidateCostume(costumes);

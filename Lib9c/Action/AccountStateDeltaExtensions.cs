@@ -388,8 +388,10 @@ namespace Nekoyume.Action
             return GetWeeklyArenaState(states, address);
         }
 
-        public static CombinationSlotState GetCombinationSlotState(this IAccountStateDelta states,
-            Address avatarAddress, int index)
+        public static CombinationSlotState GetCombinationSlotState(
+            this IAccountStateDelta states,
+            Address avatarAddress,
+            int index)
         {
             var address = avatarAddress.Derive(
                 string.Format(
