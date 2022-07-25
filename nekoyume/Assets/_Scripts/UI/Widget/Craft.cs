@@ -25,20 +25,38 @@ namespace Nekoyume.UI
 
     public class Craft : Widget
     {
-        [SerializeField] private Toggle equipmentToggle = null;
-        [SerializeField] private Toggle consumableToggle = null;
-        [SerializeField] private Button closeButton = null;
-        [SerializeField] private RecipeScroll recipeScroll = null;
-        [SerializeField] private SubRecipeView equipmentSubRecipeView = null;
-        [SerializeField] private SubRecipeView consumableSubRecipeView = null;
+        [SerializeField]
+        private Toggle equipmentToggle;
 
-        [SerializeField] private CanvasGroup canvasGroup = null;
+        [SerializeField]
+        private Toggle consumableToggle;
 
-        private bool _isEquipment;
+        [SerializeField]
+        private Toggle eventConsumableToggle;
 
-        public static RecipeModel SharedModel = null;
+        [SerializeField]
+        private Button closeButton;
+
+        [SerializeField]
+        private RecipeScroll recipeScroll;
+
+        [SerializeField]
+        private SubRecipeView equipmentSubRecipeView;
+
+        [SerializeField]
+        private SubRecipeView consumableSubRecipeView;
+
+        [SerializeField]
+        private SubRecipeView eventConsumableSubRecipeView;
+
+        [SerializeField]
+        private CanvasGroup canvasGroup;
+
+        public static RecipeModel SharedModel;
 
         private const string ConsumableRecipeGroupPath = "Recipe/ConsumableRecipeGroup";
+
+        private bool _isEquipment;
 
         protected override void Awake()
         {
