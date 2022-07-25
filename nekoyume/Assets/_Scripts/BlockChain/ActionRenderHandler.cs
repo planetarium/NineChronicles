@@ -1824,6 +1824,7 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            Widget.Find<WorldBoss>().UpdateDetailReward();
             Debug.Log("[RENDER_CLAIM_RAID_REWARD]");
         }
     }
