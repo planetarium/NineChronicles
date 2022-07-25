@@ -300,6 +300,29 @@ MonoBehaviour:
   m_Markers:
     m_Objects: []
   trackIndex: 0
+--- !u!114 &-7799691887271113052
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0fc6f5187a81dc47999eefade6f0935, type: 3}
+  m_Name: UI
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_AnimClip: {fileID: 0}
+  m_Locked: 0
+  m_Muted: 0
+  m_CustomPlayableFullTypename: 
+  m_Curves: {fileID: 0}
+  m_Parent: {fileID: 11400000}
+  m_Children: []
+  m_Clips: []
+  m_Markers:
+    m_Objects: []
 --- !u!114 &-6629892079594188161
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -381,6 +404,7 @@ MonoBehaviour:
   - {fileID: 7499388260407046812}
   - {fileID: -5451183497333429323}
   - {fileID: 9183671771033094777}
+  - {fileID: -7799691887271113052}
   m_FixedDuration: 0
   m_EditorSettings:
     m_Framerate: 60
