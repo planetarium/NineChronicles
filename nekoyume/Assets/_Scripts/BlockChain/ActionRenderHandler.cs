@@ -1682,7 +1682,7 @@ namespace Nekoyume.BlockChain
             if (eval.Extra is { })
             {
                 myDigest = eval.Extra.TryGetValue(
-                    nameof(BattleArena.ExtraMyPlayerDigest),
+                    nameof(BattleArena.ExtraMyArenaPlayerDigest),
                     out var myDigestValue)
                     ? myDigestValue is List myDigestList
                         ? new ArenaPlayerDigest(myDigestList)
@@ -1690,7 +1690,7 @@ namespace Nekoyume.BlockChain
                     : null;
 
                 enemyDigest = eval.Extra.TryGetValue(
-                    nameof(BattleArena.ExtraEnemyPlayerDigest),
+                    nameof(BattleArena.ExtraEnemyArenaPlayerDigest),
                     out var enemyDigestValue)
                     ? enemyDigestValue is List enemyDigestList
                         ? new ArenaPlayerDigest(enemyDigestList)
