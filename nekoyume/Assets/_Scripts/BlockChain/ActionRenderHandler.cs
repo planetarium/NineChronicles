@@ -114,6 +114,7 @@ namespace Nekoyume.BlockChain
             ItemEnhancement();
             RapidCombination();
             Grinding();
+            EventConsumableItemCrafts();
 
             // Market
             Sell();
@@ -401,6 +402,15 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseBattleArena)
                 .AddTo(_disposables);
         }
+        
+        private void EventConsumableItemCrafts()
+        {
+            _actionRenderer.EveryRender<EventConsumableItemCrafts>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseEventConsumableItemCrafts)
+                .AddTo(_disposables);
+        }
 
         private async UniTaskVoid ResponseCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
         {
@@ -672,6 +682,61 @@ namespace Nekoyume.BlockChain
                     result.itemUsable.TradableId);
                 // ~Notify
             }
+
+            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
+        }
+        
+        private void ResponseEventConsumableItemCrafts(
+            ActionBase.ActionEvaluation<EventConsumableItemCrafts> eval)
+        {
+            if (eval.Exception is not null)
+            {
+                Widget.Find<CombinationSlotsPopup>()
+                    .SetCaching(eval.Action.slotIndex, false);
+                return;
+            }
+
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var slotIndex = eval.Action.slotIndex;
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
+            var result = (CombinationConsumable5.ResultModel)slot.Result;
+            var itemUsable = result.itemUsable;
+            if (!eval.OutputStates.TryGetAvatarStateV2(
+                    agentAddress,
+                    avatarAddress,
+                    out var avatarState,
+                    out _))
+            {
+                return;
+            }
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
+            foreach (var pair in result.materials)
+            {
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
+            }
+
+            LocalLayerModifier.RemoveItem(
+                avatarAddress,
+                itemUsable.ItemId,
+                itemUsable.RequiredBlockIndex,
+                 1);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+
+            UpdateCombinationSlotState(slotIndex, slot);
+            UpdateAgentStateAsync(eval).Forget();
+            UpdateCurrentAvatarStateAsync(eval).Forget();
+
+            // Notify
+            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            NotificationSystem.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.GetLocalizedName()),
+                slot.UnlockBlockIndex,
+                result.itemUsable.TradableId);
+            // ~Notify
 
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }

@@ -347,12 +347,9 @@ namespace Nekoyume.BlockChain
 
                 if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
                 {
-                    if (!avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items))
-                    {
-                        count = 0;
-                    }
-
-                    count = items.Sum(x => x.count);
+                    count = avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items)
+                        ? items.Sum(x => x.count)
+                        : 0;
                 }
 
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
@@ -374,6 +371,63 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
 
             return _agent.ActionRenderer.EveryRender<CombinationConsumable>()
+                .Timeout(ActionTimeout)
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
+                .ObserveOnMainThread()
+                .DoOnError(e => throw HandleException(action.Id, e));
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<EventConsumableItemCrafts>>
+            EventConsumableItemCrafts(
+                int eventScheduleId,
+                SubRecipeView.RecipeInfo recipeInfo,
+                int slotIndex)
+        {
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -recipeInfo.CostNCG);
+            LocalLayerModifier.ModifyAvatarActionPoint(agentAddress, -recipeInfo.CostAP);
+
+            foreach (var pair in recipeInfo.Materials)
+            {
+                var id = pair.Key;
+                var count = pair.Value;
+
+                if (!Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(id, out var row))
+                {
+                    continue;
+                }
+
+                if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
+                {
+                    count = avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items)
+                        ? items.Sum(x => x.count)
+                        : 0;
+                }
+
+                LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
+            }
+
+            Analyzer.Instance.Track("Unity/Create EventConsumableItemCrafts", new Value
+            {
+                ["RecipeId"] = recipeInfo.RecipeId,
+            });
+
+            var action = new EventConsumableItemCrafts
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                eventScheduleId = eventScheduleId,
+                eventConsumableItemRecipeId = recipeInfo.RecipeId,
+                slotIndex = slotIndex,
+            };
+            action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
+            LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
+            ProcessAction(action);
+
+            return _agent.ActionRenderer.EveryRender<EventConsumableItemCrafts>()
                 .Timeout(ActionTimeout)
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
@@ -776,12 +830,9 @@ namespace Nekoyume.BlockChain
 
                 if (recipeInfo.ReplacedMaterials.ContainsKey(row.Id))
                 {
-                    if (!avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items))
-                    {
-                        count = 0;
-                    }
-
-                    count = items.Sum(x => x.count);
+                    count = avatarState.inventory.TryGetFungibleItems(row.ItemId, out var items)
+                        ? items.Sum(x => x.count)
+                        : 0;
                 }
 
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
