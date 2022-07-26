@@ -1814,7 +1814,41 @@ namespace Nekoyume.BlockChain
             }
 
             Debug.Log("[RENDER_RAID]");
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd =
+                Game.Game.instance.RaidStage.OnBattleEnded
+                    .First()
+                    .Subscribe(stage =>
+                    {
+                        var task = UniTask.Run(() =>
+                        {
+                            UpdateCurrentAvatarStateAsync(eval).Forget();
+                            var avatarState = States.Instance.CurrentAvatarState;
+                            RenderQuest(eval.Action.AvatarAddress,
+                                avatarState.questList.completedQuestIds);
+                            _disposableForBattleEnd = null;
+                            stage.IsAvatarStateUpdatedAfterBattle = true;
+                        });
+                        task.ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => Debug.LogException(e));
+                    });
+
+            var simulator = new RaidSimulator(
+                205007,
+                new LocalRandom(eval.RandomSeed),
+                States.Instance.CurrentAvatarState,
+                eval.Action.FoodIds,
+                Game.Game.instance.TableSheets.GetRaidSimulatorSheets()
+            );
+            simulator.Simulate();
+            BattleLog log = simulator.Log;
+            var playerDigest = new PlayerDigest(States.Instance.CurrentAvatarState);
+            Game.Game.instance.RaidStage.Play(log, playerDigest);
             Widget.Find<WorldBoss>().UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true);
+            Widget.Find<WorldBoss>().Close();
         }
 
         private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)
