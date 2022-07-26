@@ -382,7 +382,7 @@
             <returns>The <see cref="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier"/> of the given
             <paramref name="actionType"/> if it's annotated with
             <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.  If it's not annotated returns
-            <c>null</c>.</returns>
+            <see langword="null"/>.</returns>
         </member>
         <member name="T:Libplanet.Action.CurrencyPermissionException">
             <summary>
@@ -413,6 +413,37 @@
             <summary>
             The <see cref="T:Libplanet.Assets.Currency"/> to be tried to be minted or burned by
             the <see cref="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Action.DuplicateActionTypeIdentifierException">
+            <summary>
+            An exception that is thrown when multiple action types are associated with the same
+            <see cref="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier"/>.
+            </summary>
+            <remarks>Note this cannot be serialized as it holds a set of <see cref="T:System.Type"/> objects
+            which are not serializable either.</remarks>
+        </member>
+        <member name="M:Libplanet.Action.DuplicateActionTypeIdentifierException.#ctor(System.String,System.Collections.Immutable.IImmutableSet{System.Type},System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.DuplicateActionTypeIdentifierException"/> instance.
+            </summary>
+            <param name="typeIdentifier">The <see cref="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier"/> string
+            that the <paramref name="duplicateActionTypes"/> are associated with.</param>
+            <param name="duplicateActionTypes">The set of multiple action types that are associated
+            with the same <paramref name="typeIdentifier"/>.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.  Note that extra
+            informative text will be appended to this.</param>
+        </member>
+        <member name="P:Libplanet.Action.DuplicateActionTypeIdentifierException.TypeIdentifier">
+            <summary>
+            The <see cref="P:Libplanet.Action.ActionTypeAttribute.TypeIdentifier"/> string that
+            the <see cref="P:Libplanet.Action.DuplicateActionTypeIdentifierException.DuplicateActionTypes"/> are associated with.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.DuplicateActionTypeIdentifierException.DuplicateActionTypes">
+            <summary>
+            The set of multiple action types that are associated with the same
+            <see cref="P:Libplanet.Action.DuplicateActionTypeIdentifierException.TypeIdentifier"/>.
             </summary>
         </member>
         <member name="T:Libplanet.Action.ExtractableException">
@@ -1182,6 +1213,9 @@
             Even if a superclass is marked with
             the <see cref="T:Libplanet.Action.ActionTypeAttribute"/> its subclass also should be
             marked with the <see cref="T:Libplanet.Action.ActionTypeAttribute"/> if it is concrete.
+            <para>Also, every concrete action subclass of <typeparamref name="T"/>
+            has to be declared in the same assembly as <typeparamref name="T"/>,
+            or at least in the entry assembly of the application.</para>
             </remarks>
         </member>
         <member name="M:Libplanet.Action.PolymorphicAction`1.#ctor">
@@ -1383,14 +1417,14 @@
             <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c> was
             passed to <paramref name="hex"/>.</exception>
             <exception cref="T:System.ArgumentException">Thrown when the given <paramref
-            name="hex"/> did not lengthen 40 characters.</exception>
+            name="hex"/> did not lengthen 40 characters except 0x prefix.</exception>
             <exception cref="T:System.ArgumentException">Thrown when the given <paramref
             name="hex"/> is mixed-case and the checksum is invalid.</exception>
             <exception cref="T:System.ArgumentException">Thrown when the given <paramref
             name="hex"/> does not consist of ASCII characters.</exception>
-            <param name="hex">A 40 characters hexadecimal address string to
-            derive the corresponding <see cref="T:Libplanet.Address"/> from. The string
-            should be all lower-case or mixed-case which follows <a
+            <param name="hex">A 40 characters or included 0x prefix hexadecimal
+            address string to derive the corresponding <see cref="T:Libplanet.Address"/> from.
+            The string should be all lower-case or mixed-case which follows <a
             href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md"
             >EIP 55</a>.</param>
         </member>
@@ -6333,6 +6367,20 @@
             <remarks>A valid <see cref="T:System.Byte"/> array for a <see cref="T:Libplanet.Crypto.PrivateKey"/> can be encoded
             using <see cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/> property.</remarks>
             <seealso cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/>
+        </member>
+        <member name="M:Libplanet.Crypto.PrivateKey.#ctor(System.String)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Crypto.PrivateKey"/> instance from the given hexadecimal
+            <see cref="T:System.String"/> (i.e.,<paramref name="hex"/>).
+            </summary>
+            <param name="hex">A hexadecimal string of a private key's
+            <see cref="P:Libplanet.Crypto.PrivateKey.ByteArray"/>.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given <paramref name="hex"/>
+            string is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the length of the given
+            <paramref name="hex"/> string is too short or too long.</exception>
+            <exception cref="T:System.FormatException">Thrown when the given <paramref name="hex"/> string is
+            not a valid hexadecimal string.</exception>
         </member>
         <member name="P:Libplanet.Crypto.PrivateKey.PublicKey">
             <summary>
