@@ -23,7 +23,7 @@ namespace Nekoyume.State
         private static States _states;
         private static TableSheets _tableSheets;
 
-        private static readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private static readonly List<IDisposable> _disposables = new();
 
         private static Address? _currentAvatarAddr;
 

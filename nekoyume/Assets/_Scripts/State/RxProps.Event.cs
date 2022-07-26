@@ -10,6 +10,7 @@ namespace Nekoyume.State
 {
     public static partial class RxProps
     {
+        // Dungeon
         private static readonly ReactiveProperty<EventScheduleSheet.Row>
             _eventScheduleRowForDungeon = new(null);
 
@@ -18,9 +19,11 @@ namespace Nekoyume.State
 
         public static EventDungeonSheet.Row EventDungeonRow { get; private set; }
 
-        public static List<EventDungeonStageSheet.Row> EventDungeonStageRows { get; private set; }
+        public static List<EventDungeonStageSheet.Row>
+            EventDungeonStageRows { get; private set; }
 
-        public static List<EventDungeonStageWaveSheet.Row> EventDungeonStageWaveRows { get; private set; }
+        public static List<EventDungeonStageWaveSheet.Row>
+            EventDungeonStageWaveRows { get; private set; }
 
         private static readonly AsyncUpdatableRxProp<EventDungeonInfo>
             _eventDungeonInfo = new(UpdateEventDungeonInfoAsync);
@@ -36,6 +39,19 @@ namespace Nekoyume.State
         public static IReadOnlyReactiveProperty<TicketProgress>
             EventDungeonTicketProgress => _eventDungeonTicketProgress;
 
+        // Recipe
+        private static readonly ReactiveProperty<EventScheduleSheet.Row>
+            _eventScheduleRowForRecipe = new(null);
+
+        public static IReadOnlyReactiveProperty<EventScheduleSheet.Row>
+            EventScheduleRowForRecipe => _eventScheduleRowForRecipe;
+
+        private static readonly ReactiveProperty<List<EventConsumableItemRecipeSheet.Row>>
+            _eventConsumableItemRecipeRows = new(null);
+
+        public static IReadOnlyReactiveProperty<List<EventConsumableItemRecipeSheet.Row>>
+            EventConsumableItemRecipeRows => _eventConsumableItemRecipeRows;
+
         private static void StartEvent()
         {
             OnBlockIndexEvent(_agent.BlockIndex);
@@ -49,6 +65,7 @@ namespace Nekoyume.State
         private static void OnBlockIndexEvent(long blockIndex)
         {
             UpdateEventDungeonSheetData(blockIndex);
+            UpdateEventRecipeSheetData(blockIndex);
             UpdateEventDungeonTicketProgress(blockIndex);
         }
 
@@ -70,8 +87,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            if (_eventScheduleRowForDungeon.Value is not null &&
-                _eventScheduleRowForDungeon.Value.Id == scheduleRow.Id)
+            if (_eventScheduleRowForDungeon.Value?.Id == scheduleRow.Id)
             {
                 return;
             }
@@ -87,19 +103,20 @@ namespace Nekoyume.State
                 return;
             }
 
-            if (EventDungeonRow is not null &&
-                EventDungeonRow.Id == dungeonRow.Id)
+            if (EventDungeonRow?.Id == dungeonRow.Id)
             {
                 return;
             }
 
             EventDungeonRow = dungeonRow;
-            EventDungeonStageRows = _tableSheets.EventDungeonStageSheet.GetStageRows(
-                EventDungeonRow.StageBegin,
-                EventDungeonRow.StageEnd);
-            EventDungeonStageWaveRows = _tableSheets.EventDungeonStageWaveSheet.GetStageWaveRows(
-                EventDungeonRow.StageBegin,
-                EventDungeonRow.StageEnd);
+            EventDungeonStageRows = _tableSheets.EventDungeonStageSheet
+                .GetStageRows(
+                    EventDungeonRow.StageBegin,
+                    EventDungeonRow.StageEnd);
+            EventDungeonStageWaveRows = _tableSheets.EventDungeonStageWaveSheet
+                .GetStageWaveRows(
+                    EventDungeonRow.StageBegin,
+                    EventDungeonRow.StageEnd);
         }
 
         private static void UpdateEventDungeonTicketProgress(long blockIndex)
@@ -152,6 +169,28 @@ namespace Nekoyume.State
                 is Bencodex.Types.List serialized
                 ? new EventDungeonInfo(serialized)
                 : null;
+        }
+
+        private static void UpdateEventRecipeSheetData(long blockIndex)
+        {
+            if (!_tableSheets.EventScheduleSheet.TryGetRowForRecipe(
+                    blockIndex,
+                    out var scheduleRow))
+            {
+                _eventScheduleRowForRecipe.Value = null;
+                _eventConsumableItemRecipeRows.Value = null;
+                return;
+            }
+
+            if (_eventScheduleRowForRecipe.Value?.Id == scheduleRow.Id)
+            {
+                return;
+            }
+
+            _eventScheduleRowForRecipe.Value = scheduleRow;
+            _eventConsumableItemRecipeRows.Value =
+                _tableSheets.EventConsumableItemRecipeSheet
+                    .GetRecipeRows(_eventScheduleRowForRecipe.Value.Id);
         }
     }
 }
