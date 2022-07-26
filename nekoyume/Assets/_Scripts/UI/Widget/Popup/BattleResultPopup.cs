@@ -27,6 +27,7 @@ namespace Nekoyume.UI
     {
         public enum NextState
         {
+            None,
             GoToMain,
             RepeatStage,
             NextStage,

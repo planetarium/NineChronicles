@@ -9,13 +9,14 @@ using Nekoyume.UI.Module;
 using UnityEngine;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
-using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
+using Nekoyume.TableData.Event;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
