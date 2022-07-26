@@ -135,11 +135,10 @@ namespace Nekoyume.UI
             for (var i = 0; i < runeRewards.Count; i++)
             {
                 runes[i].Object.SetActive(true);
-                var currency = runeRewards[i].Currency.Ticker;
-                var currencyId = Convert.ToInt32(currency);
+                var currency = runeRewards[i].Currency;
                 var count = Convert.ToInt32(runeRewards[i].GetQuantityString());
                 runes[i].Count.text = $"{count:#,0}";
-                if (WorldBossFrontHelper.TryGetRuneIcon(currencyId, out var icon))
+                if (WorldBossFrontHelper.TryGetRuneIcon(currency, out var icon))
                 {
                     runes[i].Icon.sprite = icon;
                 }

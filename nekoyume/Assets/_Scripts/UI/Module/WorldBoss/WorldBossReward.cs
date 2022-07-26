@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         {
             SeasonRanking,
             BossBattle,
-            BattleRank,
+            BattleGrade,
         }
 
         [Serializable]
@@ -74,8 +74,8 @@ namespace Nekoyume.UI.Module.WorldBoss
                         break;
                     case WorldBossRewardBossBattle bossBattle:
                         break;
-                    case WorldBossRewardBattleRank battleRank:
-                        battleRank.Set(raider, raidId);
+                    case WorldBossRewardBattleGrade battleGrade:
+                        battleGrade.Set(raider, raidId);
                         break;
                 }
             }

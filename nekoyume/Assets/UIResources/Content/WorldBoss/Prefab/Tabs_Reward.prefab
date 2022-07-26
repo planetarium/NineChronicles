@@ -6031,7 +6031,7 @@ GameObject:
   - component: {fileID: 5302622289430316008}
   - component: {fileID: 2337470590542303029}
   m_Layer: 5
-  m_Name: BattleRankButtonContainer
+  m_Name: BattleGradeButtonContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8213,7 +8213,7 @@ GameObject:
   - component: {fileID: 3936752632670484665}
   - component: {fileID: 5870052453542991220}
   m_Layer: 15
-  m_Name: Content_BattleRank
+  m_Name: Content_BattleGrade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9194,7 +9194,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Battle Rank
+  m_text: Battle Grade
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
