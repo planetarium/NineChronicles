@@ -16,6 +16,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using System.Linq;
+using Nekoyume.Game;
 
 namespace Nekoyume.UI
 {
@@ -253,22 +254,12 @@ namespace Nekoyume.UI
                     eventConsumableSubRecipeView.gameObject.SetActive(false);
                     equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
                     break;
-                // NOTE: We must check the `row` is type of `EventConsumableItemRecipeSheet.Row`
-                //       because the `EventConsumableItemRecipeSheet.Row` is the inherited class of
-                //       the `ConsumableItemRecipeSheet.Row`.
-                case EventConsumableItemRecipeSheet.Row eventConsumableRow:
-                    equipmentSubRecipeView.gameObject.SetActive(false);
-                    consumableSubRecipeView.gameObject.SetActive(false);
-                    eventConsumableSubRecipeView.gameObject.SetActive(true);
-                    eventConsumableSubRecipeView.SetData(eventConsumableRow, null);
-                    break;
                 case ConsumableItemRecipeSheet.Row consumableRow:
                     equipmentSubRecipeView.gameObject.SetActive(false);
                     consumableSubRecipeView.gameObject.SetActive(true);
                     eventConsumableSubRecipeView.gameObject.SetActive(false);
                     consumableSubRecipeView.SetData(consumableRow, null);
                     break;
-
                 default:
                     equipmentSubRecipeView.gameObject.SetActive(false);
                     consumableSubRecipeView.gameObject.SetActive(false);

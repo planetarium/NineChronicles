@@ -13,9 +13,6 @@ using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using System.Numerics;
-using System.Reactive.Linq;
-using System.Text;
-using Nekoyume.TableData.Event;
 using TMPro;
 
 namespace Nekoyume.UI.Scroller
