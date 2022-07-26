@@ -10,6 +10,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.ValueControlComponents.Shader;
 using TMPro;
@@ -91,6 +92,8 @@ namespace Nekoyume.UI
         private Status _status = Status.None;
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
+        private List<WorldBossRankingRecord> _records = new List<WorldBossRankingRecord>();
+        private WorldBossRankingRecord _myInfo;
 
         protected override void Awake()
         {
@@ -181,8 +184,13 @@ namespace Nekoyume.UI
                             return;
                         }
 
-                        var (worldBoss, raider, userCount) = await GetStatesAsync(row);
-                        UpdateSeason(row, worldBoss, raider, userCount, currentBlockIndex);
+                        var (worldBoss, raider) = await GetStatesAsync(row);
+                        var address = Game.Game.instance.States.CurrentAvatarState.address;
+                        var response = await QueryRankingAsync(row.Id, address);
+                        _records = response.WorldBossRanking;
+                        _myInfo = _records.FirstOrDefault(r => r.Address == address.ToHex());
+                        var userCount = response.WorldBossTotalUsers;
+                        UpdateSeason(row, worldBoss, raider, userCount, currentBlockIndex, _myInfo?.Ranking);
                         break;
                     case Status.None:
                     default:
@@ -199,6 +207,27 @@ namespace Nekoyume.UI
             return WorldBossFrontHelper.IsItInSeason(currentBlockIndex)
                 ? Status.Season
                 : Status.OffSeason;
+        }
+
+        private async Task<WorldBossRankingResponse> QueryRankingAsync(int raidId, Address address)
+        {
+            var query = @$"query {{
+                worldBossTotalUsers(raidId: {raidId})
+                worldBossRanking(raidId: {raidId}, avatarAddress: ""{address}"") {{
+                    highScore
+                    address
+                    ranking
+                    level
+                    cp
+                    iconId
+                    avatarName
+                    totalScore
+                }}
+            }}";
+            var response = await Game.Game.instance.ApiClient.GetObjectAsync<WorldBossRankingResponse>(query);
+            Debug.Log($"total raid users: {response.WorldBossTotalUsers}");
+            Debug.Log($"find my info: {!(_myInfo is null)}");
+            return response;
         }
 
         private void UpdateOffSeason(long currentBlockIndex)
@@ -227,7 +256,8 @@ namespace Nekoyume.UI
             WorldBossState worldBoss,
             RaiderState raider,
             int userCount,
-            long currentBlockIndex)
+            long currentBlockIndex,
+            int? ranking)
         {
             Debug.Log("[UpdateSeason]");
             offSeasonContainer.SetActive(true);
@@ -238,7 +268,7 @@ namespace Nekoyume.UI
 
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
-            UpdateMyInformation(raider, currentBlockIndex);
+            UpdateMyInformation(raider, currentBlockIndex, ranking);
             UpdateUserCount(userCount);
         }
 
@@ -379,7 +409,7 @@ namespace Nekoyume.UI
             ActionManager.Instance.ClaimRaidReward();
         }
 
-        private async Task<(WorldBossState worldBoss, RaiderState raider, int userCount)>
+        private async Task<(WorldBossState worldBoss, RaiderState raider)>
             GetStatesAsync(WorldBossListSheet.Row row)
         {
             var task = Task.Run(async () =>
@@ -397,13 +427,7 @@ namespace Nekoyume.UI
                     ? new RaiderState(raiderList)
                     : null;
 
-                var raidersAddress = Addresses.GetRaidersAddress(row.Id);
-                var raidersState = await Game.Game.instance.Agent.GetStateAsync(raidersAddress);
-                var raiders = raidersState is Bencodex.Types.List raidersList
-                    ? raidersList.ToList(StateExtensions.ToAddress)
-                    : new List<Address>();
-
-                return (worldBoss, raider, raiders.Count);
+                return (worldBoss, raider);
             });
 
             await task;
@@ -431,12 +455,12 @@ namespace Nekoyume.UI
             season.UpdateBossInformation(bossName, level, curHp, maxHp);
         }
 
-        private void UpdateMyInformation(RaiderState state, long currentBlockIndex)
+        private void UpdateMyInformation(RaiderState state, long currentBlockIndex, int? ranking)
         {
             _cachedRaiderState = state;
             var totalScore = state?.TotalScore ?? 0;
             var highScore = state?.HighScore ?? 0;
-            season.UpdateMyInformation(highScore, totalScore);
+            season.UpdateMyInformation(highScore, totalScore, ranking);
             ticketText.text = $"총 도전 횟 수: {state?.TotalChallengeCount ?? 0}\n" +
                               $"티켓 구매 횟 수: {state?.PurchaseCount ?? 0}\n";
         }

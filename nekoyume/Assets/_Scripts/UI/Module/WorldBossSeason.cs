@@ -68,7 +68,7 @@ namespace Nekoyume
             // todo : 미적용
         }
 
-        public void UpdateMyInformation(int highScore, int totalScore)
+        public void UpdateMyInformation(int highScore, int totalScore, int? ranking)
         {
             Debug.Log("[WorldBossSeason] UpdateMyInformation");
             // todo : 내 랭크 순위 찍어줘야함.
@@ -84,7 +84,9 @@ namespace Nekoyume
                 _gradePrefab = Instantiate(prefab, gradeContainer);
             }
 
-            myRankText.text = "loading..";
+            myRankText.text = ranking is null
+                ? "loading.."
+                : ranking.ToString();
             myBestRecordText.text = highScore > 0 ? $"{highScore:#,0}" : "-";
             myTotalScoreText.text = totalScore > 0 ? $"{totalScore:#,0}" : "-";
         }
