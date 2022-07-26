@@ -13,7 +13,6 @@ using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using System.Numerics;
-using System.Reactive.Linq;
 using System.Text;
 using Nekoyume.TableData.Event;
 using TMPro;
@@ -69,6 +68,9 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField]
         private GameObject emptyObject;
+
+        [SerializeField]
+        private TextMeshProUGUI emptyObjectText;
 
         [SerializeField]
         private GameObject openAllRecipeArea;
@@ -206,6 +208,7 @@ namespace Nekoyume.UI.Scroller
             var items = Craft.SharedModel.EquipmentRecipeMap.Values
                 .Where(x => x.ItemSubType == type)
                 .ToList();
+            emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
             Show(items, true);
             AnimateScroller();
@@ -246,6 +249,7 @@ namespace Nekoyume.UI.Scroller
             var items = Craft.SharedModel.ConsumableRecipeMap.Values
                 .Where(x => x.StatType == type)
                 .ToList();
+            emptyObjectText.text = L10nManager.Localize("UI_WORKSHOP_EMPTY_CATEGORY");
             emptyObject.SetActive(!items.Any());
             Show(items, true);
             AnimateScroller();
@@ -253,6 +257,79 @@ namespace Nekoyume.UI.Scroller
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
                 .AddTo(_disposablesAtShow);
+        }
+
+        public void ShowAsEventConsumable()
+        {
+            _disposablesAtShow.DisposeAllAndClear();
+            Game.Game.instance.Agent.BlockIndexSubject
+                .Subscribe(value => UpdateEventScheduleRemainingTime(
+                    RxProps.EventScheduleRowForRecipe.Value,
+                    value))
+                .AddTo(_disposablesAtShow);
+            RxProps.EventScheduleRowForRecipe
+                .Subscribe(value =>
+                {
+                    UpdateEventScheduleEntireTime(value);
+                    UpdateEventScheduleRemainingTime(
+                        value,
+                        Game.Game.instance.Agent.BlockIndex);
+                })
+                .AddTo(_disposablesAtShow);
+
+            openAllRecipeArea.SetActive(false);
+            Craft.SharedModel.SelectedRow.Value = null;
+            equipmentTab.SetActive(false);
+            consumableTab.SetActive(false);
+            eventScheduleTab.SetActive(true);
+
+            if (RxProps.EventScheduleRowForRecipe is null ||
+                RxProps.EventConsumableItemRecipeRows.Value?.Count is null or 0)
+            {
+                Show(new List<RecipeRow.Model>(), true);
+                emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
+                emptyObject.SetActive(true);
+                return;
+            }
+
+            var items = Craft.SharedModel.EventConsumableRecipeMap
+                .Values.ToList();
+            emptyObject.SetActive(false);
+            Show(items, true);
+            AnimateScroller();
+        }
+
+        private void UpdateEventScheduleEntireTime(
+            EventScheduleSheet.Row row)
+        {
+            if (row is null)
+            {
+                eventScheduleTabEntireTimeText.text = string.Empty;
+                return;
+            }
+            
+            var sb = new StringBuilder();
+            sb.AppendLine(L10nManager.Localize("UI_EVENT_PERIOD"));
+            sb.AppendLine($"{row.StartBlockIndex:N0} - {row.RecipeEndBlockIndex:N0}");
+            eventScheduleTabEntireTimeText.text = sb.ToString();
+        }
+
+        private void UpdateEventScheduleRemainingTime(
+            EventScheduleSheet.Row row,
+            long currentBlockIndex)
+        {
+            if (row is null)
+            {
+                eventScheduleTabRemainingTimeText.text = string.Empty;
+                return;
+            }
+
+            var value = row.RecipeEndBlockIndex - currentBlockIndex;
+            var time = Util.GetBlockToTime(value);
+            var sb = new StringBuilder();
+            sb.AppendLine(L10nManager.Localize("UI_REMAINING_TIME_ONLY"));
+            sb.AppendLine(string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), value, time));
+            eventScheduleTabRemainingTimeText.text = sb.ToString();
         }
 
         private void UpdateUnlockAllButton()

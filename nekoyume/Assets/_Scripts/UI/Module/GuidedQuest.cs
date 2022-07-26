@@ -72,7 +72,12 @@ namespace Nekoyume.UI.Module
             public readonly ReactiveProperty<CombinationEquipmentQuest>
                 combinationEquipmentQuest = new();
 
+            // NOTE: This is fake quest.
             public readonly ReactiveProperty<WorldQuest> eventDungeonQuest = new();
+
+            // NOTE: This is fake quest.
+            public readonly ReactiveProperty<CombinationEquipmentQuest>
+                craftEventItemQuest = new();
         }
 
         private static readonly ViewModel SharedViewModel = new();
@@ -106,6 +111,10 @@ namespace Nekoyume.UI.Module
             _onClickEventDungeonQuestCell =
                 new Subject<(GuidedQuestCell cell, WorldQuest quest)>();
 
+        private readonly ISubject<(GuidedQuestCell cell, CombinationEquipmentQuest quest)>
+            _onClickCraftEventItemQuestCell =
+                new Subject<(GuidedQuestCell cell, CombinationEquipmentQuest quest)>();
+
         private readonly ISubject<WorldQuest>
             _onClearWorldQuestComplete = new Subject<WorldQuest>();
 
@@ -114,6 +123,9 @@ namespace Nekoyume.UI.Module
 
         private readonly ISubject<WorldQuest>
             _onClearEventDungeonStageComplete = new Subject<WorldQuest>();
+
+        private readonly ISubject<CombinationEquipmentQuest>
+            _onClearCraftEventItemComplete = new Subject<CombinationEquipmentQuest>();
 
         #endregion
 
@@ -144,6 +156,9 @@ namespace Nekoyume.UI.Module
         public IObservable<(GuidedQuestCell cell, WorldQuest quest)>
             OnClickEventDungeonQuestCell => _onClickEventDungeonQuestCell;
 
+        public IObservable<(GuidedQuestCell cell, CombinationEquipmentQuest quest)>
+            CnClickCraftEventItemQuestCell => _onClickCraftEventItemQuestCell;
+
         #endregion
 
         #region MonoBehaviour
@@ -160,6 +175,9 @@ namespace Nekoyume.UI.Module
             SharedViewModel.eventDungeonQuest
                 .Subscribe(SubscribeEventDungeonQuest)
                 .AddTo(gameObject);
+            SharedViewModel.craftEventItemQuest
+                .Subscribe(SubscribeCraftEventItemQuest)
+                .AddTo(gameObject);
 
             // 뷰 오브젝트를 구독합니다.
             _worldQuestCell.onClick
@@ -173,6 +191,10 @@ namespace Nekoyume.UI.Module
             _eventDungeonQuestCell.onClick
                 .Select(cell => (cell, SharedViewModel.eventDungeonQuest.Value))
                 .Subscribe(_onClickEventDungeonQuestCell)
+                .AddTo(gameObject);
+            _craftEventItemQuestCell.onClick
+                .Select(cell => (cell, SharedViewModel.craftEventItemQuest.Value))
+                .Subscribe(_onClickCraftEventItemQuestCell)
                 .AddTo(gameObject);
         }
 
@@ -189,7 +211,10 @@ namespace Nekoyume.UI.Module
         /// GuidedQuest를 초기화하면서 노출시킵니다.
         /// 이미 초기화되어 있다면 `avatarState` 인자에 따라 재초기화를 하거나 새로운 가이드 퀘스트를 더하는 AddNewGuidedQuest 상태로 진입합니다.
         /// </summary>
-        public void Show(AvatarState avatarState, System.Action onComplete = null, bool ignoreAnimation = false)
+        public void Show(
+            AvatarState avatarState,
+            System.Action onComplete = null,
+             bool ignoreAnimation = false)
         {
             if (avatarState is null)
             {
@@ -218,8 +243,9 @@ namespace Nekoyume.UI.Module
                     break;
                 default:
                     Debug.LogWarning(
-                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}." +
-                        $" Try when state is {ViewState.None}, {ViewState.Hidden} or {ViewState.Shown}");
+                        $"[{nameof(GuidedQuest)}] Cannot proceed because" +
+                        $" ViewState is {_state.Value} Try when state is" +
+                        $" {ViewState.None}, {ViewState.Hidden} or {ViewState.Shown}");
                     break;
             }
 
@@ -228,7 +254,10 @@ namespace Nekoyume.UI.Module
             RxProps.EventDungeonTicketProgress
                 .Where(_ => gameObject.activeSelf)
                 .Subscribe(_ =>
-                    StartCoroutine(CoUpdateEventDungeonQuest()))
+                {
+                    StartCoroutine(CoUpdateEventDungeonQuest());
+                    StartCoroutine(CoUpdateCraftEventItemQuest());
+                })
                 .AddTo(_disposablesAtShow);
             // ~Subscribe
         }
@@ -438,15 +467,16 @@ namespace Nekoyume.UI.Module
             yield return StartCoroutine(CoUpdateWorldQuest(questList));
             yield return StartCoroutine(CoUpdateCombinationEquipmentQuest(questList));
             yield return StartCoroutine(CoUpdateEventDungeonQuest());
+            yield return StartCoroutine(CoUpdateCraftEventItemQuest());
             onComplete?.Invoke();
         }
 
         private IEnumerator CoUpdateWorldQuest(QuestList questList)
         {
-            var newWorldQuest = GetTargetWorldQuest(questList);
+            var newQuest = GetTargetWorldQuest(questList);
             if (TryEnterToAddNewGuidedQuest(
                     SharedViewModel.worldQuest,
-                    newWorldQuest,
+                    newQuest,
                     _worldQuestCell.Quest is not null))
             {
                 yield return new WaitUntil(() => _state.Value == ViewState.Shown);
@@ -455,10 +485,10 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator CoUpdateCombinationEquipmentQuest(QuestList questList)
         {
-            var newCombinationEquipmentQuest = GetTargetCombinationEquipmentQuest(questList);
+            var newQuest = GetTargetCombinationEquipmentQuest(questList);
             if (TryEnterToAddNewGuidedQuest(
                     SharedViewModel.combinationEquipmentQuest,
-                    newCombinationEquipmentQuest,
+                    newQuest,
                     _combinationEquipmentQuestCell.Quest is not null))
             {
                 yield return new WaitUntil(() => _state.Value == ViewState.Shown);
@@ -467,18 +497,37 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator CoUpdateEventDungeonQuest()
         {
-            var newEventDungeonQuest = GetTargetEventDungeonQuest();
-            if (newEventDungeonQuest is not null &&
+            var newQuest = GetTargetEventDungeonQuest();
+            if (newQuest is not null &&
                 SharedViewModel.eventDungeonQuest.Value is not null &&
-                newEventDungeonQuest.Id == SharedViewModel.eventDungeonQuest.Value.Id)
+                newQuest.Id == SharedViewModel.eventDungeonQuest.Value.Id)
             {
                 yield break;
             }
 
             if (TryEnterToAddNewGuidedQuest(
                     SharedViewModel.eventDungeonQuest,
-                    newEventDungeonQuest,
+                    newQuest,
                     _eventDungeonQuestCell.Quest is not null))
+            {
+                yield return new WaitUntil(() => _state.Value == ViewState.Shown);
+            }
+        }
+
+        private IEnumerator CoUpdateCraftEventItemQuest()
+        {
+            var newQuest = GetTargetCraftEventItemQuest();
+            if (newQuest is not null &&
+                SharedViewModel.craftEventItemQuest.Value is not null &&
+                newQuest.Id == SharedViewModel.craftEventItemQuest.Value.Id)
+            {
+                yield break;
+            }
+            
+            if (TryEnterToAddNewGuidedQuest(
+                    SharedViewModel.craftEventItemQuest,
+                    newQuest,
+                    _craftEventItemQuestCell.Quest is not null))
             {
                 yield return new WaitUntil(() => _state.Value == ViewState.Shown);
             }
@@ -488,7 +537,7 @@ namespace Nekoyume.UI.Module
             ReactiveProperty<TQuestModel> questReactiveProperty,
             TQuestModel newQuest,
             bool cellHasQuest)
-            where TQuestModel : Nekoyume.Model.Quest.Quest
+            where TQuestModel : Quest
         {
             var currentQuest = questReactiveProperty.Value;
 
@@ -532,7 +581,7 @@ namespace Nekoyume.UI.Module
         private void EnterToAddNewGuidedQuest<TQuestModel>(
             ReactiveProperty<TQuestModel> questReactiveProperty,
             TQuestModel quest)
-            where TQuestModel : Nekoyume.Model.Quest.Quest
+            where TQuestModel : Quest
         {
             _state.Value = ViewState.AddNewGuidedQuest;
             questReactiveProperty.SetValueAndForceNotify(quest);
@@ -540,7 +589,7 @@ namespace Nekoyume.UI.Module
 
         private void EnterToClearExistGuidedQuest<TQuestModel>(
             IReactiveProperty<TQuestModel> questReactiveProperty)
-            where TQuestModel : Nekoyume.Model.Quest.Quest
+            where TQuestModel : Quest
         {
             _state.Value = ViewState.ClearExistGuidedQuest;
             questReactiveProperty.Value = null;
@@ -661,6 +710,36 @@ namespace Nekoyume.UI.Module
             var reward = new QuestReward(new Dictionary<int, int>());
             return new WorldQuest(row, reward);
         }
+        
+        private static CombinationEquipmentQuest GetTargetCraftEventItemQuest()
+        {
+            if (RxProps.EventScheduleRowForRecipe.Value is null)
+            {
+                return null;
+            }
+
+            if (SharedViewModel.craftEventItemQuest.Value is not null &&
+                SharedViewModel.craftEventItemQuest.Value.RecipeId ==
+                    RxProps.EventScheduleRowForRecipe.Value.Id)
+            {
+                return SharedViewModel.craftEventItemQuest.Value;
+            }
+
+            // NOTE: Make fake craft quest.
+            //       This fake quest make with `CombinationEquipmentQuestSheet.Row`.
+            var goal = RxProps.EventScheduleRowForRecipe.Value.Id;
+            var goalText = goal.ToString(CultureInfo.InvariantCulture);
+            var row = new CombinationEquipmentQuestSheet.Row();
+            row.Set(new[]
+            {
+                goalText,
+                goalText,
+                goalText,
+                goalText,
+            });
+            var reward = new QuestReward(new Dictionary<int, int>());
+            return new CombinationEquipmentQuest(row, reward, goal);
+        }
 
         #endregion
 
@@ -739,7 +818,7 @@ namespace Nekoyume.UI.Module
             if (eventDungeonQuest is null)
             {
                 if (state == ViewState.ClearExistGuidedQuest &&
-                    EventDungeonQuestCell.Quest is WorldQuest quest)
+                    _eventDungeonQuestCell.Quest is WorldQuest quest)
                 {
                     _eventDungeonQuestCell.HideAsClear(_ =>
                     {
@@ -763,6 +842,41 @@ namespace Nekoyume.UI.Module
                 else
                 {
                     _eventDungeonQuestCell.Show(eventDungeonQuest);
+                }
+            }
+        }
+
+        private void SubscribeCraftEventItemQuest(
+            CombinationEquipmentQuest craftEventItemQuest)
+        {
+            var state = _state.Value;
+            if (craftEventItemQuest is null)
+            {
+                if (state == ViewState.ClearExistGuidedQuest &&
+                    _craftEventItemQuestCell.Quest is CombinationEquipmentQuest quest)
+                {
+                    _craftEventItemQuestCell.HideAsClear(_ =>
+                    {
+                        EnterToShown();
+                        _onClearCraftEventItemComplete.OnNext(quest);
+                    });
+                }
+                else
+                {
+                    _craftEventItemQuestCell.Hide();
+                }
+            }
+            else
+            {
+                if (state == ViewState.AddNewGuidedQuest)
+                {
+                    _craftEventItemQuestCell.ShowAsNew(
+                        craftEventItemQuest,
+                        _ => EnterToShown());
+                }
+                else
+                {
+                    _craftEventItemQuestCell.Show(craftEventItemQuest);
                 }
             }
         }

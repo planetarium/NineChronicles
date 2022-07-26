@@ -109,6 +109,9 @@ namespace Nekoyume.UI
             guidedQuest.OnClickEventDungeonQuestCell
                 .Subscribe(tuple => EventDungeonBattle(tuple.quest.Goal))
                 .AddTo(gameObject);
+            guidedQuest.CnClickCraftEventItemQuestCell
+                .Subscribe(tuple => GoToCraftWithToggleType(2))
+                .AddTo(gameObject);
             AnimationState.Subscribe(stateType =>
             {
                 var buttonList = new List<Button>
@@ -219,11 +222,19 @@ namespace Nekoyume.UI
             Close(true);
         }
 
+        private void GoToCraftWithToggleType(int toggleIndex)
+        {
+            AudioController.PlayClick();
+            Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment");
+            CombinationClickInternal(() =>
+                Find<Craft>().ShowWithToggleIndex(toggleIndex));
+        }
+
         private void GoToCombinationEquipmentRecipe(int recipeId)
         {
+            AudioController.PlayClick();
             Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment");
-
-            CombinationClickInternal(() => Find<Craft>().Show(recipeId));
+            CombinationClickInternal(() => Find<Craft>().ShowWithEquipmentRecipeId(recipeId));
         }
 
         private void UpdateButtons()
@@ -350,8 +361,6 @@ namespace Nekoyume.UI
             Close();
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Combination);
             showAction();
-
-            AudioController.PlayClick();
         }
 
         public void RankingClick()
