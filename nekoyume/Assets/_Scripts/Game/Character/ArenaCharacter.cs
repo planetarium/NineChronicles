@@ -65,7 +65,7 @@ namespace Nekoyume.Game.Character
             _speechBubble.UpdatePosition(gameObject, HUDOffset);
         }
 
-        public void Init(PlayerDigest digest, ArenaCharacter target, bool isEnemy)
+        public void Init(ArenaPlayerDigest digest, ArenaCharacter target, bool isEnemy)
         {
             gameObject.SetActive(true);
             transform.localPosition = new Vector3(isEnemy ? StartPos : -StartPos, -1.2f, 0);

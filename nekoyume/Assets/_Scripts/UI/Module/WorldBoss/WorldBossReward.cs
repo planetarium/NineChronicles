@@ -1,8 +1,12 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Libplanet;
+using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
-using Nekoyume.UI.Module;
+using Nekoyume.Model.State;
+using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
@@ -11,7 +15,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
     public class WorldBossReward : WorldBossDetailItem
     {
-        private enum ToggleType
+        public enum ToggleType
         {
             SeasonRanking,
             BossBattle,
@@ -30,6 +34,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         private List<CategoryToggle> categoryToggles = null;
 
         private readonly ReactiveProperty<ToggleType> _selectedItemSubType = new();
+        private RaiderState _cachedRaiderState;
 
         protected void Awake()
         {
@@ -43,15 +48,78 @@ namespace Nekoyume.UI.Module.WorldBoss
                 });
             }
 
-            _selectedItemSubType.Subscribe(UpdateView).AddTo(gameObject);
+            _selectedItemSubType.Subscribe(toggleType =>
+            {
+                foreach (var toggle in categoryToggles)
+                {
+                    toggle.Item.gameObject.SetActive(toggle.Type.Equals(toggleType));
+                }
+            }).AddTo(gameObject);
         }
 
-        private void UpdateView(ToggleType toggleType)
+        public async void ShowAsync(bool isReset = true)
         {
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                return;
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var (raider, raidId) = await GetStatesAsync(avatarAddress);
             foreach (var toggle in categoryToggles)
             {
-                toggle.Item.gameObject.SetActive(toggle.Type.Equals(toggleType));
+                switch (toggle.Item)
+                {
+                    case WorldBossRewardSeasonRanking seasonRanking:
+                        break;
+                    case WorldBossRewardBossBattle bossBattle:
+                        break;
+                    case WorldBossRewardBattleRank battleRank:
+                        battleRank.Set(raider, raidId);
+                        break;
+                }
             }
+
+            if (isReset)
+            {
+                foreach (var toggle in categoryToggles)
+                {
+                    toggle.Item.gameObject.SetActive(false);
+                }
+
+                categoryToggles.First().Toggle.isOn = true;
+                _selectedItemSubType.SetValueAndForceNotify(ToggleType.SeasonRanking);
+            }
+        }
+
+        private async Task<(RaiderState, int)> GetStatesAsync(Address avatarAddress)
+        {
+            var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+
+            var task = Task.Run(async () =>
+            {
+                int raidId;
+                try
+                {
+                    raidId = bossSheet.FindRaidIdByBlockIndex(blockIndex);
+                }
+                catch (InvalidOperationException)
+                {
+                    raidId = bossSheet.FindPreviousRaidIdByBlockIndex(blockIndex);
+                }
+
+                var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, raidId);
+                var raiderState = await Game.Game.instance.Agent.GetStateAsync(raiderAddress);
+                var raider = raiderState is Bencodex.Types.List raiderList
+                    ? new RaiderState(raiderList)
+                    : null;
+
+                return (raider, raidId);
+            });
+
+            await task;
+            return task.Result;
         }
     }
 }

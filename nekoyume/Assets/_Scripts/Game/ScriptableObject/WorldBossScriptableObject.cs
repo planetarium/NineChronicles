@@ -11,8 +11,8 @@ namespace Nekoyume
     public class WorldBossScriptableObject : ScriptableObject
     {
         public List<MonsterData> Monsters;
-
         public List<GradeData> Grades;
+        public List<RuneData> Runes;
 
         [Serializable]
         public class GradeData
@@ -28,6 +28,13 @@ namespace Nekoyume
             public string name;
             public GameObject namePrefab;
             public GameObject spinePrefab;
+        }
+
+        [Serializable]
+        public class RuneData
+        {
+            public int id;
+            public Sprite icon;
         }
     }
 }

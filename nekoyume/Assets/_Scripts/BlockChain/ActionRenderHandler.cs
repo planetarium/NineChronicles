@@ -1675,8 +1675,8 @@ namespace Nekoyume.BlockChain
                 });
 
             var tableSheets = Game.Game.instance.TableSheets;
-            PlayerDigest? myDigest = null;
-            PlayerDigest? enemyDigest = null;
+            ArenaPlayerDigest? myDigest = null;
+            ArenaPlayerDigest? enemyDigest = null;
             int? previousMyScore = null;
             int? outputMyScore = null;
             if (eval.Extra is { })
@@ -1685,16 +1685,16 @@ namespace Nekoyume.BlockChain
                     nameof(BattleArena.ExtraMyPlayerDigest),
                     out var myDigestValue)
                     ? myDigestValue is List myDigestList
-                        ? new PlayerDigest(myDigestList)
-                        : (PlayerDigest?)null
+                        ? new ArenaPlayerDigest(myDigestList)
+                        : (ArenaPlayerDigest?)null
                     : null;
 
                 enemyDigest = eval.Extra.TryGetValue(
                     nameof(BattleArena.ExtraEnemyPlayerDigest),
                     out var enemyDigestValue)
                     ? enemyDigestValue is List enemyDigestList
-                        ? new PlayerDigest(enemyDigestList)
-                        : (PlayerDigest?)null
+                        ? new ArenaPlayerDigest(enemyDigestList)
+                        : (ArenaPlayerDigest?)null
                     : null;
 
                 previousMyScore = eval.Extra.TryGetValue(
@@ -1721,7 +1721,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 myDigest
-                    = new PlayerDigest(myAvatarState, myArenaAvatarState);
+                    = new ArenaPlayerDigest(myAvatarState, myArenaAvatarState);
             }
 
             if (!enemyDigest.HasValue)
@@ -1736,7 +1736,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 enemyDigest
-                    = new PlayerDigest(enemyAvatarState, enemyArenaAvatarState);
+                    = new ArenaPlayerDigest(enemyAvatarState, enemyArenaAvatarState);
             }
 
             previousMyScore ??= RxProps.PlayersArenaParticipant.HasValue
@@ -1859,6 +1859,8 @@ namespace Nekoyume.BlockChain
             }
 
             Debug.Log("[RENDER_CLAIM_RAID_REWARD]");
+            Widget.Find<GrayLoadingScreen>().Close();
+            Widget.Find<WorldBossRewardPopup>().Show(new LocalRandom(eval.RandomSeed));
         }
     }
 }

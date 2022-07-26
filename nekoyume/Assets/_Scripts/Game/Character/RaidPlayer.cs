@@ -27,7 +27,7 @@ namespace Nekoyume.Game.Character
             base.Awake();
         }
 
-        public void Init(PlayerDigest digest, RaidCharacter target)
+        public void Init(ArenaPlayerDigest digest, RaidCharacter target)
         {
             appearance.Set(digest, Animator, _hudContainer);
             _attackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "Attack");

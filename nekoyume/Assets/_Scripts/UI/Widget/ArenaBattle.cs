@@ -41,8 +41,8 @@ namespace Nekoyume.UI
         }
 
         public void Show(
-            PlayerDigest myDigest,
-            PlayerDigest enemyDigest,
+            ArenaPlayerDigest myDigest,
+            ArenaPlayerDigest enemyDigest,
             bool ignoreShowAnimation = false)
         {
             Find<HeaderMenuStatic>().Close(true);
@@ -97,7 +97,7 @@ namespace Nekoyume.UI
             comboText.Show(attacked);
         }
 
-        private void SetStatus(PlayerDigest digest, ArenaStatus status)
+        private void SetStatus(ArenaPlayerDigest digest, ArenaStatus status)
         {
             var armor = digest.Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             var sprite = SpriteHelper.GetItemIcon(armor?.Id ?? GameConfig.DefaultAvatarArmorId);
