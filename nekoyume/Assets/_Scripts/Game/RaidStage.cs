@@ -54,7 +54,7 @@ namespace Nekoyume.Game
 
         public void Play(
             BattleLog log,
-            PlayerDigest player)
+            ArenaPlayerDigest player)
         {
             if (!_isPlaying)
             {
@@ -80,7 +80,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlay(
             BattleLog log,
-            PlayerDigest player)
+            ArenaPlayerDigest player)
         {
             yield return StartCoroutine(CoEnter(player));
 
@@ -139,7 +139,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoFinish());
         }
 
-        private IEnumerator CoEnter(PlayerDigest playerDigest)
+        private IEnumerator CoEnter(ArenaPlayerDigest playerDigest)
         {
             ActionCamera.instance.gameObject.SetActive(false);
             _actionQueue.Clear();
