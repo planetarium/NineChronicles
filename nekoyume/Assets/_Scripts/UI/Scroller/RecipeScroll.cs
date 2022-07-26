@@ -68,6 +68,9 @@ namespace Nekoyume.UI.Scroller
         private GameObject emptyObject;
 
         [SerializeField]
+        private TextMeshProUGUI emptyObjectText;
+
+        [SerializeField]
         private GameObject openAllRecipeArea;
 
         [SerializeField]
