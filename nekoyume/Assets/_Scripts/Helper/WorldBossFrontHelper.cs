@@ -64,6 +64,19 @@ namespace Nekoyume.Helper
             return true;
         }
 
+        public static bool TryGetRuneIcon(int currencyId, out Sprite icon)
+        {
+            var result = ScriptableObject.Runes.FirstOrDefault(x => x.id == currencyId);
+            if (result is null)
+            {
+                icon = null;
+                return false;
+            }
+
+            icon = result.icon;
+            return true;
+        }
+
         public static bool IsItInSeason(long currentBlockIndex)
         {
             var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
@@ -35,7 +37,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         private void Start()
         {
             claimButton.OnSubmitSubject
-                .Subscribe(_ => ActionManager.Instance.ClaimRaidReward())
+                .Subscribe(_ => ClaimRaidReward())
                 .AddTo(gameObject);
 
             claimButton.OnClickDisabledSubject
@@ -61,6 +63,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
+            Widget.Find<WorldBossRewardPopup>().CachingInformation(raiderState, listRow.BossId);
             var latestRewardRank = raiderState?.LatestRewardRank ?? 0;
             var highScore = raiderState?.HighScore ?? 0;
             var currentRank = WorldBossHelper.CalculateRank(highScore);
@@ -70,6 +73,12 @@ namespace Nekoyume.UI.Module.WorldBoss
             UpdateRecord(highScore);
 
             claimButton.Interactable = latestRewardRank < currentRank;
+        }
+
+        private void ClaimRaidReward()
+        {
+            Widget.Find<GrayLoadingScreen>().Show("UI_LOADING_REWARD", true, 0.7f);
+            ActionManager.Instance.ClaimRaidReward();
         }
 
         private void UpdateItems(

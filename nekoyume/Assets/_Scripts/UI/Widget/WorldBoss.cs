@@ -194,11 +194,6 @@ namespace Nekoyume.UI
             UpdateRemainTimer(_period, currentBlockIndex);
         }
 
-        public void UpdateDetailReward()
-        {
-            Find<WorldBossDetail>().UpdateReward();
-        }
-
         private Status GetStatus(long currentBlockIndex)
         {
             return WorldBossFrontHelper.IsItInSeason(currentBlockIndex)

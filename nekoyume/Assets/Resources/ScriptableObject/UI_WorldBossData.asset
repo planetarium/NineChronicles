@@ -43,3 +43,10 @@ MonoBehaviour:
   - grade: 5
     prefab: {fileID: 2013082671546982576, guid: e43cb968e8032c44db2988c1ee1c1117,
       type: 3}
+  Runes:
+  - id: 800000
+    icon: {fileID: 21300000, guid: 9428a33d409bb98499429890c9946e73, type: 3}
+  - id: 800001
+    icon: {fileID: 21300000, guid: a231e103bb6c0184288d77696b72d4e0, type: 3}
+  - id: 800002
+    icon: {fileID: 21300000, guid: 9e8c2e38643c6e34d9d62b5280cd26d9, type: 3}

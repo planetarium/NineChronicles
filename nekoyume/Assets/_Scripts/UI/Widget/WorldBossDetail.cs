@@ -60,9 +60,9 @@ namespace Nekoyume.UI
 
         public void Show(ToggleType toggleType)
         {
-            base.Show();
             categoryToggles.FirstOrDefault(x => x.Type.Equals(toggleType)).Toggle.isOn = true;
             _selectedItemSubType.SetValueAndForceNotify(toggleType);
+            base.Show();
         }
 
         public void UpdateReward()
