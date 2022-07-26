@@ -145,7 +145,11 @@ namespace Nekoyume.UI
 
             ReactiveAvatarState.Address.Subscribe(address =>
             {
-                if (address.Equals(default)) return;
+                if (address.Equals(default))
+                {
+                    return;
+                }
+
                 SharedModel.UpdateUnlockedRecipesAsync(address);
             }).AddTo(gameObject);
 
@@ -172,8 +176,8 @@ namespace Nekoyume.UI
         {
             Show();
 
-            if (!Game.Game.instance.TableSheets
-                    .EquipmentItemRecipeSheet.TryGetValue(equipmentRecipeId, out var row))
+            if (!TableSheets.Instance.EquipmentItemRecipeSheet
+                    .TryGetValue(equipmentRecipeId, out var row))
             {
                 return;
             }
@@ -192,6 +196,7 @@ namespace Nekoyume.UI
         {
             equipmentSubRecipeView.gameObject.SetActive(false);
             consumableSubRecipeView.gameObject.SetActive(false);
+            eventConsumableSubRecipeView.gameObject.SetActive(false);
             base.Show(ignoreShowAnimation);
 
             // Toggles can be switched after enabled.
@@ -210,11 +215,11 @@ namespace Nekoyume.UI
                 HelpTooltip.HelpMe(100016, true);
             }
 
-            var audioController = AudioController.instance;
-            var musicName = AudioController.MusicCode.Combination;
-            if (!audioController.CurrentPlayingMusicName.Equals(musicName))
+            if (!AudioController.instance.CurrentPlayingMusicName
+                    .Equals(AudioController.MusicCode.Combination))
             {
-                AudioController.instance.PlayMusic(musicName);
+                AudioController.instance
+                    .PlayMusic(AudioController.MusicCode.Combination);
             }
         }
 
@@ -240,30 +245,43 @@ namespace Nekoyume.UI
 
         private void SetSubRecipe(SheetRow<int> row)
         {
-            if (row is EquipmentItemRecipeSheet.Row equipmentRow)
+            switch (row)
             {
-                equipmentSubRecipeView.gameObject.SetActive(true);
-                consumableSubRecipeView.gameObject.SetActive(false);
-                equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
-            }
-            else if (row is ConsumableItemRecipeSheet.Row consumableRow)
-            {
-                equipmentSubRecipeView.gameObject.SetActive(false);
-                consumableSubRecipeView.gameObject.SetActive(true);
-                consumableSubRecipeView.SetData(consumableRow, null);
-            }
-            else
-            {
-                equipmentSubRecipeView.gameObject.SetActive(false);
-                consumableSubRecipeView.gameObject.SetActive(false);
+                case EquipmentItemRecipeSheet.Row equipmentRow:
+                    equipmentSubRecipeView.gameObject.SetActive(true);
+                    consumableSubRecipeView.gameObject.SetActive(false);
+                    eventConsumableSubRecipeView.gameObject.SetActive(false);
+                    equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
+                    break;
+                // NOTE: We must check the `row` is type of `EventConsumableItemRecipeSheet.Row`
+                //       because the `EventConsumableItemRecipeSheet.Row` is the inherited class of
+                //       the `ConsumableItemRecipeSheet.Row`.
+                case EventConsumableItemRecipeSheet.Row eventConsumableRow:
+                    equipmentSubRecipeView.gameObject.SetActive(false);
+                    consumableSubRecipeView.gameObject.SetActive(false);
+                    eventConsumableSubRecipeView.gameObject.SetActive(true);
+                    eventConsumableSubRecipeView.SetData(eventConsumableRow, null);
+                    break;
+                case ConsumableItemRecipeSheet.Row consumableRow:
+                    equipmentSubRecipeView.gameObject.SetActive(false);
+                    consumableSubRecipeView.gameObject.SetActive(true);
+                    eventConsumableSubRecipeView.gameObject.SetActive(false);
+                    consumableSubRecipeView.SetData(consumableRow, null);
+                    break;
+
+                default:
+                    equipmentSubRecipeView.gameObject.SetActive(false);
+                    consumableSubRecipeView.gameObject.SetActive(false);
+                    eventConsumableSubRecipeView.gameObject.SetActive(false);
+                    break;
             }
         }
 
-        private void LoadRecipeModel()
+        private static void LoadRecipeModel()
         {
             var jsonAsset = Resources.Load<TextAsset>(ConsumableRecipeGroupPath);
             var group = jsonAsset is null
-                ? default
+                ? null
                 : JsonSerializer.Deserialize<CombinationRecipeGroup>(jsonAsset.text);
 
             SharedModel = new RecipeModel(
@@ -271,7 +289,7 @@ namespace Nekoyume.UI
                 group.Groups);
         }
 
-        private void SubscribeQuestList(QuestList questList)
+        private static void SubscribeQuestList(QuestList questList)
         {
             var quest = questList?
                 .OfType<CombinationEquipmentQuest>()
@@ -280,7 +298,7 @@ namespace Nekoyume.UI
                 .FirstOrDefault();
 
             if (quest is null ||
-                !Game.Game.instance.TableSheets.EquipmentItemRecipeSheet
+                !TableSheets.Instance.EquipmentItemRecipeSheet
                     .TryGetValue(quest.RecipeId, out var row) ||
                 !States.Instance.CurrentAvatarState.worldInformation
                     .TryGetLastClearedStageId(out var clearedStage))
@@ -290,7 +308,9 @@ namespace Nekoyume.UI
             }
 
             var stageId = row.UnlockStage;
-            SharedModel.NotifiedRow.Value = clearedStage >= stageId ? row : null;
+            SharedModel.NotifiedRow.Value = clearedStage >= stageId
+                ? row
+                : null;
         }
 
         private void OnClickEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
