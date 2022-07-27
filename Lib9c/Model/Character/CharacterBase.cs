@@ -42,7 +42,7 @@ namespace Nekoyume.Model
         public int Level
         {
             get => Stats.Level;
-            set => Stats.SetLevel(value);
+            set => Stats.SetStats(value);
         }
 
         public int HP => Stats.HP;
@@ -78,6 +78,30 @@ namespace Nekoyume.Model
             {
                 Stats.AddOption(optionalStatModifiers);
             }
+
+            Skills.Clear();
+
+            atkElementType = RowData.ElementalType;
+            attackRange = RowData.AttackRange;
+            defElementType = RowData.ElementalType;
+            CurrentHP = HP;
+            AttackCountMax = 0;
+        }
+
+        protected CharacterBase(
+            Simulator simulator,
+            CharacterSheet characterSheet,
+            int characterId,
+            CharacterStats stat)
+        {
+            Simulator = simulator;
+
+            if (!characterSheet.TryGetValue(characterId, out var characterRow))
+                throw new SheetRowNotFoundException("CharacterSheet", characterId);
+
+            RowData = characterRow;
+            CharacterId = characterId;
+            Stats = stat;
 
             Skills.Clear();
 
@@ -129,7 +153,7 @@ namespace Nekoyume.Model
             RowData = row;
         }
 
-        public void InitAI()
+        public virtual void InitAI()
         {
             SetSkill();
 

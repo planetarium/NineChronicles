@@ -30,6 +30,19 @@ namespace Nekoyume.Model
             PostConstruction();
         }
 
+        public Enemy(CharacterBase player,
+            CharacterSheet.Row characterRowData,
+            CharacterStats stat)
+            : base(
+                player.Simulator,
+                player.Simulator.CharacterSheet,
+                characterRowData.Id,
+                stat)
+        {
+            Targets.Add(player);
+            PostConstruction();
+        }
+
         public Enemy(Enemy value) : base(value)
         {
             spawnIndex = value.spawnIndex;
@@ -53,7 +66,7 @@ namespace Nekoyume.Model
             player.RemoveTarget(this);
         }
 
-        protected sealed override void SetSkill()
+        protected override void SetSkill()
         {
             base.SetSkill();
 

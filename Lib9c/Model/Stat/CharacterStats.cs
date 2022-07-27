@@ -8,7 +8,7 @@ namespace Nekoyume.Model.Stat
 {
     /// <summary>
     /// 캐릭터의 스탯을 관리한다.
-    /// 스탯은 레벨에 의한 _levelStats를 기본으로 하고
+    /// 스탯은 레벨에 의한 _baseStats를 기본으로 하고
     /// > 장비에 의한 _equipmentStats
     /// > 소모품에 의한 _consumableStats
     /// > 버프에 의한 _buffStats
@@ -20,7 +20,7 @@ namespace Nekoyume.Model.Stat
     {
         private readonly CharacterSheet.Row _row;
 
-        private readonly Stats _levelStats = new Stats();
+        private readonly Stats _baseStats = new Stats();
         private readonly Stats _equipmentStats = new Stats();
         private readonly Stats _consumableStats = new Stats();
         private readonly Stats _buffStats = new Stats();
@@ -32,34 +32,35 @@ namespace Nekoyume.Model.Stat
         private readonly List<StatModifier> _optionalStatModifiers = new List<StatModifier>();
 
         public int Level { get; private set; }
+        public bool UseLevelStats { get; set; }
 
-        public IStats LevelStats => _levelStats;
+        public IStats BaseStats => _baseStats;
         public IStats EquipmentStats => _equipmentStats;
         public IStats ConsumableStats => _consumableStats;
         public IStats BuffStats => _buffStats;
         public IStats OptionalStats => _optionalStats;
 
 
-        public int BaseHP => LevelStats.HP;
-        public int BaseATK => LevelStats.ATK;
-        public int BaseDEF => LevelStats.DEF;
-        public int BaseCRI => LevelStats.CRI;
-        public int BaseHIT => LevelStats.HIT;
-        public int BaseSPD => LevelStats.SPD;
+        public int BaseHP => BaseStats.HP;
+        public int BaseATK => BaseStats.ATK;
+        public int BaseDEF => BaseStats.DEF;
+        public int BaseCRI => BaseStats.CRI;
+        public int BaseHIT => BaseStats.HIT;
+        public int BaseSPD => BaseStats.SPD;
 
-        public bool HasBaseHP => LevelStats.HasHP;
-        public bool HasBaseATK => LevelStats.HasATK;
-        public bool HasBaseDEF => LevelStats.HasDEF;
-        public bool HasBaseCRI => LevelStats.HasCRI;
-        public bool HasBaseHIT => LevelStats.HasHIT;
-        public bool HasBaseSPD => LevelStats.HasSPD;
+        public bool HasBaseHP => BaseStats.HasHP;
+        public bool HasBaseATK => BaseStats.HasATK;
+        public bool HasBaseDEF => BaseStats.HasDEF;
+        public bool HasBaseCRI => BaseStats.HasCRI;
+        public bool HasBaseHIT => BaseStats.HasHIT;
+        public bool HasBaseSPD => BaseStats.HasSPD;
 
-        public int AdditionalHP => HP - _levelStats.HP;
-        public int AdditionalATK => ATK - _levelStats.ATK;
-        public int AdditionalDEF => DEF - _levelStats.DEF;
-        public int AdditionalCRI => CRI - _levelStats.CRI;
-        public int AdditionalHIT => HIT - _levelStats.HIT;
-        public int AdditionalSPD => SPD - _levelStats.SPD;
+        public int AdditionalHP => HP - _baseStats.HP;
+        public int AdditionalATK => ATK - _baseStats.ATK;
+        public int AdditionalDEF => DEF - _baseStats.DEF;
+        public int AdditionalCRI => CRI - _baseStats.CRI;
+        public int AdditionalHIT => HIT - _baseStats.HIT;
+        public int AdditionalSPD => SPD - _baseStats.SPD;
 
         public bool HasAdditionalHP => AdditionalHP > 0;
         public bool HasAdditionalATK => AdditionalATK > 0;
@@ -76,16 +77,32 @@ namespace Nekoyume.Model.Stat
             int level
         )
         {
+            UseLevelStats = true;
             _row = row ?? throw new ArgumentNullException(nameof(row));
-            SetLevel(level);
+            SetStats(level);
             EqualizeCurrentHPWithHP();
         }
 
+        public CharacterStats(
+            CharacterSheet.Row row,
+            WorldBossSheet.WaveStatData stat)
+        {
+            UseLevelStats = false;
+            _row = row ?? throw new ArgumentNullException(nameof(row));
+
+            Level = stat.Level;
+            var stats = stat.ToStats();
+            _baseStats.Set(stats);
+            SetStats(stat.Level);
+            EqualizeCurrentHPWithHP();
+        }
+            
         public CharacterStats(CharacterStats value) : base(value)
         {
+            UseLevelStats = value.UseLevelStats;
             _row = value._row;
 
-            _levelStats = new Stats(value._levelStats);
+            _baseStats = new Stats(value._baseStats);
             _equipmentStats = new Stats(value._equipmentStats);
             _consumableStats = new Stats(value._consumableStats);
             _buffStats = new Stats(value._buffStats);
@@ -107,32 +124,32 @@ namespace Nekoyume.Model.Stat
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
             CostumeStatSheet costumeStatSheet)
         {
-            SetLevel(level, false);
+            SetStats(level, false);
             SetEquipments(equipments, equipmentItemSetEffectSheet, false);
             SetCostumes(costumes, costumeStatSheet);
             SetConsumables(consumables, false);
-            UpdateLevelStats();
+            UpdateBaseStats();
             EqualizeCurrentHPWithHP();
 
             return this;
         }
 
         /// <summary>
-        /// 레벨을 설정하고, 생성자에서 받은 캐릭터 정보와 레벨을 바탕으로 모든 스탯을 재설정한다.
+        /// 생성자에서 받은 캐릭터 정보와 레벨을 바탕으로 모든 스탯을 재설정한다.
         /// </summary>
         /// <param name="level"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
-        public CharacterStats SetLevel(int level, bool updateImmediate = true)
+        public CharacterStats SetStats(int level, bool updateImmediate = true)
         {
-            if (level == Level)
+            if (UseLevelStats && level == Level)
                 return this;
 
             Level = level;
 
             if (updateImmediate)
             {
-                UpdateLevelStats();
+                UpdateBaseStats();
             }
 
             return this;
@@ -348,40 +365,44 @@ namespace Nekoyume.Model.Stat
             hp.SetValue(Math.Max(0, hp.Value * 2));
         }
 
-        private void UpdateLevelStats()
+        private void UpdateBaseStats()
         {
-            var statsData = _row.ToStats(Level);
-            _levelStats.Set(statsData);
+            if (UseLevelStats)
+            {
+                var statsData = _row.ToStats(Level);
+                _baseStats.Set(statsData);
+            }
+
             UpdateEquipmentStats();
         }
 
         private void UpdateEquipmentStats()
         {
-            _equipmentStats.Set(_equipmentStatModifiers, _levelStats);
+            _equipmentStats.Set(_equipmentStatModifiers, _baseStats);
             UpdateConsumableStats();
         }
 
         private void UpdateConsumableStats()
         {
-            _consumableStats.Set(_consumableStatModifiers, _levelStats, _equipmentStats);
+            _consumableStats.Set(_consumableStatModifiers, _baseStats, _equipmentStats);
             UpdateBuffStats();
         }
 
         private void UpdateBuffStats()
         {
-            _buffStats.Set(_buffStatModifiers.Values, _levelStats, _equipmentStats, _consumableStats);
+            _buffStats.Set(_buffStatModifiers.Values, _baseStats, _equipmentStats, _consumableStats);
             UpdateOptionalStats();
         }
 
         private void UpdateOptionalStats()
         {
-            _optionalStats.Set(_optionalStatModifiers, _levelStats, _equipmentStats, _consumableStats, _buffStats);
+            _optionalStats.Set(_optionalStatModifiers, _baseStats, _equipmentStats, _consumableStats, _buffStats);
             UpdateTotalStats();
         }
 
         private void UpdateTotalStats()
         {
-            Set(_levelStats, _equipmentStats, _consumableStats, _buffStats, _optionalStats);
+            Set(_baseStats, _equipmentStats, _consumableStats, _buffStats, _optionalStats);
             // 최소값 보정
             hp.SetValue(Math.Max(0, hp.Value));
             atk.SetValue(Math.Max(0, atk.Value));

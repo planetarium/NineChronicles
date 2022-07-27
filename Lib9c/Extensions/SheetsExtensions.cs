@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
@@ -207,6 +207,22 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
                 sheets.GetSheet<WeeklyArenaRewardSheet>()
+            );
+        }
+
+        public static RaidSimulatorSheets GetRaidSimulatorSheets(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new RaidSimulatorSheets(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<BuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
+                sheets.GetSheet<WorldBossSheet>(),
+                sheets.GetSheet<EnemySkillSheet>()
             );
         }
 

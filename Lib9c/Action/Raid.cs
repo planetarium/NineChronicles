@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
@@ -48,8 +49,17 @@ namespace Nekoyume.Action
             }
 
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new [] {
+                typeof(MaterialItemSheet),
+                typeof(SkillSheet),
+                typeof(SkillBuffSheet),
+                typeof(BuffSheet),
+                typeof(CharacterSheet),
+                typeof(CharacterLevelSheet),
+                typeof(EquipmentItemSetEffectSheet),
+                typeof(WorldBossSheet),
                 typeof(WorldBossListSheet),
                 typeof(WorldBossGlobalHpSheet),
+                typeof(EnemySkillSheet),
             });
             var worldBossListSheet = sheets.GetSheet<WorldBossListSheet>();
             var row = worldBossListSheet.FindRowByBlockIndex(context.BlockIndex);
@@ -110,6 +120,14 @@ namespace Nekoyume.Action
             avatarState.ValidateConsumable(FoodIds, context.BlockIndex);
             avatarState.ValidateCostume(CostumeIds);
             // Simulate.
+            var simulator = new RaidSimulator(
+                row.BossId,
+                context.Random,
+                avatarState,
+                FoodIds,
+                sheets.GetRaidSimulatorSheets());
+            simulator.Simulate();
+
             int score = 10_000;
             if (raiderState.HighScore < score)
             {
