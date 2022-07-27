@@ -11492,10 +11492,11 @@ MonoBehaviour:
   tutorialActions: 
   season: {fileID: 3712373159297673171}
   backButton: {fileID: 4656612568814026336}
-  prevRankButton: {fileID: 587638803008553473}
+  rewardButton: {fileID: 6424178244617798470}
   rankButton: {fileID: 7147123250306938275}
   informationButton: {fileID: 2810049449839990626}
-  rewardButton: {fileID: 6424178244617798470}
+  prevRankButton: {fileID: 587638803008553473}
+  runeButton: {fileID: 7277333978495071757}
   enterButton: {fileID: 8811684776548993440}
   offSeasonContainer: {fileID: 9120143198116046027}
   seasonContainer: {fileID: 7916253040827682814}
@@ -11504,9 +11505,6 @@ MonoBehaviour:
   timerSlider: {fileID: 3377955908406651993}
   timeBlock: {fileID: 1214163090834449120}
   ticketText: {fileID: 6006894944581489290}
-  claimRaidRewardButton: {fileID: 0}
-  viewButton: {fileID: 0}
-  viewRuneButton: {fileID: 0}
 --- !u!1 &7808758869311748717
 GameObject:
   m_ObjectHideFlags: 0
@@ -13183,7 +13181,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}

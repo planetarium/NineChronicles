@@ -20,7 +20,8 @@ namespace Nekoyume.UI
             Information,
             PreviousRank,
             Rank,
-            Reward
+            Reward,
+            Rune,
         }
 
         [Serializable]
@@ -98,6 +99,8 @@ namespace Nekoyume.UI
                         case WorldBossRank rank:
                             break;
                         case WorldBossPreviousRank previousRank:
+                            break;
+                        case WorldBossRuneInventory runeInventory:
                             break;
                     }
                 }

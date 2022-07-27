@@ -37,7 +37,7 @@ namespace Nekoyume.UI
         private Button backButton;
 
         [SerializeField]
-        public Button prevRankButton;
+        public Button rewardButton;
 
         [SerializeField]
         public Button rankButton;
@@ -46,7 +46,10 @@ namespace Nekoyume.UI
         public Button informationButton;
 
         [SerializeField]
-        public Button rewardButton;
+        public Button prevRankButton;
+
+        [SerializeField]
+        public Button runeButton;
 
         [SerializeField]
         private ConditionalButton enterButton;
@@ -79,15 +82,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI ticketText;
 
-        [SerializeField]
-        private Button claimRaidRewardButton;
-
-        [SerializeField]
-        private Button viewButton;
-
-        [SerializeField]
-        private Button viewRuneButton;
-
         private Status _status = Status.None;
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
@@ -116,6 +110,8 @@ namespace Nekoyume.UI
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Information)).AddTo(gameObject);
             prevRankButton.OnClickAsObservable()
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.PreviousRank)).AddTo(gameObject);
+            runeButton.OnClickAsObservable()
+                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rune)).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
 

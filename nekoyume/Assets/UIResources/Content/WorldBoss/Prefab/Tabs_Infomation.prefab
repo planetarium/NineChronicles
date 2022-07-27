@@ -4607,7 +4607,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7363335699118022938}
-  - component: {fileID: 301521657702157884}
   - component: {fileID: 4413060831535384642}
   m_Layer: 5
   m_Name: UI_BuffLayout
@@ -4642,30 +4641,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -168}
   m_SizeDelta: {x: 374, y: 43}
   m_Pivot: {x: 0.5, y: 1}
---- !u!114 &301521657702157884
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8237486873309297493}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d0e701cb83fe2c42a3275a51342202e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  iconPrefab: {fileID: 6167616189167565622}
-  pool:
-  - {fileID: 0}
-  - {fileID: 2863252744596334893}
-  - {fileID: 7486315107551848304}
-  - {fileID: 6146263733921841761}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &4413060831535384642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5412,12 +5387,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 28e83971c8c2ea54ebe3c2510384c8f4, type: 3}
---- !u!1 &6167616189167565622 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8474428278693145419, guid: 28e83971c8c2ea54ebe3c2510384c8f4,
-    type: 3}
-  m_PrefabInstance: {fileID: 2309486385280602237}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &6546227559272063619 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8850750749056496382, guid: 28e83971c8c2ea54ebe3c2510384c8f4,

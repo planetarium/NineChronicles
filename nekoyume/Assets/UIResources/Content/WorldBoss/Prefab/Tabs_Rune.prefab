@@ -757,7 +757,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4349767822754118350}
   - component: {fileID: 8852106516722426837}
-  - component: {fileID: 3698485135511522922}
+  - component: {fileID: 7990449719709362700}
   m_Layer: 5
   m_Name: Tabs_Rune
   m_TagString: Untagged
@@ -795,7 +795,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8844308217711945866}
   m_CullTransparentMesh: 0
---- !u!114 &3698485135511522922
+--- !u!114 &7990449719709362700
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -804,7 +804,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8844308217711945866}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34f4f309016148b0bbf5e41014b1f855, type: 3}
+  m_Script: {fileID: 11500000, guid: c81bc6ea665d4b5fb59a66caeab1ae43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &7034041355071146441
