@@ -5,6 +5,7 @@ using System.Linq;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -112,6 +113,9 @@ namespace Nekoyume.UI
         private Button closeButton = null;
 
         [SerializeField]
+        private Button stagePreparationButton = null;
+
+        [SerializeField]
         private Button nextButton = null;
 
         [SerializeField]
@@ -164,6 +168,11 @@ namespace Nekoyume.UI
                     }
                 }).AddTo(gameObject);
 
+            stagePreparationButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                OnClickStage();
+            }).AddTo(gameObject);
+
             nextButton.OnClickAsObservable().Subscribe(_ =>
                 {
                     StartCoroutine(OnClickNext());
@@ -190,6 +199,13 @@ namespace Nekoyume.UI
                 yield return CoDialog(SharedModel.StageID);
             }
             GoToMain();
+        }
+
+        private void OnClickStage()
+        {
+            _IsAlreadyOut = true;
+            AudioController.PlayClick();
+            GoToPreparation();
         }
 
         private IEnumerator OnClickNext()
@@ -251,6 +267,7 @@ namespace Nekoyume.UI
 
             base.Show();
             closeButton.gameObject.SetActive(model.StageID >= 3 || model.LastClearedStageId >= 3);
+            stagePreparationButton.gameObject.SetActive(false);
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
 
@@ -411,6 +428,12 @@ namespace Nekoyume.UI
             string fullFormat = string.Empty;
             closeButton.interactable = true;
 
+            if (!SharedModel.IsClear)
+            {
+                stagePreparationButton.gameObject.SetActive(true);
+                stagePreparationButton.interactable = true;
+            }
+
             if (!SharedModel.ActionPointNotEnough)
             {
                 var value = SharedModel.StageID >= 3 || SharedModel.LastClearedStageId >= 3;
@@ -440,6 +463,9 @@ namespace Nekoyume.UI
                     SubmitWidget = nextButton.onClick.Invoke;
                     fullFormat = L10nManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
                     break;
+                default:
+                    bottomText.text = string.Empty;
+                    yield break;
             }
 
             // for tutorial
@@ -447,6 +473,7 @@ namespace Nekoyume.UI
                 SharedModel.LastClearedStageId == 3 &&
                 SharedModel.State == BattleLog.Result.Win)
             {
+                stagePreparationButton.gameObject.SetActive(false);
                 nextButton.gameObject.SetActive(false);
                 repeatButton.gameObject.SetActive(false);
                 bottomText.text = string.Empty;
@@ -502,6 +529,7 @@ namespace Nekoyume.UI
             }
 
             closeButton.interactable = false;
+            stagePreparationButton.interactable = false;
             repeatButton.interactable = false;
             nextButton.interactable = false;
             actionPoint.SetEventTriggerEnabled(false);
@@ -556,6 +584,7 @@ namespace Nekoyume.UI
             }
 
             closeButton.interactable = false;
+            stagePreparationButton.interactable = false;
             repeatButton.interactable = false;
             nextButton.interactable = false;
             actionPoint.SetEventTriggerEnabled(false);
@@ -673,6 +702,56 @@ namespace Nekoyume.UI
                     });
                 }
             }
+        }
+
+        private void GoToPreparation()
+        {
+            Find<Battle>().Close(true);
+            Game.Game.instance.Stage.DestroyBackground();
+            Game.Event.OnRoomEnter.Invoke(true);
+            Close();
+
+            var worldMapLoading = Find<WorldMapLoadingScreen>();
+            worldMapLoading.Show();
+            Game.Game.instance.Stage.OnRoomEnterEnd.First().Subscribe(_ =>
+            {
+                CloseWithOtherWidgets();
+                Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+
+                if (SharedModel.WorldID > 10000)
+                {
+                    var viewModel = new WorldMap.ViewModel
+                    {
+                        WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
+                    };
+                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.WorldID);
+                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.StageID);
+                    Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SharedModel.WorldID,
+                        out var worldRow);
+
+                    Find<StageInformation>().Show(viewModel, worldRow, StageType.Mimisbrunnr);
+
+                    Find<BattlePreparation>().Show(
+                        StageType.Mimisbrunnr,
+                        GameConfig.MimisbrunnrWorldId,
+                        SharedModel.StageID,
+                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID % 10000000}",
+                        true);
+                }
+                else
+                {
+                    Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
+
+                    Find<BattlePreparation>().Show(
+                        StageType.HackAndSlash,
+                        SharedModel.WorldID,
+                        SharedModel.StageID,
+                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID}",
+                        true);
+                }
+
+                worldMapLoading.Close(true);
+            });
         }
 
         private void StopCoUpdateBottomText()

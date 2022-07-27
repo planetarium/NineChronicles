@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nekoyume.Game;
-using Nekoyume.Helper;
-using Nekoyume.Model.Arena;
 using Nekoyume.State;
 using TMPro;
 using UnityEngine;
