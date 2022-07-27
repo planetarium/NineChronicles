@@ -191,9 +191,9 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(AvatarAddress);
-            CrystalRandomSkillState skillState = null;
             var isNotClearedStage = !avatarState.worldInformation.IsStageCleared(StageId);
             var skillsOnWaveStart = new List<Skill>();
+            CrystalRandomSkillState skillState = null;
             if (isNotClearedStage)
             {
                 // It has state, get CrystalRandomSkillState. If not, newly make.
@@ -232,108 +232,68 @@ namespace Nekoyume.Action
             sw.Restart();
             var worldSheet = sheets.GetSheet<WorldSheet>();
             var worldUnlockSheet = sheets.GetSheet<WorldUnlockSheet>();
-            // First simulating will use Foods.
-            var simulator = new StageSimulator(
-                random,
-                avatarState,
-                Foods,
-                skillsOnWaveStart,
-                WorldId,
-                StageId,
-                sheets.GetStageSimulatorSheets(),
-                sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.ConstructorVersionV100080);
-            sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
-
+            var crystalStageBuffSheet = sheets.GetSheet<CrystalStageBuffGachaSheet>();
             sw.Restart();
-            simulator.Simulate(1);
-            sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
-
-            sw.Restart();
-            if (simulator.Log.IsClear)
-            {
-                simulator.Player.worldInformation.ClearStage(
-                    WorldId,
-                    StageId,
-                    blockIndex,
-                    worldSheet,
-                    worldUnlockSheet
-                );
-                sw.Stop();
-                Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
-            }
-
-            sw.Stop();
-            Log.Verbose(
-                "{AddressesHex}Execute HackAndSlash({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
-                "clearWave: {ClearWave}, totalWave: {TotalWave}",
-                addressesHex,
-                AvatarAddress,
-                WorldId,
-                StageId,
-                simulator.Log.result,
-                simulator.Log.clearedWaveNumber,
-                simulator.Log.waveCount
-            );
-
-            avatarState.Update(simulator);
-            var sumOfStars = simulator.Log.clearedWaveNumber;
-
-            if (PlayCount > 1)
+            // if PlayCount > 1, it is Multi-HAS.
+            for (var i = 0; i < PlayCount; i++)
             {
                 sw.Restart();
-                // if PlayCount > 1, it is MultiHAS.
-                for (var i = 1; i < PlayCount; i++)
+                // First simulating will use Foods and Random Skills.
+                // Remainder simulating will not use Foods.
+                var simulator = new StageSimulator(
+                    new HackAndSlashRandom(random.Next()),
+                    avatarState,
+                    i == 0 ? Foods : new List<Guid>(),
+                    i == 0 ? skillsOnWaveStart : new List<Skill>(),
+                    WorldId,
+                    StageId,
+                    sheets.GetStageSimulatorSheets(),
+                    sheets.GetSheet<CostumeStatSheet>(),
+                    StageSimulator.ConstructorVersionV100080);
+                sw.Stop();
+                Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
+
+                sw.Restart();
+                simulator.Simulate(1);
+                sw.Stop();
+                Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
+
+                sw.Restart();
+                if (simulator.Log.IsClear)
                 {
-                    // Remainder simulating will not use Foods.
-                    simulator = new StageSimulator(
-                        new HackAndSlashRandom(random.Next()),
-                        avatarState,
-                        new List<Guid>(),
-                        new List<Skill>(),
+                    simulator.Player.worldInformation.ClearStage(
                         WorldId,
                         StageId,
-                        sheets.GetStageSimulatorSheets(),
-                        sheets.GetSheet<CostumeStatSheet>(),
-                        StageSimulator.ConstructorVersionV100080);
-                    simulator.Simulate(1);
-                    if (simulator.Log.IsClear)
-                    {
-                        simulator.Player.worldInformation.ClearStage(
-                            WorldId,
-                            StageId,
-                            blockIndex,
-                            worldSheet,
-                            worldUnlockSheet
-                        );
-                    }
-
-                    avatarState.Update(simulator);
-                    sumOfStars += simulator.Log.clearedWaveNumber;
+                        blockIndex,
+                        worldSheet,
+                        worldUnlockSheet
+                    );
+                    sw.Stop();
+                    Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
                 }
+
+                sw.Restart();
+                avatarState.Update(simulator);
+                // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
+                skillState?.Update(simulator.Log.clearedWaveNumber, crystalStageBuffSheet);
+
                 sw.Stop();
-                Log.Verbose("{AddressesHex}HAS loop Simulate: {Elapsed}, Count: {PlayCount}",
-                    addressesHex, sw.Elapsed, PlayCount - 1);
+                Log.Verbose(
+                    "{AddressesHex}Update avatar by simulator({AvatarAddress}); " +
+                    "worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
+                    "clearWave: {ClearWave}, totalWave: {TotalWave}",
+                    addressesHex,
+                    AvatarAddress,
+                    WorldId,
+                    StageId,
+                    simulator.Log.result,
+                    simulator.Log.clearedWaveNumber,
+                    simulator.Log.waveCount
+                );
             }
-
-            if (isNotClearedStage)
-            {
-                avatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId);
-                if (lastClearedStageId >= StageId)
-                {
-                    // Make new CrystalRandomSkillState by next stage Id.
-                    skillState = new CrystalRandomSkillState(skillStateAddress, StageId + 1);
-                    states = states.SetState(skillStateAddress, skillState.Serialize());
-                }
-                else
-                {
-                    // Update CrystalRandomSkillState.Stars by sum of clearedWaveNumber. (add)
-                    skillState.Update(sumOfStars, sheets.GetSheet<CrystalStageBuffGachaSheet>());
-                    states = states.SetState(skillStateAddress, skillState.Serialize());
-                }
-            }
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS loop Simulate: {Elapsed}, Count: {PlayCount}",
+                addressesHex, sw.Elapsed, PlayCount);
 
             sw.Restart();
             avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
@@ -343,8 +303,15 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            if (isNotClearedStage && skillsOnWaveStart.Any())
+            if (isNotClearedStage)
             {
+                avatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId);
+                if (lastClearedStageId >= StageId)
+                {
+                    // Make new CrystalRandomSkillState by next stage Id.
+                    skillState = new CrystalRandomSkillState(skillStateAddress, StageId + 1);
+                }
+
                 skillState.Update(new List<int>());
                 states = states.SetState(skillStateAddress, skillState.Serialize());
             }
