@@ -63,7 +63,7 @@ namespace Lib9c.Tests.Action
                 for (int i = 800_000; i < 800_003; i++)
                 {
                     var runeCurrency = RuneHelper.ToCurrency(i);
-                    rune += (int)nextState.GetBalance(default, runeCurrency).MajorUnit;
+                    rune += (int)nextState.GetBalance(avatarAddress, runeCurrency).MajorUnit;
                 }
 
                 Assert.Equal(expectedRune, rune);
