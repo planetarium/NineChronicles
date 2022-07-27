@@ -111,27 +111,6 @@ namespace Nekoyume.Game
                     }
 
                     caster.CurrentAction = StartCoroutine(CoAct(param));
-                    var targets = param.SkillInfos.Select(i => i.Target);
-                    foreach (var target in targets)
-                    {
-                        Character.RaidCharacter character
-                            = target.Id == _player.Id ? _player : _boss;
-                        if (_player.IsDead)
-                        {
-                            yield return caster.CurrentAction;
-                            yield return StartCoroutine(character.CoDie());
-                        }
-                        else if (_boss.IsDead)
-                        {
-                            yield return caster.CurrentAction;
-                            yield return StartCoroutine(
-                                waveIndex < 4 ? 
-                                container.CoPlayRunAwayCutscene(waveIndex) :
-                                container.CoPlayFallDownCutscene());
-                            yield return StartCoroutine(container.CoPlayAppearCutscene());
-                        }
-                    }
-
                     yield return skillDelay;
                 }
             }
@@ -223,6 +202,7 @@ namespace Nekoyume.Game
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
             var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoNormalAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
@@ -231,6 +211,7 @@ namespace Nekoyume.Game
         public IEnumerator CoBlowAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
             var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoBlowAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
@@ -239,6 +220,7 @@ namespace Nekoyume.Game
         public IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
             var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoDoubleAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
@@ -247,6 +229,7 @@ namespace Nekoyume.Game
         public IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
             var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoAreaAttack);
             _actionQueue.Enqueue(actionParams);
             yield break;
@@ -255,6 +238,7 @@ namespace Nekoyume.Game
         public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
             var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoHeal);
             _actionQueue.Enqueue(actionParams);
             yield break;
@@ -263,6 +247,7 @@ namespace Nekoyume.Game
         public IEnumerator CoBuff(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
             var actionParams = new Character.RaidActionParams(target, skillInfos, buffInfos, target.CoBuff);
             _actionQueue.Enqueue(actionParams);
             yield break;
@@ -271,7 +256,16 @@ namespace Nekoyume.Game
         public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
             target.UpdateStatusUI();
+            if (target)
+            {
+                if (target.HPBar.HpVFX != null)
+                {
+                    target.HPBar.HpVFX.Stop();
+                }
+            }
+
             yield break;
         }
 
@@ -305,7 +299,28 @@ namespace Nekoyume.Game
 
         public IEnumerator CoDead(CharacterBase character)
         {
-            yield break;
+            var waveIndex = 0;
+            Character.RaidCharacter raidCharacter =
+                character.Id == _player.Id ? _player : _boss;
+            raidCharacter.Set(character);
+            yield return raidCharacter.TargetAction;
+
+            if (_player.IsDead)
+            {
+                yield return StartCoroutine(raidCharacter.CoDie());
+            }
+            else if (_boss.IsDead)
+            {
+                if (waveIndex < 4)
+                {
+                    yield return StartCoroutine(container.CoPlayRunAwayCutscene(waveIndex));
+                    yield return StartCoroutine(container.CoPlayAppearCutscene());
+                }
+                else
+                {
+                    yield return StartCoroutine(container.CoPlayFallDownCutscene());
+                }
+            }
         }
 
         private void CreateContainer(int id)

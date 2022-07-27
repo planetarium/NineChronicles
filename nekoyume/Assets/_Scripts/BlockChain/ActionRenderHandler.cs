@@ -1682,7 +1682,7 @@ namespace Nekoyume.BlockChain
             if (eval.Extra is { })
             {
                 myDigest = eval.Extra.TryGetValue(
-                    nameof(BattleArena.ExtraMyPlayerDigest),
+                    nameof(BattleArena.ExtraMyArenaPlayerDigest),
                     out var myDigestValue)
                     ? myDigestValue is List myDigestList
                         ? new ArenaPlayerDigest(myDigestList)
@@ -1690,7 +1690,7 @@ namespace Nekoyume.BlockChain
                     : null;
 
                 enemyDigest = eval.Extra.TryGetValue(
-                    nameof(BattleArena.ExtraEnemyPlayerDigest),
+                    nameof(BattleArena.ExtraEnemyArenaPlayerDigest),
                     out var enemyDigestValue)
                     ? enemyDigestValue is List enemyDigestList
                         ? new ArenaPlayerDigest(enemyDigestList)
@@ -1845,7 +1845,8 @@ namespace Nekoyume.BlockChain
             );
             simulator.Simulate();
             BattleLog log = simulator.Log;
-            var playerDigest = new PlayerDigest(States.Instance.CurrentAvatarState);
+            Widget.Find<Menu>().Close();
+            var playerDigest = new ArenaPlayerDigest(States.Instance.CurrentAvatarState);
             Game.Game.instance.RaidStage.Play(log, playerDigest);
             Widget.Find<WorldBoss>().UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true);
             Widget.Find<WorldBoss>().Close();
