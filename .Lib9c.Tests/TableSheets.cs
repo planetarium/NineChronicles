@@ -165,6 +165,8 @@ namespace Lib9c.Tests
 
         public WorldBossGlobalHpSheet WorldBossGlobalHpSheet { get; private set; }
 
+        public RuneSheet RuneSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
