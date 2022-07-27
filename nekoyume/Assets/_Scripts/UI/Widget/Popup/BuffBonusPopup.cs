@@ -185,31 +185,26 @@ namespace Nekoyume.UI
             var randomBuffsheet = Game.Game.instance.TableSheets.CrystalRandomBuffSheet;
             var randomBuffGroupsByRank = randomBuffsheet.Select(line => line.Value).GroupBy(row => row.Rank);
 
-            InitializeChildren();
+            var cellList = cellContainer.GetComponentsInChildren<BuffBonusTitleCell>().Select(cell => cell.gameObject)
+                .Concat(cellContainer.GetComponentsInChildren<BuffBonusBuffCell>().Select(cell => cell.gameObject));
+
+            foreach (var cell in cellList)
+            {
+                Destroy(cell);
+            }
 
             foreach (var randomBuffGroup in randomBuffGroupsByRank)
             {
                 // Grade
-                var go = Instantiate(titlePrefab, cellContainer);
-                go.GetComponent<BuffBonusTitleCell>().Set(randomBuffGroup.Key);
+                var cell = Instantiate(titlePrefab, cellContainer);
+                cell.GetComponent<BuffBonusTitleCell>().Set(randomBuffGroup.Key);
 
                 foreach (var randomBuffRow in randomBuffGroup)
                 {
                     // buff
-                    go = Instantiate(buffPrefab, cellContainer);
-                    go.GetComponent<BuffBonusBuffCell>().Set(randomBuffRow);
+                    cell = Instantiate(buffPrefab, cellContainer);
+                    cell.GetComponent<BuffBonusBuffCell>().Set(randomBuffRow);
                 }
-            }
-        }
-
-        private void InitializeChildren()
-        {
-            var goList = cellContainer.GetComponentsInChildren<BuffBonusTitleCell>().Select(cell => cell.gameObject)
-                .Concat(cellContainer.GetComponentsInChildren<BuffBonusBuffCell>().Select(cell => cell.gameObject));
-
-            foreach (var go in goList)
-            {
-                Destroy(go);
             }
         }
     }
