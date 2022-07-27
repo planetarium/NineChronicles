@@ -21,7 +21,7 @@ namespace Nekoyume.Helper
 
         public static bool CanRefillTicket(long blockIndex, long refilledIndex, long startedIndex)
         {
-            return blockIndex - startedIndex - refilledIndex >= RefillInterval;
+            return (blockIndex - startedIndex) / RefillInterval > refilledIndex / RefillInterval;
         }
     }
 }
