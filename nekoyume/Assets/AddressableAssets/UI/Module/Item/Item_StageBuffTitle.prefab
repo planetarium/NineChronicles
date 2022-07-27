@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5320370949689643684}
   - component: {fileID: 8031255168265283901}
+  - component: {fileID: 8647134660212260963}
   m_Layer: 5
   m_Name: Item_StageBuffTitle
   m_TagString: Untagged
@@ -49,6 +50,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 660606318441270190}
   m_CullTransparentMesh: 1
+--- !u!114 &8647134660212260963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 660606318441270190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62596794016d8034d88249aa3140d4c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bonusBuffViewData: {fileID: 11400000, guid: 99dd53a8a4f6af445ab50f3e081a7f5a, type: 2}
+  cellPrefab: {fileID: 0}
+  gradeIcon: {fileID: 7996474828679062183}
 --- !u!1 &5423303529526743085
 GameObject:
   m_ObjectHideFlags: 0

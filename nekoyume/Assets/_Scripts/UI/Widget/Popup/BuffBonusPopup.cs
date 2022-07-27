@@ -6,11 +6,16 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using System.Numerics;
 using UnityEngine;
+using UnityEngine.UI;
+using System.Text;
+using Nekoyume.Game.Controller;
 
 namespace Nekoyume.UI
 {
     using mixpanel;
     using Nekoyume.BlockChain;
+    using System.Collections.Generic;
+    using System.Linq;
     using UniRx;
 
     public class BuffBonusPopup : PopupWidget
@@ -26,6 +31,21 @@ namespace Nekoyume.UI
         private BigInteger _advancedCost;
 
         private System.Action _onAttract;
+
+        [SerializeField]
+        private Button buffListButton = null;
+
+        [SerializeField]
+        private GameObject buffListView = null;
+
+        [SerializeField]
+        private Transform cellContainer;
+
+        [SerializeField]
+        private GameObject titlePrefab;
+
+        [SerializeField]
+        private GameObject buffPrefab;
 
         protected override void Awake()
         {
@@ -54,6 +74,8 @@ namespace Nekoyume.UI
             advancedButton.OnClickDisabledSubject
                 .Subscribe(OnInsufficientStar)
                 .AddTo(gameObject);
+
+            buffListButton.onClick.AddListener(ShowBuffListView);
         }
 
         public override void Initialize()
@@ -150,6 +172,45 @@ namespace Nekoyume.UI
 
             ActionManager.Instance.HackAndSlashRandomBuff(advanced).Subscribe();
             Close();
+        }
+
+        private void ShowBuffListView()
+        {
+            buffListView.SetActive(true);
+            UpdateBuffListView();
+        }
+
+        private void UpdateBuffListView()
+        {
+            var randomBuffsheet = Game.Game.instance.TableSheets.CrystalRandomBuffSheet;
+            var randomBuffGroupsByRank = randomBuffsheet.Select(line => line.Value).GroupBy(row => row.Rank);
+
+            InitializeChildren();
+
+            foreach (var randomBuffGroup in randomBuffGroupsByRank)
+            {
+                // Grade
+                var go = Instantiate(titlePrefab, cellContainer);
+                go.GetComponent<BuffBonusTitleCell>().Set(randomBuffGroup.Key);
+
+                foreach (var randomBuffRow in randomBuffGroup)
+                {
+                    // buff
+                    go = Instantiate(buffPrefab, cellContainer);
+                    go.GetComponent<BuffBonusBuffCell>().Set(randomBuffRow);
+                }
+            }
+        }
+
+        private void InitializeChildren()
+        {
+            var goList = cellContainer.GetComponentsInChildren<BuffBonusTitleCell>().Select(cell => cell.gameObject);
+            goList.Concat(cellContainer.GetComponentsInChildren<BuffBonusBuffCell>().Select(cell => cell.gameObject));
+
+            foreach (var go in goList)
+            {
+                Destroy(go);
+            }
         }
     }
 }

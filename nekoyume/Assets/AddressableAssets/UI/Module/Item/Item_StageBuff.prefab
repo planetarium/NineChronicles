@@ -164,6 +164,7 @@ GameObject:
   - component: {fileID: 69177013183207763}
   - component: {fileID: 2692467455459945506}
   - component: {fileID: 362374539497577099}
+  - component: {fileID: 6710073086404043793}
   m_Layer: 5
   m_Name: Item_StageBuff
   m_TagString: Untagged
@@ -231,6 +232,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6710073086404043793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4563105561601584685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1839e768e17cd94f96115f01bfaae55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bonusBuffViewData: {fileID: 11400000, guid: 99dd53a8a4f6af445ab50f3e081a7f5a, type: 2}
+  gradeIconImage: {fileID: 4319665176628252566}
+  buffIconImage: {fileID: 7043216088020780601}
+  buffNameText: {fileID: 1321461728699651289}
 --- !u!1 &4970969387013083035
 GameObject:
   m_ObjectHideFlags: 0
@@ -242,6 +259,7 @@ GameObject:
   - component: {fileID: 7194269350874547670}
   - component: {fileID: 3635249095657231176}
   - component: {fileID: 1321461728699651289}
+  - component: {fileID: 1967251548368918010}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -367,3 +385,34 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1967251548368918010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4970969387013083035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fixedMarginOption: 0
+  fontMaterialType: 0
+  l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
