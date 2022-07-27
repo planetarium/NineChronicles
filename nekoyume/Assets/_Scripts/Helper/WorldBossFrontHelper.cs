@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Libplanet.Assets;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
@@ -64,8 +66,10 @@ namespace Nekoyume.Helper
             return true;
         }
 
-        public static bool TryGetRuneIcon(int currencyId, out Sprite icon)
+        public static bool TryGetRuneIcon(Currency currency, out Sprite icon)
         {
+            var ticker = currency.Ticker;
+            var currencyId = Convert.ToInt32(ticker);
             var result = ScriptableObject.Runes.FirstOrDefault(x => x.id == currencyId);
             if (result is null)
             {
