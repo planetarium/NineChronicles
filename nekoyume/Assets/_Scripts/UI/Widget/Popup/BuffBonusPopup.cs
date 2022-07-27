@@ -204,8 +204,8 @@ namespace Nekoyume.UI
 
         private void InitializeChildren()
         {
-            var goList = cellContainer.GetComponentsInChildren<BuffBonusTitleCell>().Select(cell => cell.gameObject);
-            goList.Concat(cellContainer.GetComponentsInChildren<BuffBonusBuffCell>().Select(cell => cell.gameObject));
+            var goList = cellContainer.GetComponentsInChildren<BuffBonusTitleCell>().Select(cell => cell.gameObject)
+                .Concat(cellContainer.GetComponentsInChildren<BuffBonusBuffCell>().Select(cell => cell.gameObject));
 
             foreach (var go in goList)
             {
