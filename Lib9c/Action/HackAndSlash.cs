@@ -324,8 +324,8 @@ namespace Nekoyume.Action
                 if (lastClearedStageId >= StageId)
                 {
                     // Make new CrystalRandomSkillState by next stage Id.
-                    var nextStageSkillState = new CrystalRandomSkillState(skillStateAddress, StageId + 1);
-                    states = states.SetState(skillStateAddress, nextStageSkillState.Serialize());
+                    skillState = new CrystalRandomSkillState(skillStateAddress, StageId + 1);
+                    states = states.SetState(skillStateAddress, skillState.Serialize());
                 }
                 else
                 {
