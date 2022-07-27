@@ -602,7 +602,7 @@ GameObject:
   - component: {fileID: 587638802494922526}
   - component: {fileID: 587638802494922527}
   m_Layer: 5
-  m_Name: Lune_2
+  m_Name: Rune_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -919,7 +919,7 @@ GameObject:
   - component: {fileID: 587638803566428381}
   - component: {fileID: 587638803566428382}
   m_Layer: 5
-  m_Name: Lune_3
+  m_Name: Rune_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2301,7 +2301,7 @@ GameObject:
   - component: {fileID: 4952266187499393038}
   - component: {fileID: 7277333978495071757}
   m_Layer: 15
-  m_Name: LuneButton
+  m_Name: RuneButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2476,7 +2476,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a231e103bb6c0184288d77696b72d4e0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 88c80e541a31e0b4ba550de7e7f5cf5d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2856,7 +2856,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9e8c2e38643c6e34d9d62b5280cd26d9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 000b7b5b45f709f4782b1ec62f9f9f56, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3067,7 +3067,7 @@ GameObject:
   - component: {fileID: 9094825842295369536}
   - component: {fileID: 7366309535164239191}
   m_Layer: 5
-  m_Name: Lune_1
+  m_Name: Rune_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11420,7 +11420,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9428a33d409bb98499429890c9946e73, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d6667769127c0ce46bbc124fcaa6252c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
