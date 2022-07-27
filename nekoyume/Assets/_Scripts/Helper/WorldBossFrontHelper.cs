@@ -38,31 +38,16 @@ namespace Nekoyume.Helper
             return true;
         }
 
-        public static bool TryGetBossPrefab(int bossId, out GameObject namePrefab, out GameObject spinePrefab)
+        public static bool TryGetBossData(int bossId, out WorldBossScriptableObject.MonsterData data)
         {
             var result = ScriptableObject.Monsters.FirstOrDefault(x => x.id == bossId);
             if (result is null)
             {
-                namePrefab = null;
-                spinePrefab = null;
+                data = null;
                 return false;
             }
 
-            namePrefab = result.namePrefab;
-            spinePrefab = result.spinePrefab;
-            return true;
-        }
-
-        public static bool TryGetBossName(int bossId, out string name)
-        {
-            var result = ScriptableObject.Monsters.FirstOrDefault(x => x.id == bossId);
-            if (result is null)
-            {
-                name = string.Empty;
-                return false;
-            }
-
-            name = result.name;
+            data = result;
             return true;
         }
 

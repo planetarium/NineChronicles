@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -114,14 +113,6 @@ namespace Nekoyume.UI
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rune)).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
-
-            // claimRaidRewardButton.OnClickAsObservable().Subscribe(_ => ClaimRaidReward()).AddTo(gameObject);
-            // viewButton.OnClickAsObservable().Subscribe(_ => View()).AddTo(gameObject);
-            // viewRuneButton.OnClickAsObservable().Subscribe(_ =>
-            // {
-            //     ViewRune(800000);
-            //     ViewRune(800001);
-            // }).AddTo(gameObject);
         }
 
         protected override void OnEnable()
@@ -250,15 +241,14 @@ namespace Nekoyume.UI
                 Destroy(_bossSpinePrefab);
             }
 
-            if (WorldBossFrontHelper.TryGetBossPrefab(row.BossId, out var namePrefab,
-                    out var spinePrefab))
+            if (WorldBossFrontHelper.TryGetBossData(row.BossId, out var data))
             {
                 if (isOffSeason)
                 {
-                    _bossNamePrefab = Instantiate(namePrefab, bossNameContainer);
+                    _bossNamePrefab = Instantiate(data.namePrefab, bossNameContainer);
                 }
 
-                _bossSpinePrefab = Instantiate(spinePrefab, bossSpineContainer);
+                _bossSpinePrefab = Instantiate(data.spinePrefab, bossSpineContainer);
             }
         }
 
@@ -420,8 +410,8 @@ namespace Nekoyume.UI
             var curHp = state?.CurrentHp ?? baseHp;
             var maxHp = hpSheet.Values.FirstOrDefault(x => x.Level == level)!.Hp;
             var bossId = state?.Id ?? bossSheet.Values.First().BossId;
-            var bossName = WorldBossFrontHelper.TryGetBossName(bossId, out var n)
-                ? n
+            var bossName = WorldBossFrontHelper.TryGetBossData(bossId, out var data)
+                ? data.name
                 : string.Empty;
 
             season.UpdateBossInformation(bossName, level, curHp, maxHp);
@@ -435,22 +425,6 @@ namespace Nekoyume.UI
             season.UpdateMyInformation(highScore, totalScore);
             ticketText.text = $"총 도전 횟 수: {state?.TotalChallengeCount ?? 0}\n" +
                               $"티켓 구매 횟 수: {state?.PurchaseCount ?? 0}\n";
-        }
-
-        private async void ViewRune(int runeId)
-        {
-            var agentAddress = States.Instance.AgentState.address;
-            var rune = RuneHelper.ToCurrency(runeId);
-            var state = await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, rune);
-
-            if (state != null)
-            {
-                Debug.Log($"[{state.Currency.ToString()}] :{state.MajorUnit.ToString()}");
-            }
-            else
-            {
-                Debug.Log("Balance is null!");
-            }
         }
 
         private static void ShowSheetValues()

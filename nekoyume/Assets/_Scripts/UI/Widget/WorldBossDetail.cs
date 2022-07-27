@@ -101,6 +101,7 @@ namespace Nekoyume.UI
                         case WorldBossPreviousRank previousRank:
                             break;
                         case WorldBossRuneInventory runeInventory:
+                            runeInventory.ShowAsync();
                             break;
                     }
                 }

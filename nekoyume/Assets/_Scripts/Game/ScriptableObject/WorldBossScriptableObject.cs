@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume
 {
@@ -26,6 +27,7 @@ namespace Nekoyume
         {
             public int id;
             public string name;
+            public Sprite illustration;
             public GameObject namePrefab;
             public GameObject spinePrefab;
         }
