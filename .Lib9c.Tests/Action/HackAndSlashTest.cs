@@ -712,12 +712,15 @@
             SerializeException<EquipmentSlotUnlockException>(exec);
         }
 
-        [Fact]
-        public void ExecuteThrowNotEnoughActionPointException()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(5, 2)]
+        [InlineData(120, 25)]
+        public void ExecuteThrowNotEnoughActionPointException(int ap, int playCount = 1)
         {
             var avatarState = new AvatarState(_avatarState)
             {
-                actionPoint = 0,
+                actionPoint = ap,
             };
 
             var action = new HackAndSlash
@@ -728,6 +731,7 @@
                 WorldId = 1,
                 StageId = 1,
                 AvatarAddress = _avatarAddress,
+                PlayCount = playCount,
             };
 
             var state = _initialState;
@@ -775,10 +779,16 @@
             }
 
             IAccountStateDelta state = _initialState
-            .SetState(_avatarAddress, previousAvatarState.SerializeV2())
-            .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
-            .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
-            .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                .SetState(
+                    _avatarAddress.Derive(LegacyInventoryKey),
+                    previousAvatarState.inventory.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyWorldInformationKey),
+                    previousAvatarState.worldInformation.Serialize())
+                .SetState(
+                    _avatarAddress.Derive(LegacyQuestListKey),
+                    previousAvatarState.questList.Serialize());
 
             var action = new HackAndSlash
             {
@@ -868,6 +878,40 @@
 
                     SerializeException<NotEnoughAvatarLevelException>(exec);
                 }
+            }
+        }
+
+        [Fact]
+        public void ExecuteThrowPlayCountIsZeroException()
+        {
+            for (var playCount = -10; playCount <= 0; playCount++)
+            {
+                var avatarState = new AvatarState(_avatarState)
+                {
+                    actionPoint = 99999999,
+                    level = 1,
+                };
+
+                var state = _initialState;
+                var action = new HackAndSlash
+                {
+                    Costumes = new List<Guid>(),
+                    Equipments = new List<Guid>(),
+                    Foods = new List<Guid>(),
+                    WorldId = 1,
+                    StageId = 1,
+                    AvatarAddress = avatarState.address,
+                    PlayCount = playCount,
+                };
+
+                var exec = Assert.Throws<PlayCountIsZeroException>(() => action.Execute(new ActionContext
+                {
+                    PreviousStates = state,
+                    Signer = avatarState.agentAddress,
+                    Random = new TestRandom(),
+                }));
+
+                SerializeException<PlayCountIsZeroException>(exec);
             }
         }
 

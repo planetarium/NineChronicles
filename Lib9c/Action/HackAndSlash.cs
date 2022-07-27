@@ -107,6 +107,13 @@ namespace Nekoyume.Action
 
             states.ValidateWorldId(AvatarAddress, WorldId);
 
+            if (PlayCount <= 0)
+            {
+                throw new PlayCountIsZeroException(
+                    $"{addressesHex}playCount must be greater than 0. " +
+                    $"current playCount : {PlayCount}");
+            }
+
             var sw = new Stopwatch();
             sw.Start();
             if (!states.TryGetAvatarStateV2(signer, AvatarAddress, out AvatarState avatarState, out _))
