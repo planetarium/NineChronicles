@@ -314,10 +314,10 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (skillName, _, _) = itemOptionInfo.SkillOptions[i];
+                var (skillRow, _, _) = itemOptionInfo.SkillOptions[i];
                 var text = string.Format(
                     format,
-                    skillName,
+                    skillRow.GetLocalizedName(),
                     row.ExtraSkillDamageGrowthMin.NormalizeFromTenThousandths() * 100,
                     row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths() * 100,
                     row.ExtraSkillChanceGrowthMin.NormalizeFromTenThousandths() * 100,
@@ -341,7 +341,7 @@ namespace Nekoyume.UI
             var diff = state.UnlockBlockIndex - currentBlockIndex;
             var cost =
                 RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
-            rapidCombinationButton.SetCost(ConditionalCostButton.CostType.Hourglass, cost);
+            rapidCombinationButton.SetCost(CostType.Hourglass, cost);
         }
 
         private void UpdateItemInformation(ItemUsable item)
@@ -359,6 +359,9 @@ namespace Nekoyume.UI
                         ? CraftType.CombineEquipment
                         : CraftType.CombineConsumable;
 
+                case ItemEnhancement7.ResultModel _:
+                case ItemEnhancement9.ResultModel _:
+                case ItemEnhancement10.ResultModel _:
                 case ItemEnhancement.ResultModel _:
                     return CraftType.Enhancement;
                 default:

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
-using Nekoyume.EnumType;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -35,10 +34,13 @@ namespace Nekoyume.UI.Module
 
         public enum AssetVisibleState
         {
-            Main,
+            Main = 0,
             Combination,
             Shop,
             Battle,
+            Arena,
+            EventDungeon,
+            WorldBoss,
         }
 
         [Serializable]
@@ -51,15 +53,41 @@ namespace Nekoyume.UI.Module
             public TextMeshProUGUI LockText;
         }
 
-        [SerializeField] private List<ToggleInfo> toggles = new List<ToggleInfo>();
-        [SerializeField] private GameObject ncg;
-        [SerializeField] private ActionPoint actionPoint;
-        [SerializeField] private GameObject dailyBonus;
-        [SerializeField] private GameObject hourglass;
-        [SerializeField] private VFX inventoryVFX;
-        [SerializeField] private VFX workshopVFX;
-        [SerializeField] private Image actionPointImage;
-        [SerializeField] private ToggleDropdown menuToggleDropdown;
+        [SerializeField]
+        private List<ToggleInfo> toggles = new List<ToggleInfo>();
+
+        [SerializeField]
+        private Gold ncg;
+
+        [SerializeField]
+        private ActionPoint actionPoint;
+
+        [SerializeField]
+        private Crystal crystal;
+
+        [SerializeField]
+        private GameObject dailyBonus;
+
+        [SerializeField]
+        private Hourglass hourglass;
+
+        [SerializeField]
+        private ArenaTickets arenaTickets;
+
+        [SerializeField]
+        private EventDungeonTickets eventDungeonTickets;
+
+        [SerializeField]
+        private WorldBossTickets worldBossTickets;
+
+        [SerializeField]
+        private VFX inventoryVFX;
+
+        [SerializeField]
+        private VFX workshopVFX;
+
+        [SerializeField]
+        private ToggleDropdown menuToggleDropdown;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
@@ -69,31 +97,41 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ToggleType, ReactiveProperty<bool>> _toggleNotifications =
             new Dictionary<ToggleType, ReactiveProperty<bool>>()
             {
-                {ToggleType.Quest, new ReactiveProperty<bool>(false)},
-                {ToggleType.AvatarInfo, new ReactiveProperty<bool>(false)},
-                {ToggleType.CombinationSlots, new ReactiveProperty<bool>(false)},
-                {ToggleType.Mail, new ReactiveProperty<bool>(false)},
-                {ToggleType.Rank, new ReactiveProperty<bool>(false)},
+                { ToggleType.Quest, new ReactiveProperty<bool>(false) },
+                { ToggleType.AvatarInfo, new ReactiveProperty<bool>(false) },
+                { ToggleType.CombinationSlots, new ReactiveProperty<bool>(false) },
+                { ToggleType.Mail, new ReactiveProperty<bool>(false) },
+                { ToggleType.Rank, new ReactiveProperty<bool>(false) },
             };
 
         private readonly Dictionary<ToggleType, int> _toggleUnlockStages =
             new Dictionary<ToggleType, int>()
             {
-                {ToggleType.Quest, GameConfig.RequireClearedStageLevel.UIBottomMenuQuest},
-                {ToggleType.AvatarInfo, GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter},
-                {ToggleType.CombinationSlots, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction},
-                {ToggleType.Mail, GameConfig.RequireClearedStageLevel.UIBottomMenuMail},
-                {ToggleType.Rank, 1},
-                {ToggleType.Chat, GameConfig.RequireClearedStageLevel.UIBottomMenuChat},
-                {ToggleType.Settings, 1},
-                {ToggleType.Quit, 1},
+                { ToggleType.Quest, GameConfig.RequireClearedStageLevel.UIBottomMenuQuest },
+                { ToggleType.AvatarInfo, GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter },
+                { ToggleType.CombinationSlots, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction },
+                { ToggleType.Mail, GameConfig.RequireClearedStageLevel.UIBottomMenuMail },
+                { ToggleType.Rank, 1 },
+                { ToggleType.Chat, GameConfig.RequireClearedStageLevel.UIBottomMenuChat },
+                { ToggleType.Settings, 1 },
+                { ToggleType.Quit, 1 },
             };
 
         private long _blockIndex;
 
-        public Image ActionPointImage => actionPointImage;
-
         public bool ChargingAP => actionPoint.NowCharging;
+
+        public Gold Gold => ncg;
+
+        public ActionPoint ActionPoint => actionPoint;
+
+        public Crystal Crystal => crystal;
+
+        public Hourglass Hourglass => hourglass;
+
+        public ArenaTickets ArenaTickets => arenaTickets;
+        public EventDungeonTickets EventDungeonTickets => eventDungeonTickets;
+        public WorldBossTickets WorldBossTickets => worldBossTickets;
 
         public override bool CanHandleInputEvent => false;
 
@@ -134,7 +172,7 @@ namespace Nekoyume.UI.Module
                         }
 
                         var stage = Game.Game.instance.Stage;
-                        if (!stage.IsInStage || stage.SelectedPlayer.IsAlive)
+                        if (!Game.Game.instance.IsInWorld || stage.SelectedPlayer.IsAlive)
                         {
                             widget.Show(() => { toggleInfo.Toggle.isOn = false; });
                         }
@@ -251,28 +289,43 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case AssetVisibleState.Main:
-                    SetActiveAssets(true, true, true, false);
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isDailyBonusActive: true);
                     break;
                 case AssetVisibleState.Combination:
-                    SetActiveAssets(true, true, false, true);
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isHourglassActive: true);
                     break;
                 case AssetVisibleState.Shop:
                 case AssetVisibleState.Battle:
-                    SetActiveAssets(true, true, false, false);
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true);
+                    break;
+                case AssetVisibleState.Arena:
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isArenaTicketsActive: true);
+                    break;
+                case AssetVisibleState.EventDungeon:
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isEventDungeonTicketsActive: true);
+                    break;
+                case AssetVisibleState.WorldBoss:
+                    SetActiveAssets(isNcgActive: true, isActionPointActive: true, isEventWorldBossTicketsActive: true);
                     break;
             }
         }
 
         private void SetActiveAssets(
-            bool isNcgActive,
-            bool isActionPointActive,
-            bool isDailyBonusActive,
-            bool isHourglassActive)
+            bool isNcgActive = false,
+            bool isActionPointActive = false,
+            bool isDailyBonusActive = false,
+            bool isHourglassActive = false,
+            bool isArenaTicketsActive = false,
+            bool isEventDungeonTicketsActive = false,
+            bool isEventWorldBossTicketsActive = false)
         {
-            ncg.SetActive(isNcgActive);
+            ncg.gameObject.SetActive(isNcgActive);
             actionPoint.gameObject.SetActive(isActionPointActive);
             dailyBonus.SetActive(isDailyBonusActive);
-            hourglass.SetActive(isHourglassActive);
+            hourglass.gameObject.SetActive(isHourglassActive);
+            arenaTickets.gameObject.SetActive(isArenaTicketsActive);
+            eventDungeonTickets.gameObject.SetActive(isEventDungeonTicketsActive);
+            worldBossTickets.gameObject.SetActive(isEventWorldBossTicketsActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)
@@ -350,7 +403,8 @@ namespace Nekoyume.UI.Module
             var cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
             var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.Hourglass);
-            var isEnough =  States.Instance.CurrentAvatarState.inventory.HasFungibleItem(row.ItemId, currentBlockIndex, cost);
+            var isEnough =
+                States.Instance.CurrentAvatarState.inventory.HasFungibleItem(row.ItemId, currentBlockIndex, cost);
             return isEnough;
         }
 

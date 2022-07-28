@@ -1,4 +1,4 @@
-﻿using Nekoyume.Game.Controller;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model;
 using Nekoyume.Model.Buff;
@@ -19,7 +19,7 @@ namespace Nekoyume.UI
         public void Show(Buff buff, bool isAdded)
         {
             Data = buff;
-            image.enabled = true;
+            gameObject.SetActive(true);
             remainedDurationText.enabled = true;
             var sprite = Data.RowData.GetIcon();
             image.overrideSprite = sprite;
@@ -41,7 +41,7 @@ namespace Nekoyume.UI
 
         public void Hide()
         {
-            image.enabled = false;
+            gameObject.SetActive(false);
             remainedDurationText.enabled = false;
             image.overrideSprite = null;
         }

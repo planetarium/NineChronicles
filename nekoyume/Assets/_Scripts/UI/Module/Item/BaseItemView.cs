@@ -1,11 +1,9 @@
-using System;
-using System.Linq;
 using Coffee.UIEffects;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.ScriptableObject;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
-using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -80,7 +78,7 @@ namespace Nekoyume
         private GameObject tradableObject;
 
         [SerializeField]
-        private GameObject elementalDisableObject;
+        private GameObject dimObject;
 
         [SerializeField]
         private GameObject levelLimitObject;
@@ -106,6 +104,12 @@ namespace Nekoyume
         [SerializeField]
         private ParticleSystem itemGradeParticle;
 
+        [SerializeField]
+        private GameObject grindingCountObject;
+
+        [SerializeField]
+        private TMP_Text grindingCountText;
+
         public GameObject Container => container;
         public GameObject EmptyObject => emptyObject;
         public TouchHandler TouchHandler => touchHandler;
@@ -126,7 +130,7 @@ namespace Nekoyume
         public GameObject FocusObject => focusObject;
         public GameObject ExpiredObject => expiredObject;
         public GameObject TradableObject => tradableObject;
-        public GameObject ElementalDisableObject => elementalDisableObject;
+        public GameObject DimObject => dimObject;
         public GameObject LevelLimitObject => levelLimitObject;
         public GameObject SelectObject => selectObject;
         public GameObject SelectBaseItemObject => selectBaseItemObject;
@@ -135,27 +139,17 @@ namespace Nekoyume
         public GameObject ShadowObject => shadowObject;
         public GameObject LoadingObject => loadingObject;
         public ParticleSystem ItemGradeParticle => itemGradeParticle;
+        public GameObject GrindingCountObject => grindingCountObject;
+        public TMP_Text GrindingCountText => grindingCountText;
 
-        private ItemSheet.Row GetRow(ItemBase itemBase)
+        public static Sprite GetItemIcon(ItemBase itemBase)
         {
-            var sheet = Game.Game.instance.TableSheets;
-            var row = sheet.ItemSheet.Values.FirstOrDefault(r => r.Id == itemBase.Id);
-
-            if (row is null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row), itemBase.Id, null);
-            }
-
-            return row;
-        }
-
-        public Sprite GetItemIcon(ItemBase itemBase)
-        {
-            var row = GetRow(itemBase);
-            var icon = SpriteHelper.GetItemIcon(row.Id);
+            var iconResourceId =
+                itemBase.Id.GetIconResourceId(TableSheets.Instance.ArenaSheet);
+            var icon = SpriteHelper.GetItemIcon(iconResourceId);
             if (icon is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(row.Id.ToString());
+                throw new FailedToLoadResourceException<Sprite>(iconResourceId.ToString());
             }
 
             return icon;
@@ -163,9 +157,8 @@ namespace Nekoyume
 
         public ItemViewData GetItemViewData(ItemBase itemBase)
         {
-            var row = GetRow(itemBase);
             var add = itemBase is TradableMaterial ? 1 : 0;
-            return itemViewData.GetItemViewData(row.Grade + add);
+            return itemViewData.GetItemViewData(itemBase.Grade + add);
         }
     }
 }

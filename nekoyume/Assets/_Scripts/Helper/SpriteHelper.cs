@@ -1,7 +1,7 @@
 using System;
-using Nekoyume.Data;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI;
+using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -28,7 +28,7 @@ namespace Nekoyume.Helper
 
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
 
-        private const string TitleFramePathFormat = "UI/Textures/TitleFrames/{0}";
+        private const string TitleFramePathFormat = "UI/Textures/00_TitleFrames/{0}";
         private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 49900001);
 
         private const string MenuIllustratePathFormat = "UI/Textures/MenuIllustrates/{0}";
@@ -41,6 +41,12 @@ namespace Nekoyume.Helper
         private static readonly string MailIconDefaultPath =
             string.Format(MailIconPathFormat, "icon_mail_system");
 
+        private const string WorldmapBackgroundPathFormat = "UI/Textures/00_WorldMap/battle_UI_BG_{0}_{1:D2}";
+        private const string WorldmapBackgroundDefaultPathFormat = "UI/Textures/00_WorldMap/battle_UI_BG_01_{0:D2}";
+
+        private const string DialogNPCPortaitPathFormat = "Images/npc/NPC_{0}";
+        private const string DialogCharacterPortaitPathFormat = "Images/character_{0}";
+
         public static Sprite GetCharacterIcon(int characterId)
         {
             return Resources.Load<Sprite>(string.Format(CharacterIconPathFormat, characterId)) ??
@@ -49,13 +55,8 @@ namespace Nekoyume.Helper
 
         public static Sprite GetItemIcon(int itemId)
         {
-            var path = ItemIconDefaultPath;
-            if (Game.Game.instance.TableSheets.ItemSheet.ContainsKey(itemId))
-            {
-                path = string.Format(ItemIconPathFormat, itemId);
-            }
-
-            return Resources.Load<Sprite>(path);
+            return Resources.Load<Sprite>(string.Format(ItemIconPathFormat, itemId)) ??
+                   Resources.Load<Sprite>(ItemIconDefaultPath);
         }
 
         public static Sprite GetItemBackground(int grade)
@@ -109,15 +110,14 @@ namespace Nekoyume.Helper
             Sprite result = null;
             switch (menuName)
             {
-                case nameof(RankingBoard):
+                case nameof(ArenaJoin):
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_ranking"));
                     break;
-                case "Shop":
+                case nameof(Shop):
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_shop"));
                     break;
-
                 case "Mimisbrunnr":
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_mimisbrunnr"));
@@ -144,11 +144,43 @@ namespace Nekoyume.Helper
                     result = Resources.Load<Sprite>(
                         string.Format(MailIconPathFormat, "icon_mail_system"));
                     break;
+                case MailType.Grinding:
+                    result = Resources.Load<Sprite>(
+                        string.Format(MailIconPathFormat, "icon_mail_grind"));
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mailType), mailType, null);
             }
 
             return result ? result : Resources.Load<Sprite>(MailIconDefaultPath);
+        }
+
+        public static Sprite GetStakingIcon(int level, bool smallIcon = false)
+        {
+            var data = Resources.Load<StakeIconDataScriptableObject>(
+                        "ScriptableObject/UI_StakeIconData");
+            return data.GetIcon(level, smallIcon);
+        }
+
+        public static Sprite GetWorldMapBackground(string imageKey, int pageIndex)
+        {
+            var path = string.Format(WorldmapBackgroundPathFormat, imageKey, pageIndex);
+            var sprite = Resources.Load<Sprite>(path);
+            if (sprite)
+            {
+                return sprite;
+            }
+
+            var defaultPath = string.Format(WorldmapBackgroundDefaultPathFormat, pageIndex);
+            var defaultSprite = Resources.Load<Sprite>(defaultPath);
+            return defaultSprite;
+        }
+
+        public static Sprite GetDialogPortrait(string key, bool isNPC = true)
+        {
+            var path = string.Format(isNPC ?
+                DialogNPCPortaitPathFormat : DialogCharacterPortaitPathFormat, key);
+            return Resources.Load<Sprite>(path);
         }
     }
 }

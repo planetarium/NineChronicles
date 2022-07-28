@@ -69,7 +69,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/CombinationBtn/CombinationEffect/1
+    path: MenuObject/CombinationBtn/EventObjects/ChristmasContainer/CombinationEffect/1
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -124,7 +124,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/CombinationBtn/CombinationEffect/2
+    path: MenuObject/CombinationBtn/EventObjects/ChristmasContainer/CombinationEffect/2
     classID: 225
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -136,14 +136,14 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 3748811358
+      path: 515702221
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 1182467044
+      path: 2276830327
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
@@ -223,7 +223,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/CombinationBtn/CombinationEffect/1
+    path: MenuObject/CombinationBtn/EventObjects/ChristmasContainer/CombinationEffect/1
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -278,7 +278,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: MenuObject/CombinationBtn/CombinationEffect/2
+    path: MenuObject/CombinationBtn/EventObjects/ChristmasContainer/CombinationEffect/2
     classID: 225
     script: {fileID: 0}
   m_EulerEditorCurves: []

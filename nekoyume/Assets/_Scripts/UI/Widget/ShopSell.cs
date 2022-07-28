@@ -158,7 +158,7 @@ namespace Nekoyume.UI
 
             var task = Task.Run(async () =>
             {
-                await ReactiveShopState.UpdateSellDigests();
+                await ReactiveShopState.UpdateSellDigestsAsync();
                 return true;
             });
 

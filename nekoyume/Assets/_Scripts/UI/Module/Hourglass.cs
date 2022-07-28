@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Nekoyume.Helper;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -21,7 +20,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private RectTransform tooltipArea = null;
 
+        [SerializeField]
+        private Image _iconImage;
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
+        public Image IconImage => _iconImage;
 
         protected override void OnEnable()
         {
@@ -38,7 +42,7 @@ namespace Nekoyume.UI.Module
         private void UpdateHourglass(Nekoyume.Model.Item.Inventory inventory)
         {
             var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
-            countText.text = count.ToString();
+            countText.text = count.ToString("N0", CultureInfo.CurrentCulture);
         }
 
         public void ShowTooltip()

@@ -1,3 +1,4 @@
+using Nekoyume.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,6 @@ namespace Nekoyume.UI.Module
         private Image line2 = null;
         [SerializeField]
         private Image background = null;
-
-        private const string BACKGROUND_PATH = "UI/Textures/WorldMap/battle_UI_BG";
 
         public IReadOnlyList<WorldMapStage> Stages => stages;
 
@@ -55,8 +54,7 @@ namespace Nekoyume.UI.Module
             line.gameObject.SetActive(enable);
             line2.gameObject.SetActive(!enable);
 
-            var sprite = Resources.Load<Sprite>($"{BACKGROUND_PATH}_{imageKey}_{pageIndex:D2}");
-            background.sprite = sprite != null ? sprite : Resources.Load<Sprite>($"{BACKGROUND_PATH}_01_{pageIndex:D2}");
+            background.sprite = SpriteHelper.GetWorldMapBackground(imageKey, pageIndex);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Crystal;
 
 namespace Nekoyume.Game
 {
@@ -23,7 +24,7 @@ namespace Nekoyume.Game
                 }
 
                 var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
-                var iSheet = (ISheet) sheetObject;
+                var iSheet = (ISheet)sheetObject;
                 if (iSheet is null)
                 {
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
@@ -55,7 +56,7 @@ namespace Nekoyume.Game
         public BuffSheet BuffSheet { get; private set; }
 
         public ItemSheet ItemSheet { get; private set; }
-        
+
         public ItemRequirementSheet ItemRequirementSheet { get; private set; }
 
         public ConsumableItemSheet ConsumableItemSheet { get; private set; }
@@ -136,7 +137,25 @@ namespace Nekoyume.Game
 
         public MonsterCollectionRewardSheet MonsterCollectionRewardSheet { get; private set; }
 
+        public CrystalEquipmentGrindingSheet CrystalEquipmentGrindingSheet { get; private set; }
+
+        public CrystalMonsterCollectionMultiplierSheet CrystalMonsterCollectionMultiplierSheet { get; private set; }
+
+        public CrystalStageBuffGachaSheet CrystalStageBuffGachaSheet { get; private set; }
+
+        public CrystalRandomBuffSheet CrystalRandomBuffSheet { get; private set; }
+
+        public CrystalMaterialCostSheet CrystalMaterialCostSheet { get; private set; }
+
         public SweepRequiredCPSheet SweepRequiredCPSheet { get; private set; }
+
+        public ArenaSheet ArenaSheet { get; private set; }
+
+        public StakeRegularRewardSheet StakeRegularRewardSheet { get; private set; }
+
+        public StakeRegularFixedRewardSheet StakeRegularFixedRewardSheet { get; private set; }
+
+        public CrystalFluctuationSheet CrystalFluctuationSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
@@ -202,6 +221,21 @@ namespace Nekoyume.Game
                 QuestItemRewardSheet,
                 EquipmentItemRecipeSheet,
                 EquipmentItemSubRecipeSheet
+            );
+        }
+
+        public ArenaSimulatorSheets GetArenaSimulatorSheets()
+        {
+            return new ArenaSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                CostumeStatSheet,
+                WeeklyArenaRewardSheet
             );
         }
     }

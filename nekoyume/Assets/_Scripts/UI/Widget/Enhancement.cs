@@ -78,8 +78,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private Animator animator;
 
-        private static readonly int HashToShow = Animator.StringToHash("Show");
-        private static readonly int HashToRegisterBase = Animator.StringToHash("RegisterBase");
+        private static readonly int HashToRegisterBase =
+            Animator.StringToHash("RegisterBase");
 
         private static readonly int HashToPostRegisterBase =
             Animator.StringToHash("PostRegisterBase");
@@ -90,12 +90,13 @@ namespace Nekoyume.UI
         private static readonly int HashToUnregisterMaterial =
             Animator.StringToHash("UnregisterMaterial");
 
-        private static readonly int HashToClose = Animator.StringToHash("Close");
+        private static readonly int HashToClose =
+            Animator.StringToHash("Close");
 
 
         private EnhancementCostSheetV2 _costSheet;
         private BigInteger _costNcg = 0;
-        private string errorMessage;
+        private string _errorMessage;
 
         protected override void Awake()
         {
@@ -123,7 +124,6 @@ namespace Nekoyume.UI
             Clear();
             HelpTooltip.HelpMe(100017, true);
             enhancementInventory.Set(ShowItemTooltip, UpdateInformation);
-            animator.Play(HashToShow);
             base.Show(ignoreShowAnimation);
         }
 
@@ -152,15 +152,15 @@ namespace Nekoyume.UI
             var (baseItem, materialItem) = enhancementInventory.GetSelectedModels();
             if (!IsInteractableButton(baseItem, materialItem))
             {
-                NotificationSystem.Push(MailType.System, errorMessage,
+                NotificationSystem.Push(MailType.System, _errorMessage,
                     NotificationCell.NotificationType.Alert);
                 return;
             }
 
             if (States.Instance.GoldBalanceState.Gold.MajorUnit < _costNcg)
             {
-                errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
-                NotificationSystem.Push(MailType.System, errorMessage,
+                _errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
+                NotificationSystem.Push(MailType.System, _errorMessage,
                     NotificationCell.NotificationType.Alert);
                 return;
             }
@@ -182,6 +182,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"),
                 NotificationCell.NotificationType.Information);
 
+            Find<HeaderMenuStatic>().Crystal.SetProgressCircle(true);
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseItem, materialItem, slotIndex, _costNcg).Subscribe();
 
@@ -200,19 +201,19 @@ namespace Nekoyume.UI
         {
             if (item is null || material is null)
             {
-                errorMessage = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
+                _errorMessage = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
                 return false;
             }
 
             if (States.Instance.CurrentAvatarState.actionPoint < GameConfig.EnhanceEquipmentCostAP)
             {
-                errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_ACTION_POWER");
+                _errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_ACTION_POWER");
                 return false;
             }
 
             if (!Find<CombinationSlotsPopup>().TryGetEmptyCombinationSlot(out _))
             {
-                errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");
+                _errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");
                 return false;
             }
 
@@ -283,6 +284,7 @@ namespace Nekoyume.UI
                     {
                         animator.Play(HashToUnregisterMaterial);
                     }
+
                     materialSlot.RemoveMaterial();
                 }
                 else
@@ -291,6 +293,7 @@ namespace Nekoyume.UI
                     {
                         animator.Play(HashToPostRegisterMaterial);
                     }
+
                     materialSlot.AddMaterial(materialModel.ItemBase);
                 }
 
@@ -305,7 +308,7 @@ namespace Nekoyume.UI
 
                 ClearInformation();
                 _costNcg = row.Cost;
-                upgradeButton.SetCost(ConditionalCostButton.CostType.NCG, (int)row.Cost);
+                upgradeButton.SetCost(CostType.NCG, (long)row.Cost);
                 var slots = Find<CombinationSlotsPopup>();
                 upgradeButton.Interactable = slots.TryGetEmptyCombinationSlot(out var _);
 

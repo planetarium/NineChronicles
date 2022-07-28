@@ -83,7 +83,7 @@ namespace Nekoyume.UI.Scroller
                 .Remove(addressStringCount);
 
             UpdateRank(rankingInfo.Rank);
-            characterView.SetByArmorId(
+            characterView.SetByFullCostumeOrArmorId(
                 rankingInfo.ArmorId,
                 rankingInfo.TitleId,
                 rankingInfo.AvatarLevel);

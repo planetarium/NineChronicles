@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Module
             baseItemView.NotificationObject.SetActive(false);
             baseItemView.LoadingObject.SetActive(false);
 
-            baseItemView.ItemImage.overrideSprite = baseItemView.GetItemIcon(model.ItemBase);
+            baseItemView.ItemImage.overrideSprite = BaseItemView.GetItemIcon(model.ItemBase);
 
             var data = baseItemView.GetItemViewData(model.ItemBase);
             baseItemView.GradeImage.overrideSprite = data.GradeBackground;
@@ -79,7 +79,7 @@ namespace Nekoyume.UI.Module
             model.Selected.Subscribe(b => baseItemView.SelectObject.SetActive(b)).AddTo(_disposables);
             model.SelectedBase.Subscribe(b => baseItemView.SelectBaseItemObject.SetActive(b)).AddTo(_disposables);
             model.SelectedMaterial.Subscribe(b => baseItemView.SelectMaterialItemObject.SetActive(b)).AddTo(_disposables);
-            model.Disabled.Subscribe(b => baseItemView.ElementalDisableObject.SetActive(b)).AddTo(_disposables);
+            model.Disabled.Subscribe(b => baseItemView.DimObject.SetActive(b)).AddTo(_disposables);
 
             model.View = GetComponent<RectTransform>();
 

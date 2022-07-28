@@ -20,17 +20,20 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI loadingText = null;
 
-        private Player player;
         private static readonly int Close1 = Animator.StringToHash("Close");
 
-        public void Show(ArenaInfo enemyInfo)
+        public void Show(
+            string playerName,
+            int playerLevel,
+            int playerFullCostumeOrArmorId,
+            string enemyName,
+            int enemyLevel,
+            int enemyFullCostumeOrArmorId)
         {
-            player = Game.Game.instance.Stage.GetPlayer();
-            var sprite = SpriteHelper.GetItemIcon(player.Model.armor? .Id ?? GameConfig.DefaultAvatarArmorId);
-            playerProfile.Set(player.Level, States.Instance.CurrentAvatarState.NameWithHash, sprite);
-            player.gameObject.SetActive(false);
-            var enemySprite = SpriteHelper.GetItemIcon(enemyInfo.ArmorId);
-            enemyProfile.Set(enemyInfo.Level, enemyInfo.AvatarName, enemySprite);
+            var playerSprite = SpriteHelper.GetItemIcon(playerFullCostumeOrArmorId);
+            playerProfile.Set(playerLevel, playerName, playerSprite);
+            var enemySprite = SpriteHelper.GetItemIcon(enemyFullCostumeOrArmorId);
+            enemyProfile.Set(enemyLevel, enemyName, enemySprite);
             loadingText.text = L10nManager.Localize("UI_MATCHING_OPPONENT");
             Show();
         }

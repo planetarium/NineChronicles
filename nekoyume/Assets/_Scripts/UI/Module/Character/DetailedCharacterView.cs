@@ -14,29 +14,38 @@ namespace Nekoyume.UI.Module
         public override void SetByAvatarState(AvatarState avatarState)
         {
             base.SetByAvatarState(avatarState);
-            levelText.text = $"Lv.{avatarState.level}";
+            levelText.text = avatarState.level.ToString();
         }
 
         public override void SetByPlayer(Player player)
         {
             base.SetByPlayer(player);
-            levelText.text = $"Lv.{player.Level}";
+            levelText.text = player.Level.ToString();
         }
 
-        public void SetByArmorId(int armorId, int? titleId, int level)
+        public void SetByFullCostumeOrArmorId(
+            int armorId,
+            int? titleId,
+            int level) =>
+            SetByFullCostumeOrArmorId(armorId, titleId, level.ToString());
+        
+        public void SetByFullCostumeOrArmorId(
+            int armorId,
+            int? titleId,
+            string level)
         {
-            SetByArmorId(armorId);
+            SetByFullCostumeOrArmorId(armorId);
             if (titleId.HasValue)
             {
                 var sprite = SpriteHelper.GetTitleFrame(titleId.Value);
                 SetFrame(sprite);
             }
-            levelText.text = $"Lv.{level}";
+            levelText.text = level;
         }
 
         public void SetByArenaInfo(ArenaInfo arenaInfo)
         {
-            SetByArmorId(arenaInfo.ArmorId);
+            SetByFullCostumeOrArmorId(arenaInfo.ArmorId);
             levelText.text = $"Lv.{arenaInfo.Level}";
         }
     }

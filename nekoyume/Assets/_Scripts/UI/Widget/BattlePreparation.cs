@@ -66,6 +66,9 @@ namespace Nekoyume.UI
         private ConditionalCostButton startButton;
 
         [SerializeField]
+        private BonusBuffButton randomBuffButton;
+
+        [SerializeField]
         private Button closeButton;
 
         [SerializeField]
@@ -114,7 +117,7 @@ namespace Nekoyume.UI
         private StageType _stageType = StageType.None;
         private int _worldId;
         private int _requiredCost;
-        private bool _reset = true;
+        private bool _shouldResetPlayer = true;
 
         private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
@@ -126,8 +129,7 @@ namespace Nekoyume.UI
         private bool EnoughToPlay =>
             States.Instance.CurrentAvatarState.actionPoint >= _requiredCost;
 
-        private bool IsStageCleared =>
-            States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value);
+        private bool IsFirstStage => _stageId.Value == 1;
 
         #region override
 
@@ -177,29 +179,20 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            startButton.OnSubmitSubject.Where(_ => !_stage.IsInStage)
+            startButton.OnSubmitSubject.Where(_ => !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ => OnClickBattle(repeatToggle.isOn))
                 .AddTo(gameObject);
 
             sweepPopupButton.OnClickAsObservable()
-                .Where(_ => IsStageCleared)
+                .Where(_ => !IsFirstStage)
                 .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId.Value));
 
-            sweepPopupButton.OnClickAsObservable().Where(_ => !IsStageCleared)
-                .ThrottleFirst(TimeSpan.FromSeconds(2f))
-                .Subscribe(_ =>
-                    OneLineSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_SWEEP_UNLOCK_CONDITION"),
-                        NotificationCell.NotificationType.Alert))
-                .AddTo(gameObject);
-
             boostPopupButton.OnClickAsObservable()
-                .Where(_ => EnoughToPlay && !_stage.IsInStage)
+                .Where(_ => EnoughToPlay && !Game.Game.instance.IsInWorld)
                 .Subscribe(_ => ShowBoosterPopup());
 
-            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
+            boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(2f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(
@@ -231,9 +224,9 @@ namespace Nekoyume.UI
             }
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            if (_reset)
+            if (_shouldResetPlayer)
             {
-                _reset = false;
+                _shouldResetPlayer = false;
                 _player.gameObject.SetActive(false);
                 _player.gameObject.SetActive(true);
                 _player.SpineController.Appear();
@@ -244,7 +237,7 @@ namespace Nekoyume.UI
             _worldId = worldId;
             _stageId.Value = stageId;
 
-            UpdateInventory();
+            UpdateInventory(stageType is StageType.HackAndSlash or StageType.Mimisbrunnr);
             UpdateBackground(stageType);
             UpdateTitle();
             UpdateStat(currentAvatarState);
@@ -258,6 +251,7 @@ namespace Nekoyume.UI
             costumeSlots.gameObject.SetActive(false);
             equipmentSlots.gameObject.SetActive(true);
             ShowHelpTooltip(stageType);
+            randomBuffButton.SetData(States.Instance.CrystalRandomSkillState, stageId);
             ReactiveAvatarState.ActionPoint.Subscribe(_ => ReadyToBattle()).AddTo(_disposables);
             ReactiveAvatarState.Inventory.Subscribe(_ =>
             {
@@ -269,7 +263,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            _reset = true;
+            _shouldResetPlayer = true;
             consumableSlots.Clear();
             _disposables.DisposeAllAndClear();
             base.Close(ignoreCloseAnimation);
@@ -277,7 +271,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private void UpdateInventory()
+        private void UpdateInventory(bool useConsumable)
         {
             inventory.SetAvatarInfo(
                 clickItem: ShowItemTooltip,
@@ -292,7 +286,8 @@ namespace Nekoyume.UI
                     costumeSlots.gameObject.SetActive(true);
                     equipmentSlots.gameObject.SetActive(false);
                 },
-                GetElementalTypes());
+                GetElementalTypes(),
+                useConsumable: useConsumable);
         }
 
         private void UpdateBackground(StageType stageType)
@@ -548,7 +543,7 @@ namespace Nekoyume.UI
                     submitText = model.Equipped.Value
                         ? L10nManager.Localize("UI_UNEQUIP")
                         : L10nManager.Localize("UI_EQUIP");
-                    if (model.ElementalTypeDisabled.Value)
+                    if (model.DimObjectEnabled.Value)
                     {
                         interactable = model.Equipped.Value;
                     }
@@ -628,12 +623,12 @@ namespace Nekoyume.UI
             if (stage is null)
                 return;
             _requiredCost = stage.CostAP;
-            startButton.SetCost(ConditionalCostButton.CostType.ActionPoint, _requiredCost);
+            startButton.SetCost(CostType.ActionPoint, _requiredCost);
         }
 
         private void OnClickBattle(bool repeat)
         {
-            if (_stage.IsInStage)
+            if (Game.Game.instance.IsInWorld)
             {
                 return;
             }
@@ -646,7 +641,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _stage.IsInStage = true;
+            Game.Game.instance.IsInWorld = true;
             _stage.IsShowHud = true;
             StartCoroutine(CoBattleStart(_stageType, repeat));
             repeatToggle.interactable = false;
@@ -655,8 +650,8 @@ namespace Nekoyume.UI
 
         private IEnumerator CoBattleStart(StageType stageType, bool repeat)
         {
-            var actionPointImage = Find<HeaderMenuStatic>().ActionPointImage;
-            var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
+            var actionPointImage = Find<HeaderMenuStatic>().ActionPoint.IconImage;
+            var itemMoveAnimation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,
                 Vector2.one,
@@ -666,7 +661,7 @@ namespace Nekoyume.UI
                 middleXGap);
             LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 -_requiredCost);
-            yield return new WaitWhile(() => animation.IsPlaying);
+            yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
             Battle(stageType, repeat);
             AudioController.PlayClick();
@@ -774,13 +769,49 @@ namespace Nekoyume.UI
             switch (stageType)
             {
                 case StageType.HackAndSlash:
+                    var skillState = States.Instance.CrystalRandomSkillState;
+                    var buffResult = Find<BuffBonusResultPopup>();
+                    var skillId = PlayerPrefs.GetInt("HackAndSlash.SelectedBonusSkillId", 0);
+                    if (skillId == 0)
+                    {
+                        if (skillState == null ||
+                            !skillState.SkillIds.Any())
+                        {
+                            Game.Game.instance.ActionManager.HackAndSlash(
+                                costumes,
+                                equipments,
+                                consumables,
+                                _worldId,
+                                _stageId.Value
+                            ).Subscribe();
+                            break;
+                        }
+
+                        skillId = skillState.SkillIds
+                            .Select(buffId =>
+                            {
+                                var randomBuffSheet = Game.Game.instance.TableSheets.CrystalRandomBuffSheet;
+                                if (!randomBuffSheet.TryGetValue(buffId, out var bonusBuffRow))
+                                {
+                                    return null;
+                                }
+                                return bonusBuffRow;
+                            })
+                            .OrderBy(x => x.Rank)
+                            .ThenBy(x => x.Id)
+                            .First()
+                            .Id;
+                    }
+
                     Game.Game.instance.ActionManager.HackAndSlash(
                         costumes,
                         equipments,
                         consumables,
                         _worldId,
-                        _stageId.Value
+                        _stageId.Value,
+                        skillId
                     ).Subscribe();
+                    PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", 0);
                     break;
                 case StageType.Mimisbrunnr:
                     Game.Game.instance.ActionManager.MimisbrunnrBattle(
@@ -875,7 +906,7 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                     boostPopupButton.gameObject.SetActive(false);
-                    sweepPopupButton.gameObject.SetActive(avatarState.worldInformation.IsStageCleared(_stageId.Value));
+                    sweepPopupButton.gameObject.SetActive(!IsFirstStage);
                     break;
                 case StageType.Mimisbrunnr:
                     boostPopupButton.gameObject.SetActive(canBattle);

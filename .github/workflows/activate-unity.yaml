@@ -1,0 +1,32 @@
+name: Acquire Unity license activation file
+on:
+  workflow_dispatch:
+    inputs:
+      unityVersion:
+        required: true
+        description: Version of Unity to use for building the project
+      customImage:
+        required: false
+        default: ""
+        description: >-
+          Specific Docker image that should be used to request license
+          activation file
+
+jobs:
+  activation:
+    name: Request manual activation file 🔑
+    runs-on: ubuntu-latest
+    steps:
+      # Request manual activation file
+      - name: Request manual activation file
+        id: getManualLicenseFile
+        uses: game-ci/unity-request-activation-file@v2
+        with:
+          unityVersion: ${{ github.event.inputs.unityVersion }}
+          customImage: ${{ github.event.inputs.customImage }}
+      # Upload artifact (Unity_v20XX.X.XXXX.alf)
+      - name: Expose as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ steps.getManualLicenseFile.outputs.filePath }}
+          path: ${{ steps.getManualLicenseFile.outputs.filePath }}

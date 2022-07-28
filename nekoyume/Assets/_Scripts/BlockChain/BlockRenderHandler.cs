@@ -16,6 +16,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.BlockChain
 {
+    using Nekoyume.Helper;
     using Nekoyume.UI.Scroller;
     using UniRx;
     using NCAction = PolymorphicAction<ActionBase>;
@@ -63,7 +64,7 @@ namespace Nekoyume.BlockChain
             }).AddTo(_disposables);
             if (Game.Game.instance.Agent is RPCAgent rpcAgent)
             {
-                rpcAgent.OnRetryStarted.Subscribe(_ =>
+                rpcAgent.OnRetryEnded.Subscribe(_ =>
                 {
                     _balanceUpdateRequired = true;
                     _avatarUpdateRequired = true;
@@ -89,19 +90,24 @@ namespace Nekoyume.BlockChain
             {
                 var (hasException, exception) = await UniTask.Run<(bool hasException, Exception exception)>(async () =>
                 {
-                    FungibleAssetValue value;
+                    FungibleAssetValue gold;
+                    FungibleAssetValue crystal;
                     try
                     {
-                        value = await agent.GetBalanceAsync(
+                        gold = await agent.GetBalanceAsync(
                             agentState.address,
                             States.Instance.GoldBalanceState.Gold.Currency);
+                        crystal = await agent.GetBalanceAsync(
+                            agentState.address,
+                            CrystalCalculator.CRYSTAL);
                     }
                     catch (Exception e)
                     {
                         return (true, e);
                     }
 
-                    AgentStateSubject.OnNextGold(value);
+                    AgentStateSubject.OnNextGold(gold);
+                    AgentStateSubject.OnNextCrystal(crystal);
                     _balanceUpdateRequired = false;
                     return (false, null);
                 });

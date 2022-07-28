@@ -7,16 +7,19 @@ namespace PackageExtensions.Mixpanel
     {
         private const string _clientHostKey = "client-host";
         private const string _clientHashKey = "client-hash";
+        private const string _targetNetworkKey = "target-network";
         private const string _rpcServerHostKey = "rpc-server-host";
 
         private readonly string _clientHost;
         private readonly string _clientHash;
+        private readonly string _targetNetwork;
         private readonly string _rpcServerHost;
 
         public MixpanelValueFactory(string rpcServerHost = null)
         {
             _clientHost = Resources.Load<TextAsset>("MixpanelClientHost")?.text ?? "no-host";
             _clientHash = Resources.Load<TextAsset>("MixpanelClientHash")?.text ?? "no-hash";
+            _targetNetwork = Resources.Load<TextAsset>("MixpanelTargetNetwork")?.text ?? "no-target";
             _rpcServerHost = rpcServerHost;
 
             Debug.Log(
@@ -29,6 +32,7 @@ namespace PackageExtensions.Mixpanel
             {
                 [_clientHostKey] = _clientHost,
                 [_clientHashKey] = _clientHash,
+                [_targetNetworkKey] = _targetNetwork,
             };
 
             if (_rpcServerHost is { })
@@ -48,6 +52,7 @@ namespace PackageExtensions.Mixpanel
         {
             value[_clientHostKey] = _clientHost;
             value[_clientHashKey] = _clientHash;
+            value[_targetNetworkKey] = _targetNetwork;
 
             if (_rpcServerHost is { })
             {

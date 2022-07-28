@@ -8,16 +8,21 @@ namespace Nekoyume
     {
         public static Analyzer Instance => Game.Game.instance.Analyzer;
 
+        private readonly bool _isTrackable;
+
         private readonly MixpanelValueFactory _mixpanelValueFactory;
 
         public Analyzer(
             string uniqueId = "none",
-            string rpcServerHost = null)
+            string rpcServerHost = null,
+            bool isTrackable = false)
         {
-#if UNITY_EDITOR
-            Debug.Log("Analyzer does not track in editor mode");
-            return;
-#endif
+            _isTrackable = isTrackable;
+            if (!_isTrackable)
+            {
+                Debug.Log($"Analyzer does not track: {nameof(isTrackable)} is false");
+                return;
+            }
 
             _mixpanelValueFactory = new MixpanelValueFactory(rpcServerHost);
 
@@ -30,9 +35,11 @@ namespace Nekoyume
 
         public void Track(string eventName, params (string key, string value)[] properties)
         {
-#if UNITY_EDITOR
-            return;
-#endif
+            if (!_isTrackable)
+            {
+                return;
+            }
+
             if (properties.Length == 0)
             {
                 Mixpanel.Track(eventName);
@@ -45,18 +52,22 @@ namespace Nekoyume
 
         public void Track(string eventName, Value value)
         {
-#if UNITY_EDITOR
-            return;
-#endif
+            if (!_isTrackable)
+            {
+                return;
+            }
+
             value = _mixpanelValueFactory.UpdateValue(value);
             Mixpanel.Track(eventName, value);
         }
 
         public void Flush()
         {
-#if UNITY_EDITOR
-            return;
-#endif
+            if (!_isTrackable)
+            {
+                return;
+            }
+
             Mixpanel.Flush();
         }
     }

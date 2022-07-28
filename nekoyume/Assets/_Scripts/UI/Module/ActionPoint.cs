@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.Common;
@@ -40,7 +41,7 @@ namespace Nekoyume.UI.Module
 
         public bool IsRemained => _currentActionPoint > 0;
 
-        public Image Image => image;
+        public Image IconImage => image;
 
         public bool NowCharging => loading.activeSelf;
 
@@ -138,7 +139,9 @@ namespace Nekoyume.UI.Module
 
         private void OnSliderChange()
         {
-            text.text = $"{(int) sliderAnimator.Value} / {(int) sliderAnimator.MaxValue}";
+            var current = ((int)sliderAnimator.Value).ToString("N0", CultureInfo.CurrentCulture);
+            var max = ((int)sliderAnimator.MaxValue).ToString("N0", CultureInfo.CurrentCulture);
+            text.text = $"{current}/{max}";
         }
 
         public void ShowTooltip()

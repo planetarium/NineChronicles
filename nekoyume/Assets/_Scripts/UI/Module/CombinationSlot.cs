@@ -335,7 +335,7 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case SlotType.Empty:
-                    if (Game.Game.instance.Stage.IsInStage)
+                    if (Game.Game.instance.IsInWorld)
                     {
                         UI.NotificationSystem.Push(
                             Nekoyume.Model.Mail.MailType.System,
@@ -367,7 +367,7 @@ namespace Nekoyume.UI.Module
                     break;
 
                 case SlotType.Appraise:
-                    UI.NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
+                    NotificationSystem.Push(Nekoyume.Model.Mail.MailType.System,
                         L10nManager.Localize("UI_COMBINATION_NOTIFY_IDENTIFYING"),
                         NotificationCell.NotificationType.Information);
                     break;

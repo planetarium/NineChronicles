@@ -15,19 +15,22 @@ jobs:
         projectPath:
           - nekoyume
         unityVersion:
-          - 2020.3.4f1
+          - 2021.3.5f1
         targetPlatform:
           - Windows
           - macOS
+          - Linux
     steps:
       - name: Set environment variables
         run: |
           targetPlatform=${{ matrix.targetPlatform }}
 
           if [ "$targetPlatform" == "Windows" ]; then
-            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-windows-mono-0.11" >> $GITHUB_ENV
+            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-windows-mono-1" >> $GITHUB_ENV
           elif [ "$targetPlatform" == "macOS" ]; then
-            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-mac-mono-0.11" >> $GITHUB_ENV
+            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-mac-mono-1" >> $GITHUB_ENV
+          elif [ "$targetPlatform" == "Linux" ]; then
+            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-linux-il2cpp-1" >> $GITHUB_ENV
           fi
 
       - uses: actions/checkout@v2
@@ -42,14 +45,36 @@ jobs:
 
       - name: inject mixpanel client data
         run: |
+          TARGET_NETWORK=$(case "$GITHUB_REF" in
+            refs/heads/main)
+              echo -n "mainnet"
+              ;;
+
+            refs/heads/rc-*)
+            echo -n "internal"
+              ;;
+
+            refs/heads/previewnet)
+              echo -n "previewnet"
+              ;;
+
+            *)
+              echo -n "unknown"
+              ;;
+          esac)
+
           chmod +x .github/bin/inject-mixpanel-client-data.sh
           .github/bin/inject-mixpanel-client-data.sh \
-          "$GITHUB_SHA"
+          "$GITHUB_SHA" \
+          "$TARGET_NETWORK"
 
       - name: Build Unity Player using docker
         run: |
           docker run \
-            --env ULF="${{ secrets.ULF_2020_3_0_F1 }}" \
+            --env UNITY_LICENSE="${{ secrets.UNITY_LICENSE }}" \
+            --env UNITY_EMAIL="${{ secrets.UNITY_EMAIL }}" \
+            --env UNITY_PASSWORD="${{ secrets.UNITY_PASSWORD }}" \
+            --env UNITY_SERIAL="${{ secrets.UNITY_SERIAL }}" \
             -w "${{ github.workspace }}" \
             -v "${{ github.workspace }}":"${{ github.workspace }}" \
             unityci/editor:${DOCKER_IMAGE_TAG} \
@@ -70,8 +95,9 @@ jobs:
         targetPlatform:
           - Windows
           - macOS
+          - Linux
     needs: build-unity
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet'}}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') || github.ref == 'refs/heads/previewnet' || github.ref == 'refs/heads/2022q2' }}
     steps:
       - uses: actions/checkout@v2
 

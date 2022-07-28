@@ -14,15 +14,18 @@ namespace Nekoyume.UI.Module
         public void Set(int level, string nameWithHash, Sprite sprite)
         {
             characterInfo.text = $"<color=#B38271>Lv.{level}</color> {nameWithHash}";
-            portrait.gameObject.SetActive(!enemy);
-            portraitEnemy.gameObject.SetActive(enemy);
+
             if (enemy)
             {
                 portraitEnemy.overrideSprite = sprite;
+                portrait.gameObject.SetActive(false);
+                portraitEnemy.gameObject.SetActive(true);
             }
             else
             {
                 portrait.overrideSprite = sprite;
+                portrait.gameObject.SetActive(true);
+                portraitEnemy.gameObject.SetActive(false);
             }
         }
     }

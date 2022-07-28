@@ -79,17 +79,13 @@ namespace Nekoyume.UI.Module
                     return normalText.text;
                 }
 
-                switch (CurrentState.Value)
+                return CurrentState.Value switch
                 {
-                    case State.Normal:
-                        return normalText.text;
-                    case State.Conditional:
-                        return conditionalText.text;
-                    case State.Disabled:
-                        return disabledText.text;
-                    default:
-                        return normalText.text;
-                }
+                    State.Normal => normalText.text,
+                    State.Conditional => conditionalText.text,
+                    State.Disabled => disabledText.text,
+                    _ => normalText.text,
+                };
             }
             set
             {
