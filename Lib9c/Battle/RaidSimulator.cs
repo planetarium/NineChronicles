@@ -156,7 +156,7 @@ namespace Nekoyume.Battle
 
             foreach (var wave in _waves)
             {
-                var leftHp = Math.Clamp(wave.CurrentHP, 0, wave.HP);
+                var leftHp = wave.CurrentHP > 0 ? wave.CurrentHP : 0;
                 DamageDealt += wave.HP - leftHp;
             }
 
