@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -32,8 +32,6 @@ namespace Nekoyume.Action
     {
         public Address sellerAvatarAddress;
         public IEnumerable<UpdateSellInfo> updateSellInfos;
-        public List<(Guid orderId, ShopErrorType errorType, string address)> errors =
-            new List<(Guid orderId, ShopErrorType errorType, string address)>();
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -99,16 +97,12 @@ namespace Nekoyume.Action
             {
                 if (!states.TryGetState(digestListAddress, out Dictionary rawList))
                 {
-                    errors.Add((updateSellInfo.orderId,
-                        ShopErrorType.ERROR_CODE_FAILED_LOADING_STATE,
-                        digestListAddress.ToHex()));
-                    continue;
+                    throw new FailedLoadStateException($"{addressesHex} failed to load {nameof(OrderDigest)}({digestListAddress}).");
                 }
 
                 if (updateSellInfo.price.Sign < 0)
                 {
-                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_PRICE, ""));
-                    continue;
+                    throw new InvalidPriceException($"{addressesHex} Aborted as the price is less than zero: {updateSellInfo.price}.");
                 }
 
                 var shopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, updateSellInfo.orderId);
@@ -127,10 +121,7 @@ namespace Nekoyume.Action
                 sw.Restart();
                 if (!states.TryGetState(shopAddress, out BxDictionary shopStateDict))
                 {
-                    errors.Add((updateSellInfo.orderId,
-                        ShopErrorType.ERROR_CODE_FAILED_LOADING_STATE,
-                        shopAddress.ToHex()));
-                    continue;
+                    throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(ShardedShopStateV2)}({shopAddress}).");
                 }
 
                 sw.Stop();
@@ -138,10 +129,7 @@ namespace Nekoyume.Action
                 sw.Restart();
                 if (!states.TryGetState(Order.DeriveAddress(updateSellInfo.orderId), out Dictionary orderDict))
                 {
-                    errors.Add((updateSellInfo.orderId,
-                        ShopErrorType.ERROR_CODE_FAILED_LOADING_STATE,
-                        Order.DeriveAddress(updateSellInfo.orderId).ToHex()));
-                    continue;
+                    throw new FailedLoadStateException($"{addressesHex} failed to load {nameof(Order)}({Order.DeriveAddress(updateSellInfo.orderId)}).");
                 }
 
                 var orderOnSale = OrderFactory.Deserialize(orderDict);
@@ -176,21 +164,9 @@ namespace Nekoyume.Action
                 var newOrder = OrderFactory.Create(context.Signer, sellerAvatarAddress,
                     updateSellInfo.updateSellOrderId, updateSellInfo.price,
                     updateSellInfo.tradableId, context.BlockIndex, updateSellInfo.itemSubType, updateSellInfo.count);
-                try
-                {
-                    newOrder.Validate(avatarState, updateSellInfo.count);
-                }
-                catch (InvalidAddressException)
-                {
-                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_ADDRESS, ""));
-                    continue;
-                }
-                catch (InvalidItemCountException)
-                {
-                    errors.Add((updateSellInfo.orderId, ShopErrorType.ERROR_CODE_INVALID_ADDRESS, ""));
-                    continue;
-                }
 
+                newOrder.Validate(avatarState, updateSellInfo.count);
+                
                 var tradableItem = newOrder.Sell(avatarState);
                 var orderDigest = newOrder.Digest(avatarState, costumeStatSheet);
                 updateSellShopState.Add(orderDigest, context.BlockIndex);
