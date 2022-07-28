@@ -119,7 +119,15 @@ namespace Lib9c.Tests.Action.Scenario
             var worldUnlockSheet = nextState.GetSheet<WorldUnlockSheet>();
             var newId = worldUnlockSheet.Last?.Id + 1 ?? 1;
             var newLine = $"{newId},{worldIdToClear},{stageIdToClear},{worldIdToUnlock}";
-            tableCsv = new StringBuilder(tableCsv).AppendLine(newLine).ToString();
+            tableCsv = $@"
+id,world_id,stage_id,world_id_to_unlock,required_crystal
+1,1,50,2,500
+2,2,100,3,2500
+3,3,150,4,50000
+4,2,100,10001,0
+5,4,200,5,100000
+{newLine}
+";
 
             var patchTableSheet = new PatchTableSheet
             {

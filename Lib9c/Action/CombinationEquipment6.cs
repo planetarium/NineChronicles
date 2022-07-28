@@ -24,7 +24,7 @@ namespace Nekoyume.Action
     [ActionType("combination_equipment6")]
     public class CombinationEquipment6 : GameAction
     {
-        public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
+        public static readonly Address BlacksmithAddress = ItemEnhancement9.BlacksmithAddress;
 
         public Address AvatarAddress;
         public int RecipeId;
@@ -62,7 +62,7 @@ namespace Nekoyume.Action
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
             if (!states.TryGetAgentAvatarStatesV2(ctx.Signer, AvatarAddress, out var agentState,
-                out var avatarState))
+                out var avatarState, out _))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }

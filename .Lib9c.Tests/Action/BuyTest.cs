@@ -19,14 +19,16 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Arena;
     using Nekoyume.Model;
+    using Nekoyume.Model.Arena;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class BuyTest
     {
@@ -412,7 +414,10 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(30, nextBuyerAvatarState.mailBox.Count);
 
-            var goldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);
+            var arenaSheet = _tableSheets.ArenaSheet;
+            var arenaData = arenaSheet.GetRoundByBlockIndex(100);
+            var feeStoreAddress = Addresses.GetShopFeeAddress(arenaData.ChampionshipId, arenaData.Round);
+            var goldCurrencyGold = nextState.GetBalance(feeStoreAddress, goldCurrencyState);
             Assert.Equal(totalTax, goldCurrencyGold);
             var buyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
             var prevBuyerGold = _initialState.GetBalance(_buyerAgentAddress, goldCurrencyState);
@@ -768,55 +773,6 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Rehearsal()
-        {
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
-                _orderId,
-                default,
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
-                ItemSubType.Weapon,
-                new FungibleAssetValue(_goldCurrencyState.Currency, 10, 0)
-            );
-
-            var action = new Buy
-            {
-                buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
-                _sellerAvatarAddress.Derive(LegacyInventoryKey),
-                _sellerAvatarAddress.Derive(LegacyWorldInformationKey),
-                _sellerAvatarAddress.Derive(LegacyQuestListKey),
-                OrderDigestListState.DeriveAddress(_sellerAvatarAddress),
-                _buyerAgentAddress,
-                _buyerAvatarAddress,
-                _buyerAvatarAddress.Derive(LegacyInventoryKey),
-                _buyerAvatarAddress.Derive(LegacyWorldInformationKey),
-                _buyerAvatarAddress.Derive(LegacyQuestListKey),
-                Addresses.GoldCurrency,
-                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, _orderId),
-                OrderReceipt.DeriveAddress(_orderId),
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousStates = state,
-                Signer = _buyerAgentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
-        }
-
-        [Fact]
         public void Execute_With_Testbed()
         {
             var result = BlockChainHelper.MakeInitialState();
@@ -923,8 +879,11 @@ namespace Lib9c.Tests.Action
 
             var buyerGold = nextState.GetBalance(result.GetAgentState().address, goldCurrencyState);
             Assert.Equal(prevBuyerGold - totalPrice, buyerGold);
-            var goldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);
-            Assert.Equal(result.GetCurrencyGold() + totalTax, goldCurrencyGold);
+            var arenaSheet = _tableSheets.ArenaSheet;
+            var arenaData = arenaSheet.GetRoundByBlockIndex(100);
+            var feeStoreAddress = Addresses.GetShopFeeAddress(arenaData.ChampionshipId, arenaData.Round);
+            var goldCurrencyGold = nextState.GetBalance(feeStoreAddress, goldCurrencyState);
+            Assert.Equal(totalTax, goldCurrencyGold);
 
             foreach (var (agentAddress, expectedGold) in agentRevenue)
             {
@@ -933,7 +892,7 @@ namespace Lib9c.Tests.Action
             }
         }
 
-        private (AvatarState avatarState, AgentState agentState) CreateAvatarState(
+        private (AvatarState AvatarState, AgentState AgentState) CreateAvatarState(
             Address agentAddress, Address avatarAddress)
         {
             var agentState = new AgentState(agentAddress);

@@ -18,8 +18,7 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/941
-    /// Updated at https://github.com/planetarium/lib9c/pull/945
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Updated at https://github.com/planetarium/lib9c/pull/1135
     /// </summary>
     [Serializable]
     [ActionType("ranking_battle12")]
@@ -54,6 +53,13 @@ namespace Nekoyume.Action
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress, enemyAddress);
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            var arenaSheetState = states.GetState(arenaSheetAddress);
+            if (arenaSheetState != null)
+            {
+                throw new ActionObsoletedException(nameof(RankingBattle));
+            }
 
             var sw = new Stopwatch();
             sw.Start();

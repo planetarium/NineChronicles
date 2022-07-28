@@ -13,7 +13,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class CreateAvatar6Test
     {
@@ -88,7 +88,8 @@ namespace Lib9c.Tests.Action
                 default,
                 avatarAddress,
                 out var agentState,
-                out var nextAvatarState)
+                out var nextAvatarState,
+                out _)
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);

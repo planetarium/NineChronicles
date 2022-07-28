@@ -66,6 +66,41 @@ namespace Nekoyume.Helper
                 }
 
                 var requiredCount = (int)DecimalMath.DecimalEx.Ceiling(remainExp / (decimal)stageExp);
+                if (remainCount - requiredCount >= 0) // level up
+                {
+                    currentExp += stageExp * requiredCount;
+                    remainCount -= requiredCount;
+                    currentLevel += 1;
+                }
+                else
+                {
+                    currentExp += stageExp * remainCount;
+                    break;
+                }
+            }
+
+            return (currentLevel, currentExp);
+        }
+
+        [Obsolete("Use GetLevelAndExp")]
+        public static (int, long) GetLevelAndExpV1(this AvatarState avatarState,
+            CharacterLevelSheet characterLevelSheet, int stageId, int repeatCount)
+        {
+            var remainCount = repeatCount;
+            var currentLevel = avatarState.level;
+            var currentExp = avatarState.exp;
+            while (remainCount > 0)
+            {
+                characterLevelSheet.TryGetValue(currentLevel, out var row, true);
+                var maxExp = row.Exp + row.ExpNeed;
+                var remainExp = maxExp - currentExp;
+                var stageExp = StageRewardExpHelper.GetExp(currentLevel, stageId);
+                if (stageExp == 0)
+                {
+                    break;
+                }
+
+                var requiredCount = (int)DecimalMath.DecimalEx.Ceiling(remainExp / (decimal)stageExp);
                 if (remainCount - requiredCount > 0) // level up
                 {
                     currentExp += stageExp * requiredCount;
@@ -80,6 +115,28 @@ namespace Nekoyume.Helper
             }
 
             return (currentLevel, currentExp);
+        }
+
+        public static void ValidEquipmentAndCostume(this AvatarState avatarState,
+            IEnumerable<Guid> costumeIds,
+            List<Guid> equipmentIds,
+            ItemRequirementSheet itemRequirementSheet,
+            EquipmentItemRecipeSheet equipmentItemRecipeSheet,
+            EquipmentItemSubRecipeSheetV2 equipmentItemSubRecipeSheetV2,
+            EquipmentItemOptionSheet equipmentItemOptionSheet,
+            long blockIndex,
+            string addressesHex)
+        {
+            var equipments = avatarState.ValidateEquipmentsV2(equipmentIds, blockIndex);
+            var costumeItemIds = avatarState.ValidateCostume(costumeIds);
+            avatarState.ValidateItemRequirement(
+                costumeItemIds.ToList(),
+                equipments,
+                itemRequirementSheet,
+                equipmentItemRecipeSheet,
+                equipmentItemSubRecipeSheetV2,
+                equipmentItemOptionSheet,
+                addressesHex);
         }
     }
 }

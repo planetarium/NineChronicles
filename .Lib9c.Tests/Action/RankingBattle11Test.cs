@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class RankingBattle11Test
     {
@@ -31,6 +31,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatar2Address;
         private readonly Address _weeklyArenaAddress;
         private readonly IAccountStateDelta _initialState;
+        private IValue _arenaSheetState;
 
         public RankingBattle11Test(ITestOutputHelper outputHelper)
         {
@@ -77,13 +78,17 @@ namespace Lib9c.Tests.Action
                 .SetState(Addresses.GameConfig, new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize())
                 .SetState(_weeklyArenaAddress, weeklyArenaState.Serialize());
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            _arenaSheetState = _initialState.GetState(arenaSheetAddress);
+            _initialState = _initialState.SetState(arenaSheetAddress, null);
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
         }
 
-        public static (AgentState, AvatarState) GetAgentStateWithAvatarState(
+        public static (AgentState AgentState, AvatarState AvatarState) GetAgentStateWithAvatarState(
             IReadOnlyDictionary<string, string> sheets,
             TableSheets tableSheets,
             Address rankingMapAddress)
@@ -731,6 +736,43 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
                 Rehearsal = false,
             }));
+        }
+
+        [Fact]
+        public void Execute_ActionObsoletedException()
+        {
+            var previousAvatar1State = _initialState.GetAvatarState(_avatar1Address);
+            previousAvatar1State.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                false
+            );
+            var previousState = _initialState.SetState(
+                _avatar1Address,
+                previousAvatar1State.Serialize());
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            previousState = previousState.SetState(arenaSheetAddress, _arenaSheetState);
+
+            var action = new RankingBattle11
+            {
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
+                equipmentIds = new List<Guid>(),
+            };
+
+            Assert.Throws<ActionObsoletedException>(() =>
+            {
+                action.Execute(new ActionContext
+                {
+                    PreviousStates = previousState,
+                    Signer = _agent1Address,
+                    Random = new TestRandom(),
+                    Rehearsal = false,
+                });
+            });
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Lib9c.Tests.Model.Order
     using Lib9c.Model.Order;
     using Nekoyume.Model.State;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class OrderBaseTest
     {

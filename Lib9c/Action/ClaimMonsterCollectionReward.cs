@@ -5,6 +5,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.BlockChain.Policy;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -19,8 +20,10 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("claim_monster_collection_reward3")]
+    [ActionObsolete(BlockPolicySource.V100220ObsoleteIndex)]
     public class ClaimMonsterCollectionReward : GameAction
     {
+        public const long MonsterCollectionRewardEndBlockIndex = 4_481_909;
         public Address avatarAddress;
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -42,7 +45,7 @@ namespace Nekoyume.Action
                     .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 3), MarkChanged);
             }
 
-            if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException($"Aborted as the avatar state of the signer failed to load.");
             }
@@ -58,7 +61,7 @@ namespace Nekoyume.Action
             List<MonsterCollectionRewardSheet.RewardInfo> rewards =
                 monsterCollectionState.CalculateRewards(
                     states.GetSheet<MonsterCollectionRewardSheet>(),
-                    context.BlockIndex
+                    Math.Min(MonsterCollectionRewardEndBlockIndex, context.BlockIndex)
                 );
 
             if (rewards.Count == 0)

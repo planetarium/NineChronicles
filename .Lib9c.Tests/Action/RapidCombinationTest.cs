@@ -11,13 +11,14 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Helper;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static SerializeKeys;
+    using static Lib9c.SerializeKeys;
 
     public class RapidCombinationTest
     {
@@ -529,6 +530,177 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 BlockIndex = 1,
             }));
+        }
+
+        [Theory]
+        [InlineData(7)]
+        [InlineData(9)]
+        [InlineData(10)]
+        [InlineData(11)]
+        public void Execute_NotThrow_InvalidOperationException_When_TargetSlotCreatedBy(
+            int itemEnhancementResultModelNumber)
+        {
+            const int slotStateUnlockStage = 1;
+
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            avatarState.worldInformation = new WorldInformation(
+                0,
+                _initialState.GetSheet<WorldSheet>(),
+                slotStateUnlockStage);
+
+            var row = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.Hourglass);
+            avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 83);
+            avatarState.inventory.AddItem(ItemFactory.CreateTradableMaterial(row), 100);
+            Assert.True(avatarState.inventory.HasFungibleItem(row.ItemId, 0, 183));
+
+            var firstEquipmentRow = _tableSheets.EquipmentItemSheet
+                .OrderedList.First(e => e.Grade >= 1);
+            Assert.NotNull(firstEquipmentRow);
+
+            var gameConfigState = _initialState.GetGameConfigState();
+            var requiredBlockIndex = gameConfigState.HourglassPerBlock * 200;
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                firstEquipmentRow,
+                Guid.NewGuid(),
+                requiredBlockIndex);
+            var materialEquipment = (Equipment)ItemFactory.CreateItemUsable(
+                firstEquipmentRow,
+                Guid.NewGuid(),
+                requiredBlockIndex);
+            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem(materialEquipment);
+
+            AttachmentActionResult resultModel = null;
+            var random = new TestRandom();
+            var mailId = random.GenerateRandomGuid();
+            var preItemUsable = new Equipment((Dictionary)equipment.Serialize());
+            switch (itemEnhancementResultModelNumber)
+            {
+                case 7:
+                {
+                    equipment = ItemEnhancement7.UpgradeEquipment(equipment);
+                    resultModel = new ItemEnhancement7.ResultModel
+                    {
+                        id = mailId,
+                        itemUsable = equipment,
+                        materialItemIdList = new[] { materialEquipment.NonFungibleId },
+                    };
+
+                    break;
+                }
+
+                case 9:
+                {
+                    Assert.True(ItemEnhancement9.TryGetRow(
+                        equipment,
+                        _tableSheets.EnhancementCostSheetV2,
+                        out var costRow));
+                    var equipmentResult = ItemEnhancement9.GetEnhancementResult(costRow, random);
+                    equipment.LevelUpV2(
+                        random,
+                        costRow,
+                        equipmentResult == ItemEnhancement9.EnhancementResult.GreatSuccess);
+                    resultModel = new ItemEnhancement9.ResultModel
+                    {
+                        id = mailId,
+                        preItemUsable = preItemUsable,
+                        itemUsable = equipment,
+                        materialItemIdList = new[] { materialEquipment.NonFungibleId },
+                        gold = 0,
+                        actionPoint = 0,
+                        enhancementResult = ItemEnhancement9.EnhancementResult.GreatSuccess,
+                    };
+
+                    break;
+                }
+
+                case 10:
+                {
+                    Assert.True(ItemEnhancement10.TryGetRow(
+                        equipment,
+                        _tableSheets.EnhancementCostSheetV2,
+                        out var costRow));
+                    var equipmentResult = ItemEnhancement10.GetEnhancementResult(costRow, random);
+                    equipment.LevelUpV2(
+                        random,
+                        costRow,
+                        equipmentResult == ItemEnhancement10.EnhancementResult.GreatSuccess);
+                    resultModel = new ItemEnhancement10.ResultModel
+                    {
+                        id = mailId,
+                        preItemUsable = preItemUsable,
+                        itemUsable = equipment,
+                        materialItemIdList = new[] { materialEquipment.NonFungibleId },
+                        gold = 0,
+                        actionPoint = 0,
+                        enhancementResult = ItemEnhancement10.EnhancementResult.GreatSuccess,
+                    };
+
+                    break;
+                }
+
+                case 11:
+                {
+                    Assert.True(ItemEnhancement.TryGetRow(
+                        equipment,
+                        _tableSheets.EnhancementCostSheetV2,
+                        out var costRow));
+                    var equipmentResult = ItemEnhancement.GetEnhancementResult(costRow, random);
+                    equipment.LevelUpV2(
+                        random,
+                        costRow,
+                        equipmentResult == ItemEnhancement.EnhancementResult.GreatSuccess);
+                    resultModel = new ItemEnhancement.ResultModel
+                    {
+                        id = mailId,
+                        preItemUsable = preItemUsable,
+                        itemUsable = equipment,
+                        materialItemIdList = new[] { materialEquipment.NonFungibleId },
+                        gold = 0,
+                        actionPoint = 0,
+                        enhancementResult = ItemEnhancement.EnhancementResult.GreatSuccess,
+                        CRYSTAL = 0 * CrystalCalculator.CRYSTAL,
+                    };
+
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            // NOTE: Do not update `mail`, because this test assumes that the `mail` was removed.
+            {
+                // var mail = new ItemEnhanceMail(resultModel, 0, random.GenerateRandomGuid(), requiredBlockIndex);
+                // avatarState.Update(mail);
+            }
+
+            var slotAddress = _avatarAddress.Derive(string.Format(
+                CultureInfo.InvariantCulture,
+                CombinationSlotState.DeriveFormat,
+                0));
+            var slotState = new CombinationSlotState(slotAddress, slotStateUnlockStage);
+            slotState.Update(resultModel, 0, requiredBlockIndex);
+
+            var tempState = _initialState.SetState(slotAddress, slotState.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                .SetState(_avatarAddress, avatarState.SerializeV2());
+
+            var action = new RapidCombination
+            {
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            action.Execute(new ActionContext
+            {
+                PreviousStates = tempState,
+                Signer = _agentAddress,
+                BlockIndex = 51,
+            });
         }
     }
 }

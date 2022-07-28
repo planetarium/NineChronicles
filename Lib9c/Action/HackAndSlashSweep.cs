@@ -15,11 +15,11 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [Serializable]
     /// <summary>
-    /// Introduced at https://github.com/planetarium/lib9c/pull/1017
+    /// Introduced at https://github.com/planetarium/lib9c/pull/1173
     /// </summary>
-    [ActionType("hack_and_slash_sweep4")]
+    [Serializable]
+    [ActionType("hack_and_slash_sweep5")]
     public class HackAndSlashSweep : GameAction
     {
         public const int UsableApStoneCount = 10;
@@ -63,11 +63,7 @@ namespace Nekoyume.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
-                return states
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(context.Signer, MarkChanged);
+                return states;
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -78,11 +74,7 @@ namespace Nekoyume.Action
                                                     $"apStoneCount : {apStoneCount} > UsableApStoneCount : {UsableApStoneCount}");
             }
 
-            if (worldId >= GameConfig.MimisbrunnrWorldId)
-            {
-                throw new InvalidWorldException(
-                    $"{addressesHex} [{worldId}] can't execute HackAndSlashSweep action.");
-            }
+            states.ValidateWorldId(avatarAddress, worldId);
 
             if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState, out var migrationRequired))
             {

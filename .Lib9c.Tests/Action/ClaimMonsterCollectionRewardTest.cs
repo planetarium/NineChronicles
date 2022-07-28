@@ -17,14 +17,14 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
+    using static Lib9c.SerializeKeys;
     using static Nekoyume.Model.Item.Inventory;
-    using static SerializeKeys;
 
     public class ClaimMonsterCollectionRewardTest
     {
         private readonly Address _signer;
         private readonly Address _avatarAddress;
-        private readonly TableSheets _tableSheets;
+        private readonly ClaimMonsterCollectionReward _action;
         private IAccountStateDelta _state;
 
         public ClaimMonsterCollectionRewardTest(ITestOutputHelper outputHelper)
@@ -38,14 +38,14 @@ namespace Lib9c.Tests.Action
             _avatarAddress = _signer.Derive("avatar");
             _state = new State();
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
-            _tableSheets = new TableSheets(sheets);
+            var tableSheets = new TableSheets(sheets);
             var rankingMapAddress = new PrivateKey().ToAddress();
             var agentState = new AgentState(_signer);
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _signer,
                 0,
-                _tableSheets.GetAvatarSheets(),
+                tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
                 rankingMapAddress);
             agentState.avatarAddresses[0] = _avatarAddress;
@@ -66,6 +66,11 @@ namespace Lib9c.Tests.Action
                 _state = _state
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
+
+            _action = new ClaimMonsterCollectionReward
+            {
+                avatarAddress = _avatarAddress,
+            };
         }
 
         [Theory]
@@ -90,27 +95,19 @@ namespace Lib9c.Tests.Action
             Assert.Equal(0 * currency, _state.GetBalance(_signer, currency));
             Assert.Equal(0 * currency, _state.GetBalance(collectionAddress, currency));
 
-            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
-            {
-                avatarAddress = _avatarAddress,
-            };
-
             if (exc is { })
             {
-                Assert.Throws(exc, () =>
+                Assert.Throws(exc, () => _action.Execute(new ActionContext
                 {
-                    action.Execute(new ActionContext
-                    {
-                        PreviousStates = _state,
-                        Signer = _signer,
-                        BlockIndex = claimBlockIndex,
-                        Random = new TestRandom(),
-                    });
-                });
+                    PreviousStates = _state,
+                    Signer = _signer,
+                    BlockIndex = claimBlockIndex,
+                    Random = new TestRandom(),
+                }));
             }
             else
             {
-                IAccountStateDelta nextState = action.Execute(new ActionContext
+                IAccountStateDelta nextState = _action.Execute(new ActionContext
                 {
                     PreviousStates = _state,
                     Signer = _signer,
@@ -146,12 +143,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException_AgentState()
         {
-            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
-            {
-                avatarAddress = _avatarAddress,
-            };
-
-            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
+            Assert.Throws<FailedLoadStateException>(() => _action.Execute(new ActionContext
                 {
                     PreviousStates = _state,
                     Signer = new PrivateKey().ToAddress(),
@@ -163,12 +155,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException_MonsterCollectionState()
         {
-            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
-            {
-                avatarAddress = _avatarAddress,
-            };
-
-            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
+            Assert.Throws<FailedLoadStateException>(() => _action.Execute(new ActionContext
                 {
                     PreviousStates = _state,
                     Signer = _signer,
@@ -184,12 +171,7 @@ namespace Lib9c.Tests.Action
             var monsterCollectionState = new MonsterCollectionState(collectionAddress, 1, 0);
             _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
-            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
-            {
-                avatarAddress = _avatarAddress,
-            };
-
-            Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
+            Assert.Throws<RequiredBlockIndexException>(() => _action.Execute(new ActionContext
                 {
                     PreviousStates = _state,
                     Signer = _signer,
@@ -201,12 +183,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
-            {
-                avatarAddress = _avatarAddress,
-            };
-
-            IAccountStateDelta nextState = action.Execute(new ActionContext
+            IAccountStateDelta nextState = _action.Execute(new ActionContext
                 {
                     PreviousStates = new State(),
                     Signer = _signer,
@@ -346,6 +323,33 @@ namespace Lib9c.Tests.Action
                     1,
                     MonsterCollectionState.RewardInterval * 2,
                     MonsterCollectionState.RewardInterval * 2 - 1,
+                    new (int, int)[]
+                    {
+                        (400000, 80),
+                        (500000, 1),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    1,
+                    ClaimMonsterCollectionReward.MonsterCollectionRewardEndBlockIndex,
+                    ClaimMonsterCollectionReward.MonsterCollectionRewardEndBlockIndex -
+                    MonsterCollectionState.RewardInterval,
+                    new (int, int)[]
+                    {
+                        (400000, 80),
+                        (500000, 1),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    1,
+                    ClaimMonsterCollectionReward.MonsterCollectionRewardEndBlockIndex +
+                    MonsterCollectionState.RewardInterval * 3,
+                    ClaimMonsterCollectionReward.MonsterCollectionRewardEndBlockIndex -
+                    MonsterCollectionState.RewardInterval,
                     new (int, int)[]
                     {
                         (400000, 80),

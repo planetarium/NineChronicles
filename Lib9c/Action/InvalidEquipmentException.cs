@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     public class InvalidEquipmentException : Exception
     {
         public InvalidEquipmentException()

@@ -18,6 +18,7 @@ namespace Nekoyume.Action
     [Serializable]
     /// <summary>0
     /// Introduced at https://github.com/planetarium/lib9c/pull/1017
+    /// Updated at https://github.com/planetarium/lib9c/pull/1176
     /// </summary>
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex)]
     [ActionType("hack_and_slash_sweep3")]
@@ -69,6 +70,13 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(context.Signer, MarkChanged);
+            }
+
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            var arenaSheetState = states.GetState(arenaSheetAddress);
+            if (arenaSheetState != null)
+            {
+                throw new ActionObsoletedException(nameof(HackAndSlashSweep3));
             }
 
             CheckObsolete(BlockChain.Policy.BlockPolicySource.V100210ObsoleteIndex, context);
@@ -223,7 +231,7 @@ namespace Nekoyume.Action
             avatarState.UpdateInventory(rewardItems);
 
             var levelSheet = sheets.GetSheet<CharacterLevelSheet>();
-            var (level, exp) = avatarState.GetLevelAndExp(levelSheet, stageId, playCount);
+            var (level, exp) = avatarState.GetLevelAndExpV1(levelSheet, stageId, playCount);
             avatarState.UpdateExp(level, exp);
 
             return states

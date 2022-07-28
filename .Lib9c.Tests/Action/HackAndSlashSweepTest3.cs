@@ -82,6 +82,9 @@ namespace Lib9c.Tests.Action
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
+            var arenaSheetAddress = Addresses.GetSheetAddress<ArenaSheet>();
+            _initialState = _initialState.SetState(arenaSheetAddress, null);
+
             foreach (var address in _avatarState.combinationSlotAddresses)
             {
                 var slotState = new CombinationSlotState(
@@ -167,7 +170,7 @@ namespace Lib9c.Tests.Action
                 var itemPlayCount = gameConfigState.ActionPointMax / stageRow.CostAP * apStoneCount;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
                     _tableSheets.CharacterLevelSheet,
                     stageId,
                     playCount);
@@ -498,7 +501,7 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * useApStoneCount;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
                     _tableSheets.CharacterLevelSheet,
                     2,
                     playCount);
@@ -573,7 +576,7 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * 1;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
                     _tableSheets.CharacterLevelSheet,
                     2,
                     playCount);
@@ -648,7 +651,7 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * 1;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
                     _tableSheets.CharacterLevelSheet,
                     2,
                     playCount);
@@ -723,7 +726,7 @@ namespace Lib9c.Tests.Action
                     gameConfigState.ActionPointMax / stageRow.CostAP * 1;
                 var apPlayCount = avatarState.actionPoint / stageRow.CostAP;
                 var playCount = apPlayCount + itemPlayCount;
-                (expectedLevel, expectedExp) = avatarState.GetLevelAndExp(
+                (expectedLevel, expectedExp) = avatarState.GetLevelAndExpV1(
                     _tableSheets.CharacterLevelSheet,
                     stageId,
                     playCount);
@@ -747,6 +750,26 @@ namespace Lib9c.Tests.Action
                         Random = new TestRandom(),
                     }));
             }
+        }
+
+        [Fact]
+        public void Execute_ActionObsoletedException()
+        {
+            var action = new HackAndSlashSweep3
+            {
+                apStoneCount = 1,
+                avatarAddress = _avatarAddress,
+                worldId = 1,
+                stageId = 50,
+            };
+
+            var state = _initialState.SetState(Addresses.GetSheetAddress<ArenaSheet>(), _tableSheets.ArenaSheet.Serialize());
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
         }
     }
 }
