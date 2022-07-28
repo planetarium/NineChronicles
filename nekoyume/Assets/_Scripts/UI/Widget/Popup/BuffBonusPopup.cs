@@ -47,6 +47,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject buffPrefab;
 
+        private List<GameObject> cellList = new List<GameObject>();
+
         protected override void Awake()
         {
             base.Awake();
@@ -185,9 +187,6 @@ namespace Nekoyume.UI
             var randomBuffsheet = Game.Game.instance.TableSheets.CrystalRandomBuffSheet;
             var randomBuffGroupsByRank = randomBuffsheet.Select(line => line.Value).GroupBy(row => row.Rank);
 
-            var cellList = cellContainer.GetComponentsInChildren<BuffBonusTitleCell>().Select(cell => cell.gameObject)
-                .Concat(cellContainer.GetComponentsInChildren<BuffBonusBuffCell>().Select(cell => cell.gameObject));
-
             foreach (var cell in cellList)
             {
                 Destroy(cell);
@@ -198,12 +197,14 @@ namespace Nekoyume.UI
                 // Grade
                 var cell = Instantiate(titlePrefab, cellContainer);
                 cell.GetComponent<BuffBonusTitleCell>().Set(randomBuffGroup.Key);
+                cellList.Add(cell);
 
                 foreach (var randomBuffRow in randomBuffGroup)
                 {
                     // buff
                     cell = Instantiate(buffPrefab, cellContainer);
                     cell.GetComponent<BuffBonusBuffCell>().Set(randomBuffRow);
+                    cellList.Add(cell);
                 }
             }
         }
