@@ -74,7 +74,7 @@ namespace Nekoyume.Model
             RowData = row;
             CharacterId = characterId;
             Stats = new CharacterStats(RowData, level);
-            if (optionalStatModifiers is not null)
+            if (!(optionalStatModifiers is null))
             {
                 Stats.AddOption(optionalStatModifiers);
             }
