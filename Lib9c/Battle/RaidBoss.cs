@@ -25,7 +25,7 @@ namespace Nekoyume.Model
 
         protected RaidBoss(RaidBoss value) : base(value)
         {
-
+            RaidSimulator = value.RaidSimulator;
         }
 
         public override object Clone() => new RaidBoss(this);
