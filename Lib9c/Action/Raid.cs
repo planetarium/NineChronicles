@@ -129,7 +129,7 @@ namespace Nekoyume.Action
                 sheets.GetRaidSimulatorSheets());
             simulator.Simulate();
 
-            int score = 10_000;
+            int score = simulator.DamageDealt;
             int cp = CPHelper.GetCPV2(avatarState, sheets.GetSheet<CharacterSheet>(),
                 sheets.GetSheet<CostumeStatSheet>());
             raiderState.Update(avatarState, cp, score, PayNcg);

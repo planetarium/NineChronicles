@@ -16,7 +16,8 @@ namespace Nekoyume.Battle
     {
         public readonly EnemySkillSheet EnemySkillSheet;
 
-        public override IEnumerable<ItemBase> Reward => throw new System.NotImplementedException();
+        public int DamageDealt { get; private set; }
+        public override IEnumerable<ItemBase> Reward => new List<ItemBase>();
         private const int TurnLimit = 150;
         private int _bossId;
         private readonly List<RaidBoss> _waves;
@@ -152,6 +153,12 @@ namespace Nekoyume.Battle
                 if (TurnNumber > TurnLimit ||
                     Player.IsDead)
                     break;
+            }
+
+            foreach (var wave in _waves)
+            {
+                var leftHp = Math.Clamp(wave.CurrentHP, 0, wave.HP);
+                DamageDealt += wave.HP - leftHp;
             }
 
             Log.result = Result;

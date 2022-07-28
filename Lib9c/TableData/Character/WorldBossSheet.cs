@@ -41,10 +41,10 @@ namespace Nekoyume.TableData
                 var statData = new WaveStatData()
                 {
                     Wave = int.Parse(fields[1], CultureInfo.InvariantCulture),
-                    SizeType = Enum.TryParse<SizeType>(fields[1], out var sizeType)
+                    SizeType = Enum.TryParse<SizeType>(fields[2], out var sizeType)
                         ? sizeType
                         : SizeType.S,
-                    ElementalType = Enum.TryParse<ElementalType>(fields[2], out var elementalType)
+                    ElementalType = Enum.TryParse<ElementalType>(fields[3], out var elementalType)
                         ? elementalType
                         : ElementalType.Normal,
                     Level = int.Parse(fields[4], CultureInfo.InvariantCulture),
