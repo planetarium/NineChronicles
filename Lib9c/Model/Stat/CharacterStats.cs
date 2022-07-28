@@ -83,13 +83,9 @@ namespace Nekoyume.Model.Stat
             EqualizeCurrentHPWithHP();
         }
 
-        public CharacterStats(
-            CharacterSheet.Row row,
-            WorldBossSheet.WaveStatData stat)
+        public CharacterStats(WorldBossSheet.WaveStatData stat)
         {
             UseLevelStats = false;
-            _row = row ?? throw new ArgumentNullException(nameof(row));
-
             Level = stat.Level;
             var stats = stat.ToStats();
             _baseStats.Set(stats);

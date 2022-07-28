@@ -32,28 +32,20 @@ namespace Nekoyume.Battle
             _waves = new List<RaidBoss>();
             EnemySkillSheet = simulatorSheets.EnemySkillSheet;
 
-            if (!simulatorSheets.CharacterSheet.TryGetValue(bossId, out var characterRow))
-                throw new SheetRowNotFoundException(nameof(CharacterSheet), bossId);
-
             if (!simulatorSheets.WorldBossSheet.TryGetValue(bossId, out var bossRow))
                 throw new SheetRowNotFoundException(nameof(WorldBossSheet), bossId);
 
-            SetEnemies(characterRow, bossRow);
+            SetEnemies(bossRow);
         }
 
-        private void SetEnemies(
-            CharacterSheet.Row characterRow,
-            WorldBossSheet.Row worldBossRow)
+        private void SetEnemies(WorldBossSheet.Row worldBossRow)
         {
             for (var i = 0; i < worldBossRow.WaveStats.Count; ++i)
             {
-                var stat = new CharacterStats(
-                    characterRow,
-                    worldBossRow.WaveStats[i]);
                 var enemyModel = new RaidBoss(
                     Player,
-                    characterRow,
-                    stat);
+                    worldBossRow,
+                    worldBossRow.WaveStats[i]);
                 _waves.Add(enemyModel);
             }
         }
@@ -127,21 +119,21 @@ namespace Nekoyume.Battle
                         Result = BattleLog.Result.Win;
                         Log.clearedWaveNumber = WaveNumber;
 
-                        switch (WaveNumber)
-                        {
-                            case 1:
-                                break;
-                            case 2:
-                                break;
-                            case 3:
-                                break;
-                            case 4:
-                                break;
-                            case 5:
-                                break;
-                            default:
-                                break;
-                        }
+                        //switch (WaveNumber)
+                        //{
+                        //    case 1:
+                        //        break;
+                        //    case 2:
+                        //        break;
+                        //    case 3:
+                        //        break;
+                        //    case 4:
+                        //        break;
+                        //    case 5:
+                        //        break;
+                        //    default:
+                        //        break;
+                        //}
 
                         break;
                     }

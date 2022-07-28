@@ -35,8 +35,8 @@ namespace Nekoyume.Model
 
         public CharacterSheet.Row RowData { get; }
         public int CharacterId { get; }
-        public SizeType SizeType => RowData?.SizeType ?? SizeType.S;
-        public float RunSpeed => RowData?.RunSpeed ?? 1f;
+        public SizeType SizeType { get; }
+        public float RunSpeed { get; }
         public CharacterStats Stats { get; }
 
         public int Level
@@ -74,40 +74,42 @@ namespace Nekoyume.Model
             RowData = row;
             CharacterId = characterId;
             Stats = new CharacterStats(RowData, level);
-            if (!(optionalStatModifiers is null))
+            if (optionalStatModifiers is not null)
             {
                 Stats.AddOption(optionalStatModifiers);
             }
 
             Skills.Clear();
 
+            SizeType = RowData.SizeType;
             atkElementType = RowData.ElementalType;
-            attackRange = RowData.AttackRange;
             defElementType = RowData.ElementalType;
+            RunSpeed = RowData.RunSpeed;
+            attackRange = RowData.AttackRange;
             CurrentHP = HP;
             AttackCountMax = 0;
         }
 
         protected CharacterBase(
             Simulator simulator,
-            CharacterSheet characterSheet,
+            CharacterStats stat,
             int characterId,
-            CharacterStats stat)
+            SizeType sizeType,
+            ElementalType elementalType,
+            float attackRange,
+            float runSpeed)
         {
             Simulator = simulator;
-
-            if (!characterSheet.TryGetValue(characterId, out var characterRow))
-                throw new SheetRowNotFoundException("CharacterSheet", characterId);
-
-            RowData = characterRow;
-            CharacterId = characterId;
             Stats = stat;
 
-            Skills.Clear();
+            CharacterId = characterId;
+            SizeType = sizeType;
+            atkElementType = elementalType;
+            defElementType = elementalType;
+            this.attackRange = attackRange;
+            RunSpeed = runSpeed;
 
-            atkElementType = RowData.ElementalType;
-            attackRange = RowData.AttackRange;
-            defElementType = RowData.ElementalType;
+            Skills.Clear();
             CurrentHP = HP;
             AttackCountMax = 0;
         }
@@ -117,9 +119,14 @@ namespace Nekoyume.Model
             _root = value._root;
             Id = value.Id;
             Simulator = value.Simulator;
+
+            CharacterId = value.CharacterId;
+            SizeType = value.SizeType;
             atkElementType = value.atkElementType;
-            attackRange = value.attackRange;
             defElementType = value.defElementType;
+            attackRange = value.attackRange;
+            RunSpeed = value.RunSpeed;
+
             // 스킬은 변하지 않는다는 가정 하에 얕은 복사.
             Skills = value.Skills;
             // 버프는 컨테이너도 옮기고,
@@ -138,7 +145,6 @@ namespace Nekoyume.Model
             RowData = value.RowData;
             Stats = new CharacterStats(value.Stats);
             AttackCountMax = value.AttackCountMax;
-            CharacterId = value.CharacterId;
         }
 
         public abstract object Clone();

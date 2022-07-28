@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.Model.Character;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -30,14 +32,22 @@ namespace Nekoyume.Model
             PostConstruction();
         }
 
-        public Enemy(CharacterBase player,
-            CharacterSheet.Row characterRowData,
-            CharacterStats stat)
+        public Enemy(
+            CharacterBase player,
+            CharacterStats stat,
+            int characterId,
+            SizeType sizeType,
+            ElementalType elementalType,
+            float attackRange,
+            float runSpeed)
             : base(
                 player.Simulator,
-                player.Simulator.CharacterSheet,
-                characterRowData.Id,
-                stat)
+                stat,
+                characterId,
+                sizeType,
+                elementalType,
+                attackRange,
+                runSpeed)
         {
             Targets.Add(player);
             PostConstruction();

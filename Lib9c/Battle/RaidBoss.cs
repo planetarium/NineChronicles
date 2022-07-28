@@ -1,4 +1,5 @@
 using Nekoyume.Battle;
+using Nekoyume.Model.Character;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -14,18 +15,29 @@ namespace Nekoyume.Model
         [NonSerialized]
         public RaidSimulator RaidSimulator;
 
+        public new WorldBossSheet.Row RowData { get; }
+
         public RaidBoss(
             CharacterBase player,
-            CharacterSheet.Row characterRow,
-            CharacterStats stat)
-            : base(player, characterRow, stat)
+            WorldBossSheet.Row row,
+            WorldBossSheet.WaveStatData statData)
+            : base(
+                player,
+                new CharacterStats(statData),
+                row.BossId,
+                statData.SizeType,
+                statData.ElementalType,
+                statData.AttackRange,
+                statData.RunSpeed)
         {
             RaidSimulator = (RaidSimulator) player.Simulator;
+            RowData = row;
         }
 
         protected RaidBoss(RaidBoss value) : base(value)
         {
             RaidSimulator = value.RaidSimulator;
+            RowData = value.RowData;
         }
 
         public override object Clone() => new RaidBoss(this);
@@ -41,7 +53,7 @@ namespace Nekoyume.Model
             Skills.Add(attack);
 
             var dmg = (int)(ATK * 0.3m);
-            var skillIds = RaidSimulator.EnemySkillSheet.Values.Where(r => r.characterId == RowData.Id)
+            var skillIds = RaidSimulator.EnemySkillSheet.Values.Where(r => r.characterId == RowData.BossId)
                 .Select(r => r.skillId).ToList();
             var enemySkills = Simulator.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
                 .ToList();
