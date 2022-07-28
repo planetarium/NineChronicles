@@ -29,7 +29,6 @@ using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
-using Unity.Mathematics;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -809,44 +808,32 @@ namespace Nekoyume.BlockChain
             {
                 return;
             }
-
             var updateSellInfos = eval.Action.updateSellInfos;
-            var errors = eval.Action.errors;
-            foreach (var updateSellInfo in updateSellInfos)
+
+            string message;
+            if (updateSellInfos.Count() > 1)
             {
+                message = L10nManager.Localize(""); // Todo 일괄 재등록 완료
+            }
+            else
+            {
+                var updateSellInfo = updateSellInfos.FirstOrDefault();
                 var itemName = await Util.GetItemNameByOrderId(updateSellInfo.orderId);
                 var order = await Util.GetOrder(updateSellInfo.orderId);
                 var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
 
-                if (errors.Exists(tuple => tuple.orderId.Equals(updateSellInfo.orderId))) // is error
+                if (count > 1)
                 {
-                    string message;
-                    if (count > 1)
-                    {
-                        message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_FAIL"), itemName, count);
-                    }
-                    else
-                    {
-                        message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_FAILE"), itemName);
-                    }
-                    OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Alert);
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_COMPLETE"),
+                        itemName, count);
                 }
                 else
                 {
-                    string message;
-                    if (count > 1)
-                    {
-                        message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_COMPLETE"),
-                            itemName, count);
-                    }
-                    else
-            {
-                message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
-            }
-
-            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
                 }
             }
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+
             UpdateCurrentAvatarStateAsync(eval).Forget();
             ReactiveShopState.UpdateSellDigestsAsync().Forget();
         }

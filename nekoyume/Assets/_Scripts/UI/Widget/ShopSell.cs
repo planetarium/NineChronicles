@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Lib9c.Model.Order;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
@@ -14,7 +13,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
-using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 using Inventory = Nekoyume.UI.Module.Inventory;
@@ -296,22 +294,27 @@ namespace Nekoyume.UI
                 ["Quantity"] = updateSellInfos.Count
             });
 
-            foreach (var info in oneLineSystemInfos)
+            string message;
+            if (updateSellInfos.Count() > 1)
             {
-                string message;
+                message = L10nManager.Localize(""); // Todo 일괄 재등록 시작
+            }
+            else
+            {
+                var info = oneLineSystemInfos.FirstOrDefault();
                 if (info.count > 1)
                 {
                     message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_START"),
-                        info.name,
-                        info.count);
+                        info.name, info.count);
                 }
                 else
                 {
                     message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_START"),
                         info.name);
                 }
-                OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             }
+
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
         }
 
