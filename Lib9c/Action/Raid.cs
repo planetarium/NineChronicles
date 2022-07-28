@@ -60,6 +60,8 @@ namespace Nekoyume.Action
                 typeof(WorldBossListSheet),
                 typeof(WorldBossGlobalHpSheet),
                 typeof(EnemySkillSheet),
+                typeof(CharacterSheet),
+                typeof(CostumeStatSheet),
             });
             var worldBossListSheet = sheets.GetSheet<WorldBossListSheet>();
             var row = worldBossListSheet.FindRowByBlockIndex(context.BlockIndex);
@@ -90,7 +92,7 @@ namespace Nekoyume.Action
 
             if (raiderState.RemainChallengeCount < 1)
             {
-                if (context.BlockIndex - raiderState.RefillBlockIndex >= WorldBossHelper.RefillInterval)
+                if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
                 {
                     raiderState.RemainChallengeCount = 3;
                     raiderState.RefillBlockIndex = context.BlockIndex;
@@ -129,17 +131,9 @@ namespace Nekoyume.Action
             simulator.Simulate();
 
             int score = 10_000;
-            if (raiderState.HighScore < score)
-            {
-                raiderState.HighScore = score;
-            }
-
-            raiderState.TotalScore += score;
-            if (!PayNcg)
-            {
-                raiderState.RemainChallengeCount--;
-            }
-            raiderState.TotalChallengeCount++;
+            int cp = CPHelper.GetCPV2(avatarState, sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CostumeStatSheet>());
+            raiderState.Update(avatarState, cp, score, PayNcg);
             // Reward.
             WorldBossState bossState;
             WorldBossGlobalHpSheet hpSheet = sheets.GetSheet<WorldBossGlobalHpSheet>();
@@ -172,6 +166,7 @@ namespace Nekoyume.Action
                     ["a"] = AvatarAddress.Serialize(),
                     ["e"] = new List(EquipmentIds.Select(e => e.Serialize())),
                     ["c"] = new List(CostumeIds.Select(c => c.Serialize())),
+                    ["f"] = new List(FoodIds.Select(f => f.Serialize())),
                 }
                 .ToImmutableDictionary();
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -179,6 +174,7 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["a"].ToAddress();
             EquipmentIds = plainValue["e"].ToList(StateExtensions.ToGuid);
             CostumeIds = plainValue["c"].ToList(StateExtensions.ToGuid);
+            FoodIds = plainValue["f"].ToList(StateExtensions.ToGuid);
         }
     }
 }

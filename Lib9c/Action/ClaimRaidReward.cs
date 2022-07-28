@@ -65,7 +65,7 @@ namespace Nekoyume.Action
                     );
                     foreach (var reward in rewards)
                     {
-                        states = states.MintAsset(context.Signer, reward);
+                        states = states.MintAsset(AvatarAddress, reward);
                     }
                 }
 

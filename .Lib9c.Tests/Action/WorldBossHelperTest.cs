@@ -26,5 +26,15 @@ namespace Lib9c.Tests.Action
             };
             Assert.Equal(expected * currency, WorldBossHelper.CalculateTicketPrice(row, raiderState, currency));
         }
+
+        [Theory]
+        [InlineData(100L, 0L, 0L, true)]
+        [InlineData(150L, 80L, 0L, true)]
+        [InlineData(200L, 199L, 0L, true)]
+        [InlineData(150L, 110L, 0L, false)]
+        public void CanRefillTicket(long blockIndex, long refilledBlockIndex, long startedBlockIndex, bool expected)
+        {
+            Assert.Equal(expected, WorldBossHelper.CanRefillTicket(blockIndex, refilledBlockIndex, startedBlockIndex));
+        }
     }
 }
