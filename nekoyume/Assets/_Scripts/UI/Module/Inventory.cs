@@ -381,7 +381,7 @@ namespace Nekoyume.UI.Module
                 .OrderByDescending(x => bestItems.Exists(y => y.Equals(x)))
                 .ThenBy(x => x.ItemBase.ItemSubType)
                 .ThenByDescending(x => Util.IsUsableItem(x.ItemBase))
-                .ThenBy(x => CPHelper.GetCP(x.ItemBase as Equipment))
+                .ThenByDescending(x => CPHelper.GetCP(x.ItemBase as Equipment))
                 .ToList();
 
             if (_elementalTypes.Any())
