@@ -1,7 +1,6 @@
 using Nekoyume.Battle;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using Nekoyume.Model;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -27,8 +26,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private ComparisonStatView[] statViews = null;
-
-        private LevelUpVFX _levelUpVFX = null;
 
         private Player _model = null;
 
@@ -84,23 +81,9 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             var position = ActionCamera.instance.transform.position;
-            _levelUpVFX = VFXController.instance.CreateAndChaseCam<LevelUpVFX>(position, new Vector3(0f, 0.7f));
-            _levelUpVFX.Play();
-            _levelUpVFX.OnFinished = () => Close();
 
             var stage = Game.Game.instance.Stage;
-            stage.ReleaseWhiteList.Add(_levelUpVFX.gameObject);
             base.Show(ignoreShowAnimation);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            if (_levelUpVFX)
-            {
-                _levelUpVFX = null;
-            }
-
-            base.Close(ignoreCloseAnimation);
         }
 
         private void TweenLevelText()

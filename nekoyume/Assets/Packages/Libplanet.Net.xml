@@ -1684,21 +1684,6 @@
             <returns><c>true</c> if the corresponding <see cref="T:Libplanet.Blocks.Block`1"/> to
             <paramref name="target"/> is needed, otherwise, <c>false</c>.</returns>
         </member>
-        <member name="T:Libplanet.Net.SwarmOptions.TransportType">
-            <summary>
-            <c>Enum</c> represents the type of the <see cref="T:Libplanet.Net.Transports.ITransport"/>.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.SwarmOptions.TransportType.NetMQTransport">
-            <summary>
-            NetMQ based transport.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.SwarmOptions.TransportType.TcpTransport">
-            <summary>
-            TCP based transport.
-            </summary>
-        </member>
         <member name="P:Libplanet.Net.SwarmOptions.BlockDemandLifespan">
             <summary>
             The lifespan of block demand.
@@ -1789,11 +1774,6 @@
             The lifespan of the <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.  When the tip has not been updated
             for the configured lifespan, <see cref="T:Libplanet.Net.Swarm`1"/> pulls new blocks from neighbor
             peers.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.SwarmOptions.Type">
-            <summary>
-            The type of <see cref="T:Libplanet.Net.Transports.ITransport"/> used in <see cref="T:Libplanet.Net.Swarm`1"/>.
             </summary>
         </member>
         <member name="P:Libplanet.Net.SwarmOptions.BootstrapOptions">
@@ -1890,19 +1870,6 @@
             <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to query
             <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
             <param name="timeout">Timeout value for request.</param>
-            <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
-        </member>
-        <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.QueryAppProtocolVersionTcp(Libplanet.Net.BoundPeer,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
-            <summary>
-            Queries <see cref="T:Libplanet.Net.AppProtocolVersion"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>
-            specialized for TCP based transport.
-            </summary>
-            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to query
-            <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
-            <param name="timeout">Timeout value for request.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
             <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
         </member>
         <member name="T:Libplanet.Net.Transports.CommunicationFailException">
@@ -2169,27 +2136,6 @@
             <summary>
             An <see cref="T:System.Exception"/> thrown when fail to send a <see cref="T:Libplanet.Net.Messages.Message"/>.
             </summary>
-        </member>
-        <member name="P:Libplanet.Net.Transports.TcpTransport.ProcessMessageHandler">
-            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.ProcessMessageHandler"/>
-        </member>
-        <member name="P:Libplanet.Net.Transports.TcpTransport.AsPeer">
-            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.AsPeer"/>
-        </member>
-        <member name="P:Libplanet.Net.Transports.TcpTransport.LastMessageTimestamp">
-            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.Running"/>
-        </member>
-        <member name="M:Libplanet.Net.Transports.TcpTransport.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc cref="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)"/>
-        </member>
-        <member name="M:Libplanet.Net.Transports.TcpTransport.WaitForRunningAsync">
-            <inheritdoc cref="M:Libplanet.Net.Transports.ITransport.WaitForRunningAsync"/>
-        </member>
-        <member name="M:Libplanet.Net.Transports.TcpTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Net.Transports.TcpTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
-            <inheritdoc/>
         </member>
     </members>
 </doc>
