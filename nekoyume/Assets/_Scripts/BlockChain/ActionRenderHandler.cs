@@ -1004,7 +1004,6 @@ namespace Nekoyume.BlockChain
                         });
 
                 var tableSheets = Game.Game.instance.TableSheets;
-
                 var skillsOnWaveStart = new List<Model.Skill.Skill>();
                 if (eval.Action.StageBuffId.HasValue)
                 {
@@ -1015,19 +1014,16 @@ namespace Nekoyume.BlockChain
                     skillsOnWaveStart.Add(skill);
                 }
 
-                var simulator = new StageSimulator(
-                    new LocalRandom(eval.RandomSeed),
-                    States.Instance.CurrentAvatarState,
-                    eval.Action.Foods,
+                var resultModel = eval.GetHackAndSlashReward(States.Instance.CurrentAvatarState,
                     skillsOnWaveStart,
-                    eval.Action.WorldId,
-                    eval.Action.StageId,
-                    Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
-                    Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080);
-                simulator.Simulate(1);
+                    tableSheets,
+                    out var simulator);
                 var log = simulator.Log;
-                Game.Game.instance.Stage.PlayCount = 1;
+                Game.Game.instance.Stage.PlayCount = eval.Action.PlayCount;
+                if (eval.Action.PlayCount > 1)
+                {
+                    Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
+                }
 
                 if (eval.Action.StageBuffId.HasValue)
                 {
@@ -1533,7 +1529,7 @@ namespace Nekoyume.BlockChain
             return null;
         }
 
-        private class LocalRandom : System.Random, IRandom
+        internal class LocalRandom : System.Random, IRandom
         {
             public LocalRandom(int Seed)
                 : base(Seed)
