@@ -220,18 +220,10 @@
                 itemCount
             );
 
-            var defaultUpdateSellInfo = new UpdateSellInfo(
-                default,
-                default,
-                default,
-                ItemSubType.Food,
-                2 * _currency,
-                1);
-
             var action = new UpdateSell
             {
                 sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo, defaultUpdateSellInfo },
+                updateSellInfos = new[] { updateSellInfo },
             };
 
             var nextState = action.Execute(new ActionContext
@@ -250,7 +242,6 @@
             Assert.Equal(updateSellOrderId, nextShopState.OrderDigestList.First().OrderId);
             Assert.Equal(itemId, nextShopState.OrderDigestList.First().TradableId);
             Assert.Equal(requiredBlockIndex + 101, nextShopState.OrderDigestList.First().ExpiredBlockIndex);
-            Assert.Single(action.errors);
         }
 
         [Fact]
@@ -362,13 +353,12 @@
                 updateSellInfos = new[] { updateSellInfo },
             };
 
-            action.Execute(new ActionContext
+            Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
-            });
-            Assert.Contains(action.errors, e => e.errorType == ShopErrorType.ERROR_CODE_INVALID_PRICE);
+            }));
         }
     }
 }
