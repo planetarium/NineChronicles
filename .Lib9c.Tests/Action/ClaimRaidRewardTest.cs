@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System;
+    using System.Linq;
     using Libplanet;
     using Libplanet.Action;
     using Nekoyume;
@@ -11,6 +12,20 @@ namespace Lib9c.Tests.Action
 
     public class ClaimRaidRewardTest
     {
+        private readonly TableSheets _tableSheets;
+        private readonly IAccountStateDelta _state;
+
+        public ClaimRaidRewardTest()
+        {
+            var tableCsv = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(tableCsv);
+            _state = new State();
+            foreach (var kv in tableCsv)
+            {
+                _state = _state.SetState(Addresses.GetSheetAddress(kv.Key), kv.Value.Serialize());
+            }
+        }
+
         [Theory]
         // rank 0
         [InlineData(typeof(NotEnoughRankException), 0, 0, 0, 0)]
@@ -28,22 +43,15 @@ namespace Lib9c.Tests.Action
         [InlineData(null, 90_000, 0, 562_500, 595)]
         public void Execute(Type exc, int highScore, int latestRank, int expectedCrystal, int expectedRune)
         {
-            var tableCsv = TableSheetsImporter.ImportSheets();
-            var tableSheets = new TableSheets(tableCsv);
-            IAccountStateDelta state = new State();
-            foreach (var kv in tableCsv)
-            {
-                state = state.SetState(Addresses.GetSheetAddress(kv.Key), kv.Value.Serialize());
-            }
-
             Address avatarAddress = default;
-            var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, 1);
+            var bossRow = _tableSheets.WorldBossListSheet.OrderedList.First();
+            var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, bossRow.Id);
             var raiderState = new RaiderState
             {
                 HighScore = highScore,
                 LatestRewardRank = latestRank,
             };
-            state = state.SetState(raiderAddress, raiderState.Serialize());
+            IAccountStateDelta state = _state.SetState(raiderAddress, raiderState.Serialize());
 
             var action = new ClaimRaidReward(avatarAddress);
             if (exc is null)
@@ -60,9 +68,12 @@ namespace Lib9c.Tests.Action
                 Assert.Equal(expectedCrystal * crystalCurrency, nextState.GetBalance(default, crystalCurrency));
 
                 var rune = 0;
-                for (int i = 800_000; i < 800_003; i++)
+                var runeIds = _tableSheets.RuneWeightSheet.Values
+                        .Where(r => r.BossId == bossRow.BossId)
+                        .SelectMany(r => r.RuneInfos.Select(i => i.RuneId)).ToHashSet();
+                foreach (var runeId in runeIds)
                 {
-                    var runeCurrency = RuneHelper.ToCurrency(i);
+                    var runeCurrency = RuneHelper.ToCurrency(runeId);
                     rune += (int)nextState.GetBalance(avatarAddress, runeCurrency).MajorUnit;
                 }
 
