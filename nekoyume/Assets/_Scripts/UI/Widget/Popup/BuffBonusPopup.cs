@@ -7,14 +7,11 @@ using Nekoyume.UI.Scroller;
 using System.Numerics;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Text;
-using Nekoyume.Game.Controller;
 
 namespace Nekoyume.UI
 {
     using mixpanel;
     using Nekoyume.BlockChain;
-    using System.Collections.Generic;
     using System.Linq;
     using UniRx;
 
@@ -39,15 +36,13 @@ namespace Nekoyume.UI
         private GameObject buffListView = null;
 
         [SerializeField]
-        private Transform cellContainer;
+        private RectTransform cellContainer;
 
         [SerializeField]
-        private GameObject titlePrefab;
+        private BuffBonusTitleCell titlePrefab;
 
         [SerializeField]
-        private GameObject buffPrefab;
-
-        private List<GameObject> cellList = new List<GameObject>();
+        private BuffBonusBuffCell buffPrefab;
 
         protected override void Awake()
         {
@@ -77,13 +72,14 @@ namespace Nekoyume.UI
                 .Subscribe(OnInsufficientStar)
                 .AddTo(gameObject);
 
-            buffListButton.onClick.AddListener(ShowBuffListView);
+            buffListButton.onClick.AddListener(OnClickBuffListButton);
         }
 
         public override void Initialize()
         {
             normalButton.Text = L10nManager.Localize("UI_DRAW_NORMAL");
             advancedButton.Text = L10nManager.Localize("UI_DRAW_ADVANCED");
+            InitializeBuffListView();
             base.Initialize();
         }
 
@@ -176,35 +172,29 @@ namespace Nekoyume.UI
             Close();
         }
 
-        private void ShowBuffListView()
+        private void OnClickBuffListButton()
         {
+            var pos = cellContainer.anchoredPosition;
+            pos.y = 0;
+            cellContainer.anchoredPosition = pos;
+
             buffListView.SetActive(true);
-            UpdateBuffListView();
         }
 
-        private void UpdateBuffListView()
+        private void InitializeBuffListView()
         {
             var randomBuffsheet = Game.Game.instance.TableSheets.CrystalRandomBuffSheet;
             var randomBuffGroupsByRank = randomBuffsheet.Select(line => line.Value).GroupBy(row => row.Rank);
 
-            foreach (var cell in cellList)
-            {
-                Destroy(cell);
-            }
-
             foreach (var randomBuffGroup in randomBuffGroupsByRank)
             {
                 // Grade
-                var cell = Instantiate(titlePrefab, cellContainer);
-                cell.GetComponent<BuffBonusTitleCell>().Set(randomBuffGroup.Key);
-                cellList.Add(cell);
+                Instantiate(titlePrefab, cellContainer).Set(randomBuffGroup.Key);
 
                 foreach (var randomBuffRow in randomBuffGroup)
                 {
                     // buff
-                    cell = Instantiate(buffPrefab, cellContainer);
-                    cell.GetComponent<BuffBonusBuffCell>().Set(randomBuffRow);
-                    cellList.Add(cell);
+                    Instantiate(buffPrefab, cellContainer).Set(randomBuffRow);
                 }
             }
         }
