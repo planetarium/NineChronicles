@@ -15,10 +15,10 @@ namespace Nekoyume.Battle
     {
         public readonly EnemySkillSheet EnemySkillSheet;
 
+        public int BossId { get; private set; }
         public int DamageDealt { get; private set; }
         public override IEnumerable<ItemBase> Reward => new List<ItemBase>();
         private const int TurnLimit = 150;
-        private int _bossId;
         private readonly List<RaidBoss> _waves;
 
         public RaidSimulator(
@@ -28,7 +28,7 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             RaidSimulatorSheets simulatorSheets) : base(random, avatarState, foods, simulatorSheets)
         {
-            _bossId = bossId;
+            BossId = bossId;
             _waves = new List<RaidBoss>();
             EnemySkillSheet = simulatorSheets.EnemySkillSheet;
 

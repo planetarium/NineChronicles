@@ -7,7 +7,6 @@ namespace Lib9c.Tests.Model
     using Libplanet.Action;
     using Nekoyume.Battle;
     using Nekoyume.Model.BattleStatus;
-    using Nekoyume.Model.Quest;
     using Nekoyume.Model.State;
     using Xunit;
 
