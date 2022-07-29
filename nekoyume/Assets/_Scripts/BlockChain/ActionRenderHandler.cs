@@ -1000,7 +1000,7 @@ namespace Nekoyume.BlockChain
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
                                 UpdateCrystalRandomSkillState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
-                                RenderQuest(eval.Action.avatarAddress,
+                                RenderQuest(eval.Action.AvatarAddress,
                                     avatarState.questList.completedQuestIds);
                                 _disposableForBattleEnd = null;
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
@@ -1014,10 +1014,10 @@ namespace Nekoyume.BlockChain
                 var tableSheets = Game.Game.instance.TableSheets;
 
                 var skillsOnWaveStart = new List<Model.Skill.Skill>();
-                if (eval.Action.stageBuffId.HasValue)
+                if (eval.Action.StageBuffId.HasValue)
                 {
                     var skill = CrystalRandomSkillState.GetSkill(
-                        eval.Action.stageBuffId.Value,
+                        eval.Action.StageBuffId.Value,
                         tableSheets.CrystalRandomBuffSheet,
                         tableSheets.SkillSheet);
                     skillsOnWaveStart.Add(skill);
@@ -1026,10 +1026,10 @@ namespace Nekoyume.BlockChain
                 var simulator = new StageSimulator(
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
-                    eval.Action.foods,
+                    eval.Action.Foods,
                     skillsOnWaveStart,
-                    eval.Action.worldId,
-                    eval.Action.stageId,
+                    eval.Action.WorldId,
+                    eval.Action.StageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
                     Game.Game.instance.TableSheets.CostumeStatSheet,
                     StageSimulator.ConstructorVersionV100080);
@@ -1037,11 +1037,11 @@ namespace Nekoyume.BlockChain
                 var log = simulator.Log;
                 Game.Game.instance.Stage.PlayCount = 1;
 
-                if (eval.Action.stageBuffId.HasValue)
+                if (eval.Action.StageBuffId.HasValue)
                 {
                     Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill", new Value
                     {
-                        ["RandomSkillId"] = eval.Action.stageBuffId,
+                        ["RandomSkillId"] = eval.Action.StageBuffId,
                         ["IsCleared"] = simulator.Log.IsClear,
                     });
                 }
@@ -1689,7 +1689,7 @@ namespace Nekoyume.BlockChain
                         ? previousMyScoreText.ToInteger()
                         : ArenaScore.ArenaScoreDefault
                     : ArenaScore.ArenaScoreDefault;
-                
+
                 // TODO: Add `ExtraOutputMyScore` to `BattleArena`
                 outputMyScore = null;
             }
