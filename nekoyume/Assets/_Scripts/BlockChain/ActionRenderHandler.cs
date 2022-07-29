@@ -1836,20 +1836,29 @@ namespace Nekoyume.BlockChain
                             .DoOnError(e => Debug.LogException(e));
                     });
 
+            if (!WorldBossFrontHelper.TryGetCurrentRow(eval.BlockIndex, out var row))
+            {
+                Debug.LogError($"[Raid] Failed to get current world boss row. BlockIndex : {eval.BlockIndex}");
+                return;
+            }
+            
             var simulator = new RaidSimulator(
-                205007,
+                row.BossId,
                 new LocalRandom(eval.RandomSeed),
                 States.Instance.CurrentAvatarState,
                 eval.Action.FoodIds,
-                Game.Game.instance.TableSheets.GetRaidSimulatorSheets()
+                TableSheets.Instance.GetRaidSimulatorSheets()
             );
             simulator.Simulate();
             BattleLog log = simulator.Log;
             Widget.Find<Menu>().Close();
             var playerDigest = new ArenaPlayerDigest(States.Instance.CurrentAvatarState);
-            Game.Game.instance.RaidStage.Play(log, playerDigest);
-            Widget.Find<WorldBoss>().UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true);
-            Widget.Find<WorldBoss>().Close();
+            Widget.Find<LoadingScreen>().Close();
+            Game.Game.instance.RaidStage.Play(simulator.BossId, log, playerDigest);
+
+            var worldBoss = Widget.Find<WorldBoss>();
+            worldBoss.UpdateViewAsync(eval.BlockIndex, true);
+            worldBoss.Close();
         }
 
         private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)

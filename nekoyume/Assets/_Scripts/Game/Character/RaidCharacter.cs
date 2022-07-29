@@ -35,6 +35,8 @@ namespace Nekoyume.Game.Character
         public Coroutine CurrentAction { get; set; }
         public Coroutine TargetAction => _target.CurrentAction;
 
+        private bool _isAppQuitting = false;
+
         protected virtual void Awake()
         {
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
@@ -44,6 +46,19 @@ namespace Nekoyume.Game.Character
         {
             _hudContainer.UpdatePosition(gameObject, HUDOffset);
             _speechBubble.UpdatePosition(gameObject, HUDOffset);
+        }
+
+        private void OnDisable()
+        {
+            if (!_isAppQuitting)
+            {
+                DisableHUD();
+            }
+        }
+
+        private void OnApplicationQuit()
+        {
+            _isAppQuitting = true;
         }
 
         public virtual void Init(RaidCharacter target)
@@ -556,10 +571,6 @@ namespace Nekoyume.Game.Character
         protected virtual void OnDeadEnd()
         {
             Animator.Idle();
-            if (this is RaidPlayer)
-            {
-                gameObject.SetActive(false);
-            }
         }
 
         public void ToggleRunning()

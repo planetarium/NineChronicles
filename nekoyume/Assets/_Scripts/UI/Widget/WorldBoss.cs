@@ -334,6 +334,7 @@ namespace Nekoyume.UI
 
         private void Raid(bool payNcg)
         {
+            Find<LoadingScreen>().Show();
             var inventory = States.Instance.CurrentAvatarState.inventory;
             ActionManager.Instance.Raid(inventory.Costumes
                     .Where(e => e.Equipped)

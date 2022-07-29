@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Playables;
 
 namespace Nekoyume.Game
 {
@@ -21,6 +20,10 @@ namespace Nekoyume.Game
         [SerializeField]
         private ObjectPool objectPool;
 
+        [SerializeField]
+        private float delayOnBattleFinished = 3f;
+
+        private WaitForSeconds _delayOnBattleFinished;
         private Character.RaidPlayer _player;
         private Character.RaidBoss _boss;
 
@@ -42,7 +45,7 @@ namespace Nekoyume.Game
 
         private void Awake()
         {
-
+            _delayOnBattleFinished = new WaitForSeconds(delayOnBattleFinished);
         }
 
         public void Initialize()
@@ -53,6 +56,7 @@ namespace Nekoyume.Game
         }
 
         public void Play(
+            int bossId,
             BattleLog log,
             ArenaPlayerDigest player)
         {
@@ -69,7 +73,7 @@ namespace Nekoyume.Game
 
                 if (log?.Count > 0)
                 {
-                    _battleCoroutine = StartCoroutine(CoPlay(log, player));
+                    _battleCoroutine = StartCoroutine(CoPlay(bossId, log, player));
                 }
             }
             else
@@ -79,10 +83,11 @@ namespace Nekoyume.Game
         }
 
         private IEnumerator CoPlay(
+            int bossId,
             BattleLog log,
             ArenaPlayerDigest player)
         {
-            yield return StartCoroutine(CoEnter(player));
+            yield return StartCoroutine(CoEnter(bossId, player));
 
             var actionDelay = new WaitForSeconds(StageConfig.instance.actionDelay);
             var skillDelay = new WaitForSeconds(SkillDelay);
@@ -118,12 +123,12 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoFinish());
         }
 
-        private IEnumerator CoEnter(ArenaPlayerDigest playerDigest)
+        private IEnumerator CoEnter(int bossId, ArenaPlayerDigest playerDigest)
         {
             ActionCamera.instance.gameObject.SetActive(false);
             _actionQueue.Clear();
 
-            CreateContainer(205007);
+            CreateContainer(bossId);
             container.Show();
             MainCanvas.instance.Canvas.worldCamera = container.Camera;
 
@@ -157,6 +162,7 @@ namespace Nekoyume.Game
             _onBattleEnded.OnNext(this);
             yield return _player.CurrentAction;
             yield return _boss.CurrentAction;
+            yield return delayOnBattleFinished;
             yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
 
             if (_battleCoroutine is not null)
@@ -167,6 +173,9 @@ namespace Nekoyume.Game
             _isPlaying = false;
             ActionRenderHandler.Instance.Pending = false;
             Widget.Find<RaidBattle>().Close();
+
+            ActionCamera.instance.gameObject.SetActive(true);
+            MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
 
             container.Close();
             var model = new BattleResultPopup.Model()
@@ -180,8 +189,6 @@ namespace Nekoyume.Game
             {
                 Destroy(container);
             }
-            ActionCamera.instance.gameObject.SetActive(true);
-            MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
         }
 
         public IEnumerator CoSpawnPlayer(Player character)
@@ -305,16 +312,17 @@ namespace Nekoyume.Game
             raidCharacter.Set(character);
             yield return raidCharacter.TargetAction;
 
-            if (_player.IsDead)
+            if (raidCharacter is Character.RaidPlayer player)
             {
-                yield return StartCoroutine(raidCharacter.CoDie());
+                yield return StartCoroutine(player.CoDie());
             }
-            else if (_boss.IsDead)
+            else if (raidCharacter is Character.RaidBoss)
             {
                 if (waveIndex < 4)
                 {
                     yield return StartCoroutine(container.CoPlayRunAwayCutscene(waveIndex));
                     yield return StartCoroutine(container.CoPlayAppearCutscene());
+                    _boss.Animator.Idle();
                 }
                 else
                 {
