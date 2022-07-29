@@ -9,7 +9,7 @@ using static Nekoyume.TableData.TableExtensions;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class WorldBossSheet : Sheet<int, WorldBossSheet.Row>
+    public class WorldBossCharacterSheet : Sheet<int, WorldBossCharacterSheet.Row>
     {
         [Serializable]
         public class WaveStatData
@@ -69,7 +69,7 @@ namespace Nekoyume.TableData
             }
         }
         
-        public WorldBossSheet() : base(nameof(WorldBossSheet))
+        public WorldBossCharacterSheet() : base(nameof(WorldBossCharacterSheet))
         {
         }
 
@@ -90,7 +90,7 @@ namespace Nekoyume.TableData
 
     public static class WorldBossStatSheetExtension
     {
-        public static StatsMap ToStats(this WorldBossSheet.WaveStatData statData)
+        public static StatsMap ToStats(this WorldBossCharacterSheet.WaveStatData statData)
         {
             var hp = statData.HP;
             var atk = statData.ATK;

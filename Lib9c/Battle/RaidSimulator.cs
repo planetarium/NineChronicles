@@ -32,20 +32,20 @@ namespace Nekoyume.Battle
             _waves = new List<RaidBoss>();
             EnemySkillSheet = simulatorSheets.EnemySkillSheet;
 
-            if (!simulatorSheets.WorldBossSheet.TryGetValue(bossId, out var bossRow))
-                throw new SheetRowNotFoundException(nameof(WorldBossSheet), bossId);
+            if (!simulatorSheets.WorldBossCharacterSheet.TryGetValue(bossId, out var bossRow))
+                throw new SheetRowNotFoundException(nameof(WorldBossCharacterSheet), bossId);
 
             SetEnemies(bossRow);
         }
 
-        private void SetEnemies(WorldBossSheet.Row worldBossRow)
+        private void SetEnemies(WorldBossCharacterSheet.Row worldBossCharacterRow)
         {
-            for (var i = 0; i < worldBossRow.WaveStats.Count; ++i)
+            for (var i = 0; i < worldBossCharacterRow.WaveStats.Count; ++i)
             {
                 var enemyModel = new RaidBoss(
                     Player,
-                    worldBossRow,
-                    worldBossRow.WaveStats[i]);
+                    worldBossCharacterRow,
+                    worldBossCharacterRow.WaveStats[i]);
                 _waves.Add(enemyModel);
             }
         }
@@ -62,7 +62,7 @@ namespace Nekoyume.Battle
         }
 
 
-        public Player Simulate()
+        public BattleLog Simulate()
         {
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
@@ -161,7 +161,7 @@ namespace Nekoyume.Battle
             }
 
             Log.result = Result;
-            return Player;
+            return Log;
         }
     }
 }

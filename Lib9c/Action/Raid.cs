@@ -55,7 +55,7 @@ namespace Nekoyume.Action
                 typeof(BuffSheet),
                 typeof(CharacterLevelSheet),
                 typeof(EquipmentItemSetEffectSheet),
-                typeof(WorldBossSheet),
+                typeof(WorldBossCharacterSheet),
                 typeof(WorldBossListSheet),
                 typeof(WorldBossGlobalHpSheet),
                 typeof(EnemySkillSheet),

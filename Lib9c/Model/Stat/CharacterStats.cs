@@ -83,7 +83,7 @@ namespace Nekoyume.Model.Stat
             EqualizeCurrentHPWithHP();
         }
 
-        public CharacterStats(WorldBossSheet.WaveStatData stat)
+        public CharacterStats(WorldBossCharacterSheet.WaveStatData stat)
         {
             UseLevelStats = false;
             Level = stat.Level;

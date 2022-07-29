@@ -165,7 +165,7 @@ namespace Lib9c.Tests
 
         public WorldBossGlobalHpSheet WorldBossGlobalHpSheet { get; private set; }
 
-        public WorldBossSheet WorldBossSheet { get; private set; }
+        public WorldBossCharacterSheet WorldBossCharacterSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {
@@ -247,7 +247,7 @@ namespace Lib9c.Tests
                 CharacterSheet,
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
-                WorldBossSheet,
+                WorldBossCharacterSheet,
                 EnemySkillSheet
             );
         }

@@ -15,12 +15,12 @@ namespace Nekoyume.Model
         [NonSerialized]
         public RaidSimulator RaidSimulator;
 
-        public new WorldBossSheet.Row RowData { get; }
+        public new WorldBossCharacterSheet.Row RowData { get; }
 
         public RaidBoss(
             CharacterBase player,
-            WorldBossSheet.Row row,
-            WorldBossSheet.WaveStatData statData)
+            WorldBossCharacterSheet.Row row,
+            WorldBossCharacterSheet.WaveStatData statData)
             : base(
                 player,
                 new CharacterStats(statData),

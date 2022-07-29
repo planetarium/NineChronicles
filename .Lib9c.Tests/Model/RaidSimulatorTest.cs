@@ -31,22 +31,34 @@ namespace Lib9c.Tests.Model
                 default
             );
 
-            _avatarState.level = 200;
+            _avatarState.level = 250;
         }
 
         [Fact]
         public void Simulate()
         {
-            var bossId = _tableSheets.WorldBossListSheet.First().Key;
+            var bossId = _tableSheets.WorldBossListSheet.First().Value.BossId;
             var simulator = new RaidSimulator(
                 bossId,
                 _random,
                 _avatarState,
                 new List<Guid>(),
                 _tableSheets.GetRaidSimulatorSheets());
+            Assert.Equal(_random, simulator.Random);
 
-            simulator.Simulate();
-            Assert.NotEqual(0, simulator.DamageDealt);
+            var log = simulator.Simulate();
+
+            var turn = log.OfType<WaveTurnEnd>().Count();
+            Assert.Equal(simulator.TurnNumber, turn);
+
+            var expectedWaveCount = _tableSheets.WorldBossCharacterSheet[bossId].WaveStats.Count;
+            Assert.Equal(expectedWaveCount, log.waveCount);
+
+            var deadEvents = log.OfType<Dead>();
+            foreach (var dead in deadEvents)
+            {
+                Assert.True(dead.Character.IsDead);
+            }
         }
     }
 }
