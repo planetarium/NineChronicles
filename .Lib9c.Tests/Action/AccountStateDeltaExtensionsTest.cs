@@ -298,5 +298,60 @@ namespace Lib9c.Tests.Action
                 Assert.Null(beforePreviousWeekly);
             }
         }
+
+        [Theory]
+        [InlineData(0, 0, 0, typeof(InvalidClaimException))]
+        [InlineData(1, 1, 100, null)]
+        [InlineData(2, 2, 200, null)]
+        public void SetBossKillReward(int level, int expectedRune, int expectedCrystal, Type exc)
+        {
+            IAccountStateDelta states = new State();
+            var rewardInfoAddress = new PrivateKey().ToAddress();
+            var rewardRecord = new WorldBossKillRewardRecord();
+            for (int i = 0; i < level; i++)
+            {
+                rewardRecord[i] = new List<FungibleAssetValue>();
+            }
+
+            states = states.SetState(rewardInfoAddress, rewardRecord.Serialize());
+
+            var random = new TestRandom();
+            var runeWeightSheet = new RuneWeightSheet();
+            runeWeightSheet.Set(@"id,boss_id,rank,rune_id,weight
+1,1,0,1,100
+");
+            var killRewardSheet = new WorldBossKillRewardSheet();
+            killRewardSheet.Set(@"id,boss_id,rank,rune_min,rune_max,crystal
+1,1,0,1,1,100
+");
+            var runeSheet = new TableSheets(TableSheetsImporter.ImportSheets()).RuneSheet;
+            var runeCurrency = RuneHelper.ToCurrency(runeSheet[1], 0, null);
+            var avatarAddress = new PrivateKey().ToAddress();
+
+            if (exc is null)
+            {
+                var nextState = states.SetWorldBossKillReward(rewardInfoAddress, rewardRecord, 0, 1, runeWeightSheet, killRewardSheet, runeSheet, random, avatarAddress);
+                Assert.Equal(expectedRune * runeCurrency, nextState.GetBalance(avatarAddress, runeCurrency));
+                Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, nextState.GetBalance(avatarAddress, CrystalCalculator.CRYSTAL));
+                var nextRewardInfo = new WorldBossKillRewardRecord((List)nextState.GetState(rewardInfoAddress));
+                Assert.All(nextRewardInfo, kv => Assert.NotEmpty(kv.Value));
+            }
+            else
+            {
+                Assert.Throws(
+                    exc,
+                    () => states.SetWorldBossKillReward(
+                        rewardInfoAddress,
+                        rewardRecord,
+                        0,
+                        1,
+                        runeWeightSheet,
+                        killRewardSheet,
+                        runeSheet,
+                        random,
+                        avatarAddress)
+                );
+            }
+        }
     }
 }

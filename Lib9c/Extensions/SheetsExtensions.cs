@@ -261,6 +261,15 @@ namespace Nekoyume.Extensions
                     blockIndex <= r.EndedBlockIndex
                 );
         }
+
+        public static WorldBossListSheet.Row FindPreviousRowByBlockIndex(
+            this WorldBossListSheet sheet, long blockIndex)
+        {
+            return sheet.OrderedList.Last(
+                r => r.EndedBlockIndex < blockIndex
+            );
+        }
+
         public static int FindRaidIdByBlockIndex(this WorldBossListSheet sheet, long blockIndex)
         {
             WorldBossListSheet.Row row = sheet.FindRowByBlockIndex(blockIndex);
@@ -270,9 +279,8 @@ namespace Nekoyume.Extensions
         public static int FindPreviousRaidIdByBlockIndex(this WorldBossListSheet sheet,
             long blockIndex)
         {
-            return sheet.OrderedList.Last(
-                r => r.EndedBlockIndex < blockIndex
-            ).Id;
+            WorldBossListSheet.Row row = sheet.FindPreviousRowByBlockIndex(blockIndex);
+            return row.Id;
         }
     }
 }
