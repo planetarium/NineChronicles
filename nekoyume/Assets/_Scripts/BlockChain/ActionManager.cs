@@ -229,13 +229,13 @@ namespace Nekoyume.BlockChain
 
             var action = new HackAndSlash
             {
-                costumes = costumes.Select(c => c.ItemId).ToList(),
-                equipments = equipments.Select(e => e.ItemId).ToList(),
-                foods = foods.Select(f => f.ItemId).ToList(),
-                worldId = worldId,
-                stageId = stageId,
-                stageBuffId = stageBuffId,
-                avatarAddress = avatarAddress,
+                Costumes = costumes.Select(c => c.ItemId).ToList(),
+                Equipments = equipments.Select(e => e.ItemId).ToList(),
+                Foods = foods.Select(f => f.ItemId).ToList(),
+                WorldId = worldId,
+                StageId = stageId,
+                StageBuffId = stageBuffId,
+                AvatarAddress = avatarAddress,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
