@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -9,7 +9,6 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
-using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
@@ -19,21 +18,20 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1229
-    /// Updated at https://github.com/planetarium/lib9c/pull/1229
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1222
+    /// Updated at https://github.com/planetarium/lib9c/pull/1225
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash16")]
-    public class HackAndSlash : GameAction
+    [ActionType("hack_and_slash15")]
+    public class HackAndSlash15 : GameAction
     {
-        public List<Guid> Costumes;
-        public List<Guid> Equipments;
-        public List<Guid> Foods;
-        public int WorldId;
-        public int StageId;
-        public int? StageBuffId;
-        public Address AvatarAddress;
-        public int PlayCount = 1;
+        public List<Guid> costumes;
+        public List<Guid> equipments;
+        public List<Guid> foods;
+        public int worldId;
+        public int stageId;
+        public int? stageBuffId;
+        public Address avatarAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
@@ -41,18 +39,17 @@ namespace Nekoyume.Action
             {
                 var dict = new Dictionary<string, IValue>
                 {
-                    ["costumes"] = new List(Costumes.OrderBy(i => i).Select(e => e.Serialize())),
+                    ["costumes"] = new List(costumes.OrderBy(i => i).Select(e => e.Serialize())),
                     ["equipments"] =
-                        new List(Equipments.OrderBy(i => i).Select(e => e.Serialize())),
-                    ["foods"] = new List(Foods.OrderBy(i => i).Select(e => e.Serialize())),
-                    ["worldId"] = WorldId.Serialize(),
-                    ["stageId"] = StageId.Serialize(),
-                    ["avatarAddress"] = AvatarAddress.Serialize(),
-                    ["playCount"] = PlayCount.Serialize(),
+                        new List(equipments.OrderBy(i => i).Select(e => e.Serialize())),
+                    ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
+                    ["worldId"] = worldId.Serialize(),
+                    ["stageId"] = stageId.Serialize(),
+                    ["avatarAddress"] = avatarAddress.Serialize(),
                 };
-                if (StageBuffId.HasValue)
+                if (stageBuffId.HasValue)
                 {
-                    dict["stageBuffId"] = StageBuffId.Serialize();
+                    dict["stageBuffId"] = stageBuffId.Serialize();
                 }
                 return dict.ToImmutableDictionary();
             }
@@ -61,17 +58,16 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            Costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
-            Equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
-            Foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
-            WorldId = plainValue["worldId"].ToInteger();
-            StageId = plainValue["stageId"].ToInteger();
+            costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
+            equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
+            foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
+            worldId = plainValue["worldId"].ToInteger();
+            stageId = plainValue["stageId"].ToInteger();
             if (plainValue.ContainsKey("stageBuffId"))
             {
-                StageBuffId = plainValue["stageBuffId"].ToNullableInteger();
+                stageBuffId = plainValue["stageBuffId"].ToNullableInteger();
             }
-            AvatarAddress = plainValue["avatarAddress"].ToAddress();
-            PlayCount = plainValue["playCount"].ToInteger();
+            avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -87,26 +83,19 @@ namespace Nekoyume.Action
             long blockIndex,
             IRandom random)
         {
-            var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
+            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
 
-            var addressesHex = $"[{signer.ToHex()}, {AvatarAddress.ToHex()}]";
+            var addressesHex = $"[{signer.ToHex()}, {avatarAddress.ToHex()}]";
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
 
-            states.ValidateWorldId(AvatarAddress, WorldId);
-
-            if (PlayCount <= 0)
-            {
-                throw new PlayCountIsZeroException(
-                    $"{addressesHex}playCount must be greater than 0. " +
-                    $"current playCount : {PlayCount}");
-            }
+            states.ValidateWorldId(avatarAddress, worldId);
 
             var sw = new Stopwatch();
             sw.Start();
-            if (!states.TryGetAvatarStateV2(signer, AvatarAddress, out AvatarState avatarState, out _))
+            if (!states.TryGetAvatarStateV2(signer, avatarAddress, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
@@ -143,19 +132,18 @@ namespace Nekoyume.Action
             // Validate about avatar state.
             Validator.ValidateForHackAndSlash(avatarState,
                 sheets,
-                WorldId,
-                StageId,
-                Equipments,
-                Costumes,
-                Foods,
+                worldId,
+                stageId,
+                equipments,
+                costumes,
+                foods,
                 sw,
                 blockIndex,
-                addressesHex,
-                PlayCount);
+                addressesHex);
 
-            var items = Equipments.Concat(Costumes);
+            var items = equipments.Concat(costumes);
             avatarState.EquipItems(items);
-            avatarState.actionPoint -= sheets.GetSheet<StageSheet>()[StageId].CostAP * PlayCount;
+            avatarState.actionPoint -= sheets.GetSheet<StageSheet>()[stageId].CostAP;
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -180,25 +168,25 @@ namespace Nekoyume.Action
 
             sw.Restart();
 
-            var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(AvatarAddress);
-            var isNotClearedStage = !avatarState.worldInformation.IsStageCleared(StageId);
-            var skillsOnWaveStart = new List<Skill>();
+            var skillStateAddress = Addresses.GetSkillStateAddressFromAvatarAddress(avatarAddress);
             CrystalRandomSkillState skillState = null;
+            var isNotClearedStage = !avatarState.worldInformation.IsStageCleared(stageId);
+            var skillsOnWaveStart = new List<Model.Skill.Skill>();
             if (isNotClearedStage)
             {
                 // It has state, get CrystalRandomSkillState. If not, newly make.
                 skillState = states.TryGetState<List>(skillStateAddress, out var serialized)
                     ? new CrystalRandomSkillState(skillStateAddress, serialized)
-                    : new CrystalRandomSkillState(skillStateAddress, StageId);
+                    : new CrystalRandomSkillState(skillStateAddress, stageId);
 
                 if (skillState.SkillIds.Any())
                 {
                     var crystalRandomBuffSheet = sheets.GetSheet<CrystalRandomBuffSheet>();
                     var skillSheet = sheets.GetSheet<SkillSheet>();
                     int selectedId;
-                    if (StageBuffId.HasValue && skillState.SkillIds.Contains(StageBuffId.Value))
+                    if (stageBuffId.HasValue && skillState.SkillIds.Contains(stageBuffId.Value))
                     {
-                        selectedId = StageBuffId.Value;
+                        selectedId = stageBuffId.Value;
                     }
                     else
                     {
@@ -220,72 +208,72 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get skillState : {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var worldSheet = sheets.GetSheet<WorldSheet>();
-            var worldUnlockSheet = sheets.GetSheet<WorldUnlockSheet>();
-            var crystalStageBuffSheet = sheets.GetSheet<CrystalStageBuffGachaSheet>();
+            var simulator = new StageSimulator(
+                random,
+                avatarState,
+                foods,
+                skillsOnWaveStart,
+                worldId,
+                stageId,
+                sheets.GetStageSimulatorSheets(),
+                sheets.GetSheet<CostumeStatSheet>(),
+                StageSimulator.ConstructorVersionV100080);
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
+
             sw.Restart();
-            // if PlayCount > 1, it is Multi-HAS.
-            for (var i = 0; i < PlayCount; i++)
+            simulator.Simulate(1);
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
+
+            Log.Verbose(
+                "{AddressesHex}Execute HackAndSlash({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
+                "clearWave: {ClearWave}, totalWave: {TotalWave}",
+                addressesHex,
+                avatarAddress,
+                worldId,
+                stageId,
+                simulator.Log.result,
+                simulator.Log.clearedWaveNumber,
+                simulator.Log.waveCount
+            );
+
+            if (simulator.Log.IsClear)
             {
                 sw.Restart();
-                // First simulating will use Foods and Random Skills.
-                // Remainder simulating will not use Foods.
-                var simulator = new StageSimulator(
-                    random,
-                    avatarState,
-                    i == 0 ? Foods : new List<Guid>(),
-                    i == 0 ? skillsOnWaveStart : new List<Skill>(),
-                    WorldId,
-                    StageId,
-                    sheets.GetStageSimulatorSheets(),
-                    sheets.GetSheet<CostumeStatSheet>(),
-                    StageSimulator.ConstructorVersionV100080);
-                sw.Stop();
-                Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
-
-                sw.Restart();
-                simulator.Simulate(1);
-                sw.Stop();
-                Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
-
-                sw.Restart();
-                if (simulator.Log.IsClear)
-                {
-                    simulator.Player.worldInformation.ClearStage(
-                        WorldId,
-                        StageId,
-                        blockIndex,
-                        worldSheet,
-                        worldUnlockSheet
-                    );
-                    sw.Stop();
-                    Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
-                }
-
-                sw.Restart();
-                avatarState.Update(simulator);
-                // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
-                skillState?.Update(simulator.Log.clearedWaveNumber, crystalStageBuffSheet);
-
-                sw.Stop();
-                Log.Verbose(
-                    "{AddressesHex}Update avatar by simulator({AvatarAddress}); " +
-                    "worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
-                    "clearWave: {ClearWave}, totalWave: {TotalWave}",
-                    addressesHex,
-                    AvatarAddress,
-                    WorldId,
-                    StageId,
-                    simulator.Log.result,
-                    simulator.Log.clearedWaveNumber,
-                    simulator.Log.waveCount
+                simulator.Player.worldInformation.ClearStage(
+                    worldId,
+                    stageId,
+                    blockIndex,
+                    sheets.GetSheet<WorldSheet>(),
+                    sheets.GetSheet<WorldUnlockSheet>()
                 );
+                sw.Stop();
+                Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
+
+                if (isNotClearedStage)
+                {
+                    // Make new CrystalRandomSkillState by next stage Id.
+                    var nextStageSkillState = new CrystalRandomSkillState(skillStateAddress, stageId + 1);
+                    states = states.SetState(skillStateAddress, nextStageSkillState.Serialize());
+                }
             }
-            sw.Stop();
-            Log.Verbose("{AddressesHex}HAS loop Simulate: {Elapsed}, Count: {PlayCount}",
-                addressesHex, sw.Elapsed, PlayCount);
+            else
+            {
+                if (isNotClearedStage)
+                {
+                    // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
+                    skillState!.Update(simulator.Log.clearedWaveNumber,
+                        sheets.GetSheet<CrystalStageBuffGachaSheet>());
+                    // clear current skill id.
+                    skillState!.Update(new List<int>());
+                    states = states.SetState(skillStateAddress, skillState!.Serialize());
+                }
+            }
 
             sw.Restart();
+            avatarState.Update(simulator);
             avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
             avatarState.updatedAt = blockIndex;
             avatarState.mailBox.CleanUp();
@@ -293,21 +281,8 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            if (isNotClearedStage)
-            {
-                avatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId);
-                if (lastClearedStageId >= StageId)
-                {
-                    // Make new CrystalRandomSkillState by next stage Id.
-                    skillState = new CrystalRandomSkillState(skillStateAddress, StageId + 1);
-                }
-
-                skillState.Update(new List<int>());
-                states = states.SetState(skillStateAddress, skillState.Serialize());
-            }
-
             states = states
-                .SetState(AvatarAddress, avatarState.SerializeV2())
+                .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize());
