@@ -19,23 +19,13 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1225
-    /// Updated at https://github.com/planetarium/lib9c/pull/1225
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1229
+    /// Updated at https://github.com/planetarium/lib9c/pull/1229
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash16")]
     public class HackAndSlash : GameAction
     {
-        internal class HackAndSlashRandom : Random, IRandom
-        {
-            public HackAndSlashRandom(int seed) : base(seed)
-            {
-                Seed = seed;
-            }
-
-            public int Seed { get; }
-        }
-
         public List<Guid> Costumes;
         public List<Guid> Equipments;
         public List<Guid> Foods;
@@ -241,7 +231,7 @@ namespace Nekoyume.Action
                 // First simulating will use Foods and Random Skills.
                 // Remainder simulating will not use Foods.
                 var simulator = new StageSimulator(
-                    new HackAndSlashRandom(random.Next()),
+                    random,
                     avatarState,
                     i == 0 ? Foods : new List<Guid>(),
                     i == 0 ? skillsOnWaveStart : new List<Skill>(),
