@@ -36,6 +36,7 @@ namespace Nekoyume.Action
                 typeof(RuneWeightSheet),
                 typeof(WorldBossRankRewardSheet),
                 typeof(WorldBossListSheet),
+                typeof(RuneSheet),
             });
             var worldBossListSheet = sheets.GetSheet<WorldBossListSheet>();
             int raidId;
@@ -61,6 +62,7 @@ namespace Nekoyume.Action
                         row.BossId,
                         sheets.GetSheet<RuneWeightSheet>(),
                         sheets.GetSheet<WorldBossRankRewardSheet>(),
+                        sheets.GetSheet<RuneSheet>(),
                         context.Random
                     );
                     foreach (var reward in rewards)

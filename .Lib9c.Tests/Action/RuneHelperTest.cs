@@ -1,21 +1,34 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Linq;
     using Libplanet.Assets;
     using Nekoyume.Helper;
+    using Nekoyume.TableData;
     using Xunit;
 
     public class RuneHelperTest
     {
         private readonly Currency _crystalCurrency = CrystalCalculator.CRYSTAL;
 
-        [Fact]
-        public void CalculateReward()
+        [Theory]
+        [InlineData(typeof(WorldBossRankRewardSheet))]
+        [InlineData(typeof(WorldBossKillRewardSheet))]
+        public void CalculateReward(Type sheetType)
         {
             var tableSheet = new TableSheets(TableSheetsImporter.ImportSheets());
             var random = new TestRandom();
+            IWorldBossRewardSheet sheet;
+            if (sheetType == typeof(WorldBossRankRewardSheet))
+            {
+                sheet = tableSheet.WorldBossRankRewardSheet;
+            }
+            else
+            {
+                sheet = tableSheet.WorldBossKillRewardSheet;
+            }
 
-            foreach (var rewardRow in tableSheet.WorldBossRankRewardSheet)
+            foreach (var rewardRow in sheet.OrderedRows)
             {
                 var bossId = rewardRow.BossId;
                 var rank = rewardRow.Rank;
@@ -23,7 +36,8 @@ namespace Lib9c.Tests.Action
                     rank,
                     bossId,
                     tableSheet.RuneWeightSheet,
-                    tableSheet.WorldBossRankRewardSheet,
+                    sheet,
+                    tableSheet.RuneSheet,
                     random
                 );
                 var expectedRune = rewardRow.Rune;
