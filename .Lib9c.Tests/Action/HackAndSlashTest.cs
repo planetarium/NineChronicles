@@ -1187,7 +1187,7 @@
             var nextSkillState = new CrystalRandomSkillState(skillStateAddress, serialized);
             Assert.Equal(skillStateAddress, nextSkillState.Address);
 
-            if (clear)
+            if (log.IsClear)
             {
                 Assert.Equal(stageId + 1, nextSkillState.StageId);
                 Assert.Equal(0, nextSkillState.StarCount);
