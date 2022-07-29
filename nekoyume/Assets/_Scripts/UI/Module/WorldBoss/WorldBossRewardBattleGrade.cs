@@ -49,21 +49,19 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Set(RaiderState raiderState, int raidId)
         {
-            var listSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
-            var listRow = listSheet.Values.FirstOrDefault(x => x.Id.Equals(raidId));
-            if (listRow is null)
+            if (!WorldBossFrontHelper.TryGetRaid(raidId, out var row))
             {
                 return;
             }
 
             var rewardSheet = Game.Game.instance.TableSheets.WorldBossRankRewardSheet;
-            var rows = rewardSheet.Values.Where(x => x.BossId.Equals(listRow.BossId)).ToList();
+            var rows = rewardSheet.Values.Where(x => x.BossId.Equals(row.BossId)).ToList();
             if (!rows.Any())
             {
                 return;
             }
 
-            Widget.Find<WorldBossRewardPopup>().CachingInformation(raiderState, listRow.BossId);
+            Widget.Find<WorldBossRewardPopup>().CachingInformation(raiderState, row.BossId);
             var latestRewardRank = raiderState?.LatestRewardRank ?? 0;
             var highScore = raiderState?.HighScore ?? 0;
             var currentRank = WorldBossHelper.CalculateRank(highScore);

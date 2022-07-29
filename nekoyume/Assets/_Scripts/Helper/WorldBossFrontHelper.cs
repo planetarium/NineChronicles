@@ -51,6 +51,13 @@ namespace Nekoyume.Helper
             return true;
         }
 
+        public static bool TryGetRaid(int raidId, out WorldBossListSheet.Row row)
+        {
+            var listSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
+            row = listSheet.Values.FirstOrDefault(x => x.Id.Equals(raidId));
+            return row is not null;
+        }
+
         public static bool TryGetRuneIcon(Currency currency, out Sprite icon)
         {
             var ticker = currency.Ticker;

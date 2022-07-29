@@ -328,7 +328,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 8, y: 4.0000024}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -409,7 +409,7 @@ RectTransform:
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 10}
   m_SizeDelta: {x: 20, y: -20}
-  m_Pivot: {x: 1, y: 0}
+  m_Pivot: {x: 1, y: 1}
 --- !u!222 &8522877029254801141
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -490,7 +490,7 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 5715509147598289349}
   m_HandleRect: {fileID: 6312024234223514570}
-  m_Direction: 2
+  m_Direction: 3
   m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
@@ -651,13 +651,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f8b6fea0c6f402d9f7c04e86ad844f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: 0.22857143
-  scrollOffset: 0.22857143
+  cellInterval: 0.11940298
+  scrollOffset: 0.35820895
   loop: 0
   cellContainer: {fileID: 2650021101203174663}
-  reuseCellMarginCount: 0
-  paddingHead: 0
-  paddingTail: 0
+  reuseCellMarginCount: 2
+  paddingHead: 10
+  paddingTail: 150
   spacing: 10
   cellPrefab: {fileID: 6010896103443595525, guid: 0e71d172cdac63442b1903b0f5f68e09,
     type: 3}

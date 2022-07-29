@@ -41,7 +41,7 @@ namespace Nekoyume
         private Transform gradeContainer;
 
 
-        private GameObject _gradePrefab;
+        private GameObject _gradeObject;
 
         public void UpdateUserCount(int count)
         {
@@ -74,14 +74,15 @@ namespace Nekoyume
             // todo : 내 랭크 순위 찍어줘야함.
             // todo : 랭크 마크 찍어줘야함.
 
-            if (_gradePrefab != null)
+            if (_gradeObject != null)
             {
-                Destroy(_gradePrefab);
+                Destroy(_gradeObject);
             }
 
-            if (WorldBossFrontHelper.TryGetGrade(WorldBossGrade.S, out var prefab))
+            var grade = (WorldBossGrade)WorldBossHelper.CalculateRank(highScore);
+            if (WorldBossFrontHelper.TryGetGrade(grade, out var prefab))
             {
-                _gradePrefab = Instantiate(prefab, gradeContainer);
+                _gradeObject = Instantiate(prefab, gradeContainer);
             }
 
             myRankText.text = "loading..";

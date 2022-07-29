@@ -170,6 +170,13 @@ namespace Nekoyume.UI
 
                         var (worldBoss, raider, userCount) = await GetStatesAsync(row);
                         UpdateSeason(row, worldBoss, raider, userCount, currentBlockIndex);
+                        // var (worldBoss, raider) = await GetStatesAsync(row);
+                        // var address = Game.Game.instance.States.CurrentAvatarState.address;
+                        // var response = await QueryRankingAsync(row.Id, address);
+                        // _records = response.WorldBossRanking;
+                        // _myInfo = _records.FirstOrDefault(r => r.Address == address.ToHex());
+                        // var userCount = response.WorldBossTotalUsers;
+                        // UpdateSeason(row, worldBoss, raider, userCount, currentBlockIndex, _myInfo?.Ranking);
                         break;
                     case Status.None:
                     default:
