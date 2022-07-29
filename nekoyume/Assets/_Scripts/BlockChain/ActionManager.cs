@@ -213,13 +213,14 @@ namespace Nekoyume.BlockChain
             List<Consumable> foods,
             int worldId,
             int stageId,
-            int? stageBuffId = null)
+            int? stageBuffId = null,
+            int playCount = 1)
         {
             Analyzer.Instance.Track("Unity/HackAndSlash", new Value
             {
                 ["WorldId"] = worldId,
                 ["StageId"] = stageId,
-                ["PlayCount"] = 1,
+                ["PlayCount"] = playCount,
             });
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -236,6 +237,7 @@ namespace Nekoyume.BlockChain
                 StageId = stageId,
                 StageBuffId = stageBuffId,
                 AvatarAddress = avatarAddress,
+                PlayCount = playCount,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
