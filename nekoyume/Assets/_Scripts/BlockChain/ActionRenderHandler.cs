@@ -813,7 +813,7 @@ namespace Nekoyume.BlockChain
             string message;
             if (updateSellInfos.Count() > 1)
             {
-                message = L10nManager.Localize(""); // Todo 일괄 재등록 완료
+                message = L10nManager.Localize("NOTIFICATION_REREGISTER_ALL_COMPLETE");
             }
             else
             {

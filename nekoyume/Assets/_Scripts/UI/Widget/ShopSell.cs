@@ -297,7 +297,7 @@ namespace Nekoyume.UI
             string message;
             if (updateSellInfos.Count() > 1)
             {
-                message = L10nManager.Localize(""); // Todo 일괄 재등록 시작
+                message = L10nManager.Localize("NOTIFICATION_REREGISTER_ALL_START");
             }
             else
             {
