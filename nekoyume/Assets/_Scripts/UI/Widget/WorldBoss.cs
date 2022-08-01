@@ -147,7 +147,7 @@ namespace Nekoyume.UI
             loading.Show();
 
             ShowSheetValues();
-            await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate:true);
+            await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate: true);
 
             loading.Close();
             base.Show(ignoreShowAnimation);
@@ -177,18 +177,20 @@ namespace Nekoyume.UI
                 switch (_status)
                 {
                     case Status.OffSeason:
-                        ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.CurrencyOnly, ignoreHeaderMenuAnimation);
+                        ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.CurrencyOnly,
+                            ignoreHeaderMenuAnimation);
                         UpdateOffSeason(currentBlockIndex);
                         break;
                     case Status.Season:
-                        ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.WorldBoss, ignoreHeaderMenuAnimation);
+                        ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.WorldBoss,
+                            ignoreHeaderMenuAnimation);
                         if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
                         {
                             return;
                         }
 
                         var (worldBoss, raider, myRecord, userCount) = await GetStatesAsync(row);
-                        UpdateSeason(row, worldBoss, raider, myRecord, userCount, currentBlockIndex);
+                        UpdateSeason(row, worldBoss, raider, myRecord, userCount);
 
                         break;
                     case Status.None:
@@ -197,6 +199,7 @@ namespace Nekoyume.UI
                 }
             }
 
+            UpdateTicket(currentBlockIndex);
             UpdateRemainTimer(_period, currentBlockIndex);
             SetActiveQueryLoading(false);
         }
@@ -219,7 +222,8 @@ namespace Nekoyume.UI
             seasonContainer.SetActive(false);
             rankButton.gameObject.SetActive(false);
             enterButton.Text = "Practice";
-            var begin = WorldBossFrontHelper.TryGetPreviousRow(currentBlockIndex, out var previousRow)
+            var begin =
+                WorldBossFrontHelper.TryGetPreviousRow(currentBlockIndex, out var previousRow)
                     ? previousRow.EndedBlockIndex
                     : 0;
             _period = (begin, nextRow.StartedBlockIndex);
@@ -232,8 +236,7 @@ namespace Nekoyume.UI
             WorldBossState worldBoss,
             RaiderState myRaiderState,
             WorldBossRankingRecord myRecord,
-            int userCount,
-            long currentBlockIndex)
+            int userCount)
         {
             Debug.Log("[UpdateSeason]");
 
@@ -248,7 +251,6 @@ namespace Nekoyume.UI
             UpdateBossInformationAsync(worldBoss);
             UpdateMyInformation(myRaiderState, myRecord);
             UpdateUserCount(userCount);
-            UpdateTicket(currentBlockIndex, row.StartedBlockIndex);
         }
 
         private void UpdateBossPrefab(WorldBossListSheet.Row row, bool isOffSeason = false)
@@ -284,39 +286,29 @@ namespace Nekoyume.UI
             timeBlock.SetTimeBlock(Util.GetBlockToTime(end - current), $"{current}/{end}");
         }
 
-        private void UpdateTicket(long currentBlockIndex, long startBlockIndex)
+        private void UpdateTicket(long current)
         {
-            Debug.Log("[UpdateTicket]");
+            if (!WorldBossFrontHelper.TryGetCurrentRow(current, out var row))
+            {
+                return;
+            }
+
             var maxTicket = 3;
-            var refillBlockIndex = _cachedRaiderState?.RefillBlockIndex ?? 0;
-            var remainTicket = _cachedRaiderState?.RemainChallengeCount ?? maxTicket;
-
-            if (WorldBossHelper.CanRefillTicket(currentBlockIndex, refillBlockIndex, startBlockIndex))
+            var start = row.StartedBlockIndex;
+            if (_cachedRaiderState != null)
             {
-
-            }
-            else
-            {
-
-            }
-            if (_cachedRaiderState is { RefillBlockIndex: 0 } &&
-                _cachedRaiderState.RemainChallengeCount != 0) // temp
-            {
-                _remainTicket = remainTicket;
-            }
-            else
-            {
-                _remainTicket = currentBlockIndex - refillBlockIndex >=
-                                WorldBossHelper.RefillInterval
+                var refill = _cachedRaiderState?.RefillBlockIndex ?? 0;
+                _remainTicket = WorldBossHelper.CanRefillTicket(current, refill, start)
                     ? maxTicket
-                    : remainTicket;
+                    : _cachedRaiderState.RemainChallengeCount;
+            }
+            else
+            {
+                _remainTicket = maxTicket;
             }
 
-            var remainder = (currentBlockIndex - refillBlockIndex) % WorldBossHelper.RefillInterval;
-            var remain = WorldBossHelper.RefillInterval - remainder;
-            Debug.Log(
-                $"[remain] {remain} / [remainTicket] {remainTicket} / [maxTicket] {maxTicket}");
-
+            var reminder = (current - start) % WorldBossHelper.RefillInterval;
+            var remain = WorldBossHelper.RefillInterval - reminder;
             _headerMenu.WorldBossTickets.Set(remain, _remainTicket, maxTicket);
         }
 
@@ -397,7 +389,8 @@ namespace Nekoyume.UI
             ActionManager.Instance.ClaimRaidReward();
         }
 
-        private async Task<(WorldBossState worldBoss, RaiderState raiderState, WorldBossRankingRecord myRecord, int userCount)>
+        private async Task<(WorldBossState worldBoss, RaiderState raiderState,
+                WorldBossRankingRecord myRecord, int userCount)>
             GetStatesAsync(WorldBossListSheet.Row row)
         {
             var task = Task.Run(async () =>
@@ -430,7 +423,8 @@ namespace Nekoyume.UI
         {
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
             var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
-            var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
+            var myRecord =
+                records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
             var userCount = response?.WorldBossTotalUsers ?? 0;
             return (myRecord, userCount);
         }
@@ -470,8 +464,8 @@ namespace Nekoyume.UI
         {
             SetActiveQueryLoading(true);
             await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex,
-                forceUpdate:true,
-                ignoreHeaderMenuAnimation:true);
+                forceUpdate: true,
+                ignoreHeaderMenuAnimation: true);
         }
 
         private void SetActiveQueryLoading(bool value)
