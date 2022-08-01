@@ -231,7 +231,7 @@ namespace Nekoyume.Model
 
         public void RemoveTarget(Enemy enemy)
         {
-            monsterMap.Add(new KeyValuePair<int, int>(enemy.RowData.Id, 1));
+            monsterMap.Add(new KeyValuePair<int, int>(enemy.CharacterId, 1));
             Targets.Remove(enemy);
             Simulator.Characters.TryRemove(enemy);
         }

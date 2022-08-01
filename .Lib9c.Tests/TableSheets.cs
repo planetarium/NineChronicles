@@ -165,6 +165,8 @@ namespace Lib9c.Tests
 
         public WorldBossGlobalHpSheet WorldBossGlobalHpSheet { get; private set; }
 
+        public WorldBossCharacterSheet WorldBossCharacterSheet { get; private set; }
+
         public RuneSheet RuneSheet { get; private set; }
 
         public void ItemSheetInitialize()
@@ -234,6 +236,21 @@ namespace Lib9c.Tests
                 EquipmentItemSetEffectSheet,
                 CostumeStatSheet,
                 WeeklyArenaRewardSheet
+            );
+        }
+
+        public RaidSimulatorSheets GetRaidSimulatorSheets()
+        {
+            return new RaidSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WorldBossCharacterSheet,
+                EnemySkillSheet
             );
         }
 

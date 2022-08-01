@@ -45,7 +45,7 @@ namespace Nekoyume.Model
         public int Level
         {
             get => _stats.Level;
-            set => _stats.SetLevel(value);
+            set => _stats.SetStats(value);
         }
         public int CurrentHP
         {

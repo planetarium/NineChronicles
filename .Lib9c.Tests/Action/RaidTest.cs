@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Battle;
     using Nekoyume.Extensions;
     using Nekoyume.Helper;
     using Nekoyume.Model.Arena;
@@ -20,6 +21,7 @@ namespace Lib9c.Tests.Action
 
     public class RaidTest
     {
+        private readonly Dictionary<string, string> _sheets;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly TableSheets _tableSheets;
@@ -27,7 +29,8 @@ namespace Lib9c.Tests.Action
 
         public RaidTest()
         {
-            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            _sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(_sheets);
             _agentAddress = new PrivateKey().ToAddress();
             _avatarAddress = new PrivateKey().ToAddress();
             _goldCurrency = new Currency("NCG", decimalPlaces: 2, minters: null);
@@ -95,23 +98,30 @@ namespace Lib9c.Tests.Action
             }
 
             IAccountStateDelta state = new State()
-                .SetState(Addresses.GetSheetAddress<WorldBossListSheet>(), _tableSheets.WorldBossListSheet.Serialize())
-                .SetState(Addresses.GetSheetAddress<WorldBossGlobalHpSheet>(), hpSheet.Serialize())
-                .SetState(Addresses.GetSheetAddress<CharacterSheet>(), _tableSheets.CharacterSheet.Serialize())
-                .SetState(Addresses.GetSheetAddress<CostumeStatSheet>(), _tableSheets.CostumeStatSheet.Serialize())
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
 
+            foreach (var (key, value) in _sheets)
+            {
+                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default
+            );
+
             if (avatarExist)
             {
-                var avatarState = new AvatarState(
-                    _avatarAddress,
-                    _agentAddress,
-                    0,
-                    _tableSheets.GetAvatarSheets(),
-                    new GameConfigState(),
-                    default
-                );
+                var equipments = Doomfist.GetAllParts(_tableSheets, avatarState.level);
+                foreach (var equipment in equipments)
+                {
+                    avatarState.inventory.AddItem(equipment);
+                }
 
                 if (stageCleared)
                 {
@@ -169,14 +179,27 @@ namespace Lib9c.Tests.Action
 
             if (exc is null)
             {
-                var nextState = action.Execute(new ActionContext
+                var seed = 0;
+                var ctx = new ActionContext
                 {
                     BlockIndex = blockIndex,
                     PreviousStates = state,
-                    Random = new TestRandom(),
+                    Random = new TestRandom(seed),
                     Rehearsal = false,
                     Signer = _agentAddress,
-                });
+                };
+
+                var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(ctx.BlockIndex);
+                var simulator = new RaidSimulator(
+                    bossRow.BossId,
+                    new TestRandom(seed),
+                    avatarState,
+                    action.FoodIds,
+                    _tableSheets.GetRaidSimulatorSheets());
+                simulator.Simulate();
+                var score = simulator.DamageDealt;
+
+                var nextState = action.Execute(ctx);
 
                 Assert.Equal(0 * crystal, nextState.GetBalance(_agentAddress, crystal));
                 if (crystalExist)
@@ -186,10 +209,11 @@ namespace Lib9c.Tests.Action
 
                 Assert.True(nextState.TryGetState(raiderAddress, out List rawRaider));
                 var raiderState = new RaiderState(rawRaider);
-                int expectedTotalScore = raiderStateExist ? 11_000 : 10_000;
+                int expectedTotalScore = raiderStateExist ? 1_000 + score : score;
                 int expectedRemainChallenge = payNcg ? 0 : 2;
                 int expectedTotalChallenge = raiderStateExist ? 2 : 1;
-                Assert.Equal(10_000, raiderState.HighScore);
+
+                Assert.Equal(score, raiderState.HighScore);
                 Assert.Equal(expectedTotalScore, raiderState.TotalScore);
                 Assert.Equal(expectedRemainChallenge, raiderState.RemainChallengeCount);
                 Assert.Equal(expectedTotalChallenge, raiderState.TotalChallengeCount);

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.Model.Character;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -30,6 +32,21 @@ namespace Nekoyume.Model
             PostConstruction();
         }
 
+        public Enemy(
+            CharacterBase player,
+            CharacterStats stat,
+            int characterId,
+            ElementalType elementalType)
+            : base(
+                player.Simulator,
+                stat,
+                characterId,
+                elementalType)
+        {
+            Targets.Add(player);
+            PostConstruction();
+        }
+
         public Enemy(Enemy value) : base(value)
         {
             spawnIndex = value.spawnIndex;
@@ -53,7 +70,7 @@ namespace Nekoyume.Model
             player.RemoveTarget(this);
         }
 
-        protected sealed override void SetSkill()
+        protected override void SetSkill()
         {
             base.SetSkill();
 

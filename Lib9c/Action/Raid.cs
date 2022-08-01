@@ -48,9 +48,19 @@ namespace Nekoyume.Action
                     50, current);
             }
 
-            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new [] {
+            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(
+                containRaidSimulatorSheets: true,
+                sheetTypes: new [] {
+                typeof(MaterialItemSheet),
+                typeof(SkillSheet),
+                typeof(SkillBuffSheet),
+                typeof(BuffSheet),
+                typeof(CharacterLevelSheet),
+                typeof(EquipmentItemSetEffectSheet),
+                typeof(WorldBossCharacterSheet),
                 typeof(WorldBossListSheet),
                 typeof(WorldBossGlobalHpSheet),
+                typeof(EnemySkillSheet),
                 typeof(CharacterSheet),
                 typeof(CostumeStatSheet),
             });
@@ -113,7 +123,15 @@ namespace Nekoyume.Action
             avatarState.ValidateConsumable(FoodIds, context.BlockIndex);
             avatarState.ValidateCostume(CostumeIds);
             // Simulate.
-            int score = 10_000;
+            var simulator = new RaidSimulator(
+                row.BossId,
+                context.Random,
+                avatarState,
+                FoodIds,
+                sheets.GetRaidSimulatorSheets());
+            simulator.Simulate();
+
+            int score = simulator.DamageDealt;
             int cp = CPHelper.GetCPV2(avatarState, sheets.GetSheet<CharacterSheet>(),
                 sheets.GetSheet<CostumeStatSheet>());
             raiderState.Update(avatarState, cp, score, PayNcg);
