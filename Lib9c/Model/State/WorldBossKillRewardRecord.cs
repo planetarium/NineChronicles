@@ -6,9 +6,9 @@ using Libplanet.Assets;
 
 namespace Nekoyume.Model.State
 {
-    public class WorldBossKillRewardRecord : IDictionary<int, List<FungibleAssetValue>>, IState
+    public class WorldBossKillRewardRecord : IDictionary<int, bool>, IState
     {
-        private Dictionary<int, List<FungibleAssetValue>> _dict = new Dictionary<int, List<FungibleAssetValue>>();
+        private Dictionary<int, bool> _dict = new Dictionary<int, bool>();
 
         public WorldBossKillRewardRecord(List serialized)
         {
@@ -16,7 +16,7 @@ namespace Nekoyume.Model.State
             {
                 var list = (List) iValue;
                 var key = list[0].ToInteger();
-                var value = list[1].ToList(StateExtensions.ToFungibleAssetValue);
+                var value = list[1].ToBoolean();
                 _dict[key] = value;
             }
         }
@@ -28,14 +28,13 @@ namespace Nekoyume.Model.State
         public bool IsClaimable(int level)
         {
 #pragma warning disable LAA1002
-            var filtered = _dict
+            return  _dict
 #pragma warning restore LAA1002
                 .Where(kv => kv.Key < level)
-                .Select(kv => kv.Value);
-            return filtered.Any(i => !i.Any());
+                .Any(kv => !kv.Value);
         }
 
-        public IEnumerator<KeyValuePair<int, List<FungibleAssetValue>>> GetEnumerator()
+        public IEnumerator<KeyValuePair<int, bool>> GetEnumerator()
         {
             return _dict.GetEnumerator();
         }
@@ -45,7 +44,7 @@ namespace Nekoyume.Model.State
             return _dict.GetEnumerator();
         }
 
-        public void Add(KeyValuePair<int, List<FungibleAssetValue>> item)
+        public void Add(KeyValuePair<int, bool> item)
         {
             throw new System.NotImplementedException();
         }
@@ -55,24 +54,24 @@ namespace Nekoyume.Model.State
             _dict.Clear();
         }
 
-        public bool Contains(KeyValuePair<int, List<FungibleAssetValue>> item)
+        public bool Contains(KeyValuePair<int, bool> item)
         {
-            return ((IDictionary<int, List<FungibleAssetValue>>)_dict).Contains(item);
+            return ((IDictionary<int, bool>)_dict).Contains(item);
         }
 
-        public void CopyTo(KeyValuePair<int, List<FungibleAssetValue>>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<int, bool>[] array, int arrayIndex)
         {
-            ((IDictionary<int, List<FungibleAssetValue>>)_dict).CopyTo(array, arrayIndex);
+            ((IDictionary<int, bool>)_dict).CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(KeyValuePair<int, List<FungibleAssetValue>> item)
+        public bool Remove(KeyValuePair<int, bool> item)
         {
-            return ((IDictionary<int, List<FungibleAssetValue>>)_dict).Remove(item);
+            return ((IDictionary<int, bool>)_dict).Remove(item);
         }
 
         public int Count => _dict.Count;
         public bool IsReadOnly => false;
-        public void Add(int key, List<FungibleAssetValue> value)
+        public void Add(int key, bool value)
         {
             _dict.Add(key, value);
         }
@@ -87,19 +86,19 @@ namespace Nekoyume.Model.State
             return _dict.Remove(key);
         }
 
-        public bool TryGetValue(int key, out List<FungibleAssetValue> value)
+        public bool TryGetValue(int key, out bool value)
         {
             return _dict.TryGetValue(key, out value);
         }
 
-        public List<FungibleAssetValue> this[int key]
+        public bool this[int key]
         {
             get => _dict[key];
             set => _dict[key] = value;
         }
 
         public ICollection<int> Keys => _dict.Keys;
-        public ICollection<List<FungibleAssetValue>> Values => _dict.Values;
+        public ICollection<bool> Values => _dict.Values;
         public IValue Serialize()
         {
             return _dict.OrderBy(kv => kv.Key)
@@ -108,12 +107,7 @@ namespace Nekoyume.Model.State
                         current.Add(
                             List.Empty
                                 .Add(kv.Key.Serialize())
-                                .Add(kv.Value.Aggregate(
-                                    List.Empty,
-                                    (cur, fav) =>
-                                        cur.Add(fav.Serialize())
-                                    )
-                                )
+                                .Add(kv.Value.Serialize())
                         )
                 );
         }

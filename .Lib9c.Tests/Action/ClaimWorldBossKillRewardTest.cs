@@ -43,7 +43,7 @@ namespace Lib9c.Tests.Action
             var worldBossKillRewardRecord = new WorldBossKillRewardRecord();
             if (exc is null)
             {
-                worldBossKillRewardRecord[0] = new List<FungibleAssetValue>();
+                worldBossKillRewardRecord[0] = false;
             }
 
             var raiderStateAddress = Addresses.GetRaiderAddress(avatarAddress, 1);
@@ -68,19 +68,34 @@ namespace Lib9c.Tests.Action
 
             if (exc is null)
             {
+                var randomSeed = 0;
                 var nextState = action.Execute(new ActionContext
                 {
                     BlockIndex = blockIndex,
                     Signer = default,
                     PreviousStates = state,
-                    Random = new TestRandom(),
+                    Random = new TestRandom(randomSeed),
                 });
 
                 var runeCurrency = RuneHelper.ToCurrency(tableSheets.RuneSheet[1], 0, null);
                 Assert.Equal(1 * runeCurrency, nextState.GetBalance(avatarAddress, runeCurrency));
                 Assert.Equal(100 * CrystalCalculator.CRYSTAL, nextState.GetBalance(avatarAddress, CrystalCalculator.CRYSTAL));
                 var nextRewardInfo = new WorldBossKillRewardRecord((List)nextState.GetState(worldBossKillRewardRecordAddress));
-                Assert.All(nextRewardInfo, kv => Assert.NotEmpty(kv.Value));
+                Assert.All(nextRewardInfo, kv => Assert.True(kv.Value));
+
+                List<FungibleAssetValue> rewards = RuneHelper.CalculateReward(
+                    0,
+                    worldBossState.Id,
+                    runeWeightSheet,
+                    killRewardSheet,
+                    tableSheets.RuneSheet,
+                    new TestRandom(randomSeed)
+                );
+
+                foreach (var reward in rewards)
+                {
+                    Assert.Equal(reward, nextState.GetBalance(avatarAddress, reward.Currency));
+                }
             }
             else
             {

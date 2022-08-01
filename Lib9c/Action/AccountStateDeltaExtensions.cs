@@ -1030,7 +1030,7 @@ namespace Nekoyume.Action
             }
 #pragma warning disable LAA1002
             var filtered = rewardRecord
-                .Where(kv => !kv.Value.Any())
+                .Where(kv => !kv.Value)
                 .Select(kv => kv.Key);
 #pragma warning restore LAA1002
             foreach (var level in filtered)
@@ -1043,7 +1043,7 @@ namespace Nekoyume.Action
                     runeSheet,
                     random
                 );
-                rewardRecord[level] = rewards;
+                rewardRecord[level] = true;
                 foreach (var reward in rewards)
                 {
                     states = states.MintAsset(avatarAddress, reward);

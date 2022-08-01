@@ -310,7 +310,7 @@ namespace Lib9c.Tests.Action
             var rewardRecord = new WorldBossKillRewardRecord();
             for (int i = 0; i < level; i++)
             {
-                rewardRecord[i] = new List<FungibleAssetValue>();
+                rewardRecord[i] = false;
             }
 
             states = states.SetState(rewardInfoAddress, rewardRecord.Serialize());
@@ -340,7 +340,7 @@ namespace Lib9c.Tests.Action
                 Assert.Equal(expectedRune * runeCurrency, nextState.GetBalance(avatarAddress, runeCurrency));
                 Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, nextState.GetBalance(avatarAddress, CrystalCalculator.CRYSTAL));
                 var nextRewardInfo = new WorldBossKillRewardRecord((List)nextState.GetState(rewardInfoAddress));
-                Assert.All(nextRewardInfo, kv => Assert.NotEmpty(kv.Value));
+                Assert.All(nextRewardInfo, kv => Assert.True(kv.Value));
             }
             else
             {
