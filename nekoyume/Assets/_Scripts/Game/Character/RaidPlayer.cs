@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Nekoyume.Model;
+using Nekoyume.Model.Item;
+using Nekoyume.UI;
 
 namespace Nekoyume.Game.Character
 {
-    using Nekoyume.Model;
-    using Nekoyume.Model.Item;
-    using Nekoyume.UI;
-    using System.Collections;
     using System.Linq;
 
     public class RaidPlayer : RaidCharacter
@@ -53,6 +52,12 @@ namespace Nekoyume.Game.Character
 
             var armor = _equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             AreaAttackCutscene.Show(armor?.Id ?? GameConfig.DefaultAvatarArmorId);
+        }
+
+        protected override void OnDeadEnd()
+        {
+            base.OnDeadEnd();
+            gameObject.SetActive(false);
         }
     }
 }

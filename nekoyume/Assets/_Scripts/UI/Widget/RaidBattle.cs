@@ -42,7 +42,7 @@ namespace Nekoyume.UI
             CharacterBase player,
             bool ignoreShowAnimation = false)
         {
-            Find<HeaderMenuStatic>().Close(true);
+            Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.WorldBoss);
             comboText.comboMax = AttackCountHelper.GetCountMax(player.Level);
             comboText.Close();
             base.Show(ignoreShowAnimation);

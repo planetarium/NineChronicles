@@ -22,6 +22,7 @@ namespace Nekoyume.Game.Character
         protected Model.CharacterBase _characterModel;
         protected HudContainer _hudContainer;
         protected SpeechBubble _speechBubble;
+        public HpBar HPBar { get; private set; }
 
         protected int _currentHp;
 
@@ -32,6 +33,9 @@ namespace Nekoyume.Game.Character
         public bool IsDead => _currentHp <= 0;
         public Model.CharacterBase Model => _characterModel;
         public Coroutine CurrentAction { get; set; }
+        public Coroutine TargetAction => _target.CurrentAction;
+
+        private bool _isAppQuitting = false;
 
         protected virtual void Awake()
         {
@@ -42,6 +46,19 @@ namespace Nekoyume.Game.Character
         {
             _hudContainer.UpdatePosition(gameObject, HUDOffset);
             _speechBubble.UpdatePosition(gameObject, HUDOffset);
+        }
+
+        private void OnDisable()
+        {
+            if (!_isAppQuitting)
+            {
+                DisableHUD();
+            }
+        }
+
+        private void OnApplicationQuit()
+        {
+            _isAppQuitting = true;
         }
 
         public virtual void Init(RaidCharacter target)
@@ -63,11 +80,73 @@ namespace Nekoyume.Game.Character
             UpdateStatusUI();
         }
 
+        public virtual void Set(Model.CharacterBase model, bool updateCurrentHP = false)
+        {
+            _characterModel = model;
+            if (updateCurrentHP)
+            {
+                _currentHp = _characterModel.HP;
+            }
+        }
+
+        protected virtual void InitializeHpBar()
+        {
+            HPBar = Widget.Create<HpBar>(true);
+            HPBar.transform.SetParent(_hudContainer.transform);
+            HPBar.transform.localPosition = Vector3.zero;
+            HPBar.transform.localScale = Vector3.one;
+        }
+
+        public virtual void UpdateHpBar()
+        {
+            if (!Game.instance.IsInWorld)
+                return;
+
+            if (!HPBar)
+            {
+                InitializeHpBar();
+                _hudContainer.UpdateAlpha(1);
+            }
+
+            _hudContainer.UpdatePosition(gameObject, HUDOffset);
+            HPBar.Set(_currentHp, _characterModel.Stats.BuffStats.HP, _characterModel.HP);
+            HPBar.SetBuffs(_characterModel.Buffs);
+            HPBar.SetLevel(_characterModel.Level);
+
+            //OnUpdateHPBar.OnNext(this);
+        }
+
+        public void DisableHUD()
+        {
+            // No pooling. HUD Pooling causes HUD positioning bug.
+            if (HPBar)
+            {
+                Destroy(HPBar.gameObject);
+                HPBar = null;
+            }
+
+            // No pooling. HUD Pooling causes HUD positioning bug.
+            if (_hudContainer)
+            {
+                Destroy(_hudContainer.gameObject);
+                _hudContainer = null;
+            }
+
+            if (!ReferenceEquals(_speechBubble, null))
+            {
+                _speechBubble.StopAllCoroutines();
+                _speechBubble.gameObject.SetActive(false);
+                Destroy(_speechBubble.gameObject, _speechBubble.destroyTime);
+                _speechBubble = null;
+            }
+        }
+
         public virtual void UpdateStatusUI()
         {
             if (!Game.instance.IsInWorld)
                 return;
 
+            UpdateHpBar();
             _hudContainer.UpdatePosition(gameObject, HUDOffset);
         }
 
@@ -435,6 +514,7 @@ namespace Nekoyume.Game.Character
             var buff = info.Buff;
             var effect = Game.instance.RaidStage.BuffController.Get<RaidCharacter, BuffVFX>(target, buff);
             effect.Play();
+            target.UpdateStatusUI();
         }
 
         private void ProcessHeal(Skill.SkillInfo info)
@@ -491,10 +571,6 @@ namespace Nekoyume.Game.Character
         protected virtual void OnDeadEnd()
         {
             Animator.Idle();
-            if (this is RaidPlayer)
-            {
-                gameObject.SetActive(false);
-            }
         }
 
         public void ToggleRunning()

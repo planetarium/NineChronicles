@@ -47,8 +47,8 @@ namespace Nekoyume.UI.Module
         public void SetProfile(Enemy enemy)
         {
             var level = enemy.Level;
-            var name = L10nManager.LocalizeCharacterName(enemy.RowData.Id);
-            var sprite = SpriteHelper.GetCharacterIcon(enemy.RowData.Id);
+            var name = L10nManager.LocalizeCharacterName(enemy.CharacterId);
+            var sprite = SpriteHelper.GetCharacterIcon(enemy.CharacterId);
             SetProfile(level, name, sprite);
             SetHp(enemy.HP, enemy.HP);
         }

@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: UI_WorldBossData
   m_EditorClassIdentifier: 
   Monsters:
-  - id: 205007
+  - id: 900001
     name: fenrir of the abyss
     illustration: {fileID: 21300000, guid: 9b7b4ed9c234188499f361b1bd822bad, type: 3}
     namePrefab: {fileID: 7177679302177427472, guid: 9077ce1b0e2a349479de63699ea19926,
       type: 3}
     spinePrefab: {fileID: 7353096591528320530, guid: ba316703c4bf8134f8a8ebea259de773,
       type: 3}
-  - id: 203007
+  - id: 900002
     name: serimnir of the abyss
     illustration: {fileID: 21300000, guid: 1242f629318f1db4bac418b773e128c9, type: 3}
     namePrefab: {fileID: 8173047061470112773, guid: 02d0bdb57bfdd1d45b1d67f46ca666ea,

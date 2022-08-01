@@ -1814,7 +1814,51 @@ namespace Nekoyume.BlockChain
             }
 
             Debug.Log("[RENDER_RAID]");
-            Widget.Find<WorldBoss>().UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true);
+
+            _disposableForBattleEnd?.Dispose();
+            _disposableForBattleEnd =
+                Game.Game.instance.RaidStage.OnBattleEnded
+                    .First()
+                    .Subscribe(stage =>
+                    {
+                        var task = UniTask.Run(() =>
+                        {
+                            UpdateCurrentAvatarStateAsync(eval).Forget();
+                            var avatarState = States.Instance.CurrentAvatarState;
+                            RenderQuest(eval.Action.AvatarAddress,
+                                avatarState.questList.completedQuestIds);
+                            _disposableForBattleEnd = null;
+                            stage.IsAvatarStateUpdatedAfterBattle = true;
+                        });
+                        task.ToObservable()
+                            .First()
+                            // ReSharper disable once ConvertClosureToMethodGroup
+                            .DoOnError(e => Debug.LogException(e));
+                    });
+
+            if (!WorldBossFrontHelper.TryGetCurrentRow(eval.BlockIndex, out var row))
+            {
+                Debug.LogError($"[Raid] Failed to get current world boss row. BlockIndex : {eval.BlockIndex}");
+                return;
+            }
+            
+            var simulator = new RaidSimulator(
+                row.BossId,
+                new LocalRandom(eval.RandomSeed),
+                States.Instance.CurrentAvatarState,
+                eval.Action.FoodIds,
+                TableSheets.Instance.GetRaidSimulatorSheets()
+            );
+            simulator.Simulate();
+            BattleLog log = simulator.Log;
+            Widget.Find<Menu>().Close();
+            var playerDigest = new ArenaPlayerDigest(States.Instance.CurrentAvatarState);
+            Widget.Find<LoadingScreen>().Close();
+            Game.Game.instance.RaidStage.Play(simulator.BossId, log, playerDigest);
+
+            var worldBoss = Widget.Find<WorldBoss>();
+            worldBoss.UpdateViewAsync(eval.BlockIndex, true);
+            worldBoss.Close();
         }
 
         private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)
