@@ -654,11 +654,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6681426273830561096}
   - {fileID: 9055819640702375657}
   - {fileID: 5409268982631345999}
   - {fileID: 5091538498712567520}
   - {fileID: 5281694142266953866}
-  - {fileID: 6681426273830561096}
   m_Father: {fileID: 3711757380979436278}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1656,7 +1656,7 @@ RectTransform:
   - {fileID: 3889469014556311372}
   - {fileID: 5051226910650307697}
   m_Father: {fileID: 587638802754812873}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2725,10 +2725,9 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 906325422312998997}
+  m_Children: []
   m_Father: {fileID: 587638802754812873}
-  m_RootOrder: 4
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -9202,7 +9201,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 587638802754812873}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -10590,8 +10589,9 @@ RectTransform:
   - {fileID: 8188828134429504065}
   - {fileID: 7559331888260239575}
   - {fileID: 3269042076696616083}
+  - {fileID: 906325422312998997}
   m_Father: {fileID: 587638802754812873}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -11062,7 +11062,6 @@ MonoBehaviour:
   prevRankButton: {fileID: 587638803008553473}
   runeButton: {fileID: 7277333978495071757}
   apiMissingButton: {fileID: 1118646872049355205}
-  refreshButton: {fileID: 6276601177561108679}
   enterButton: {fileID: 8811684776548993440}
   offSeasonContainer: {fileID: 7916253040827682814}
   seasonContainer: {fileID: 9120143198116046027}
@@ -11071,11 +11070,6 @@ MonoBehaviour:
   timerSlider: {fileID: 5083658049772709017}
   timeBlock: {fileID: 1214163090834449120}
   apiMissing: {fileID: 2361100179607856833}
-  queryLoadingObjects:
-  - {fileID: 2846205069070236859}
-  - {fileID: 7965326612532702510}
-  - {fileID: 3396802738936286938}
-  - {fileID: 3021692371796549182}
 --- !u!1 &7893562865489127868
 GameObject:
   m_ObjectHideFlags: 0
@@ -13124,7 +13118,7 @@ RectTransform:
   - {fileID: 6743589009429575564}
   - {fileID: 3347776594842737841}
   m_Father: {fileID: 587638802754812873}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -13608,7 +13602,7 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 6681426273830561096}
+    m_TransformParent: {fileID: 9055819640702375657}
     m_Modifications:
     - target: {fileID: 614013971705096407, guid: a355d939a3380434f93d18dfbb4e50d2,
         type: 3}
@@ -13623,7 +13617,7 @@ PrefabInstance:
     - target: {fileID: 614013971705096407, guid: a355d939a3380434f93d18dfbb4e50d2,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 614013971705096407, guid: a355d939a3380434f93d18dfbb4e50d2,
         type: 3}
@@ -13693,12 +13687,12 @@ PrefabInstance:
     - target: {fileID: 614013971705096407, guid: a355d939a3380434f93d18dfbb4e50d2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 270
+      value: 314
       objectReference: {fileID: 0}
     - target: {fileID: 614013971705096407, guid: a355d939a3380434f93d18dfbb4e50d2,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 614013971705096407, guid: a355d939a3380434f93d18dfbb4e50d2,
         type: 3}
@@ -13763,12 +13757,17 @@ PrefabInstance:
     - target: {fileID: 6109922152359174619, guid: a355d939a3380434f93d18dfbb4e50d2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 6109922152359174619, guid: a355d939a3380434f93d18dfbb4e50d2,
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7101650982706475522, guid: a355d939a3380434f93d18dfbb4e50d2,
+        type: 3}
+      propertyPath: m_text
+      value: UI_RANKING_API_MISSING
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a355d939a3380434f93d18dfbb4e50d2, type: 3}
@@ -14283,7 +14282,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
