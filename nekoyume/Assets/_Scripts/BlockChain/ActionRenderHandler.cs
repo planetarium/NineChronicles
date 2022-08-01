@@ -29,7 +29,6 @@ using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
-using Unity.Mathematics;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -809,23 +808,32 @@ namespace Nekoyume.BlockChain
             {
                 return;
             }
-
-            var itemName = await Util.GetItemNameByOrderId(eval.Action.orderId);
-            var order = await Util.GetOrder(eval.Action.orderId);
-            var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
+            var updateSellInfos = eval.Action.updateSellInfos;
 
             string message;
-            if (count > 1)
+            if (updateSellInfos.Count() > 1)
             {
-                message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_COMPLETE"),
-                    itemName, count);
+                message = L10nManager.Localize("NOTIFICATION_REREGISTER_ALL_COMPLETE");
             }
             else
             {
-                message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
-            }
+                var updateSellInfo = updateSellInfos.FirstOrDefault();
+                var itemName = await Util.GetItemNameByOrderId(updateSellInfo.orderId);
+                var order = await Util.GetOrder(updateSellInfo.orderId);
+                var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
 
+                if (count > 1)
+                {
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_COMPLETE"),
+                        itemName, count);
+                }
+                else
+                {
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
+                }
+            }
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+
             UpdateCurrentAvatarStateAsync(eval).Forget();
             ReactiveShopState.UpdateSellDigestsAsync().Forget();
         }

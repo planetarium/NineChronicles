@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Libplanet.Assets;
+using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -9,7 +13,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
-using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 using Inventory = Nekoyume.UI.Module.Inventory;
@@ -38,6 +41,9 @@ namespace Nekoyume.UI
         private SpeechBubble speechBubble = null;
 
         [SerializeField]
+        private Button reregistrationButton;
+
+        [SerializeField]
         private Button buyButton = null;
 
         [SerializeField]
@@ -52,6 +58,15 @@ namespace Nekoyume.UI
             base.Awake();
             SharedModel = new Shop();
             CloseWidget = null;
+
+            reregistrationButton.onClick.AddListener(() =>
+            {
+                Find<TwoButtonSystem>().Show(
+                    L10nManager.Localize("UI_SHOP_UPDATESELLALL_POPUP"),
+                    L10nManager.Localize("UI_YES"),
+                    L10nManager.Localize("UI_NO"),
+                    SubscribeUpdateSellPopupSubmit);
+            });
 
             buyButton.onClick.AddListener(() =>
             {
@@ -234,6 +249,75 @@ namespace Nekoyume.UI
             data.Item.Value.CountEnabled.Value = false;
         }
 
+        private void SubscribeUpdateSellPopupSubmit()
+        {
+            var digests = ReactiveShopState.SellDigest.Value;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var orderDigests = digests.Where(d => d.ExpiredBlockIndex - blockIndex <= 0).ToList();
+
+            if (!orderDigests.Any())
+            {
+                OneLineSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_SHOP_NONEUPDATESELLALL"),
+                    NotificationCell.NotificationType.Alert);
+
+                return;
+            }
+            view.SetLoading(orderDigests);
+
+            var updateSellInfos = new List<UpdateSellInfo>();
+            var oneLineSystemInfos = new List<(string name, int count)>();
+            foreach (var orderDigest in orderDigests)
+            {
+                if (!ReactiveShopState.TryGetShopItem(orderDigest, out var itemBase))
+                {
+                    return;
+                }
+
+                var updateSellInfo = new UpdateSellInfo(
+                    orderDigest.OrderId,
+                    Guid.NewGuid(),
+                    orderDigest.TradableId,
+                    itemBase.ItemSubType,
+                    orderDigest.Price,
+                    orderDigest.ItemCount
+                );
+
+                updateSellInfos.Add(updateSellInfo);
+                oneLineSystemInfos.Add((itemBase.GetLocalizedName(), orderDigest.ItemCount));
+            }
+
+            Game.Game.instance.ActionManager.UpdateSell(updateSellInfos).Subscribe();
+            Analyzer.Instance.Track("Unity/UpdateSellAll", new Value
+            {
+                ["Quantity"] = updateSellInfos.Count
+            });
+
+            string message;
+            if (updateSellInfos.Count() > 1)
+            {
+                message = L10nManager.Localize("NOTIFICATION_REREGISTER_ALL_START");
+            }
+            else
+            {
+                var info = oneLineSystemInfos.FirstOrDefault();
+                if (info.count > 1)
+                {
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_START"),
+                        info.name, info.count);
+                }
+                else
+                {
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_START"),
+                        info.name);
+                }
+            }
+
+            OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
+        }
+
         private void ShowRetrievePopup(ShopItem model)
         {
             SharedModel.ItemCountAndPricePopup.Value.TitleText.Value =
@@ -328,12 +412,16 @@ namespace Nekoyume.UI
             }
 
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-            Game.Game.instance.ActionManager.UpdateSell(
+            var updateSellInfo = new UpdateSellInfo(
                 digest.OrderId,
-                tradableItem,
-                count,
+                Guid.NewGuid(),
+                tradableItem.TradableId,
+                itemSubType,
                 totalPrice,
-                itemSubType).Subscribe();
+                count
+            );
+            
+            Game.Game.instance.ActionManager.UpdateSell(new List<UpdateSellInfo> {updateSellInfo}).Subscribe();
             Analyzer.Instance.Track("Unity/UpdateSell");
             ResponseSell();
         }
