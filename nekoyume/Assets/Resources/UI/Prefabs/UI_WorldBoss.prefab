@@ -9337,7 +9337,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 5815871849668249335}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -11062,6 +11062,7 @@ MonoBehaviour:
   prevRankButton: {fileID: 587638803008553473}
   runeButton: {fileID: 7277333978495071757}
   apiMissingButton: {fileID: 1118646872049355205}
+  refreshButton: {fileID: 6276601177561108679}
   enterButton: {fileID: 8811684776548993440}
   offSeasonContainer: {fileID: 7916253040827682814}
   seasonContainer: {fileID: 9120143198116046027}
@@ -11070,6 +11071,11 @@ MonoBehaviour:
   timerSlider: {fileID: 5083658049772709017}
   timeBlock: {fileID: 1214163090834449120}
   apiMissing: {fileID: 2361100179607856833}
+  queryLoadingObjects:
+  - {fileID: 2846205069070236859}
+  - {fileID: 7965326612532702510}
+  - {fileID: 3396802738936286938}
+  - {fileID: 3021692371796549182}
 --- !u!1 &7893562865489127868
 GameObject:
   m_ObjectHideFlags: 0

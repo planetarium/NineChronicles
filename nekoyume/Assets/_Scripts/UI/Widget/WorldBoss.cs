@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
@@ -53,6 +54,9 @@ namespace Nekoyume.UI
         private Button apiMissingButton;
 
         [SerializeField]
+        private Button refreshButton;
+
+        [SerializeField]
         private ConditionalButton enterButton;
 
         [SerializeField]
@@ -76,7 +80,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject apiMissing;
 
-
+        [SerializeField]
+        private List<GameObject> queryLoadingObjects;
 
         private GameObject _bossNamePrefab;
         private GameObject _bossSpinePrefab;
@@ -118,6 +123,8 @@ namespace Nekoyume.UI
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rune)).AddTo(gameObject);
             apiMissingButton.OnClickAsObservable()
                 .Subscribe(_ => apiMissing.SetActive(false)).AddTo(gameObject);
+            refreshButton.OnClickAsObservable()
+                .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
         }
@@ -140,20 +147,23 @@ namespace Nekoyume.UI
             loading.Show();
 
             ShowSheetValues();
-            ShowHeaderMenu();
-            await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true);
+            await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate:true);
 
             loading.Close();
             base.Show(ignoreShowAnimation);
         }
 
-        private void ShowHeaderMenu()
+        private void ShowHeaderMenu(
+            HeaderMenuStatic.AssetVisibleState assetVisibleState,
+            bool showHeaderMenuAnimation)
         {
             _headerMenu = Find<HeaderMenuStatic>();
-            _headerMenu.Show(HeaderMenuStatic.AssetVisibleState.WorldBoss);
+            _headerMenu.Show(assetVisibleState, showHeaderMenuAnimation);
         }
 
-        public async Task UpdateViewAsync(long currentBlockIndex, bool forceUpdate = false)
+        public async Task UpdateViewAsync(long currentBlockIndex
+            , bool forceUpdate = false
+            , bool ignoreHeaderMenuAnimation = false)
         {
             if (forceUpdate)
             {
@@ -167,16 +177,19 @@ namespace Nekoyume.UI
                 switch (_status)
                 {
                     case Status.OffSeason:
+                        ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.CurrencyOnly, ignoreHeaderMenuAnimation);
                         UpdateOffSeason(currentBlockIndex);
                         break;
                     case Status.Season:
+                        ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.WorldBoss, ignoreHeaderMenuAnimation);
                         if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
                         {
                             return;
                         }
 
                         var (worldBoss, raider, myRecord, userCount) = await GetStatesAsync(row);
-                        UpdateSeason(row, worldBoss, raider, myRecord, userCount);
+                        UpdateSeason(row, worldBoss, raider, myRecord, userCount, currentBlockIndex);
+
                         break;
                     case Status.None:
                     default:
@@ -184,8 +197,8 @@ namespace Nekoyume.UI
                 }
             }
 
-            UpdateTicket(currentBlockIndex);
             UpdateRemainTimer(_period, currentBlockIndex);
+            SetActiveQueryLoading(false);
         }
 
         private Status GetStatus(long currentBlockIndex)
@@ -219,7 +232,8 @@ namespace Nekoyume.UI
             WorldBossState worldBoss,
             RaiderState myRaiderState,
             WorldBossRankingRecord myRecord,
-            int userCount)
+            int userCount,
+            long currentBlockIndex)
         {
             Debug.Log("[UpdateSeason]");
 
@@ -234,11 +248,13 @@ namespace Nekoyume.UI
             UpdateBossInformationAsync(worldBoss);
             UpdateMyInformation(myRaiderState, myRecord);
             UpdateUserCount(userCount);
+            UpdateTicket(currentBlockIndex, row.StartedBlockIndex);
         }
 
         private void UpdateBossPrefab(WorldBossListSheet.Row row, bool isOffSeason = false)
         {
             if (_bossNamePrefab != null)
+
             {
                 Destroy(_bossNamePrefab);
             }
@@ -268,13 +284,21 @@ namespace Nekoyume.UI
             timeBlock.SetTimeBlock(Util.GetBlockToTime(end - current), $"{current}/{end}");
         }
 
-        private void UpdateTicket(long currentBlockIndex)
+        private void UpdateTicket(long currentBlockIndex, long startBlockIndex)
         {
             Debug.Log("[UpdateTicket]");
             var maxTicket = 3;
             var refillBlockIndex = _cachedRaiderState?.RefillBlockIndex ?? 0;
             var remainTicket = _cachedRaiderState?.RemainChallengeCount ?? maxTicket;
 
+            if (WorldBossHelper.CanRefillTicket(currentBlockIndex, refillBlockIndex, startBlockIndex))
+            {
+
+            }
+            else
+            {
+
+            }
             if (_cachedRaiderState is { RefillBlockIndex: 0 } &&
                 _cachedRaiderState.RemainChallengeCount != 0) // temp
             {
@@ -391,16 +415,23 @@ namespace Nekoyume.UI
                     ? new RaiderState(raiderList)
                     : null;
 
-                var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
-                var records = response?.WorldBossRanking?? new List<WorldBossRankingRecord>();
-                var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
-                var userCount = response?.WorldBossTotalUsers ?? 0;
-
-                return (worldBoss, raider, myRecord, userCount);
+                var (record, userCount) = await QueryRankingAsync(row, avatarAddress);
+                return (worldBoss, raider, record, userCount);
             });
 
             await task;
             return task.Result;
+        }
+
+        private static async Task<(WorldBossRankingRecord, int)> QueryRankingAsync(
+            WorldBossListSheet.Row row,
+            Address avatarAddress)
+        {
+            var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
+            var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
+            var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
+            var userCount = response?.WorldBossTotalUsers ?? 0;
+            return (myRecord, userCount);
         }
 
         private void UpdateUserCount(int count)
@@ -432,6 +463,22 @@ namespace Nekoyume.UI
             var highScore = record?.HighScore ?? 0;
             var rank = record?.Ranking ?? 0;
             season.UpdateMyInformation(totalScore, highScore, rank);
+        }
+
+        private async void RefreshMyInformationAsync()
+        {
+            SetActiveQueryLoading(true);
+            await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex,
+                forceUpdate:true,
+                ignoreHeaderMenuAnimation:true);
+        }
+
+        private void SetActiveQueryLoading(bool value)
+        {
+            foreach (var o in queryLoadingObjects)
+            {
+                o.SetActive(value);
+            }
         }
 
         private static void ShowSheetValues()
