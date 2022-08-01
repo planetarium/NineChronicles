@@ -13,10 +13,10 @@ namespace Nekoyume.Model
     {
         public int spawnIndex = -1;
 
-        [NonSerialized]
-        public StageSimulator StageSimulator;
-
-        public Enemy(CharacterBase player, CharacterSheet.Row rowData, int monsterLevel,
+        public Enemy(
+            CharacterBase player,
+            CharacterSheet.Row rowData,
+            int monsterLevel,
             IEnumerable<StatModifier> optionalStatModifiers = null)
             : base(
                 player.Simulator,
@@ -26,7 +26,6 @@ namespace Nekoyume.Model
                 optionalStatModifiers)
         {
             Targets.Add(player);
-            StageSimulator = (StageSimulator) Simulator;
             PostConstruction();
         }
 
@@ -49,7 +48,7 @@ namespace Nekoyume.Model
         protected override void OnDead()
         {
             base.OnDead();
-            var player = (Player) Targets[0];
+            var player = (Player)Targets[0];
             player.RemoveTarget(this);
         }
 
@@ -57,10 +56,15 @@ namespace Nekoyume.Model
         {
             base.SetSkill();
 
-            var dmg = (int) (ATK * 0.3m);
-            var skillIds = StageSimulator.EnemySkillSheet.Values.Where(r => r.characterId == RowData.Id)
-                .Select(r => r.skillId).ToList();
-            var enemySkills = Simulator.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
+            var dmg = (int)(ATK * 0.3m);
+            var skillIds = ((IStageSimulator)Simulator)
+                .EnemySkillSheet
+                .Values
+                .Where(r => r.characterId == RowData.Id)
+                .Select(r => r.skillId)
+                .ToList();
+            var enemySkills = Simulator.SkillSheet.Values
+                .Where(r => skillIds.Contains(r.Id))
                 .ToList();
             foreach (var skillRow in enemySkills)
             {
