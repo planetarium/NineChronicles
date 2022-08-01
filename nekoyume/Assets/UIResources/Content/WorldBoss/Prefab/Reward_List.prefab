@@ -636,7 +636,7 @@ GameObject:
   - component: {fileID: 9120822971590157565}
   - component: {fileID: 3331018954814633534}
   m_Layer: 15
-  m_Name: Lune
+  m_Name: RuneIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -690,7 +690,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 40631fad04148dd48886e3db9dd251e4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1cb46b66b7dab8947a0e3a0425d707d0, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

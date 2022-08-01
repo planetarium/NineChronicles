@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using Libplanet.Assets;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
@@ -36,36 +38,30 @@ namespace Nekoyume.Helper
             return true;
         }
 
-        public static bool TryGetBossPrefab(int bossId, out GameObject namePrefab, out GameObject spinePrefab)
+        public static bool TryGetBossData(int bossId, out WorldBossScriptableObject.MonsterData data)
         {
             var result = ScriptableObject.Monsters.FirstOrDefault(x => x.id == bossId);
             if (result is null)
             {
-                namePrefab = null;
-                spinePrefab = null;
+                data = null;
                 return false;
             }
 
-            namePrefab = result.namePrefab;
-            spinePrefab = result.spinePrefab;
+            data = result;
             return true;
         }
 
-        public static bool TryGetBossName(int bossId, out string name)
+        public static bool TryGetRaid(int raidId, out WorldBossListSheet.Row row)
         {
-            var result = ScriptableObject.Monsters.FirstOrDefault(x => x.id == bossId);
-            if (result is null)
-            {
-                name = string.Empty;
-                return false;
-            }
-
-            name = result.name;
-            return true;
+            var listSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
+            row = listSheet.Values.FirstOrDefault(x => x.Id.Equals(raidId));
+            return row is not null;
         }
 
-        public static bool TryGetRuneIcon(int currencyId, out Sprite icon)
+        public static bool TryGetRuneIcon(Currency currency, out Sprite icon)
         {
+            var ticker = currency.Ticker;
+            var currencyId = Convert.ToInt32(ticker);
             var result = ScriptableObject.Runes.FirstOrDefault(x => x.id == currencyId);
             if (result is null)
             {

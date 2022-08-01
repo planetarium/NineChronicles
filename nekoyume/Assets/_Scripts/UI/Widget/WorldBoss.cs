@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,7 +36,7 @@ namespace Nekoyume.UI
         private Button backButton;
 
         [SerializeField]
-        public Button prevRankButton;
+        public Button rewardButton;
 
         [SerializeField]
         public Button rankButton;
@@ -46,7 +45,10 @@ namespace Nekoyume.UI
         public Button informationButton;
 
         [SerializeField]
-        public Button rewardButton;
+        public Button prevRankButton;
+
+        [SerializeField]
+        public Button runeButton;
 
         [SerializeField]
         private ConditionalButton enterButton;
@@ -79,15 +81,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI ticketText;
 
-        [SerializeField]
-        private Button claimRaidRewardButton;
-
-        [SerializeField]
-        private Button viewButton;
-
-        [SerializeField]
-        private Button viewRuneButton;
-
         private Status _status = Status.None;
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
@@ -116,16 +109,10 @@ namespace Nekoyume.UI
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Information)).AddTo(gameObject);
             prevRankButton.OnClickAsObservable()
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.PreviousRank)).AddTo(gameObject);
+            runeButton.OnClickAsObservable()
+                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rune)).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
-
-            // claimRaidRewardButton.OnClickAsObservable().Subscribe(_ => ClaimRaidReward()).AddTo(gameObject);
-            // viewButton.OnClickAsObservable().Subscribe(_ => View()).AddTo(gameObject);
-            // viewRuneButton.OnClickAsObservable().Subscribe(_ =>
-            // {
-            //     ViewRune(800000);
-            //     ViewRune(800001);
-            // }).AddTo(gameObject);
         }
 
         protected override void OnEnable()
@@ -183,6 +170,13 @@ namespace Nekoyume.UI
 
                         var (worldBoss, raider, userCount) = await GetStatesAsync(row);
                         UpdateSeason(row, worldBoss, raider, userCount, currentBlockIndex);
+                        // var (worldBoss, raider) = await GetStatesAsync(row);
+                        // var address = Game.Game.instance.States.CurrentAvatarState.address;
+                        // var response = await QueryRankingAsync(row.Id, address);
+                        // _records = response.WorldBossRanking;
+                        // _myInfo = _records.FirstOrDefault(r => r.Address == address.ToHex());
+                        // var userCount = response.WorldBossTotalUsers;
+                        // UpdateSeason(row, worldBoss, raider, userCount, currentBlockIndex, _myInfo?.Ranking);
                         break;
                     case Status.None:
                     default:
@@ -254,15 +248,14 @@ namespace Nekoyume.UI
                 Destroy(_bossSpinePrefab);
             }
 
-            if (WorldBossFrontHelper.TryGetBossPrefab(row.BossId, out var namePrefab,
-                    out var spinePrefab))
+            if (WorldBossFrontHelper.TryGetBossData(row.BossId, out var data))
             {
                 if (isOffSeason)
                 {
-                    _bossNamePrefab = Instantiate(namePrefab, bossNameContainer);
+                    _bossNamePrefab = Instantiate(data.namePrefab, bossNameContainer);
                 }
 
-                _bossSpinePrefab = Instantiate(spinePrefab, bossSpineContainer);
+                _bossSpinePrefab = Instantiate(data.spinePrefab, bossSpineContainer);
             }
         }
 
@@ -425,8 +418,8 @@ namespace Nekoyume.UI
             var curHp = state?.CurrentHp ?? baseHp;
             var maxHp = hpSheet.Values.FirstOrDefault(x => x.Level == level)!.Hp;
             var bossId = state?.Id ?? bossSheet.Values.First().BossId;
-            var bossName = WorldBossFrontHelper.TryGetBossName(bossId, out var n)
-                ? n
+            var bossName = WorldBossFrontHelper.TryGetBossData(bossId, out var data)
+                ? data.name
                 : string.Empty;
 
             season.UpdateBossInformation(bossName, level, curHp, maxHp);
@@ -440,22 +433,6 @@ namespace Nekoyume.UI
             season.UpdateMyInformation(highScore, totalScore);
             ticketText.text = $"총 도전 횟 수: {state?.TotalChallengeCount ?? 0}\n" +
                               $"티켓 구매 횟 수: {state?.PurchaseCount ?? 0}\n";
-        }
-
-        private async void ViewRune(int runeId)
-        {
-            var agentAddress = States.Instance.AgentState.address;
-            var rune = RuneHelper.ToCurrency(runeId);
-            var state = await Game.Game.instance.Agent.GetBalanceAsync(agentAddress, rune);
-
-            if (state != null)
-            {
-                Debug.Log($"[{state.Currency.ToString()}] :{state.MajorUnit.ToString()}");
-            }
-            else
-            {
-                Debug.Log("Balance is null!");
-            }
         }
 
         private static void ShowSheetValues()
