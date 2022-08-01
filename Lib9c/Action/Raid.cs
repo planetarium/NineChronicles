@@ -48,7 +48,9 @@ namespace Nekoyume.Action
                     50, current);
             }
 
-            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new [] {
+            Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(
+                containRaidSimulatorSheets: true,
+                sheetTypes: new [] {
                 typeof(MaterialItemSheet),
                 typeof(SkillSheet),
                 typeof(SkillBuffSheet),

@@ -530,6 +530,7 @@ namespace Nekoyume.Action
             bool containStageSimulatorSheets = false,
             bool containRankingSimulatorSheets = false,
             bool containArenaSimulatorSheets = false,
+            bool containRaidSimulatorSheets = false,
             IEnumerable<Type> sheetTypes = null)
         {
             var sheetTypeList = sheetTypes?.ToList() ?? new List<Type>();
@@ -604,6 +605,19 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
                 sheetTypeList.Add(typeof(CostumeStatSheet));
+            }
+
+            if (containRaidSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(BuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
+                sheetTypeList.Add(typeof(WorldBossCharacterSheet));
+                sheetTypeList.Add(typeof(EnemySkillSheet));
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());
