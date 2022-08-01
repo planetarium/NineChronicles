@@ -167,6 +167,8 @@ namespace Lib9c.Tests
 
         public WorldBossCharacterSheet WorldBossCharacterSheet { get; private set; }
 
+        public RuneSheet RuneSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
