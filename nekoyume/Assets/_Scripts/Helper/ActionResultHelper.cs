@@ -20,11 +20,12 @@ namespace Nekoyume.Helper
         {
             firstStageSimulator = null;
             var model = new BattleResultPopup.Model();
+            var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
             for (var i = 0; i < eval.Action.PlayCount; i++)
             {
                 var prevExp = avatarState.exp;
                 var simulator = new StageSimulator(
-                    new ActionRenderHandler.LocalRandom(eval.RandomSeed),
+                    random,
                     avatarState,
                     i == 0 ? eval.Action.Foods : new List<Guid>(),
                     i == 0 ? skillsOnWaveStart : new List<Model.Skill.Skill>(),
