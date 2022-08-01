@@ -242,7 +242,18 @@ namespace Lib9c.Tests.Action
                 SellCancellation _ => new SellCancellation(),
                 UpdateSell _ => new UpdateSell
                 {
-                    price = _currency * 100,
+                    sellerAvatarAddress = new PrivateKey().ToAddress(),
+                    updateSellInfos = new[]
+                    {
+                        new UpdateSellInfo(
+                            Guid.NewGuid(),
+                            Guid.NewGuid(),
+                            Guid.NewGuid(),
+                            ItemSubType.Armor,
+                            _currency * 100,
+                            1
+                        ),
+                    },
                 },
                 CreatePendingActivations _ => new CreatePendingActivations
                 {
