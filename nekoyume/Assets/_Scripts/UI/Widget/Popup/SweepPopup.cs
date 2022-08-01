@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -67,6 +68,15 @@ namespace Nekoyume.UI
         private GameObject insufficientCpContainer;
 
         [SerializeField]
+        private GameObject apStoneContainer;
+
+        [SerializeField]
+        private GameObject sweepIconContainer;
+
+        [SerializeField]
+        private GameObject repeatIconContainer;
+
+        [SerializeField]
         private GameObject information;
 
         [SerializeField]
@@ -78,12 +88,14 @@ namespace Nekoyume.UI
         private readonly ReactiveProperty<int> _apStoneCount = new ReactiveProperty<int>();
         private readonly ReactiveProperty<int> _ap = new ReactiveProperty<int>();
         private readonly ReactiveProperty<int> _cp = new ReactiveProperty<int>();
-        private readonly List<Guid> equipments = new List<Guid>();
-        private readonly List<Guid> costumes = new List<Guid>();
+        private readonly List<Guid> _equipments = new List<Guid>();
+        private readonly List<Guid> _costumes = new List<Guid>();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private StageSheet.Row _stageRow;
         private int _worldId;
+        private bool _useSweep;
+        private Action<StageType, bool, int> _repeatBattleAction;
 
         protected override void Awake()
         {
@@ -92,7 +104,17 @@ namespace Nekoyume.UI
             _cp.Subscribe(v => UpdateCpView()).AddTo(gameObject);
 
             startButton.OnSubmitSubject
-                .Subscribe(_ => Sweep(_apStoneCount.Value, _ap.Value, _worldId, _stageRow))
+                .Subscribe(_ =>
+                {
+                    if (_useSweep)
+                    {
+                        Sweep(_apStoneCount.Value, _ap.Value, _worldId, _stageRow);
+                    }
+                    else
+                    {
+                        _repeatBattleAction(StageType.HackAndSlash, false, 1);
+                    }
+                })
                 .AddTo(gameObject);
 
             cancelButton.onClick.AddListener(() => Close());
@@ -102,7 +124,10 @@ namespace Nekoyume.UI
             base.Awake();
         }
 
-        public void Show(int worldId, int stageId, bool ignoreShowAnimation = false)
+        public void Show(int worldId,
+            int stageId,
+            Action<StageType, bool, int> repeatBattleAction,
+            bool ignoreShowAnimation = false)
         {
             if (!Game.Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageRow))
             {
@@ -116,11 +141,22 @@ namespace Nekoyume.UI
             _apStoneCount.SetValueAndForceNotify(0);
             _ap.SetValueAndForceNotify(States.Instance.CurrentAvatarState.actionPoint);
             _cp.SetValueAndForceNotify(States.Instance.CurrentAvatarState.GetCP());
+            _repeatBattleAction = repeatBattleAction;
 
             contentText.text =
                 $"({L10nManager.Localize("UI_AP")} / {L10nManager.Localize("UI_AP_POTION")})";
 
             base.Show(ignoreShowAnimation);
+        }
+
+        public void UpdateByToggle(bool useSweep)
+        {
+            enoughCpContainer.SetActive(useSweep);
+            insufficientCpContainer.SetActive(useSweep);
+            apStoneContainer.SetActive(useSweep);
+            sweepIconContainer.SetActive(useSweep);
+            repeatIconContainer.SetActive(!useSweep);
+            _useSweep = useSweep;
         }
 
         private void SubscribeInventory()
@@ -134,8 +170,8 @@ namespace Nekoyume.UI
                 }
 
                 var haveApStoneCount = 0;
-                costumes.Clear();
-                equipments.Clear();
+                _costumes.Clear();
+                _equipments.Clear();
 
                 foreach (var item in inventory.Items)
                 {
@@ -150,7 +186,7 @@ namespace Nekoyume.UI
                             var costume = (Costume)item.item;
                             if (costume.equipped)
                             {
-                                costumes.Add(costume.ItemId);
+                                _costumes.Add(costume.ItemId);
                             }
 
                             break;
@@ -159,7 +195,7 @@ namespace Nekoyume.UI
                             var equipment = (Equipment)item.item;
                             if (equipment.equipped)
                             {
-                                equipments.Add(equipment.ItemId);
+                                _equipments.Add(equipment.ItemId);
                             }
 
                             break;
@@ -356,8 +392,8 @@ namespace Nekoyume.UI
             }
 
             Game.Game.instance.ActionManager.HackAndSlashSweep(
-                costumes,
-                equipments,
+                _costumes,
+                _equipments,
                 apStoneCount,
                 actionPoint,
                 worldId,

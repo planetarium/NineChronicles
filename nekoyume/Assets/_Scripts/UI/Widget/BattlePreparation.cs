@@ -186,7 +186,7 @@ namespace Nekoyume.UI
 
             sweepPopupButton.OnClickAsObservable()
                 .Where(_ => !IsFirstStage)
-                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId.Value));
+                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId.Value, Battle));
 
             boostPopupButton.OnClickAsObservable()
                 .Where(_ => EnoughToPlay && !Game.Game.instance.IsInWorld)
@@ -745,7 +745,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void Battle(StageType stageType, bool repeat)
+        private void Battle(StageType stageType, bool repeat, int playCount = 1)
         {
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
@@ -770,7 +770,6 @@ namespace Nekoyume.UI
             {
                 case StageType.HackAndSlash:
                     var skillState = States.Instance.CrystalRandomSkillState;
-                    var buffResult = Find<BuffBonusResultPopup>();
                     var skillId = PlayerPrefs.GetInt("HackAndSlash.SelectedBonusSkillId", 0);
                     if (skillId == 0)
                     {
@@ -782,7 +781,8 @@ namespace Nekoyume.UI
                                 equipments,
                                 consumables,
                                 _worldId,
-                                _stageId.Value
+                                _stageId.Value,
+                                playCount
                             ).Subscribe();
                             break;
                         }
@@ -809,7 +809,8 @@ namespace Nekoyume.UI
                         consumables,
                         _worldId,
                         _stageId.Value,
-                        skillId
+                        skillId,
+                        playCount
                     ).Subscribe();
                     PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", 0);
                     break;
