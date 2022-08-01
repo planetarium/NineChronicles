@@ -21,9 +21,7 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/602
-    /// Updated at https://github.com/planetarium/lib9c/pull/620
-    /// Updated at https://github.com/planetarium/lib9c/pull/861
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Updated at https://github.com/planetarium/lib9c/pull/1022
     /// </summary>
     [Serializable]
     [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex)]

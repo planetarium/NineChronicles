@@ -19,10 +19,6 @@ using BxList = Bencodex.Types.List;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/602
-    /// Updated at https://github.com/planetarium/lib9c/pull/620
-    /// Updated at https://github.com/planetarium/lib9c/pull/861
-    /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1022
     /// Updated at https://github.com/planetarium/lib9c/pull/1022
     /// </summary>
@@ -166,7 +162,7 @@ namespace Nekoyume.Action
                     updateSellInfo.tradableId, context.BlockIndex, updateSellInfo.itemSubType, updateSellInfo.count);
 
                 newOrder.Validate(avatarState, updateSellInfo.count);
-                
+
                 var tradableItem = newOrder.Sell(avatarState);
                 var orderDigest = newOrder.Digest(avatarState, costumeStatSheet);
                 updateSellShopState.Add(orderDigest, context.BlockIndex);
