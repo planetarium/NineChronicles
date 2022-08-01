@@ -36,10 +36,12 @@ namespace Nekoyume.Action
                 [UpdateSellInfoKey] = updateSellInfos.Select(info => info.Serialize()).Serialize(),
             }.ToImmutableDictionary();
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
+        protected override void LoadPlainValueInternal(
+            IImmutableDictionary<string, IValue> plainValue)
         {
             sellerAvatarAddress = plainValue[SellerAvatarAddressKey].ToAddress();
-            updateSellInfos = plainValue[UpdateSellInfoKey].ToList(info => new UpdateSellInfo((List) info));
+            updateSellInfos = plainValue[UpdateSellInfoKey]
+                .ToEnumerable(info => new UpdateSellInfo((List)info));
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -89,13 +91,15 @@ namespace Nekoyume.Action
 
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
 
+            if (!states.TryGetState(digestListAddress, out Dictionary rawList))
+            {
+                throw new FailedLoadStateException(
+                    $"{addressesHex} failed to load {nameof(OrderDigest)}({digestListAddress}).");
+            }
+            var digestList = new OrderDigestListState(rawList);
+
             foreach (var updateSellInfo in updateSellInfos)
             {
-                if (!states.TryGetState(digestListAddress, out Dictionary rawList))
-                {
-                    throw new FailedLoadStateException($"{addressesHex} failed to load {nameof(OrderDigest)}({digestListAddress}).");
-                }
-
                 if (updateSellInfo.price.Sign < 0)
                 {
                     throw new InvalidPriceException($"{addressesHex} Aborted as the price is less than zero: {updateSellInfo.price}.");
@@ -105,7 +109,6 @@ namespace Nekoyume.Action
                 var updateSellShopAddress = ShardedShopStateV2.DeriveAddress(updateSellInfo.itemSubType, updateSellInfo.updateSellOrderId);
                 var updateSellOrderAddress = Order.DeriveAddress(updateSellInfo.updateSellOrderId);
                 var itemAddress = Addresses.GetItemAddress(updateSellInfo.tradableId);
-                var digestList = new OrderDigestListState(rawList);
 
                 // migration method
                 avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress);
@@ -130,7 +133,7 @@ namespace Nekoyume.Action
 
                 var orderOnSale = OrderFactory.Deserialize(orderDict);
                 orderOnSale.ValidateCancelOrder(avatarState, updateSellInfo.tradableId);
-                var itemOnSale = orderOnSale.Cancel(avatarState, context.BlockIndex);
+                orderOnSale.Cancel(avatarState, context.BlockIndex);
                 if (context.BlockIndex < orderOnSale.ExpiredBlockIndex)
                 {
                     var shardedShopState = new ShardedShopStateV2(shopStateDict);
@@ -139,8 +142,6 @@ namespace Nekoyume.Action
                 }
 
                 digestList.Remove(orderOnSale.OrderId);
-                states = states.SetState(itemAddress, itemOnSale.Serialize())
-                    .SetState(digestListAddress, digestList.Serialize());
                 sw.Stop();
 
                 var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
@@ -151,15 +152,23 @@ namespace Nekoyume.Action
                 }
 
                 // for updateSell
-                var updateSellShopState = states.TryGetState(updateSellShopAddress, out Dictionary serializedState)
-                    ? new ShardedShopStateV2(serializedState)
-                    : new ShardedShopStateV2(updateSellShopAddress);
+                var updateSellShopState =
+                    states.TryGetState(updateSellShopAddress, out Dictionary serializedState)
+                        ? new ShardedShopStateV2(serializedState)
+                        : new ShardedShopStateV2(updateSellShopAddress);
 
                 Log.Verbose("{AddressesHex} UpdateSell Get ShardedShopState: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
-                var newOrder = OrderFactory.Create(context.Signer, sellerAvatarAddress,
-                    updateSellInfo.updateSellOrderId, updateSellInfo.price,
-                    updateSellInfo.tradableId, context.BlockIndex, updateSellInfo.itemSubType, updateSellInfo.count);
+                var newOrder = OrderFactory.Create(
+                    context.Signer,
+                    sellerAvatarAddress,
+                    updateSellInfo.updateSellOrderId,
+                    updateSellInfo.price,
+                    updateSellInfo.tradableId,
+                    context.BlockIndex,
+                    updateSellInfo.itemSubType,
+                    updateSellInfo.count
+                );
 
                 newOrder.Validate(avatarState, updateSellInfo.count);
 
@@ -170,7 +179,6 @@ namespace Nekoyume.Action
                 digestList.Add(orderDigest);
 
                 states = states
-                    .SetState(digestListAddress, digestList.Serialize())
                     .SetState(itemAddress, tradableItem.Serialize())
                     .SetState(updateSellOrderAddress, newOrder.Serialize())
                     .SetState(updateSellShopAddress, updateSellShopState.Serialize());
@@ -182,7 +190,8 @@ namespace Nekoyume.Action
             states = states.SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(sellerAvatarAddress, avatarState.SerializeV2());
+                .SetState(sellerAvatarAddress, avatarState.SerializeV2())
+                .SetState(digestListAddress, digestList.Serialize());
             sw.Stop();
             Log.Verbose("{AddressesHex} UpdateSell Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
