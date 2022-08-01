@@ -1017,14 +1017,14 @@ namespace Nekoyume.Action
             Address rewardInfoAddress,
             WorldBossKillRewardRecord rewardRecord,
             int rank,
-            int bossId,
+            WorldBossState bossState,
             RuneWeightSheet runeWeightSheet,
             WorldBossKillRewardSheet worldBossKillRewardSheet,
             RuneSheet runeSheet,
             IRandom random,
             Address avatarAddress)
         {
-            if (!rewardRecord.IsClaimable())
+            if (!rewardRecord.IsClaimable(bossState.Level))
             {
                 throw new InvalidClaimException();
             }
@@ -1037,7 +1037,7 @@ namespace Nekoyume.Action
             {
                 List<FungibleAssetValue> rewards = RuneHelper.CalculateReward(
                     rank,
-                    bossId,
+                    bossState.Id,
                     runeWeightSheet,
                     worldBossKillRewardSheet,
                     runeSheet,

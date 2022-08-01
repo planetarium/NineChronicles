@@ -316,21 +316,27 @@ namespace Lib9c.Tests.Action
             states = states.SetState(rewardInfoAddress, rewardRecord.Serialize());
 
             var random = new TestRandom();
-            var runeWeightSheet = new RuneWeightSheet();
-            runeWeightSheet.Set(@"id,boss_id,rank,rune_id,weight
-1,1,0,1,100
-");
-            var killRewardSheet = new WorldBossKillRewardSheet();
-            killRewardSheet.Set(@"id,boss_id,rank,rune_min,rune_max,crystal
-1,1,0,1,1,100
-");
-            var runeSheet = new TableSheets(TableSheetsImporter.ImportSheets()).RuneSheet;
+            var tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            var runeSheet = tableSheets.RuneSheet;
             var runeCurrency = RuneHelper.ToCurrency(runeSheet[1], 0, null);
             var avatarAddress = new PrivateKey().ToAddress();
+            var bossState = new WorldBossState(
+                tableSheets.WorldBossListSheet[1],
+                tableSheets.WorldBossGlobalHpSheet[1]
+            );
+            var bossId = bossState.Id;
+            var runeWeightSheet = new RuneWeightSheet();
+            runeWeightSheet.Set($@"id,boss_id,rank,rune_id,weight
+1,{bossId},0,1,100
+");
+            var killRewardSheet = new WorldBossKillRewardSheet();
+            killRewardSheet.Set($@"id,boss_id,rank,rune_min,rune_max,crystal
+1,{bossId},0,1,1,100
+");
 
             if (exc is null)
             {
-                var nextState = states.SetWorldBossKillReward(rewardInfoAddress, rewardRecord, 0, 1, runeWeightSheet, killRewardSheet, runeSheet, random, avatarAddress);
+                var nextState = states.SetWorldBossKillReward(rewardInfoAddress, rewardRecord, 0, bossState, runeWeightSheet, killRewardSheet, runeSheet, random, avatarAddress);
                 Assert.Equal(expectedRune * runeCurrency, nextState.GetBalance(avatarAddress, runeCurrency));
                 Assert.Equal(expectedCrystal * CrystalCalculator.CRYSTAL, nextState.GetBalance(avatarAddress, CrystalCalculator.CRYSTAL));
                 var nextRewardInfo = new WorldBossKillRewardRecord((List)nextState.GetState(rewardInfoAddress));
@@ -344,7 +350,7 @@ namespace Lib9c.Tests.Action
                         rewardInfoAddress,
                         rewardRecord,
                         0,
-                        1,
+                        bossState,
                         runeWeightSheet,
                         killRewardSheet,
                         runeSheet,

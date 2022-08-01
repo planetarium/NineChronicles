@@ -49,12 +49,16 @@ namespace Lib9c.Tests.Action
             var raiderStateAddress = Addresses.GetRaiderAddress(avatarAddress, 1);
             var raiderState = new RaiderState();
 
+            var worldBossAddress = Addresses.GetWorldBossAddress(1);
+            var worldBossState = new WorldBossState(worldBossListSheet[1], tableSheets.WorldBossGlobalHpSheet[1]);
+
             state = state
                 .SetState(Addresses.GetSheetAddress<RuneWeightSheet>(), runeWeightSheet.Serialize())
                 .SetState(Addresses.GetSheetAddress<WorldBossListSheet>(), worldBossListSheet.Serialize())
                 .SetState(Addresses.GetSheetAddress<WorldBossKillRewardSheet>(), killRewardSheet.Serialize())
                 .SetState(Addresses.GetSheetAddress<RuneSheet>(), tableSheets.RuneSheet.Serialize())
                 .SetState(worldBossKillRewardRecordAddress, worldBossKillRewardRecord.Serialize())
+                .SetState(worldBossAddress, worldBossState.Serialize())
                 .SetState(raiderStateAddress, raiderState.Serialize());
 
             var action = new ClaimWordBossKillReward

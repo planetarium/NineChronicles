@@ -12,16 +12,14 @@ namespace Lib9c.Tests.Model
         public void IsClaimable()
         {
             var rewardRecord = new WorldBossKillRewardRecord();
-            Assert.False(rewardRecord.IsClaimable());
-
-            rewardRecord[0] = new List<FungibleAssetValue>();
-            Assert.True(rewardRecord.IsClaimable());
-
-            rewardRecord[0].Add(1 * CrystalCalculator.CRYSTAL);
-            Assert.False(rewardRecord.IsClaimable());
+            Assert.False(rewardRecord.IsClaimable(1));
 
             rewardRecord[1] = new List<FungibleAssetValue>();
-            Assert.True(rewardRecord.IsClaimable());
+            Assert.False(rewardRecord.IsClaimable(1));
+            Assert.True(rewardRecord.IsClaimable(2));
+
+            rewardRecord[1].Add(1 * CrystalCalculator.CRYSTAL);
+            Assert.False(rewardRecord.IsClaimable(2));
         }
     }
 }

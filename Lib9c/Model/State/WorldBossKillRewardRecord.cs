@@ -25,9 +25,14 @@ namespace Nekoyume.Model.State
         {
         }
 
-        public bool IsClaimable()
+        public bool IsClaimable(int level)
         {
-            return _dict.Values.Any(i => !i.Any());
+#pragma warning disable LAA1002
+            var filtered = _dict
+#pragma warning restore LAA1002
+                .Where(kv => kv.Key < level)
+                .Select(kv => kv.Value);
+            return filtered.Any(i => !i.Any());
         }
 
         public IEnumerator<KeyValuePair<int, List<FungibleAssetValue>>> GetEnumerator()

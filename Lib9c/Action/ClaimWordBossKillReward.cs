@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -31,31 +32,32 @@ namespace Nekoyume.Action
             });
 
             var worldBossListSheet = sheets.GetSheet<WorldBossListSheet>();
-            WorldBossListSheet.Row row;
+            int raidId;
             try
             {
-                row = worldBossListSheet.FindRowByBlockIndex(context.BlockIndex);
+                raidId = worldBossListSheet.FindRaidIdByBlockIndex(context.BlockIndex);
             }
             catch (InvalidOperationException)
             {
-                row = worldBossListSheet.FindPreviousRowByBlockIndex(context.BlockIndex);
+                raidId = worldBossListSheet.FindPreviousRaidIdByBlockIndex(context.BlockIndex);
             }
-            int raidId = row.Id;
             var raiderAddress = Addresses.GetRaiderAddress(AvatarAddress, raidId);
             RaiderState raiderState = states.GetRaiderState(raiderAddress);
             int rank = WorldBossHelper.CalculateRank(raiderState.HighScore);
             var worldBossKillRewardRecordAddress = Addresses.GetWorldBossKillRewardRecordAddress(AvatarAddress, raidId);
             var rewardRecord = new WorldBossKillRewardRecord((List) states.GetState(worldBossKillRewardRecordAddress));
+            Address worldBossAddress = Addresses.GetWorldBossAddress(raidId);
+            var worldBossState = new WorldBossState((List) states.GetState(worldBossAddress));
             return states.SetWorldBossKillReward(
                 worldBossKillRewardRecordAddress,
                 rewardRecord,
                 rank,
-                row.BossId,
+                worldBossState,
                 sheets.GetSheet<RuneWeightSheet>(),
                 sheets.GetSheet<WorldBossKillRewardSheet>(),
                 sheets.GetSheet<RuneSheet>(),
                 context.Random,
-                AvatarAddress
+                    AvatarAddress
             );
         }
 
