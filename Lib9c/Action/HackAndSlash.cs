@@ -230,7 +230,7 @@ namespace Nekoyume.Action
                 sw.Restart();
                 // First simulating will use Foods and Random Skills.
                 // Remainder simulating will not use Foods.
-                var simulator = new StageSimulator(
+                var simulator = new StageSimulatorV1(
                     random,
                     avatarState,
                     i == 0 ? Foods : new List<Guid>(),
@@ -239,7 +239,7 @@ namespace Nekoyume.Action
                     StageId,
                     sheets.GetStageSimulatorSheets(),
                     sheets.GetSheet<CostumeStatSheet>(),
-                    StageSimulator.ConstructorVersionV100080);
+                    StageSimulatorV1.ConstructorVersionV100080);
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 

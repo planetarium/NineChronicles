@@ -1126,7 +1126,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
             };
             var nextState = action.Execute(ctx);
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 new TestRandom(ctx.Random.Seed),
                 previousAvatarState,
                 new List<Guid>(),
@@ -1134,7 +1134,7 @@ namespace Lib9c.Tests.Action
                 stageId,
                 _tableSheets.GetStageSimulatorSheets(),
                 _tableSheets.CostumeStatSheet,
-                StageSimulator.ConstructorVersionV100080);
+                StageSimulatorV1.ConstructorVersionV100080);
             simulator.Simulate(1);
             var log = simulator.Log;
             var skillStateIValue =

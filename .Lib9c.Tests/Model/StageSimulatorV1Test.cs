@@ -13,13 +13,13 @@ namespace Lib9c.Tests.Model
     using Nekoyume.Model.State;
     using Xunit;
 
-    public class StageSimulatorTest
+    public class StageSimulatorV1Test
     {
         private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
         private readonly AvatarState _avatarState;
 
-        public StageSimulatorTest()
+        public StageSimulatorV1Test()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _random = new TestRandom();
@@ -37,7 +37,7 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void Simulate3()
         {
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 _random,
                 _avatarState,
                 new List<Guid>(),
@@ -61,7 +61,7 @@ namespace Lib9c.Tests.Model
             costume.equipped = true;
             _avatarState.inventory.AddItem(costume);
 
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 _random,
                 _avatarState,
                 new List<Guid>(),
@@ -81,7 +81,7 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void Simulate5()
         {
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 _random,
                 _avatarState,
                 new List<Guid>(),
@@ -107,7 +107,7 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void Simulate6()
         {
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 _random,
                 _avatarState,
                 new List<Guid>(),
@@ -133,7 +133,7 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void Simulate()
         {
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 _random,
                 _avatarState,
                 new List<Guid>(),

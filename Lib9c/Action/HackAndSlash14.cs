@@ -269,7 +269,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get skillState : {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 ctx.Random,
                 avatarState,
                 foods,
@@ -278,7 +278,7 @@ namespace Nekoyume.Action
                 stageId,
                 sheets.GetStageSimulatorSheets(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.ConstructorVersionV100080);
+                StageSimulatorV1.ConstructorVersionV100080);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
