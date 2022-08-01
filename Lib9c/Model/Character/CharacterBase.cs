@@ -94,10 +94,10 @@ namespace Nekoyume.Model
             Simulator simulator,
             CharacterStats stat,
             int characterId,
-            SizeType sizeType,
             ElementalType elementalType,
-            float attackRange,
-            float runSpeed)
+            SizeType sizeType = SizeType.XL,
+            float attackRange = 4,
+            float runSpeed = 0.3f)
         {
             Simulator = simulator;
             Stats = stat;

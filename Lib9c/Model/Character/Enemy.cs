@@ -36,18 +36,12 @@ namespace Nekoyume.Model
             CharacterBase player,
             CharacterStats stat,
             int characterId,
-            SizeType sizeType,
-            ElementalType elementalType,
-            float attackRange,
-            float runSpeed)
+            ElementalType elementalType)
             : base(
                 player.Simulator,
                 stat,
                 characterId,
-                sizeType,
-                elementalType,
-                attackRange,
-                runSpeed)
+                elementalType)
         {
             Targets.Add(player);
             PostConstruction();

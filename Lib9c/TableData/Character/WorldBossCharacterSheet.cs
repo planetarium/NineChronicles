@@ -15,7 +15,6 @@ namespace Nekoyume.TableData
         public class WaveStatData
         {
             public int Wave { get; set; }
-            public SizeType SizeType { get; set; }
             public ElementalType ElementalType { get; set; }
             public int Level { get; set; }
             public decimal HP { get; set; }
@@ -24,8 +23,6 @@ namespace Nekoyume.TableData
             public decimal CRI { get; set; }
             public decimal HIT { get; set; }
             public decimal SPD { get; set; }
-            public float AttackRange { get; set; }
-            public float RunSpeed { get; set; }
         }
 
         [Serializable]
@@ -41,19 +38,16 @@ namespace Nekoyume.TableData
                 var statData = new WaveStatData()
                 {
                     Wave = int.Parse(fields[1], CultureInfo.InvariantCulture),
-                    SizeType = Enum.TryParse<SizeType>(fields[2], out var sizeType)
-                        ? sizeType
-                        : SizeType.S,
-                    ElementalType = Enum.TryParse<ElementalType>(fields[3], out var elementalType)
+                    ElementalType = Enum.TryParse<ElementalType>(fields[2], out var elementalType)
                         ? elementalType
                         : ElementalType.Normal,
-                    Level = int.Parse(fields[4], CultureInfo.InvariantCulture),
-                    HP = TryParseDecimal(fields[5], out var hp) ? hp : 0m,
-                    ATK = TryParseDecimal(fields[6], out var damage) ? damage : 0m,
-                    DEF = TryParseDecimal(fields[7], out var defense) ? defense : 0m,
-                    CRI = TryParseDecimal(fields[8], out var cri) ? cri : 0m,
-                    HIT = TryParseDecimal(fields[9], out var hit) ? hit : 0m,
-                    SPD = TryParseDecimal(fields[10], out var spd) ? spd : 0m,
+                    Level = int.Parse(fields[3], CultureInfo.InvariantCulture),
+                    HP = TryParseDecimal(fields[4], out var hp) ? hp : 0m,
+                    ATK = TryParseDecimal(fields[5], out var damage) ? damage : 0m,
+                    DEF = TryParseDecimal(fields[6], out var defense) ? defense : 0m,
+                    CRI = TryParseDecimal(fields[7], out var cri) ? cri : 0m,
+                    HIT = TryParseDecimal(fields[8], out var hit) ? hit : 0m,
+                    SPD = TryParseDecimal(fields[9], out var spd) ? spd : 0m,
                 };
                 WaveStats = new List<WaveStatData> { statData };
             }

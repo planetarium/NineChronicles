@@ -25,10 +25,7 @@ namespace Nekoyume.Model
                 player,
                 new CharacterStats(statData),
                 row.BossId,
-                statData.SizeType,
-                statData.ElementalType,
-                statData.AttackRange,
-                statData.RunSpeed)
+                statData.ElementalType)
         {
             RaidSimulator = (RaidSimulator) player.Simulator;
             RowData = row;

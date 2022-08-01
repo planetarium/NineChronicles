@@ -32,7 +32,6 @@ namespace Nekoyume.Model.Stat
         private readonly List<StatModifier> _optionalStatModifiers = new List<StatModifier>();
 
         public int Level { get; private set; }
-        public bool UseLevelStats { get; set; }
 
         public IStats BaseStats => _baseStats;
         public IStats EquipmentStats => _equipmentStats;
@@ -77,7 +76,6 @@ namespace Nekoyume.Model.Stat
             int level
         )
         {
-            UseLevelStats = true;
             _row = row ?? throw new ArgumentNullException(nameof(row));
             SetStats(level);
             EqualizeCurrentHPWithHP();
@@ -85,8 +83,6 @@ namespace Nekoyume.Model.Stat
 
         public CharacterStats(WorldBossCharacterSheet.WaveStatData stat)
         {
-            UseLevelStats = false;
-            Level = stat.Level;
             var stats = stat.ToStats();
             _baseStats.Set(stats);
             SetStats(stat.Level);
@@ -95,7 +91,6 @@ namespace Nekoyume.Model.Stat
             
         public CharacterStats(CharacterStats value) : base(value)
         {
-            UseLevelStats = value.UseLevelStats;
             _row = value._row;
 
             _baseStats = new Stats(value._baseStats);
@@ -138,7 +133,7 @@ namespace Nekoyume.Model.Stat
         /// <returns></returns>
         public CharacterStats SetStats(int level, bool updateImmediate = true)
         {
-            if (UseLevelStats && level == Level)
+            if (level == Level)
                 return this;
 
             Level = level;
@@ -363,7 +358,7 @@ namespace Nekoyume.Model.Stat
 
         private void UpdateBaseStats()
         {
-            if (UseLevelStats)
+            if (_row != null)
             {
                 var statsData = _row.ToStats(Level);
                 _baseStats.Set(statsData);
