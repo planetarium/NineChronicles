@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
-using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.ValueControlComponents.Shader;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using StateExtensions = Nekoyume.Model.State.StateExtensions;
 
 namespace Nekoyume.UI
 {
@@ -51,6 +50,9 @@ namespace Nekoyume.UI
         public Button runeButton;
 
         [SerializeField]
+        private Button apiMissingButton;
+
+        [SerializeField]
         private ConditionalButton enterButton;
 
         [SerializeField]
@@ -71,15 +73,16 @@ namespace Nekoyume.UI
         [SerializeField]
         private TimeBlock timeBlock;
 
+        [SerializeField]
+        private GameObject apiMissing;
+
+
+
         private GameObject _bossNamePrefab;
         private GameObject _bossSpinePrefab;
         private (long, long) _period;
         private RaiderState _cachedRaiderState;
         private int _remainTicket;
-
-        // for test
-        [SerializeField]
-        private TextMeshProUGUI ticketText;
 
         private Status _status = Status.None;
         private readonly List<IDisposable> _disposables = new();
@@ -106,11 +109,15 @@ namespace Nekoyume.UI
             rankButton.OnClickAsObservable()
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rank)).AddTo(gameObject);
             informationButton.OnClickAsObservable()
-                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Information)).AddTo(gameObject);
+                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Information))
+                .AddTo(gameObject);
             prevRankButton.OnClickAsObservable()
-                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.PreviousRank)).AddTo(gameObject);
+                .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.PreviousRank))
+                .AddTo(gameObject);
             runeButton.OnClickAsObservable()
                 .Subscribe(_ => ShowDetail(WorldBossDetail.ToggleType.Rune)).AddTo(gameObject);
+            apiMissingButton.OnClickAsObservable()
+                .Subscribe(_ => apiMissing.SetActive(false)).AddTo(gameObject);
 
             enterButton.OnSubmitSubject.Subscribe(_ => OnClickEnter()).AddTo(gameObject);
         }
@@ -168,15 +175,8 @@ namespace Nekoyume.UI
                             return;
                         }
 
-                        var (worldBoss, raider, userCount) = await GetStatesAsync(row);
-                        UpdateSeason(row, worldBoss, raider, userCount, currentBlockIndex);
-                        // var (worldBoss, raider) = await GetStatesAsync(row);
-                        // var address = Game.Game.instance.States.CurrentAvatarState.address;
-                        // var response = await QueryRankingAsync(row.Id, address);
-                        // _records = response.WorldBossRanking;
-                        // _myInfo = _records.FirstOrDefault(r => r.Address == address.ToHex());
-                        // var userCount = response.WorldBossTotalUsers;
-                        // UpdateSeason(row, worldBoss, raider, userCount, currentBlockIndex, _myInfo?.Ranking);
+                        var (worldBoss, raider, myRecord, userCount) = await GetStatesAsync(row);
+                        UpdateSeason(row, worldBoss, raider, myRecord, userCount);
                         break;
                     case Status.None:
                     default:
@@ -202,13 +202,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            offSeasonContainer.SetActive(false);
-            seasonContainer.SetActive(true);
+            offSeasonContainer.SetActive(true);
+            seasonContainer.SetActive(false);
             rankButton.gameObject.SetActive(false);
             enterButton.Text = "Practice";
-
-            var begin =
-                WorldBossFrontHelper.TryGetPreviousRow(currentBlockIndex, out var previousRow)
+            var begin = WorldBossFrontHelper.TryGetPreviousRow(currentBlockIndex, out var previousRow)
                     ? previousRow.EndedBlockIndex
                     : 0;
             _period = (begin, nextRow.StartedBlockIndex);
@@ -219,20 +217,22 @@ namespace Nekoyume.UI
         private void UpdateSeason(
             WorldBossListSheet.Row row,
             WorldBossState worldBoss,
-            RaiderState raider,
-            int userCount,
-            long currentBlockIndex)
+            RaiderState myRaiderState,
+            WorldBossRankingRecord myRecord,
+            int userCount)
         {
             Debug.Log("[UpdateSeason]");
-            offSeasonContainer.SetActive(true);
-            seasonContainer.SetActive(false);
+
+            offSeasonContainer.SetActive(false);
+            seasonContainer.SetActive(true);
+            apiMissing.SetActive(!Game.Game.instance.ApiClient.IsInitialized);
             rankButton.gameObject.SetActive(true);
             enterButton.Text = "Enter";
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
 
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
-            UpdateMyInformation(raider, currentBlockIndex);
+            UpdateMyInformation(myRaiderState, myRecord);
             UpdateUserCount(userCount);
         }
 
@@ -372,7 +372,7 @@ namespace Nekoyume.UI
             ActionManager.Instance.ClaimRaidReward();
         }
 
-        private async Task<(WorldBossState worldBoss, RaiderState raider, int userCount)>
+        private async Task<(WorldBossState worldBoss, RaiderState raiderState, WorldBossRankingRecord myRecord, int userCount)>
             GetStatesAsync(WorldBossListSheet.Row row)
         {
             var task = Task.Run(async () =>
@@ -383,6 +383,7 @@ namespace Nekoyume.UI
                     ? new WorldBossState(worldBossList)
                     : null;
 
+
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
                 var raiderAddress = Addresses.GetRaiderAddress(avatarAddress, row.Id);
                 var raiderState = await Game.Game.instance.Agent.GetStateAsync(raiderAddress);
@@ -390,13 +391,12 @@ namespace Nekoyume.UI
                     ? new RaiderState(raiderList)
                     : null;
 
-                var raidersAddress = Addresses.GetRaidersAddress(row.Id);
-                var raidersState = await Game.Game.instance.Agent.GetStateAsync(raidersAddress);
-                var raiders = raidersState is Bencodex.Types.List raidersList
-                    ? raidersList.ToList(StateExtensions.ToAddress)
-                    : new List<Address>();
+                var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
+                var records = response?.WorldBossRanking?? new List<WorldBossRankingRecord>();
+                var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
+                var userCount = response?.WorldBossTotalUsers ?? 0;
 
-                return (worldBoss, raider, raiders.Count);
+                return (worldBoss, raider, myRecord, userCount);
             });
 
             await task;
@@ -424,14 +424,14 @@ namespace Nekoyume.UI
             season.UpdateBossInformation(bossName, level, curHp, maxHp);
         }
 
-        private void UpdateMyInformation(RaiderState state, long currentBlockIndex)
+        private void UpdateMyInformation(RaiderState state, WorldBossRankingRecord record)
         {
             _cachedRaiderState = state;
-            var totalScore = state?.TotalScore ?? 0;
-            var highScore = state?.HighScore ?? 0;
-            season.UpdateMyInformation(highScore, totalScore);
-            ticketText.text = $"총 도전 횟 수: {state?.TotalChallengeCount ?? 0}\n" +
-                              $"티켓 구매 횟 수: {state?.PurchaseCount ?? 0}\n";
+
+            var totalScore = record?.TotalScore ?? 0;
+            var highScore = record?.HighScore ?? 0;
+            var rank = record?.Ranking ?? 0;
+            season.UpdateMyInformation(totalScore, highScore, rank);
         }
 
         private static void ShowSheetValues()

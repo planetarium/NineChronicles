@@ -1,12 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
-using Libplanet;
-using Nekoyume.GraphQL;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
@@ -103,29 +99,6 @@ namespace Nekoyume.UI.Module.WorldBoss
             myInfo.gameObject.SetActive(false);
         }
 
-        private async Task<WorldBossRankingResponse> QueryRankingAsync(
-            NineChroniclesAPIClient apiClient,
-            int raidId,
-            Address address)
-        {
-            var query = @$"query {{
-                worldBossTotalUsers(raidId: {raidId})
-                worldBossRanking(raidId: {raidId}, avatarAddress: ""{address}"") {{
-                    highScore
-                    address
-                    ranking
-                    level
-                    cp
-                    iconId
-                    avatarName
-                    totalScore
-                }}
-            }}";
-
-            var response = await apiClient.GetObjectAsync<WorldBossRankingResponse>(query);
-            return response;
-        }
-
         private void UpdateBossInformation(int raidId)
         {
             if (!WorldBossFrontHelper.TryGetRaid(raidId, out var row))
@@ -152,11 +125,11 @@ namespace Nekoyume.UI.Module.WorldBoss
                 // _cachedItems.Add(status, items);
             }
 
-            var apiClient = Game.Game.instance.ApiClient;
+
             var avatarState = States.Instance.CurrentAvatarState;
-            var response = await QueryRankingAsync(apiClient, raidId, avatarState.address);
-            var records = response.WorldBossRanking;
-            var userCount = response.WorldBossTotalUsers;
+            var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarState.address);
+            var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
+            var userCount = response?.WorldBossTotalUsers ?? 0;
 
             var avatarAddress = "C54d5b047bb87bd4F71af42456ac2d499FBCe767"; // for test
             // var avatarAddress = avatarState.address.ToHex();
@@ -183,7 +156,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             myInfo.gameObject.SetActive(items.MyItem != null);
             myInfo.Set(items.MyItem, null);
             scroll.UpdateData(items.UserItems);
-            totalUsers.text = $"{items.UserCount:#,0}";
+            totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : "-";
         }
     }
 }
