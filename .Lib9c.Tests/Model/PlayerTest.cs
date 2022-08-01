@@ -44,10 +44,13 @@ namespace Lib9c.Tests.Model
                 _random,
                 _avatarState,
                 new List<Guid>(),
+                new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,
+                false,
+                20,
                 _tableSheets.GetStageSimulatorSheets(),
-                2,
+                _tableSheets.CostumeStatSheet,
                 1
             );
             var player = simulator.Player;
@@ -67,10 +70,13 @@ namespace Lib9c.Tests.Model
                 _random,
                 _avatarState,
                 new List<Guid>(),
+                new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,
+                false,
+                20,
                 _tableSheets.GetStageSimulatorSheets(),
-                2,
+                _tableSheets.CostumeStatSheet,
                 1
             );
             var player = simulator.Player;
@@ -107,10 +113,13 @@ namespace Lib9c.Tests.Model
                 _random,
                 _avatarState,
                 new List<Guid>(),
+                new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,
+                false,
+                20,
                 _tableSheets.GetStageSimulatorSheets(),
-                2,
+                _tableSheets.CostumeStatSheet,
                 1
             );
             var player = simulator.Player;
@@ -224,10 +233,13 @@ namespace Lib9c.Tests.Model
                 _random,
                 _avatarState,
                 new List<Guid>(),
+                new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,
+                false,
+                20,
                 _tableSheets.GetStageSimulatorSheets(),
-                2,
+                _tableSheets.CostumeStatSheet,
                 1
             );
             var player = simulator.Player;
