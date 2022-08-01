@@ -31,7 +31,7 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Spawn")]
-        public void SpawnV1(Simulator simulator)
+        public void SpawnV1(ISimulator simulator)
         {
             foreach (var enemy in _enemies)
             {
@@ -46,7 +46,7 @@ namespace Nekoyume.Battle
         }
 
         [Obsolete("Use Spawn")]
-        public void SpawnV2(Simulator simulator)
+        public void SpawnV2(ISimulator simulator)
         {
             foreach (var enemy in _enemies)
             {
