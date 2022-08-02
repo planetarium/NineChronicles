@@ -111,7 +111,10 @@ namespace Nekoyume.Action
                     typeof(MaterialItemSheet),
                 });
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose(
+                "{AddressesHex}Get Sheets: {Elapsed}",
+                addressesHex,
+                sw.Elapsed);
 
             sw.Restart();
             var worldSheet = sheets.GetSheet<WorldSheet>();
