@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
@@ -89,9 +90,30 @@ namespace Nekoyume.Action
                 "{AddressesHex}Mimisbrunnr Get AgentAvatarStates: {Elapsed}",
                 addressesHex,
                 sw.Elapsed);
-            sw.Restart();
 
-            var worldSheet = states.GetSheet<WorldSheet>();
+            sw.Restart();
+            var sheets = states.GetSheets(
+                containSimulatorSheets: true,
+                sheetTypes: new[]
+                {
+                    typeof(WorldSheet),
+                    typeof(StageSheet),
+                    typeof(StageWaveSheet),
+                    typeof(EnemySkillSheet),
+                    typeof(CostumeStatSheet),
+                    typeof(WorldUnlockSheet),
+                    typeof(MimisbrunnrSheet),
+                    typeof(ItemRequirementSheet),
+                    typeof(EquipmentItemRecipeSheet),
+                    typeof(EquipmentItemSubRecipeSheetV2),
+                    typeof(EquipmentItemOptionSheet),
+                    typeof(MaterialItemSheet),
+                });
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Get Sheets: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
+            var worldSheet = sheets.GetSheet<WorldSheet>();
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), worldId);
@@ -105,13 +127,13 @@ namespace Nekoyume.Action
                     $" {worldRow.StageBegin}-{worldRow.StageEnd}");
             }
 
-            var stageSheet = states.GetSheet<StageSheet>();
+            var stageSheet = sheets.GetSheet<StageSheet>();
             if (!stageSheet.TryGetValue(stageId, out var stageRow))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(StageSheet), stageId);
             }
 
-            var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
+            var worldUnlockSheet = sheets.GetSheet<WorldUnlockSheet>();
             var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
@@ -164,7 +186,7 @@ namespace Nekoyume.Action
             }
 
             sw.Restart();
-            var mimisbrunnrSheet = states.GetSheet<MimisbrunnrSheet>();
+            var mimisbrunnrSheet = sheets.GetSheet<MimisbrunnrSheet>();
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
             {
                 throw new SheetRowNotFoundException(
@@ -221,14 +243,14 @@ namespace Nekoyume.Action
 
             var equippableItem = costumes.Concat(equipments);
             avatarState.EquipItems(equippableItem);
-            var requirementSheet = states.GetSheet<ItemRequirementSheet>();
+            var requirementSheet = sheets.GetSheet<ItemRequirementSheet>();
             avatarState.ValidateItemRequirement(
                 costumeIds.Concat(foodIds).ToList(),
                 equipmentList,
                 requirementSheet,
-                states.GetSheet<EquipmentItemRecipeSheet>(),
-                states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
-                states.GetSheet<EquipmentItemOptionSheet>(),
+                sheets.GetSheet<EquipmentItemRecipeSheet>(),
+                sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                sheets.GetSheet<EquipmentItemOptionSheet>(),
                 addressesHex);
 
             avatarState.actionPoint -= totalCostActionPoint;
@@ -239,7 +261,7 @@ namespace Nekoyume.Action
                 sw.Elapsed);
 
             sw.Restart();
-            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
+            sheets.GetSheet<StageWaveSheet>().TryGetValue(stageId, out var stageWaveRow, true);
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
@@ -247,10 +269,13 @@ namespace Nekoyume.Action
                 new List<Skill>(),
                 worldId,
                 stageId,
+                stageRow,
+                sheets.GetSheet<StageWaveSheet>()[stageId],
                 avatarState.worldInformation.IsStageCleared(stageId),
                 0,
-                states.GetStageSimulatorSheets(),
-                costumeStatSheet,
+                sheets.GetSimulatorSheets(),
+                sheets.GetSheet<EnemySkillSheet>(),
+                sheets.GetSheet<CostumeStatSheet>(),
                 playCount);
             sw.Stop();
             Log.Verbose(
@@ -300,7 +325,7 @@ namespace Nekoyume.Action
 
             avatarState.Update(simulator);
 
-            var materialSheet = states.GetSheet<MaterialItemSheet>();
+            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
             avatarState.UpdateQuestRewards(materialSheet);
 
             avatarState.updatedAt = context.BlockIndex;

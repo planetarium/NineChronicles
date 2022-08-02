@@ -125,16 +125,18 @@ namespace Nekoyume.Action
             sw.Restart();
             var sheets = states.GetSheets(
                 containQuestSheet: true,
-                containStageSimulatorSheets: true,
+                containSimulatorSheets: true,
                 sheetTypes: new[]
                 {
                     typeof(WorldSheet),
                     typeof(StageSheet),
+                    typeof(StageWaveSheet),
+                    typeof(EnemySkillSheet),
+                    typeof(CostumeStatSheet),
                     typeof(SkillSheet),
                     typeof(QuestRewardSheet),
                     typeof(QuestItemRewardSheet),
                     typeof(EquipmentItemRecipeSheet),
-                    typeof(CostumeStatSheet),
                     typeof(WorldUnlockSheet),
                     typeof(MaterialItemSheet),
                     typeof(ItemRequirementSheet),
@@ -244,9 +246,12 @@ namespace Nekoyume.Action
                     i == 0 ? skillsOnWaveStart : new List<Skill>(),
                     WorldId,
                     StageId,
+                    sheets.GetSheet<StageSheet>()[StageId],
+                    sheets.GetSheet<StageWaveSheet>()[StageId],
                     avatarState.worldInformation.IsStageCleared(StageId),
                     StageRewardExpHelper.GetExp(avatarState.level, StageId),
-                    sheets.GetStageSimulatorSheets(),
+                    sheets.GetSimulatorSheets(),
+                    sheets.GetSheet<EnemySkillSheet>(),
                     sheets.GetSheet<CostumeStatSheet>(),
                     1);
                 sw.Stop();
