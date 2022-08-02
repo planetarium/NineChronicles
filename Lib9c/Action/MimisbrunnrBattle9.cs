@@ -8,7 +8,6 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -17,11 +16,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/884
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("mimisbrunnr_battle10")]
-    public class MimisbrunnrBattle : GameAction
+    [ActionType("mimisbrunnr_battle9")]
+    public class MimisbrunnrBattle9 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -43,12 +43,11 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = avatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
-        protected override void LoadPlainValueInternal(
-            IImmutableDictionary<string, IValue> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            costumes = ((List)plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
-            equipments = ((List)plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
-            foods = ((List)plainValue["foods"]).Select(e => e.ToGuid()).ToList();
+            costumes =  ((List) plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
+            equipments = ((List) plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
+            foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
             playCount = plainValue["playCount"].ToInteger();
@@ -57,38 +56,35 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            var states = context.PreviousStates;
+            IActionContext ctx = context;
+            var states = ctx.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
-            if (context.Rehearsal)
+            if (ctx.Rehearsal)
             {
-                return states;
+                states = states.SetState(avatarAddress, MarkChanged);
+                states = states
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged);
+                return states.SetState(ctx.Signer, MarkChanged);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose(
-                "{AddressesHex}Mimisbrunnr exec started",
-                addressesHex);
+            Log.Verbose("{AddressesHex}Mimisbrunnr exec started", addressesHex);
 
-            if (!states.TryGetAvatarStateV2(
-                    context.Signer,
-                    avatarAddress,
-                    out var avatarState,
-                    out _))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out AvatarState avatarState, out _))
             {
-                throw new FailedLoadStateException(
-                    "Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
             sw.Stop();
-            Log.Verbose(
-                "{AddressesHex}Mimisbrunnr Get AgentAvatarStates: {Elapsed}",
-                addressesHex,
-                sw.Elapsed);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var worldSheet = states.GetSheet<WorldSheet>();
@@ -101,8 +97,8 @@ namespace Nekoyume.Action
                 stageId > worldRow.StageEnd)
             {
                 throw new SheetRowColumnException(
-                    $"{addressesHex}{worldId} world is not contains {worldRow.Id} stage:" +
-                    $" {worldRow.StageBegin}-{worldRow.StageEnd}");
+                    $"{addressesHex}{worldId} world is not contains {worldRow.Id} stage: " +
+                    $"{worldRow.StageBegin}-{worldRow.StageEnd}");
             }
 
             var stageSheet = states.GetSheet<StageSheet>();
@@ -116,8 +112,7 @@ namespace Nekoyume.Action
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
                 // NOTE: Add new World from WorldSheet
-                worldInformation.AddAndUnlockMimisbrunnrWorld(worldRow, context.BlockIndex,
-                    worldSheet, worldUnlockSheet);
+                worldInformation.AddAndUnlockMimisbrunnrWorld(worldRow, ctx.BlockIndex, worldSheet, worldUnlockSheet);
                 if (!worldInformation.TryGetWorld(worldId, out world))
                 {
                     // Do nothing.
@@ -126,14 +121,12 @@ namespace Nekoyume.Action
 
             if (!world.IsUnlocked)
             {
-                var worldUnlockSheetRow =
-                    worldUnlockSheet.OrderedList.FirstOrDefault(row =>
-                        row.WorldIdToUnlock == worldId);
+                var worldUnlockSheetRow = worldUnlockSheet.OrderedList.FirstOrDefault(row => row.WorldIdToUnlock == worldId);
                 if (!(worldUnlockSheetRow is null) &&
                     worldInformation.IsWorldUnlocked(worldUnlockSheetRow.WorldId) &&
                     worldInformation.IsStageCleared(worldUnlockSheetRow.StageId))
                 {
-                    worldInformation.UnlockWorld(worldId, context.BlockIndex, worldSheet);
+                    worldInformation.UnlockWorld(worldId, ctx.BlockIndex, worldSheet);
                     if (!worldInformation.TryGetWorld(worldId, out world))
                     {
                         // Do nothing.
@@ -156,8 +149,8 @@ namespace Nekoyume.Action
                 !world.IsStageCleared && stageId != world.StageBegin)
             {
                 throw new InvalidStageException(
-                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not" +
-                    $" cleared; cleared stage: {world.StageClearedId}"
+                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
+                    $"cleared stage: {world.StageClearedId}"
                 );
             }
 
@@ -165,33 +158,23 @@ namespace Nekoyume.Action
             var mimisbrunnrSheet = states.GetSheet<MimisbrunnrSheet>();
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
             {
-                throw new SheetRowNotFoundException(
-                    addressesHex,
-                    "MimisbrunnrSheet",
-                    stageId);
+                throw new SheetRowNotFoundException("MimisbrunnrSheet", addressesHex, stageId);
             }
 
             foreach (var equipmentId in equipments)
             {
-                if (!avatarState.inventory.TryGetNonFungibleItem(
-                        equipmentId,
-                        out ItemUsable itemUsable))
+                if (avatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable itemUsable))
                 {
-                    continue;
-                }
-
-                var elementalType = ((Equipment)itemUsable).ElementalType;
-                if (!mimisbrunnrSheetRow.ElementalTypes.Exists(x =>
-                        x == elementalType))
-                {
-                    throw new InvalidElementalException(
-                        $"{addressesHex}ElementalType of {equipmentId} does not match.");
+                    var elementalType = ((Equipment) itemUsable).ElementalType;
+                    if (!mimisbrunnrSheetRow.ElementalTypes.Exists(x => x == elementalType))
+                    {
+                        throw new InvalidElementalException(
+                            $"{addressesHex}ElementalType of {equipmentId} does not match.");
+                    }
                 }
             }
-
             sw.Stop();
-            Log.Verbose("{AddressesHex}Mimisbrunnr Check Equipments ElementalType: {Elapsed}",
-                addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Check Equipments ElementalType: {Elapsed}", addressesHex, sw.Elapsed);
 
             var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
             var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
@@ -201,17 +184,16 @@ namespace Nekoyume.Action
 
             if (playCount <= 0)
             {
-                throw new PlayCountIsZeroException(
-                    $"{addressesHex}playCount must be greater than 0." +
-                    $" current playCount : {playCount}");
+                throw new PlayCountIsZeroException($"{addressesHex}playCount must be greater than 0. " +
+                                                   $"current playCount : {playCount}");
             }
 
             var totalCostActionPoint = stageRow.CostAP * playCount;
             if (avatarState.actionPoint < totalCostActionPoint)
             {
                 throw new NotEnoughActionPointException(
-                    $"{addressesHex}Aborted due to insufficient action point:" +
-                    $" current({avatarState.actionPoint}) < required({totalCostActionPoint})"
+                    $"{addressesHex}Aborted due to insufficient action point: " +
+                    $"{avatarState.actionPoint} < totalAP({totalCostActionPoint}) = cost({stageRow.CostAP}) * boostCount({playCount})"
                 );
             }
 
@@ -229,43 +211,31 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= totalCostActionPoint;
             sw.Stop();
-            Log.Verbose(
-                "{AddressesHex}Mimisbrunnr Unequip items: {Elapsed}",
-                addressesHex,
-                sw.Elapsed);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-            var simulator = new StageSimulator(
-                context.Random,
+            var simulator = new StageSimulatorV1(
+                ctx.Random,
                 avatarState,
                 foods,
-                new List<Skill>(),
                 worldId,
                 stageId,
-                avatarState.worldInformation.IsStageCleared(stageId),
-                0,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
+                StageSimulatorV1.ConstructorVersionV100080,
                 playCount);
             sw.Stop();
-            Log.Verbose(
-                "{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}",
-                addressesHex,
-                sw.Elapsed);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
             simulator.Simulate(playCount);
             sw.Stop();
-            Log.Verbose(
-                "{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}",
-                addressesHex,
-                sw.Elapsed);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
             Log.Verbose(
-                "{AddressesHex}Execute Mimisbrunnr({AvatarAddress});" +
-                " worldId: {WorldId}, stageId: {StageId}, result: {Result}," +
-                " clearWave: {ClearWave}, totalWave: {TotalWave}",
+                "{AddressesHex}Execute Mimisbrunnr({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
+                "clearWave: {ClearWave}, totalWave: {TotalWave}",
                 addressesHex,
                 avatarAddress,
                 worldId,
@@ -281,17 +251,13 @@ namespace Nekoyume.Action
                 simulator.Player.worldInformation.ClearStage(
                     worldId,
                     stageId,
-                    context.BlockIndex,
+                    ctx.BlockIndex,
                     worldSheet,
                     worldUnlockSheet
                 );
             }
-
             sw.Stop();
-            Log.Verbose(
-                "{AddressesHex}Mimisbrunnr ClearStage: {Elapsed}",
-                addressesHex,
-                sw.Elapsed);
+            Log.Verbose("{AddressesHex}Mimisbrunnr ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             avatarState.Update(simulator);
@@ -299,7 +265,7 @@ namespace Nekoyume.Action
             var materialSheet = states.GetSheet<MaterialItemSheet>();
             avatarState.UpdateQuestRewards(materialSheet);
 
-            avatarState.updatedAt = context.BlockIndex;
+            avatarState.updatedAt = ctx.BlockIndex;
             avatarState.mailBox.CleanUp();
             states = states
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
@@ -308,17 +274,11 @@ namespace Nekoyume.Action
                 .SetState(avatarAddress, avatarState.SerializeV2());
 
             sw.Stop();
-            Log.Verbose(
-                "{AddressesHex}Mimisbrunnr Set AvatarState: {Elapsed}",
-                addressesHex,
-                sw.Elapsed);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Verbose(
-                "{AddressesHex}Mimisbrunnr Total Executed Time: {Elapsed}",
-                addressesHex,
-                ended - started);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states;
         }
     }

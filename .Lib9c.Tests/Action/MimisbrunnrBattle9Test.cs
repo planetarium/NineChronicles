@@ -4,12 +4,14 @@ namespace Lib9c.Tests.Action
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
+    using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Elemental;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
@@ -18,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class MimisbrunnrBattleTest
+    public class MimisbrunnrBattle9Test
     {
         private readonly TableSheets _tableSheets;
 
@@ -28,7 +30,7 @@ namespace Lib9c.Tests.Action
 
         private readonly IAccountStateDelta _initialState;
 
-        public MimisbrunnrBattleTest()
+        public MimisbrunnrBattle9Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -142,7 +144,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, previousAvatarState.SerializeV2());
             }
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle9
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -214,7 +216,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle9
             {
                 costumes = new List<Guid> { costume.ItemId },
                 equipments = new List<Guid> { equipment.ItemId },
@@ -240,7 +242,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle9
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -264,7 +266,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFound()
         {
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle9
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -288,7 +290,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowColumn()
         {
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle9
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -327,7 +329,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 _tableSheets.WorldUnlockSheet);
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle9
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -413,7 +415,7 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle9
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = new List<Guid> { equipment.ItemId },
@@ -452,7 +454,7 @@ namespace Lib9c.Tests.Action
             avatarState.worldInformation = new WorldInformation(0, worldSheet, alreadyClearedStageId);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle9
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -496,7 +498,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle9
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = new List<Guid> { equipment.ItemId },
@@ -586,7 +588,7 @@ namespace Lib9c.Tests.Action
                         avatarState.address.Derive(LegacyInventoryKey),
                         avatarState.inventory.Serialize());
 
-                var action = new MimisbrunnrBattle
+                var action = new MimisbrunnrBattle9
                 {
                     costumes = costumes,
                     equipments = equipments,
@@ -691,7 +693,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
             }
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle9
             {
                 costumes = costumes,
                 equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -729,6 +731,42 @@ namespace Lib9c.Tests.Action
             var totalMax = max * playCount * stageRow.DropItemMax;
             var totalCount = rewardItem.Sum(x => x.count);
             Assert.InRange(totalCount, totalMin, totalMax);
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            var action = new MimisbrunnrBattle9
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                playCount = 1,
+                avatarAddress = _avatarAddress,
+            };
+
+            var updatedAddresses = new List<Address>
+            {
+                _agentAddress,
+                _avatarAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
     }
 }
