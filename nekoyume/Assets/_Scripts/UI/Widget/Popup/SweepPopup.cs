@@ -15,6 +15,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -38,7 +39,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI expText;
 
         [SerializeField]
-        private TextMeshProUGUI playCountText;
+        private TextMeshProUGUI starText;
 
         [SerializeField]
         private TextMeshProUGUI totalApText;
@@ -68,22 +69,19 @@ namespace Nekoyume.UI
         private GameObject insufficientCpContainer;
 
         [SerializeField]
-        private GameObject apStoneContainer;
-
-        [SerializeField]
-        private GameObject sweepIconContainer;
-
-        [SerializeField]
-        private GameObject repeatIconContainer;
-
-        [SerializeField]
         private GameObject information;
 
         [SerializeField]
         private GameObject expGlow;
 
         [SerializeField]
-        private GameObject playCountGlow;
+        private Toggle pageToggle;
+
+        [SerializeField]
+        private List<GameObject> objectsForSweep;
+
+        [SerializeField]
+        private List<GameObject> objectsForRepeat;
 
         private readonly ReactiveProperty<int> _apStoneCount = new ReactiveProperty<int>();
         private readonly ReactiveProperty<int> _ap = new ReactiveProperty<int>();
@@ -94,7 +92,7 @@ namespace Nekoyume.UI
 
         private StageSheet.Row _stageRow;
         private int _worldId;
-        private bool _useSweep;
+        private bool _useSweep = true;
         private Action<StageType, bool, int> _repeatBattleAction;
 
         protected override void Awake()
@@ -102,6 +100,7 @@ namespace Nekoyume.UI
             _apStoneCount.Subscribe(v => UpdateView()).AddTo(gameObject);
             _ap.Subscribe(v => UpdateView()).AddTo(gameObject);
             _cp.Subscribe(v => UpdateCpView()).AddTo(gameObject);
+            pageToggle.onValueChanged.AddListener(UpdateByToggle);
 
             startButton.OnSubmitSubject
                 .Subscribe(_ =>
@@ -112,7 +111,9 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        _repeatBattleAction(StageType.HackAndSlash, false, 1);
+                        _repeatBattleAction(StageType.HackAndSlash,
+                            false,
+                            _ap.Value / _stageRow.CostAP);
                     }
                 })
                 .AddTo(gameObject);
@@ -149,14 +150,12 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        public void UpdateByToggle(bool useSweep)
+        private void UpdateByToggle(bool useSweep)
         {
-            enoughCpContainer.SetActive(useSweep);
-            insufficientCpContainer.SetActive(useSweep);
-            apStoneContainer.SetActive(useSweep);
-            sweepIconContainer.SetActive(useSweep);
-            repeatIconContainer.SetActive(!useSweep);
+            objectsForSweep.ForEach(obj => obj.SetActive(useSweep));
+            objectsForRepeat.ForEach(obj => obj.SetActive(!useSweep));
             _useSweep = useSweep;
+            UpdateView();
         }
 
         private void SubscribeInventory()
@@ -282,13 +281,9 @@ namespace Nekoyume.UI
 
             var (apPlayCount, apStonePlayCount) =
                 GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value);
+            UpdateRewardView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
+
             var totalPlayCount = apPlayCount + apStonePlayCount;
-
-            playCountText.text = totalPlayCount.ToString();
-            playCountGlow.SetActive(totalPlayCount > 0);
-
-            UpdateExpView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
-
             if (_apStoneCount.Value == 0 && _ap.Value == 0)
             {
                 information.SetActive(true);
@@ -298,20 +293,21 @@ namespace Nekoyume.UI
             else
             {
                 information.SetActive(false);
-                totalApText.text = $"{totalPlayCount * _stageRow.CostAP}";
-                apStoneText.text = apStonePlayCount > 0
-                    ? $"(+{apStonePlayCount * _stageRow.CostAP})"
+                totalApText.text = (_useSweep ? totalPlayCount : apPlayCount).ToString();
+                apStoneText.text = apStonePlayCount > 0 && _useSweep
+                    ? $"(+{apStonePlayCount})"
                     : string.Empty;
             }
 
             UpdateStartButton();
         }
 
-        private void UpdateExpView(AvatarState avatarState, StageSheet.Row row, int apPlayCount,
+        private void UpdateRewardView(AvatarState avatarState, StageSheet.Row row, int apPlayCount,
             int apStonePlayCount)
         {
             var earnedExp = GetEarnedExp(avatarState, row, apPlayCount, apStonePlayCount);
             expText.text = $"+{earnedExp}";
+            starText.text = $"+{apPlayCount * 2}";
             expGlow.SetActive(earnedExp > 0);
         }
 
@@ -346,6 +342,12 @@ namespace Nekoyume.UI
 
         private void UpdateStartButton()
         {
+            if (_useSweep)
+            {
+                startButton.Interactable = _ap.Value > 0;
+                return;
+            }
+
             if (_apStoneCount.Value == 0 && _ap.Value == 0)
             {
                 startButton.Interactable = false;
