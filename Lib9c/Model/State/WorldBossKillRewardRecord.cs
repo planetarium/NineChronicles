@@ -46,7 +46,7 @@ namespace Nekoyume.Model.State
 
         public void Add(KeyValuePair<int, bool> item)
         {
-            throw new System.NotImplementedException();
+            ((IDictionary<int, bool>)_dict).Add(item);
         }
 
         public void Clear()
