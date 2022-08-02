@@ -38,16 +38,19 @@ namespace Nekoyume.Battle
             List<Model.Skill.Skill> skillsOnWaveStart,
             int worldId,
             int stageId,
+            StageSheet.Row stageRow,
+            StageWaveSheet.Row stageWaveRow,
             bool isCleared,
             int exp,
-            StageSimulatorSheets stageSimulatorSheets,
+            SimulatorSheets simulatorSheets,
+            EnemySkillSheet enemySkillSheet,
             CostumeStatSheet costumeStatSheet,
             int playCount)
             : base(
                 random,
                 avatarState,
                 foods,
-                stageSimulatorSheets)
+                simulatorSheets)
         {
             Player.SetCostumeStat(costumeStatSheet);
 
@@ -57,17 +60,9 @@ namespace Nekoyume.Battle
             StageId = stageId;
             IsCleared = isCleared;
             Exp = exp;
-            EnemySkillSheet = stageSimulatorSheets.EnemySkillSheet;
-            stageSimulatorSheets.StageSheet.TryGetValue(
-                StageId,
-                out var stageRow,
-                true);
+            EnemySkillSheet = enemySkillSheet;
             TurnLimit = stageRow.TurnLimit;
 
-            stageSimulatorSheets.StageWaveSheet.TryGetValue(
-                StageId,
-                out var stageWaveRow,
-                true);
             SetWave(stageRow, stageWaveRow);
 
             var maxCountForItemDrop = Random.Next(

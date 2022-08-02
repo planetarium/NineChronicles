@@ -1177,9 +1177,12 @@
                 new List<Skill>(),
                 worldId,
                 stageId,
+                _tableSheets.StageSheet[stageId],
+                _tableSheets.StageWaveSheet[stageId],
                 false,
                 20,
-                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.GetSimulatorSheets(),
+                _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
                 1);
             simulator.Simulate(1);

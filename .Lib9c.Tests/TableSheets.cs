@@ -182,6 +182,19 @@ namespace Lib9c.Tests
             QuestSheet.Set(CombinationEquipmentQuestSheet);
         }
 
+        public SimulatorSheets GetSimulatorSheets()
+        {
+            return new SimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet
+            );
+        }
+
         public StageSimulatorSheets GetStageSimulatorSheets()
         {
             return new StageSimulatorSheets(
