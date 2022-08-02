@@ -14,7 +14,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 {
     using UniRx;
 
-    public class WorldBossRewardBattleGrade : WorldBossRewardItem
+    public class WorldBossGradeReward : WorldBossRewardItem
     {
         [SerializeField]
         private TextMeshProUGUI myBestRecordText;

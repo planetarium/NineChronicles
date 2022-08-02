@@ -3831,7 +3831,7 @@ GameObject:
   - component: {fileID: 8956796214962772020}
   - component: {fileID: 5350502446592110649}
   m_Layer: 15
-  m_Name: Content_SeasonRanking
+  m_Name: Content_Season
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4986,7 +4986,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Reward
+  m_text: UI_REWARDS
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 1d76289fafd1e498bbf819fb87c42441, type: 2}
@@ -5073,7 +5073,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 25
-  l10nKey: 
+  l10nKey: UI_REWARDS
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -8213,7 +8213,7 @@ GameObject:
   - component: {fileID: 3936752632670484665}
   - component: {fileID: 5870052453542991220}
   m_Layer: 15
-  m_Name: Content_BattleGrade
+  m_Name: Content_Grade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9675,7 +9675,7 @@ GameObject:
   - component: {fileID: 4318043862580533279}
   - component: {fileID: 2433039078214037060}
   m_Layer: 15
-  m_Name: Content_BossBattle
+  m_Name: Content_Battle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

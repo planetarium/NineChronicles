@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Libplanet;
 using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
@@ -69,12 +68,12 @@ namespace Nekoyume.UI.Module.WorldBoss
             {
                 switch (toggle.Item)
                 {
-                    case WorldBossRewardSeasonRanking seasonRanking:
+                    case WorldBossSeasonReward season:
                         break;
-                    case WorldBossRewardBossBattle bossBattle:
+                    case WorldBossBattleReward battle:
                         break;
-                    case WorldBossRewardBattleGrade battleGrade:
-                        battleGrade.Set(raider, raidId);
+                    case WorldBossGradeReward grade:
+                        grade.Set(raider, raidId);
                         break;
                 }
             }
