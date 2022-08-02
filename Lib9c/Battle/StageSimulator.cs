@@ -15,13 +15,13 @@ using Priority_Queue;
 
 namespace Nekoyume.Battle
 {
-    public class StageSimulator : Simulator
+    public class StageSimulator : Simulator, IStageSimulator
     {
         private readonly List<Wave> _waves;
         private readonly List<ItemBase> _waveRewards;
         private readonly List<Model.Skill.Skill> _skillsOnWaveStart = new List<Model.Skill.Skill>();
-        public CollectionMap ItemMap = new CollectionMap();
-        public readonly EnemySkillSheet EnemySkillSheet;
+        public CollectionMap ItemMap { get; private set; } = new CollectionMap();
+        public EnemySkillSheet EnemySkillSheet { get; }
 
         public const int ConstructorVersionDefault = 1;
         public const int ConstructorVersionV100025 = 2;
