@@ -146,10 +146,10 @@ namespace Lib9c.Tests.Action
 
             var action = new EventConsumableItemCrafts
             {
-                avatarAddress = _avatarAddress,
-                eventScheduleId = eventScheduleId,
-                eventConsumableItemRecipeId = eventConsumableItemRecipeId,
-                slotIndex = slotIndex,
+                AvatarAddress = _avatarAddress,
+                EventScheduleId = eventScheduleId,
+                EventConsumableItemRecipeId = eventConsumableItemRecipeId,
+                SlotIndex = slotIndex,
             };
 
             var nextStates = action.Execute(new ActionContext

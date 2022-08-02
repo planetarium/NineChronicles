@@ -23,20 +23,20 @@ namespace Nekoyume.Action
     {
         private const string ActionTypeText = "event_consumable_item_crafts";
 
-        public Address avatarAddress;
-        public int eventScheduleId;
-        public int eventConsumableItemRecipeId;
-        public int slotIndex;
+        public Address AvatarAddress;
+        public int EventScheduleId;
+        public int EventConsumableItemRecipeId;
+        public int SlotIndex;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
             get
             {
                 var list = Bencodex.Types.List.Empty
-                    .Add(avatarAddress.Serialize())
-                    .Add(eventScheduleId.Serialize())
-                    .Add(eventConsumableItemRecipeId.Serialize())
-                    .Add(slotIndex.Serialize());
+                    .Add(AvatarAddress.Serialize())
+                    .Add(EventScheduleId.Serialize())
+                    .Add(EventConsumableItemRecipeId.Serialize())
+                    .Add(SlotIndex.Serialize());
 
                 return new Dictionary<string, IValue>
                 {
@@ -62,10 +62,10 @@ namespace Nekoyume.Action
                 throw new ArgumentException("'l' must contain at least 4 items");
             }
 
-            avatarAddress = list[0].ToAddress();
-            eventScheduleId = list[1].ToInteger();
-            eventConsumableItemRecipeId = list[2].ToInteger();
-            slotIndex = list[3].ToInteger();
+            AvatarAddress = list[0].ToAddress();
+            EventScheduleId = list[1].ToInteger();
+            EventConsumableItemRecipeId = list[2].ToInteger();
+            SlotIndex = list[3].ToInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -76,7 +76,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Execute() start",
@@ -88,7 +88,7 @@ namespace Nekoyume.Action
             sw.Start();
             if (!states.TryGetAvatarStateV2(
                     context.Signer,
-                    avatarAddress,
+                    AvatarAddress,
                     out var avatarState,
                     out var migrationRequired))
             {
@@ -96,7 +96,7 @@ namespace Nekoyume.Action
                     ActionTypeText,
                     addressesHex,
                     typeof(AvatarState),
-                    avatarAddress);
+                    AvatarAddress);
             }
 
             sw.Stop();
@@ -142,28 +142,28 @@ namespace Nekoyume.Action
             var scheduleSheet = sheets.GetSheet<EventScheduleSheet>();
             scheduleSheet.ValidateFromActionForRecipe(
                 context.BlockIndex,
-                eventScheduleId,
-                eventConsumableItemRecipeId,
+                EventScheduleId,
+                EventConsumableItemRecipeId,
                 ActionTypeText,
                 addressesHex);
 
             var recipeSheet = sheets.GetSheet<EventConsumableItemRecipeSheet>();
             var recipeRow = recipeSheet.ValidateFromAction(
-                eventConsumableItemRecipeId,
+                EventConsumableItemRecipeId,
                 ActionTypeText,
                 addressesHex);
 
-            var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
+            var slotState = states.GetCombinationSlotState(AvatarAddress, SlotIndex);
             if (slotState is null)
             {
                 throw new FailedLoadStateException(
-                    $"{addressesHex}Aborted as the slot state is failed to load: # {slotIndex}");
+                    $"{addressesHex}Aborted as the slot state is failed to load: # {SlotIndex}");
             }
 
             if (!slotState.Validate(avatarState, context.BlockIndex))
             {
                 throw new CombinationSlotUnlockException(
-                    $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {slotIndex}");
+                    $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {SlotIndex}");
             }
 
             sw.Stop();
@@ -259,7 +259,7 @@ namespace Nekoyume.Action
                     e => ItemFactory.CreateMaterial(materialItemSheet, e.Key),
                     e => e.Value),
                 itemUsable = consumable,
-                recipeId = eventConsumableItemRecipeId,
+                recipeId = EventConsumableItemRecipeId,
             };
             slotState.Update(attachmentResult, context.BlockIndex, endBlockIndex);
             // ~Update Slot
@@ -277,29 +277,29 @@ namespace Nekoyume.Action
             if (migrationRequired)
             {
                 states = states
-                    .SetState(avatarAddress, avatarState.SerializeV2())
+                    .SetState(AvatarAddress, avatarState.SerializeV2())
                     .SetState(
-                        avatarAddress.Derive(LegacyInventoryKey),
+                        AvatarAddress.Derive(LegacyInventoryKey),
                         avatarState.inventory.Serialize())
                     .SetState(
-                        avatarAddress.Derive(LegacyWorldInformationKey),
+                        AvatarAddress.Derive(LegacyWorldInformationKey),
                         avatarState.worldInformation.Serialize())
                     .SetState(
-                        avatarAddress.Derive(LegacyQuestListKey),
+                        AvatarAddress.Derive(LegacyQuestListKey),
                         avatarState.questList.Serialize())
                     .SetState(
-                        CombinationSlotState.DeriveAddress(avatarAddress, slotIndex),
+                        CombinationSlotState.DeriveAddress(AvatarAddress, SlotIndex),
                         slotState.Serialize());
             }
             else
             {
                 states = states
-                    .SetState(avatarAddress, avatarState.SerializeV2())
+                    .SetState(AvatarAddress, avatarState.SerializeV2())
                     .SetState(
-                        avatarAddress.Derive(LegacyInventoryKey),
+                        AvatarAddress.Derive(LegacyInventoryKey),
                         avatarState.inventory.Serialize())
                     .SetState(
-                        CombinationSlotState.DeriveAddress(avatarAddress, slotIndex),
+                        CombinationSlotState.DeriveAddress(AvatarAddress, SlotIndex),
                         slotState.Serialize());
             }
 
