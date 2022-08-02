@@ -150,14 +150,10 @@ namespace Nekoyume.UI.Module
         {
             switch (worldState)
             {
-                case WorldState.Unlocked:
-                    unlockImage.SetActive(false);
-                    unlockableImage.SetActive(false);
-                    break;
                 case WorldState.Locked:
-                    lockImage.SetActive(false);
-                    break;
                 case WorldState.Unlockable:
+                    break;
+                case WorldState.Unlocked:
                     unlockableImage.SetActive(false);
                     break;
                 default:
