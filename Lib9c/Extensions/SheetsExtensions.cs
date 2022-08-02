@@ -162,6 +162,20 @@ namespace Nekoyume.Extensions
             return questSheet;
         }
 
+        public static SimulatorSheets GetSimulatorSheets(
+            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
+        {
+            return new SimulatorSheets(
+                sheets.GetSheet<MaterialItemSheet>(),
+                sheets.GetSheet<SkillSheet>(),
+                sheets.GetSheet<SkillBuffSheet>(),
+                sheets.GetSheet<BuffSheet>(),
+                sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CharacterLevelSheet>(),
+                sheets.GetSheet<EquipmentItemSetEffectSheet>()
+            );
+        }
+
         public static StageSimulatorSheets GetStageSimulatorSheets(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {
