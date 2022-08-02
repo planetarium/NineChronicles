@@ -17,7 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/1241
     /// </summary>
     [Serializable]
     [ActionType("mimisbrunnr_battle10")]

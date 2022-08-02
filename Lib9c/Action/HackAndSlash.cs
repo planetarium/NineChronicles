@@ -20,7 +20,7 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1229
-    /// Updated at https://github.com/planetarium/lib9c/pull/
+    /// Updated at https://github.com/planetarium/lib9c/pull/1241
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash16")]
@@ -88,7 +88,8 @@ namespace Nekoyume.Action
                 context.Random);
         }
 
-        public IAccountStateDelta Execute(IAccountStateDelta states,
+        public IAccountStateDelta Execute(
+            IAccountStateDelta states,
             Address signer,
             long blockIndex,
             IRandom random)
