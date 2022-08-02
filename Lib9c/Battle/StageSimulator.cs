@@ -55,8 +55,8 @@ namespace Nekoyume.Battle
 
             WorldId = worldId;
             StageId = stageId;
-            IsCleared = isCleared; //avatarState.worldInformation.IsStageCleared(StageId);
-            Exp = exp; //StageRewardExpHelper.GetExp(avatarState.level, stageId);
+            IsCleared = isCleared;
+            Exp = exp;
             EnemySkillSheet = stageSimulatorSheets.EnemySkillSheet;
             stageSimulatorSheets.StageSheet.TryGetValue(
                 StageId,

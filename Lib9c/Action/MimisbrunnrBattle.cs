@@ -116,8 +116,11 @@ namespace Nekoyume.Action
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
                 // NOTE: Add new World from WorldSheet
-                worldInformation.AddAndUnlockMimisbrunnrWorld(worldRow, context.BlockIndex,
-                    worldSheet, worldUnlockSheet);
+                worldInformation.AddAndUnlockMimisbrunnrWorld(
+                    worldRow,
+                    context.BlockIndex,
+                    worldSheet,
+                    worldUnlockSheet);
                 if (!worldInformation.TryGetWorld(worldId, out world))
                 {
                     // Do nothing.
@@ -126,9 +129,8 @@ namespace Nekoyume.Action
 
             if (!world.IsUnlocked)
             {
-                var worldUnlockSheetRow =
-                    worldUnlockSheet.OrderedList.FirstOrDefault(row =>
-                        row.WorldIdToUnlock == worldId);
+                var worldUnlockSheetRow = worldUnlockSheet.OrderedList
+                    .FirstOrDefault(row => row.WorldIdToUnlock == worldId);
                 if (!(worldUnlockSheetRow is null) &&
                     worldInformation.IsWorldUnlocked(worldUnlockSheetRow.WorldId) &&
                     worldInformation.IsStageCleared(worldUnlockSheetRow.StageId))
@@ -190,8 +192,10 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}Mimisbrunnr Check Equipments ElementalType: {Elapsed}",
-                addressesHex, sw.Elapsed);
+            Log.Verbose(
+                "{AddressesHex}Mimisbrunnr Check Equipments ElementalType: {Elapsed}",
+                addressesHex,
+                sw.Elapsed);
 
             var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
             var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
