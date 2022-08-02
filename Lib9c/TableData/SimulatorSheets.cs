@@ -1,5 +1,3 @@
-using Nekoyume.TableData.Event;
-
 namespace Nekoyume.TableData
 {
     public class SimulatorSheets

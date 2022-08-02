@@ -6,7 +6,6 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.TableData;
-using Nekoyume.TableData.Event;
 
 namespace Nekoyume.Extensions
 {
