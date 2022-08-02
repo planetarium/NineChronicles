@@ -782,7 +782,7 @@ namespace Nekoyume.UI
                                 consumables,
                                 _worldId,
                                 _stageId.Value,
-                                playCount
+                                playCount: playCount
                             ).Subscribe();
                             break;
                         }
