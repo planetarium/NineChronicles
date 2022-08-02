@@ -52,9 +52,12 @@ namespace Lib9c.Tests.Model.Skill
                 new List<Nekoyume.Model.Skill.Skill>(),
                 1,
                 1,
+                tableSheets.StageSheet[1],
+                tableSheets.StageWaveSheet[1],
                 false,
                 20,
-                tableSheets.GetStageSimulatorSheets(),
+                tableSheets.GetSimulatorSheets(),
+                tableSheets.EnemySkillSheet,
                 tableSheets.CostumeStatSheet,
                 1
             );
