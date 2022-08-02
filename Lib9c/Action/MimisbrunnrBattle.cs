@@ -131,8 +131,7 @@ namespace Nekoyume.Action
                     $" {worldRow.StageBegin}-{worldRow.StageEnd}");
             }
 
-            var stageSheet = sheets.GetSheet<StageSheet>();
-            if (!stageSheet.TryGetValue(stageId, out var stageRow))
+            if (!sheets.GetSheet<StageSheet>().TryGetValue(stageId, out var stageRow))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(StageSheet), stageId);
             }
@@ -265,7 +264,6 @@ namespace Nekoyume.Action
                 sw.Elapsed);
 
             sw.Restart();
-            sheets.GetSheet<StageWaveSheet>().TryGetValue(stageId, out var stageWaveRow, true);
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
