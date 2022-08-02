@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
-    public class WorldBossRewardBattleGradeItem : MonoBehaviour
+    public class WorldBossGradeRewardItem : MonoBehaviour
     {
         public enum Status
         {

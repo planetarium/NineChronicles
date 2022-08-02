@@ -53,13 +53,6 @@ namespace Nekoyume.Helper
             return true;
         }
 
-        public static bool TryGetRaid(int raidId, out WorldBossListSheet.Row row)
-        {
-            var listSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
-            row = listSheet.Values.FirstOrDefault(x => x.Id.Equals(raidId));
-            return row is not null;
-        }
-
         public static bool TryGetRuneIcon(string ticker, out Sprite icon)
         {
             var result = ScriptableObject.Runes.FirstOrDefault(x => x.ticker == ticker);
@@ -73,22 +66,34 @@ namespace Nekoyume.Helper
             return true;
         }
 
+        public static bool TryGetRaid(int raidId, out WorldBossListSheet.Row row)
+        {
+            var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
+            row = sheet.Values.FirstOrDefault(x => x.Id.Equals(raidId));
+            return row is not null;
+        }
+
         public static bool TryGetRunes(int bossId, out List<RuneSheet.Row> rows)
         {
             var runeIds = new List<int>();
-
-            var runeWeightSheet = Game.Game.instance.TableSheets.RuneWeightSheet;
-            var weightRows = runeWeightSheet.Values.Where(x => x.BossId == bossId).ToList();
+            var sheet = Game.Game.instance.TableSheets.RuneWeightSheet;
+            var weightRows = sheet.Values.Where(x => x.BossId == bossId).ToList();
             foreach (var row in weightRows)
             {
                 runeIds.AddRange(row.RuneInfos.Select(x => x.RuneId));
             }
 
-            runeIds.Distinct();
-
+            var ids  = runeIds.Distinct().ToList();
             var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
-            rows = runeSheet.Values.Where(x => runeIds.Contains(x.Id)).ToList();
-            return true;
+            rows = runeSheet.Values.Where(x => ids.Contains(x.Id)).ToList();
+            return rows.Any();
+        }
+
+        public static bool TryGetKillRewards(int bossId, out List<WorldBossKillRewardSheet.Row> rows)
+        {
+            var sheet = Game.Game.instance.TableSheets.WorldBossKillRewardSheet;
+            rows = sheet.Values.Where(x => x.BossId == bossId).ToList();
+            return rows.Any();
         }
 
         public static bool IsItInSeason(long currentBlockIndex)

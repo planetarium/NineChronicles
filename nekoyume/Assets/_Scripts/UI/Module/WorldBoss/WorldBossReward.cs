@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
-            var (raider, raidId) = await GetStatesAsync();
+            var (raider, killRewardRecord, raidId) = await GetStatesAsync();
             foreach (var toggle in categoryToggles)
             {
                 switch (toggle.Item)
@@ -71,6 +71,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                     case WorldBossSeasonReward season:
                         break;
                     case WorldBossBattleReward battle:
+                        battle.Set(killRewardRecord, raidId);
                         break;
                     case WorldBossGradeReward grade:
                         grade.Set(raider, raidId);
@@ -90,7 +91,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        private async Task<(RaiderState, int)> GetStatesAsync()
+        private async Task<(RaiderState, WorldBossKillRewardRecord, int)> GetStatesAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
@@ -114,7 +115,13 @@ namespace Nekoyume.UI.Module.WorldBoss
                     ? new RaiderState(raiderList)
                     : null;
 
-                return (raider, raidId);
+                var killRewardAddress = Addresses.GetWorldBossKillRewardRecordAddress(avatarAddress, raidId);
+                var killRewardState = await Game.Game.instance.Agent.GetStateAsync(killRewardAddress);
+                var killReward = killRewardState is Bencodex.Types.List killRewardList
+                    ? new WorldBossKillRewardRecord(killRewardList)
+                    : null;
+
+                return (raider, killReward, raidId);
             });
 
             await task;

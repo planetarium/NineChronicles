@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         private TextMeshProUGUI myBestRecordText;
 
         [SerializeField]
-        private List<WorldBossRewardBattleGradeItem> items;
+        private List<WorldBossGradeRewardItem> items;
 
         [SerializeField]
         private ConditionalButton claimButton;
@@ -92,13 +92,13 @@ namespace Nekoyume.UI.Module.WorldBoss
 
                 if (i + 1 <= latestRewardRank)
                 {
-                    items[i].SetStatus(WorldBossRewardBattleGradeItem.Status.Received);
+                    items[i].SetStatus(WorldBossGradeRewardItem.Status.Received);
                 }
                 else
                 {
                     items[i].SetStatus(i < currentRank
-                        ? WorldBossRewardBattleGradeItem.Status.Active
-                        : WorldBossRewardBattleGradeItem.Status.Normal);
+                        ? WorldBossGradeRewardItem.Status.Active
+                        : WorldBossGradeRewardItem.Status.Normal);
                 }
             }
         }
