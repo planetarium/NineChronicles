@@ -413,7 +413,7 @@ namespace Nekoyume
                 throw new KeyNotFoundException($"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
             var tableSheets = Game.Game.instance.TableSheets;
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 new DebugRandom(),
                 States.Instance.CurrentAvatarState,
                 new List<Guid>(),

@@ -1131,7 +1131,7 @@ namespace Nekoyume.BlockChain
                                 .DoOnError(e => Debug.LogException(e));
                         });
 
-                var simulator = new StageSimulator(
+                var simulator = new StageSimulatorV1(
                     new LocalRandom(eval.RandomSeed),
                     States.Instance.CurrentAvatarState,
                     eval.Action.foods,
@@ -1139,7 +1139,7 @@ namespace Nekoyume.BlockChain
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
                     Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080,
+                    StageSimulatorV1.ConstructorVersionV100080,
                     eval.Action.playCount
                 );
                 simulator.Simulate(eval.Action.playCount);

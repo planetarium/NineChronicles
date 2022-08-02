@@ -198,7 +198,7 @@ public class BattleSimulator : Widget
         // food
         var consumables = AddFood(avatarState, foodItemSheet, random, food);
 
-        var simulator = new StageSimulator(
+        var simulator = new StageSimulatorV1(
             random,
             avatarState,
             consumables,

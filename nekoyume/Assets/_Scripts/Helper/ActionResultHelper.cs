@@ -16,7 +16,7 @@ namespace Nekoyume.Helper
             AvatarState avatarState,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
-            out StageSimulator firstStageSimulator)
+            out StageSimulatorV1 firstStageSimulator)
         {
             firstStageSimulator = null;
             var model = new BattleResultPopup.Model();
@@ -24,7 +24,7 @@ namespace Nekoyume.Helper
             for (var i = 0; i < eval.Action.PlayCount; i++)
             {
                 var prevExp = avatarState.exp;
-                var simulator = new StageSimulator(
+                var simulator = new StageSimulatorV1(
                     random,
                     avatarState,
                     i == 0 ? eval.Action.Foods : new List<Guid>(),
@@ -33,7 +33,7 @@ namespace Nekoyume.Helper
                     eval.Action.StageId,
                     sheets.GetStageSimulatorSheets(),
                     sheets.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080);
+                    StageSimulatorV1.ConstructorVersionV100080);
                 simulator.Simulate(1);
 
                 if (simulator.Log.IsClear)

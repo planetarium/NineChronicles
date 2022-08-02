@@ -983,7 +983,7 @@ namespace Nekoyume.UI
             }
 
             var tableSheets = Game.Game.instance.TableSheets;
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 new Cheat.DebugRandom(),
                 avatarState,
                 consumables,
