@@ -31,7 +31,7 @@ namespace Nekoyume.Model
             RowData = row;
         }
 
-        protected RaidBoss(RaidBoss value) : base(value)
+        public RaidBoss(RaidBoss value) : base(value)
         {
             RaidSimulator = value.RaidSimulator;
             RowData = value.RowData;

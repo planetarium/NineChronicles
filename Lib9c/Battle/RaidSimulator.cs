@@ -56,7 +56,7 @@ namespace Nekoyume.Battle
             Characters.Enqueue(raidBoss, TurnPriority / raidBoss.SPD);
             raidBoss.InitAI();
 
-            var enemies = new List<Enemy>() { raidBoss };
+            var enemies = new List<Enemy>() { new RaidBoss(raidBoss) };
             var spawnWave = new SpawnWave(null, WaveNumber, WaveTurn, enemies, true);
             Log.Add(spawnWave);
         }
