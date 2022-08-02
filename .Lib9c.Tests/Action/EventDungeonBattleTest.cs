@@ -234,15 +234,15 @@ namespace Lib9c.Tests.Action
 
             var action = new EventDungeonBattle
             {
-                avatarAddress = _avatarAddress,
-                eventScheduleId = eventScheduleId,
-                eventDungeonId = eventDungeonId,
-                eventDungeonStageId = eventDungeonStageId,
-                equipments = equipments
+                AvatarAddress = _avatarAddress,
+                EventScheduleId = eventScheduleId,
+                EventDungeonId = eventDungeonId,
+                EventDungeonStageId = eventDungeonStageId,
+                Equipments = equipments
                     .Select(e => e.NonFungibleId)
                     .ToList(),
-                costumes = new List<Guid>(),
-                foods = new List<Guid>(),
+                Costumes = new List<Guid>(),
+                Foods = new List<Guid>(),
             };
 
             var nextState = action.Execute(new ActionContext

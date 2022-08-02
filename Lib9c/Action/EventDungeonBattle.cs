@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -11,6 +10,7 @@ using Nekoyume.Battle;
 using Nekoyume.Exceptions;
 using Nekoyume.Extensions;
 using Nekoyume.Model.Event;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Event;
@@ -29,33 +29,33 @@ namespace Nekoyume.Action
         private const string ActionTypeText = "event_dungeon_battle";
         public const int PlayCount = 1;
 
-        public Address avatarAddress;
-        public int eventScheduleId;
-        public int eventDungeonId;
-        public int eventDungeonStageId;
-        public List<Guid> equipments;
-        public List<Guid> costumes;
-        public List<Guid> foods;
+        public Address AvatarAddress;
+        public int EventScheduleId;
+        public int EventDungeonId;
+        public int EventDungeonStageId;
+        public List<Guid> Equipments;
+        public List<Guid> Costumes;
+        public List<Guid> Foods;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
             get
             {
                 var list = Bencodex.Types.List.Empty
-                    .Add(avatarAddress.Serialize())
-                    .Add(eventScheduleId.Serialize())
-                    .Add(eventDungeonId.Serialize())
-                    .Add(eventDungeonStageId.Serialize())
+                    .Add(AvatarAddress.Serialize())
+                    .Add(EventScheduleId.Serialize())
+                    .Add(EventDungeonId.Serialize())
+                    .Add(EventDungeonStageId.Serialize())
                     .Add(new Bencodex.Types.List(
-                        equipments
+                        Equipments
                             .OrderBy(e => e)
                             .Select(e => e.Serialize())))
                     .Add(new Bencodex.Types.List(
-                        costumes
+                        Costumes
                             .OrderBy(e => e)
                             .Select(e => e.Serialize())))
                     .Add(new Bencodex.Types.List(
-                        foods
+                        Foods
                             .OrderBy(e => e)
                             .Select(e => e.Serialize())));
 
@@ -84,13 +84,13 @@ namespace Nekoyume.Action
                 throw new ArgumentException("'l' must contain at least 7 items");
             }
 
-            avatarAddress = list[0].ToAddress();
-            eventScheduleId = list[1].ToInteger();
-            eventDungeonId = list[2].ToInteger();
-            eventDungeonStageId = list[3].ToInteger();
-            equipments = ((List)list[4]).ToList(StateExtensions.ToGuid);
-            costumes = ((List)list[5]).ToList(StateExtensions.ToGuid);
-            foods = ((List)list[6]).ToList(StateExtensions.ToGuid);
+            AvatarAddress = list[0].ToAddress();
+            EventScheduleId = list[1].ToInteger();
+            EventDungeonId = list[2].ToInteger();
+            EventDungeonStageId = list[3].ToInteger();
+            Equipments = ((List)list[4]).ToList(StateExtensions.ToGuid);
+            Costumes = ((List)list[5]).ToList(StateExtensions.ToGuid);
+            Foods = ((List)list[6]).ToList(StateExtensions.ToGuid);
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -101,7 +101,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Execute() start",
@@ -113,7 +113,7 @@ namespace Nekoyume.Action
             sw.Start();
             if (!states.TryGetAvatarStateV2(
                     context.Signer,
-                    avatarAddress,
+                    AvatarAddress,
                     out var avatarState,
                     out var migrationRequired))
             {
@@ -121,7 +121,7 @@ namespace Nekoyume.Action
                     ActionTypeText,
                     addressesHex,
                     typeof(AvatarState),
-                    avatarAddress);
+                    AvatarAddress);
             }
 
             sw.Stop();
@@ -135,12 +135,16 @@ namespace Nekoyume.Action
             // Get sheets
             sw.Restart();
             var sheets = states.GetSheets(
-                containEventDungeonSimulatorSheets: true,
+                containSimulatorSheets: true,
                 containValidateItemRequirementSheets: true,
                 sheetTypes: new[]
                 {
                     typeof(EventScheduleSheet),
                     typeof(EventDungeonSheet),
+                    typeof(EventDungeonStageSheet),
+                    typeof(EventDungeonStageWaveSheet),
+                    typeof(EnemySkillSheet),
+                    typeof(CostumeStatSheet),
                 });
             sw.Stop();
             Log.Verbose(
@@ -155,28 +159,28 @@ namespace Nekoyume.Action
             var scheduleSheet = sheets.GetSheet<EventScheduleSheet>();
             var scheduleRow = scheduleSheet.ValidateFromAction(
                 context.BlockIndex,
-                eventScheduleId,
-                eventDungeonId,
+                EventScheduleId,
+                EventDungeonId,
                 ActionTypeText,
                 addressesHex);
 
             var dungeonSheet = sheets.GetSheet<EventDungeonSheet>();
             var dungeonRow = dungeonSheet.ValidateFromAction(
-                eventDungeonId,
-                eventDungeonStageId,
+                EventDungeonId,
+                EventDungeonStageId,
                 ActionTypeText,
                 addressesHex);
 
             var stageSheet = sheets.GetSheet<EventDungeonStageSheet>();
-            stageSheet.ValidateFromAction(
-                eventDungeonStageId,
+            var stageRow = stageSheet.ValidateFromAction(
+                EventDungeonStageId,
                 ActionTypeText,
                 addressesHex);
 
-            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            var costumeIds = avatarState.ValidateCostume(costumes);
-            var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
-            var equipmentAndCostumes = equipments.Concat(costumes);
+            var equipmentList = avatarState.ValidateEquipmentsV2(Equipments, context.BlockIndex);
+            var costumeIds = avatarState.ValidateCostume(Costumes);
+            var foodIds = avatarState.ValidateConsumable(Foods, context.BlockIndex);
+            var equipmentAndCostumes = Equipments.Concat(Costumes);
             avatarState.EquipItems(equipmentAndCostumes);
             avatarState.ValidateItemRequirement(
                 costumeIds.Concat(foodIds).ToList(),
@@ -198,8 +202,8 @@ namespace Nekoyume.Action
             // Validate avatar's event dungeon info.
             sw.Restart();
             var eventDungeonInfoAddr = EventDungeonInfo.DeriveAddress(
-                avatarAddress,
-                eventDungeonId);
+                AvatarAddress,
+                EventDungeonId);
             var eventDungeonInfo = states.GetState(eventDungeonInfoAddr)
                 is Bencodex.Types.List serializedEventDungeonInfoList
                 ? new EventDungeonInfo(serializedEventDungeonInfoList)
@@ -231,13 +235,13 @@ namespace Nekoyume.Action
                     eventDungeonInfo.RemainingTickets);
             }
 
-            if (eventDungeonStageId != dungeonRow.StageBegin &&
-                !eventDungeonInfo.IsCleared(eventDungeonStageId - 1))
+            if (EventDungeonStageId != dungeonRow.StageBegin &&
+                !eventDungeonInfo.IsCleared(EventDungeonStageId - 1))
             {
                 throw new StageNotClearedException(
                     ActionTypeText,
                     addressesHex,
-                    eventDungeonStageId - 1,
+                    EventDungeonStageId - 1,
                     eventDungeonInfo.ClearedStageId);
             }
 
@@ -253,16 +257,21 @@ namespace Nekoyume.Action
             sw.Restart();
             // NOTE: This is a temporary solution. The formula is not yet decided.
             var exp = scheduleRow.DungeonExpSeedValue;
-            var simulator = new EventDungeonBattleSimulator(
+            var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
-                foods,
-                eventDungeonId,
-                eventDungeonStageId,
-                sheets.GetEventDungeonBattleSimulatorSheets(),
-                PlayCount,
-                eventDungeonInfo.IsCleared(eventDungeonStageId),
-                exp);
+                Foods,
+                new List<Skill>(),
+                EventDungeonId,
+                EventDungeonStageId,
+                stageRow,
+                sheets.GetSheet<EventDungeonStageWaveSheet>()[EventDungeonStageId],
+                eventDungeonInfo.IsCleared(EventDungeonStageId),
+                exp,
+                sheets.GetSimulatorSheets(),
+                sheets.GetSheet<EnemySkillSheet>(),
+                sheets.GetSheet<CostumeStatSheet>(),
+                PlayCount);
             simulator.Simulate(PlayCount);
             sw.Stop();
             Log.Verbose(
@@ -276,7 +285,7 @@ namespace Nekoyume.Action
             if (simulator.Log.IsClear)
             {
                 sw.Restart();
-                eventDungeonInfo.ClearStage(eventDungeonStageId);
+                eventDungeonInfo.ClearStage(EventDungeonStageId);
                 sw.Stop();
                 Log.Verbose(
                     "[{ActionTypeString}][{AddressesHex}] Update event dungeon info: {Elapsed}",
@@ -302,24 +311,24 @@ namespace Nekoyume.Action
             if (migrationRequired)
             {
                 states = states
-                    .SetState(avatarAddress, avatarState.SerializeV2())
+                    .SetState(AvatarAddress, avatarState.SerializeV2())
                     .SetState(
-                        avatarAddress.Derive(LegacyInventoryKey),
+                        AvatarAddress.Derive(LegacyInventoryKey),
                         avatarState.inventory.Serialize())
                     .SetState(
-                        avatarAddress.Derive(LegacyWorldInformationKey),
+                        AvatarAddress.Derive(LegacyWorldInformationKey),
                         avatarState.worldInformation.Serialize())
                     .SetState(
-                        avatarAddress.Derive(LegacyQuestListKey),
+                        AvatarAddress.Derive(LegacyQuestListKey),
                         avatarState.questList.Serialize())
                     .SetState(eventDungeonInfoAddr, eventDungeonInfo.Serialize());
             }
             else
             {
                 states = states
-                    .SetState(avatarAddress, avatarState.SerializeV2())
+                    .SetState(AvatarAddress, avatarState.SerializeV2())
                     .SetState(
-                        avatarAddress.Derive(LegacyInventoryKey),
+                        AvatarAddress.Derive(LegacyInventoryKey),
                         avatarState.inventory.Serialize())
                     .SetState(eventDungeonInfoAddr, eventDungeonInfo.Serialize());
             }
