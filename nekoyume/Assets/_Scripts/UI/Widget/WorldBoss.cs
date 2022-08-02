@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -221,7 +222,7 @@ namespace Nekoyume.UI
             offSeasonContainer.SetActive(true);
             seasonContainer.SetActive(false);
             rankButton.gameObject.SetActive(false);
-            enterButton.Text = "Practice";
+            enterButton.Text = L10nManager.Localize("UI_PRACTICE");
             var begin =
                 WorldBossFrontHelper.TryGetPreviousRow(currentBlockIndex, out var previousRow)
                     ? previousRow.EndedBlockIndex
@@ -244,7 +245,7 @@ namespace Nekoyume.UI
             seasonContainer.SetActive(true);
             apiMissing.SetActive(!Game.Game.instance.ApiClient.IsInitialized);
             rankButton.gameObject.SetActive(true);
-            enterButton.Text = "Enter";
+            enterButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
 
             UpdateBossPrefab(row);
@@ -423,8 +424,7 @@ namespace Nekoyume.UI
         {
             var response = await WorldBossQuery.QueryRankingAsync(row.Id, avatarAddress);
             var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
-            var myRecord =
-                records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
+            var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
             var userCount = response?.WorldBossTotalUsers ?? 0;
             return (myRecord, userCount);
         }

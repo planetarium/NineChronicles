@@ -64,8 +64,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var (raider, raidId) = await GetStatesAsync(avatarAddress);
+            var (raider, raidId) = await GetStatesAsync();
             foreach (var toggle in categoryToggles)
             {
                 switch (toggle.Item)
@@ -92,8 +91,9 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        private async Task<(RaiderState, int)> GetStatesAsync(Address avatarAddress)
+        private async Task<(RaiderState, int)> GetStatesAsync()
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
 

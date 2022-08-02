@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Nekoyume.Helper;
@@ -12,6 +13,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module.WorldBoss
 {
+    using UniRx;
+
     public class WorldBossRank : WorldBossDetailItem
     {
         public enum Status
@@ -38,65 +41,88 @@ namespace Nekoyume.UI.Module.WorldBoss
         private TextMeshProUGUI totalUsers;
 
         [SerializeField]
+        private Button refreshButton;
+
+        [SerializeField]
         private GameObject apiMissing;
 
         [SerializeField]
-        private GameObject loadingIndicator;
+        private GameObject noSeasonInfo;
+
+        [SerializeField]
+        private List<GameObject> queryLoadingObjects;
 
         [SerializeField]
         private WorldBossRankItemView myInfo;
 
         private readonly Dictionary<Status, WorldBossRankItems> _cachedItems = new();
+        private Status _status;
 
-        public async void ShowAsync(int raidId, Status status)
+        private void Awake()
+        {
+            refreshButton.OnClickAsObservable()
+                .Subscribe(_ => RefreshMyInformationAsync()).AddTo(gameObject);
+        }
+
+        public async void ShowAsync(Status status)
         {
             Reset(status);
 
-            var apiClient = Game.Game.instance.ApiClient;
-            if (!apiClient.IsInitialized)
+            var raidId = GetRaidId(status);
+            if (!WorldBossFrontHelper.TryGetRaid(raidId, out _))
+            {
+                noSeasonInfo.SetActive(true);
+                return;
+            }
+
+            if (!Game.Game.instance.ApiClient.IsInitialized)
             {
                 apiMissing.SetActive(true);
                 return;
             }
 
-            // for test
-            // var records = new List<WorldBossRankingRecord>();
-            // for (var i = 0; i < 100; i++)
-            // {
-            //     var record = new WorldBossRankingRecord
-            //     {
-            //         Ranking = i+1,
-            //         Level =  i+1,
-            //         Cp = i * 100,
-            //         IconId = 10210000,
-            //         AvatarName = $"{i}+{i}",
-            //         HighScore = i * 1000,
-            //         TotalScore = i * 10000,
-            //     };
-            //     records.Add(record);
-            // }
-            //
-            // if (raidId == 0)
-            // {
-            //     records.Clear();
-            // }
-
-            loadingIndicator.SetActive(true);
-            var finish = await SetItemsAsync(raidId, status);
+            SetActiveQueryLoading(true);
+            await SetItemsAsync(raidId, status);
             UpdateBossInformation(raidId);
             UpdateRecord(status);
-            loadingIndicator.SetActive(false);
+            SetActiveQueryLoading(false);
+        }
+
+        private void RefreshMyInformationAsync()
+        {
+            _cachedItems.Remove(_status);
+            ShowAsync(_status);
+        }
+
+        private static int GetRaidId(Status status)
+        {
+            return status switch
+            {
+                Status.PreviousSeason => WorldBossFrontHelper.TryGetPreviousRow(
+                    Game.Game.instance.Agent.BlockIndex, out var row)
+                    ? row.Id
+                    : 0,
+                Status.Season => WorldBossFrontHelper.TryGetCurrentRow(
+                    Game.Game.instance.Agent.BlockIndex, out var row)
+                    ? row.Id
+                    : 0,
+                _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+            };
         }
 
         private void Reset(Status status)
         {
+            _status = status;
             rankTitle.text = status == Status.PreviousSeason
-                ? $"{L10nManager.Localize("UI_PREVIOUS")} {L10nManager.Localize("UI_RANK")}"
-                : L10nManager.Localize("UI_RANK");
+                ? L10nManager.Localize("UI_PREVIOUS_SEASON_RANK")
+                : L10nManager.Localize("UI_LEADERBOARD");
             bossName.text = "-";
             totalUsers.text = $"-";
             bossImage.enabled = false;
             myInfo.gameObject.SetActive(false);
+            noSeasonInfo.SetActive(false);
+            apiMissing.SetActive(false);
+            SetActiveQueryLoading(false);
         }
 
         private void UpdateBossInformation(int raidId)
@@ -116,23 +142,19 @@ namespace Nekoyume.UI.Module.WorldBoss
             bossImage.sprite = data.illustration;
         }
 
-        private async Task<bool> SetItemsAsync(int raidId, Status status)
+        private async Task SetItemsAsync(int raidId, Status status)
         {
             if (_cachedItems.ContainsKey(status))
             {
-                return true;
-                // todo : refresh 기능 추가해야함
-                // _cachedItems.Add(status, items);
+                return;
             }
-
 
             var avatarState = States.Instance.CurrentAvatarState;
             var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarState.address);
             var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
             var userCount = response?.WorldBossTotalUsers ?? 0;
 
-            var avatarAddress = "C54d5b047bb87bd4F71af42456ac2d499FBCe767"; // for test
-            // var avatarAddress = avatarState.address.ToHex();
+            var avatarAddress = avatarState.address.ToHex();
             var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress);
 
             if (records.Count > LimitCount)
@@ -147,7 +169,6 @@ namespace Nekoyume.UI.Module.WorldBoss
                 userCount);
 
             _cachedItems[status] = items;
-            return true;
         }
 
         private void UpdateRecord(Status status)
@@ -157,6 +178,14 @@ namespace Nekoyume.UI.Module.WorldBoss
             myInfo.Set(items.MyItem, null);
             scroll.UpdateData(items.UserItems);
             totalUsers.text = items.UserCount > 0 ? $"{items.UserCount:#,0}" : "-";
+        }
+
+        private void SetActiveQueryLoading(bool value)
+        {
+            foreach (var o in queryLoadingObjects)
+            {
+                o.SetActive(value);
+            }
         }
     }
 }
