@@ -83,30 +83,28 @@ namespace Nekoyume.Action
                 states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
             }
 
+            if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
+            {
+                raiderState.RemainChallengeCount = WorldBossHelper.MaxChallengeCount;
+                raiderState.RefillBlockIndex = context.BlockIndex;
+            }
+
             if (raiderState.RemainChallengeCount < 1)
             {
-                if (WorldBossHelper.CanRefillTicket(context.BlockIndex, raiderState.RefillBlockIndex, row.StartedBlockIndex))
+                if (PayNcg)
                 {
-                    raiderState.RemainChallengeCount = 3;
-                    raiderState.RefillBlockIndex = context.BlockIndex;
+                    if (raiderState.PurchaseCount >= row.MaxPurchaseCount)
+                    {
+                        throw new ExceedTicketPurchaseLimitException("");
+                    }
+                    var goldCurrency = states.GetGoldCurrency();
+                    states = states.TransferAsset(context.Signer, worldBossAddress,
+                        WorldBossHelper.CalculateTicketPrice(row, raiderState, goldCurrency));
+                    raiderState.PurchaseCount++;
                 }
                 else
                 {
-                    if (PayNcg)
-                    {
-                        if (raiderState.PurchaseCount >= row.MaxPurchaseCount)
-                        {
-                            throw new ExceedTicketPurchaseLimitException("");
-                        }
-                        var goldCurrency = states.GetGoldCurrency();
-                        states = states.TransferAsset(context.Signer, worldBossAddress,
-                            WorldBossHelper.CalculateTicketPrice(row, raiderState, goldCurrency));
-                        raiderState.PurchaseCount++;
-                    }
-                    else
-                    {
-                        throw new ExceedPlayCountException("");
-                    }
+                    throw new ExceedPlayCountException("");
                 }
             }
 
