@@ -16,6 +16,7 @@
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.Quest;
+    using Nekoyume.Model.Skill;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -1173,11 +1174,14 @@
                 new TestRandom(ctx.Random.Seed),
                 previousAvatarState,
                 new List<Guid>(),
+                new List<Skill>(),
                 worldId,
                 stageId,
+                false,
+                20,
                 _tableSheets.GetStageSimulatorSheets(),
                 _tableSheets.CostumeStatSheet,
-                StageSimulator.ConstructorVersionV100080);
+                1);
             simulator.Simulate(1);
             var log = simulator.Log;
             var skillStateIValue =

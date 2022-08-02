@@ -12,16 +12,15 @@
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Battle;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static Lib9c.SerializeKeys;
+    using static SerializeKeys;
 
-    public class UpdateSellTest
+    public class UpdateSell2Test
     {
         private const long ProductPrice = 100;
         private readonly Address _agentAddress;
@@ -32,7 +31,7 @@
         private readonly GoldCurrencyState _goldCurrencyState;
         private IAccountStateDelta _initialState;
 
-        public UpdateSellTest(ITestOutputHelper outputHelper)
+        public UpdateSell2Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -210,22 +209,16 @@
 
             var currencyState = prevState.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, ProductPrice, 0);
-
-            var updateSellInfo = new UpdateSellInfo(
-                orderId,
-                updateSellOrderId,
-                itemId,
-                itemSubType,
-                price,
-                itemCount
-            );
-
-            var action = new UpdateSell
+            var action = new UpdateSell2
             {
+                orderId = orderId,
+                updateSellOrderId = updateSellOrderId,
+                tradableId = itemId,
                 sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo },
+                itemSubType = itemSubType,
+                price = price,
+                count = itemCount,
             };
-
             var nextState = action.Execute(new ActionContext
             {
                 BlockIndex = 101,
@@ -245,15 +238,20 @@
         }
 
         [Fact]
-        public void Execute_Throw_ListEmptyException()
+        public void Execute_Throw_FailedLoadStateException()
         {
-            var action = new UpdateSell
+            var action = new UpdateSell2
             {
+                orderId = default,
+                updateSellOrderId = default,
+                tradableId = default,
                 sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new List<UpdateSellInfo>(),
+                itemSubType = ItemSubType.Food,
+                price = 0 * _currency,
+                count = 1,
             };
 
-            Assert.Throws<ListEmptyException>(() => action.Execute(new ActionContext
+            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
                 PreviousStates = new State(),
@@ -262,26 +260,23 @@
         }
 
         [Fact]
-        public void Execute_Throw_FailedLoadStateException()
+        public void Execute_Throw_InvalidPriceException()
         {
-            var updateSellInfo = new UpdateSellInfo(
-                default,
-                default,
-                default,
-                ItemSubType.Food,
-                0 * _currency,
-                1);
-
-            var action = new UpdateSell
+            var action = new UpdateSell2
             {
+                orderId = default,
+                updateSellOrderId = default,
+                tradableId = default,
                 sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo },
+                itemSubType = default,
+                price = -1 * _currency,
+                count = 1,
             };
 
-            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
+            Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
             {
                 BlockIndex = 0,
-                PreviousStates = new State(),
+                PreviousStates = _initialState,
                 Signer = _agentAddress,
             }));
         }
@@ -300,18 +295,15 @@
 
             _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var updateSellInfo = new UpdateSellInfo(
-                default,
-                default,
-                default,
-                ItemSubType.Food,
-                0 * _currency,
-                1);
-
-            var action = new UpdateSell
+            var action = new UpdateSell2
             {
+                updateSellOrderId = default,
+                orderId = default,
+                tradableId = default,
                 sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo },
+                itemSubType = ItemSubType.Food,
+                price = 0 * _currency,
+                count = 1,
             };
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
@@ -323,42 +315,47 @@
         }
 
         [Fact]
-        public void Execute_Throw_InvalidPriceException()
+        public void Rehearsal()
         {
-            var avatarState = new AvatarState(_avatarState)
+            var tradableId = Guid.NewGuid();
+            var orderId = Guid.NewGuid();
+            var updateSellOrderId = Guid.NewGuid();
+            var action = new UpdateSell2
             {
-                worldInformation = new WorldInformation(
-                    0,
-                    _tableSheets.WorldSheet,
-                    GameConfig.RequireClearedStageLevel.ActionsInShop
-                ),
-            };
-            var digestListAddress = OrderDigestListState.DeriveAddress(_avatarAddress);
-            var digestList = new OrderDigestListState(digestListAddress);
-            _initialState = _initialState
-                .SetState(_avatarAddress, avatarState.Serialize())
-                .SetState(digestListAddress, digestList.Serialize());
-
-            var updateSellInfo = new UpdateSellInfo(
-                default,
-                default,
-                default,
-                default,
-                -1 * _currency,
-                1);
-
-            var action = new UpdateSell
-            {
+                orderId = orderId,
+                updateSellOrderId = updateSellOrderId,
+                tradableId = tradableId,
                 sellerAvatarAddress = _avatarAddress,
-                updateSellInfos = new[] { updateSellInfo },
+                itemSubType = ItemSubType.Weapon,
+                price = _currency * ProductPrice,
+                count = 1,
             };
 
-            Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
+            var updatedAddresses = new List<Address>()
             {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
+                _agentAddress,
+                _avatarAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+                Addresses.GetItemAddress(tradableId),
+                Order.DeriveAddress(updateSellOrderId),
+                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, orderId),
+                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, updateSellOrderId),
+                OrderDigestListState.DeriveAddress(_avatarAddress),
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
                 Signer = _agentAddress,
-            }));
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
     }
 }

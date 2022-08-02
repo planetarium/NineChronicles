@@ -20,7 +20,7 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1229
-    /// Updated at https://github.com/planetarium/lib9c/pull/1229
+    /// Updated at https://github.com/planetarium/lib9c/pull/1241
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash16")]
@@ -76,13 +76,20 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            return Execute(context.PreviousStates,
+            if (context.Rehearsal)
+            {
+                return context.PreviousStates;
+            }
+
+            return Execute(
+                context.PreviousStates,
                 context.Signer,
                 context.BlockIndex,
                 context.Random);
         }
 
-        public IAccountStateDelta Execute(IAccountStateDelta states,
+        public IAccountStateDelta Execute(
+            IAccountStateDelta states,
             Address signer,
             long blockIndex,
             IRandom random)
@@ -237,9 +244,11 @@ namespace Nekoyume.Action
                     i == 0 ? skillsOnWaveStart : new List<Skill>(),
                     WorldId,
                     StageId,
+                    avatarState.worldInformation.IsStageCleared(StageId),
+                    StageRewardExpHelper.GetExp(avatarState.level, StageId),
                     sheets.GetStageSimulatorSheets(),
                     sheets.GetSheet<CostumeStatSheet>(),
-                    StageSimulator.ConstructorVersionV100080);
+                    1);
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
