@@ -534,7 +534,6 @@ namespace Nekoyume.Action
             bool containStageSimulatorSheets = false,
             bool containRankingSimulatorSheets = false,
             bool containArenaSimulatorSheets = false,
-            bool containEventDungeonSimulatorSheets = false,
             bool containValidateItemRequirementSheets = false,
             IEnumerable<Type> sheetTypes = null)
         {
@@ -620,21 +619,6 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(CharacterLevelSheet));
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
-                sheetTypeList.Add(typeof(CostumeStatSheet));
-            }
-
-            if (containEventDungeonSimulatorSheets)
-            {
-                sheetTypeList.Add(typeof(MaterialItemSheet));
-                sheetTypeList.Add(typeof(SkillSheet));
-                sheetTypeList.Add(typeof(SkillBuffSheet));
-                sheetTypeList.Add(typeof(BuffSheet));
-                sheetTypeList.Add(typeof(CharacterSheet));
-                sheetTypeList.Add(typeof(CharacterLevelSheet));
-                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
-                sheetTypeList.Add(typeof(EventDungeonStageSheet));
-                sheetTypeList.Add(typeof(EventDungeonStageWaveSheet));
-                sheetTypeList.Add(typeof(EnemySkillSheet));
                 sheetTypeList.Add(typeof(CostumeStatSheet));
             }
 

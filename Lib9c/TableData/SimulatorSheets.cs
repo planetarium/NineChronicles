@@ -65,42 +65,6 @@ namespace Nekoyume.TableData
         }
     }
 
-    public class EventDungeonBattleSimulatorSheets : SimulatorSheets
-    {
-        public readonly EventDungeonStageSheet EventDungeonStageSheet;
-        public readonly EventDungeonStageWaveSheet EventDungeonStageWaveSheet;
-        public readonly EnemySkillSheet EnemySkillSheet;
-        public readonly CostumeStatSheet CostumeStatSheet;
-
-        public EventDungeonBattleSimulatorSheets(
-            MaterialItemSheet materialItemSheet,
-            SkillSheet skillSheet,
-            SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet,
-            CharacterSheet characterSheet,
-            CharacterLevelSheet characterLevelSheet,
-            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
-            EventDungeonStageSheet eventDungeonStageSheet,
-            EventDungeonStageWaveSheet eventDungeonStageWaveSheet,
-            EnemySkillSheet enemySkillSheet,
-            CostumeStatSheet costumeStatSheet
-        ) : base(
-            materialItemSheet,
-            skillSheet,
-            skillBuffSheet,
-            buffSheet,
-            characterSheet,
-            characterLevelSheet,
-            equipmentItemSetEffectSheet
-        )
-        {
-            EventDungeonStageSheet = eventDungeonStageSheet;
-            EventDungeonStageWaveSheet = eventDungeonStageWaveSheet;
-            EnemySkillSheet = enemySkillSheet;
-            CostumeStatSheet = costumeStatSheet;
-        }
-    }
-
     public class RankingSimulatorSheets : SimulatorSheets
     {
         public readonly WeeklyArenaRewardSheet WeeklyArenaRewardSheet;

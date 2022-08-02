@@ -194,24 +194,6 @@ namespace Nekoyume.Extensions
             );
         }
 
-        public static EventDungeonBattleSimulatorSheets GetEventDungeonBattleSimulatorSheets(
-            this Dictionary<Type, (Address address, ISheet sheet)> sheets)
-        {
-            return new EventDungeonBattleSimulatorSheets(
-                sheets.GetSheet<MaterialItemSheet>(),
-                sheets.GetSheet<SkillSheet>(),
-                sheets.GetSheet<SkillBuffSheet>(),
-                sheets.GetSheet<BuffSheet>(),
-                sheets.GetSheet<CharacterSheet>(),
-                sheets.GetSheet<CharacterLevelSheet>(),
-                sheets.GetSheet<EquipmentItemSetEffectSheet>(),
-                sheets.GetSheet<EventDungeonStageSheet>(),
-                sheets.GetSheet<EventDungeonStageWaveSheet>(),
-                sheets.GetSheet<EnemySkillSheet>(),
-                sheets.GetSheet<CostumeStatSheet>()
-            );
-        }
-
         public static RankingSimulatorSheets GetRankingSimulatorSheets(
             this Dictionary<Type, (Address address, ISheet sheet)> sheets)
         {
