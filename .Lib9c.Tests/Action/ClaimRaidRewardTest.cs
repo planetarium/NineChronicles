@@ -73,7 +73,7 @@ namespace Lib9c.Tests.Action
                         .SelectMany(r => r.RuneInfos.Select(i => i.RuneId)).ToHashSet();
                 foreach (var runeId in runeIds)
                 {
-                    var runeCurrency = RuneHelper.ToCurrency(runeId);
+                    var runeCurrency = RuneHelper.ToCurrency(_tableSheets.RuneSheet[runeId], 0, null);
                     rune += (int)nextState.GetBalance(avatarAddress, runeCurrency).MajorUnit;
                 }
 

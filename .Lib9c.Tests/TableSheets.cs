@@ -169,6 +169,8 @@ namespace Lib9c.Tests
 
         public RuneSheet RuneSheet { get; private set; }
 
+        public WorldBossKillRewardSheet WorldBossKillRewardSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();

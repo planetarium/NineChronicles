@@ -3,16 +3,16 @@ using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
-    public class WorldBossRankRewardSheet: Sheet<int, WorldBossRankRewardSheet.Row>
+    public class WorldBossRankRewardSheet: Sheet<int, WorldBossRankRewardSheet.Row>, IWorldBossRewardSheet
     {
-        public class Row : SheetRow<int>
+        public class Row : SheetRow<int>, IWorldBossRewardRow
         {
             public override int Key => Id;
             public int Id;
-            public int BossId;
-            public int Rank;
-            public int Rune;
-            public int Crystal;
+            public int BossId { get; private set; }
+            public int Rank { get; private set; }
+            public int Rune { get; private set; }
+            public int Crystal { get; private set; }
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0]);
@@ -26,5 +26,7 @@ namespace Nekoyume.TableData
         public WorldBossRankRewardSheet() : base(nameof(WorldBossRankRewardSheet))
         {
         }
+
+        public IReadOnlyList<IWorldBossRewardRow> OrderedRows => OrderedList;
     }
 }

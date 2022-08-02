@@ -69,7 +69,6 @@ namespace Nekoyume.Action
             int raidId = row.Id;
             Address worldBossAddress = Addresses.GetWorldBossAddress(raidId);
             Address raiderAddress = Addresses.GetRaiderAddress(AvatarAddress, raidId);
-            Address raidersAddress = Addresses.GetRaidersAddress(raidId);
 
             // Check challenge count.
             RaiderState raiderState;
@@ -80,15 +79,8 @@ namespace Nekoyume.Action
             else
             {
                 raiderState = new RaiderState();
-                // FIXME delete raiders & calculate rank in DP.
-                List<Address> raiders = states.TryGetState(raidersAddress, out List rawRaiders)
-                    ? rawRaiders.ToList(StateExtensions.ToAddress)
-                    : new List<Address>();
-                raiders.Add(AvatarAddress);
                 FungibleAssetValue crystalCost = CrystalCalculator.CalculateEntranceFee(avatarState.level, row.EntranceFee);
-                states = states
-                    .SetState(raidersAddress, new List(raiders.Select(a => a.Serialize())))
-                    .TransferAsset(context.Signer, worldBossAddress, crystalCost);
+                states = states.TransferAsset(context.Signer, worldBossAddress, crystalCost);
             }
 
             if (raiderState.RemainChallengeCount < 1)

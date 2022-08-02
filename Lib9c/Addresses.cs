@@ -56,7 +56,7 @@ namespace Nekoyume
             Addresses.Blacksmith.Derive($"_{championshipId}_{round}");
 
         public static Address GetWorldBossAddress(int raidId) => Raid.Derive($"{raidId}");
-        public static Address GetRaidersAddress(int raidId) => Raid.Derive($"raiders_{raidId}");
+        public static Address GetWorldBossKillRewardRecordAddress(Address avatarAddress, int raidId) => avatarAddress.Derive($"reward_info_{raidId}");
         public static Address GetRaiderAddress(Address avatarAddress, int raidId) => avatarAddress.Derive($"{raidId}");
     }
 }

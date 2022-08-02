@@ -1011,5 +1011,46 @@ namespace Nekoyume.Action
 
             throw new FailedLoadStateException("can't find RaiderState.");
         }
+
+        public static IAccountStateDelta SetWorldBossKillReward(
+            this IAccountStateDelta states,
+            Address rewardInfoAddress,
+            WorldBossKillRewardRecord rewardRecord,
+            int rank,
+            WorldBossState bossState,
+            RuneWeightSheet runeWeightSheet,
+            WorldBossKillRewardSheet worldBossKillRewardSheet,
+            RuneSheet runeSheet,
+            IRandom random,
+            Address avatarAddress)
+        {
+            if (!rewardRecord.IsClaimable(bossState.Level))
+            {
+                throw new InvalidClaimException();
+            }
+#pragma warning disable LAA1002
+            var filtered = rewardRecord
+                .Where(kv => !kv.Value)
+                .Select(kv => kv.Key);
+#pragma warning restore LAA1002
+            foreach (var level in filtered)
+            {
+                List<FungibleAssetValue> rewards = RuneHelper.CalculateReward(
+                    rank,
+                    bossState.Id,
+                    runeWeightSheet,
+                    worldBossKillRewardSheet,
+                    runeSheet,
+                    random
+                );
+                rewardRecord[level] = true;
+                foreach (var reward in rewards)
+                {
+                    states = states.MintAsset(avatarAddress, reward);
+                }
+            }
+
+            return states.SetState(rewardInfoAddress, rewardRecord.Serialize());
+        }
     }
 }

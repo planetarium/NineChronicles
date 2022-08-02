@@ -1,6 +1,9 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using JetBrains.Annotations;
+using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Battle;
@@ -10,20 +13,40 @@ namespace Nekoyume.Helper
 {
     public static class RuneHelper
     {
-        public static Currency ToCurrency(int runeId)
+        public static Currency ToCurrency(
+            RuneSheet.Row runeRow,
+            byte decimalPlaces,
+            [CanBeNull] IImmutableSet<Address> minters
+        )
         {
-            return new Currency(runeId.ToString(CultureInfo.InvariantCulture), decimalPlaces: 0, minters: null);
+            return new Currency(runeRow.Ticker, decimalPlaces: decimalPlaces, minters: minters);
         }
 
-        public static FungibleAssetValue ToFungibleAssetValue(int runeId, int quantity)
+        public static FungibleAssetValue ToFungibleAssetValue(
+            RuneSheet.Row runeRow,
+            int quantity,
+            byte decimalPlaces = 0,
+            [CanBeNull] IImmutableSet<Address> minters = null
+        )
         {
-            return ToCurrency(runeId) * quantity;
+            return ToCurrency(runeRow, decimalPlaces, minters) * quantity;
         }
 
-        public static List<FungibleAssetValue> CalculateReward(int rank, int bossId, RuneWeightSheet sheet, WorldBossRankRewardSheet rewardSheet, IRandom random)
+        public static List<FungibleAssetValue> CalculateReward(
+            int rank,
+            int bossId,
+            RuneWeightSheet sheet,
+            IWorldBossRewardSheet rewardSheet,
+            RuneSheet runeSheet,
+            IRandom random
+        )
         {
             var row = sheet.Values.First(r => r.Rank == rank && r.BossId == bossId);
-            var rewardRow = rewardSheet.Values.First(r => r.Rank == rank && r.BossId == bossId);
+            var rewardRow = rewardSheet.OrderedRows.First(r => r.Rank == rank && r.BossId == bossId);
+            if (rewardRow is WorldBossKillRewardSheet.Row rr)
+            {
+                rr.SetRune(random);
+            }
             var total = 0;
             var dictionary = new Dictionary<int, int>();
             while (total < rewardRow.Rune)
@@ -53,7 +76,7 @@ namespace Nekoyume.Helper
 #pragma warning disable LAA1002
             var result = dictionary
 #pragma warning restore LAA1002
-                .Select(kv => ToFungibleAssetValue(kv.Key, kv.Value))
+                .Select(kv => ToFungibleAssetValue(runeSheet[kv.Key], kv.Value))
                 .ToList();
             result.Add(rewardRow.Crystal * CrystalCalculator.CRYSTAL);
             return result;
