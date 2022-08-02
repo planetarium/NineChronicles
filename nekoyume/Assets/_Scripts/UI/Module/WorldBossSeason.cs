@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Numerics;
 using Nekoyume.Helper;
 using Nekoyume.UI.Model;
@@ -40,6 +41,9 @@ namespace Nekoyume
         [SerializeField]
         private Transform gradeContainer;
 
+        [SerializeField]
+        private List<Image> runeIcons;
+
         private GameObject _gradeObject;
 
         public void UpdateUserCount(int count)
@@ -47,7 +51,12 @@ namespace Nekoyume
             Debug.Log("[WorldBossSeason] UpdateUserCount");
             raidersText.text = count > 0 ? $"{count:#,0}" : "-";
         }
-        public void UpdateBossInformation(string bossName, int level, BigInteger curHp, BigInteger maxHp)
+        public void UpdateBossInformation(
+            int bossId,
+            string bossName,
+            int level,
+            BigInteger curHp,
+            BigInteger maxHp)
         {
             Debug.Log("[WorldBossSeason] UpdateBossInformation");
             bossNameText.text = bossName;
@@ -59,11 +68,24 @@ namespace Nekoyume
             var ratio = lCurHp / (float)lMaxHp;
             bossHpRatioText.text = $"{(int)(ratio * 100)}%";
             bossHpSlider.normalizedValue = ratio;
+
+            UpdateRewards(bossId);
         }
 
-        public void UpdateRewards()
+        private void UpdateRewards(int bossId)
         {
-            // todo : 넣어줘야함.
+            if (!WorldBossFrontHelper.TryGetRunes(bossId, out var runeRows))
+            {
+                return;
+            }
+
+            for (var i = 0; i < runeRows.Count; i++)
+            {
+                if (WorldBossFrontHelper.TryGetRuneIcon(runeRows[i].Ticker, out var sprite))
+                {
+                    runeIcons[i].sprite = sprite;
+                }
+            }
         }
 
         public void UpdateMyInformation(int totalScore, int highScore, int rank)

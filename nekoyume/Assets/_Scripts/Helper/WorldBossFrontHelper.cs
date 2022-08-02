@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Libplanet.Assets;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
@@ -58,11 +60,9 @@ namespace Nekoyume.Helper
             return row is not null;
         }
 
-        public static bool TryGetRuneIcon(Currency currency, out Sprite icon)
+        public static bool TryGetRuneIcon(string ticker, out Sprite icon)
         {
-            var ticker = currency.Ticker;
-            var currencyId = Convert.ToInt32(ticker);
-            var result = ScriptableObject.Runes.FirstOrDefault(x => x.id == currencyId);
+            var result = ScriptableObject.Runes.FirstOrDefault(x => x.ticker == ticker);
             if (result is null)
             {
                 icon = null;
@@ -70,6 +70,24 @@ namespace Nekoyume.Helper
             }
 
             icon = result.icon;
+            return true;
+        }
+
+        public static bool TryGetRunes(int bossId, out List<RuneSheet.Row> rows)
+        {
+            var runeIds = new List<int>();
+
+            var runeWeightSheet = Game.Game.instance.TableSheets.RuneWeightSheet;
+            var weightRows = runeWeightSheet.Values.Where(x => x.BossId == bossId).ToList();
+            foreach (var row in weightRows)
+            {
+                runeIds.AddRange(row.RuneInfos.Select(x => x.RuneId));
+            }
+
+            runeIds.Distinct();
+
+            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
+            rows = runeSheet.Values.Where(x => runeIds.Contains(x.Id)).ToList();
             return true;
         }
 

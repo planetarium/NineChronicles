@@ -146,10 +146,7 @@ namespace Nekoyume.UI
         {
             var loading = Find<DataLoadingScreen>();
             loading.Show();
-
-            ShowSheetValues();
             await UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, forceUpdate: true);
-
             loading.Close();
             base.Show(ignoreShowAnimation);
         }
@@ -385,11 +382,6 @@ namespace Nekoyume.UI
                 () => Raid(true));
         }
 
-        private void ClaimRaidReward()
-        {
-            ActionManager.Instance.ClaimRaidReward();
-        }
-
         private async Task<(WorldBossState worldBoss, RaiderState raiderState,
                 WorldBossRankingRecord myRecord, int userCount)>
             GetStatesAsync(WorldBossListSheet.Row row)
@@ -447,7 +439,7 @@ namespace Nekoyume.UI
                 ? data.name
                 : string.Empty;
 
-            season.UpdateBossInformation(bossName, level, curHp, maxHp);
+            season.UpdateBossInformation(bossId, bossName, level, curHp, maxHp);
         }
 
         private void UpdateMyInformation(RaiderState state, WorldBossRankingRecord record)
@@ -473,53 +465,6 @@ namespace Nekoyume.UI
             foreach (var o in queryLoadingObjects)
             {
                 o.SetActive(value);
-            }
-        }
-
-        private static void ShowSheetValues()
-        {
-            Debug.Log("---- [WorldBossListSheet] ----");
-            var sheet = Game.Game.instance.TableSheets.WorldBossListSheet;
-            foreach (var sheetValue in sheet)
-            {
-                Debug.Log($"[ID : {sheetValue.Id}] / " +
-                          $"BOSS ID : {sheetValue.BossId} / " +
-                          $"STARTEDBLOCKINDEX : {sheetValue.StartedBlockIndex} / " +
-                          $"ENDEDBLOCKINDEX : {sheetValue.EndedBlockIndex}");
-            }
-
-            Debug.Log("---- [WorldBossRankRewardSheet] ----");
-            var rewardSheet = Game.Game.instance.TableSheets.WorldBossRankRewardSheet;
-            foreach (var sheetValue in rewardSheet)
-            {
-                Debug.Log($"[ID : {sheetValue.Id}] / " +
-                          $"BOSS ID : {sheetValue.BossId} / " +
-                          $"RANK : {sheetValue.Rank} / " +
-                          $"RANK : {sheetValue.Rune} / " +
-                          $"CRYSTAL : {sheetValue.Crystal}");
-            }
-
-            Debug.Log("---- [WorldBossGlobalHpSheet] ----");
-            var hpSheet = Game.Game.instance.TableSheets.WorldBossGlobalHpSheet;
-            foreach (var sheetValue in hpSheet)
-            {
-                Debug.Log($"[LEVEL : {sheetValue.Level}] / " +
-                          $"HP : {sheetValue.Hp}");
-            }
-
-            Debug.Log("---- [RuneWeightSheet] ----");
-            var runeSheet = Game.Game.instance.TableSheets.RuneWeightSheet;
-            foreach (var sheetValue in runeSheet)
-            {
-                Debug.Log($"[ID : {sheetValue.Id}] / " +
-                          $"BOSS ID : {sheetValue.BossId} / " +
-                          $"CRYSTAL : {sheetValue.Rank}");
-
-                foreach (var runeInfo in sheetValue.RuneInfos)
-                {
-                    Debug.Log($"runeInfo.RuneId : {runeInfo.RuneId} / " +
-                              $"runeInfo.Weight : {runeInfo.Weight}");
-                }
             }
         }
     }

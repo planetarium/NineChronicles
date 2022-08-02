@@ -35,7 +35,7 @@ namespace Nekoyume
         [Serializable]
         public class RuneData
         {
-            public int id;
+            public string ticker;
             public Sprite icon;
         }
     }

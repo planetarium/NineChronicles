@@ -159,9 +159,11 @@ namespace Nekoyume.Game
 
         public WorldBossListSheet WorldBossListSheet { get; private set; }
         public WorldBossRankRewardSheet WorldBossRankRewardSheet { get; private set; }
+        public WorldBossKillRewardSheet WorldBossKillRewardSheet { get; private set; }
         public WorldBossGlobalHpSheet WorldBossGlobalHpSheet { get; private set; }
-        public RuneWeightSheet RuneWeightSheet { get; private set; }
         public WorldBossCharacterSheet WorldBossCharacterSheet { get; private set; }
+        public RuneWeightSheet RuneWeightSheet { get; private set; }
+        public RuneSheet RuneSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

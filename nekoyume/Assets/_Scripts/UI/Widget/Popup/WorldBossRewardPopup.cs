@@ -103,6 +103,7 @@ namespace Nekoyume.UI
         {
             var runeWeightSheet = Game.Game.instance.TableSheets.RuneWeightSheet;
             var rewardSheet = Game.Game.instance.TableSheets.WorldBossRankRewardSheet;
+            var runeSheet = Game.Game.instance.TableSheets.RuneSheet;
             var rank = WorldBossHelper.CalculateRank(_cachedRaiderState.HighScore);
             var totalRewards = new List<FungibleAssetValue>();
             for (var i = _cachedRaiderState.LatestRewardRank; i < rank; i++)
@@ -112,6 +113,7 @@ namespace Nekoyume.UI
                     _cachedBossId,
                     runeWeightSheet,
                     rewardSheet,
+                    runeSheet,
                     random
                 );
                 totalRewards.AddRange(rewards);
@@ -135,10 +137,10 @@ namespace Nekoyume.UI
             for (var i = 0; i < runeRewards.Count; i++)
             {
                 runes[i].Object.SetActive(true);
-                var currency = runeRewards[i].Currency;
+                var ticker = runeRewards[i].Currency.Ticker;
                 var count = Convert.ToInt32(runeRewards[i].GetQuantityString());
                 runes[i].Count.text = $"{count:#,0}";
-                if (WorldBossFrontHelper.TryGetRuneIcon(currency, out var icon))
+                if (WorldBossFrontHelper.TryGetRuneIcon(ticker, out var icon))
                 {
                     runes[i].Icon.sprite = icon;
                 }
