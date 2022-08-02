@@ -19,11 +19,16 @@ namespace Nekoyume.Action
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/967
     /// Updated at https://github.com/planetarium/lib9c/pull/1167
+    /// Obsoleted at https://github.com/planetarium/lib9c/pull/1241
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash14")]
+    [ActionObsolete(ObsoletedBlockIndex)]
     public class HackAndSlash14 : GameAction
     {
+        private const long ObsoletedBlockIndex =
+            BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex;
+
         public List<Guid> costumes;
         public List<Guid> equipments;
         public List<Guid> foods;
@@ -80,6 +85,8 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
+            CheckObsolete(ObsoletedBlockIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
@@ -269,7 +276,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get skillState : {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 ctx.Random,
                 avatarState,
                 foods,
@@ -278,7 +285,7 @@ namespace Nekoyume.Action
                 stageId,
                 sheets.GetStageSimulatorSheets(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                StageSimulator.ConstructorVersionV100080);
+                StageSimulatorV1.ConstructorVersionV100080);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
