@@ -305,7 +305,10 @@ namespace Nekoyume.UI
         private void UpdateRewardView(AvatarState avatarState, StageSheet.Row row, int apPlayCount,
             int apStonePlayCount)
         {
-            var earnedExp = GetEarnedExp(avatarState, row, apPlayCount, apStonePlayCount);
+            var earnedExp = GetEarnedExp(avatarState,
+                row,
+                apPlayCount,
+                _useSweep ? apStonePlayCount : 0);
             expText.text = $"+{earnedExp}";
             starText.text = $"+{apPlayCount * 2}";
             expGlow.SetActive(earnedExp > 0);
@@ -342,7 +345,7 @@ namespace Nekoyume.UI
 
         private void UpdateStartButton()
         {
-            if (_useSweep)
+            if (!_useSweep)
             {
                 startButton.Interactable = _ap.Value > 0;
                 return;
