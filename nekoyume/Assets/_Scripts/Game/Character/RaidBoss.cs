@@ -1,13 +1,7 @@
-using Nekoyume.UI;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
-    using Nekoyume.Model;
-    using UniRx;
-
     public class RaidBoss : RaidCharacter
     {
         [SerializeField]

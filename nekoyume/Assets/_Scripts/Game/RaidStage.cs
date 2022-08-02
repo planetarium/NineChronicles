@@ -144,6 +144,7 @@ namespace Nekoyume.Game
             _waveTurn = 1;
 
             yield return StartCoroutine(container.CoPlayAppearCutscene());
+            _boss.Animator.Idle();
         }
 
         public IEnumerator CoAct(Character.RaidActionParams param)
@@ -215,7 +216,10 @@ namespace Nekoyume.Game
             yield break;
         }
 
-        public IEnumerator CoBlowAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        public IEnumerator CoBlowAttack(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
@@ -224,7 +228,10 @@ namespace Nekoyume.Game
             yield break;
         }
 
-        public IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        public IEnumerator CoDoubleAttack(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
@@ -233,7 +240,10 @@ namespace Nekoyume.Game
             yield break;
         }
 
-        public IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        public IEnumerator CoAreaAttack(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
@@ -242,7 +252,10 @@ namespace Nekoyume.Game
             yield break;
         }
 
-        public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        public IEnumerator CoHeal(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);
@@ -251,7 +264,10 @@ namespace Nekoyume.Game
             yield break;
         }
 
-        public IEnumerator CoBuff(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos)
+        public IEnumerator CoBuff(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
         {
             Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
             target.Set(caster);

@@ -73,14 +73,15 @@ namespace Nekoyume.Game.Character
 
         public void Spawn(Model.CharacterBase model)
         {
-            _characterModel = model;
+            Set(model, true);
             Id = _characterModel.Id;
             SizeType = _characterModel.SizeType;
-            _currentHp = _characterModel.HP;
             UpdateStatusUI();
         }
 
-        public virtual void Set(Model.CharacterBase model, bool updateCurrentHP = false)
+        public virtual void Set(
+            Model.CharacterBase model,
+            bool updateCurrentHP = false)
         {
             _characterModel = model;
             if (updateCurrentHP)
@@ -148,6 +149,11 @@ namespace Nekoyume.Game.Character
 
             UpdateHpBar();
             _hudContainer.UpdatePosition(gameObject, HUDOffset);
+        }
+
+        private void AddNextBuff(Model.Buff.Buff buff)
+        {
+            _characterModel.AddBuff(buff);
         }
 
         public IEnumerator CoNormalAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
@@ -514,6 +520,7 @@ namespace Nekoyume.Game.Character
             var buff = info.Buff;
             var effect = Game.instance.RaidStage.BuffController.Get<RaidCharacter, BuffVFX>(target, buff);
             effect.Play();
+            AddNextBuff(buff);
             target.UpdateStatusUI();
         }
 
