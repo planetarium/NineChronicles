@@ -76,7 +76,13 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            return Execute(context.PreviousStates,
+            if (context.Rehearsal)
+            {
+                return context.PreviousStates;
+            }
+
+            return Execute(
+                context.PreviousStates,
                 context.Signer,
                 context.BlockIndex,
                 context.Random);
