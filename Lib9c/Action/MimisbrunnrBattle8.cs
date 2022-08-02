@@ -15,11 +15,17 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Obsoleted at https://github.com/planetarium/lib9c/pull/1241
+    /// </summary>
     [Serializable]
     [ActionType("mimisbrunnr_battle8")]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex)]
+    [ActionObsolete(ObsoletedBlockIndex)]
     public class MimisbrunnrBattle8 : GameAction
     {
+        private const long ObsoletedBlockIndex =
+            BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex;
+
         public List<Guid> costumes;
         public List<Guid> equipments;
         public List<Guid> foods;
@@ -68,7 +74,7 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100270ObsoleteIndex, context);
+            CheckObsolete(ObsoletedBlockIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
