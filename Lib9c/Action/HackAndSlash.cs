@@ -20,7 +20,7 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1229
-    /// Updated at https://github.com/planetarium/lib9c/pull/1229
+    /// Updated at https://github.com/planetarium/lib9c/pull/
     /// </summary>
     [Serializable]
     [ActionType("hack_and_slash16")]
@@ -230,16 +230,18 @@ namespace Nekoyume.Action
                 sw.Restart();
                 // First simulating will use Foods and Random Skills.
                 // Remainder simulating will not use Foods.
-                var simulator = new StageSimulatorV1(
+                var simulator = new StageSimulator(
                     random,
                     avatarState,
                     i == 0 ? Foods : new List<Guid>(),
                     i == 0 ? skillsOnWaveStart : new List<Skill>(),
                     WorldId,
                     StageId,
+                    avatarState.worldInformation.IsStageCleared(StageId),
+                    StageRewardExpHelper.GetExp(avatarState.level, StageId),
                     sheets.GetStageSimulatorSheets(),
                     sheets.GetSheet<CostumeStatSheet>(),
-                    StageSimulatorV1.ConstructorVersionV100080);
+                    1);
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
