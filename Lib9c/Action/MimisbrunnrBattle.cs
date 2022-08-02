@@ -19,6 +19,7 @@ namespace Nekoyume.Action
 {
     /// <summary>
     /// Hard forked at https://github.com/planetarium/lib9c/pull/1241
+    /// Updated at https://github.com/planetarium/lib9c/pull/1244
     /// </summary>
     [Serializable]
     [ActionType("mimisbrunnr_battle10")]
