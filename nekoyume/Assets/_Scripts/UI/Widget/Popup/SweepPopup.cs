@@ -78,6 +78,9 @@ namespace Nekoyume.UI
         private Toggle pageToggle;
 
         [SerializeField]
+        private CanvasGroup canvasGroupForRepeat;
+
+        [SerializeField]
         private List<GameObject> objectsForSweep;
 
         [SerializeField]
@@ -114,6 +117,7 @@ namespace Nekoyume.UI
                         _repeatBattleAction(StageType.HackAndSlash,
                             false,
                             _ap.Value / _stageRow.CostAP);
+                        Close();
                     }
                 })
                 .AddTo(gameObject);
@@ -143,7 +147,10 @@ namespace Nekoyume.UI
             _ap.SetValueAndForceNotify(States.Instance.CurrentAvatarState.actionPoint);
             _cp.SetValueAndForceNotify(States.Instance.CurrentAvatarState.GetCP());
             _repeatBattleAction = repeatBattleAction;
-
+            pageToggle.isOn = true;
+            var disableRepeat = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId);
+            canvasGroupForRepeat.alpha = disableRepeat ? 0 : 1;
+            canvasGroupForRepeat.interactable = !disableRepeat;
             contentText.text =
                 $"({L10nManager.Localize("UI_AP")} / {L10nManager.Localize("UI_AP_POTION")})";
 

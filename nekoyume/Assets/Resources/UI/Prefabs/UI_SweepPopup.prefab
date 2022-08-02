@@ -1743,7 +1743,7 @@ GameObject:
   - component: {fileID: 5976073684580954495}
   - component: {fileID: 4306953529379295104}
   m_Layer: 5
-  m_Name: TabButton_Sub_Booster
+  m_Name: TabButton_Sub_Repeat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2641,6 +2641,7 @@ MonoBehaviour:
   information: {fileID: 7163942670845539158}
   expGlow: {fileID: 8896312618204441212}
   pageToggle: {fileID: 1601504763091829554}
+  canvasGroupForRepeat: {fileID: 5976073684580954495}
   objectsForSweep:
   - {fileID: 6756336485244890741}
   - {fileID: 8340559758803186182}
