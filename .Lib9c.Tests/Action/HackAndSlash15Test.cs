@@ -1,7 +1,8 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -16,13 +17,12 @@
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.Quest;
-    using Nekoyume.Model.Skill;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
     using static Lib9c.SerializeKeys;
 
-    public class HackAndSlashTest
+    public class HackAndSlash15Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -41,7 +41,7 @@
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public HackAndSlashTest()
+        public HackAndSlash15Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -183,14 +183,14 @@
                 List.Empty.Add(worldId.Serialize())
             );
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = costumes,
-                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
-                Foods = new List<Guid>(),
-                WorldId = worldId,
-                StageId = stageId,
-                AvatarAddress = _avatarAddress,
+                costumes = costumes,
+                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -253,14 +253,14 @@
             Assert.Equal(equipments.Count, avatarState.inventory.Items.Count);
 
             // HackAndSlash
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
-                Foods = new List<Guid>(),
-                WorldId = worldId,
-                StageId = stageId,
-                AvatarAddress = avatarState.address,
+                costumes = new List<Guid>(),
+                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = avatarState.address,
             };
 
             avatarState = state.GetAvatarStateV2(avatarState.address);
@@ -325,14 +325,14 @@
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.SerializeV2());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>(),
-                Foods = new List<Guid>(),
-                WorldId = worldId,
-                StageId = stageId,
-                AvatarAddress = _avatarAddress,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -386,14 +386,14 @@
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(_inventoryAddress, previousAvatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = equipments,
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 1,
-                AvatarAddress = _avatarAddress,
+                costumes = new List<Guid>(),
+                equipments = equipments,
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
             };
 
             var exec = Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
@@ -412,14 +412,14 @@
         [InlineData(false)]
         public void Execute_Throw_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>(),
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 1,
-                AvatarAddress = _avatarAddress,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
             };
 
             IAccountStateDelta state = backward ? new State() : _initialState;
@@ -447,14 +447,14 @@
         [InlineData(51)]
         public void ExecuteThrowSheetRowColumnException(int stageId)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>(),
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = stageId,
-                AvatarAddress = _avatarAddress,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
             };
 
             var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext
@@ -470,14 +470,14 @@
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByStage()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>(),
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 1,
-                AvatarAddress = _avatarAddress,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
             };
 
             var state = _initialState;
@@ -496,14 +496,14 @@
         [Fact]
         public void ExecuteThrowFailedAddWorldException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>(),
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 1,
-                AvatarAddress = _avatarAddress,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
             };
 
             var state = _initialState;
@@ -535,14 +535,14 @@
         [InlineData(2, 51, true)]
         public void Execute_Throw_InvalidWorldException(int worldId, int stageId, bool unlockedIdsExist)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>(),
-                Foods = new List<Guid>(),
-                WorldId = worldId,
-                StageId = stageId,
-                AvatarAddress = _avatarAddress,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
             };
 
             IAccountStateDelta state = _initialState;
@@ -567,14 +567,14 @@
         [Fact]
         public void ExecuteThrowInvalidStageException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>(),
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 3,
-                AvatarAddress = _avatarAddress,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 3,
+                avatarAddress = _avatarAddress,
             };
 
             var avatarState = new AvatarState(_avatarState);
@@ -607,14 +607,14 @@
         [Fact]
         public void ExecuteThrowInvalidStageExceptionUnlockedWorld()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>(),
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 2,
-                AvatarAddress = _avatarAddress,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 2,
+                avatarAddress = _avatarAddress,
             };
 
             _avatarState.worldInformation.TryGetWorld(1, out var world);
@@ -643,17 +643,17 @@
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
             avatarState.inventory.AddItem(equipment);
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>
                 {
                     equipment.ItemId,
                 },
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 1,
-                AvatarAddress = _avatarAddress,
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
             };
 
             var state = _initialState
@@ -690,17 +690,17 @@
             avatarState.inventory.AddItem(equipment);
             state = state.SetState(_inventoryAddress, avatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>
                 {
                     equipment.ItemId,
                 },
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 1,
-                AvatarAddress = _avatarAddress,
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
             };
 
             var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext
@@ -713,26 +713,22 @@
             SerializeException<EquipmentSlotUnlockException>(exec);
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(5, 2)]
-        [InlineData(120, 25)]
-        public void ExecuteThrowNotEnoughActionPointException(int ap, int playCount = 1)
+        [Fact]
+        public void ExecuteThrowNotEnoughActionPointException()
         {
             var avatarState = new AvatarState(_avatarState)
             {
-                actionPoint = ap,
+                actionPoint = 0,
             };
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = new List<Guid>(),
-                Equipments = new List<Guid>(),
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 1,
-                AvatarAddress = _avatarAddress,
-                PlayCount = playCount,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
             };
 
             var state = _initialState;
@@ -780,25 +776,19 @@
             }
 
             IAccountStateDelta state = _initialState
-                .SetState(_avatarAddress, previousAvatarState.SerializeV2())
-                .SetState(
-                    _avatarAddress.Derive(LegacyInventoryKey),
-                    previousAvatarState.inventory.Serialize())
-                .SetState(
-                    _avatarAddress.Derive(LegacyWorldInformationKey),
-                    previousAvatarState.worldInformation.Serialize())
-                .SetState(
-                    _avatarAddress.Derive(LegacyQuestListKey),
-                    previousAvatarState.questList.Serialize());
+            .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+            .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+            .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+            .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = costumes,
-                Equipments = equipments,
-                Foods = new List<Guid>(),
-                WorldId = 1,
-                StageId = 1,
-                AvatarAddress = _avatarAddress,
+                costumes = costumes,
+                equipments = equipments,
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -860,14 +850,14 @@
                             avatarState.address.Derive(LegacyInventoryKey),
                             avatarState.inventory.Serialize());
 
-                    var action = new HackAndSlash
+                    var action = new HackAndSlash15
                     {
-                        Costumes = costumes,
-                        Equipments = equipments,
-                        Foods = new List<Guid>(),
-                        WorldId = 1,
-                        StageId = 1,
-                        AvatarAddress = avatarState.address,
+                        costumes = costumes,
+                        equipments = equipments,
+                        foods = new List<Guid>(),
+                        worldId = 1,
+                        stageId = 1,
+                        avatarAddress = avatarState.address,
                     };
 
                     var exec = Assert.Throws<NotEnoughAvatarLevelException>(() => action.Execute(new ActionContext
@@ -879,40 +869,6 @@
 
                     SerializeException<NotEnoughAvatarLevelException>(exec);
                 }
-            }
-        }
-
-        [Fact]
-        public void ExecuteThrowPlayCountIsZeroException()
-        {
-            for (var playCount = -10; playCount <= 0; playCount++)
-            {
-                var avatarState = new AvatarState(_avatarState)
-                {
-                    actionPoint = 99999999,
-                    level = 1,
-                };
-
-                var state = _initialState;
-                var action = new HackAndSlash
-                {
-                    Costumes = new List<Guid>(),
-                    Equipments = new List<Guid>(),
-                    Foods = new List<Guid>(),
-                    WorldId = 1,
-                    StageId = 1,
-                    AvatarAddress = avatarState.address,
-                    PlayCount = playCount,
-                };
-
-                var exec = Assert.Throws<PlayCountIsZeroException>(() => action.Execute(new ActionContext
-                {
-                    PreviousStates = state,
-                    Signer = avatarState.agentAddress,
-                    Random = new TestRandom(),
-                }));
-
-                SerializeException<PlayCountIsZeroException>(exec);
             }
         }
 
@@ -1001,14 +957,14 @@
                 Enumerable.Range(1, worldId).ToList().Select(i => i.Serialize()).Serialize()
             );
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = costumes,
-                Equipments = equipments.Select(e => e.NonFungibleId).ToList(),
-                Foods = new List<Guid>(),
-                WorldId = worldId,
-                StageId = stageId,
-                AvatarAddress = _avatarAddress,
+                costumes = costumes,
+                equipments = equipments.Select(e => e.NonFungibleId).ToList(),
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -1146,17 +1102,17 @@
                 state = state.SetState(skillStateAddress, skillState.Serialize());
             }
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash15
             {
-                Costumes = clear ? costumes : new List<Guid>(),
-                Equipments = clear
+                costumes = clear ? costumes : new List<Guid>(),
+                equipments = clear
                     ? equipments.Select(e => e.NonFungibleId).ToList()
                     : new List<Guid>(),
-                Foods = new List<Guid>(),
-                WorldId = worldId,
-                StageId = stageId,
-                AvatarAddress = _avatarAddress,
-                StageBuffId = skillState?.SkillIds
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
+                stageBuffId = skillState?.SkillIds
                     .OrderBy(key => _tableSheets.CrystalRandomBuffSheet[key].Rank)
                     .FirstOrDefault(),
             };
@@ -1170,21 +1126,15 @@
                 BlockIndex = 1,
             };
             var nextState = action.Execute(ctx);
-            var simulator = new StageSimulator(
+            var simulator = new StageSimulatorV1(
                 new TestRandom(ctx.Random.Seed),
                 previousAvatarState,
                 new List<Guid>(),
-                new List<Skill>(),
                 worldId,
                 stageId,
-                _tableSheets.StageSheet[stageId],
-                _tableSheets.StageWaveSheet[stageId],
-                false,
-                20,
-                _tableSheets.GetSimulatorSheets(),
-                _tableSheets.EnemySkillSheet,
+                _tableSheets.GetStageSimulatorSheets(),
                 _tableSheets.CostumeStatSheet,
-                1);
+                StageSimulatorV1.ConstructorVersionV100080);
             simulator.Simulate(1);
             var log = simulator.Log;
             var skillStateIValue =
@@ -1194,7 +1144,7 @@
             var nextSkillState = new CrystalRandomSkillState(skillStateAddress, serialized);
             Assert.Equal(skillStateAddress, nextSkillState.Address);
 
-            if (log.IsClear)
+            if (clear)
             {
                 Assert.Equal(stageId + 1, nextSkillState.StageId);
                 Assert.Equal(0, nextSkillState.StarCount);

@@ -249,7 +249,7 @@ namespace Nekoyume.Model.State
             NameWithHash = $"{name} <size=80%><color=#A68F7E>#{address.ToHex().Substring(0, 4)}</color></size>";
         }
 
-        public void Update(StageSimulator stageSimulator)
+        public void Update(IStageSimulator stageSimulator)
         {
             var player = stageSimulator.Player;
             characterId = player.RowData.Id;

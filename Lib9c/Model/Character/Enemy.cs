@@ -12,6 +12,9 @@ namespace Nekoyume.Model
     public class Enemy : CharacterBase, ICloneable
     {
         public int spawnIndex = -1;
+        
+        [NonSerialized]
+        private IStageSimulator _stageSimulator;
 
         public Enemy(
             CharacterBase player,
@@ -25,6 +28,7 @@ namespace Nekoyume.Model
                 monsterLevel,
                 optionalStatModifiers)
         {
+            _stageSimulator = (IStageSimulator)player.Simulator;
             Targets.Add(player);
             PostConstruction();
         }
@@ -38,6 +42,7 @@ namespace Nekoyume.Model
         public Enemy(CharacterSheet.Row rowData) : base(rowData)
         {
         }
+
 
         private void PostConstruction()
         {
@@ -56,8 +61,7 @@ namespace Nekoyume.Model
             base.SetSkill();
 
             var dmg = (int)(ATK * 0.3m);
-            var skillIds = ((IEnemySkillSheetContainedSimulator)Simulator)
-                .EnemySkillSheet.Values
+            var skillIds = _stageSimulator.EnemySkillSheet.Values
                 .Where(r => r.characterId == RowData.Id)
                 .Select(r => r.skillId)
                 .ToList();

@@ -7,7 +7,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -15,20 +15,22 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
+    /// <summary>
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/884
+    /// Updated at https://github.com/planetarium/lib9c/pull/957
+    /// Updated at https://github.com/planetarium/lib9c/pull/1241
+    /// </summary>
     [Serializable]
-    [ActionObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex)]
-    [ActionType("hack_and_slash6")]
-    public class HackAndSlash6 : GameAction
+    [ActionType("mimisbrunnr_battle9")]
+    public class MimisbrunnrBattle9 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
         public List<Guid> foods;
         public int worldId;
         public int stageId;
+        public int playCount = 1;
         public Address avatarAddress;
-        public Address WeeklyArenaAddress;
-        public Address RankingMapAddress;
-        public BattleLog Result { get; private set; }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -38,23 +40,19 @@ namespace Nekoyume.Action
                 ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
+                ["playCount"] = playCount.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
-                ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
-                ["rankingMapAddress"] = RankingMapAddress.Serialize(),
             }.ToImmutableDictionary();
 
-
-        protected override void LoadPlainValueInternal(
-            IImmutableDictionary<string, IValue> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             costumes =  ((List) plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
             equipments = ((List) plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
             foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
+            playCount = plainValue["playCount"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-            WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
-            RankingMapAddress = plainValue["rankingMapAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -66,9 +64,7 @@ namespace Nekoyume.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
-                states = states.SetState(RankingMapAddress, MarkChanged);
                 states = states.SetState(avatarAddress, MarkChanged);
-                states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 states = states
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
@@ -76,33 +72,23 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.Policy.BlockPolicySource.V100080ObsoleteIndex, context);
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
+            Log.Verbose("{AddressesHex}Mimisbrunnr exec started", addressesHex);
 
             if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out AvatarState avatarState, out _))
             {
-                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
-
+            Log.Verbose("{AddressesHex}Mimisbrunnr Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            if (avatarState.RankingMapAddress != RankingMapAddress)
-            {
-                throw new InvalidAddressException($"{addressesHex}Invalid ranking map address");
-            }
-
-            // worldId와 stageId가 유효한지 확인합니다.
             var worldSheet = states.GetSheet<WorldSheet>();
-
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), worldId);
@@ -122,11 +108,31 @@ namespace Nekoyume.Action
                 throw new SheetRowNotFoundException(addressesHex, nameof(StageSheet), stageId);
             }
 
+            var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
             var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
                 // NOTE: Add new World from WorldSheet
-                worldInformation.AddAndUnlockNewWorld(worldRow, ctx.BlockIndex, worldSheet);
+                worldInformation.AddAndUnlockMimisbrunnrWorld(worldRow, ctx.BlockIndex, worldSheet, worldUnlockSheet);
+                if (!worldInformation.TryGetWorld(worldId, out world))
+                {
+                    // Do nothing.
+                }
+            }
+
+            if (!world.IsUnlocked)
+            {
+                var worldUnlockSheetRow = worldUnlockSheet.OrderedList.FirstOrDefault(row => row.WorldIdToUnlock == worldId);
+                if (!(worldUnlockSheetRow is null) &&
+                    worldInformation.IsWorldUnlocked(worldUnlockSheetRow.WorldId) &&
+                    worldInformation.IsStageCleared(worldUnlockSheetRow.StageId))
+                {
+                    worldInformation.UnlockWorld(worldId, ctx.BlockIndex, worldSheet);
+                    if (!worldInformation.TryGetWorld(worldId, out world))
+                    {
+                        // Do nothing.
+                    }
+                }
             }
 
             if (!world.IsUnlocked)
@@ -149,30 +155,67 @@ namespace Nekoyume.Action
                 );
             }
 
-            avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
-            avatarState.ValidateConsumable(foods, context.BlockIndex);
-            avatarState.ValidateCostume(costumes);
+            sw.Restart();
+            var mimisbrunnrSheet = states.GetSheet<MimisbrunnrSheet>();
+            if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
+            {
+                throw new SheetRowNotFoundException("MimisbrunnrSheet", addressesHex, stageId);
+            }
 
-            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
+            foreach (var equipmentId in equipments)
+            {
+                if (avatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable itemUsable))
+                {
+                    var elementalType = ((Equipment) itemUsable).ElementalType;
+                    if (!mimisbrunnrSheetRow.ElementalTypes.Exists(x => x == elementalType))
+                    {
+                        throw new InvalidElementalException(
+                            $"{addressesHex}ElementalType of {equipmentId} does not match.");
+                    }
+                }
+            }
+            sw.Stop();
+            Log.Verbose("{AddressesHex}Mimisbrunnr Check Equipments ElementalType: {Elapsed}", addressesHex, sw.Elapsed);
+
+            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
+            var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
+            var costumeIds = avatarState.ValidateCostume(costumes);
 
             sw.Restart();
-            if (avatarState.actionPoint < stageRow.CostAP)
+
+            if (playCount <= 0)
+            {
+                throw new PlayCountIsZeroException($"{addressesHex}playCount must be greater than 0. " +
+                                                   $"current playCount : {playCount}");
+            }
+
+            var totalCostActionPoint = stageRow.CostAP * playCount;
+            if (avatarState.actionPoint < totalCostActionPoint)
             {
                 throw new NotEnoughActionPointException(
                     $"{addressesHex}Aborted due to insufficient action point: " +
-                    $"{avatarState.actionPoint} < {stageRow.CostAP}"
+                    $"{avatarState.actionPoint} < totalAP({totalCostActionPoint}) = cost({stageRow.CostAP}) * boostCount({playCount})"
                 );
             }
 
-            avatarState.actionPoint -= stageRow.CostAP;
+            var equippableItem = costumes.Concat(equipments);
+            avatarState.EquipItems(equippableItem);
+            var requirementSheet = states.GetSheet<ItemRequirementSheet>();
+            avatarState.ValidateItemRequirement(
+                costumeIds.Concat(foodIds).ToList(),
+                equipmentList,
+                requirementSheet,
+                states.GetSheet<EquipmentItemRecipeSheet>(),
+                states.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                states.GetSheet<EquipmentItemOptionSheet>(),
+                addressesHex);
 
-            var items = equipments.Concat(costumes);
-            avatarState.EquipItems(items);
+            avatarState.actionPoint -= totalCostActionPoint;
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var characterSheet = states.GetSheet<CharacterSheet>();
+            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
             var simulator = new StageSimulatorV1(
                 ctx.Random,
                 avatarState,
@@ -181,18 +224,18 @@ namespace Nekoyume.Action
                 stageId,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
-                StageSimulatorV1.ConstructorVersionV100025);
-
+                StageSimulatorV1.ConstructorVersionV100080,
+                playCount);
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.SimulateV3();
+            simulator.Simulate(playCount);
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Simulator.SimulateV2(): {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
             Log.Verbose(
-                "{AddressesHex}Execute HackAndSlash6({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
+                "{AddressesHex}Execute Mimisbrunnr({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
                 "clearWave: {ClearWave}, totalWave: {TotalWave}",
                 addressesHex,
                 avatarAddress,
@@ -206,7 +249,6 @@ namespace Nekoyume.Action
             sw.Restart();
             if (simulator.Log.IsClear)
             {
-                var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
                 simulator.Player.worldInformation.ClearStage(
                     worldId,
                     stageId,
@@ -215,83 +257,29 @@ namespace Nekoyume.Action
                     worldUnlockSheet
                 );
             }
-
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
-
+            Log.Verbose("{AddressesHex}Mimisbrunnr ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
+
             avatarState.Update(simulator);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards2(materialSheet);
+            avatarState.UpdateQuestRewards(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.mailBox.CleanUp();
             states = states
-                .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(avatarAddress, avatarState.SerializeV2());
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
-
+            Log.Verbose("{AddressesHex}Mimisbrunnr Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
-            if (states.TryGetState(RankingMapAddress, out Dictionary d) && simulator.Log.IsClear)
-            {
-                var ranking = new RankingMapState(d);
-                ranking.Update(avatarState);
-
-                sw.Stop();
-                Log.Verbose("{AddressesHex}HAS Update RankingState: {Elapsed}", addressesHex, sw.Elapsed);
-                sw.Restart();
-
-                var serialized = ranking.Serialize();
-
-                sw.Stop();
-                Log.Verbose("{AddressesHex}HAS Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
-                sw.Restart();
-                states = states.SetState(RankingMapAddress, serialized);
-            }
-
-            sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Set RankingState: {Elapsed}", addressesHex, sw.Elapsed);
-
-            sw.Restart();
-            if (simulator.Log.stageId >= GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
-                simulator.Log.IsClear &&
-                states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
-            {
-                var weekly = new WeeklyArenaState(weeklyDict);
-                if (!weekly.Ended)
-                {
-                    if (weekly.ContainsKey(avatarAddress))
-                    {
-                        var info = weekly[avatarAddress];
-                        info.UpdateV2(avatarState, characterSheet, costumeStatSheet);
-                        weekly.Update(info);
-                    }
-                    else
-                    {
-                        weekly.SetV2(avatarState, characterSheet, costumeStatSheet);
-                    }
-
-                    sw.Stop();
-                    Log.Verbose("{AddressesHex}HAS Update WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
-
-                    sw.Restart();
-                    var weeklySerialized = weekly.Serialize();
-                    sw.Stop();
-                    Log.Verbose("{AddressesHex}HAS Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
-
-                    states = states.SetState(weekly.address, weeklySerialized);
-                }
-            }
-
-            Result = simulator.Log;
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Verbose("{AddressesHex}Mimisbrunnr Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states;
         }
     }

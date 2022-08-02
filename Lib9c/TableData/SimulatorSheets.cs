@@ -2,7 +2,7 @@ using Nekoyume.TableData.Event;
 
 namespace Nekoyume.TableData
 {
-    public abstract class SimulatorSheets
+    public class SimulatorSheets
     {
         public readonly MaterialItemSheet MaterialItemSheet;
         public readonly SkillSheet SkillSheet;
@@ -12,7 +12,7 @@ namespace Nekoyume.TableData
         public readonly CharacterLevelSheet CharacterLevelSheet;
         public readonly EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet;
 
-        protected SimulatorSheets(
+        public SimulatorSheets(
             MaterialItemSheet materialItemSheet,
             SkillSheet skillSheet,
             SkillBuffSheet skillBuffSheet,

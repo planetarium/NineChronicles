@@ -158,6 +158,7 @@ namespace Lib9c
         public const string CompletedQuestIdsKeyDeprecated = "completedQuestIds";
 
         public const string updateSellOrderIdKey = "roi";
+        public const string UpdateSellInfoKey = "usi";
 
         // Arena
         public const string MyAvatarAddressKey = "maa";

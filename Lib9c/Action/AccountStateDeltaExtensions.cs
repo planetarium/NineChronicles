@@ -530,6 +530,7 @@ namespace Nekoyume.Action
             bool containAvatarSheets = false,
             bool containItemSheet = false,
             bool containQuestSheet = false,
+            bool containSimulatorSheets = false,
             bool containStageSimulatorSheets = false,
             bool containRankingSimulatorSheets = false,
             bool containArenaSimulatorSheets = false,
@@ -570,6 +571,17 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(ItemTypeCollectQuestSheet));
                 sheetTypeList.Add(typeof(GoldQuestSheet));
                 sheetTypeList.Add(typeof(CombinationEquipmentQuestSheet));
+            }
+
+            if (containSimulatorSheets)
+            {
+                sheetTypeList.Add(typeof(MaterialItemSheet));
+                sheetTypeList.Add(typeof(SkillSheet));
+                sheetTypeList.Add(typeof(SkillBuffSheet));
+                sheetTypeList.Add(typeof(BuffSheet));
+                sheetTypeList.Add(typeof(CharacterSheet));
+                sheetTypeList.Add(typeof(CharacterLevelSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
             }
 
             if (containStageSimulatorSheets)

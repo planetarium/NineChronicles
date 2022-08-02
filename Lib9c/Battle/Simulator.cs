@@ -11,13 +11,13 @@ using Priority_Queue;
 
 namespace Nekoyume.Battle
 {
-    public abstract class Simulator
+    public abstract class Simulator : ISimulator
     {
         public readonly IRandom Random;
-        public readonly BattleLog Log;
-        public readonly Player Player;
+        public BattleLog Log { get; }
+        public Player Player { get; }
         public BattleLog.Result Result { get; protected set; }
-        public SimplePriorityQueue<CharacterBase, decimal> Characters;
+        public SimplePriorityQueue<CharacterBase, decimal> Characters { get; set; }
         public const decimal TurnPriority = 100m;
         public readonly MaterialItemSheet MaterialItemSheet;
         public readonly SkillSheet SkillSheet;
@@ -28,8 +28,8 @@ namespace Nekoyume.Battle
         public readonly EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet;
         protected const int MaxTurn = 200;
         public int TurnNumber;
-        public int WaveNumber;
-        public int WaveTurn;
+        public int WaveNumber { get; protected set; }
+        public int WaveTurn { get; set; }
         public abstract IEnumerable<ItemBase> Reward { get; }
 
         protected Simulator(

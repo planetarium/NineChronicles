@@ -155,12 +155,12 @@ namespace Lib9c.Tests.Action
                 },
                 HackAndSlash _ => new HackAndSlash
                 {
-                    costumes = new List<Guid>(),
-                    equipments = new List<Guid>(),
-                    foods = new List<Guid>(),
-                    worldId = 0,
-                    stageId = 0,
-                    avatarAddress = new PrivateKey().ToAddress(),
+                    Costumes = new List<Guid>(),
+                    Equipments = new List<Guid>(),
+                    Foods = new List<Guid>(),
+                    WorldId = 0,
+                    StageId = 0,
+                    AvatarAddress = new PrivateKey().ToAddress(),
                 },
                 ActivateAccount _ => new ActivateAccount(new PrivateKey().ToAddress(), new byte[] { 0x0 }),
                 AddActivatedAccount _ => new AddActivatedAccount(),
@@ -242,7 +242,18 @@ namespace Lib9c.Tests.Action
                 SellCancellation _ => new SellCancellation(),
                 UpdateSell _ => new UpdateSell
                 {
-                    price = _currency * 100,
+                    sellerAvatarAddress = new PrivateKey().ToAddress(),
+                    updateSellInfos = new[]
+                    {
+                        new UpdateSellInfo(
+                            Guid.NewGuid(),
+                            Guid.NewGuid(),
+                            Guid.NewGuid(),
+                            ItemSubType.Armor,
+                            _currency * 100,
+                            1
+                        ),
+                    },
                 },
                 CreatePendingActivations _ => new CreatePendingActivations
                 {
