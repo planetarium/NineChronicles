@@ -145,6 +145,7 @@ namespace Nekoyume.Action
                     typeof(EventDungeonStageWaveSheet),
                     typeof(EnemySkillSheet),
                     typeof(CostumeStatSheet),
+                    typeof(MaterialItemSheet),
                 });
             sw.Stop();
             Log.Verbose(
@@ -256,7 +257,7 @@ namespace Nekoyume.Action
             // Simulate
             sw.Restart();
             // NOTE: This is a temporary solution. The formula is not yet decided.
-            var exp = scheduleRow.DungeonExpSeedValue;
+            var exp = scheduleRow.DungeonExpSeedValue * PlayCount;
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
@@ -271,8 +272,12 @@ namespace Nekoyume.Action
                 sheets.GetSimulatorSheets(),
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                PlayCount);
-            simulator.Simulate(PlayCount);
+                StageSimulator.GetWaveRewards(
+                    context.Random,
+                    stageRow,
+                    sheets.GetSheet<MaterialItemSheet>(),
+                    PlayCount));
+            simulator.Simulate();
             sw.Stop();
             Log.Verbose(
                 "[{ActionTypeString}][{AddressesHex}] Simulate: {Elapsed}",
