@@ -54,12 +54,16 @@ namespace Nekoyume.Model
             base.SetSkill();
 
             var pattern = PatternRowData.Patterns.First(x => x.Wave == _wave);
-            var availableSkills = Simulator.SkillSheet.Values
-                .Where(r => pattern.SkillIds.Contains(r.Id));
             var dmg = (int)(ATK * 0.3m);
+
             foreach (var id in pattern.SkillIds)
             {
-                var skill = SkillFactory.Get(availableSkills.First(x => x.Id == id), dmg, 100);
+                if (!Simulator.SkillSheet.TryGetValue(id, out var skillRow))
+                {
+                    throw new SheetRowNotFoundException(nameof(SkillSheet), id);
+                }
+
+                var skill = SkillFactory.Get(skillRow, dmg, 100);
                 _orderedSkills.Add(skill);
             }
         }
@@ -77,11 +81,6 @@ namespace Nekoyume.Model
                     Simulator.BuffSheet
                 )
             );
-
-            if (!Simulator.SkillSheet.TryGetValue(skill.SkillRow.Id, out var sheetSkill))
-            {
-                throw new KeyNotFoundException(skill.SkillRow.Id.ToString(CultureInfo.InvariantCulture));
-            }
 
             Simulator.Log.Add(usedSkill);
             foreach (var info in usedSkill.SkillInfos)
