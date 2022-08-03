@@ -1170,8 +1170,9 @@
                 BlockIndex = 1,
             };
             var nextState = action.Execute(ctx);
+            var contextRandom = new TestRandom(ctx.Random.Seed);
             var simulator = new StageSimulator(
-                new TestRandom(ctx.Random.Seed),
+                contextRandom,
                 previousAvatarState,
                 new List<Guid>(),
                 new List<Skill>(),
@@ -1184,8 +1185,11 @@
                 _tableSheets.GetSimulatorSheets(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
-                1);
-            simulator.Simulate(1);
+                StageSimulator.GetWaveRewards(
+                    contextRandom,
+                    _tableSheets.StageSheet[stageId],
+                    _tableSheets.MaterialItemSheet));
+            simulator.Simulate();
             var log = simulator.Log;
             var skillStateIValue =
                 nextState.GetState(skillStateAddress);

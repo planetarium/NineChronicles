@@ -264,6 +264,7 @@ namespace Nekoyume.Action
                 sw.Elapsed);
 
             sw.Restart();
+            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
@@ -278,7 +279,7 @@ namespace Nekoyume.Action
                 sheets.GetSimulatorSheets(),
                 sheets.GetSheet<EnemySkillSheet>(),
                 sheets.GetSheet<CostumeStatSheet>(),
-                playCount);
+                StageSimulator.GetWaveRewards(context.Random, stageRow, materialSheet, playCount));
             sw.Stop();
             Log.Verbose(
                 "{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}",
@@ -286,7 +287,7 @@ namespace Nekoyume.Action
                 sw.Elapsed);
 
             sw.Restart();
-            simulator.Simulate(playCount);
+            simulator.Simulate();
             sw.Stop();
             Log.Verbose(
                 "{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}",
@@ -326,8 +327,6 @@ namespace Nekoyume.Action
             sw.Restart();
 
             avatarState.Update(simulator);
-
-            var materialSheet = sheets.GetSheet<MaterialItemSheet>();
             avatarState.UpdateQuestRewards(materialSheet);
 
             avatarState.updatedAt = context.BlockIndex;
