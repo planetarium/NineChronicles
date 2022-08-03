@@ -16,25 +16,31 @@ namespace Nekoyume.Helper
             AvatarState avatarState,
             List<Model.Skill.Skill> skillsOnWaveStart,
             TableSheets sheets,
-            out StageSimulatorV1 firstStageSimulator)
+            out StageSimulator firstStageSimulator)
         {
             firstStageSimulator = null;
             var model = new BattleResultPopup.Model();
             var random = new ActionRenderHandler.LocalRandom(eval.RandomSeed);
+            var stageRow = sheets.StageSheet[eval.Action.StageId];
             for (var i = 0; i < eval.Action.PlayCount; i++)
             {
                 var prevExp = avatarState.exp;
-                var simulator = new StageSimulatorV1(
+                var simulator = new StageSimulator(
                     random,
                     avatarState,
                     i == 0 ? eval.Action.Foods : new List<Guid>(),
                     i == 0 ? skillsOnWaveStart : new List<Model.Skill.Skill>(),
                     eval.Action.WorldId,
                     eval.Action.StageId,
+                    stageRow,
+                    sheets.StageWaveSheet[eval.Action.StageId],
+                    avatarState.worldInformation.IsStageCleared(eval.Action.StageId),
+                    StageRewardExpHelper.GetExp(avatarState.level, eval.Action.StageId),
                     sheets.GetStageSimulatorSheets(),
+                    sheets.EnemySkillSheet,
                     sheets.CostumeStatSheet,
-                    StageSimulatorV1.ConstructorVersionV100080);
-                simulator.Simulate(1);
+                    StageSimulator.GetWaveRewards(random, stageRow, sheets.MaterialItemSheet));
+                simulator.Simulate();
 
                 if (simulator.Log.IsClear)
                 {

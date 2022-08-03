@@ -29,6 +29,7 @@ using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
+using Skill = Nekoyume.Model.Skill.Skill;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -1131,18 +1132,31 @@ namespace Nekoyume.BlockChain
                                 .DoOnError(e => Debug.LogException(e));
                         });
 
-                var simulator = new StageSimulatorV1(
-                    new LocalRandom(eval.RandomSeed),
-                    States.Instance.CurrentAvatarState,
+                var sheets = TableSheets.Instance;
+                var stageRow = sheets.StageSheet[eval.Action.stageId];
+                var avatarState = States.Instance.CurrentAvatarState;
+                var localRandom = new LocalRandom(eval.RandomSeed);
+                var simulator = new StageSimulator(
+                    localRandom,
+                    avatarState,
                     eval.Action.foods,
+                    new List<Skill>(),
                     eval.Action.worldId,
                     eval.Action.stageId,
-                    Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
-                    Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulatorV1.ConstructorVersionV100080,
-                    eval.Action.playCount
+                    stageRow,
+                    sheets.StageWaveSheet[eval.Action.stageId],
+                    avatarState.worldInformation.IsStageCleared(eval.Action.stageId),
+                    0,
+                    sheets.GetStageSimulatorSheets(),
+                    sheets.EnemySkillSheet,
+                    sheets.CostumeStatSheet,
+                    StageSimulator.GetWaveRewards(
+                        localRandom,
+                        stageRow,
+                        sheets.MaterialItemSheet,
+                        eval.Action.playCount)
                 );
-                simulator.Simulate(eval.Action.playCount);
+                simulator.Simulate();
                 BattleLog log = simulator.Log;
                 Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
 
