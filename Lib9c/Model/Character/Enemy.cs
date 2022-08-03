@@ -73,10 +73,6 @@ namespace Nekoyume.Model
         protected override void SetSkill()
         {
             base.SetSkill();
-            if (RowData == null)
-            {
-                return;
-            }
 
             var dmg = (int) (ATK * 0.3m);
             var skillIds = StageSimulator.EnemySkillSheet.Values.Where(r => r.characterId == RowData.Id)

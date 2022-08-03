@@ -51,8 +51,6 @@ namespace Nekoyume.Model
 
         protected override void SetSkill()
         {
-            base.SetSkill();
-
             var pattern = PatternRowData.Patterns.First(x => x.Wave == _wave);
             var dmg = (int)(ATK * 0.3m);
 
