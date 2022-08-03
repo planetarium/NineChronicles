@@ -56,7 +56,11 @@ namespace Lib9c.Tests.Model
                 _tableSheets.GetSimulatorSheets(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
-                1);
+                StageSimulator.GetWaveRewards(
+                    _random,
+                    _tableSheets.StageSheet[1],
+                    _tableSheets.MaterialItemSheet)
+            );
 
             var player = simulator.Player;
             Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);

@@ -233,6 +233,8 @@ namespace Nekoyume.Action
             var worldSheet = sheets.GetSheet<WorldSheet>();
             var worldUnlockSheet = sheets.GetSheet<WorldUnlockSheet>();
             var crystalStageBuffSheet = sheets.GetSheet<CrystalStageBuffGachaSheet>();
+            var stageRow = sheets.GetSheet<StageSheet>()[StageId];
+            var materialItemSheet = sheets.GetSheet<MaterialItemSheet>();
             sw.Restart();
             // if PlayCount > 1, it is Multi-HAS.
             for (var i = 0; i < PlayCount; i++)
@@ -247,14 +249,14 @@ namespace Nekoyume.Action
                     i == 0 ? skillsOnWaveStart : new List<Skill>(),
                     WorldId,
                     StageId,
-                    sheets.GetSheet<StageSheet>()[StageId],
+                    stageRow,
                     sheets.GetSheet<StageWaveSheet>()[StageId],
                     avatarState.worldInformation.IsStageCleared(StageId),
                     StageRewardExpHelper.GetExp(avatarState.level, StageId),
                     sheets.GetSimulatorSheets(),
                     sheets.GetSheet<EnemySkillSheet>(),
                     sheets.GetSheet<CostumeStatSheet>(),
-                    1);
+                    StageSimulator.GetWaveRewards(random, stageRow, materialItemSheet));
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -301,7 +303,7 @@ namespace Nekoyume.Action
                 addressesHex, sw.Elapsed, PlayCount);
 
             sw.Restart();
-            avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
+            avatarState.UpdateQuestRewards(materialItemSheet);
             avatarState.updatedAt = blockIndex;
             avatarState.mailBox.CleanUp();
             sw.Stop();

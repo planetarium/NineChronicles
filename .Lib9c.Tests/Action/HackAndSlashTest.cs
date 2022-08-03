@@ -1184,7 +1184,10 @@
                 _tableSheets.GetSimulatorSheets(),
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
-                1);
+                StageSimulator.GetWaveRewards(
+                    random,
+                    _tableSheets.StageSheet[stageId],
+                    _tableSheets.MaterialItemSheet));
             simulator.Simulate();
             var log = simulator.Log;
             var skillStateIValue =
