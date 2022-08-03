@@ -22,6 +22,14 @@ namespace Nekoyume.Extensions
             return eventDungeonOrRecipeId / 10_000;
         }
 
+
+
+        public static int GetStageExp(
+            this EventScheduleSheet.Row row,
+            int stageNumber,
+            int multiplier) =>
+            stageNumber / 5 * row.DungeonExpSeedValue * multiplier;
+
         public static EventScheduleSheet.Row ValidateFromAction(
             this EventScheduleSheet scheduleSheet,
             long blockIndex,

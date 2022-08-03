@@ -256,8 +256,9 @@ namespace Nekoyume.Action
 
             // Simulate
             sw.Restart();
-            // NOTE: This is a temporary solution. The formula is not yet decided.
-            var exp = scheduleRow.DungeonExpSeedValue * PlayCount;
+            var exp = scheduleRow.GetStageExp(
+                EventDungeonStageId.ToEventDungeonStageNumber(),
+                PlayCount);
             var simulator = new StageSimulator(
                 context.Random,
                 avatarState,
