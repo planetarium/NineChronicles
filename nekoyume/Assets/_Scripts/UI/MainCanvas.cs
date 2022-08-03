@@ -233,9 +233,15 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<StageInformation>());
             yield return null;
+            secondWidgets.Add(Widget.Create<WorldBoss>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<WorldBossDetail>());
+            yield return null;
             secondWidgets.Add(Widget.Create<BattlePreparation>());
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaBattlePreparation>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<RaidPreparation>());
             yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
@@ -246,10 +252,6 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<EventBanner>());
             yield return null;
             secondWidgets.Add(Widget.Create<NoticePopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<WorldBoss>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<WorldBossDetail>());
             yield return null;
 
             // loading

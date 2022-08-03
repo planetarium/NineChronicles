@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
-using Libplanet.Assets;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
@@ -129,6 +126,11 @@ namespace Nekoyume.Helper
                                             .ToList();
             row = rows.Any() ? rows.First() : null;
             return rows.Any();
+        }
+
+        public static WorldBossStatus GetStatus(long currentBlockIndex)
+        {
+            return IsItInSeason(currentBlockIndex) ? WorldBossStatus.Season : WorldBossStatus.OffSeason;
         }
     }
 }

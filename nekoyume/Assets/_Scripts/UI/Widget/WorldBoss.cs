@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -23,13 +24,6 @@ namespace Nekoyume.UI
 
     public class WorldBoss : Widget
     {
-        private enum Status
-        {
-            None,
-            OffSeason,
-            Season,
-        }
-
         [SerializeField]
         private WorldBossSeason season;
 
@@ -88,9 +82,9 @@ namespace Nekoyume.UI
         private GameObject _bossSpinePrefab;
         private (long, long) _period;
         private RaiderState _cachedRaiderState;
-        private int _remainTicket;
+        // private int _remainTicket;
 
-        private Status _status = Status.None;
+        private WorldBossStatus _status = WorldBossStatus.None;
         private readonly List<IDisposable> _disposables = new();
         private HeaderMenuStatic _headerMenu;
 
@@ -165,21 +159,21 @@ namespace Nekoyume.UI
         {
             if (forceUpdate)
             {
-                _status = Status.None;
+                _status = WorldBossStatus.None;
             }
 
-            var curStatus = GetStatus(currentBlockIndex);
+            var curStatus = WorldBossFrontHelper.GetStatus(currentBlockIndex);
             if (_status != curStatus)
             {
                 _status = curStatus;
                 switch (_status)
                 {
-                    case Status.OffSeason:
+                    case WorldBossStatus.OffSeason:
                         ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.CurrencyOnly,
                             ignoreHeaderMenuAnimation);
                         UpdateOffSeason(currentBlockIndex);
                         break;
-                    case Status.Season:
+                    case WorldBossStatus.Season:
                         ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.WorldBoss,
                             ignoreHeaderMenuAnimation);
                         if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
@@ -191,22 +185,16 @@ namespace Nekoyume.UI
                         UpdateSeason(row, worldBoss, raider, myRecord, userCount);
 
                         break;
-                    case Status.None:
+                    case WorldBossStatus.None:
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
 
-            UpdateTicket(currentBlockIndex);
+            _headerMenu.WorldBossTickets.UpdateTicket(_cachedRaiderState, currentBlockIndex);
+            // UpdateTicket(currentBlockIndex);
             UpdateRemainTimer(_period, currentBlockIndex);
             SetActiveQueryLoading(false);
-        }
-
-        private Status GetStatus(long currentBlockIndex)
-        {
-            return WorldBossFrontHelper.IsItInSeason(currentBlockIndex)
-                ? Status.Season
-                : Status.OffSeason;
         }
 
         private void UpdateOffSeason(long currentBlockIndex)
@@ -244,10 +232,11 @@ namespace Nekoyume.UI
             rankButton.gameObject.SetActive(true);
             enterButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
+            _cachedRaiderState = myRaiderState;
 
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
-            UpdateMyInformation(myRaiderState, myRecord);
+            UpdateMyInformation(myRecord);
             UpdateUserCount(userCount);
         }
 
@@ -284,31 +273,31 @@ namespace Nekoyume.UI
             timeBlock.SetTimeBlock(Util.GetBlockToTime(end - current), $"{current}/{end}");
         }
 
-        private void UpdateTicket(long current)
-        {
-            if (!WorldBossFrontHelper.TryGetCurrentRow(current, out var row))
-            {
-                return;
-            }
-
-            var maxTicket = 3;
-            var start = row.StartedBlockIndex;
-            if (_cachedRaiderState != null)
-            {
-                var refill = _cachedRaiderState?.RefillBlockIndex ?? 0;
-                _remainTicket = WorldBossHelper.CanRefillTicket(current, refill, start)
-                    ? maxTicket
-                    : _cachedRaiderState.RemainChallengeCount;
-            }
-            else
-            {
-                _remainTicket = maxTicket;
-            }
-
-            var reminder = (current - start) % WorldBossHelper.RefillInterval;
-            var remain = WorldBossHelper.RefillInterval - reminder;
-            _headerMenu.WorldBossTickets.Set(remain, _remainTicket, maxTicket);
-        }
+        // private void UpdateTicket(long current)
+        // {
+        //     if (!WorldBossFrontHelper.TryGetCurrentRow(current, out var row))
+        //     {
+        //         return;
+        //     }
+        //
+        //     var maxTicket = 3;
+        //     var start = row.StartedBlockIndex;
+        //     if (_cachedRaiderState != null)
+        //     {
+        //         var refill = _cachedRaiderState?.RefillBlockIndex ?? 0;
+        //         _remainTicket = WorldBossHelper.CanRefillTicket(current, refill, start)
+        //             ? maxTicket
+        //             : _cachedRaiderState.RemainChallengeCount;
+        //     }
+        //     else
+        //     {
+        //         _remainTicket = maxTicket;
+        //     }
+        //
+        //     var reminder = (current - start) % WorldBossHelper.RefillInterval;
+        //     var remain = WorldBossHelper.RefillInterval - reminder;
+        //     _headerMenu.WorldBossTickets.Set(remain, _remainTicket, maxTicket);
+        // }
 
         private void ShowDetail(WorldBossDetail.ToggleType toggleType)
         {
@@ -318,69 +307,65 @@ namespace Nekoyume.UI
 
         private void OnClickEnter()
         {
-            switch (_status)
-            {
-                case Status.OffSeason:
-                    break;
-                case Status.Season:
-                    if (_remainTicket > 0)
-                    {
-                        Raid(false);
-                    }
-                    else
-                    {
-                        ShowTicketPurchasePopup();
-                    }
-
-                    break;
-                case Status.None:
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            Find<RaidPreparation>().Show(_cachedRaiderState);
+            // switch (_status)
+            // {
+            //     case Status.OffSeason:
+            //         break;
+            //     case Status.Season:
+            //         Find<RaidPreparation>().Show();
+            //         if (_remainTicket > 0)
+            //         {
+            //             Raid(false);
+            //         }
+            //         else
+            //         {
+            //             ShowTicketPurchasePopup();
+            //         }
+            //
+            //         break;
+            //     case Status.None:
+            //     default:
+            //         throw new ArgumentOutOfRangeException();
+            // }
         }
 
-        private void Raid(bool payNcg)
-        {
-            Find<LoadingScreen>().Show();
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-            ActionManager.Instance.Raid(inventory.Costumes
-                    .Where(e => e.Equipped)
-                    .Select(e => e.NonFungibleId)
-                    .ToList(),
-                inventory.Equipments
-                    .Where(e => e.Equipped)
-                    .Select(e => e.NonFungibleId)
-                    .ToList(),
-                new List<Guid>(),
-                payNcg);
-        }
-
-        private async void ShowTicketPurchasePopup()
-        {
-            var state = await Game.Game.instance.Agent.GetStateAsync(GoldCurrencyState.Address);
-            if (state is not Bencodex.Types.Dictionary dic)
-            {
-                return;
-            }
-
-            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
-            {
-                return;
-            }
-
-            var cur = new GoldCurrencyState(dic).Currency;
-            var cost = WorldBossHelper.CalculateTicketPrice(row, _cachedRaiderState, cur);
-            var balance = States.Instance.GoldBalanceState;
-            Find<TicketPurchasePopup>().Show(
-                CostType.WorldBossTicket,
-                CostType.NCG,
-                balance.Gold,
-                cost,
-                _cachedRaiderState.PurchaseCount,
-                row.MaxPurchaseCount,
-                () => Raid(true));
-        }
+        // private void Raid(bool payNcg)
+        // {
+        //     Find<LoadingScreen>().Show();
+        //     var inventory = States.Instance.CurrentAvatarState.inventory;
+        //     ActionManager.Instance.Raid(inventory.Costumes
+        //             .Where(e => e.Equipped)
+        //             .Select(e => e.NonFungibleId)
+        //             .ToList(),
+        //         inventory.Equipments
+        //             .Where(e => e.Equipped)
+        //             .Select(e => e.NonFungibleId)
+        //             .ToList(),
+        //         new List<Guid>(),
+        //         payNcg);
+        // }
+        //
+        // private void ShowTicketPurchasePopup()
+        // {
+        //     var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+        //     if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
+        //     {
+        //         return;
+        //     }
+        //
+        //     var cur = States.Instance.GoldBalanceState.Gold.Currency;
+        //     var cost = WorldBossHelper.CalculateTicketPrice(row, _cachedRaiderState, cur);
+        //     var balance = States.Instance.GoldBalanceState;
+        //     Find<TicketPurchasePopup>().Show(
+        //         CostType.WorldBossTicket,
+        //         CostType.NCG,
+        //         balance.Gold,
+        //         cost,
+        //         _cachedRaiderState.PurchaseCount,
+        //         row.MaxPurchaseCount,
+        //         () => Raid(true));
+        // }
 
         private async Task<(WorldBossState worldBoss, RaiderState raiderState,
                 WorldBossRankingRecord myRecord, int userCount)>
@@ -442,10 +427,8 @@ namespace Nekoyume.UI
             season.UpdateBossInformation(bossId, bossName, level, curHp, maxHp);
         }
 
-        private void UpdateMyInformation(RaiderState state, WorldBossRankingRecord record)
+        private void UpdateMyInformation( WorldBossRankingRecord record)
         {
-            _cachedRaiderState = state;
-
             var totalScore = record?.TotalScore ?? 0;
             var highScore = record?.HighScore ?? 0;
             var rank = record?.Ranking ?? 0;

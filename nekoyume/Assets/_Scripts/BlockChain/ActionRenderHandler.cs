@@ -1813,6 +1813,16 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var worldBoss = Widget.Find<WorldBoss>();
+            if (Widget.Find<RaidPreparation>().IsSkipRender)
+            {
+                Widget.Find<LoadingScreen>().Close();
+                worldBoss.UpdateViewAsync(eval.BlockIndex, true);
+                worldBoss.Close();
+                Game.Event.OnRoomEnter.Invoke(true);
+                return;
+            }
+
             Debug.Log("[RENDER_RAID]");
 
             _disposableForBattleEnd?.Dispose();
@@ -1841,7 +1851,7 @@ namespace Nekoyume.BlockChain
                 Debug.LogError($"[Raid] Failed to get current world boss row. BlockIndex : {eval.BlockIndex}");
                 return;
             }
-            
+
             var simulator = new RaidSimulator(
                 row.BossId,
                 new LocalRandom(eval.RandomSeed),
@@ -1856,7 +1866,6 @@ namespace Nekoyume.BlockChain
             Widget.Find<LoadingScreen>().Close();
             Game.Game.instance.RaidStage.Play(simulator.BossId, log, playerDigest);
 
-            var worldBoss = Widget.Find<WorldBoss>();
             worldBoss.UpdateViewAsync(eval.BlockIndex, true);
             worldBoss.Close();
         }
