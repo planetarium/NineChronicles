@@ -129,7 +129,8 @@ namespace Nekoyume.UI
             base.Awake();
         }
 
-        public void Show(int worldId,
+        public void Show(
+            int worldId,
             int stageId,
             Action<StageType, bool, int> repeatBattleAction,
             bool ignoreShowAnimation = false)
