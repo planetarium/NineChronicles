@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -14,6 +15,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -37,7 +39,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI expText;
 
         [SerializeField]
-        private TextMeshProUGUI playCountText;
+        private TextMeshProUGUI starText;
 
         [SerializeField]
         private TextMeshProUGUI totalApText;
@@ -73,26 +75,51 @@ namespace Nekoyume.UI
         private GameObject expGlow;
 
         [SerializeField]
-        private GameObject playCountGlow;
+        private Toggle pageToggle;
+
+        [SerializeField]
+        private CanvasGroup canvasGroupForRepeat;
+
+        [SerializeField]
+        private List<GameObject> objectsForSweep;
+
+        [SerializeField]
+        private List<GameObject> objectsForRepeat;
 
         private readonly ReactiveProperty<int> _apStoneCount = new ReactiveProperty<int>();
         private readonly ReactiveProperty<int> _ap = new ReactiveProperty<int>();
         private readonly ReactiveProperty<int> _cp = new ReactiveProperty<int>();
-        private readonly List<Guid> equipments = new List<Guid>();
-        private readonly List<Guid> costumes = new List<Guid>();
+        private readonly List<Guid> _equipments = new List<Guid>();
+        private readonly List<Guid> _costumes = new List<Guid>();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private StageSheet.Row _stageRow;
         private int _worldId;
+        private bool _useSweep = true;
+        private Action<StageType, bool, int> _repeatBattleAction;
 
         protected override void Awake()
         {
             _apStoneCount.Subscribe(v => UpdateView()).AddTo(gameObject);
             _ap.Subscribe(v => UpdateView()).AddTo(gameObject);
             _cp.Subscribe(v => UpdateCpView()).AddTo(gameObject);
+            pageToggle.onValueChanged.AddListener(UpdateByToggle);
 
             startButton.OnSubmitSubject
-                .Subscribe(_ => Sweep(_apStoneCount.Value, _ap.Value, _worldId, _stageRow))
+                .Subscribe(_ =>
+                {
+                    if (_useSweep)
+                    {
+                        Sweep(_apStoneCount.Value, _ap.Value, _worldId, _stageRow);
+                    }
+                    else
+                    {
+                        _repeatBattleAction(StageType.HackAndSlash,
+                            false,
+                            _ap.Value / _stageRow.CostAP);
+                        Close();
+                    }
+                })
                 .AddTo(gameObject);
 
             cancelButton.onClick.AddListener(() => Close());
@@ -102,7 +129,11 @@ namespace Nekoyume.UI
             base.Awake();
         }
 
-        public void Show(int worldId, int stageId, bool ignoreShowAnimation = false)
+        public void Show(
+            int worldId,
+            int stageId,
+            Action<StageType, bool, int> repeatBattleAction,
+            bool ignoreShowAnimation = false)
         {
             if (!Game.Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageRow))
             {
@@ -116,11 +147,23 @@ namespace Nekoyume.UI
             _apStoneCount.SetValueAndForceNotify(0);
             _ap.SetValueAndForceNotify(States.Instance.CurrentAvatarState.actionPoint);
             _cp.SetValueAndForceNotify(States.Instance.CurrentAvatarState.GetCP());
-
+            _repeatBattleAction = repeatBattleAction;
+            pageToggle.isOn = true;
+            var disableRepeat = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(stageId);
+            canvasGroupForRepeat.alpha = disableRepeat ? 0 : 1;
+            canvasGroupForRepeat.interactable = !disableRepeat;
             contentText.text =
                 $"({L10nManager.Localize("UI_AP")} / {L10nManager.Localize("UI_AP_POTION")})";
 
             base.Show(ignoreShowAnimation);
+        }
+
+        private void UpdateByToggle(bool useSweep)
+        {
+            objectsForSweep.ForEach(obj => obj.SetActive(useSweep));
+            objectsForRepeat.ForEach(obj => obj.SetActive(!useSweep));
+            _useSweep = useSweep;
+            UpdateView();
         }
 
         private void SubscribeInventory()
@@ -134,8 +177,8 @@ namespace Nekoyume.UI
                 }
 
                 var haveApStoneCount = 0;
-                costumes.Clear();
-                equipments.Clear();
+                _costumes.Clear();
+                _equipments.Clear();
 
                 foreach (var item in inventory.Items)
                 {
@@ -150,7 +193,7 @@ namespace Nekoyume.UI
                             var costume = (Costume)item.item;
                             if (costume.equipped)
                             {
-                                costumes.Add(costume.ItemId);
+                                _costumes.Add(costume.ItemId);
                             }
 
                             break;
@@ -159,7 +202,7 @@ namespace Nekoyume.UI
                             var equipment = (Equipment)item.item;
                             if (equipment.equipped)
                             {
-                                equipments.Add(equipment.ItemId);
+                                _equipments.Add(equipment.ItemId);
                             }
 
                             break;
@@ -246,13 +289,9 @@ namespace Nekoyume.UI
 
             var (apPlayCount, apStonePlayCount) =
                 GetPlayCount(_stageRow, _apStoneCount.Value, _ap.Value);
+            UpdateRewardView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
+
             var totalPlayCount = apPlayCount + apStonePlayCount;
-
-            playCountText.text = totalPlayCount.ToString();
-            playCountGlow.SetActive(totalPlayCount > 0);
-
-            UpdateExpView(avatarState, _stageRow, apPlayCount, apStonePlayCount);
-
             if (_apStoneCount.Value == 0 && _ap.Value == 0)
             {
                 information.SetActive(true);
@@ -262,20 +301,24 @@ namespace Nekoyume.UI
             else
             {
                 information.SetActive(false);
-                totalApText.text = $"{totalPlayCount * _stageRow.CostAP}";
-                apStoneText.text = apStonePlayCount > 0
-                    ? $"(+{apStonePlayCount * _stageRow.CostAP})"
+                totalApText.text = (_useSweep ? totalPlayCount : apPlayCount).ToString();
+                apStoneText.text = apStonePlayCount > 0 && _useSweep
+                    ? $"(+{apStonePlayCount})"
                     : string.Empty;
             }
 
             UpdateStartButton();
         }
 
-        private void UpdateExpView(AvatarState avatarState, StageSheet.Row row, int apPlayCount,
+        private void UpdateRewardView(AvatarState avatarState, StageSheet.Row row, int apPlayCount,
             int apStonePlayCount)
         {
-            var earnedExp = GetEarnedExp(avatarState, row, apPlayCount, apStonePlayCount);
+            var earnedExp = GetEarnedExp(avatarState,
+                row,
+                apPlayCount,
+                _useSweep ? apStonePlayCount : 0);
             expText.text = $"+{earnedExp}";
+            starText.text = $"+{apPlayCount * 2}";
             expGlow.SetActive(earnedExp > 0);
         }
 
@@ -310,6 +353,12 @@ namespace Nekoyume.UI
 
         private void UpdateStartButton()
         {
+            if (!_useSweep)
+            {
+                startButton.Interactable = _ap.Value > 0;
+                return;
+            }
+
             if (_apStoneCount.Value == 0 && _ap.Value == 0)
             {
                 startButton.Interactable = false;
@@ -356,8 +405,8 @@ namespace Nekoyume.UI
             }
 
             Game.Game.instance.ActionManager.HackAndSlashSweep(
-                costumes,
-                equipments,
+                _costumes,
+                _equipments,
                 apStoneCount,
                 actionPoint,
                 worldId,

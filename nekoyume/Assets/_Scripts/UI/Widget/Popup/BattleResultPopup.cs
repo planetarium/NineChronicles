@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
@@ -16,7 +15,6 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,6 +35,7 @@ namespace Nekoyume.UI
         public class Model
         {
             private readonly List<CountableItem> _rewards = new List<CountableItem>();
+            public int[] ClearedWaves = new int[4];
 
             public NextState NextState;
             public BattleLog.Result State;
@@ -149,6 +148,8 @@ namespace Nekoyume.UI
 
         public Model SharedModel { get; private set; }
 
+        public Model ModelForMultiHackAndSlash { get; set; }
+
         public StageProgressBar StageProgressBar => stageProgressBar;
 
         protected override void Awake()
@@ -253,6 +254,30 @@ namespace Nekoyume.UI
         {
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
+            if (isBoosted)
+            {
+                model = new Model
+                {
+                    NextState = model.NextState,
+                    State = model.State,
+                    WorldName = model.WorldName,
+                    Exp = ModelForMultiHackAndSlash.Exp,
+                    WorldID = model.WorldID,
+                    StageID = model.StageID,
+                    ClearedWaveNumber = model.ClearedWaveNumber,
+                    ActionPoint = model.ActionPoint,
+                    LastClearedStageId = model.LastClearedStageId,
+                    ActionPointNotEnough = model.ActionPointNotEnough,
+                    IsClear = model.IsClear,
+                    IsEndStage = model.IsEndStage,
+                    ClearedWaves = ModelForMultiHackAndSlash.ClearedWaves,
+                };
+                foreach (var item in ModelForMultiHackAndSlash.Rewards)
+                {
+                    model.AddReward(item);
+                }
+            }
+
             SharedModel = model;
             _IsAlreadyOut = false;
 
@@ -319,8 +344,8 @@ namespace Nekoyume.UI
             StartCoroutine(EmitBattleWinVFX());
 
             victoryImageContainer.SetActive(true);
-            // 4 is index of animation about boost.
-            // if not use boost, set animation index to SharedModel.ClearedWaveNumber (1/2/3).
+            // 4 is index of animation about multi-has.
+            // if not use multi-has, set animation index to SharedModel.ClearedWaveNumber (1/2/3).
             _victoryImageAnimator.SetInteger(ClearedWave,
                 isBoosted ? 4 : SharedModel.ClearedWaveNumber);
 
