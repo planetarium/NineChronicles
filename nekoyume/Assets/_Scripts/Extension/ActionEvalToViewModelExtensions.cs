@@ -10,7 +10,7 @@ using Nekoyume.UI.Model;
 
 namespace Nekoyume.Helper
 {
-    public static class ActionResultHelper
+    public static class ActionEvalToViewModelExtensions
     {
         public static BattleResultPopup.Model GetHackAndSlashReward(this ActionBase.ActionEvaluation<HackAndSlash> eval,
             AvatarState avatarState,
