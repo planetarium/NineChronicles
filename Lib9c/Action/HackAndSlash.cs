@@ -259,7 +259,7 @@ namespace Nekoyume.Action
                 Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
                 sw.Restart();
-                simulator.Simulate(1);
+                simulator.Simulate();
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 

@@ -1185,7 +1185,7 @@
                 _tableSheets.EnemySkillSheet,
                 _tableSheets.CostumeStatSheet,
                 1);
-            simulator.Simulate(1);
+            simulator.Simulate();
             var log = simulator.Log;
             var skillStateIValue =
                 nextState.GetState(skillStateAddress);

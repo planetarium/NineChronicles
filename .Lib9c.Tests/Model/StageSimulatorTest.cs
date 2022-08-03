@@ -62,7 +62,7 @@ namespace Lib9c.Tests.Model
             Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);
             while (player.Level == 1)
             {
-                simulator.Simulate(1);
+                simulator.Simulate();
             }
 
             var player2 = simulator.Player;

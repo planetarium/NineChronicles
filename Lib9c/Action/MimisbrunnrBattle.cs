@@ -286,7 +286,7 @@ namespace Nekoyume.Action
                 sw.Elapsed);
 
             sw.Restart();
-            simulator.Simulate(playCount);
+            simulator.Simulate();
             sw.Stop();
             Log.Verbose(
                 "{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}",

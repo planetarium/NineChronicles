@@ -88,7 +88,7 @@ namespace Nekoyume.Battle
             _skillsOnWaveStart = skillsOnWaveStart;
         }
 
-        public Player Simulate(int playCount)
+        public Player Simulate()
         {
             Log.worldId = WorldId;
             Log.stageId = StageId;
@@ -128,7 +128,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (Exp > 0)
                             {
-                                Player.GetExp((int)(Exp * 0.3m * playCount), true);
+                                Player.GetExp((int)(Exp * 0.3m), true);
                             }
                         }
                         else
@@ -155,7 +155,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (Exp > 0)
                             {
-                                Player.GetExp((int)(Exp * 0.3m * playCount), true);
+                                Player.GetExp((int)(Exp * 0.3m), true);
                             }
                         }
                         else
@@ -178,7 +178,7 @@ namespace Nekoyume.Battle
                             {
                                 if (Exp > 0)
                                 {
-                                    Player.GetExp(Exp * playCount, true);
+                                    Player.GetExp(Exp, true);
                                 }
 
                                 break;
