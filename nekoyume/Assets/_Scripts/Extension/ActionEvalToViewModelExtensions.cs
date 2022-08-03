@@ -8,7 +8,7 @@ using Nekoyume.Model.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 
-namespace Nekoyume.Helper
+namespace Nekoyume
 {
     public static class ActionEvalToViewModelExtensions
     {
