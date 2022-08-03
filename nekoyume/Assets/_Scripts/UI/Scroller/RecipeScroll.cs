@@ -307,7 +307,7 @@ namespace Nekoyume.UI.Scroller
                 eventScheduleTabEntireTimeText.text = string.Empty;
                 return;
             }
-            
+
             var sb = new StringBuilder();
             sb.AppendLine(L10nManager.Localize("UI_EVENT_PERIOD"));
             sb.AppendLine($"{row.StartBlockIndex:N0} - {row.RecipeEndBlockIndex:N0}");

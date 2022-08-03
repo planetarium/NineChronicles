@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
 
     public class WorldButton : MonoBehaviour
     {
-        private enum State
+        public enum WorldState
         {
             Unlocked,
             Locked,
@@ -29,7 +29,6 @@ namespace Nekoyume.UI.Module
             None,
             Idle,
             Hover,
-            OpenLock,
         }
 
         [SerializeField]
@@ -68,7 +67,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Animator animator;
 
-        private readonly ReactiveProperty<State> _state = new(State.Locked);
+        private readonly ReactiveProperty<WorldState> _state = new(WorldState.Locked);
 
         private readonly ReactiveProperty<AnimationState> _animationState = new(AnimationState.None);
 
@@ -79,8 +78,8 @@ namespace Nekoyume.UI.Module
         public readonly ReactiveProperty<bool> HasNotification = new(false);
 
         public bool IsShown => gameObject.activeSelf;
-        private bool IsLocked => _state.Value == State.Locked;
-        public bool IsUnlockable => _state.Value == State.Unlockable;
+        private bool IsLocked => _state.Value == WorldState.Locked;
+        public bool IsUnlockable => _state.Value == WorldState.Unlockable;
         public string WorldName => worldName;
         public int Id { get; private set; }
         public int StageBegin { get; private set; }
@@ -111,23 +110,20 @@ namespace Nekoyume.UI.Module
 
             button.OnClickAsObservable().Subscribe(OnClick).AddTo(go);
             HasNotification.SubscribeTo(hasNotificationImage).AddTo(go);
-            _state.Subscribe(OnState).AddTo(go);
+            _state.Subscribe(OnEnterWorldButtonState).AddTo(go);
             _animationState.Subscribe(OnAnimationState).AddTo(go);
         }
 
         private void OnEnable()
         {
             _state.SetValueAndForceNotify(_state.Value);
-            _animationState.SetValueAndForceNotify(_animationState.Value);
+            _animationState.SetValueAndForceNotify(AnimationState.None);
         }
 
         private void OnDisable()
         {
             _tweener?.Kill();
             _tweener = null;
-            lockImage.SetActive(false);
-            unlockableImage.SetActive(false);
-            unlockImage.SetActive(false);
         }
 
         public void Show()
@@ -142,12 +138,27 @@ namespace Nekoyume.UI.Module
 
         public void Unlock(bool crystalLock = false)
         {
-            _state.SetValueAndForceNotify(crystalLock ? State.Unlockable : State.Unlocked);
+            _state.SetValueAndForceNotify(crystalLock ? WorldState.Unlockable : WorldState.Unlocked);
         }
 
         public void Lock()
         {
-            _state.SetValueAndForceNotify(State.Locked);
+            _state.SetValueAndForceNotify(WorldState.Locked);
+        }
+
+        public void OnCompleteAnimation(WorldState worldState)
+        {
+            switch (worldState)
+            {
+                case WorldState.Locked:
+                case WorldState.Unlockable:
+                    break;
+                case WorldState.Unlocked:
+                    unlockableImage.SetActive(false);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(worldState), worldState, null);
+            }
         }
 
         private void OnClick(Unit unit)
@@ -156,36 +167,36 @@ namespace Nekoyume.UI.Module
             OnClickSubject.OnNext(this);
         }
 
-        private void OnState(State state)
+        private void OnEnterWorldButtonState(WorldState worldState)
         {
-            switch (state)
+            switch (worldState)
             {
-                case State.Unlocked:
+                case WorldState.Unlocked:
                     button.interactable = true;
                     grayImage.enabled = false;
                     colorImage.enabled = true;
                     lockImage.SetActive(false);
                     unlockImage.SetActive(true);
-                    _animationState.SetValueAndForceNotify(AnimationState.OpenLock);
+                    // unlockableImage not set.
+                    animator.Play(worldState.ToString());
                     break;
-                case State.Locked:
+                case WorldState.Locked:
                     button.interactable = false;
                     grayImage.enabled = true;
                     colorImage.enabled = false;
                     lockImage.SetActive(true);
                     unlockImage.SetActive(false);
                     unlockableImage.SetActive(false);
-                    _animationState.SetValueAndForceNotify(AnimationState.None);
                     break;
-                case State.Unlockable:
+                case WorldState.Unlockable:
                     button.interactable = true;
-                    unlockableImage.SetActive(true);
                     lockImage.SetActive(false);
                     unlockImage.SetActive(false);
-                    animator.Play("WorldOpen");
+                    unlockableImage.SetActive(true);
+                    animator.Play(worldState.ToString());
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                    throw new ArgumentOutOfRangeException(nameof(worldState), worldState, null);
             }
         }
 
@@ -196,7 +207,7 @@ namespace Nekoyume.UI.Module
 
             transform.localScale = UnityEngine.Vector3.one;
 
-            if (_state.Value == State.Locked)
+            if (_state.Value == WorldState.Locked)
             {
                 return;
             }
@@ -212,9 +223,6 @@ namespace Nekoyume.UI.Module
                         .DOScale(hoverScaleTo, 1f / hoverScaleSpeed)
                         .SetEase(Ease.Linear)
                         .SetLoops(-1, LoopType.Yoyo);
-                    break;
-                case AnimationState.OpenLock:
-                    animator.Play("ChainOpen");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);

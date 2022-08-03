@@ -30,7 +30,7 @@ using Nekoyume.Game;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.BattleStatus.Arena;
 using Nekoyume.Model.EnumType;
-using Unity.Mathematics;
+using Skill = Nekoyume.Model.Skill.Skill;
 
 #if LIB9C_DEV_EXTENSIONS || UNITY_EDITOR
 using Lib9c.DevExtensions.Action;
@@ -402,7 +402,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseBattleArena)
                 .AddTo(_disposables);
         }
-        
+
         private void EventConsumableItemCrafts()
         {
             _actionRenderer.EveryRender<EventConsumableItemCrafts>()
@@ -685,20 +685,20 @@ namespace Nekoyume.BlockChain
 
             Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
         }
-        
+
         private void ResponseEventConsumableItemCrafts(
             ActionBase.ActionEvaluation<EventConsumableItemCrafts> eval)
         {
             if (eval.Exception is not null)
             {
                 Widget.Find<CombinationSlotsPopup>()
-                    .SetCaching(eval.Action.slotIndex, false);
+                    .SetCaching(eval.Action.SlotIndex, false);
                 return;
             }
 
             var agentAddress = eval.Signer;
-            var avatarAddress = eval.Action.avatarAddress;
-            var slotIndex = eval.Action.slotIndex;
+            var avatarAddress = eval.Action.AvatarAddress;
+            var slotIndex = eval.Action.SlotIndex;
             var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
             var result = (CombinationConsumable5.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
@@ -738,7 +738,7 @@ namespace Nekoyume.BlockChain
                 result.itemUsable.TradableId);
             // ~Notify
 
-            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.slotIndex, false);
+            Widget.Find<CombinationSlotsPopup>().SetCaching(eval.Action.SlotIndex, false);
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
@@ -885,23 +885,32 @@ namespace Nekoyume.BlockChain
             {
                 return;
             }
-
-            var itemName = await Util.GetItemNameByOrderId(eval.Action.orderId);
-            var order = await Util.GetOrder(eval.Action.orderId);
-            var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
+            var updateSellInfos = eval.Action.updateSellInfos;
 
             string message;
-            if (count > 1)
+            if (updateSellInfos.Count() > 1)
             {
-                message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_COMPLETE"),
-                    itemName, count);
+                message = L10nManager.Localize("NOTIFICATION_REREGISTER_ALL_COMPLETE");
             }
             else
             {
-                message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
-            }
+                var updateSellInfo = updateSellInfos.FirstOrDefault();
+                var itemName = await Util.GetItemNameByOrderId(updateSellInfo.orderId);
+                var order = await Util.GetOrder(updateSellInfo.orderId);
+                var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
 
+                if (count > 1)
+                {
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_REREGISTER_COMPLETE"),
+                        itemName, count);
+                }
+                else
+                {
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE"), itemName);
+                }
+            }
             OneLineSystem.Push(MailType.Auction, message, NotificationCell.NotificationType.Information);
+
             UpdateCurrentAvatarStateAsync(eval).Forget();
             ReactiveShopState.UpdateSellDigestsAsync().Forget();
         }
@@ -1068,7 +1077,7 @@ namespace Nekoyume.BlockChain
                                 UpdateCurrentAvatarStateAsync(eval).Forget();
                                 UpdateCrystalRandomSkillState(eval);
                                 var avatarState = States.Instance.CurrentAvatarState;
-                                RenderQuest(eval.Action.avatarAddress,
+                                RenderQuest(eval.Action.AvatarAddress,
                                     avatarState.questList.completedQuestIds);
                                 _disposableForBattleEnd = null;
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
@@ -1080,38 +1089,32 @@ namespace Nekoyume.BlockChain
                         });
 
                 var tableSheets = TableSheets.Instance;
-
                 var skillsOnWaveStart = new List<Model.Skill.Skill>();
-                if (eval.Action.stageBuffId.HasValue)
+                if (eval.Action.StageBuffId.HasValue)
                 {
                     var skill = CrystalRandomSkillState.GetSkill(
-                        eval.Action.stageBuffId.Value,
+                        eval.Action.StageBuffId.Value,
                         tableSheets.CrystalRandomBuffSheet,
                         tableSheets.SkillSheet);
                     skillsOnWaveStart.Add(skill);
                 }
 
-                var simulator = new StageSimulator(
-                    new LocalRandom(eval.RandomSeed),
-                    States.Instance.CurrentAvatarState,
-                    eval.Action.foods,
+                var resultModel = eval.GetHackAndSlashReward(States.Instance.CurrentAvatarState,
                     skillsOnWaveStart,
-                    eval.Action.worldId,
-                    eval.Action.stageId,
-                    TableSheets.Instance.GetStageSimulatorSheets(),
-                    TableSheets.Instance.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080);
-                simulator.Simulate(1);
+                    tableSheets,
+                    out var simulator);
                 var log = simulator.Log;
-                var stage = Game.Game.instance.Stage;
-                stage.StageType = StageType.HackAndSlash;
-                stage.PlayCount = 1;
+                Game.Game.instance.Stage.PlayCount = eval.Action.PlayCount;
+                if (eval.Action.PlayCount > 1)
+                {
+                    Widget.Find<BattleResultPopup>().ModelForMultiHackAndSlash = resultModel;
+                }
 
-                if (eval.Action.stageBuffId.HasValue)
+                if (eval.Action.StageBuffId.HasValue)
                 {
                     Analyzer.Instance.Track("Unity/Use Crystal Bonus Skill", new Value
                     {
-                        ["RandomSkillId"] = eval.Action.stageBuffId,
+                        ["RandomSkillId"] = eval.Action.StageBuffId,
                         ["IsCleared"] = simulator.Log.IsClear,
                     });
                 }
@@ -1205,22 +1208,33 @@ namespace Nekoyume.BlockChain
                                 .DoOnError(e => Debug.LogException(e));
                         });
 
+                var sheets = TableSheets.Instance;
+                var stageRow = sheets.StageSheet[eval.Action.stageId];
+                var avatarState = States.Instance.CurrentAvatarState;
+                var localRandom = new LocalRandom(eval.RandomSeed);
                 var simulator = new StageSimulator(
-                    new LocalRandom(eval.RandomSeed),
-                    States.Instance.CurrentAvatarState,
+                    localRandom,
+                    avatarState,
                     eval.Action.foods,
+                    new List<Skill>(),
                     eval.Action.worldId,
                     eval.Action.stageId,
-                    TableSheets.Instance.GetStageSimulatorSheets(),
-                    TableSheets.Instance.CostumeStatSheet,
-                    StageSimulator.ConstructorVersionV100080,
-                    eval.Action.playCount
+                    stageRow,
+                    sheets.StageWaveSheet[eval.Action.stageId],
+                    avatarState.worldInformation.IsStageCleared(eval.Action.stageId),
+                    0,
+                    sheets.GetSimulatorSheets(),
+                    sheets.EnemySkillSheet,
+                    sheets.CostumeStatSheet,
+                    StageSimulator.GetWaveRewards(
+                        localRandom,
+                        stageRow,
+                        sheets.MaterialItemSheet,
+                        eval.Action.playCount)
                 );
-                simulator.Simulate(eval.Action.playCount);
-                var log = simulator.Log;
-                var stage = Game.Game.instance.Stage; 
-                stage.StageType = StageType.Mimisbrunnr;
-                stage.PlayCount = eval.Action.playCount;
+                simulator.Simulate();
+                BattleLog log = simulator.Log;
+                Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -1302,19 +1316,31 @@ namespace Nekoyume.BlockChain
 
             var playCount = Action.EventDungeonBattle.PlayCount;
             // NOTE: This is a temporary solution. The formula is not yet decided.
+            var random = new LocalRandom(eval.RandomSeed);
+            var stageId = eval.Action.EventDungeonStageId;
+            var stageRow = TableSheets.Instance.EventDungeonStageSheet[stageId];
+            var isCleared = RxProps.EventDungeonInfo.Value?.IsCleared(stageId) ?? false;
             var exp = RxProps.EventScheduleRowForDungeon.Value.DungeonExpSeedValue;
-            var simulator = new EventDungeonBattleSimulator(
-                new LocalRandom(eval.RandomSeed),
+            var simulator = new StageSimulator(
+                random,
                 States.Instance.CurrentAvatarState,
-                eval.Action.foods,
-                eval.Action.eventDungeonId,
-                eval.Action.eventDungeonStageId,
-                TableSheets.Instance.GetEventDungeonBattleSimulatorSheets(),
-                playCount,
-                RxProps.EventDungeonInfo.Value?.IsCleared(
-                    eval.Action.eventDungeonStageId) ?? false,
-                exp);
-            simulator.Simulate(playCount);
+                eval.Action.Foods,
+                new List<Skill>(),
+                eval.Action.EventDungeonId,
+                stageId,
+                stageRow,
+                TableSheets.Instance.EventDungeonStageWaveSheet[stageId],
+                isCleared,
+                exp,
+                TableSheets.Instance.GetSimulatorSheets(),
+                TableSheets.Instance.EnemySkillSheet,
+                TableSheets.Instance.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(
+                    random,
+                    stageRow,
+                    TableSheets.Instance.MaterialItemSheet,
+                    Action.EventDungeonBattle.PlayCount));
+            simulator.Simulate();
             var log = simulator.Log;
             var stage = Game.Game.instance.Stage;
             stage.StageType = StageType.EventDungeon;
@@ -1696,7 +1722,7 @@ namespace Nekoyume.BlockChain
             return null;
         }
 
-        private class LocalRandom : System.Random, IRandom
+        internal class LocalRandom : System.Random, IRandom
         {
             public LocalRandom(int Seed)
                 : base(Seed)
@@ -1844,7 +1870,7 @@ namespace Nekoyume.BlockChain
                         ? previousMyScoreText.ToInteger()
                         : ArenaScore.ArenaScoreDefault
                     : ArenaScore.ArenaScoreDefault;
-                
+
                 // TODO: Add `ExtraOutputMyScore` to `BattleArena`
                 outputMyScore = null;
             }

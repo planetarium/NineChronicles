@@ -523,7 +523,7 @@ namespace Nekoyume.UI.Module
             {
                 yield break;
             }
-            
+
             if (TryEnterToAddNewGuidedQuest(
                     SharedViewModel.craftEventItemQuest,
                     newQuest,
@@ -710,7 +710,7 @@ namespace Nekoyume.UI.Module
             var reward = new QuestReward(new Dictionary<int, int>());
             return new WorldQuest(row, reward);
         }
-        
+
         private static CombinationEquipmentQuest GetTargetCraftEventItemQuest()
         {
             if (RxProps.EventScheduleRowForRecipe.Value is null)

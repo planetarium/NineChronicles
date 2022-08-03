@@ -154,17 +154,16 @@ namespace Nekoyume.UI
                         .First(i => i.Id == stageId)
                         .CostAP;
                     boostCountText.text = $"<sprite name=UI_main_icon_star><size=75%>{boostCost}</size>";
-                    boostEffectObject.SetActive(boostCost > cost);
                     exitToggle.isOn = boostCost > cost;
                     break;
                 }
                 case StageType.EventDungeon:
-                    boostEffectObject.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
+            boostEffectObject.SetActive(false);
             exitToggle.gameObject.SetActive(true);
             //repeatToggle.gameObject.SetActive(true);
             helpButton.gameObject.SetActive(true);

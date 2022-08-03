@@ -27,6 +27,7 @@ using Nekoyume.TableData;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using Material = Nekoyume.Model.Item.Material;
+using Skill = Nekoyume.Model.Skill.Skill;
 
 namespace Nekoyume.UI
 {
@@ -197,7 +198,7 @@ namespace Nekoyume.UI
 
             sweepPopupButton.OnClickAsObservable()
                 .Where(_ => !IsFirstStage)
-                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId));
+                .Subscribe(_ => Find<SweepPopup>().Show(_worldId, _stageId, SendBattleAction));
 
             boostPopupButton.OnClickAsObservable()
                 .Where(_ => EnoughToPlay && !Game.Game.instance.IsInWorld)
@@ -858,7 +859,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SendBattleAction(StageType stageType, bool repeat)
+        private void SendBattleAction(StageType stageType, bool repeat, int playCount = 1)
         {
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
@@ -896,7 +897,8 @@ namespace Nekoyume.UI
                                 equipments,
                                 consumables,
                                 _worldId,
-                                _stageId
+                                _stageId,
+                                playCount: playCount
                             ).Subscribe();
                             break;
                         }
@@ -920,7 +922,8 @@ namespace Nekoyume.UI
                         consumables,
                         _worldId,
                         _stageId,
-                        skillId
+                        skillId,
+                        playCount
                     ).Subscribe();
                     PlayerPrefs.SetInt("HackAndSlash.SelectedBonusSkillId", 0);
                     break;
@@ -1129,42 +1132,49 @@ namespace Nekoyume.UI
             }
 
             var tableSheets = TableSheets.Instance;
+            var random = new Cheat.DebugRandom();
+            StageSheet.Row stageRow;
+            StageWaveSheet.Row stageWaveRow;
             switch (_stageType)
             {
                 case StageType.HackAndSlash:
                 case StageType.Mimisbrunnr:
                 {
-                    var simulator = new StageSimulator(
-                        new Cheat.DebugRandom(),
-                        avatarState,
-                        consumables,
-                        worldRow.Id,
-                        stageId,
-                        tableSheets.GetStageSimulatorSheets(),
-                        tableSheets.CostumeStatSheet);
-                    simulator.Simulate(1);
-                    GoToStage(simulator.Log);
+                    stageRow = tableSheets.StageSheet[stageId];
+                    stageWaveRow = tableSheets.StageWaveSheet[stageId];
                     break;
                 }
                 case StageType.EventDungeon:
                 {
-                    var simulator = new EventDungeonBattleSimulator(
-                        new Cheat.DebugRandom(),
-                        avatarState,
-                        consumables,
-                        worldRow.Id,
-                        stageId,
-                        tableSheets.GetEventDungeonBattleSimulatorSheets(),
-                        1,
-                        true,
-                        0);
-                    simulator.Simulate(1);
-                    GoToStage(simulator.Log);
+                    stageRow = tableSheets.EventDungeonStageSheet[stageId];
+                    stageWaveRow = tableSheets.EventDungeonStageWaveSheet[stageId];
                     break;
                 }
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            var simulator = new StageSimulator(
+                random,
+                avatarState,
+                consumables,
+                new List<Skill>(),
+                worldRow.Id,
+                stageId,
+                stageRow,
+                stageWaveRow,
+                avatarState.worldInformation.IsStageCleared(stageId),
+                StageRewardExpHelper.GetExp(avatarState.level, stageId),
+                tableSheets.GetSimulatorSheets(),
+                tableSheets.EnemySkillSheet,
+                tableSheets.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(
+                    random,
+                    tableSheets.StageSheet[stageId],
+                    tableSheets.MaterialItemSheet)
+            );
+            simulator.Simulate();
+            GoToStage(simulator.Log);
         }
     }
 }

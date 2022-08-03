@@ -18,6 +18,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Crystal;
 using UnityEngine;
 using MailModel = Nekoyume.Model.Mail.Mail;
 using QuestModel = Nekoyume.Model.Quest.Quest;
@@ -482,6 +483,18 @@ namespace Nekoyume
                 3 => Palette.GetColor(EnumType.ColorType.TextGrade02),
                 4 => Palette.GetColor(EnumType.ColorType.TextGrade03),
                 5 => Palette.GetColor(EnumType.ColorType.TextGrade04),
+                _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
+            };
+        }
+
+        public static Color GetBuffGradeColor(CrystalRandomBuffSheet.Row.BuffRank grade)
+        {
+            return grade switch
+            {
+                CrystalRandomBuffSheet.Row.BuffRank.SS => Palette.GetColor(EnumType.ColorType.TextGrade04),
+                CrystalRandomBuffSheet.Row.BuffRank.S => Palette.GetColor(EnumType.ColorType.TextGrade03),
+                CrystalRandomBuffSheet.Row.BuffRank.A => Palette.GetColor(EnumType.ColorType.TextGrade02),
+                CrystalRandomBuffSheet.Row.BuffRank.B => Palette.GetColor(EnumType.ColorType.TextGrade00),
                 _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
             };
         }

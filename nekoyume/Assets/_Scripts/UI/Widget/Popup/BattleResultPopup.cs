@@ -36,6 +36,7 @@ namespace Nekoyume.UI
         public class Model
         {
             private readonly List<CountableItem> _rewards = new();
+            public int[] ClearedWaves = new int[4];
 
             public StageType StageType;
             public NextState NextState;
@@ -148,6 +149,8 @@ namespace Nekoyume.UI
         private bool _IsAlreadyOut;
 
         private Model SharedModel { get; set; }
+
+        public Model ModelForMultiHackAndSlash { get; set; }
 
         public StageProgressBar StageProgressBar => stageProgressBar;
 
@@ -262,6 +265,30 @@ namespace Nekoyume.UI
         {
             canvasGroup.alpha = 1f;
             canvasGroup.blocksRaycasts = true;
+            if (isBoosted)
+            {
+                model = new Model
+                {
+                    NextState = model.NextState,
+                    State = model.State,
+                    WorldName = model.WorldName,
+                    Exp = ModelForMultiHackAndSlash.Exp,
+                    WorldID = model.WorldID,
+                    StageID = model.StageID,
+                    ClearedWaveNumber = model.ClearedWaveNumber,
+                    ActionPoint = model.ActionPoint,
+                    LastClearedStageId = model.LastClearedStageId,
+                    ActionPointNotEnough = model.ActionPointNotEnough,
+                    IsClear = model.IsClear,
+                    IsEndStage = model.IsEndStage,
+                    ClearedWaves = ModelForMultiHackAndSlash.ClearedWaves,
+                };
+                foreach (var item in ModelForMultiHackAndSlash.Rewards)
+                {
+                    model.AddReward(item);
+                }
+            }
+
             SharedModel = model;
             _IsAlreadyOut = false;
 
@@ -335,8 +362,8 @@ namespace Nekoyume.UI
             StartCoroutine(EmitBattleWinVFX());
 
             victoryImageContainer.SetActive(true);
-            // 4 is index of animation about boost.
-            // if not use boost, set animation index to SharedModel.ClearedWaveNumber (1/2/3).
+            // 4 is index of animation about multi-has.
+            // if not use multi-has, set animation index to SharedModel.ClearedWaveNumber (1/2/3).
             _victoryImageAnimator.SetInteger(
                 ClearedWave,
                 isBoosted

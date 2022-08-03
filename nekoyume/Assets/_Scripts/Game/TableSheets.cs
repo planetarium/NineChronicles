@@ -197,6 +197,19 @@ namespace Nekoyume.Game
             QuestSheet.Set(CombinationEquipmentQuestSheet);
         }
 
+        public SimulatorSheets GetSimulatorSheets()
+        {
+            return new SimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet
+            );
+        }
+
         public StageSimulatorSheets GetStageSimulatorSheets()
         {
             return new StageSimulatorSheets(
@@ -210,23 +223,6 @@ namespace Nekoyume.Game
                 StageSheet,
                 StageWaveSheet,
                 EnemySkillSheet
-            );
-        }
-
-        public EventDungeonBattleSimulatorSheets GetEventDungeonBattleSimulatorSheets()
-        {
-            return new EventDungeonBattleSimulatorSheets(
-                MaterialItemSheet,
-                SkillSheet,
-                SkillBuffSheet,
-                BuffSheet,
-                CharacterSheet,
-                CharacterLevelSheet,
-                EquipmentItemSetEffectSheet,
-                EventDungeonStageSheet,
-                EventDungeonStageWaveSheet,
-                EnemySkillSheet,
-                CostumeStatSheet
             );
         }
 

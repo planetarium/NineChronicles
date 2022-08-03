@@ -216,13 +216,14 @@ namespace Nekoyume.BlockChain
             List<Consumable> foods,
             int worldId,
             int stageId,
-            int? stageBuffId = null)
+            int? stageBuffId = null,
+            int playCount = 1)
         {
             Analyzer.Instance.Track("Unity/HackAndSlash", new Value
             {
                 ["WorldId"] = worldId,
                 ["StageId"] = stageId,
-                ["PlayCount"] = 1,
+                ["PlayCount"] = playCount,
             });
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -232,13 +233,14 @@ namespace Nekoyume.BlockChain
 
             var action = new HackAndSlash
             {
-                costumes = costumes.Select(c => c.ItemId).ToList(),
-                equipments = equipments.Select(e => e.ItemId).ToList(),
-                foods = foods.Select(f => f.ItemId).ToList(),
-                worldId = worldId,
-                stageId = stageId,
-                stageBuffId = stageBuffId,
-                avatarAddress = avatarAddress,
+                Costumes = costumes.Select(c => c.ItemId).ToList(),
+                Equipments = equipments.Select(e => e.ItemId).ToList(),
+                Foods = foods.Select(f => f.ItemId).ToList(),
+                WorldId = worldId,
+                StageId = stageId,
+                StageBuffId = stageBuffId,
+                AvatarAddress = avatarAddress,
+                PlayCount = playCount,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -296,13 +298,13 @@ namespace Nekoyume.BlockChain
 
             var action = new EventDungeonBattle
             {
-                avatarAddress = avatarAddress,
-                eventScheduleId = eventScheduleId,
-                eventDungeonId = eventDungeonId,
-                eventDungeonStageId = eventDungeonStageId,
-                equipments = equipments.Select(e => e.ItemId).ToList(),
-                costumes = costumes.Select(c => c.ItemId).ToList(),
-                foods = foods.Select(f => f.ItemId).ToList(),
+                AvatarAddress = avatarAddress,
+                EventScheduleId = eventScheduleId,
+                EventDungeonId = eventDungeonId,
+                EventDungeonStageId = eventDungeonStageId,
+                Equipments = equipments.Select(e => e.ItemId).ToList(),
+                Costumes = costumes.Select(c => c.ItemId).ToList(),
+                Foods = foods.Select(f => f.ItemId).ToList(),
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -418,10 +420,10 @@ namespace Nekoyume.BlockChain
 
             var action = new EventConsumableItemCrafts
             {
-                avatarAddress = States.Instance.CurrentAvatarState.address,
-                eventScheduleId = eventScheduleId,
-                eventConsumableItemRecipeId = recipeInfo.RecipeId,
-                slotIndex = slotIndex,
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                EventScheduleId = eventScheduleId,
+                EventConsumableItemRecipeId = recipeInfo.RecipeId,
+                SlotIndex = slotIndex,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
@@ -538,34 +540,16 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => throw HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(
-            Guid orderId,
-            ITradableItem tradableItem,
-            int count,
-            FungibleAssetValue price,
-            ItemSubType itemSubType)
+        public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(List<UpdateSellInfo> updateSellInfos)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
-            if (!(tradableItem is TradableMaterial))
-            {
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,
-                    count);
-            }
-
-            // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, tradableItem.TradableId, false);
-
             var action = new UpdateSell
             {
-                orderId = orderId,
-                updateSellOrderId = Guid.NewGuid(),
-                tradableId = tradableItem.TradableId,
                 sellerAvatarAddress = avatarAddress,
-                itemSubType = itemSubType,
-                price = price,
-                count = count,
+                updateSellInfos = updateSellInfos
             };
+
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
             ProcessAction(action);

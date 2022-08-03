@@ -26,6 +26,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Enemy = Nekoyume.Game.Character.Enemy;
+using Skill = Nekoyume.Model.Skill.Skill;
 using Text = UnityEngine.UI.Text;
 
 namespace Nekoyume
@@ -413,16 +414,28 @@ namespace Nekoyume
                 throw new KeyNotFoundException($"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
             var tableSheets = Game.Game.instance.TableSheets;
+            var random = new DebugRandom();
+            var avatarState = States.Instance.CurrentAvatarState;
             var simulator = new StageSimulator(
-                new DebugRandom(),
-                States.Instance.CurrentAvatarState,
+                random,
+                avatarState,
                 new List<Guid>(),
+                new List<Skill>(),
                 worldRow.Id,
                 stageId,
-                tableSheets.GetStageSimulatorSheets(),
-                _selectedSkill
+                tableSheets.StageSheet[stageId],
+                tableSheets.StageWaveSheet[stageId],
+                avatarState.worldInformation.IsStageCleared(stageId),
+                StageRewardExpHelper.GetExp(avatarState.level, stageId),
+                tableSheets.GetSimulatorSheets(),
+                tableSheets.EnemySkillSheet,
+                tableSheets.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(
+                    random,
+                    tableSheets.StageSheet[stageId],
+                    tableSheets.MaterialItemSheet)
             );
-            simulator.Simulate(1);
+            simulator.Simulate();
             simulator.Log.result = _result;
 
             var stage = Game.Game.instance.Stage;
