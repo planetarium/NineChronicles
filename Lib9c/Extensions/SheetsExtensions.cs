@@ -222,7 +222,7 @@ namespace Nekoyume.Extensions
                 sheets.GetSheet<CharacterLevelSheet>(),
                 sheets.GetSheet<EquipmentItemSetEffectSheet>(),
                 sheets.GetSheet<WorldBossCharacterSheet>(),
-                sheets.GetSheet<EnemySkillSheet>()
+                sheets.GetSheet<WorldBossActionPatternSheet>()
             );
         }
 

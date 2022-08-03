@@ -222,7 +222,7 @@ namespace Nekoyume.Model
             Skills.ReduceCooldownV1();
         }
 
-        private void UseSkill()
+        protected virtual void UseSkill()
         {
             var selectedSkill = Skills.Select(Simulator.Random);
             var usedSkill = selectedSkill.Use(

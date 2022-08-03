@@ -60,7 +60,7 @@ namespace Nekoyume.Action
                 typeof(WorldBossCharacterSheet),
                 typeof(WorldBossListSheet),
                 typeof(WorldBossGlobalHpSheet),
-                typeof(EnemySkillSheet),
+                typeof(WorldBossActionPatternSheet),
                 typeof(CharacterSheet),
                 typeof(CostumeStatSheet),
                 typeof(RuneWeightSheet),

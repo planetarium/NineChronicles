@@ -13,8 +13,6 @@ namespace Nekoyume.Battle
 {
     public class RaidSimulator : Simulator
     {
-        public readonly EnemySkillSheet EnemySkillSheet;
-
         public int BossId { get; private set; }
         public int DamageDealt { get; private set; }
         public override IEnumerable<ItemBase> Reward => new List<ItemBase>();
@@ -30,22 +28,27 @@ namespace Nekoyume.Battle
         {
             BossId = bossId;
             _waves = new List<RaidBoss>();
-            EnemySkillSheet = simulatorSheets.EnemySkillSheet;
 
             if (!simulatorSheets.WorldBossCharacterSheet.TryGetValue(bossId, out var bossRow))
                 throw new SheetRowNotFoundException(nameof(WorldBossCharacterSheet), bossId);
 
-            SetEnemies(bossRow);
+            if (!simulatorSheets.WorldBossActionPatternSheet.TryGetValue(bossId, out var patternRow))
+                throw new SheetRowNotFoundException(nameof(WorldBossActionPatternSheet), bossId);
+
+            SetEnemies(bossRow, patternRow);
         }
 
-        private void SetEnemies(WorldBossCharacterSheet.Row worldBossCharacterRow)
+        private void SetEnemies(
+            WorldBossCharacterSheet.Row characterRow,
+            WorldBossActionPatternSheet.Row patternRow)
         {
-            for (var i = 0; i < worldBossCharacterRow.WaveStats.Count; ++i)
+            for (var i = 0; i < characterRow.WaveStats.Count; ++i)
             {
                 var enemyModel = new RaidBoss(
                     Player,
-                    worldBossCharacterRow,
-                    worldBossCharacterRow.WaveStats[i]);
+                    characterRow,
+                    patternRow,
+                    characterRow.WaveStats[i]);
                 _waves.Add(enemyModel);
             }
         }
