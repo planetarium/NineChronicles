@@ -14,6 +14,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.TableData.Crystal;
+using Nekoyume.TableData.Event;
 using Serilog;
 using static Lib9c.SerializeKeys;
 
@@ -387,8 +388,10 @@ namespace Nekoyume.Action
             return GetWeeklyArenaState(states, address);
         }
 
-        public static CombinationSlotState GetCombinationSlotState(this IAccountStateDelta states,
-            Address avatarAddress, int index)
+        public static CombinationSlotState GetCombinationSlotState(
+            this IAccountStateDelta states,
+            Address avatarAddress,
+            int index)
         {
             var address = avatarAddress.Derive(
                 string.Format(
@@ -531,6 +534,7 @@ namespace Nekoyume.Action
             bool containStageSimulatorSheets = false,
             bool containRankingSimulatorSheets = false,
             bool containArenaSimulatorSheets = false,
+            bool containValidateItemRequirementSheets = false,
             IEnumerable<Type> sheetTypes = null)
         {
             var sheetTypeList = sheetTypes?.ToList() ?? new List<Type>();
@@ -616,6 +620,14 @@ namespace Nekoyume.Action
                 sheetTypeList.Add(typeof(EquipmentItemSetEffectSheet));
                 sheetTypeList.Add(typeof(WeeklyArenaRewardSheet));
                 sheetTypeList.Add(typeof(CostumeStatSheet));
+            }
+
+            if (containValidateItemRequirementSheets)
+            {
+                sheetTypeList.Add(typeof(ItemRequirementSheet));
+                sheetTypeList.Add(typeof(EquipmentItemRecipeSheet));
+                sheetTypeList.Add(typeof(EquipmentItemSubRecipeSheetV2));
+                sheetTypeList.Add(typeof(EquipmentItemOptionSheet));
             }
 
             return states.GetSheets(sheetTypeList.Distinct().ToArray());

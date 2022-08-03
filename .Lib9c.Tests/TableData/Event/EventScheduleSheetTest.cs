@@ -10,8 +10,9 @@
         public void Set()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("id,name,start_block_index,world_end_block_index,recipe_end_block_index");
-            sb.AppendLine("10000001,\"2022 Summer Event\",0,100,110");
+            sb.AppendLine(
+                "id,_name,start_block_index,dungeon_end_block_index,dungeon_tickets_max,dungeon_tickets_reset_interval_block_range,dungeon_exp_seed_value,recipe_end_block_index");
+            sb.AppendLine("10000001,\"2022 Summer Event\",0,100,8,5040,10,110");
             var csv = sb.ToString();
 
             var sheet = new EventScheduleSheet();
@@ -21,9 +22,11 @@
             Assert.NotNull(sheet.Last);
             var row = sheet.First;
             Assert.Equal(10000001, row.Id);
-            Assert.Equal("\"2022 Summer Event\"", row.Name);
             Assert.Equal(0, row.StartBlockIndex);
-            Assert.Equal(100, row.WorldEndBlockIndex);
+            Assert.Equal(100, row.DungeonEndBlockIndex);
+            Assert.Equal(8, row.DungeonTicketsMax);
+            Assert.Equal(5040, row.DungeonTicketsResetIntervalBlockRange);
+            Assert.Equal(10, row.DungeonExpSeedValue);
             Assert.Equal(110, row.RecipeEndBlockIndex);
         }
     }

@@ -9,23 +9,66 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void Serialize()
         {
-            var eventDungeonClearState = new EventDungeonInfo();
-            eventDungeonClearState.ClearStage(1);
-            var serialized = eventDungeonClearState.Serialize();
+            var eventDungeonInfo = new EventDungeonInfo();
+            eventDungeonInfo.ResetTickets(1, 10);
+            eventDungeonInfo.ClearStage(1);
+            var serialized = eventDungeonInfo.Serialize();
             var deserialized = new EventDungeonInfo(serialized);
-            Assert.Equal(eventDungeonClearState, deserialized);
+            Assert.Equal(eventDungeonInfo, deserialized);
             var reSerialized = deserialized.Serialize();
             Assert.Equal(serialized, reSerialized);
         }
 
         [Theory]
-        [InlineData(int.MinValue)]
-        [InlineData(-1)]
-        public void ResetTickets_Throw_ArgumentException(int tickets)
+        [InlineData(0, 0, 0)]
+        [InlineData(int.MaxValue, int.MaxValue, int.MaxValue)]
+        public void Constructor(
+            int resetTicketsInterval,
+            int remainingTickets,
+            int clearedStageId)
         {
-            var eventDungeonClearState = new EventDungeonInfo();
+            var eventDungeonInfo = new EventDungeonInfo(
+                resetTicketsInterval,
+                remainingTickets,
+                clearedStageId);
+            Assert.Equal(
+                resetTicketsInterval,
+                eventDungeonInfo.ResetTicketsInterval);
+            Assert.Equal(
+                remainingTickets,
+                eventDungeonInfo.RemainingTickets);
+            Assert.Equal(
+                clearedStageId,
+                eventDungeonInfo.ClearedStageId);
+        }
+
+        [Theory]
+        [InlineData(-1, 0, 0)]
+        [InlineData(0, -1, 0)]
+        [InlineData(0, 0, -1)]
+        [InlineData(int.MinValue, int.MinValue, int.MinValue)]
+        public void Constructor_Throw_ArgumentException(
+            int resetTicketsInterval,
+            int remainingTickets,
+            int clearedStageId) =>
             Assert.Throws<ArgumentException>(() =>
-                eventDungeonClearState.ResetTickets(tickets));
+                new EventDungeonInfo(
+                    resetTicketsInterval,
+                    remainingTickets,
+                    clearedStageId));
+
+        [Theory]
+        [InlineData(-1, 0)]
+        [InlineData(0, 0)]
+        [InlineData(0, -1)]
+        [InlineData(int.MinValue, int.MinValue)]
+        public void ResetTickets_Throw_ArgumentException(
+            int resetTicketsInterval,
+            int tickets)
+        {
+            var eventDungeonInfo = new EventDungeonInfo();
+            Assert.Throws<ArgumentException>(() =>
+                eventDungeonInfo.ResetTickets(resetTicketsInterval, tickets));
         }
 
         [Theory]
@@ -33,9 +76,9 @@ namespace Lib9c.Tests.Model
         [InlineData(-1)]
         public void HasTickets_Throw_ArgumentException(int tickets)
         {
-            var eventDungeonClearState = new EventDungeonInfo();
+            var eventDungeonInfo = new EventDungeonInfo();
             Assert.Throws<ArgumentException>(() =>
-                eventDungeonClearState.HasTickets(tickets));
+                eventDungeonInfo.HasTickets(tickets));
         }
 
         [Theory]
@@ -43,9 +86,9 @@ namespace Lib9c.Tests.Model
         [InlineData(-1)]
         public void TryUseTickets_Throw_ArgumentException(int tickets)
         {
-            var eventDungeonClearState = new EventDungeonInfo();
+            var eventDungeonInfo = new EventDungeonInfo();
             Assert.Throws<ArgumentException>(() =>
-                eventDungeonClearState.TryUseTickets(tickets));
+                eventDungeonInfo.TryUseTickets(tickets));
         }
 
         [Theory]
@@ -53,17 +96,17 @@ namespace Lib9c.Tests.Model
         [InlineData(10)]
         public void ResetTickets_And_HasTickets(int tickets)
         {
-            var eventDungeonClearState = new EventDungeonInfo();
-            eventDungeonClearState.ResetTickets(tickets);
+            var eventDungeonInfo = new EventDungeonInfo();
+            eventDungeonInfo.ResetTickets(1, tickets);
             for (var i = 0; i < tickets + 2; i++)
             {
                 if (i < tickets + 1)
                 {
-                    Assert.True(eventDungeonClearState.HasTickets(i));
+                    Assert.True(eventDungeonInfo.HasTickets(i));
                 }
                 else
                 {
-                    Assert.False(eventDungeonClearState.HasTickets(i));
+                    Assert.False(eventDungeonInfo.HasTickets(i));
                 }
             }
         }
@@ -73,23 +116,23 @@ namespace Lib9c.Tests.Model
         [InlineData(10)]
         public void ResetTickets_And_TryUseTickets(int tickets)
         {
-            var eventDungeonClearState = new EventDungeonInfo();
-            eventDungeonClearState.ResetTickets(tickets);
+            var eventDungeonInfo = new EventDungeonInfo();
+            eventDungeonInfo.ResetTickets(1, tickets);
             for (var i = 0; i < tickets + 1; i++)
             {
                 if (i < tickets)
                 {
-                    Assert.True(eventDungeonClearState.TryUseTickets(1));
+                    Assert.True(eventDungeonInfo.TryUseTickets(1));
                 }
                 else
                 {
-                    Assert.False(eventDungeonClearState.TryUseTickets(1));
+                    Assert.False(eventDungeonInfo.TryUseTickets(1));
                 }
             }
 
-            eventDungeonClearState.ResetTickets(tickets);
-            Assert.True(eventDungeonClearState.TryUseTickets(tickets));
-            Assert.False(eventDungeonClearState.TryUseTickets(1));
+            eventDungeonInfo.ResetTickets(2, tickets);
+            Assert.True(eventDungeonInfo.TryUseTickets(tickets));
+            Assert.False(eventDungeonInfo.TryUseTickets(1));
         }
 
         [Theory]
@@ -97,17 +140,17 @@ namespace Lib9c.Tests.Model
         [InlineData(10010010)]
         public void ClearStage_And_IsCleared(int stageId)
         {
-            var eventDungeonClearState = new EventDungeonInfo();
-            eventDungeonClearState.ClearStage(stageId);
+            var eventDungeonInfo = new EventDungeonInfo();
+            eventDungeonInfo.ClearStage(stageId);
             for (var i = 10010001; i < stageId + 2; i++)
             {
                 if (i < stageId + 1)
                 {
-                    Assert.True(eventDungeonClearState.IsCleared(i));
+                    Assert.True(eventDungeonInfo.IsCleared(i));
                 }
                 else
                 {
-                    Assert.False(eventDungeonClearState.IsCleared(i));
+                    Assert.False(eventDungeonInfo.IsCleared(i));
                 }
             }
         }

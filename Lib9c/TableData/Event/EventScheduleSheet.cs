@@ -11,18 +11,22 @@ namespace Nekoyume.TableData.Event
         {
             public override int Key => Id;
             public int Id { get; private set; }
-            public string Name { get; private set; }
             public long StartBlockIndex { get; private set; }
-            public long WorldEndBlockIndex { get; private set; }
+            public long DungeonEndBlockIndex { get; private set; }
+            public int DungeonTicketsMax { get; private set; }
+            public int DungeonTicketsResetIntervalBlockRange { get; private set; }
+            public int DungeonExpSeedValue { get; private set; }
             public long RecipeEndBlockIndex { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0], 0);
-                Name = fields[1];
-                StartBlockIndex = ParseLong(fields[2], 0L);
-                WorldEndBlockIndex = ParseLong(fields[3], 0L);
-                RecipeEndBlockIndex = ParseLong(fields[4], 0L);
+                StartBlockIndex = ParseLong(fields[1], 0L);
+                DungeonEndBlockIndex = ParseLong(fields[2], 0L);
+                DungeonTicketsMax = ParseInt(fields[3], 0);
+                DungeonTicketsResetIntervalBlockRange = ParseInt(fields[4], 0);
+                DungeonExpSeedValue = ParseInt(fields[5], 0);
+                RecipeEndBlockIndex = ParseLong(fields[6], 0L);
             }
         }
 
