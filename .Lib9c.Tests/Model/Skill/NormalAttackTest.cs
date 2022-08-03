@@ -45,8 +45,9 @@ namespace Lib9c.Tests.Model.Skill
             var worldRow = tableSheets.WorldSheet.First;
             Assert.NotNull(worldRow);
 
+            var random = new TestRandom();
             var simulator = new StageSimulator(
-                new TestRandom(),
+                random,
                 avatarState,
                 new List<Guid>(),
                 new List<Nekoyume.Model.Skill.Skill>(),
@@ -59,7 +60,10 @@ namespace Lib9c.Tests.Model.Skill
                 tableSheets.GetSimulatorSheets(),
                 tableSheets.EnemySkillSheet,
                 tableSheets.CostumeStatSheet,
-                1
+                StageSimulator.GetWaveRewards(
+                    random,
+                    tableSheets.StageSheet[1],
+                    tableSheets.MaterialItemSheet)
             );
             var player = new Player(avatarState, simulator);
 

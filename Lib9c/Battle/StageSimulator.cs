@@ -45,7 +45,7 @@ namespace Nekoyume.Battle
             SimulatorSheets simulatorSheets,
             EnemySkillSheet enemySkillSheet,
             CostumeStatSheet costumeStatSheet,
-            int playCount)
+            List<ItemBase> waveRewards)
             : base(
                 random,
                 avatarState,
@@ -55,40 +55,45 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
 
             _waves = new List<Wave>();
-
+            _waveRewards = waveRewards;
             WorldId = worldId;
             StageId = stageId;
             IsCleared = isCleared;
             Exp = exp;
             EnemySkillSheet = enemySkillSheet;
             TurnLimit = stageRow.TurnLimit;
+            _skillsOnWaveStart = skillsOnWaveStart;
 
             SetWave(stageRow, stageWaveRow);
+        }
 
-            var maxCountForItemDrop = Random.Next(
+        public static List<ItemBase> GetWaveRewards(
+            IRandom random,
+            StageSheet.Row stageRow,
+            MaterialItemSheet materialItemSheet,
+            int playCount = 1)
+        {
+            var maxCountForItemDrop = random.Next(
                 stageRow.DropItemMin,
                 stageRow.DropItemMax + 1);
-            _waveRewards = new List<ItemBase>();
+            var waveRewards = new List<ItemBase>();
             for (var i = 0; i < playCount; i++)
             {
-                var itemSelector = StageSimulatorV1.SetItemSelector(stageRow, Random);
+                var itemSelector = StageSimulatorV1.SetItemSelector(stageRow, random);
                 var rewards = SetRewardV2(
                     itemSelector,
                     maxCountForItemDrop,
-                    Random,
-                    MaterialItemSheet
+                    random,
+                    materialItemSheet
                 );
 
-                foreach (var reward in rewards)
-                {
-                    _waveRewards.Add(reward);
-                }
+                waveRewards.AddRange(rewards);
             }
 
-            _skillsOnWaveStart = skillsOnWaveStart;
+            return waveRewards;
         }
 
-        public Player Simulate(int playCount)
+        public Player Simulate()
         {
             Log.worldId = WorldId;
             Log.stageId = StageId;
@@ -128,7 +133,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (Exp > 0)
                             {
-                                Player.GetExp((int)(Exp * 0.3m * playCount), true);
+                                Player.GetExp((int)(Exp * 0.3m), true);
                             }
                         }
                         else
@@ -155,7 +160,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (Exp > 0)
                             {
-                                Player.GetExp((int)(Exp * 0.3m * playCount), true);
+                                Player.GetExp((int)(Exp * 0.3m), true);
                             }
                         }
                         else
@@ -178,7 +183,7 @@ namespace Nekoyume.Battle
                             {
                                 if (Exp > 0)
                                 {
-                                    Player.GetExp(Exp * playCount, true);
+                                    Player.GetExp(Exp, true);
                                 }
 
                                 break;
