@@ -25,6 +25,7 @@ using Nekoyume.TableData;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using Material = Nekoyume.Model.Item.Material;
+using Skill = Nekoyume.Model.Skill.Skill;
 
 namespace Nekoyume.UI
 {
@@ -983,16 +984,24 @@ namespace Nekoyume.UI
             }
 
             var tableSheets = Game.Game.instance.TableSheets;
-            var simulator = new StageSimulatorV1(
-                new Cheat.DebugRandom(),
+            var random = new Cheat.DebugRandom();
+            var simulator = new StageSimulator(
+                random,
                 avatarState,
                 consumables,
+                new List<Skill>(),
                 worldRow.Id,
                 stageId,
+                tableSheets.StageSheet[stageId],
+                tableSheets.StageWaveSheet[stageId],
+                avatarState.worldInformation.IsStageCleared(stageId),
+                StageRewardExpHelper.GetExp(avatarState.level, stageId),
                 tableSheets.GetStageSimulatorSheets(),
-                tableSheets.CostumeStatSheet
+                tableSheets.EnemySkillSheet,
+                tableSheets.CostumeStatSheet,
+                StageSimulator.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet)
             );
-            simulator.Simulate(1);
+            simulator.Simulate();
             GoToStage(simulator.Log);
         }
     }

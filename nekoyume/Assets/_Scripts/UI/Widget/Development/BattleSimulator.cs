@@ -15,6 +15,7 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
 using UnityEngine.UI;
+using Skill = Nekoyume.Model.Skill.Skill;
 
 public class BattleSimulator : Widget
 {
@@ -198,17 +199,26 @@ public class BattleSimulator : Widget
         // food
         var consumables = AddFood(avatarState, foodItemSheet, random, food);
 
-        var simulator = new StageSimulatorV1(
+        var worldId = TextToInt(world.text);
+        var stageId = TextToInt(stage.text);
+        var simulator = new StageSimulator(
             random,
             avatarState,
             consumables,
-            TextToInt(world.text),
-            TextToInt(stage.text),
+            new List<Skill>(),
+            worldId,
+            stageId,
+            tableSheets.StageSheet[stageId],
+            tableSheets.StageWaveSheet[stageId],
+            avatarState.worldInformation.IsStageCleared(stageId),
+            StageRewardExpHelper.GetExp(avatarState.level, stageId),
             tableSheets.GetStageSimulatorSheets(),
-            tableSheets.CostumeStatSheet
+            tableSheets.EnemySkillSheet,
+            tableSheets.CostumeStatSheet,
+            StageSimulator.GetWaveRewards(random, tableSheets.StageSheet[stageId], tableSheets.MaterialItemSheet)
         );
 
-        simulator.Simulate(1);
+        simulator.Simulate();
 
         var log = simulator.Log;
         return log;
