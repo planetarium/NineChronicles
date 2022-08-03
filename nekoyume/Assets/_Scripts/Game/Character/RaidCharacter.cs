@@ -423,6 +423,11 @@ namespace Nekoyume.Game.Character
 
         public void ShowSpeech(string key, params int[] list)
         {
+            if (!_speechBubble)
+            {
+                return;
+            }
+
             _speechBubble.enable = true;
 
             if (_speechBubble.gameObject.activeSelf)
