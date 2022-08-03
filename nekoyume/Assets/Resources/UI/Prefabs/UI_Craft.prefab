@@ -30598,7 +30598,7 @@ MonoBehaviour:
   equipmentTab: {fileID: 6791142679090398431}
   consumableTab: {fileID: 6791142679933328461}
   eventScheduleTab: {fileID: 8863071563067808770}
-  eventScheduleTabEntireTimeText: {fileID: 0}
+  eventScheduleTabEntireTimeText: {fileID: 4990702604821508035}
   eventScheduleTabRemainingTimeText: {fileID: 3416248351457315219}
   emptyObject: {fileID: 1871018598415912220}
   emptyObjectText: {fileID: 4347272740260676275}
@@ -50217,6 +50217,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a330862a27f9643b2b66226a669dc301, type: 3}
+--- !u!114 &4990702604821508035 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 80958265080771374, guid: a330862a27f9643b2b66226a669dc301,
+    type: 3}
+  m_PrefabInstance: {fileID: 4926118371717930221}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &5834025229567151146 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1489435312420655303, guid: a330862a27f9643b2b66226a669dc301,
