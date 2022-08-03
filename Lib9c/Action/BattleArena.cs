@@ -24,7 +24,7 @@ namespace Nekoyume.Action
     /// Introduced at https://github.com/planetarium/lib9c/pull/1190
     /// </summary>
     [Serializable]
-    [ActionType("battle_arena2")]
+    [ActionType("battle_arena3")]
     public class BattleArena : GameAction
     {
         public Address myAvatarAddress;
