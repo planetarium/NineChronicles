@@ -9,6 +9,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Exceptions;
+    using Nekoyume.Extensions;
     using Nekoyume.Model.Event;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
@@ -258,9 +259,11 @@ namespace Lib9c.Tests.Action
                 eventScheduleId,
                 out var scheduleRow));
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-            // NOTE: This is a temporary test. The formula should be changed.
+            var expectExp = scheduleRow.GetStageExp(
+                eventDungeonStageId.ToEventDungeonStageNumber(),
+                EventDungeonBattle.PlayCount);
             Assert.Equal(
-                previousAvatarState.exp + scheduleRow.DungeonExpSeedValue,
+                previousAvatarState.exp + expectExp,
                 nextAvatarState.exp);
             var eventDungeonInfoAddr =
                 EventDungeonInfo.DeriveAddress(_avatarAddress, eventDungeonId);
