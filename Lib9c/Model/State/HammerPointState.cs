@@ -1,0 +1,43 @@
+﻿using Bencodex.Types;
+using Libplanet;
+
+namespace Nekoyume.Model.State
+{
+    public class HammerPointState : IState
+    {
+        public Address Address { get; }
+        public int RecipeId { get; }
+        public int HammerPoint { get; private set; }
+
+        public HammerPointState(Address address, int recipeId)
+        {
+            Address = address;
+            RecipeId = recipeId;
+            HammerPoint = 0;
+        }
+
+        public HammerPointState(Address address, List serialized)
+        {
+            Address = address;
+            RecipeId = serialized[0].ToInteger();
+            HammerPoint = serialized[1].ToInteger();
+        }
+
+        public IValue Serialize()
+        {
+            return List.Empty
+                .Add(RecipeId.Serialize())
+                .Add(HammerPoint.Serialize());
+        }
+
+        public void AddHammerPoint(int point)
+        {
+            HammerPoint += point;
+        }
+
+        public void ResetHammerPoint()
+        {
+            HammerPoint = 0;
+        }
+    }
+}
