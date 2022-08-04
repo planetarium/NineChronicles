@@ -192,28 +192,48 @@ namespace Lib9c.Tests.Action
 
             if (exc is null)
             {
-                var seed = 0;
+                var randomSeed = 0;
                 var ctx = new ActionContext
                 {
                     BlockIndex = blockIndex,
                     PreviousStates = state,
-                    Random = new TestRandom(seed),
+                    Random = new TestRandom(randomSeed),
                     Rehearsal = false,
                     Signer = _agentAddress,
                 };
 
+                var nextState = action.Execute(ctx);
+
+                var random = new TestRandom(randomSeed);
+                if (levelUp && rewardRecordExist)
+                {
+                    Assert.True(state.TryGetState(bossAddress, out List prevRawBoss));
+                    var prevBossState = new WorldBossState(prevRawBoss);
+                    int rank = WorldBossHelper.CalculateRank(raiderStateExist ? 1_000 : 0);
+                    List<FungibleAssetValue> rewards = RuneHelper.CalculateReward(
+                        rank,
+                        prevBossState.Id,
+                        _tableSheets.RuneWeightSheet,
+                        _tableSheets.WorldBossKillRewardSheet,
+                        _tableSheets.RuneSheet,
+                        random
+                    );
+
+                    foreach (var reward in rewards)
+                    {
+                        Assert.Equal(reward, nextState.GetBalance(_avatarAddress, reward.Currency));
+                    }
+                }
+
                 var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(ctx.BlockIndex);
                 var simulator = new RaidSimulator(
                     bossRow.BossId,
-                    new TestRandom(seed),
+                    random,
                     avatarState,
                     action.FoodIds,
                     _tableSheets.GetRaidSimulatorSheets());
                 simulator.Simulate();
                 var score = simulator.DamageDealt;
-
-                var nextState = action.Execute(ctx);
-
                 Assert.Equal(0 * crystal, nextState.GetBalance(_agentAddress, crystal));
                 if (crystalExist)
                 {
