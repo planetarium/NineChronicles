@@ -20,17 +20,17 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Model.Elemental;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.WorldBoss;
+using Nekoyume.UI.Scroller;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = UnityEngine.UI.Toggle;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.UI.Scroller;
     using UniRx;
-
     public class RaidPreparation : Widget
     {
         private static readonly Vector3 PlayerPosition = new(1999.8f, 1999.3f, 3f);
+        private const string RAID_EQUIPMENT_KEY = "RAID_EQUIPMENT_KEY";
 
         [SerializeField]
         private Toggle toggle;
@@ -153,18 +153,25 @@ namespace Nekoyume.UI
             _cachedRaiderState = cachedRaiderState;
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             startButton.gameObject.SetActive(true);
             startButton.Interactable = true;
-            if (_cachedRaiderState is null)
+            if (WorldBossFrontHelper.IsItInSeason(currentBlockIndex))
             {
-                var cost = GetEntranceFee(currentAvatarState);
-                startButton.SetCost(CostType.Crystal, cost);
+                if (_cachedRaiderState is null)
+                {
+                    var cost = GetEntranceFee(currentAvatarState);
+                    startButton.SetCost(CostType.Crystal, cost);
+                }
+                else
+                {
+                    startButton.SetCost(CostType.WorldBossTicket, 1);
+                    startButton.SetCostColor(_headerMenu.WorldBossTickets.RemainTicket > 0);
+                }
             }
             else
             {
-                startButton.SetCost(CostType.WorldBossTicket, 1);
-                startButton.SetCostColor(_headerMenu.WorldBossTickets.RemainTicket > 0);
+                startButton.SetCost(CostType.None, 0);
             }
 
             if (_player == null)
@@ -177,22 +184,16 @@ namespace Nekoyume.UI
             _player.Set(currentAvatarState);
             _player.gameObject.SetActive(true);
 
+            _cachedEquipment.Clear();
+            _cachedEquipment.AddRange(_player.Model.Equipments.Select(x=> x.ItemId).ToList());
+            _cachedEquipment.AddRange(_player.Model.Costumes.Select(x=> x.ItemId).ToList());
+            var loadEquipment = LoadEquipment();
+            currentAvatarState.EquipItems(loadEquipment);
+
             UpdateInventory();
             UpdateTitle();
             UpdateStat(currentAvatarState);
             UpdateSlot(currentAvatarState, true);
-
-            foreach (var particle in particles)
-            {
-                if (startButton.IsSubmittable)
-                {
-                    particle.Play();
-                }
-                else
-                {
-                    particle.Stop();
-                }
-            }
             UpdateStartButton(currentAvatarState);
 
 
@@ -226,6 +227,13 @@ namespace Nekoyume.UI
         {
             consumableSlots.Clear();
             _disposables.DisposeAllAndClear();
+
+            if (_player != null)
+            {
+                var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+                currentAvatarState.EquipItems(_cachedEquipment);
+            }
+
             base.Close(ignoreCloseAnimation);
         }
 
@@ -264,6 +272,7 @@ namespace Nekoyume.UI
             _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }
 
+        private readonly List<Guid> _cachedEquipment = new();
         private void UpdateSlot(AvatarState avatarState, bool isResetConsumableSlot = false)
         {
             _player.Set(avatarState);
@@ -576,6 +585,10 @@ namespace Nekoyume.UI
                 .Select(slot => (Consumable)slot.Item)
                 .Select(c => c.ItemId).ToList();
 
+            var equipment = new List<Guid>();
+            equipment.AddRange(equipments);
+            equipment.AddRange(consumables);
+            SaveEquipment(equipment);
             ActionManager.Instance.Raid(costumes, equipments,  consumables, payNcg);
             Find<LoadingScreen>().Show();
             Close();
@@ -660,6 +673,18 @@ namespace Nekoyume.UI
 
         private void UpdateStartButton(AvatarState avatarState)
         {
+            foreach (var particle in particles)
+            {
+                if (startButton.IsSubmittable)
+                {
+                    particle.Play();
+                }
+                else
+                {
+                    particle.Stop();
+                }
+            }
+
             _player.Set(avatarState);
             var foodIds = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
@@ -667,6 +692,36 @@ namespace Nekoyume.UI
             var canBattle = Util.CanBattle(_player, foodIds);
             startButton.gameObject.SetActive(canBattle);
             blockStartingTextObject.SetActive(!canBattle);
+        }
+
+        private List<Guid> LoadEquipment()
+        {
+            if (!PlayerPrefs.HasKey(RAID_EQUIPMENT_KEY))
+            {
+                return new List<Guid>();
+            }
+
+            var json = PlayerPrefs.GetString(RAID_EQUIPMENT_KEY);
+            var data =  JsonUtility.FromJson<EquipmentData>(json);
+            return data.Guids.Select(Guid.Parse).ToList();
+        }
+
+        private void SaveEquipment(IEnumerable<Guid> guids)
+        {
+            var e = new EquipmentData(guids.Select(x=> x.ToString()).ToArray());
+            var json = JsonUtility.ToJson(e);
+            PlayerPrefs.SetString(RAID_EQUIPMENT_KEY, json);
+        }
+
+        [Serializable]
+        public class EquipmentData
+        {
+            public string[] Guids;
+
+            public EquipmentData(string[] guids)
+            {
+                Guids = guids;
+            }
         }
     }
 }
