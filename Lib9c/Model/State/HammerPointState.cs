@@ -6,27 +6,27 @@ namespace Nekoyume.Model.State
     public class HammerPointState : IState
     {
         public Address Address { get; }
-        public int ItemId { get; }
+        public int RecipeId { get; }
         public int HammerPoint { get; private set; }
 
-        public HammerPointState(Address address, int itemId)
+        public HammerPointState(Address address, int recipeId)
         {
             Address = address;
-            ItemId = itemId;
+            RecipeId = recipeId;
             HammerPoint = 0;
         }
 
         public HammerPointState(Address address, List serialized)
         {
             Address = address;
-            ItemId = serialized[0].ToInteger();
+            RecipeId = serialized[0].ToInteger();
             HammerPoint = serialized[1].ToInteger();
         }
 
         public IValue Serialize()
         {
             return List.Empty
-                .Add(ItemId.Serialize())
+                .Add(RecipeId.Serialize())
                 .Add(HammerPoint.Serialize());
         }
 
