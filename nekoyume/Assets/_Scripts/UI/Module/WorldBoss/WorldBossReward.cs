@@ -69,6 +69,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 switch (toggle.Item)
                 {
                     case WorldBossSeasonReward season:
+                        season.Set(raidId);
                         break;
                     case WorldBossBattleReward battle:
                         battle.Set(killRewardRecord, raidId);
