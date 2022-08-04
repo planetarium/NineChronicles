@@ -122,7 +122,7 @@ namespace Nekoyume.TableData
     public class RaidSimulatorSheets : SimulatorSheets
     {
         public WorldBossCharacterSheet WorldBossCharacterSheet { get; }
-        public EnemySkillSheet EnemySkillSheet { get; }
+        public WorldBossActionPatternSheet WorldBossActionPatternSheet { get; }
 
         public RaidSimulatorSheets(
             MaterialItemSheet materialItemSheet,
@@ -133,7 +133,7 @@ namespace Nekoyume.TableData
             CharacterLevelSheet characterLevelSheet,
             EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
             WorldBossCharacterSheet worldBossCharacterSheet,
-            EnemySkillSheet enemySkillSheet
+            WorldBossActionPatternSheet worldBossActionPatternSheet
         ) : base(materialItemSheet,
             skillSheet,
             skillBuffSheet,
@@ -143,7 +143,7 @@ namespace Nekoyume.TableData
             equipmentItemSetEffectSheet)
         {
             WorldBossCharacterSheet = worldBossCharacterSheet;
-            EnemySkillSheet = enemySkillSheet;
+            WorldBossActionPatternSheet = worldBossActionPatternSheet;
         }
     }
 }

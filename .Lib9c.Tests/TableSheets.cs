@@ -167,6 +167,8 @@ namespace Lib9c.Tests
 
         public WorldBossCharacterSheet WorldBossCharacterSheet { get; private set; }
 
+        public WorldBossActionPatternSheet WorldBossActionPatternSheet { get; private set; }
+
         public RuneSheet RuneSheet { get; private set; }
 
         public WorldBossKillRewardSheet WorldBossKillRewardSheet { get; private set; }
@@ -254,7 +256,7 @@ namespace Lib9c.Tests
                 CharacterLevelSheet,
                 EquipmentItemSetEffectSheet,
                 WorldBossCharacterSheet,
-                EnemySkillSheet
+                WorldBossActionPatternSheet
             );
         }
 
