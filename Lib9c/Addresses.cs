@@ -54,7 +54,7 @@ namespace Nekoyume
         public static Address GetBlacksmithFeeAddress(int championshipId, int round) =>
             Addresses.Blacksmith.Derive($"_{championshipId}_{round}");
 
-        public static Address GetHammerPointStateAddress(Address avatarAddress, int itemId) =>
-            avatarAddress.Derive($"hammer_{itemId}");
+        public static Address GetHammerPointStateAddress(Address avatarAddress, int recipeId) =>
+            avatarAddress.Derive($"hammer_{recipeId}");
     }
 }
