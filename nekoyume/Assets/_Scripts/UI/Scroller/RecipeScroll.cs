@@ -13,6 +13,7 @@ using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using System.Numerics;
+using Nekoyume.UI.Module.Common;
 using TMPro;
 
 namespace Nekoyume.UI.Scroller
@@ -59,7 +60,7 @@ namespace Nekoyume.UI.Scroller
         private GameObject eventScheduleTab;
 
         [SerializeField]
-        private TextMeshProUGUI eventScheduleTabEntireTimeText;
+        private BlocksAndDatesPeriod eventScheduleTabEntireBlocksAndDatesPeriod;
 
         [SerializeField]
         private TextMeshProUGUI eventScheduleTabRemainingTimeText;
