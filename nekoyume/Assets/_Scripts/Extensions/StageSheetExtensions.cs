@@ -5,7 +5,7 @@ using Nekoyume.TableData;
 
 namespace Nekoyume
 {
-    public static class StageSheetExtension
+    public static class StageSheetExtensions
     {
         private static readonly Dictionary<int, List<MaterialItemSheet.Row>> GetRewardItemRowsCache = new Dictionary<int, List<MaterialItemSheet.Row>>();
 

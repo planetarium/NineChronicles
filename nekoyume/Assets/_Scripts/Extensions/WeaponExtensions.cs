@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    public static class WeaponExtension
+    public static class WeaponExtensions
     {
         public static Sprite GetPlayerSpineTexture(this Weapon weapon)
         {

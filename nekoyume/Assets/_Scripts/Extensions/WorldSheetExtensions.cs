@@ -5,7 +5,7 @@ using Nekoyume.TableData;
 
 namespace Nekoyume
 {
-    public static class WorldSheetExtension
+    public static class WorldSheetExtensions
     {
         public static bool TryGetByName(this WorldSheet sheet, string name, out WorldSheet.Row worldRow)
         {

@@ -4,7 +4,7 @@ using Nekoyume.TableData;
 
 namespace Nekoyume
 {
-    public static class SkillSheetExtension
+    public static class SkillSheetExtensions
     {
         private static readonly Dictionary<int, List<BuffSheet.Row>> SkillBuffs =
             new Dictionary<int, List<BuffSheet.Row>>();
