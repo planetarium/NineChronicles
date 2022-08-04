@@ -74,4 +74,5 @@ Shader "Custom/Distortion_Additive_Stencil"
             ENDCG
         }
     }
+
 }
