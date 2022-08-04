@@ -166,6 +166,8 @@ namespace Lib9c.Tests
 
         public EventDungeonStageWaveSheet EventDungeonStageWaveSheet { get; private set; }
 
+        public EventConsumableItemRecipeSheet EventConsumableItemRecipeSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet ??= new ItemSheet();
