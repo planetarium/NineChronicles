@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Scroller
             gradeIconImage.sprite = gradeData.BgSprite;
             buffIconImage.sprite = bonusBuffViewData.GetBonusBuffIcon(skillRow.SkillCategory);
             buffNameText.text = skillRow.GetLocalizedName();
-            buffNameText.color = LocalizationExtension.GetBuffGradeColor(itemData.Rank);
+            buffNameText.color = itemData.Rank.GetBuffGradeColor();
         }
     }
 }

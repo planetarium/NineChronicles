@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    public static class VectorExtension
+    public static class VectorExtensions
     {
         public static float2 ToCanvasPosition(this Vector3 worldPosition, Camera camera, Canvas canvas)
         {
