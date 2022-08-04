@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Libplanet;
 using Libplanet.Assets;
@@ -21,12 +22,21 @@ namespace Nekoyume.Arena
         public static Address DeriveArenaAddress(int championshipId, int round) =>
             Addresses.Arena.Derive($"_{championshipId}_{round}");
 
-        public static readonly IReadOnlyDictionary<ArenaType, (int, int)> ScoreLimits =
-            new Dictionary<ArenaType, (int, int)>()
-        {
-            { ArenaType.Season, (100, -100) },
-            { ArenaType.Championship, (100, -100) }
-        };
+        [Obsolete("Use `ScoreLimits` instead.")]
+        public static readonly IReadOnlyDictionary<ArenaType, (int, int)> ScoreLimitsV1 =
+            new Dictionary<ArenaType, (int, int)>
+            {
+                { ArenaType.Season, (100, -100) },
+                { ArenaType.Championship, (100, -100) }
+            };
+
+        public static readonly IReadOnlyDictionary<ArenaType, (int upper, int lower)> ScoreLimits =
+            new Dictionary<ArenaType, (int, int)>
+            {
+                { ArenaType.OffSeason, (100, -100) },
+                { ArenaType.Season, (100, -100) },
+                { ArenaType.Championship, (100, -100) }
+            };
 
         public static int GetMedalItemId(int championshipId, int round) =>
             700_000 + (championshipId * 100) + round;
@@ -72,7 +82,8 @@ namespace Nekoyume.Arena
                 : fee.DivRem(100, out _) * 50;
         }
 
-        public static bool ValidateScoreDifference(
+        [Obsolete("Use `ValidateScoreDifference()` instead.")]
+        public static bool ValidateScoreDifferenceV1(
             IReadOnlyDictionary<ArenaType, (int, int)> scoreLimits,
             ArenaType arenaType,
             int myScore,
@@ -81,6 +92,22 @@ namespace Nekoyume.Arena
             if (arenaType.Equals(ArenaType.OffSeason))
             {
                 return true;
+            }
+
+            var (upper, lower) = scoreLimits[arenaType];
+            var diff = enemyScore - myScore;
+            return lower <= diff && diff <= upper;
+        }
+
+        public static bool ValidateScoreDifference(
+            IReadOnlyDictionary<ArenaType, (int, int)> scoreLimits,
+            ArenaType arenaType,
+            int myScore,
+            int enemyScore)
+        {
+            if (!scoreLimits.ContainsKey(arenaType))
+            {
+                return false;
             }
 
             var (upper, lower) = scoreLimits[arenaType];
