@@ -22,13 +22,13 @@
         {
             var address = new PrivateKey().ToAddress();
             var state = new HammerPointState(address, 1);
-            state.UpdateHammerPoint(3);
+            state.AddHammerPoint(3);
             var serialized = state.Serialize();
             var deserialized = new HammerPointState(address, (List)serialized);
 
             Assert.Equal(state.Address, deserialized.Address);
             Assert.Equal(state.HammerPoint, deserialized.HammerPoint);
-            Assert.Equal(state.ItemId, deserialized.ItemId);
+            Assert.Equal(state.RecipeId, deserialized.RecipeId);
         }
 
         [Fact]
@@ -36,18 +36,32 @@
         {
             var address = new PrivateKey().ToAddress();
             var state = new HammerPointState(address, 1);
-            state.UpdateHammerPoint(3);
+            state.AddHammerPoint(3);
             var serialized = state.Serialize();
             var deserialized = new HammerPointState(address, (List)serialized);
 
             Assert.Equal(state.Address, deserialized.Address);
             Assert.Equal(state.HammerPoint, deserialized.HammerPoint);
-            Assert.Equal(state.ItemId, deserialized.ItemId);
+            Assert.Equal(state.RecipeId, deserialized.RecipeId);
 
             state.ResetHammerPoint();
             var newSerialized = state.Serialize();
             deserialized = new HammerPointState(address, (List)newSerialized);
             Assert.Equal(state.HammerPoint, deserialized.HammerPoint);
+        }
+
+        [Fact]
+        public void AddHammerPoint()
+        {
+            var address = new PrivateKey().ToAddress();
+            var state = new HammerPointState(address, 1);
+            state.AddHammerPoint(3);
+
+            Assert.Equal(3, state.HammerPoint);
+            state.AddHammerPoint(10);
+            Assert.Equal(13, state.HammerPoint);
+            state.AddHammerPoint(0);
+            Assert.Equal(13, state.HammerPoint);
         }
     }
 }

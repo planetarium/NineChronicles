@@ -30,7 +30,7 @@ namespace Nekoyume.Model.State
                 .Add(HammerPoint.Serialize());
         }
 
-        public void UpdateHammerPoint(int point)
+        public void AddHammerPoint(int point)
         {
             HammerPoint += point;
         }
