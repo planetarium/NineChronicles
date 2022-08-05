@@ -17,12 +17,12 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     /// <summary>
-    /// Hard forked at https://github.com/planetarium/lib9c/pull/1222
+    /// Hard forked at https://github.com/planetarium/lib9c/pull/967
     /// Updated at https://github.com/planetarium/lib9c/pull/1167
     /// </summary>
     [Serializable]
-    [ActionType("hack_and_slash15")]
-    public class HackAndSlash : GameAction
+    [ActionType("hack_and_slash14")]
+    public class HackAndSlash14 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -71,22 +71,17 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            return Execute(context.PreviousStates,
-                context.Signer,
-                context.BlockIndex,
-                context.Random);
-        }
-
-        public IAccountStateDelta Execute(IAccountStateDelta states,
-            Address signer,
-            long blockIndex,
-            IRandom random)
-        {
+            IActionContext ctx = context;
+            var states = ctx.PreviousStates;
             var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
+            if (ctx.Rehearsal)
+            {
+                return states;
+            }
 
-            var addressesHex = $"[{signer.ToHex()}, {avatarAddress.ToHex()}]";
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
 
@@ -94,7 +89,7 @@ namespace Nekoyume.Action
 
             var sw = new Stopwatch();
             sw.Start();
-            if (!states.TryGetAvatarStateV2(signer, avatarAddress, out AvatarState avatarState, out _))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out AvatarState avatarState, out _))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
@@ -156,7 +151,7 @@ namespace Nekoyume.Action
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
                 // NOTE: Add new World from WorldSheet
-                worldInformation.AddAndUnlockNewWorld(worldRow, blockIndex, worldSheet);
+                worldInformation.AddAndUnlockNewWorld(worldRow, ctx.BlockIndex, worldSheet);
             }
 
             if (!world.IsUnlocked)
@@ -183,8 +178,8 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Validate World: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, blockIndex);
-            var foodIds = avatarState.ValidateConsumable(foods, blockIndex);
+            var equipmentList = avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
+            var foodIds = avatarState.ValidateConsumable(foods, context.BlockIndex);
             var costumeIds = avatarState.ValidateCostume(costumes);
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Validate Items: {Elapsed}", addressesHex, sw.Elapsed);
@@ -275,7 +270,7 @@ namespace Nekoyume.Action
 
             sw.Restart();
             var simulator = new StageSimulator(
-                random,
+                ctx.Random,
                 avatarState,
                 foods,
                 skillsOnWaveStart,
@@ -311,7 +306,7 @@ namespace Nekoyume.Action
                 simulator.Player.worldInformation.ClearStage(
                     worldId,
                     stageId,
-                    blockIndex,
+                    ctx.BlockIndex,
                     worldSheet,
                     sheets.GetSheet<WorldUnlockSheet>()
                 );
@@ -329,11 +324,15 @@ namespace Nekoyume.Action
             {
                 if (isNotClearedStage)
                 {
+                    if (skillsOnWaveStart.Any())
+                    {
+                        // clear current star count, skill id.
+                        skillState = new CrystalRandomSkillState(skillStateAddress, stageId);
+                    }
+
                     // Update CrystalRandomSkillState.Stars by clearedWaveNumber. (add)
                     skillState!.Update(simulator.Log.clearedWaveNumber,
                         sheets.GetSheet<CrystalStageBuffGachaSheet>());
-                    // clear current skill id.
-                    skillState!.Update(new List<int>());
                     states = states.SetState(skillStateAddress, skillState!.Serialize());
                 }
             }
@@ -341,7 +340,7 @@ namespace Nekoyume.Action
             sw.Restart();
             avatarState.Update(simulator);
             avatarState.UpdateQuestRewards(sheets.GetSheet<MaterialItemSheet>());
-            avatarState.updatedAt = blockIndex;
+            avatarState.updatedAt = ctx.BlockIndex;
             avatarState.mailBox.CleanUp();
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
