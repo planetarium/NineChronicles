@@ -22,6 +22,8 @@ namespace Nekoyume.Model.Skill
                             return new BlowAttack(skillRow, power, chance);
                         case SkillCategory.AreaAttack:
                             return new AreaAttack(skillRow, power, chance);
+                        case SkillCategory.SpecialAttack:
+                            return new SpecialAttack(skillRow, power, chance);
                         default:
                             return new NormalAttack(skillRow, power, chance);
                     }

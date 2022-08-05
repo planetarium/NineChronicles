@@ -6,6 +6,7 @@ namespace Nekoyume.Model.Skill
         BlowAttack,
         DoubleAttack,
         AreaAttack,
+        SpecialAttack,
 
         Heal,
 
