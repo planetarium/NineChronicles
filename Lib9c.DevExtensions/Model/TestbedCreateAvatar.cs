@@ -8,6 +8,7 @@ namespace Lib9c.DevExtensions.Model
         public long BlockDifficulty;
         public int TradableMaterialCount;
         public int MaterialCount;
+        public int FoodCount;
         public CustomEquipmentItem[] CustomEquipmentItems;
     }
 
