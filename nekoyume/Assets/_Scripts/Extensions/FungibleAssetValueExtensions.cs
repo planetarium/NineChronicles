@@ -1,6 +1,4 @@
-﻿using System;
-using System.Numerics;
-using Libplanet.Assets;
+﻿using Libplanet.Assets;
 
 namespace Nekoyume
 {

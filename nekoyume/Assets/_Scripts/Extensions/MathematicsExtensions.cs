@@ -2,7 +2,7 @@
 
 namespace Nekoyume
 {
-    public static class MathematicsExtension
+    public static class MathematicsExtensions
     {
         public static float2 ReverseX(this float2 value)
         {

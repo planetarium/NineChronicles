@@ -15,6 +15,7 @@ using Nekoyume.State;
 using System.Numerics;
 using System.Text;
 using Nekoyume.TableData.Event;
+using Nekoyume.UI.Module.Common;
 using TMPro;
 
 namespace Nekoyume.UI.Scroller
@@ -61,7 +62,7 @@ namespace Nekoyume.UI.Scroller
         private GameObject eventScheduleTab;
 
         [SerializeField]
-        private TextMeshProUGUI eventScheduleTabEntireTimeText;
+        private BlocksAndDatesPeriod eventScheduleTabEntireBlocksAndDatesPeriod;
 
         [SerializeField]
         private TextMeshProUGUI eventScheduleTabRemainingTimeText;
@@ -304,14 +305,15 @@ namespace Nekoyume.UI.Scroller
         {
             if (row is null)
             {
-                eventScheduleTabEntireTimeText.text = string.Empty;
+                eventScheduleTabEntireBlocksAndDatesPeriod.Hide();
                 return;
             }
 
-            var sb = new StringBuilder();
-            sb.AppendLine(L10nManager.Localize("UI_EVENT_PERIOD"));
-            sb.AppendLine($"{row.StartBlockIndex:N0} - {row.RecipeEndBlockIndex:N0}");
-            eventScheduleTabEntireTimeText.text = sb.ToString();
+            eventScheduleTabEntireBlocksAndDatesPeriod.Show(
+                row.StartBlockIndex,
+                row.RecipeEndBlockIndex,
+                Game.Game.instance.Agent.BlockIndex,
+                DateTime.UtcNow);
         }
 
         private void UpdateEventScheduleRemainingTime(

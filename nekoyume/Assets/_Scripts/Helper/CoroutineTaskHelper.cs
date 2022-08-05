@@ -4,7 +4,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Nekoyume.Extension
+namespace Nekoyume.Helper
 {
     /// <summary>
     /// Coroutine and Task Async Interactive Helper

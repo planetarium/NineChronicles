@@ -25,7 +25,7 @@ using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume
 {
-    public static class LocalizationExtension
+    public static class LocalizationExtensions
     {
         public static async Task<string> ToInfo(this MailModel mail)
         {
@@ -487,7 +487,7 @@ namespace Nekoyume
             };
         }
 
-        public static Color GetBuffGradeColor(CrystalRandomBuffSheet.Row.BuffRank grade)
+        public static Color GetBuffGradeColor(this CrystalRandomBuffSheet.Row.BuffRank grade)
         {
             return grade switch
             {

@@ -12,8 +12,8 @@ namespace Nekoyume
         }
 
         /// <param name="value"></param>
-        /// <param name="begin">"yyyy-MM-ddTHH-mm-ss"</param>
-        /// <param name="end">"yyyy-MM-ddTHH-mm-ss"</param>
+        /// <param name="begin">"yyyy-MM-ddTHH:mm:ss"</param>
+        /// <param name="end">"yyyy-MM-ddTHH:mm:ss"</param>
         /// <returns></returns>
         public static bool IsInTime(this DateTime value, string begin, string end) =>
             value.IsInTime(

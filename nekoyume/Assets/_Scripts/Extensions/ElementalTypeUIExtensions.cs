@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    static class ElementalTypeUIExtension
+    static class ElementalTypeUIExtensions
     {
         private const string FireIconResourcePath = "UI/Icons/ElementalType/icon_elemental_fire";
         private const string WaterIconResourcePath = "UI/Icons/ElementalType/icon_elemental_water";

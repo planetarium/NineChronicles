@@ -1,10 +1,8 @@
-using Nekoyume.Arena;
 using Nekoyume.TableData;
-using Nekoyume.UI;
 
 namespace Nekoyume
 {
-    public static class ItemSheetExtension
+    public static class ItemSheetExtensions
     {
         public static string GetLocalizedName(
             this ItemSheet.Row value,
@@ -18,7 +16,7 @@ namespace Nekoyume
                     return equipmentRow.GetLocalizedName(0, useElementalIcon);
                 }
 
-                return LocalizationExtension.GetLocalizedNonColoredName(
+                return LocalizationExtensions.GetLocalizedNonColoredName(
                     equipmentRow.ElementalType,
                     equipmentRow.Id,
                     useElementalIcon);
@@ -29,7 +27,7 @@ namespace Nekoyume
                 return consumableRow.GetLocalizedName(hasColor);
             }
 
-            return LocalizationExtension.GetLocalizedNonColoredName(
+            return LocalizationExtensions.GetLocalizedNonColoredName(
                 value.ElementalType, value.Id, useElementalIcon);
         }
 
@@ -37,7 +35,7 @@ namespace Nekoyume
             this ItemSheet.Row row,
             ArenaSheet arenaSheet) =>
             row.Id.GetIconResourceId(arenaSheet);
-        
+
         public static int GetIconResourceId(
             this int itemSheetRowId,
             ArenaSheet arenaSheet)

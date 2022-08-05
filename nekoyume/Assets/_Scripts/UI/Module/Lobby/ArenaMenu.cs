@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Nekoyume.Game;
+using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -68,7 +69,7 @@ namespace Nekoyume.UI.Module.Lobby
                 currentRoundData =
                     TableSheets.Instance.ArenaSheet.GetRoundByBlockIndex(blockIndex);
             }
-            catch
+            catch(RoundNotFoundException)
             {
                 _seasonGameObject.SetActive(false);
                 _championshipGameObject.SetActive(false);

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Nekoyume
 {
-    public static class EnumerableExtension
+    public static class EnumerableExtensions
     {
         public static IEnumerable<T> Sample<T>(this IEnumerable<T> population, int k)
         {
