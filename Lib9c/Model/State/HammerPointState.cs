@@ -34,7 +34,10 @@ namespace Nekoyume.Model.State
 
         public void AddHammerPoint(int point, CrystalHammerPointSheet sheet)
         {
-            HammerPoint = Math.Min(HammerPoint + point, sheet[RecipeId].MaxPoint);
+            if (sheet.TryGetValue(RecipeId, out var row))
+            {
+                HammerPoint = Math.Min(HammerPoint + point, row.MaxPoint);
+            }
         }
 
         public void ResetHammerPoint()
