@@ -1,5 +1,7 @@
-﻿using Bencodex.Types;
+﻿using System;
+using Bencodex.Types;
 using Libplanet;
+using Nekoyume.TableData.Crystal;
 
 namespace Nekoyume.Model.State
 {
@@ -30,9 +32,9 @@ namespace Nekoyume.Model.State
                 .Add(HammerPoint.Serialize());
         }
 
-        public void AddHammerPoint(int point)
+        public void AddHammerPoint(int point, CrystalHammerPointSheet sheet)
         {
-            HammerPoint += point;
+            HammerPoint = Math.Min(HammerPoint + point, sheet[RecipeId].MaxPoint);
         }
 
         public void ResetHammerPoint()
