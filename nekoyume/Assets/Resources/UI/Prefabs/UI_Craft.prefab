@@ -1076,7 +1076,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 8, y: 0}
-  m_SizeDelta: {x: 26, y: 26}
+  m_SizeDelta: {x: 28, y: 26}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &7595110898451835486
 CanvasRenderer:
@@ -1106,7 +1106,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 53bf0a57798894a1f8d5389dd47ec1eb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 185aaf8bb42334190a6f4d375e6e6f67, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1128,8 +1128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EffectFactor: 1
-  m_ColorFactor: 0.16
+  m_EffectFactor: 0.54
+  m_ColorFactor: 0.113
   m_BlurFactor: 1
   m_EffectMode: 2
   m_ColorMode: 2
@@ -14127,7 +14127,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
+  m_fontSize: 18
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -15593,7 +15593,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 3, y: 0}
-  m_SizeDelta: {x: 26, y: 26}
+  m_SizeDelta: {x: 28, y: 26}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &2591769025372576482
 CanvasRenderer:
@@ -15623,7 +15623,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 53bf0a57798894a1f8d5389dd47ec1eb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 185aaf8bb42334190a6f4d375e6e6f67, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16278,7 +16278,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6544352832133153728
 RectTransform:
   m_ObjectHideFlags: 0
@@ -35249,8 +35249,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 75.2963, y: -92}
-  m_SizeDelta: {x: 144.5926, y: 46}
+  m_AnchoredPosition: {x: 75, y: -92}
+  m_SizeDelta: {x: 144, y: 46}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &7384755039342807866
 CanvasRenderer:
@@ -40411,7 +40411,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5239199911435851887
 RectTransform:
   m_ObjectHideFlags: 0
