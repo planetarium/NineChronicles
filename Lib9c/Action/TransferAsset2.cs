@@ -17,16 +17,16 @@ namespace Nekoyume.Action
     /// Updated at https://github.com/planetarium/lib9c/pull/957
     /// </summary>
     [Serializable]
-    [ActionType("transfer_asset3")]
-    public class TransferAsset : ActionBase, ISerializable
+    [ActionType("transfer_asset2")]
+    public class TransferAsset2 : ActionBase, ISerializable
     {
         private const int MemoMaxLength = 80;
 
-        public TransferAsset()
+        public TransferAsset2()
         {
         }
 
-        public TransferAsset(Address sender, Address recipient, FungibleAssetValue amount, string memo = null)
+        public TransferAsset2(Address sender, Address recipient, FungibleAssetValue amount, string memo = null)
         {
             Sender = sender;
             Recipient = recipient;
@@ -36,7 +36,7 @@ namespace Nekoyume.Action
             Memo = memo;
         }
 
-        protected TransferAsset(SerializationInfo info, StreamingContext context)
+        protected TransferAsset2(SerializationInfo info, StreamingContext context)
         {
             var rawBytes = (byte[])info.GetValue("serialized", typeof(byte[]));
             Dictionary pv = (Dictionary) new Codec().Decode(rawBytes);
@@ -82,7 +82,9 @@ namespace Nekoyume.Action
                 throw new InvalidTransferSignerException(context.Signer, Sender, Recipient);
             }
 
-            if (Sender == Recipient)
+            // This works for block after 380000. Please take a look at
+            // https://github.com/planetarium/libplanet/pull/1133
+            if (context.BlockIndex > 380000 && Sender == Recipient)
             {
                 throw new InvalidTransferRecipientException(Sender, Recipient);
             }
@@ -90,19 +92,13 @@ namespace Nekoyume.Action
             Address recipientAddress = Recipient.Derive(ActivationKey.DeriveKey);
 
             // Check new type of activation first.
-            // If result of GetState is not null, it is assumed that it has been activated.
-            if (
-                state.GetState(recipientAddress) is null &&
-                state.GetState(Addresses.ActivatedAccount) is Dictionary asDict &&
-                state.GetState(Recipient) is null
-            )
+            if (state.GetState(recipientAddress) is null && state.GetState(Addresses.ActivatedAccount) is Dictionary asDict )
             {
                 var activatedAccountsState = new ActivatedAccountsState(asDict);
                 var activatedAccounts = activatedAccountsState.Accounts;
                 // if ActivatedAccountsState is empty, all user is activate.
                 if (activatedAccounts.Count != 0
-                    && !activatedAccounts.Contains(Recipient)
-                    && state.GetState(Recipient) is null)
+                    && !activatedAccounts.Contains(Recipient))
                 {
                     throw new InvalidTransferUnactivatedRecipientException(Sender, Recipient);
                 }
