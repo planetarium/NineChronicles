@@ -33,6 +33,7 @@ namespace Nekoyume.Game.Character
         public bool IsDead => _currentHp <= 0;
         public Model.CharacterBase Model => _characterModel;
         public Coroutine CurrentAction { get; set; }
+        public int NextSpecialSkillId { get; set; }
         public Coroutine TargetAction => _target.CurrentAction;
 
         private bool _isAppQuitting = false;
@@ -165,6 +166,31 @@ namespace Nekoyume.Game.Character
 
             ActionPoint = () => ApplyDamage(skillInfos);
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
+        }
+
+        public virtual IEnumerator CoSpecialAttack(
+            IReadOnlyList<Skill.SkillInfo> skillInfos)
+        {
+            if (skillInfos is null || skillInfos.Count == 0)
+            {
+                yield break;
+            }
+
+            yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(x => x.Critical)));
+            ApplyDamage(skillInfos);
+
+            foreach (var info in skillInfos)
+            {
+                if (info.Buff is null)
+                {
+                    continue;
+                }
+
+                var target = info.Target.Id == Id ? this : _target;
+                target.ProcessBuff(target, info);
+            }
+
+            NextSpecialSkillId = 0;
         }
 
         public IEnumerator CoBlowAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
@@ -352,7 +378,7 @@ namespace Nekoyume.Game.Character
         {
         }
 
-        private IEnumerator CoAnimationAttack(bool isCritical)
+        protected IEnumerator CoAnimationAttack(bool isCritical)
         {
             if (isCritical)
             {
@@ -489,7 +515,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void ApplyDamage(IReadOnlyList<Skill.SkillInfo> skillInfos)
+        protected void ApplyDamage(IReadOnlyList<Skill.SkillInfo> skillInfos)
         {
             for (var i = 0; i < skillInfos.Count; i++)
             {
@@ -515,7 +541,7 @@ namespace Nekoyume.Game.Character
             ShowSpeech("PLAYER_ATTACK");
         }
 
-        private void ProcessBuff(RaidCharacter target, Skill.SkillInfo info)
+        public void ProcessBuff(RaidCharacter target, Skill.SkillInfo info)
         {
             if (IsDead)
             {

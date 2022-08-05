@@ -216,6 +216,19 @@ namespace Nekoyume.Game
             yield break;
         }
 
+        public IEnumerator CoSpecialAttack(
+            CharacterBase caster,
+            int skillId,
+            IEnumerable<Skill.SkillInfo> skillInfos,
+            IEnumerable<Skill.SkillInfo> buffInfos)
+        {
+            Character.RaidCharacter target = caster.Id == _player.Id ? _player : _boss;
+            target.Set(caster);
+            target.NextSpecialSkillId = skillId;
+            skillInfos = skillInfos.Concat(buffInfos);
+            yield return target.CoSpecialAttack(skillInfos.ToList());
+        }
+
         public IEnumerator CoBlowAttack(
             CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
