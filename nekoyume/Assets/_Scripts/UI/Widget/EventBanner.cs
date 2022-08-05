@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using Nekoyume.Helper;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -24,15 +27,22 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private PageView pageView;
 
-        private void Awake()
-        {
-            if (EventManager.TryGetArenaSeasonInfo(Game.Game.instance.Agent.BlockIndex, out var info))
-            {
-                var banner = Instantiate(Banner, content);
-                banner.GetComponent<EventBannerItem>().Set(info.SeasonBanner, info.SeasonUrl);
-                banner.transform.SetAsFirstSibling();
-            }
+        private AsyncOperationHandle _handle;
 
+        private readonly List<GameObject> banners = new();
+
+        protected override void Awake()
+        {
+            base.Awake();
+            AddressablesHelper.LoadAssets("banner", banners, Set);
+        }
+
+        private void Set()
+        {
+            foreach (var banner in banners)
+            {
+                Instantiate(banner, content);
+            }
             var destroyList = new List<GameObject>();
             for (var i = 0; i < content.childCount; i++)
             {

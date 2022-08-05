@@ -46,6 +46,8 @@ namespace Nekoyume.UI.Module
 
         private bool _isDragging;
 
+        private Coroutine _coroutine;
+
         public void Set(RectTransform content, IEnumerable<Image> indexImages)
         {
             _content = content;
@@ -57,7 +59,11 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            UpdateView();
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+            }
+            _coroutine = StartCoroutine(CoMovePage());
         }
 
         private void UpdateView()
@@ -69,7 +75,6 @@ namespace Nekoyume.UI.Module
             SetPageIndex(0);
             _isPageMoving = false;
             _isDragging = false;
-            StartCoroutine(CoMovePage());
         }
 
         public void OnBeginDrag(PointerEventData eventData)
