@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             selected.SetActive(isSelected);
         }
 
-        public void Set(WorldBossRankingRewardSheet.Row row, bool isSelected)
+        public void Set(WorldBossRankingRewardSheet.Row row, int myRank, int userCount)
         {
             rankTextContainer.gameObject.SetActive(false);
             rankingIconContainer.gameObject.SetActive(false);
@@ -48,6 +48,7 @@ namespace Nekoyume.UI.Module.WorldBoss
                 case 3:
                     rankTextContainer.gameObject.SetActive(true);
                     rankingIcon.sprite = SpriteHelper.GetRankIcon(row.RankingMin);
+                    selected.SetActive(row.RankingMin == myRank);
                     break;
                 default:
                     rankingIconContainer.gameObject.SetActive(true);
@@ -56,10 +57,16 @@ namespace Nekoyume.UI.Module.WorldBoss
                         rankText.text = row.RateMin > 1
                             ? $"{row.RateMin}%~{row.RateMax}%"
                             : $"{row.RateMax}%";
+
+                        var rate = userCount > 0 ? (int)(((float)myRank / userCount) * 100) : 0;
+                        var value = row.RateMin <= rate && rate <= row.RateMax;
+                        selected.SetActive(value);
                     }
                     else
                     {
                         rankText.text = $"{row.RankingMin}~{row.RankingMax}";
+                        var value = row.RankingMin <= myRank && myRank <= row.RankingMax;
+                        selected.SetActive(value);
                     }
                     break;
             }
@@ -67,7 +74,6 @@ namespace Nekoyume.UI.Module.WorldBoss
             var runeSum = row.Runes.Sum(x => x.RuneQty);
             rune.text = $"{runeSum:#,0}";
             crystal.text = $"{row.Crystal:#,0}";
-            selected.SetActive(isSelected);
         }
     }
 }

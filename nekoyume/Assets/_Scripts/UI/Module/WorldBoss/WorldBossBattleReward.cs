@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Nekoyume.Helper;
-using Nekoyume.Model.State;
+using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
@@ -13,7 +13,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private List<WorldBossBattleRewardItem> killRewardItems;
 
-        public void Set(WorldBossKillRewardRecord record, int raidId)
+        public void Set(int raidId, WorldBossRankingRecord record)
         {
             if (!WorldBossFrontHelper.TryGetRaid(raidId, out var row))
             {
@@ -25,10 +25,12 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
+            var grade = record != null ? WorldBossHelper.CalculateRank(record.HighScore) : -1;
+            rewards.Reverse();
             for (var i = 0; i < rewards.Count; i++)
             {
-                // todo : select 조건 넣어줘야함
-                killRewardItems[i].Set(rewards[i], false);
+                var g = rewards.Count - i - 1;
+                killRewardItems[i].Set(rewards[i], g == grade);
             }
         }
     }

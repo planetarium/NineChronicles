@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
@@ -43,7 +41,6 @@ namespace Nekoyume.UI.Module.WorldBoss
             claimButton.OnClickDisabledSubject
                 .Subscribe(_ =>
                 {
-                    // 여기서 받을 것 없다는 노티 띄워줘야 하려나?
                 }).AddTo(gameObject);
         }
 

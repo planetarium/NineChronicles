@@ -6,6 +6,7 @@ using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.UI.Model;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module.WorldBoss
@@ -63,16 +64,17 @@ namespace Nekoyume.UI.Module.WorldBoss
                 return;
             }
 
-            var (raider, killRewardRecord, raidId) = await GetStatesAsync();
+            var (raider, killRewardRecord, raidId, record, userCount) = await GetDataAsync();
             foreach (var toggle in categoryToggles)
             {
                 switch (toggle.Item)
                 {
                     case WorldBossSeasonReward season:
-                        season.Set(raidId);
+                        var rank = record?.Ranking ?? 0;
+                        season.Set(raidId, rank, userCount);
                         break;
                     case WorldBossBattleReward battle:
-                        battle.Set(killRewardRecord, raidId);
+                        battle.Set(raidId, record);
                         break;
                     case WorldBossGradeReward grade:
                         grade.Set(raider, raidId);
@@ -92,7 +94,13 @@ namespace Nekoyume.UI.Module.WorldBoss
             }
         }
 
-        private async Task<(RaiderState, WorldBossKillRewardRecord, int)> GetStatesAsync()
+        private async Task<(
+            RaiderState raider,
+            WorldBossKillRewardRecord killReward,
+            int raidId,
+            WorldBossRankingRecord record,
+            int userCount)>
+            GetDataAsync()
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var bossSheet = Game.Game.instance.TableSheets.WorldBossListSheet;
@@ -122,7 +130,11 @@ namespace Nekoyume.UI.Module.WorldBoss
                     ? new WorldBossKillRewardRecord(killRewardList)
                     : null;
 
-                return (raider, killReward, raidId);
+                var response = await WorldBossQuery.QueryRankingAsync(raidId, avatarAddress);
+                var records = response?.WorldBossRanking ?? new List<WorldBossRankingRecord>();
+                var userCount = response?.WorldBossTotalUsers ?? 0;
+                var myRecord = records.FirstOrDefault(record => record.Address == avatarAddress.ToHex());
+                return (raider, killReward, raidId, myRecord, userCount);
             });
 
             await task;

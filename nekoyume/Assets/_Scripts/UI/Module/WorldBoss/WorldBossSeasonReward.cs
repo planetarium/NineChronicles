@@ -9,7 +9,7 @@ namespace Nekoyume.UI.Module.WorldBoss
         [SerializeField]
         private List<WorldBossBattleRewardItem> Items;
 
-        public void Set(int raidId)
+        public void Set(int raidId, int myRank, int userCount)
         {
             if (!WorldBossFrontHelper.TryGetRaid(raidId, out var raidRow))
             {
@@ -23,8 +23,7 @@ namespace Nekoyume.UI.Module.WorldBoss
 
             for (var i = 0; i < rankingRows.Count; i++)
             {
-                // todo : select 조건 넣어줘야함
-                Items[i].Set(rankingRows[i], false);
+                Items[i].Set(rankingRows[i], myRank, userCount);
             }
         }
     }
