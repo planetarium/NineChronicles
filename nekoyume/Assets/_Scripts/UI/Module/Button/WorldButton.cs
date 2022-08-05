@@ -73,6 +73,7 @@ namespace Nekoyume.UI.Module
 
         private Tweener _tweener;
         private BigInteger _openCost;
+        private bool _interactable;
 
         public readonly Subject<WorldButton> OnClickSubject = new();
         public readonly ReactiveProperty<bool> HasNotification = new(false);
@@ -138,11 +139,13 @@ namespace Nekoyume.UI.Module
 
         public void Unlock(bool crystalLock = false)
         {
+            _interactable = true;
             _state.SetValueAndForceNotify(crystalLock ? WorldState.Unlockable : WorldState.Unlocked);
         }
 
-        public void Lock()
+        public void Lock(bool interactable = false)
         {
+            _interactable = interactable;
             _state.SetValueAndForceNotify(WorldState.Locked);
         }
 
@@ -169,10 +172,10 @@ namespace Nekoyume.UI.Module
 
         private void OnEnterWorldButtonState(WorldState worldState)
         {
+            button.interactable = _interactable;
             switch (worldState)
             {
                 case WorldState.Unlocked:
-                    button.interactable = true;
                     grayImage.enabled = false;
                     colorImage.enabled = true;
                     lockImage.SetActive(false);
@@ -181,7 +184,6 @@ namespace Nekoyume.UI.Module
                     animator.Play(worldState.ToString());
                     break;
                 case WorldState.Locked:
-                    button.interactable = false;
                     grayImage.enabled = true;
                     colorImage.enabled = false;
                     lockImage.SetActive(true);
@@ -189,7 +191,6 @@ namespace Nekoyume.UI.Module
                     unlockableImage.SetActive(false);
                     break;
                 case WorldState.Unlockable:
-                    button.interactable = true;
                     lockImage.SetActive(false);
                     unlockImage.SetActive(false);
                     unlockableImage.SetActive(true);

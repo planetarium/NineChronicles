@@ -12,9 +12,11 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData.Event;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine.UI;
@@ -47,7 +49,7 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private WorldButton _eventDungeonButton;
-        
+
         [SerializeField]
         private TextMeshProUGUI _eventDungeonTicketsText;
 
@@ -117,10 +119,16 @@ namespace Nekoyume.UI
                     }).AddTo(gameObject);
             }
 
+            _eventDungeonButton.Lock(true);
+            _eventDungeonButton.Show();
             _eventDungeonButton.OnClickSubject.Subscribe(_ =>
             {
                 if (RxProps.EventDungeonRow is null)
                 {
+                    NotificationSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                        NotificationCell.NotificationType.Information);
                     return;
                 }
 
@@ -167,7 +175,7 @@ namespace Nekoyume.UI
                 {
                     Find<HeaderMenuStatic>().UpdateAssets(
                         HeaderMenuStatic.AssetVisibleState.Battle);
-                    _eventDungeonButton.Hide();
+                    _eventDungeonButton.Lock(true);
                     return;
                 }
 
@@ -178,7 +186,6 @@ namespace Nekoyume.UI
                         .currentTickets.ToString(CultureInfo.InvariantCulture);
                 _eventDungeonButton.HasNotification.Value = true;
                 _eventDungeonButton.Unlock();
-                _eventDungeonButton.Show();
             }).AddTo(_disposablesAtShow);
             RxProps.EventDungeonTicketProgress.Subscribe(value =>
             {
@@ -292,7 +299,7 @@ namespace Nekoyume.UI
             {
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
-            
+
             var openedStageId = RxProps.EventDungeonInfo?.Value is null
                 ? RxProps.EventDungeonRow.StageBegin
                 : RxProps.EventDungeonInfo.Value.ClearedStageId;
