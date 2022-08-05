@@ -1,6 +1,6 @@
 ﻿namespace Lib9c.Tests.Model.State
 {
-    using System.Collections.Generic;
+    using System;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Crypto;
@@ -22,7 +22,7 @@
         {
             var address = new PrivateKey().ToAddress();
             var state = new HammerPointState(address, 1);
-            state.AddHammerPoint(3);
+            state.AddHammerPoint(3, _tableSheets.CrystalHammerPointSheet);
             var serialized = state.Serialize();
             var deserialized = new HammerPointState(address, (List)serialized);
 
@@ -36,7 +36,7 @@
         {
             var address = new PrivateKey().ToAddress();
             var state = new HammerPointState(address, 1);
-            state.AddHammerPoint(3);
+            state.AddHammerPoint(3, _tableSheets.CrystalHammerPointSheet);
             var serialized = state.Serialize();
             var deserialized = new HammerPointState(address, (List)serialized);
 
@@ -55,13 +55,14 @@
         {
             var address = new PrivateKey().ToAddress();
             var state = new HammerPointState(address, 1);
-            state.AddHammerPoint(3);
+            var sheet = _tableSheets.CrystalHammerPointSheet;
+            state.AddHammerPoint(3, sheet);
 
             Assert.Equal(3, state.HammerPoint);
-            state.AddHammerPoint(10);
-            Assert.Equal(13, state.HammerPoint);
-            state.AddHammerPoint(0);
-            Assert.Equal(13, state.HammerPoint);
+            state.AddHammerPoint(10, sheet);
+            Assert.Equal(Math.Min(13, sheet[1].MaxPoint), state.HammerPoint);
+            state.AddHammerPoint(0, _tableSheets.CrystalHammerPointSheet);
+            Assert.Equal(Math.Min(13, sheet[1].MaxPoint), state.HammerPoint);
         }
     }
 }
