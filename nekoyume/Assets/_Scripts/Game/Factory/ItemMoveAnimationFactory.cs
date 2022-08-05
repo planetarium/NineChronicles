@@ -50,8 +50,9 @@ namespace Nekoyume.Game.Factory
                     true,
                     setMidByRandom: true,
                     destroy: false);
-                yield return null;
             }
+
+            yield return null;
         }
     }
 }
