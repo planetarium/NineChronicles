@@ -282,20 +282,25 @@ namespace Nekoyume.UI.Scroller
             Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);
             consumableTab.SetActive(false);
-            eventScheduleTab.SetActive(true);
 
             if (RxProps.EventScheduleRowForRecipe is null ||
                 RxProps.EventConsumableItemRecipeRows.Value?.Count is null or 0)
             {
                 Show(new List<RecipeRow.Model>(), true);
                 emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
+                // FIXME: Set the viewport to serialized field.
+                transform.Find("Viewport").gameObject.SetActive(false);
                 emptyObject.SetActive(true);
+                eventScheduleTab.SetActive(false);
                 return;
             }
 
             var items = Craft.SharedModel.EventConsumableRecipeMap
                 .Values.ToList();
+            // FIXME: Set the viewport to serialized field.
+            transform.Find("Viewport").gameObject.SetActive(true);
             emptyObject.SetActive(false);
+            eventScheduleTab.SetActive(true);
             Show(items, true);
             AnimateScroller();
         }
@@ -327,9 +332,8 @@ namespace Nekoyume.UI.Scroller
             }
 
             var value = row.RecipeEndBlockIndex - currentBlockIndex;
-            var time = Util.GetBlockToTime(value);
-            eventScheduleTabRemainingTimeText.text =
-                string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), value, time);
+            var time = value.BlockRangeToTimeSpanString();
+            eventScheduleTabRemainingTimeText.text = $"{value}({time})";
         }
 
         private void UpdateUnlockAllButton()

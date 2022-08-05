@@ -6,7 +6,6 @@ using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Arena;
-using Nekoyume.Helper;
 using Nekoyume.Model.Arena;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.State;

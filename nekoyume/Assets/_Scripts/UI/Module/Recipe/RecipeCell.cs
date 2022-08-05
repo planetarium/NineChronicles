@@ -184,7 +184,8 @@ namespace Nekoyume.UI.Module
                 IsLocked = true;
                 return;
             }
-            else if (sharedModel.DummyLockedRecipes.Contains(equipmentRow.Id))
+
+            if (sharedModel.DummyLockedRecipes.Contains(equipmentRow.Id))
             {
                 lockVFXObject.SetActive(true);
                 equipmentView.Hide();
@@ -192,7 +193,8 @@ namespace Nekoyume.UI.Module
                 _unlockable = true;
                 return;
             }
-            else if (sharedModel.UnlockedRecipes is null)
+
+            if (sharedModel.UnlockedRecipes is null)
             {
                 unlockConditionText.text = L10nManager.Localize("ERROR_FAILED_LOAD_STATE");
                 unlockConditionText.enabled = true;
@@ -200,17 +202,22 @@ namespace Nekoyume.UI.Module
                 IsLocked = true;
                 return;
             }
-            else if (sharedModel.UnlockingRecipes.Contains(equipmentRow.Id))
+
+            if (sharedModel.UnlockingRecipes.Contains(equipmentRow.Id))
             {
                 _isWaitingForUnlock = true;
                 SetLoadingView(equipmentRow);
                 IsLocked = false;
                 return;
             }
-            else if (!sharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id))
+
+            if (!sharedModel.UnlockedRecipes.Value.Contains(equipmentRow.Id))
             {
-                var unlockable = sharedModel.UnlockableRecipes.Value.Contains(equipmentRow.Id) &&
-                                 sharedModel.UnlockableRecipesOpenCost <= States.Instance.CrystalBalance.MajorUnit;
+                var unlockable =
+                    sharedModel.UnlockableRecipes.Value is not null &&
+                    sharedModel.UnlockableRecipes.Value.Contains(equipmentRow.Id) &&
+                    sharedModel.UnlockableRecipesOpenCost <=
+                    States.Instance.CrystalBalance.MajorUnit;
                 lockVFXObject.SetActive(unlockable);
                 equipmentView.Hide();
                 unlockObject.SetActive(true);
@@ -300,8 +307,11 @@ namespace Nekoyume.UI.Module
 
         private void SetUnlockable(List<int> recipeIds)
         {
-            var unlockable = recipeIds.Contains(_recipeRow.Key) &&
-                             Craft.SharedModel.UnlockableRecipesOpenCost <= States.Instance.CrystalBalance.MajorUnit;
+            var unlockable =
+                recipeIds is not null &&
+                recipeIds.Contains(_recipeRow.Key) &&
+                Craft.SharedModel.UnlockableRecipesOpenCost <=
+                States.Instance.CrystalBalance.MajorUnit;
             lockVFXObject.SetActive(unlockable);
             unlockPriceText.color = unlockable
                 ? Palette.GetColor(ColorType.ButtonEnabled)

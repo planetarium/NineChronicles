@@ -25,7 +25,7 @@ namespace Nekoyume.Helper
 
         public static string GetBlockToTime(long block)
         {
-            if (block <= 0)
+            if (block < 0)
             {
                 return string.Empty;
             }
@@ -63,7 +63,7 @@ namespace Nekoyume.Helper
 
             if (sb.Length == 0)
             {
-                sb.Append("1m");
+                sb.Append("0m");
             }
 
             return sb.ToString();

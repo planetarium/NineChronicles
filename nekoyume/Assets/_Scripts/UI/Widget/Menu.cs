@@ -234,7 +234,8 @@ namespace Nekoyume.UI
         {
             AudioController.PlayClick();
             Analyzer.Instance.Track("Unity/Click Guided Quest Combination Equipment");
-            CombinationClickInternal(() => Find<Craft>().ShowWithEquipmentRecipeId(recipeId));
+            CombinationClickInternal(() =>
+                Find<Craft>().ShowWithEquipmentRecipeId(recipeId));
         }
 
         private void UpdateButtons()

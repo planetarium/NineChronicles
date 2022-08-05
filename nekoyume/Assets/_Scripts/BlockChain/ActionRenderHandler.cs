@@ -1305,6 +1305,7 @@ namespace Nekoyume.BlockChain
                         var task = UniTask.Run(() =>
                         {
                             UpdateCurrentAvatarStateAsync(eval).Forget();
+                            RxProps.EventDungeonInfo.UpdateAsync().Forget();
                             _disposableForBattleEnd = null;
                             Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
                         });
@@ -1362,8 +1363,6 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<BattleResultPopup>().NextStage(log);
             }
-
-            RxProps.EventDungeonInfo.UpdateAsync().Forget();
         }
 
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)

@@ -78,7 +78,8 @@ namespace Nekoyume.State
         {
             if (!_tableSheets.EventScheduleSheet.TryGetRowForDungeon(
                     blockIndex,
-                    out var scheduleRow))
+                    out var scheduleRow) ||
+                scheduleRow.DungeonEndBlockIndex == blockIndex)
             {
                 _eventScheduleRowForDungeon.Value = null;
                 EventDungeonRow = null;
@@ -175,7 +176,8 @@ namespace Nekoyume.State
         {
             if (!_tableSheets.EventScheduleSheet.TryGetRowForRecipe(
                     blockIndex,
-                    out var scheduleRow))
+                    out var scheduleRow) ||
+                scheduleRow.RecipeEndBlockIndex == blockIndex)
             {
                 _eventScheduleRowForRecipe.Value = null;
                 _eventConsumableItemRecipeRows.Value = null;

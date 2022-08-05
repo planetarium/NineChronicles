@@ -136,15 +136,6 @@ namespace Nekoyume.UI.Module
         public static WorldQuest WorldQuest =>
             SharedViewModel.worldQuest.Value;
 
-        public static CombinationEquipmentQuest CombinationEquipmentQuest =>
-            SharedViewModel.combinationEquipmentQuest.Value;
-
-        public static WorldQuest EventDungeonQuest =>
-            SharedViewModel.eventDungeonQuest.Value;
-
-        public static CombinationEquipmentQuest CraftEventItemQuest =>
-            SharedViewModel.craftEventItemQuest.Value;
-
         #region Events
 
         public IObservable<(GuidedQuestCell cell, WorldQuest quest)>
@@ -222,6 +213,7 @@ namespace Nekoyume.UI.Module
                 SharedViewModel.worldQuest.Value = null;
                 SharedViewModel.combinationEquipmentQuest.Value = null;
                 SharedViewModel.eventDungeonQuest.Value = null;
+                SharedViewModel.craftEventItemQuest.Value = null;
                 onComplete?.Invoke();
                 return;
             }
@@ -278,16 +270,6 @@ namespace Nekoyume.UI.Module
             _worldQuestCell.SetToInProgress(true);
         }
 
-        public void SetCombinationEquipmentToInProgress(int recipeId)
-        {
-            if (SharedViewModel.combinationEquipmentQuest.Value?.RecipeId != recipeId)
-            {
-                return;
-            }
-
-            _combinationEquipmentQuestCell.SetToInProgress(true);
-        }
-
         public void SetEventDungeonStageToInProgress(int eventDungeonStageId)
         {
             if (SharedViewModel.eventDungeonQuest.Value?.Id != eventDungeonStageId)
@@ -330,39 +312,6 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ => onComplete?.Invoke(true));
 
             EnterToClearExistGuidedQuest(SharedViewModel.worldQuest);
-        }
-
-        /// <summary>
-        /// 현재 노출된 장비 조합 가이드 퀘스트 정보와 같은 레시피일 경우에 동작합니다.
-        /// `ClearWorldQuest`와는 다르게 `QuestResult`를 띄우지 않습니다.
-        /// </summary>
-        /// <param name="recipeId"></param>
-        /// <param name="onComplete">함께 전달 받은 `recipeId`와 `subRecipeId` 인자가 현재 노출된 장비 조합 가이드 퀘스트와 같다면 보상 연출이
-        /// 끝난 후에 `true` 인자와 함께 `onComplete`가 호출됩니다. 그렇지 않다면 `false` 인자와 함께 호출됩니다.</param>
-        public void ClearCombinationEquipmentQuest(
-            int recipeId,
-            Action<bool> onComplete)
-        {
-            if (_state.Value != ViewState.Shown)
-            {
-                Debug.LogWarning(
-                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.Shown}");
-                return;
-            }
-
-            if (recipeId != SharedViewModel.combinationEquipmentQuest.Value.RecipeId)
-            {
-                return;
-            }
-
-            // NOTE: 이 라인까지 로직이 흐르면 `EnterToClearExistGuidedQuest()` 호출을 통해서
-            // `_onClearCombinationEquipmentQuestComplete`가 반드시 호출되는 것을 기대합니다.
-            _onClearCombinationEquipmentQuestComplete
-                .Where(quest => quest.RecipeId == recipeId)
-                .First()
-                .Subscribe(_ => onComplete?.Invoke(true));
-
-            EnterToClearExistGuidedQuest(SharedViewModel.combinationEquipmentQuest);
         }
 
         public void ClearEventDungeonStage(int eventDungeonStageId, Action<bool> onComplete)
@@ -621,6 +570,7 @@ namespace Nekoyume.UI.Module
             SharedViewModel.worldQuest.Value = null;
             SharedViewModel.combinationEquipmentQuest.Value = null;
             SharedViewModel.eventDungeonQuest.Value = null;
+            SharedViewModel.craftEventItemQuest.Value = null;
         }
 
         #endregion

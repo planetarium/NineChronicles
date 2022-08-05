@@ -196,6 +196,7 @@ namespace Nekoyume.UI
 
         public void ShowWithToggleIndex(int toggleIndex, bool ignoreShowAnimation = false)
         {
+            _disposablesAtShow.DisposeAllAndClear();
             eventConsumableToggle.gameObject.SetActive(true);
             equipmentSubRecipeView.gameObject.SetActive(false);
             consumableSubRecipeView.gameObject.SetActive(false);
@@ -212,10 +213,12 @@ namespace Nekoyume.UI
                 case 1:
                     consumableToggle.isOn = true;
                     ShowConsumable();
+                    AnimationState.Value = AnimationStateType.Shown;
                     break;
                 case 2:
                     eventConsumableToggle.isOn = true;
                     ShowConsumable();
+                    AnimationState.Value = AnimationStateType.Shown;
                     break;
             }
 
@@ -231,9 +234,18 @@ namespace Nekoyume.UI
                     .PlayMusic(AudioController.MusicCode.Combination);
             }
 
-            _disposablesAtShow.DisposeAllAndClear();
+
+            RxProps.EventScheduleRowForRecipe
+                .Skip(1)
+                .Select(_ => eventConsumableToggle.isOn)
+                .Subscribe(OnClickConsumableToggle)
+                .AddTo(_disposablesAtShow);
             RxProps.EventConsumableItemRecipeRows
-                .Subscribe(SharedModel.UpdateEventConsumable)
+                .Subscribe(value =>
+                {
+                    SharedModel.UpdateEventConsumable(value);
+                    OnClickConsumableToggle(eventConsumableToggle.isOn);
+                })
                 .AddTo(_disposablesAtShow);
         }
 

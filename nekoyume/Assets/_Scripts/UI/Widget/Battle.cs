@@ -132,7 +132,18 @@ namespace Nekoyume.UI
             base.Show();
             guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
             {
-                guidedQuest.SetWorldQuestToInProgress(stageId);
+                switch (_stageType)
+                {
+                    case StageType.HackAndSlash:
+                    case StageType.Mimisbrunnr:
+                        guidedQuest.SetWorldQuestToInProgress(stageId);
+                        break;
+                    case StageType.EventDungeon:
+                        guidedQuest.SetEventDungeonStageToInProgress(stageId);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(stageType), stageType, null);
+                }
             });
 
             stageText.text =
@@ -167,22 +178,45 @@ namespace Nekoyume.UI
             exitToggle.gameObject.SetActive(true);
             //repeatToggle.gameObject.SetActive(true);
             helpButton.gameObject.SetActive(true);
+
         }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
         {
-            guidedQuest.ClearWorldQuest(stageId, cleared =>
+            switch (_stageType)
             {
-                if (!cleared)
-                {
-                    onComplete(false);
-                    return;
-                }
+                case StageType.HackAndSlash:
+                case StageType.Mimisbrunnr:
+                    guidedQuest.ClearWorldQuest(stageId, cleared =>
+                    {
+                        if (!cleared)
+                        {
+                            onComplete(false);
+                            return;
+                        }
 
-                guidedQuest.UpdateList(
-                    States.Instance.CurrentAvatarState,
-                    () => onComplete(true));
-            });
+                        guidedQuest.UpdateList(
+                            States.Instance.CurrentAvatarState,
+                            () => onComplete(true));
+                    });
+                    break;
+                case StageType.EventDungeon:
+                    guidedQuest.ClearEventDungeonStage(stageId, cleared =>
+                    {
+                        if (!cleared)
+                        {
+                            onComplete(false);
+                            return;
+                        }
+
+                        guidedQuest.UpdateList(
+                            States.Instance.CurrentAvatarState,
+                            () => onComplete(true));
+                    });
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public void ShowComboText(bool attacked)
