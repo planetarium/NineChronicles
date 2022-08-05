@@ -87,9 +87,24 @@ namespace Nekoyume.Action
                 throw new InvalidTransferRecipientException(Sender, Recipient);
             }
 
-            if (state.GetState(Recipient) is null)
+            Address recipientAddress = Recipient.Derive(ActivationKey.DeriveKey);
+
+            // Check new type of activation first.
+            // If result of GetState is not null, it is assumed that it has been activated.
+            if (
+                state.GetState(recipientAddress) is null &&
+                state.GetState(Addresses.ActivatedAccount) is Dictionary asDict &&
+                state.GetState(Recipient) is null
+            )
             {
-                throw new InvalidTransferUnactivatedRecipientException(Sender, Recipient);
+                var activatedAccountsState = new ActivatedAccountsState(asDict);
+                var activatedAccounts = activatedAccountsState.Accounts;
+                // if ActivatedAccountsState is empty, all user is activate.
+                if (activatedAccounts.Count != 0
+                    && !activatedAccounts.Contains(Recipient) && state.GetState(Recipient) is null)
+                {
+                    throw new InvalidTransferUnactivatedRecipientException(Sender, Recipient);
+                }
             }
 
             Currency currency = Amount.Currency;
