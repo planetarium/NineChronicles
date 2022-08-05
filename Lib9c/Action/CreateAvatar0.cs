@@ -183,14 +183,17 @@ namespace Nekoyume.Action
             var data = TestbedHelper.LoadData<TestbedCreateAvatar>("TestbedCreateAvatar");
             var costumeItemSheet = ctx.PreviousStates.GetSheet<CostumeItemSheet>();
             var equipmentItemSheet = ctx.PreviousStates.GetSheet<EquipmentItemSheet>();
+            var consumableItemSheet = ctx.PreviousStates.GetSheet<ConsumableItemSheet>();
             AddItemsForTest(
                 avatarState: avatarState,
                 random: ctx.Random,
                 costumeItemSheet: costumeItemSheet,
                 materialItemSheet: materialItemSheet,
                 equipmentItemSheet: equipmentItemSheet,
+                consumableItemSheet: consumableItemSheet,
                 data.MaterialCount,
-                data.TradableMaterialCount);
+                data.TradableMaterialCount,
+                data.FoodCount);
 
             var skillSheet = ctx.PreviousStates.GetSheet<SkillSheet>();
             var optionSheet = ctx.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
@@ -222,8 +225,10 @@ namespace Nekoyume.Action
             CostumeItemSheet costumeItemSheet,
             MaterialItemSheet materialItemSheet,
             EquipmentItemSheet equipmentItemSheet,
+            ConsumableItemSheet consumableItemSheet,
             int materialCount,
-            int tradableMaterialCount)
+            int tradableMaterialCount,
+            int foodCount)
         {
             foreach (var row in costumeItemSheet.OrderedList)
             {
@@ -246,6 +251,17 @@ namespace Nekoyume.Action
             {
                 var itemId = random.GenerateRandomGuid();
                 avatarState.inventory.AddItem2(ItemFactory.CreateItemUsable(row, itemId, default));
+            }
+
+            foreach (var row in consumableItemSheet.OrderedList)
+            {
+                for (var i = 0; i < foodCount; i++)
+                {
+                    var itemId = random.GenerateRandomGuid();
+                    var consumable = (Consumable)ItemFactory.CreateItemUsable(row, itemId,
+                        0, 0);
+                    avatarState.inventory.AddItem2(consumable);
+                }
             }
         }
 
