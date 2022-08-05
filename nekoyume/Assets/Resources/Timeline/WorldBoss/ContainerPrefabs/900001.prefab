@@ -239,7 +239,7 @@ GameObject:
   - component: {fileID: 3131037016693458774}
   - component: {fileID: 4966907011472140292}
   m_Layer: 8
-  m_Name: 205007
+  m_Name: 900001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -357,7 +357,7 @@ Animator:
   m_GameObject: {fileID: 1900515835472351134}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 21ad0e93f82d940989ca46e7a61db8ac, type: 2}
+  m_Controller: {fileID: 9100000, guid: fa6b47bc519f52b4d94fa5040b1f2af8, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -450,6 +450,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 3131037016693458774}
+  skillAnimationInfos:
+  - SkillId: 900001
+    AnimationType: 19
+    AnimationTime: 3.4
 --- !u!1 &2334821906908147141
 GameObject:
   m_ObjectHideFlags: 0

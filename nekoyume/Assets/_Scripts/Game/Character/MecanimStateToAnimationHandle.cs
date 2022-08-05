@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Spine.Unity;
 
@@ -10,6 +10,7 @@ namespace Nekoyume.Game.Character
 
         public int layer;
         public string animationClip;
+        public AnimationReferenceAsset animationAsset;
         public float timeScale = 1f;
         public float exitTime = 1f;
         public bool loop;
@@ -47,7 +48,9 @@ namespace Nekoyume.Game.Character
 
             try
             {
-                var (body, tail) = _controller.PlayAnimationForState(animationClip, layer);
+                var (body, tail) = animationAsset ?
+                    _controller.PlayAnimationForState(animationAsset, layer) : 
+                    _controller.PlayAnimationForState(animationClip, layer);
                 _trackEntry = body;
                 _trackEntry.TimeScale = timeScale;
                 if (tail != null)

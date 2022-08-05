@@ -140,6 +140,11 @@ namespace Nekoyume.Game.Character
             return PlayNewAnimation(foundAnimation, layerIndex);
         }
 
+        public (TrackEntry, TrackEntry) PlayAnimationForState(AnimationReferenceAsset stateAsset, int layerIndex)
+        {
+            return PlayNewAnimation(stateAsset, layerIndex);
+        }
+
         /// <summary>Play a non-looping animation once then continue playing the state animation.</summary>
         public void PlayOneShot(Spine.Animation oneShot, int layerIndex)
         {
