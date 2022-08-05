@@ -330,9 +330,10 @@ namespace Nekoyume.UI
             UpdateStageInfoMonsters(stageWaveRow.TotalMonsterIds);
             UpdateStageInfoRewards(stageRow.GetRewardItemRows());
 
-            // TODO!!!! This is temporary.
-            var exp = RxProps.EventScheduleRowForDungeon.Value.DungeonExpSeedValue;
-            expText.text = $"?EXP +{exp}?";
+            var exp = RxProps.EventScheduleRowForDungeon.Value.GetStageExp(
+                eventDungeonStageId.ToEventDungeonStageNumber(),
+                1);
+            expText.text = $"EXP +{exp}";
 
             buttonNotification.SetActive(false);
         }
