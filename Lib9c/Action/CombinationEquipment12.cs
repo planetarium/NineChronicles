@@ -6,10 +6,8 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Arena;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Stat;
@@ -25,7 +23,7 @@ namespace Nekoyume.Action
     /// </summary>
     [Serializable]
     [ActionType("combination_equipment12")]
-    public class CombinationEquipment : GameAction
+    public class CombinationEquipment12 : GameAction
     {
         public const string AvatarAddressKey = "a";
         public Address avatarAddress;

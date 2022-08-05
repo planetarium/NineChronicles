@@ -161,7 +161,7 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid(),
                 default);
             Assert.Equal(0, equipment.optionCountFromCombination);
-            CombinationEquipment.AddAndUnlockOption(
+            CombinationEquipment12.AddAndUnlockOption(
                 agentState,
                 equipment,
                 _random,

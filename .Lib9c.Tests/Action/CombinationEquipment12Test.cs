@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static Lib9c.SerializeKeys;
 
-    public class CombinationEquipmentTest
+    public class CombinationEquipment12Test
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
@@ -38,7 +38,7 @@ namespace Lib9c.Tests.Action
         private readonly AgentState _agentState;
         private readonly AvatarState _avatarState;
 
-        public CombinationEquipmentTest(ITestOutputHelper outputHelper)
+        public CombinationEquipment12Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -277,7 +277,7 @@ namespace Lib9c.Tests.Action
             Assert.Null(state.GetState(dailyCostAddress));
             Assert.Null(state.GetState(weeklyCostAddress));
 
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment12
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = slotIndex,
@@ -379,7 +379,7 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid(),
                 default);
             Assert.Equal(0, equipment.optionCountFromCombination);
-            CombinationEquipment.AddAndUnlockOption(
+            CombinationEquipment12.AddAndUnlockOption(
                 _agentState,
                 equipment,
                 _random,
