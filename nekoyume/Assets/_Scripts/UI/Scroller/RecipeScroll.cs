@@ -328,10 +328,8 @@ namespace Nekoyume.UI.Scroller
 
             var value = row.RecipeEndBlockIndex - currentBlockIndex;
             var time = Util.GetBlockToTime(value);
-            var sb = new StringBuilder();
-            sb.AppendLine(L10nManager.Localize("UI_REMAINING_TIME_ONLY"));
-            sb.AppendLine(string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), value, time));
-            eventScheduleTabRemainingTimeText.text = sb.ToString();
+            eventScheduleTabRemainingTimeText.text =
+                string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), value, time);
         }
 
         private void UpdateUnlockAllButton()
