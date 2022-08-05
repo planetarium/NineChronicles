@@ -101,7 +101,8 @@ namespace Nekoyume.Action
                 var activatedAccounts = activatedAccountsState.Accounts;
                 // if ActivatedAccountsState is empty, all user is activate.
                 if (activatedAccounts.Count != 0
-                    && !activatedAccounts.Contains(Recipient) && state.GetState(Recipient) is null)
+                    && !activatedAccounts.Contains(Recipient)
+                    && state.GetState(Recipient) is null)
                 {
                     throw new InvalidTransferUnactivatedRecipientException(Sender, Recipient);
                 }
