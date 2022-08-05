@@ -14,9 +14,9 @@ namespace Nekoyume.TableData.Crystal
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                RecipeId = ParseInt(fields[0]);
-                MaxPoint = ParseInt(fields[1]);
-                CRYSTAL = ParseInt(fields[2]);
+                RecipeId = ParseInt(fields[0], 0);
+                MaxPoint = ParseInt(fields[1], 0);
+                CRYSTAL = ParseInt(fields[2], 0);
             }
         }
 
