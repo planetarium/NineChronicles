@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using Nekoyume.State;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -24,6 +26,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private bool useAgentAddress;
 
+        [SerializeField]
+        private RawImage image;
+
+        private const string bucketUrl =
+            "https://9c-asset-bundle.s3.us-east-2.amazonaws.com/Images/Banner_";
+
         private void Awake()
         {
             GetComponent<Button>().onClick.AddListener(() =>
@@ -37,6 +45,25 @@ namespace Nekoyume.UI.Module
 
                 Application.OpenURL(u);
             });
+
+            StartCoroutine(SetTexture());
+        }
+
+        private IEnumerator SetTexture()
+        {
+            var split = gameObject.name.Split('_');
+            var index = split[^1].Replace("(Clone)", string.Empty);
+            var www = UnityWebRequestTexture.GetTexture($"{bucketUrl}{index}.png");
+            yield return www.SendWebRequest();
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                var myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+                image.texture = myTexture;
+            }
         }
 
         public void Set(Texture texture, string url)
