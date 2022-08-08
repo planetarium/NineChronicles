@@ -41,11 +41,11 @@ namespace Nekoyume.Action
                     $"Aborted as the avatar state of the signer was failed to load.");
             }
             // Check stage level.
-            if (!avatarState.worldInformation.IsStageCleared(50))
+            if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInRaid))
             {
                 avatarState.worldInformation.TryGetLastClearedStageId(out int current);
                 throw new NotEnoughClearedStageLevelException(AvatarAddress.ToHex(),
-                    50, current);
+                    GameConfig.RequireClearedStageLevel.ActionsInRaid, current);
             }
 
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(
