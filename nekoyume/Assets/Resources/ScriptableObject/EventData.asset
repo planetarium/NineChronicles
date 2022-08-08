@@ -37,13 +37,6 @@ MonoBehaviour:
     StageIcon: {fileID: 21300000, guid: 393ebe8864bbd4f04982ced1bf53943e, type: 3}
     StageIconOffset: {x: 0, y: 0}
     mainBGM: {fileID: 8300000, guid: 09471cca651f74acb8b5223ac301ef79, type: 3}
-  - EventType: 3
-    BeginDateTime: 08/01 00:00:00
-    EndDateTime: 08/31 23:59:59
-    Intro: {fileID: 21300000, guid: 46a8a229bbe9b432d99a82b73c5c9c27, type: 3}
-    StageIcon: {fileID: 21300000, guid: 9280eabeaa0244db9aa93984db26a46e, type: 3}
-    StageIconOffset: {x: 0, y: 0}
-    mainBGM: {fileID: 8300000, guid: f461d703e65c9ea4f85f37f198af9f5f, type: 3}
   ArenaSeasons:
   - Index: 2
     StartBlockIndex: 3528000
