@@ -102,7 +102,7 @@ namespace Nekoyume.UI.Module.WorldBoss
             bossName.text = bossData.name;
 
             var waveNumber = _wave + 1;
-            wave.text = $"{waveNumber}";
+            wave.text = L10nManager.Localize("UI_WAVE_PHASE", waveNumber);
             content.text = L10nManager.Localize($"UI_BOSS_{_bossId}_INFO_WAVE{waveNumber}");
 
             var data = _cachedData[_wave];
