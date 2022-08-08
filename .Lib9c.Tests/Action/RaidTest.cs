@@ -100,6 +100,8 @@ namespace Lib9c.Tests.Action
                 level = hpSheet.OrderedList.Last().Level;
             }
 
+            var fee = _tableSheets.WorldBossListSheet[raidId].EntranceFee;
+
             IAccountStateDelta state = new State()
                 .SetState(goldCurrencyState.address, goldCurrencyState.Serialize())
                 .SetState(_agentAddress, new AgentState(_agentAddress).Serialize());
@@ -136,7 +138,8 @@ namespace Lib9c.Tests.Action
 
                 if (crystalExist)
                 {
-                    state = state.MintAsset(_agentAddress, 300 * crystal);
+                    var price = _tableSheets.WorldBossListSheet[raidId].EntranceFee;
+                    state = state.MintAsset(_agentAddress, price * crystal);
                 }
 
                 if (raiderStateExist)
@@ -145,7 +148,7 @@ namespace Lib9c.Tests.Action
                     raiderState.RefillBlockIndex = refillBlockIndex;
                     raiderState.RemainChallengeCount = remainChallengeCount;
                     raiderState.TotalScore = 1_000;
-                    raiderState.HighScore = 1_000;
+                    raiderState.HighScore = 1;
                     raiderState.TotalChallengeCount = 1;
                     raiderState.PurchaseCount = purchaseCount;
                     raiderState.Cp = 0;
@@ -237,7 +240,7 @@ namespace Lib9c.Tests.Action
                 Assert.Equal(0 * crystal, nextState.GetBalance(_agentAddress, crystal));
                 if (crystalExist)
                 {
-                    Assert.Equal(300 * crystal, nextState.GetBalance(bossAddress, crystal));
+                    Assert.Equal(fee * crystal, nextState.GetBalance(bossAddress, crystal));
                 }
 
                 Assert.True(nextState.TryGetState(raiderAddress, out List rawRaider));
@@ -358,7 +361,6 @@ namespace Lib9c.Tests.Action
             raiderState.RefillBlockIndex = 0;
             raiderState.RemainChallengeCount = WorldBossHelper.MaxChallengeCount;
             raiderState.TotalScore = 1_000;
-            raiderState.HighScore = 1_000;
             raiderState.TotalChallengeCount = 1;
             raiderState.PurchaseCount = 0;
             raiderState.Cp = 0;
