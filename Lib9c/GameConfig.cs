@@ -94,6 +94,7 @@ namespace Nekoyume
             public const int ActionsInShop = IsEditor ? 1 : 17;
             public const int ActionsInRankingBoard = IsEditor ? 1 : 25;
             public const int ActionsInMimisbrunnr = IsEditor ? 1 : 100;
+            public const int ActionsInRaid = IsEditor ? 1 : 50;
 
             #endregion
 
