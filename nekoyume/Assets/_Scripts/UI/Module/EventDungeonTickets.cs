@@ -30,7 +30,6 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             RxProps.EventDungeonTicketProgress
-                .SubscribeOnMainThread()
                 .Subscribe(UpdateTimespanText)
                 .AddTo(_disposables);
         }

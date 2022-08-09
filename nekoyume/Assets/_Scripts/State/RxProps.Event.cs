@@ -58,6 +58,7 @@ namespace Nekoyume.State
             OnAvatarChangedEvent();
 
             _eventDungeonInfo
+                .ObserveOnMainThread()
                 .Subscribe(_ => UpdateEventDungeonTicketProgress(_agent.BlockIndex))
                 .AddTo(_disposables);
         }

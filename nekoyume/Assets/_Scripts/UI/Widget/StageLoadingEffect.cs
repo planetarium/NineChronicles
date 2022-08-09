@@ -54,7 +54,7 @@ namespace Nekoyume.UI
 
         private static SpriteAtlas GetSpriteAtlas(string background)
         {
-            var chapter = background.Substring(0, background.Length - 3);
+            var chapter = background[..^3];
             var spriteAtlasPath = string.Format(SpriteAtlasPathFormat, chapter);
             var spriteAtlas = Resources.Load<SpriteAtlas>(spriteAtlasPath);
             if (spriteAtlas is null)
