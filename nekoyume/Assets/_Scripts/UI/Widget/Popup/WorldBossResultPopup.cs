@@ -19,7 +19,16 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI scoreText;
 
+        [SerializeField]
+        private Button closeButton;
+
         private GameObject _gradeObject;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            closeButton.onClick.AddListener(() => Close());
+        }
 
         protected override void OnDisable()
         {
@@ -40,6 +49,14 @@ namespace Nekoyume.UI
                 _gradeObject = Instantiate(prefab, gradeParent);
                 _gradeObject.transform.localScale = Vector3.one;
             }
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            Find<WorldBossBattle>().Close(true);
+            Game.Event.OnRoomEnter.Invoke(true);
+
+            base.Close(ignoreCloseAnimation);
         }
     }
 }

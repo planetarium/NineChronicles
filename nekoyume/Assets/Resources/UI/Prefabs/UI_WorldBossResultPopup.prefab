@@ -1156,7 +1156,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 3
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1180,19 +1180,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8938473020558487438}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Nekoyume.UI.Widget, Nekoyume
-        m_MethodName: Close
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!225 &4536660323049702924
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -2023,6 +2011,7 @@ MonoBehaviour:
   gradeParent: {fileID: 6868479096098356090}
   seasonBestObject: {fileID: 1877104593503131110}
   scoreText: {fileID: 7789265291887167243}
+  closeButton: {fileID: 942184991345854241}
 --- !u!1 &8571984525182272847
 GameObject:
   m_ObjectHideFlags: 0
