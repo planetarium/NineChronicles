@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: EventDungeon_01
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 6eb4bd8434e6d4db28b33188dbc96d0c, type: 3}
+    - {fileID: 2800000, guid: e0b430abead7543b7b0824d016566139, type: 3}
+    - {fileID: 2800000, guid: 416968fe7a0704e9abf2d89ca742af43, type: 3}
+    - {fileID: 2800000, guid: 639ebae6ad78e4c1aaf8e3c49894a9cd, type: 3}
+    - {fileID: 2800000, guid: df944b106808e4d3d99f21bc154ba4fa, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: df944b106808e4d3d99f21bc154ba4fa, type: 3}
+  - {fileID: 21300000, guid: 6eb4bd8434e6d4db28b33188dbc96d0c, type: 3}
+  - {fileID: 21300000, guid: 639ebae6ad78e4c1aaf8e3c49894a9cd, type: 3}
+  - {fileID: 21300000, guid: e0b430abead7543b7b0824d016566139, type: 3}
+  - {fileID: 21300000, guid: 416968fe7a0704e9abf2d89ca742af43, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - eventdungeon_01_01_01
+  - bg_eventdungeon_01_01_01
+  - eventdungeon_01_01_02
+  - bg_eventdungeon_01_01_02
+  - bg_eventdungeon_01_01_03
+  m_RenderDataMap: {}
+  m_Tag: EventDungeon_01
+  m_IsVariant: 0
