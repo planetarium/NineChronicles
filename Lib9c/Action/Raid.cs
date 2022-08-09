@@ -199,6 +199,7 @@ namespace Nekoyume.Action
                     ["e"] = new List(EquipmentIds.Select(e => e.Serialize())),
                     ["c"] = new List(CostumeIds.Select(c => c.Serialize())),
                     ["f"] = new List(FoodIds.Select(f => f.Serialize())),
+                    ["p"] = PayNcg.Serialize(),
                 }
                 .ToImmutableDictionary();
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -207,6 +208,7 @@ namespace Nekoyume.Action
             EquipmentIds = plainValue["e"].ToList(StateExtensions.ToGuid);
             CostumeIds = plainValue["c"].ToList(StateExtensions.ToGuid);
             FoodIds = plainValue["f"].ToList(StateExtensions.ToGuid);
+            PayNcg = plainValue["p"].ToBoolean();
         }
     }
 }

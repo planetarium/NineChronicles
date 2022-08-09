@@ -281,6 +281,7 @@ namespace Lib9c.Tests.Action
                     CostumeIds = new List<Guid>(),
                     EquipmentIds = new List<Guid>(),
                     FoodIds = new List<Guid>(),
+                    PayNcg = true,
                 },
                 _ => throw new InvalidCastException(),
             };
