@@ -1865,9 +1865,6 @@ namespace Nekoyume.BlockChain
             var playerDigest = new ArenaPlayerDigest(States.Instance.CurrentAvatarState);
             Widget.Find<LoadingScreen>().Close();
             Game.Game.instance.RaidStage.Play(simulator.BossId, log, playerDigest);
-
-            worldBoss.UpdateViewAsync(eval.BlockIndex, true);
-            worldBoss.Close();
         }
 
         private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)

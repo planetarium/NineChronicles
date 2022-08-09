@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine;
@@ -138,6 +139,25 @@ namespace Nekoyume.Helper
         public static WorldBossStatus GetStatus(long currentBlockIndex)
         {
             return IsItInSeason(currentBlockIndex) ? WorldBossStatus.Season : WorldBossStatus.OffSeason;
+        }
+
+        public static int GetRemainTicket(RaiderState state, long currentBlockIndex)
+        {
+            if (!TryGetCurrentRow(currentBlockIndex, out var row))
+            {
+                return WorldBossHelper.MaxChallengeCount;
+            }
+
+            if (state == null)
+            {
+                return WorldBossHelper.MaxChallengeCount;
+            }
+
+            var startBlockIndex = row.StartedBlockIndex;
+            var refillBlockIndex = state?.RefillBlockIndex ?? 0;
+            var refillable = WorldBossHelper.CanRefillTicket(
+                currentBlockIndex, refillBlockIndex, startBlockIndex);
+            return refillable ? WorldBossHelper.MaxChallengeCount : state.RemainChallengeCount;
         }
     }
 }

@@ -393,11 +393,11 @@ namespace Nekoyume.UI
 
         public void WorldBossClick()
         {
-            // if (!btnWorldBoss.IsUnlocked)
-            // {
-            //     btnWorldBoss.JingleTheCat();
-            //     return;
-            // }
+            if (!btnWorldBoss.IsUnlocked)
+            {
+                btnWorldBoss.JingleTheCat();
+                return;
+            }
 
             Close(true);
             Find<WorldBoss>().ShowAsync().Forget();

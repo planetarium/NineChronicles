@@ -38,24 +38,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // todo : 맥스티켓 바꿔줘야함.
-            var maxTicket = 3;
+            RemainTicket = WorldBossFrontHelper.GetRemainTicket(state, current);
             var start = row.StartedBlockIndex;
-            if (state != null)
-            {
-                var refill = state?.RefillBlockIndex ?? 0;
-                RemainTicket = WorldBossHelper.CanRefillTicket(current, refill, start)
-                    ? maxTicket
-                    : state.RemainChallengeCount;
-            }
-            else
-            {
-                RemainTicket = maxTicket;
-            }
-
             var reminder = (current - start) % WorldBossHelper.RefillInterval;
             var remain = WorldBossHelper.RefillInterval - reminder;
-            Set(remain, RemainTicket, maxTicket);
+            Set(remain, RemainTicket, WorldBossHelper.MaxChallengeCount);
         }
     }
 }
