@@ -7,14 +7,14 @@
     public class EventDungeonExtensionsTest
     {
         [Theory]
-        [InlineData(10_000_000, 1_000)]
+        [InlineData(10_000_000, 0)]
         [InlineData(99_999_999, 9_999)]
-        public void ToEventScheduleId(
-            int eventDungeonId,
+        public void ToEventDungeonStageNumber(
+            int eventDungeonStageId,
             int expected) =>
             Assert.Equal(
                 expected,
-                eventDungeonId.ToEventScheduleId());
+                eventDungeonStageId.ToEventDungeonStageNumber());
 
         [Theory]
         [InlineData(int.MinValue)]
@@ -29,9 +29,9 @@
         [InlineData(9_999_999)]
         [InlineData(100_000_000)]
         [InlineData(int.MaxValue)]
-        public void ToEventScheduleId_Throw_ArgumentException(
-            int eventDungeonId) =>
+        public void ToEventDungeonStageNumber_Throw_ArgumentException(
+            int eventDungeonStageId) =>
             Assert.Throws<ArgumentException>(() =>
-                eventDungeonId.ToEventScheduleId());
+                eventDungeonStageId.ToEventDungeonStageNumber());
     }
 }
