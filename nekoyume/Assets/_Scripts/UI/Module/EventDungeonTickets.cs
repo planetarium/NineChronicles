@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             _disposables.DisposeAllAndClear();
         }

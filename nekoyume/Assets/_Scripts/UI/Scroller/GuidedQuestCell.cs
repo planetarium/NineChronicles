@@ -59,13 +59,15 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            ObservableExtensions.Subscribe(bodyButton.OnClickAsObservable(), _ =>
+            bodyButton.OnClickAsObservable()
+                .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     onClick.OnNext(this);
                 })
                 .AddTo(gameObject);
-            ObservableExtensions.Subscribe(L10nManager.OnLanguageChange, _ => SetContent(Quest))
+            L10nManager.OnLanguageChange
+                .Subscribe(_ => SetContent(Quest))
                 .AddTo(gameObject);
         }
 
