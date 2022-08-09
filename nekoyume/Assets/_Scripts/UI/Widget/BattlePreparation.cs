@@ -120,6 +120,7 @@ namespace Nekoyume.UI
         private GameObject _cachedCharacterTitle;
 
         private StageType _stageType;
+        private int? _scheduleId;
         private int _worldId;
         private int _stageId;
         private int _requiredCost;
@@ -192,7 +193,7 @@ namespace Nekoyume.UI
             CloseWidget = () => Close(true);
 
             startButton.OnSubmitSubject.Where(_ => !Game.Game.instance.IsInWorld)
-                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .ThrottleFirst(TimeSpan.FromSeconds(1f))
                 .Subscribe(_ => OnClickBattle(repeatToggle.isOn))
                 .AddTo(gameObject);
 
@@ -205,7 +206,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => ShowBoosterPopup());
 
             boostPopupButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !Game.Game.instance.IsInWorld)
-                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .ThrottleFirst(TimeSpan.FromSeconds(1f))
                 .Subscribe(_ =>
                     OneLineSystem.Push(
                         MailType.System,
@@ -276,6 +277,9 @@ namespace Nekoyume.UI
                         .AddTo(_disposables);
                     break;
                 case StageType.EventDungeon:
+                    RxProps.EventScheduleRowForDungeon
+                        .Subscribe(value => _scheduleId = value?.Id)
+                        .AddTo(_disposables);
                     RxProps.EventDungeonTicketProgress
                         .Subscribe(_ => UpdateStartButton())
                         .AddTo(_disposables);
@@ -726,6 +730,15 @@ namespace Nekoyume.UI
                 }
                 case StageType.EventDungeon:
                 {
+                    if (!_scheduleId.HasValue)
+                    {
+                        NotificationSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                            NotificationCell.NotificationType.Information);
+                        return;
+                    }
+
                     StartCoroutine(CoBattleStart(
                         _stageType,
                         CostType.EventDungeonTicket,
@@ -942,8 +955,17 @@ namespace Nekoyume.UI
                 }
                 case StageType.EventDungeon:
                 {
+                    if (!_scheduleId.HasValue)
+                    {
+                        NotificationSystem.Push(
+                            MailType.System,
+                            L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                            NotificationCell.NotificationType.Information);
+                        break;
+                    }
+
                     ActionManager.Instance.EventDungeonBattle(
-                            RxProps.EventScheduleRowForDungeon.Value.Id,
+                            _scheduleId.Value,
                             _worldId,
                             _stageId,
                             equipments,

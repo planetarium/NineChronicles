@@ -12,9 +12,11 @@ using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -221,6 +223,16 @@ namespace Nekoyume.UI
                 yield break;
             }
 
+            if (SharedModel.StageType == StageType.EventDungeon &&
+                RxProps.EventScheduleRowForDungeon.Value is null)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                    NotificationCell.NotificationType.Information);
+                yield break;
+            }
+
             AudioController.PlayClick();
             yield return CoProceedNextStage();
         }
@@ -229,6 +241,16 @@ namespace Nekoyume.UI
         {
             if (_IsAlreadyOut)
             {
+                yield break;
+            }
+
+            if (SharedModel.StageType == StageType.EventDungeon &&
+                RxProps.EventScheduleRowForDungeon.Value is null)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                    NotificationCell.NotificationType.Information);
                 yield break;
             }
 
