@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
@@ -13,7 +14,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [ActionType("stake2")]
-    public class Stake : ActionBase
+    public class Stake : GameAction
     {
         internal BigInteger Amount { get; set; }
 
@@ -28,13 +29,12 @@ namespace Nekoyume.Action
         {
         }
 
-        public override IValue PlainValue =>
-            Dictionary.Empty.Add(AmountKey, (IValue) (Integer) Amount);
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
+            ImmutableDictionary<string, IValue>.Empty.Add(AmountKey, (IValue) (Integer) Amount);
 
-        public override void LoadPlainValue(IValue plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            var dictionary = (Dictionary) plainValue;
-            Amount = dictionary[AmountKey].ToBigInteger();
+            Amount = plainValue[AmountKey].ToBigInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
