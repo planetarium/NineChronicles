@@ -76,11 +76,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<GameObject> queryLoadingObjects;
 
+        public RaiderState CachedRaiderState { get; private set; }
+
         private GameObject _bossNamePrefab;
         private GameObject _bossSpinePrefab;
         private string _bossName;
         private (long, long) _period;
-        private RaiderState _cachedRaiderState;
 
         private WorldBossStatus _status = WorldBossStatus.None;
         private readonly List<IDisposable> _disposables = new();
@@ -197,7 +198,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            _headerMenu.WorldBossTickets.UpdateTicket(_cachedRaiderState, currentBlockIndex);
+            _headerMenu.WorldBossTickets.UpdateTicket(CachedRaiderState, currentBlockIndex);
             UpdateRemainTimer(_period, currentBlockIndex);
             SetActiveQueryLoading(false);
         }
@@ -237,7 +238,7 @@ namespace Nekoyume.UI
             rankButton.gameObject.SetActive(true);
             enterButton.Text = L10nManager.Localize("UI_WORLD_MAP_ENTER");
             _period = (row.StartedBlockIndex, row.EndedBlockIndex);
-            _cachedRaiderState = myRaiderState;
+            CachedRaiderState = myRaiderState;
 
             UpdateBossPrefab(row);
             UpdateBossInformationAsync(worldBoss);
@@ -288,7 +289,7 @@ namespace Nekoyume.UI
 
         private void OnClickEnter()
         {
-            Find<RaidPreparation>().Show(_cachedRaiderState, _bossName);
+            Find<RaidPreparation>().Show(CachedRaiderState, _bossName);
         }
 
         private async Task<(
