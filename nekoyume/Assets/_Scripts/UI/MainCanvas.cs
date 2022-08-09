@@ -221,7 +221,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ArenaBattle>());
             yield return null;
-            secondWidgets.Add(Widget.Create<RaidBattle>());
+            secondWidgets.Add(Widget.Create<WorldBossBattle>());
             yield return null;
             secondWidgets.Add(Widget.Create<Blind>());
             yield return null;

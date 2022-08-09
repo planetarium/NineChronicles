@@ -1,17 +1,18 @@
 using System.Collections.Generic;
 using Nekoyume.Battle;
-using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
 using Nekoyume.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class RaidBattle : Widget
+    public class WorldBossBattle : Widget
     {
         [SerializeField]
-        private BossStatus bossStatus;
+        private RaidBossStatus bossStatus;
+
+        [SerializeField]
+        private RaidPlayerStatus playerStatus;
 
         [SerializeField]
         private ComboText comboText;
@@ -19,35 +20,22 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-
-            Game.Event.OnGetItem.AddListener(_ =>
-            {
-                var headerMenu = Find<HeaderMenuStatic>();
-                if (!headerMenu)
-                {
-                    throw new WidgetNotFoundException<HeaderMenuStatic>();
-                }
-
-                var target = headerMenu.GetToggle(HeaderMenuStatic.ToggleType.AvatarInfo);
-                VFXController.instance.CreateAndChase<DropItemInventoryVFX>(target, Vector3.zero);
-            });
             CloseWidget = null;
         }
 
         public void Show(
-            CharacterBase player,
+            Game.Character.Player player,
             bool ignoreShowAnimation = false)
         {
-            Find<HeaderMenuStatic>().Show(HeaderMenuStatic.AssetVisibleState.WorldBoss);
             comboText.comboMax = AttackCountHelper.GetCountMax(player.Level);
             comboText.Close();
+            playerStatus.SetData(player);
             base.Show(ignoreShowAnimation);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             bossStatus.Close(ignoreCloseAnimation);
-            Find<HeaderMenuStatic>().Close();
             base.Close(ignoreCloseAnimation);
         }
 
