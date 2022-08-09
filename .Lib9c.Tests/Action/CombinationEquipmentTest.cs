@@ -367,7 +367,9 @@
 
         [Theory]
         [InlineData(null, false, true, 1)]
+        [InlineData(null, false, false, 1)]
         [InlineData(typeof(NotEnoughFungibleAssetValueException), true, true, 1)]
+        [InlineData(null, true, true, 1)]
         public void ExecuteBySuperCraft(
             Type exc,
             bool doSuperCraft,
@@ -388,32 +390,23 @@
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem(material, row.MaterialCount);
-            int? subRecipeId = null;
-            if (!useBasicRecipe)
+            int? subRecipeId = useBasicRecipe ? row.SubRecipeIds.First() : row.SubRecipeIds.Skip(1).First();
+            var subRow = _tableSheets.EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
+            foreach (var materialInfo in subRow.Materials)
             {
-                foreach (var tempSubRecipeId in row.SubRecipeIds.TakeLast(2))
-                {
-                    var subRow = _tableSheets.EquipmentItemSubRecipeSheetV2[tempSubRecipeId];
-                    foreach (var materialInfo in subRow.Materials)
-                    {
-                        var subMaterial = ItemFactory.CreateItem(
-                            _tableSheets.MaterialItemSheet[materialInfo.Id], _random);
-                        _avatarState.inventory.AddItem(subMaterial, materialInfo.Count);
-                    }
-
-                    state = state.MintAsset(
-                        _agentAddress,
-                        subRow.RequiredGold * state.GetGoldCurrency());
-                }
-
-                subRecipeId = row.SubRecipeIds.Skip(1).First();
+                var subMaterial = ItemFactory.CreateItem(
+                    _tableSheets.MaterialItemSheet[materialInfo.Id], _random);
+                _avatarState.inventory.AddItem(subMaterial, materialInfo.Count);
             }
+
+            state = state.MintAsset(
+                _agentAddress,
+                subRow.RequiredGold * state.GetGoldCurrency());
 
             var inventoryAddress = _avatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress =
                 _avatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = _avatarAddress.Derive(LegacyQuestListKey);
-
             state = state
                 .SetState(_avatarAddress, _avatarState.SerializeV2())
                 .SetState(inventoryAddress, _avatarState.inventory.Serialize())
@@ -468,7 +461,11 @@
                 }
                 else
                 {
-                    Assert.True(hammerPointState.HammerPoint == 0);
+                    Assert.Equal(0, hammerPointState.HammerPoint);
+                    var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
+                    Assert.NotNull(slotState.Result);
+                    Assert.NotNull(slotState.Result.itemUsable);
+                    Assert.NotEmpty(slotState.Result.itemUsable.Skills);
                 }
             }
             else
