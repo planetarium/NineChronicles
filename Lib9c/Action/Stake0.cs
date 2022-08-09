@@ -12,19 +12,19 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
-    [ActionType("stake2")]
-    public class Stake : ActionBase
+    [ActionType("stake")]
+    public class Stake0 : ActionBase
     {
         internal BigInteger Amount { get; set; }
 
-        public Stake(BigInteger amount)
+        public Stake0(BigInteger amount)
         {
             Amount = amount >= 0
                 ? amount
                 : throw new ArgumentOutOfRangeException(nameof(amount));
         }
 
-        public Stake()
+        public Stake0()
         {
         }
 
