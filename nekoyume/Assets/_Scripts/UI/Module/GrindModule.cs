@@ -511,5 +511,26 @@ namespace Nekoyume.UI.Module
 
             return animationData.minimum;
         }
+
+#if UNITY_EDITOR
+        private void Update()
+        {
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    StartCoroutine(CoCombineNPCAnimation(MiddleCrystal));
+                }
+                else if (Input.GetKeyDown(KeyCode.W))
+                {
+                    StartCoroutine(CoCombineNPCAnimation(MiddleCrystal + 1));
+                }
+                else if (Input.GetKeyDown(KeyCode.E))
+                {
+                    StartCoroutine(CoCombineNPCAnimation(MaximumCrystal + 1));
+                }
+            }
+        }
     }
+#endif
 }
