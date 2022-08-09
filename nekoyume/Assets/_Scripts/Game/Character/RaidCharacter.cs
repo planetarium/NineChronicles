@@ -26,7 +26,7 @@ namespace Nekoyume.Game.Character
 
         protected int _currentHp;
 
-        protected RaidBattle _raidBattle;
+        protected WorldBossBattle _worldBossBattle;
         protected float _attackTime;
         protected float _criticalAttackTime;
         protected RaidCharacter _target;
@@ -66,7 +66,7 @@ namespace Nekoyume.Game.Character
         {
             gameObject.SetActive(true);
 
-            _raidBattle ??= Widget.Find<RaidBattle>();
+            _worldBossBattle ??= Widget.Find<WorldBossBattle>();
             _hudContainer ??= Widget.Create<HudContainer>(true);
             _speechBubble ??= Widget.Create<SpeechBubble>();
             _target = target;
@@ -524,7 +524,7 @@ namespace Nekoyume.Game.Character
                 ProcessAttack(target, info, false);
                 if (info.Target is Model.Enemy)
                 {
-                    _raidBattle.ShowComboText(info.Effect > 0);
+                    _worldBossBattle.ShowComboText(info.Effect > 0);
                 }
             }
         }

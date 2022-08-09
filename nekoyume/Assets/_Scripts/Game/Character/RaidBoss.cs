@@ -45,7 +45,7 @@ namespace Nekoyume.Game.Character
         public override void UpdateStatusUI()
         {
             base.UpdateStatusUI();
-            _raidBattle.UpdateStatus(_currentHp, _characterModel.HP, _characterModel.Buffs);
+            _worldBossBattle.UpdateStatus(_currentHp, _characterModel.HP, _characterModel.Buffs);
         }
 
         public override IEnumerator CoSpecialAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)

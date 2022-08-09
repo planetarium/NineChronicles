@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,9 +85,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject blockStartingTextObject;
 
+        public Player Player { get; private set; }
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
-        private Player _player;
         private GameObject _cachedCharacterTitle;
 
         private int _requiredCost;
@@ -179,20 +179,19 @@ namespace Nekoyume.UI
             }
 
             closeButtonText.text = bossName;
-
-            if (_player == null)
+            if (Player == null)
             {
-                _player = PlayerFactory.Create(currentAvatarState).GetComponent<Player>();
+                Player = PlayerFactory.Create(currentAvatarState).GetComponent<Player>();
             }
 
-            _player.transform.position = PlayerPosition;
-            _player.SpineController.Appear();
-            _player.Set(currentAvatarState);
-            _player.gameObject.SetActive(true);
+            Player.transform.position = PlayerPosition;
+            Player.SpineController.Appear();
+            Player.Set(currentAvatarState);
+            Player.gameObject.SetActive(true);
 
             _cachedEquipment.Clear();
-            _cachedEquipment.AddRange(_player.Model.Equipments.Select(x=> x.ItemId).ToList());
-            _cachedEquipment.AddRange(_player.Model.Costumes.Select(x=> x.ItemId).ToList());
+            _cachedEquipment.AddRange(Player.Model.Equipments.Select(x=> x.ItemId).ToList());
+            _cachedEquipment.AddRange(Player.Model.Costumes.Select(x=> x.ItemId).ToList());
             var loadEquipment = LoadEquipment();
             currentAvatarState.EquipItems(loadEquipment);
 
@@ -234,7 +233,7 @@ namespace Nekoyume.UI
             consumableSlots.Clear();
             _disposables.DisposeAllAndClear();
 
-            if (_player != null)
+            if (Player != null)
             {
                 var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
                 currentAvatarState.EquipItems(_cachedEquipment);
@@ -265,7 +264,7 @@ namespace Nekoyume.UI
 
         private void UpdateTitle()
         {
-            var title = _player.Costumes
+            var title = Player.Costumes
                 .FirstOrDefault(x => x.ItemSubType == ItemSubType.Title && x.Equipped);
             if (title is null)
             {
@@ -281,29 +280,29 @@ namespace Nekoyume.UI
         private readonly List<Guid> _cachedEquipment = new();
         private void UpdateSlot(AvatarState avatarState, bool isResetConsumableSlot = false)
         {
-            _player.Set(avatarState);
-            equipmentSlots.SetPlayerEquipments(_player.Model,
+            Player.Set(avatarState);
+            equipmentSlots.SetPlayerEquipments(Player.Model,
                 OnClickSlot, OnDoubleClickSlot,
                 ElementalTypeExtension.GetAllTypes());
-            costumeSlots.SetPlayerCostumes(_player.Model, OnClickSlot, OnDoubleClickSlot);
+            costumeSlots.SetPlayerCostumes(Player.Model, OnClickSlot, OnDoubleClickSlot);
             if (isResetConsumableSlot)
             {
-                consumableSlots.SetPlayerConsumables(_player.Level,OnClickSlot, OnDoubleClickSlot);
+                consumableSlots.SetPlayerConsumables(Player.Level,OnClickSlot, OnDoubleClickSlot);
             }
         }
 
         private void UpdateStat(AvatarState avatarState)
         {
-            _player.Set(avatarState);
-            var equipments = _player.Equipments;
-            var costumes = _player.Costumes;
+            Player.Set(avatarState);
+            var equipments = Player.Equipments;
+            var costumes = Player.Costumes;
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => (Consumable)slot.Item).ToList();
             var equipmentSetEffectSheet =
                 Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet;
             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-            var s = _player.Model.Stats.SetAll(_player.Model.Stats.Level,
+            var s = Player.Model.Stats.SetAll(Player.Model.Stats.Level,
                 equipments, costumes, consumables,
                 equipmentSetEffectSheet, costumeSheet);
             stats.SetData(s);
@@ -584,8 +583,8 @@ namespace Nekoyume.UI
 
         private void Raid(bool payNcg)
         {
-            var equipments = _player.Equipments.Select(c => c.ItemId).ToList();
-            var costumes = _player.Costumes.Select(c => c.ItemId).ToList();
+            var equipments = Player.Equipments.Select(c => c.ItemId).ToList();
+            var costumes = Player.Costumes.Select(c => c.ItemId).ToList();
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => (Consumable)slot.Item)
@@ -594,9 +593,13 @@ namespace Nekoyume.UI
             var equipment = new List<Guid>();
             equipment.AddRange(equipments);
             equipment.AddRange(consumables);
+
             SaveEquipment(equipment);
             ActionManager.Instance.Raid(costumes, equipments,  consumables, payNcg);
             Find<LoadingScreen>().Show();
+
+            _cachedEquipment.Clear();
+            _cachedEquipment.AddRange(equipment);
             Close();
         }
 
@@ -691,11 +694,11 @@ namespace Nekoyume.UI
                 }
             }
 
-            _player.Set(avatarState);
+            Player.Set(avatarState);
             var foodIds = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => (Consumable) slot.Item).Select(food => food.Id);
-            var canBattle = Util.CanBattle(_player, foodIds);
+            var canBattle = Util.CanBattle(Player, foodIds);
             startButton.gameObject.SetActive(canBattle);
             blockStartingTextObject.SetActive(!canBattle);
         }

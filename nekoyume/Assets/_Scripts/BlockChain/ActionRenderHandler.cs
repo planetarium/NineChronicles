@@ -1852,20 +1852,21 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var avatarState = States.Instance.CurrentAvatarState;
             var simulator = new RaidSimulator(
                 row.BossId,
                 new LocalRandom(eval.RandomSeed),
-                States.Instance.CurrentAvatarState,
+                avatarState,
                 eval.Action.FoodIds,
                 TableSheets.Instance.GetRaidSimulatorSheets()
             );
             simulator.Simulate();
             BattleLog log = simulator.Log;
             Widget.Find<Menu>().Close();
-            var playerDigest = new ArenaPlayerDigest(States.Instance.CurrentAvatarState);
+            var playerDigest = new ArenaPlayerDigest(avatarState);
             Widget.Find<LoadingScreen>().Close();
             Game.Game.instance.RaidStage.Play(simulator.BossId, log, playerDigest);
-            worldBoss.UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true);
+            worldBoss.UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true, ignoreHeaderMenu: true);
             worldBoss.Close();
         }
 

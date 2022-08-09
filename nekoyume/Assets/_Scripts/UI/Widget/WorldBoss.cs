@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -153,7 +153,8 @@ namespace Nekoyume.UI
 
         public async Task UpdateViewAsync(long currentBlockIndex
             , bool forceUpdate = false
-            , bool ignoreHeaderMenuAnimation = false)
+            , bool ignoreHeaderMenuAnimation = false
+            , bool ignoreHeaderMenu = false)
         {
             if (forceUpdate)
             {
@@ -167,13 +168,20 @@ namespace Nekoyume.UI
                 switch (_status)
                 {
                     case WorldBossStatus.OffSeason:
-                        ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.CurrencyOnly,
-                            ignoreHeaderMenuAnimation);
+                        if (!ignoreHeaderMenu)
+                        {
+                            ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.CurrencyOnly,
+                                ignoreHeaderMenuAnimation);
+                        }
                         UpdateOffSeason(currentBlockIndex);
                         break;
                     case WorldBossStatus.Season:
-                        ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.WorldBoss,
+                        if (!ignoreHeaderMenu)
+                        {
+                            ShowHeaderMenu(HeaderMenuStatic.AssetVisibleState.WorldBoss,
                             ignoreHeaderMenuAnimation);
+                        }
+
                         if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
                         {
                             return;

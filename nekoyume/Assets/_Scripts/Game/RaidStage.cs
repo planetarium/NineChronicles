@@ -6,6 +6,7 @@ using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -125,6 +126,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoEnter(int bossId, ArenaPlayerDigest playerDigest)
         {
+            Widget.Find<HeaderMenuStatic>().Close(true);
             ActionCamera.instance.gameObject.SetActive(false);
             _actionQueue.Clear();
 
@@ -173,7 +175,7 @@ namespace Nekoyume.Game
             }
             _isPlaying = false;
             ActionRenderHandler.Instance.Pending = false;
-            Widget.Find<RaidBattle>().Close();
+            Widget.Find<WorldBossBattle>().Close();
 
             ActionCamera.instance.gameObject.SetActive(true);
             MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
@@ -195,7 +197,9 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnPlayer(Player character)
         {
             _player.Spawn(character);
-            Widget.Find<RaidBattle>().Show(_player.Model);
+
+            var player = Widget.Find<RaidPreparation>().Player;
+            Widget.Find<WorldBossBattle>().Show(player);
             yield break;
         }
 
@@ -318,7 +322,7 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnWave(int waveNumber, int waveTurn, List<Enemy> enemies, bool hasBoss)
         {
             _boss.Spawn(enemies.First());
-            Widget.Find<RaidBattle>().SetBossProfile(_boss.Model as Enemy);
+            Widget.Find<WorldBossBattle>().SetBossProfile(_boss.Model as Enemy);
             yield break;
         }
 
@@ -330,6 +334,7 @@ namespace Nekoyume.Game
         public IEnumerator CoWaveTurnEnd(int turnNumber, int waveTurn)
         {
             _waveTurn = waveTurn;
+            Event.OnPlayerTurnEnd.Invoke(turnNumber);
             yield break;
         }
 
