@@ -284,6 +284,7 @@ namespace Nekoyume.Action
                     throw new NotEnoughFungibleAssetValueException($"required {costCrystal}, but balance is {crystalBalance}");
                 }
 
+                hammerPointState.ResetHammerPoint();
                 states = states.TransferAsset(
                     context.Signer,
                     Addresses.SuperCraft,
@@ -443,7 +444,6 @@ namespace Nekoyume.Action
 
                     endBlockIndex = equipment.RequiredBlockIndex =
                         context.BlockIndex + firstFoodRow.RequiredBlockIndex;
-                    hammerPointState.ResetHammerPoint();
                 }
             }
             // ~Create Equipment
