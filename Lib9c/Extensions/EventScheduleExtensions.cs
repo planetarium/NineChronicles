@@ -25,8 +25,8 @@ namespace Nekoyume.Extensions
         public static int GetStageExp(
             this EventScheduleSheet.Row row,
             int stageNumber,
-            int multiplier) =>
-            stageNumber / 5 * row.DungeonExpSeedValue * multiplier;
+            int multiplier = 1) =>
+            (stageNumber / 11 * row.DungeonExpSeedValue + 1) * multiplier;
 
         public static EventScheduleSheet.Row ValidateFromActionForDungeon(
             this EventScheduleSheet scheduleSheet,
