@@ -283,12 +283,17 @@ namespace Nekoyume.BlockChain
             List<Costume> costumes,
             List<Consumable> foods)
         {
+            var remainingTickets = RxProps.EventDungeonTicketProgress.Value.currentTickets -
+                                   Action.EventDungeonBattle.PlayCount;
+            // FIXME: This is a temporary.
+            var usedNCG = 0;
             Analyzer.Instance.Track("Unity/EventDungeonBattle", new Value
             {
                 ["EventScheduleId"] = eventScheduleId,
                 ["EventDungeonId"] = eventDungeonId,
                 ["EventDungeonStageId"] = eventDungeonStageId,
-                ["PlayCount"] = 1,
+                ["RemainingTickets"] = remainingTickets,
+                ["UsedNCG"] = usedNCG,
             });
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -386,6 +391,21 @@ namespace Nekoyume.BlockChain
                 SubRecipeView.RecipeInfo recipeInfo,
                 int slotIndex)
         {
+            var trackValue = new Value
+            {
+                ["EventScheduleId"] = eventScheduleId,
+                ["RecipeId"] = recipeInfo.RecipeId,
+                ["SubRecipeId"] = recipeInfo.SubRecipeId ?? 0,
+            };
+            var num = 1;
+            foreach (var pair in recipeInfo.Materials)
+            {
+                trackValue.Add($"MaterialId_{num:00}", pair.Key);
+                trackValue.Add($"MaterialCount_{num:00}", pair.Value);
+                num++;
+            }
+            Analyzer.Instance.Track("Unity/EventConsumableItemCrafts", trackValue);
+
             var agentAddress = States.Instance.AgentState.address;
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
@@ -412,11 +432,6 @@ namespace Nekoyume.BlockChain
 
                 LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, count);
             }
-
-            Analyzer.Instance.Track("Unity/Create EventConsumableItemCrafts", new Value
-            {
-                ["RecipeId"] = recipeInfo.RecipeId,
-            });
 
             var action = new EventConsumableItemCrafts
             {
