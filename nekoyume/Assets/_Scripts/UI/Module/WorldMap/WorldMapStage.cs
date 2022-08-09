@@ -117,7 +117,7 @@ namespace Nekoyume.UI.Module
             _tweener = null;
         }
 
-        public void Show(ViewModel viewModel, string imageKey)
+        public void Show(ViewModel viewModel)
         {
             if (viewModel is null)
             {
@@ -131,7 +131,7 @@ namespace Nekoyume.UI.Module
             SharedViewModel.State.Subscribe(SubscribeState).AddTo(_disposablesForModel);
             SharedViewModel.Selected.Subscribe(SubscribeSelect).AddTo(_disposablesForModel);
             SharedViewModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(_disposablesForModel);
-            Set(SharedViewModel.hasBoss, imageKey);
+            Set(SharedViewModel.hasBoss);
 
             buttonText.text = StageInformation.GetStageIdString(
                 SharedViewModel.stageType,
@@ -210,18 +210,13 @@ namespace Nekoyume.UI.Module
                 .SetLoops(-1, LoopType.Yoyo);
         }
 
-        private void Set(bool isBoss, string imageKey)
+        private void Set(bool isBoss)
         {
             var icon = EventManager.GetStageIcon();
             var offset = EventManager.GetStageIconOffset();
             normalImage.sprite = icon;
             normalImage.SetNativeSize();
             normalImage.rectTransform.anchoredPosition = offset;
-            if (imageKey == "03")
-            {
-                //같은 이미지가 사용됨
-                imageKey = "02";
-            }
 
             disabledImage.sprite = icon;
             disabledImage.SetNativeSize();

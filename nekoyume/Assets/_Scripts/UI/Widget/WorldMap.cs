@@ -302,21 +302,17 @@ namespace Nekoyume.UI
 
             var openedStageId = RxProps.EventDungeonInfo?.Value is null
                 ? RxProps.EventDungeonRow.StageBegin
-                : RxProps.EventDungeonInfo.Value.ClearedStageId;
-            var nextStageId = RxProps.EventDungeonInfo?.Value is null
-                ? RxProps.EventDungeonRow.StageBegin
                 : math.min(
                     RxProps.EventDungeonInfo.Value.ClearedStageId + 1,
                     RxProps.EventDungeonRow.StageEnd);
-
             SharedViewModel.SelectedWorldId.Value = eventDungeonRow.Id;
-            SharedViewModel.SelectedStageId.Value = nextStageId;
+            SharedViewModel.SelectedStageId.Value = openedStageId;
             var stageInfo = Find<StageInformation>();
             stageInfo.Show(
                 SharedViewModel,
                 eventDungeonRow,
                 openedStageId,
-                nextStageId);
+                openedStageId);
             Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
             Find<HeaderMenuStatic>().Show();
         }

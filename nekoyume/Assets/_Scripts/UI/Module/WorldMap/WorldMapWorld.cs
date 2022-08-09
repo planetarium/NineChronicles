@@ -7,6 +7,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -128,7 +129,7 @@ namespace Nekoyume.UI.Module
                     $" worldRow.StagesCount({worldRow.StagesCount}) != stageRowsCount({stageTuples.Count})");
             }
 
-            Set(worldRow, stageTuples);
+            Set(worldRow, stageType, stageTuples);
         }
 
         public void Set(EventDungeonSheet.Row eventDungeonRow)
@@ -150,16 +151,14 @@ namespace Nekoyume.UI.Module
                     $" worldRow.StagesCount({eventDungeonRow.StagesCount}) != stageRowsCount({eventDungeonStageTuples.Count})");
             }
 
-            Set(eventDungeonRow, eventDungeonStageTuples);
+            Set(eventDungeonRow, StageType.EventDungeon, eventDungeonStageTuples);
         }
 
         private void Set(
             WorldSheet.Row worldRow,
+            StageType stageType,
             List<(int stageId, bool hasBoss)> stageTuples)
         {
-            var imageKey = worldRow.Id == GameConfig.MimisbrunnrWorldId
-                ? "mimisbrunnr"
-                : $"{worldRow.Id:D2}";
             var stageWaveRowsCount = stageTuples.Count;
             var stageOffset = 0;
             var nextPageShouldHide = false;
@@ -211,12 +210,16 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
-                page.Show(
-                    stageModels,
-                    imageKey,
-                    worldRow.Id == GameConfig.MimisbrunnrWorldId
-                        ? 1
-                        : pageIndex);
+                var background = SpriteHelper.GetWorldMapBackground(
+                    stageType switch
+                    {
+                        StageType.Mimisbrunnr => "mimisbrunnr",
+                        // NOTE: `EventSummer` is flaky.
+                        StageType.EventDungeon => "EventSummer",
+                        _ => worldRow.Id.ToString("00"),
+                    },
+                    pageIndex);
+                page.Show(stageModels, background);
                 pageIndex += 1;
                 stageOffset += stageModels.Count;
                 if (stageOffset >= stageWaveRowsCount)
