@@ -208,6 +208,16 @@ namespace Lib9c.Tests.Action
                 var nextState = action.Execute(ctx);
 
                 var random = new TestRandom(randomSeed);
+                var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(ctx.BlockIndex);
+                var simulator = new RaidSimulator(
+                    bossRow.BossId,
+                    random,
+                    avatarState,
+                    action.FoodIds,
+                    _tableSheets.GetRaidSimulatorSheets());
+                simulator.Simulate();
+                var score = simulator.DamageDealt;
+
                 if (levelUp && rewardRecordExist)
                 {
                     Assert.True(state.TryGetState(bossAddress, out List prevRawBoss));
@@ -228,15 +238,6 @@ namespace Lib9c.Tests.Action
                     }
                 }
 
-                var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(ctx.BlockIndex);
-                var simulator = new RaidSimulator(
-                    bossRow.BossId,
-                    random,
-                    avatarState,
-                    action.FoodIds,
-                    _tableSheets.GetRaidSimulatorSheets());
-                simulator.Simulate();
-                var score = simulator.DamageDealt;
                 Assert.Equal(0 * crystal, nextState.GetBalance(_agentAddress, crystal));
                 if (crystalExist)
                 {
@@ -404,6 +405,16 @@ namespace Lib9c.Tests.Action
             var nextRaiderState = new RaiderState(rawRaider);
             var bossRow = _tableSheets.WorldBossListSheet.FindRowByBlockIndex(blockIndex);
             var random = new TestRandom(randomSeed);
+
+            var simulator = new RaidSimulator(
+                bossRow.BossId,
+                random,
+                avatarState,
+                action.FoodIds,
+                _tableSheets.GetRaidSimulatorSheets());
+            simulator.Simulate();
+            Assert.Equal(simulator.DamageDealt, nextRaiderState.HighScore);
+
             List<FungibleAssetValue> rewards = RuneHelper.CalculateReward(
                 0,
                 bossState.Id,
@@ -418,14 +429,6 @@ namespace Lib9c.Tests.Action
                 Assert.Equal(reward, nextState.GetBalance(_avatarAddress, reward.Currency));
             }
 
-            var simulator = new RaidSimulator(
-                bossRow.BossId,
-                random,
-                avatarState,
-                action.FoodIds,
-                _tableSheets.GetRaidSimulatorSheets());
-            simulator.Simulate();
-            Assert.Equal(simulator.DamageDealt, nextRaiderState.HighScore);
             Assert.Equal(1, nextRaiderState.Level);
             Assert.Equal(GameConfig.DefaultAvatarArmorId, nextRaiderState.IconId);
             Assert.True(nextRaiderState.Cp > 0);

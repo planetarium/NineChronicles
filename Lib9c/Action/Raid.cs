@@ -114,7 +114,6 @@ namespace Nekoyume.Action
             avatarState.ValidateEquipmentsV2(EquipmentIds, context.BlockIndex);
             avatarState.ValidateConsumable(FoodIds, context.BlockIndex);
             avatarState.ValidateCostume(CostumeIds);
-            // Reward.
             int previousHighScore = raiderState.HighScore;
             WorldBossState bossState;
             WorldBossGlobalHpSheet hpSheet = sheets.GetSheet<WorldBossGlobalHpSheet>();
@@ -126,6 +125,32 @@ namespace Nekoyume.Action
             {
                 bossState = new WorldBossState(row, hpSheet[1]);
             }
+
+            // Simulate.
+            var simulator = new RaidSimulator(
+                row.BossId,
+                context.Random,
+                avatarState,
+                FoodIds,
+                sheets.GetRaidSimulatorSheets());
+            simulator.Simulate();
+
+            int score = simulator.DamageDealt;
+            int cp = CPHelper.GetCPV2(avatarState, sheets.GetSheet<CharacterSheet>(),
+                sheets.GetSheet<CostumeStatSheet>());
+            raiderState.Update(avatarState, cp, score, PayNcg);
+
+            // Reward.
+            bossState.CurrentHp -= score;
+            if (bossState.CurrentHp <= 0)
+            {
+                if (bossState.Level < hpSheet.OrderedList.Last().Level)
+                {
+                    bossState.Level++;
+                }
+                bossState.CurrentHp = hpSheet[bossState.Level].Hp;
+            }
+
             // Update State.
             if (raiderState.LatestBossLevel < bossState.Level)
             {
@@ -154,30 +179,6 @@ namespace Nekoyume.Action
                     rewardRecord = new WorldBossKillRewardRecord();
                 }
 
-                // Simulate.
-                var simulator = new RaidSimulator(
-                    row.BossId,
-                    context.Random,
-                    avatarState,
-                    FoodIds,
-                    sheets.GetRaidSimulatorSheets());
-                simulator.Simulate();
-
-                int score = simulator.DamageDealt;
-                int cp = CPHelper.GetCPV2(avatarState, sheets.GetSheet<CharacterSheet>(),
-                    sheets.GetSheet<CostumeStatSheet>());
-                raiderState.Update(avatarState, cp, score, PayNcg);
-
-                // Reward.
-                bossState.CurrentHp -= score;
-                if (bossState.CurrentHp <= 0)
-                {
-                    if (bossState.Level < hpSheet.OrderedList.Last().Level)
-                    {
-                        bossState.Level++;
-                    }
-                    bossState.CurrentHp = hpSheet[bossState.Level].Hp;
-                }
                 // Save level infos;
                 raiderState.LatestBossLevel = bossState.Level;
                 if (!rewardRecord.ContainsKey(raiderState.LatestBossLevel))
