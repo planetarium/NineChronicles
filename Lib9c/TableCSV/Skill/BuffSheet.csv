@@ -30,12 +30,12 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 302004,302000,공격 강화 (3),100,150,Self,ATK,Percentage,3,icon_buff_plus_attack
 302005,302000,공격 강화 (5),100,150,Self,ATK,Percentage,5,icon_buff_plus_attack
 302006,302000,공격 강화 (8),100,150,Self,ATK,Percentage,8,icon_buff_plus_attack
-302007,302000,공격 강화 (10),100,150,Self,ATK,Percentage,10,icon_buff_plus_attack
-302008,302000,공격 강화 (15),100,150,Self,ATK,Percentage,15,icon_buff_plus_attack
+302007,302000,S 올스텟,100,150,Self,ATK,Percentage,20,icon_buff_plus_attack
+302008,302000,S 공격력2,100,150,Self,ATK,Percentage,35,icon_buff_plus_attack
 302009,302000,공격 강화 (18),100,150,Self,ATK,Percentage,18,icon_buff_plus_attack
-302010,302000,공격 강화 (20),100,150,Self,ATK,Percentage,20,icon_buff_plus_attack
-302011,302000,공격 강화 (35),100,150,Self,ATK,Percentage,35,icon_buff_plus_attack
-302012,302000,공격 강화 (70),100,150,Self,ATK,Percentage,70,icon_buff_plus_attack
+302010,302000,SS 올스탯,100,150,Self,ATK,Percentage,50,icon_buff_plus_attack
+302011,302000,S 공격력1,100,150,Self,ATK,Percentage,60,icon_buff_plus_attack
+302012,302000,SS 공격력,100,150,Self,ATK,Percentage,90,icon_buff_plus_attack
 303000,303000,방어 강화 (2),100,150,Self,DEF,Percentage,2,icon_buff_plus_defense
 303001,303000,방어 강화 (2),100,150,Self,DEF,Percentage,2,icon_buff_plus_defense
 303002,303000,방어 강화 (3),100,150,Self,DEF,Percentage,3,icon_buff_plus_defense
@@ -43,12 +43,12 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 303004,303000,방어 강화 (3),100,150,Self,DEF,Percentage,3,icon_buff_plus_defense
 303005,303000,방어 강화 (5),100,150,Self,DEF,Percentage,5,icon_buff_plus_defense
 303006,303000,방어 강화 (8),100,150,Self,DEF,Percentage,8,icon_buff_plus_defense
-303007,303000,방어 강화 (10),100,150,Self,DEF,Percentage,10,icon_buff_plus_defense
-303008,303000,방어 강화 (15),100,150,Self,DEF,Percentage,15,icon_buff_plus_defense
+303007,303000,S 올스텟,100,150,Self,DEF,Percentage,20,icon_buff_plus_defense
+303008,303000,S 방어력2,100,150,Self,DEF,Percentage,35,icon_buff_plus_defense
 303009,303000,방어 강화 (18),100,150,Self,DEF,Percentage,18,icon_buff_plus_defense
-303010,303000,방어 강화 (20),100,150,Self,DEF,Percentage,20,icon_buff_plus_defense
-303011,303000,방어 강화 (35),100,150,Self,DEF,Percentage,35,icon_buff_plus_defense
-303012,303000,방어 강화 (70),100,150,Self,DEF,Percentage,70,icon_buff_plus_defense
+303010,303000,SS 올스탯,100,150,Self,DEF,Percentage,50,icon_buff_plus_defense
+303011,303000,S 방어력1,100,150,Self,DEF,Percentage,60,icon_buff_plus_defense
+303012,303000,SS 방어력,100,150,Self,DEF,Percentage,90,icon_buff_plus_defense
 304000,304000,치명 증가 (100),100,150,Self,CRI,Percentage,100,icon_buff_plus_critical
 304001,304000,치명 증가 (250),100,150,Self,CRI,Percentage,250,icon_buff_plus_critical
 305000,305000,명중 강화 (2),100,150,Self,HIT,Percentage,2,icon_buff_plus_hit
@@ -58,12 +58,12 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 305004,305000,명중 강화 (3),100,150,Self,HIT,Percentage,3,icon_buff_plus_hit
 305005,305000,명중 강화 (5),100,150,Self,HIT,Percentage,5,icon_buff_plus_hit
 305006,305000,명중 강화 (8),100,150,Self,HIT,Percentage,8,icon_buff_plus_hit
-305007,305000,명중 강화 (10),100,150,Self,HIT,Percentage,10,icon_buff_plus_hit
-305008,305000,명중 강화 (15),100,150,Self,HIT,Percentage,15,icon_buff_plus_hit
+305007,305000,S 올스텟,100,150,Self,HIT,Percentage,20,icon_buff_plus_hit
+305008,305000,S 명중2,100,150,Self,HIT,Percentage,35,icon_buff_plus_hit
 305009,305000,명중 강화 (18),100,150,Self,HIT,Percentage,18,icon_buff_plus_hit
-305010,305000,명중 강화 (20),100,150,Self,HIT,Percentage,20,icon_buff_plus_hit
-305011,305000,명중 강화 (35),100,150,Self,HIT,Percentage,35,icon_buff_plus_hit
-305012,305000,명중 강화 (70),100,150,Self,HIT,Percentage,70,icon_buff_plus_hit
+305010,305000,SS 올스탯,100,150,Self,HIT,Percentage,50,icon_buff_plus_hit
+305011,305000,S 명중1,100,150,Self,HIT,Percentage,60,icon_buff_plus_hit
+305012,305000,SS 명중,100,150,Self,HIT,Percentage,90,icon_buff_plus_hit
 306000,306000,속도 강화 (2),100,150,Self,SPD,Percentage,2,icon_buff_plus_speed
 306001,306000,속도 강화 (2),100,150,Self,SPD,Percentage,2,icon_buff_plus_speed
 306002,306000,속도 강화 (3),100,150,Self,SPD,Percentage,3,icon_buff_plus_speed
@@ -71,9 +71,9 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 306004,306000,속도 강화 (3),100,150,Self,SPD,Percentage,3,icon_buff_plus_speed
 306005,306000,속도 강화 (5),100,150,Self,SPD,Percentage,5,icon_buff_plus_speed
 306006,306000,속도 강화 (8),100,150,Self,SPD,Percentage,8,icon_buff_plus_speed
-306007,306000,속도 강화 (10),100,150,Self,SPD,Percentage,10,icon_buff_plus_speed
-306008,306000,속도 강화 (15),100,150,Self,SPD,Percentage,15,icon_buff_plus_speed
+306007,306000,S 올스텟,100,150,Self,SPD,Percentage,20,icon_buff_plus_speed
+306008,306000,S 속도2,100,150,Self,SPD,Percentage,35,icon_buff_plus_speed
 306009,306000,속도 강화 (18),100,150,Self,SPD,Percentage,18,icon_buff_plus_speed
-306010,306000,속도 강화 (20),100,150,Self,SPD,Percentage,20,icon_buff_plus_speed
-306011,306000,속도 강화 (35),100,150,Self,SPD,Percentage,35,icon_buff_plus_speed
-306012,306000,속도 강화 (70),100,150,Self,SPD,Percentage,70,icon_buff_plus_speed
+306010,306000,SS 올스탯,100,150,Self,SPD,Percentage,50,icon_buff_plus_speed
+306011,306000,S 속도1,100,150,Self,SPD,Percentage,60,icon_buff_plus_speed
+306012,306000,SS 속도,100,150,Self,SPD,Percentage,90,icon_buff_plus_speed
