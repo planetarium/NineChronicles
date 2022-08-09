@@ -47,7 +47,7 @@ namespace Nekoyume.Game.Factory
                     endPosition,
                     Vector2.one,
                     true,
-                    true,
+                    false,
                     setMidByRandom: true,
                     destroy: false);
             }
