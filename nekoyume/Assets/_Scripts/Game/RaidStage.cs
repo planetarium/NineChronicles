@@ -59,7 +59,9 @@ namespace Nekoyume.Game
         public void Play(
             int bossId,
             BattleLog log,
-            ArenaPlayerDigest player)
+            ArenaPlayerDigest player,
+            int damageDealt,
+            bool isNewRecord)
         {
             if (!_isPlaying)
             {
@@ -74,7 +76,8 @@ namespace Nekoyume.Game
 
                 if (log?.Count > 0)
                 {
-                    _battleCoroutine = StartCoroutine(CoPlay(bossId, log, player));
+                    _battleCoroutine = StartCoroutine(
+                        CoPlay(bossId, log, player, damageDealt, isNewRecord));
                 }
             }
             else
@@ -86,7 +89,9 @@ namespace Nekoyume.Game
         private IEnumerator CoPlay(
             int bossId,
             BattleLog log,
-            ArenaPlayerDigest player)
+            ArenaPlayerDigest player,
+            int damageDealt,
+            bool isNewRecord)
         {
             yield return StartCoroutine(CoEnter(bossId, player));
 
@@ -121,7 +126,7 @@ namespace Nekoyume.Game
                 }
             }
 
-            yield return StartCoroutine(CoFinish());
+            yield return StartCoroutine(CoFinish(damageDealt, isNewRecord));
         }
 
         private IEnumerator CoEnter(int bossId, ArenaPlayerDigest playerDigest)
@@ -159,7 +164,7 @@ namespace Nekoyume.Game
             _boss.UpdateStatusUI();
         }
 
-        private IEnumerator CoFinish()
+        private IEnumerator CoFinish(int damageDealt, bool isNewRecord)
         {
             IsAvatarStateUpdatedAfterBattle = false;
             _onBattleEnded.OnNext(this);
@@ -181,12 +186,7 @@ namespace Nekoyume.Game
             MainCanvas.instance.Canvas.worldCamera = ActionCamera.instance.Cam;
 
             container.Close();
-            var model = new BattleResultPopup.Model()
-            {
-                State = BattleLog.Result.Lose,
-                LastClearedStageId = 100,
-            };
-            Widget.Find<BattleResultPopup>().Show(model, false);
+            Widget.Find<WorldBossResultPopup>().Show(damageDealt, isNewRecord);
 
             if (container)
             {

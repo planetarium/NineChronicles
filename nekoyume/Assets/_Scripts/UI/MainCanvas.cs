@@ -311,6 +311,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<WorldBossResultPopup>());
+            yield return null;
 
             // popup
             secondWidgets.Add(Widget.Create<CombinationSlotPopup>());

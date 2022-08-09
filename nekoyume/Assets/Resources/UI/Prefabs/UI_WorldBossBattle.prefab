@@ -9982,12 +9982,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 693824846569763398}
-  activatedStarImages:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  activatedObjects:
+  - {fileID: 1466750548022419923}
+  - {fileID: 7443873102250399284}
+  - {fileID: 6598047645312384303}
+  - {fileID: 2105211477128664557}
+  - {fileID: 4997990882318461386}
   vfxClamper: {fileID: 4035729964114713906}
   vfxOffset: {fileID: 5300909335901588619}
   smoothenSpeed: 4

@@ -1951,8 +1951,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6385346256523567444}
   - component: {fileID: 567996991680081171}
+  - component: {fileID: 8157047412155536420}
   m_Layer: 5
-  m_Name: WorldBoss_Result
+  m_Name: UI_WorldBossResultPopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2005,6 +2006,23 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8157047412155536420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8133227393376784123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 799e78f80a848cc4b951961fc4e360c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  gradeParent: {fileID: 6868479096098356090}
+  seasonBestObject: {fileID: 1877104593503131110}
+  scoreText: {fileID: 7789265291887167243}
 --- !u!1 &8571984525182272847
 GameObject:
   m_ObjectHideFlags: 0
@@ -2485,6 +2503,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Emblem
+      objectReference: {fileID: 0}
+    - target: {fileID: 8281203931229735741, guid: d640dc21c89cd1d4391491862d8a5f6e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d640dc21c89cd1d4391491862d8a5f6e, type: 3}

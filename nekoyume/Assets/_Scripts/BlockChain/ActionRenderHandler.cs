@@ -401,7 +401,7 @@ namespace Nekoyume.BlockChain
             _actionRenderer.EveryRender<Raid>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseRaid)
+                .Subscribe(ResponseRaidAsync)
                 .AddTo(_disposables);
         }
 
@@ -1805,7 +1805,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseRaid(ActionBase.ActionEvaluation<Raid> eval)
+        private async void ResponseRaidAsync(ActionBase.ActionEvaluation<Raid> eval)
         {
             if (eval.Exception is not null)
             {
@@ -1865,9 +1865,17 @@ namespace Nekoyume.BlockChain
             Widget.Find<Menu>().Close();
             var playerDigest = new ArenaPlayerDigest(avatarState);
             Widget.Find<LoadingScreen>().Close();
-            Game.Game.instance.RaidStage.Play(simulator.BossId, log, playerDigest);
-            worldBoss.UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true, ignoreHeaderMenu: true);
+
             worldBoss.Close();
+            await worldBoss.UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true, ignoreHeaderMenu: true);
+
+            var isNewRecord = worldBoss.CachedRaiderState.HighScore < simulator.DamageDealt;
+            Game.Game.instance.RaidStage.Play(
+                simulator.BossId,
+                log,
+                playerDigest,
+                simulator.DamageDealt,
+                isNewRecord);
         }
 
         private void ResponseClaimRaidReward(ActionBase.ActionEvaluation<ClaimRaidReward> eval)
