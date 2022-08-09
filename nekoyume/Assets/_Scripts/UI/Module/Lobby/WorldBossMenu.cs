@@ -118,6 +118,7 @@ namespace Nekoyume.UI.Module.Lobby
                         return;
                     }
 
+                    ticketContainer.SetActive(false);
                     timeContainer.SetActive(true);
                     var begin =
                         WorldBossFrontHelper.TryGetPreviousRow(currentBlockIndex, out var previousRow)
@@ -133,6 +134,7 @@ namespace Nekoyume.UI.Module.Lobby
                     }
 
                     ticketContainer.SetActive(true);
+                    timeContainer.SetActive(false);
                     if (_cachedRaiderState is null)
                     {
                         notification.SetActive(true);

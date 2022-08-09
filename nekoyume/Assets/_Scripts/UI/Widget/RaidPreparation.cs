@@ -21,6 +21,7 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.UI.Scroller;
+using TMPro;
 using Inventory = Nekoyume.UI.Module.Inventory;
 using Toggle = UnityEngine.UI.Toggle;
 
@@ -61,6 +62,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button closeButton;
+
+        [SerializeField]
+        private TextMeshProUGUI closeButtonText;
 
         [SerializeField]
         private Transform buttonStarImageTransform;
@@ -145,12 +149,12 @@ namespace Nekoyume.UI
             toggle.gameObject.SetActive(GameConfig.IsEditor);
         }
 
-        public void Show(RaiderState cachedRaiderState, bool ignoreShowAnimation = false)
+        public void Show(RaiderState raiderState, string bossName, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
             _headerMenu = Find<HeaderMenuStatic>();
-            _cachedRaiderState = cachedRaiderState;
+            _cachedRaiderState = raiderState;
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -173,6 +177,8 @@ namespace Nekoyume.UI
             {
                 startButton.SetCost(CostType.None, 0);
             }
+
+            closeButtonText.text = bossName;
 
             if (_player == null)
             {
