@@ -770,11 +770,13 @@ namespace Nekoyume.UI.Module
                 if (state == ViewState.ClearExistGuidedQuest &&
                     _eventDungeonQuestCell.Quest is WorldQuest quest)
                 {
-                    _eventDungeonQuestCell.HideAsClear(_ =>
-                    {
-                        EnterToShown();
-                        _onClearEventDungeonStageComplete.OnNext(quest);
-                    });
+                    _eventDungeonQuestCell.HideAsClear(
+                        ignoreQuestResult: true,
+                        onComplete: _ =>
+                        {
+                            EnterToShown();
+                            _onClearEventDungeonStageComplete.OnNext(quest);
+                        });
                 }
                 else
                 {
@@ -805,11 +807,13 @@ namespace Nekoyume.UI.Module
                 if (state == ViewState.ClearExistGuidedQuest &&
                     _craftEventItemQuestCell.Quest is CombinationEquipmentQuest quest)
                 {
-                    _craftEventItemQuestCell.HideAsClear(_ =>
-                    {
-                        EnterToShown();
-                        _onClearCraftEventItemComplete.OnNext(quest);
-                    });
+                    _craftEventItemQuestCell.HideAsClear(
+                        ignoreQuestResult: true,
+                        onComplete: _ =>
+                        {
+                            EnterToShown();
+                            _onClearCraftEventItemComplete.OnNext(quest);
+                        });
                 }
                 else
                 {
