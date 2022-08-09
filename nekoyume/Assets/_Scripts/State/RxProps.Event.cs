@@ -57,7 +57,7 @@ namespace Nekoyume.State
             OnBlockIndexEvent(_agent.BlockIndex);
             OnAvatarChangedEvent();
 
-            EventDungeonInfo
+            _eventDungeonInfo
                 .Subscribe(_ => UpdateEventDungeonTicketProgress(_agent.BlockIndex))
                 .AddTo(_disposables);
         }
@@ -85,6 +85,7 @@ namespace Nekoyume.State
                 EventDungeonRow = null;
                 EventDungeonStageRows = new List<EventDungeonStageSheet.Row>();
                 EventDungeonStageWaveRows = new List<EventDungeonStageWaveSheet.Row>();
+                _eventDungeonInfo.Value = null;
                 return;
             }
 
@@ -130,7 +131,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            var current = EventDungeonInfo.Value
+            var current = _eventDungeonInfo.Value
                 .GetRemainingTicketsConsiderReset(
                     _eventScheduleRowForDungeon.Value,
                     blockIndex);
