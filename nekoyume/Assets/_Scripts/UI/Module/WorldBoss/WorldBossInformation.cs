@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
@@ -59,19 +60,45 @@ namespace Nekoyume.UI.Module.WorldBoss
 
         public void Show()
         {
-            var bossId = WorldBossFrontHelper.TryGetCurrentRow(
-                Game.Game.instance.Agent.BlockIndex, out var row) ? row.BossId : 0;
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
             var sheet = Game.Game.instance.TableSheets.WorldBossCharacterSheet;
-            if (!sheet.TryGetValue(bossId, out var bossRow))
+            var status = WorldBossFrontHelper.GetStatus(currentBlockIndex);
+            switch (status)
+            {
+                case WorldBossStatus.OffSeason:
+                    if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var nextRow))
+                    {
+                        return;
+                    }
+
+                    set(sheet, nextRow);
+                    break;
+                case WorldBossStatus.Season:
+                    if (!WorldBossFrontHelper.TryGetCurrentRow(currentBlockIndex, out var row))
+                    {
+                        return;
+                    }
+
+                    set(sheet, row);
+                    break;
+                case WorldBossStatus.None:
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            UpdateView();
+        }
+
+        private void set(WorldBossCharacterSheet sheet, WorldBossListSheet.Row row)
+        {
+            if (!sheet.TryGetValue(row.BossId, out var bossRow))
             {
                 return;
             }
 
             _cachedData = bossRow.WaveStats;
             _wave = 0;
-            _bossId = bossId;
-
-            UpdateView();
+            _bossId = row.BossId;
         }
 
         private void UpdatePage(int value)
