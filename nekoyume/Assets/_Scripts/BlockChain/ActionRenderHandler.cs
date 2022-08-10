@@ -1857,14 +1857,18 @@ namespace Nekoyume.BlockChain
             clonedAvatarState.EquipItems(items);
 
             var random = new LocalRandom(eval.RandomSeed);
-            var rewards = RuneHelper.CalculateReward(
-                    worldBoss.CachedRaiderState.LatestRewardRank,
-                    row.BossId,
-                    Game.Game.instance.TableSheets.RuneWeightSheet,
-                    Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
-                    Game.Game.instance.TableSheets.RuneSheet,
-                    random
-                );
+
+            if (worldBoss.CachedRaiderState != null)
+            {
+                var rewards = RuneHelper.CalculateReward(
+                        worldBoss.CachedRaiderState.LatestRewardRank,
+                        row.BossId,
+                        Game.Game.instance.TableSheets.RuneWeightSheet,
+                        Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
+                        Game.Game.instance.TableSheets.RuneSheet,
+                        random
+                    );
+            }
 
             var simulator = new RaidSimulator(
                 row.BossId,
