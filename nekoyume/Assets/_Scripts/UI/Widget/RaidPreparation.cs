@@ -592,14 +592,12 @@ namespace Nekoyume.UI
 
             var equipment = new List<Guid>();
             equipment.AddRange(equipments);
+            equipment.AddRange(costumes);
             equipment.AddRange(consumables);
 
             SaveEquipment(equipment);
             ActionManager.Instance.Raid(costumes, equipments, consumables, payNcg);
             Find<LoadingScreen>().Show();
-
-            _cachedEquipment.Clear();
-            _cachedEquipment.AddRange(equipment);
             Close();
         }
 
@@ -703,7 +701,7 @@ namespace Nekoyume.UI
             blockStartingTextObject.SetActive(!canBattle);
         }
 
-        private List<Guid> LoadEquipment()
+        public List<Guid> LoadEquipment()
         {
             if (!PlayerPrefs.HasKey(RAID_EQUIPMENT_KEY))
             {

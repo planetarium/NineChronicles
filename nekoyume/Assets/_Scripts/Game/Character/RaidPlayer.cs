@@ -28,6 +28,8 @@ namespace Nekoyume.Game.Character
 
         public void Init(ArenaPlayerDigest digest, RaidCharacter target)
         {
+            Init(target);
+
             appearance.Set(digest, Animator, _hudContainer);
             _attackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "Attack");
             _criticalAttackTime = SpineAnimationHelper.GetAnimationDuration(appearance, "CriticalAttack");
@@ -37,8 +39,6 @@ namespace Nekoyume.Game.Character
             _costumes.AddRange(digest.Costumes);
             _equipments.Clear();
             _equipments.AddRange(digest.Equipments);
-
-            Init(target);
         }
 
         protected override void ShowCutscene()
