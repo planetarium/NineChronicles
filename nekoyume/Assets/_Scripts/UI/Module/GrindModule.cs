@@ -531,6 +531,6 @@ namespace Nekoyume.UI.Module
                 }
             }
         }
-    }
 #endif
+    }
 }
