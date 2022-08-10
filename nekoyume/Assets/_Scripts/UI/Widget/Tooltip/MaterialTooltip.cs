@@ -10,6 +10,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Event;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -91,11 +92,11 @@ namespace Nekoyume.UI
                 target);
         }
 
-        private static List<StageSheet.Row> GetStageByOrder(
-            IOrderedEnumerable<StageSheet.Row> rows,
-            int id)
+        private static List<T> GetStageByOrder<T>(
+            IOrderedEnumerable<T> rows,
+            int id) where T : StageSheet.Row
         {
-            var result = new List<StageSheet.Row>();
+            var result = new List<T>();
             var rowList = rows.Where(s =>
             {
                 if (States.Instance.CurrentAvatarState.worldInformation
@@ -184,12 +185,20 @@ namespace Nekoyume.UI
 
                     break;
                 case ItemSubType.FoodMaterial:
-                    acquisitionPlaceList.Add(
-                        MakeAcquisitionPlaceModelByType(
-                            AcquisitionPlaceButton.PlaceType.Arena,
-                            itemBase));
-
-                    // TODO!!!! Consider event recipe.
+                    var eventDungeonRows = TableSheets.Instance.EventDungeonStageSheet.GetStagesContainsReward(itemBase.Id)
+                        .OrderByDescending(s => s.Key);
+                    var eventStages = GetStageByOrder(eventDungeonRows, itemBase.Id);
+                    if (eventStages.Any())
+                    {
+                        // use ToEventScheduleId
+                    }
+                    else
+                    {
+                        acquisitionPlaceList.Add(
+                            MakeAcquisitionPlaceModelByType(
+                                AcquisitionPlaceButton.PlaceType.Arena,
+                                itemBase));
+                    }
 
                     break;
                 case ItemSubType.Hourglass:
