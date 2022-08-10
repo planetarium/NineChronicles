@@ -1856,9 +1856,19 @@ namespace Nekoyume.BlockChain
             var items = Widget.Find<RaidPreparation>().LoadEquipment();
             clonedAvatarState.EquipItems(items);
 
+            var random = new LocalRandom(eval.RandomSeed);
+            var rewards = RuneHelper.CalculateReward(
+                    worldBoss.CachedRaiderState.LatestRewardRank,
+                    row.BossId,
+                    Game.Game.instance.TableSheets.RuneWeightSheet,
+                    Game.Game.instance.TableSheets.WorldBossKillRewardSheet,
+                    Game.Game.instance.TableSheets.RuneSheet,
+                    random
+                );
+
             var simulator = new RaidSimulator(
                 row.BossId,
-                new LocalRandom(eval.RandomSeed),
+                random,
                 clonedAvatarState,
                 eval.Action.FoodIds,
                 TableSheets.Instance.GetRaidSimulatorSheets()
