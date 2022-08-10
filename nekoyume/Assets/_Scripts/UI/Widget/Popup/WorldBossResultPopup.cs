@@ -55,7 +55,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Game.Event.OnRoomEnter.Invoke(true);
+            Find<WorldBoss>().Show();
             base.Close(ignoreCloseAnimation);
         }
     }
