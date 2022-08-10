@@ -162,7 +162,7 @@ namespace Nekoyume.UI
             var stage = Game.Game.instance.Stage;
             stage.IsRepeatStage = false;
 
-            UpdateAvatarState();
+            UpdateArenaAvatarState();
             var avatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
             if (!_player)
             {
@@ -204,17 +204,16 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private void UpdateAvatarState()
+        private void UpdateArenaAvatarState()
         {
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
             var arenaAvatarState = RxProps.PlayersArenaParticipant.Value.AvatarState;
             var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
 
-            var arenaItems = arenaAvatarState.inventory.Items;
-            for (int i = arenaItems.Count - 1; i > 0; i--)
+            for (int i = arenaAvatarState.inventory.Items.Count - 1; i > 0; i--)
             {
                 Nekoyume.Model.Item.Inventory.Item existItem;
-                switch (arenaItems[i].item)
+                switch (arenaAvatarState.inventory.Items[i].item)
                 {
                     case Equipment arenaEquipment:
                     {
@@ -236,16 +235,19 @@ namespace Nekoyume.UI
 
                 if (existItem is null)
                 {
-                    arenaAvatarState.inventory.RemoveItem(arenaItems[i]);
+                    // It cause modifying arenaAvatarState.inventory collection in a loop
+                    arenaAvatarState.inventory.RemoveItem(arenaAvatarState.inventory.Items[i]);
                 }
-
-                var isValid = existItem is { Locked: false, item: ITradableItem tradableItem }
-                              && tradableItem.RequiredBlockIndex <= currentBlockIndex;
-
-                if (arenaItems[i] is { item: IEquippableItem { Equipped: true } equippedItem }
-                    && !isValid)
+                else
                 {
-                    equippedItem.Unequip();
+                    var isValid = existItem is { Locked: false, item: ITradableItem tradableItem }
+                                  && tradableItem.RequiredBlockIndex <= currentBlockIndex;
+
+                    if (arenaAvatarState.inventory.Items[i] is { item: IEquippableItem { Equipped: true } equippedItem }
+                        && !isValid)
+                    {
+                        equippedItem.Unequip();
+                    }
                 }
             }
         }
