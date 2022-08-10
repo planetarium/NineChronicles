@@ -1866,10 +1866,11 @@ namespace Nekoyume.BlockChain
             var playerDigest = new ArenaPlayerDigest(avatarState);
             Widget.Find<LoadingScreen>().Close();
 
+            var isNewRecord = worldBoss.CachedRaiderState is null ||
+                worldBoss.CachedRaiderState.HighScore < simulator.DamageDealt;
             worldBoss.Close();
             await worldBoss.UpdateViewAsync(Game.Game.instance.Agent.BlockIndex, true, ignoreHeaderMenu: true);
 
-            var isNewRecord = worldBoss.CachedRaiderState.HighScore < simulator.DamageDealt;
             Game.Game.instance.RaidStage.Play(
                 simulator.BossId,
                 log,

@@ -595,7 +595,7 @@ namespace Nekoyume.UI
             equipment.AddRange(consumables);
 
             SaveEquipment(equipment);
-            ActionManager.Instance.Raid(costumes, equipments,  consumables, payNcg);
+            ActionManager.Instance.Raid(costumes, equipments, consumables, payNcg);
             Find<LoadingScreen>().Show();
 
             _cachedEquipment.Clear();

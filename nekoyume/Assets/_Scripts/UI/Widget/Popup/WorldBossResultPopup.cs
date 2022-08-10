@@ -1,8 +1,10 @@
 using Nekoyume.Helper;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.WorldBoss;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -53,9 +55,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<WorldBossBattle>().Close(true);
             Game.Event.OnRoomEnter.Invoke(true);
-
             base.Close(ignoreCloseAnimation);
         }
     }
