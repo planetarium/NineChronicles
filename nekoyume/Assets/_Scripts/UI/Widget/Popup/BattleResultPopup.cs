@@ -715,7 +715,8 @@ namespace Nekoyume.UI
                         SharedModel.StageID + stageIdOffset,
                         equipments,
                         costumes,
-                        new List<Consumable>())
+                        new List<Consumable>(),
+                        false)
                     .StartAsCoroutine(),
                 _ => throw new ArgumentOutOfRangeException()
             };

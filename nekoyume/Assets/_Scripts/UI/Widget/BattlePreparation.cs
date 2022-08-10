@@ -970,7 +970,8 @@ namespace Nekoyume.UI
                             _stageId,
                             equipments,
                             costumes,
-                            consumables)
+                            consumables,
+                            false)
                         .Subscribe();
                     break;
                 }

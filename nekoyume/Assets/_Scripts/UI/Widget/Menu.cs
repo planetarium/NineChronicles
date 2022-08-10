@@ -216,7 +216,8 @@ namespace Nekoyume.UI
                     scheduleId,
                     eventDungeonRow.Id,
                     eventDungeonStageId,
-                    player)
+                    player,
+                    false)
                 .Subscribe();
             var props = new Value
             {

@@ -13,6 +13,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.ActionExtensions;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -266,14 +267,16 @@ namespace Nekoyume.BlockChain
             int eventScheduleId,
             int eventDungeonId,
             int eventDungeonStageId,
-            Player player) =>
+            Player player,
+            bool buyTicketIfNeeded) =>
             EventDungeonBattle(
                 eventScheduleId,
                 eventDungeonId,
                 eventDungeonStageId,
                 player.Equipments,
                 player.Costumes,
-                null);
+                null,
+                buyTicketIfNeeded);
 
         public IObservable<ActionBase.ActionEvaluation<EventDungeonBattle>> EventDungeonBattle(
             int eventScheduleId,
@@ -281,19 +284,27 @@ namespace Nekoyume.BlockChain
             int eventDungeonStageId,
             List<Equipment> equipments,
             List<Costume> costumes,
-            List<Consumable> foods)
+            List<Consumable> foods,
+            bool buyTicketIfNeeded)
         {
-            var remainingTickets = RxProps.EventDungeonTicketProgress.Value.currentTickets -
-                                   Action.EventDungeonBattle.PlayCount;
             // FIXME: This is a temporary.
-            var usedNCG = 0;
+            var numberOfTicketPurchases = RxProps.EventDungeonInfo.Value.NumberOfTicketPurchases;
             Analyzer.Instance.Track("Unity/EventDungeonBattle", new Value
             {
                 ["EventScheduleId"] = eventScheduleId,
                 ["EventDungeonId"] = eventDungeonId,
                 ["EventDungeonStageId"] = eventDungeonStageId,
-                ["RemainingTickets"] = remainingTickets,
-                ["UsedNCG"] = usedNCG,
+                ["RemainingTickets"] =
+                    RxProps.EventDungeonTicketProgress.Value.currentTickets -
+                    Action.EventDungeonBattle.PlayCount,
+                ["NumberOfTicketPurchases"] = numberOfTicketPurchases,
+                ["TicketCost"] = buyTicketIfNeeded
+                    ? TableSheets.Instance.EventScheduleSheet.TryGetValue(
+                        eventScheduleId,
+                        out var scheduleRow)
+                        ? scheduleRow.GetDungeonTicketCost(numberOfTicketPurchases)
+                        : 0
+                    : 0,
             });
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -310,6 +321,7 @@ namespace Nekoyume.BlockChain
                 Equipments = equipments.Select(e => e.ItemId).ToList(),
                 Costumes = costumes.Select(c => c.ItemId).ToList(),
                 Foods = foods.Select(f => f.ItemId).ToList(),
+                BuyTicketIfNeeded = buyTicketIfNeeded,
             };
             action.PayCost(Game.Game.instance.Agent, States.Instance, TableSheets.Instance);
             LocalLayerActions.Instance.Register(action.Id, action.PayCost, _agent.BlockIndex);
