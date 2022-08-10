@@ -29,8 +29,6 @@ namespace Nekoyume
         [SerializeField]
         private TimeBlockSet top;
 
-        private TimeBlockSet _selectedSet;
-
         private void Awake()
         {
             if (timeBlockType.Equals(TimeBlockType.Gauge))
@@ -39,7 +37,6 @@ namespace Nekoyume
                 gauge.Time.gameObject.SetActive(true);
                 top.Block.gameObject.SetActive(false);
                 top.Time.gameObject.SetActive(false);
-                _selectedSet = gauge;
             }
             else
             {
@@ -47,14 +44,21 @@ namespace Nekoyume
                 gauge.Time.gameObject.SetActive(false);
                 top.Block.gameObject.SetActive(true);
                 top.Time.gameObject.SetActive(true);
-                _selectedSet = top;
             }
         }
 
         public void SetTimeBlock(string time, string block)
         {
-            _selectedSet.Time.text = time;
-            _selectedSet.Block.text = block;
+            if (timeBlockType.Equals(TimeBlockType.Gauge))
+            {
+                gauge.Time.text = time;
+                gauge.Block.text = block;
+            }
+            else
+            {
+                top.Time.text = time;
+                top.Block.text = block;
+            }
         }
     }
 }

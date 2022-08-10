@@ -11,6 +11,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Common;
 using Nekoyume.UI.Module.WorldBoss;
 using Nekoyume.ValueControlComponents.Shader;
 using UnityEngine;
@@ -69,6 +70,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TimeBlock timeBlock;
+
+        [SerializeField]
+        private BlocksAndDatesPeriod blocksAndDatesPeriod;
 
         [SerializeField]
         private GameObject apiMissing;
@@ -279,6 +283,7 @@ namespace Nekoyume.UI
             var progress = current - begin;
             timerSlider.NormalizedValue = (float)progress / range;
             timeBlock.SetTimeBlock(Util.GetBlockToTime(end - current), $"{current}/{end}");
+            blocksAndDatesPeriod.Show(begin, end, current, DateTime.Now);
         }
 
         private void ShowDetail(WorldBossDetail.ToggleType toggleType)
