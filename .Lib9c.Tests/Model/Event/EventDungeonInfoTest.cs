@@ -20,16 +20,18 @@ namespace Lib9c.Tests.Model
         }
 
         [Theory]
-        [InlineData(0, 0, 0)]
-        [InlineData(int.MaxValue, int.MaxValue, int.MaxValue)]
+        [InlineData(0, 0, 0, 0)]
+        [InlineData(int.MaxValue, int.MaxValue, int.MaxValue, int.MaxValue)]
         public void Constructor(
             int resetTicketsInterval,
             int remainingTickets,
+            int numberOfTicketPurchases,
             int clearedStageId)
         {
             var eventDungeonInfo = new EventDungeonInfo(
                 resetTicketsInterval,
                 remainingTickets,
+                numberOfTicketPurchases,
                 clearedStageId);
             Assert.Equal(
                 resetTicketsInterval,
@@ -38,58 +40,30 @@ namespace Lib9c.Tests.Model
                 remainingTickets,
                 eventDungeonInfo.RemainingTickets);
             Assert.Equal(
+                numberOfTicketPurchases,
+                eventDungeonInfo.NumberOfTicketPurchases);
+            Assert.Equal(
                 clearedStageId,
                 eventDungeonInfo.ClearedStageId);
         }
 
         [Theory]
-        [InlineData(-1, 0, 0)]
-        [InlineData(0, -1, 0)]
-        [InlineData(0, 0, -1)]
-        [InlineData(int.MinValue, int.MinValue, int.MinValue)]
+        [InlineData(-1, 0, 0, 0)]
+        [InlineData(0, -1, 0, 0)]
+        [InlineData(0, 0, -1, 0)]
+        [InlineData(0, 0, 0, -1)]
+        [InlineData(int.MinValue, int.MinValue, int.MinValue, int.MinValue)]
         public void Constructor_Throw_ArgumentException(
             int resetTicketsInterval,
             int remainingTickets,
+            int numberOfTicketPurchases,
             int clearedStageId) =>
             Assert.Throws<ArgumentException>(() =>
                 new EventDungeonInfo(
                     resetTicketsInterval,
                     remainingTickets,
+                    numberOfTicketPurchases,
                     clearedStageId));
-
-        [Theory]
-        [InlineData(-1, 0)]
-        [InlineData(0, 0)]
-        [InlineData(0, -1)]
-        [InlineData(int.MinValue, int.MinValue)]
-        public void ResetTickets_Throw_ArgumentException(
-            int resetTicketsInterval,
-            int tickets)
-        {
-            var eventDungeonInfo = new EventDungeonInfo();
-            Assert.Throws<ArgumentException>(() =>
-                eventDungeonInfo.ResetTickets(resetTicketsInterval, tickets));
-        }
-
-        [Theory]
-        [InlineData(int.MinValue)]
-        [InlineData(-1)]
-        public void HasTickets_Throw_ArgumentException(int tickets)
-        {
-            var eventDungeonInfo = new EventDungeonInfo();
-            Assert.Throws<ArgumentException>(() =>
-                eventDungeonInfo.HasTickets(tickets));
-        }
-
-        [Theory]
-        [InlineData(int.MinValue)]
-        [InlineData(-1)]
-        public void TryUseTickets_Throw_ArgumentException(int tickets)
-        {
-            var eventDungeonInfo = new EventDungeonInfo();
-            Assert.Throws<ArgumentException>(() =>
-                eventDungeonInfo.TryUseTickets(tickets));
-        }
 
         [Theory]
         [InlineData(1)]
@@ -133,6 +107,78 @@ namespace Lib9c.Tests.Model
             eventDungeonInfo.ResetTickets(2, tickets);
             Assert.True(eventDungeonInfo.TryUseTickets(tickets));
             Assert.False(eventDungeonInfo.TryUseTickets(1));
+        }
+
+        [Theory]
+        [InlineData(-1, 0)]
+        [InlineData(0, 0)]
+        [InlineData(0, -1)]
+        [InlineData(int.MinValue, int.MinValue)]
+        public void ResetTickets_Throw_ArgumentException(
+            int resetTicketsInterval,
+            int tickets)
+        {
+            var eventDungeonInfo = new EventDungeonInfo();
+            Assert.Throws<ArgumentException>(() =>
+                eventDungeonInfo.ResetTickets(resetTicketsInterval, tickets));
+        }
+
+        [Theory]
+        [InlineData(int.MinValue)]
+        [InlineData(-1)]
+        public void HasTickets_Throw_ArgumentException(int tickets)
+        {
+            var eventDungeonInfo = new EventDungeonInfo();
+            Assert.Throws<ArgumentException>(() =>
+                eventDungeonInfo.HasTickets(tickets));
+        }
+
+        [Theory]
+        [InlineData(int.MinValue)]
+        [InlineData(-1)]
+        public void TryUseTickets_Throw_ArgumentException(int tickets)
+        {
+            var eventDungeonInfo = new EventDungeonInfo();
+            Assert.Throws<ArgumentException>(() =>
+                eventDungeonInfo.TryUseTickets(tickets));
+        }
+
+        [Theory]
+        [InlineData(0, 1)]
+        [InlineData(0, 10)]
+        [InlineData(int.MaxValue - 1, 1)]
+        public void IncreaseNumberOfTicketPurchases(
+            int initialNumberOfTicketPurchases,
+            int numberOfIncrease)
+        {
+            var eventDungeonInfo = new EventDungeonInfo(
+                numberOfTicketPurchases: initialNumberOfTicketPurchases);
+            for (var i = 0; i < numberOfIncrease; i++)
+            {
+                eventDungeonInfo.IncreaseNumberOfTicketPurchases();
+            }
+
+            Assert.Equal(
+                initialNumberOfTicketPurchases + numberOfIncrease,
+                eventDungeonInfo.NumberOfTicketPurchases);
+        }
+
+        [Theory]
+        [InlineData(int.MaxValue, 1)]
+        [InlineData(int.MaxValue - 10, 11)]
+        public void IncreaseNumberOfTicketPurchases_Throw_InvalidOperationException(
+            int initialNumberOfTicketPurchases,
+            int numberOfIncrease)
+        {
+            var eventDungeonInfo = new EventDungeonInfo(
+                numberOfTicketPurchases: initialNumberOfTicketPurchases);
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                for (var i = 0; i < numberOfIncrease; i++)
+                {
+                    eventDungeonInfo.IncreaseNumberOfTicketPurchases();
+                }
+            });
         }
 
         [Theory]
