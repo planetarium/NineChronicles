@@ -15,6 +15,8 @@ namespace Nekoyume.TableData.Event
             public long DungeonEndBlockIndex { get; private set; }
             public int DungeonTicketsMax { get; private set; }
             public int DungeonTicketsResetIntervalBlockRange { get; private set; }
+            public int DungeonTicketPrice { get; private set; }
+            public int DungeonTicketAdditionalPrice { get; private set; }
             public int DungeonExpSeedValue { get; private set; }
             public long RecipeEndBlockIndex { get; private set; }
 
@@ -25,8 +27,10 @@ namespace Nekoyume.TableData.Event
                 DungeonEndBlockIndex = ParseLong(fields[2], 0L);
                 DungeonTicketsMax = ParseInt(fields[3], 0);
                 DungeonTicketsResetIntervalBlockRange = ParseInt(fields[4], 0);
-                DungeonExpSeedValue = ParseInt(fields[5], 0);
-                RecipeEndBlockIndex = ParseLong(fields[6], 0L);
+                DungeonTicketPrice = ParseInt(fields[5], 0);
+                DungeonTicketAdditionalPrice = ParseInt(fields[6], 0);
+                DungeonExpSeedValue = ParseInt(fields[7], 0);
+                RecipeEndBlockIndex = ParseLong(fields[8], 0L);
             }
         }
 
