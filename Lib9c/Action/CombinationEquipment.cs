@@ -6,11 +6,8 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Assets;
-using Nekoyume.Arena;
 using Nekoyume.Extensions;
 using Nekoyume.Helper;
-using Nekoyume.Model.Arena;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
@@ -42,6 +39,10 @@ namespace Nekoyume.Action
         public int? subRecipeId;
         public const string PayByCrystalKey = "p";
         public bool payByCrystal;
+        public const string UseHammerPointKey = "h";
+        public bool useHammerPoint;
+        public const int BasicSubRecipeHammerPoint = 1;
+        public const int SpecialSubRecipeHammerPoint = 2;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -51,6 +52,7 @@ namespace Nekoyume.Action
                 [RecipeIdKey] = recipeId.Serialize(),
                 [SubRecipeIdKey] = subRecipeId.Serialize(),
                 [PayByCrystalKey] = payByCrystal.Serialize(),
+                [UseHammerPointKey] = useHammerPoint.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
@@ -61,6 +63,7 @@ namespace Nekoyume.Action
             recipeId = plainValue[RecipeIdKey].ToInteger();
             subRecipeId = plainValue[SubRecipeIdKey].ToNullableInteger();
             payByCrystal = plainValue[PayByCrystalKey].ToBoolean();
+            useHammerPoint = plainValue[UseHammerPointKey].ToBoolean();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -133,10 +136,9 @@ namespace Nekoyume.Action
 
             // Validate Work
             var costActionPoint = 0;
-            var costNCG = 0L;
+            var costNcg = 0L;
             var endBlockIndex = context.BlockIndex;
             var requiredFungibleItems = new Dictionary<int, int>();
-            var costCrystal = 0 * CrystalCalculator.CRYSTAL;
 
             Dictionary<Type, (Address, ISheet)> sheets = states.GetSheets(sheetTypes: new[]
             {
@@ -249,13 +251,13 @@ namespace Nekoyume.Action
                 // ~Validate SubRecipe Material
 
                 costActionPoint += subRecipeRow.RequiredActionPoint;
-                costNCG += subRecipeRow.RequiredGold;
+                costNcg += subRecipeRow.RequiredGold;
                 endBlockIndex += subRecipeRow.RequiredBlockIndex;
             }
             // ~Validate SubRecipeId
 
             costActionPoint += recipeRow.RequiredActionPoint;
-            costNCG += recipeRow.RequiredGold;
+            costNcg += recipeRow.RequiredGold;
             endBlockIndex += recipeRow.RequiredBlockIndex;
             // ~Validate Work
 
@@ -273,103 +275,26 @@ namespace Nekoyume.Action
                     recipeId);
             }
 
-            var useHammerPoint =
-                hammerPointState.HammerPoint >= hammerPointRow.MaxPoint && payByCrystal;
             if (useHammerPoint)
             {
-                var crystalBalance = states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
-                var hammerPointCost = CrystalCalculator.CRYSTAL * hammerPointRow.CRYSTAL;
-                if (crystalBalance < hammerPointCost)
-                {
-                    throw new NotEnoughFungibleAssetValueException($"required {costCrystal}, but balance is {crystalBalance}");
-                }
-
-                hammerPointState.ResetHammerPoint();
-                states = states.TransferAsset(
-                    context.Signer,
-                    Addresses.SuperCraft,
-                    hammerPointCost);
+                states = UseAssetsBySuperCraft(
+                    states,
+                    context,
+                    hammerPointRow,
+                    hammerPointState);
             }
-
-            if (!useHammerPoint)
+            else
             {
-                // Remove Required Materials
-                var inventory = avatarState.inventory;
-                var crystalMaterialSheet = sheets.GetSheet<CrystalMaterialCostSheet>();
-                foreach (var pair in requiredFungibleItems.OrderBy(pair => pair.Key))
-                {
-                    var itemId = pair.Key;
-                    var requiredCount = pair.Value;
-                    if (materialItemSheet.TryGetValue(itemId, out materialRow))
-                    {
-                        int itemCount = inventory.TryGetItem(itemId, out Inventory.Item item)
-                            ? item.count
-                            : 0;
-                        if (itemCount < requiredCount && payByCrystal)
-                        {
-                            costCrystal += CrystalCalculator.CalculateMaterialCost(
-                                itemId,
-                                requiredCount - itemCount,
-                                crystalMaterialSheet);
-                            requiredCount = itemCount;
-                        }
-
-                        if (requiredCount > 0 && !inventory.RemoveFungibleItem(materialRow.ItemId,
-                                context.BlockIndex,
-                                requiredCount))
-                        {
-                            throw new NotEnoughMaterialException(
-                                $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
-                        }
-                    }
-                    else
-                    {
-                        throw new SheetRowNotFoundException(nameof(MaterialItemSheet), itemId);
-                    }
-                }
-                // ~Remove Required Materials
-
-                if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
-                {
-                    var crystalFluctuationSheet = sheets.GetSheet<CrystalFluctuationSheet>();
-                    var row = crystalFluctuationSheet.Values
-                        .First(r => r.Type == CrystalFluctuationSheet.ServiceType.Combination);
-                    var (dailyCostState, weeklyCostState, _, _) =
-                        states.GetCrystalCostStates(context.BlockIndex, row.BlockInterval);
-                    // 1x fixed crystal cost.
-                    costCrystal = CrystalCalculator.CalculateCombinationCost(costCrystal, row: row,
-                        prevWeeklyCostState: null, beforePrevWeeklyCostState: null);
-                    // Update Daily Formula.
-                    dailyCostState.Count++;
-                    dailyCostState.CRYSTAL += costCrystal;
-                    // Update Weekly Formula.
-                    weeklyCostState.Count++;
-                    weeklyCostState.CRYSTAL += costCrystal;
-
-                    var crystalBalance =
-                        states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
-                    if (costCrystal > crystalBalance)
-                    {
-                        throw new NotEnoughFungibleAssetValueException(
-                            $"required {costCrystal}, but balance is {crystalBalance}");
-                    }
-
-                    states = states
-                        .SetState(dailyCostState.Address, dailyCostState.Serialize())
-                        .SetState(weeklyCostState.Address, weeklyCostState.Serialize())
-                        .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
-                }
-
-                int gainHammerPoint;
-                if (!subRecipeId.HasValue || recipeRow.SubRecipeIds[0] == subRecipeId.Value)
-                {
-                    gainHammerPoint = 1;
-                }
-                else
-                {
-                    gainHammerPoint = 2;
-                }
-                hammerPointState.AddHammerPoint(gainHammerPoint, sheets.GetSheet<CrystalHammerPointSheet>());
+                states = UseAssetsByNormalCombination(
+                    states,
+                    context,
+                    avatarState,
+                    hammerPointState,
+                    sheets,
+                    materialItemSheet,
+                    requiredFungibleItems,
+                    recipeRow,
+                    addressesHex);
             }
 
             // Subtract Required ActionPoint
@@ -387,7 +312,7 @@ namespace Nekoyume.Action
             // ~Subtract Required ActionPoint
 
             // Transfer Required NCG
-            if (costNCG > 0L)
+            if (costNcg > 0L)
             {
                 var arenaSheet = states.GetSheet<ArenaSheet>();
                 var arenaData = arenaSheet.GetRoundByBlockIndex(context.BlockIndex);
@@ -396,7 +321,7 @@ namespace Nekoyume.Action
                 states = states.TransferAsset(
                     context.Signer,
                     feeStoreAddress,
-                    states.GetGoldCurrency() * costNCG
+                    states.GetGoldCurrency() * costNcg
                 );
             }
             // ~Transfer Required NCG
@@ -462,7 +387,7 @@ namespace Nekoyume.Action
             {
                 id = mailId,
                 actionPoint = costActionPoint,
-                gold = costNCG,
+                gold = costNcg,
                 materials = requiredFungibleItems.ToDictionary(
                     e => ItemFactory.CreateMaterial(materialItemSheet, e.Key),
                     e => e.Value),
@@ -490,6 +415,117 @@ namespace Nekoyume.Action
                 .SetState(slotAddress, slotState.Serialize())
                 .SetState(hammerPointAddress,hammerPointState.Serialize())
                 .SetState(context.Signer, agentState.Serialize());
+        }
+
+        private IAccountStateDelta UseAssetsBySuperCraft(
+            IAccountStateDelta states,
+            IActionContext context,
+            CrystalHammerPointSheet.Row row,
+            HammerPointState hammerPointState)
+        {
+            var crystalBalance = states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
+            var hammerPointCost = CrystalCalculator.CRYSTAL * row.CRYSTAL;
+            if (crystalBalance < hammerPointCost)
+            {
+                throw new NotEnoughFungibleAssetValueException($"required {hammerPointCost}, but balance is {crystalBalance}");
+            }
+
+            hammerPointState.ResetHammerPoint();
+            return states.TransferAsset(
+                context.Signer,
+                Addresses.SuperCraft,
+                hammerPointCost);
+        }
+
+        private IAccountStateDelta UseAssetsByNormalCombination(
+            IAccountStateDelta states,
+            IActionContext context,
+            AvatarState avatarState,
+            HammerPointState hammerPointState,
+            Dictionary<Type, (Address, ISheet)> sheets,
+            MaterialItemSheet materialItemSheet,
+            Dictionary<int, int> requiredFungibleItems,
+            EquipmentItemRecipeSheet.Row recipeRow,
+            string addressesHex)
+        {
+            // Remove Required Materials
+                var inventory = avatarState.inventory;
+                var crystalMaterialSheet = sheets.GetSheet<CrystalMaterialCostSheet>();
+                var costCrystal = CrystalCalculator.CRYSTAL * 0;
+                foreach (var pair in requiredFungibleItems.OrderBy(pair => pair.Key))
+                {
+                    var itemId = pair.Key;
+                    var requiredCount = pair.Value;
+                    if (materialItemSheet.TryGetValue(itemId, out var materialRow))
+                    {
+                        int itemCount = inventory.TryGetItem(itemId, out Inventory.Item item)
+                            ? item.count
+                            : 0;
+                        if (itemCount < requiredCount && payByCrystal)
+                        {
+                            costCrystal += CrystalCalculator.CalculateMaterialCost(
+                                itemId,
+                                requiredCount - itemCount,
+                                crystalMaterialSheet);
+                            requiredCount = itemCount;
+                        }
+
+                        if (requiredCount > 0 && !inventory.RemoveFungibleItem(materialRow.ItemId,
+                                context.BlockIndex,
+                                requiredCount))
+                        {
+                            throw new NotEnoughMaterialException(
+                                $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
+                        }
+                    }
+                    else
+                    {
+                        throw new SheetRowNotFoundException(nameof(MaterialItemSheet), itemId);
+                    }
+                }
+                // ~Remove Required Materials
+
+                if (costCrystal > 0 * CrystalCalculator.CRYSTAL)
+                {
+                    var crystalFluctuationSheet = sheets.GetSheet<CrystalFluctuationSheet>();
+                    var row = crystalFluctuationSheet.Values
+                        .First(r => r.Type == CrystalFluctuationSheet.ServiceType.Combination);
+                    var (dailyCostState, weeklyCostState, _, _) =
+                        states.GetCrystalCostStates(context.BlockIndex, row.BlockInterval);
+                    // 1x fixed crystal cost.
+                    costCrystal = CrystalCalculator.CalculateCombinationCost(
+                        costCrystal,
+                        row: row,
+                        prevWeeklyCostState: null,
+                        beforePrevWeeklyCostState: null);
+                    // Update Daily Formula.
+                    dailyCostState.Count++;
+                    dailyCostState.CRYSTAL += costCrystal;
+                    // Update Weekly Formula.
+                    weeklyCostState.Count++;
+                    weeklyCostState.CRYSTAL += costCrystal;
+
+                    var crystalBalance =
+                        states.GetBalance(context.Signer, CrystalCalculator.CRYSTAL);
+                    if (costCrystal > crystalBalance)
+                    {
+                        throw new NotEnoughFungibleAssetValueException(
+                            $"required {costCrystal}, but balance is {crystalBalance}");
+                    }
+
+                    states = states
+                        .SetState(dailyCostState.Address, dailyCostState.Serialize())
+                        .SetState(weeklyCostState.Address, weeklyCostState.Serialize())
+                        .TransferAsset(context.Signer, Addresses.MaterialCost, costCrystal);
+                }
+
+                var isBasicSubRecipe = !subRecipeId.HasValue ||
+                                       recipeRow.SubRecipeIds[0] == subRecipeId.Value;
+
+                hammerPointState.AddHammerPoint(
+                    isBasicSubRecipe ? BasicSubRecipeHammerPoint : SpecialSubRecipeHammerPoint,
+                    sheets.GetSheet<CrystalHammerPointSheet>());
+                return states;
         }
 
         public static void AddAndUnlockOption(
