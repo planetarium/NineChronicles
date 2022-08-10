@@ -57,6 +57,10 @@ namespace Nekoyume.Action
                 typeof(BuffSheet),
                 typeof(CharacterLevelSheet),
                 typeof(EquipmentItemSetEffectSheet),
+                typeof(ItemRequirementSheet),
+                typeof(EquipmentItemRecipeSheet),
+                typeof(EquipmentItemSubRecipeSheetV2),
+                typeof(EquipmentItemOptionSheet),
                 typeof(WorldBossCharacterSheet),
                 typeof(WorldBossListSheet),
                 typeof(WorldBossGlobalHpSheet),
@@ -111,9 +115,9 @@ namespace Nekoyume.Action
             }
 
             // Validate equipment, costume.
-            avatarState.ValidateEquipmentsV2(EquipmentIds, context.BlockIndex);
-            avatarState.ValidateConsumable(FoodIds, context.BlockIndex);
-            avatarState.ValidateCostume(CostumeIds);
+            var equipmentList = avatarState.ValidateEquipmentsV2(EquipmentIds, context.BlockIndex);
+            var foodIds = avatarState.ValidateConsumable(FoodIds, context.BlockIndex);
+            var costumeIds = avatarState.ValidateCostume(CostumeIds);
             int previousHighScore = raiderState.HighScore;
             WorldBossState bossState;
             WorldBossGlobalHpSheet hpSheet = sheets.GetSheet<WorldBossGlobalHpSheet>();
@@ -125,6 +129,18 @@ namespace Nekoyume.Action
             {
                 bossState = new WorldBossState(row, hpSheet[1]);
             }
+
+            var addressesHex = $"[{context.Signer.ToHex()}, {AvatarAddress.ToHex()}]";
+            var items = EquipmentIds.Concat(CostumeIds);
+            avatarState.EquipItems(items);
+            avatarState.ValidateItemRequirement(
+                costumeIds.Concat(foodIds).ToList(),
+                equipmentList,
+                sheets.GetSheet<ItemRequirementSheet>(),
+                sheets.GetSheet<EquipmentItemRecipeSheet>(),
+                sheets.GetSheet<EquipmentItemSubRecipeSheetV2>(),
+                sheets.GetSheet<EquipmentItemOptionSheet>(),
+                addressesHex);
 
             // Simulate.
             var simulator = new RaidSimulator(
