@@ -36,6 +36,7 @@ namespace Nekoyume.Action
         public List<Guid> Equipments;
         public List<Guid> Costumes;
         public List<Guid> Foods;
+        public bool BuyTicketIfNeeded;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
@@ -57,7 +58,8 @@ namespace Nekoyume.Action
                     .Add(new Bencodex.Types.List(
                         Foods
                             .OrderBy(e => e)
-                            .Select(e => e.Serialize())));
+                            .Select(e => e.Serialize())))
+                    .Add(BuyTicketIfNeeded.Serialize());
 
                 return new Dictionary<string, IValue>
                 {
@@ -79,9 +81,9 @@ namespace Nekoyume.Action
                 throw new ArgumentException("'l' must be a bencodex list");
             }
 
-            if (list.Count < 7)
+            if (list.Count < 8)
             {
-                throw new ArgumentException("'l' must contain at least 7 items");
+                throw new ArgumentException("'l' must contain at least 8 items");
             }
 
             AvatarAddress = list[0].ToAddress();
@@ -91,6 +93,7 @@ namespace Nekoyume.Action
             Equipments = ((List)list[4]).ToList(StateExtensions.ToGuid);
             Costumes = ((List)list[5]).ToList(StateExtensions.ToGuid);
             Foods = ((List)list[6]).ToList(StateExtensions.ToGuid);
+            BuyTicketIfNeeded = list[7].ToBoolean();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -229,11 +232,29 @@ namespace Nekoyume.Action
 
             if (!eventDungeonInfo.TryUseTickets(PlayCount))
             {
-                throw new NotEnoughEventDungeonTicketsException(
-                    ActionTypeText,
-                    addressesHex,
-                    PlayCount,
-                    eventDungeonInfo.RemainingTickets);
+                if (!BuyTicketIfNeeded)
+                {
+                    throw new NotEnoughEventDungeonTicketsException(
+                        ActionTypeText,
+                        addressesHex,
+                        PlayCount,
+                        eventDungeonInfo.RemainingTickets);
+                }
+
+                var currency = states.GetGoldCurrency();
+                var cost = scheduleRow.GetDungeonTicketCost(
+                    eventDungeonInfo.NumberOfTicketPurchases);
+                if (cost > 0L)
+                {
+                    states = states.TransferAsset(
+                        context.Signer,
+                        Addresses.EventDungeon,
+                        cost * currency);
+                }
+
+                // NOTE: The number of ticket purchases should be increased
+                //       even if [`cost`] is 0.
+                eventDungeonInfo.IncreaseNumberOfTicketPurchases();
             }
 
             if (EventDungeonStageId != dungeonRow.StageBegin &&
