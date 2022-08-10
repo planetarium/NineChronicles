@@ -261,22 +261,37 @@ namespace Nekoyume.Action
             endBlockIndex += recipeRow.RequiredBlockIndex;
             // ~Validate Work
 
-            var hammerPointAddress = Addresses.GetHammerPointStateAddress(avatarAddress, recipeId);
-            var hammerPointState = states.TryGetState(hammerPointAddress, out List serialized)
-                ? new HammerPointState(hammerPointAddress, serialized)
-                : new HammerPointState(hammerPointAddress, recipeId);
-            // Validate HammerPointSheet by recipeId
-            var hammerPointSheet = sheets.GetSheet<CrystalHammerPointSheet>();
-            if (!hammerPointSheet.TryGetValue(recipeId, out var hammerPointRow))
+            var existHammerPointSheet =
+                sheets.TryGetSheet(out CrystalHammerPointSheet hammerPointSheet);
+            var hammerPointAddress =
+                Addresses.GetHammerPointStateAddress(avatarAddress, recipeId);
+            var hammerPointState = new HammerPointState(hammerPointAddress, recipeId);
+            CrystalHammerPointSheet.Row hammerPointRow = null;
+            if (existHammerPointSheet)
             {
-                throw new SheetRowNotFoundException(
-                    addressesHex,
-                    nameof(CrystalHammerPointSheet),
-                    recipeId);
+                if (states.TryGetState(hammerPointAddress, out List serialized))
+                {
+                    hammerPointState =
+                        new HammerPointState(hammerPointAddress, serialized);
+                }
+
+                // Validate HammerPointSheet by recipeId
+                if (!hammerPointSheet.TryGetValue(recipeId, out hammerPointRow))
+                {
+                    throw new SheetRowNotFoundException(
+                        addressesHex,
+                        nameof(CrystalHammerPointSheet),
+                        recipeId);
+                }
             }
 
             if (useHammerPoint)
             {
+                if (!existHammerPointSheet)
+                {
+                    throw new FailedLoadSheetException(typeof(CrystalHammerPointSheet));
+                }
+
                 states = UseAssetsBySuperCraft(
                     states,
                     context,
@@ -292,8 +307,9 @@ namespace Nekoyume.Action
                     hammerPointState,
                     sheets,
                     materialItemSheet,
-                    requiredFungibleItems,
+                    hammerPointSheet,
                     recipeRow,
+                    requiredFungibleItems,
                     addressesHex);
             }
 
@@ -444,8 +460,9 @@ namespace Nekoyume.Action
             HammerPointState hammerPointState,
             Dictionary<Type, (Address, ISheet)> sheets,
             MaterialItemSheet materialItemSheet,
-            Dictionary<int, int> requiredFungibleItems,
+            CrystalHammerPointSheet hammerPointSheet,
             EquipmentItemRecipeSheet.Row recipeRow,
+            Dictionary<int, int> requiredFungibleItems,
             string addressesHex)
         {
             // Remove Required Materials
@@ -524,7 +541,7 @@ namespace Nekoyume.Action
 
                 hammerPointState.AddHammerPoint(
                     isBasicSubRecipe ? BasicSubRecipeHammerPoint : SpecialSubRecipeHammerPoint,
-                    sheets.GetSheet<CrystalHammerPointSheet>());
+                    hammerPointSheet);
                 return states;
         }
 
