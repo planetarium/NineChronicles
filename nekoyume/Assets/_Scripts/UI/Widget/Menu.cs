@@ -191,6 +191,17 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (RxProps.EventDungeonInfo.Value.GetRemainingTicketsConsiderReset(
+                    RxProps.EventScheduleRowForDungeon.Value,
+                    Game.Game.instance.Agent.BlockIndex) == 0)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("ERROR_NOT_ENOUGH_EVENT_DUNGEON_TICKETS"),
+                    NotificationCell.NotificationType.Information);
+                return;
+            }
+
             if (!TableSheets.Instance.EventDungeonSheet
                     .TryGetRowByEventDungeonStageId(
                         eventDungeonStageId,
