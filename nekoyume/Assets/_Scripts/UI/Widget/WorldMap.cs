@@ -123,7 +123,7 @@ namespace Nekoyume.UI
             _eventDungeonButton.Show();
             _eventDungeonButton.OnClickSubject.Subscribe(_ =>
             {
-                if (RxProps.EventDungeonRow is null)
+                if (RxProps.EventScheduleRowForDungeon.Value is null)
                 {
                     NotificationSystem.Push(
                         MailType.System,

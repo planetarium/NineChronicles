@@ -182,6 +182,15 @@ namespace Nekoyume.UI
 
         private static void EventDungeonBattle(int eventDungeonStageId)
         {
+            if (RxProps.EventScheduleRowForDungeon.Value is null)
+            {
+                NotificationSystem.Push(
+                    MailType.System,
+                    L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                    NotificationCell.NotificationType.Information);
+                return;
+            }
+
             if (!TableSheets.Instance.EventDungeonSheet
                     .TryGetRowByEventDungeonStageId(
                         eventDungeonStageId,
@@ -201,15 +210,17 @@ namespace Nekoyume.UI
             ActionCamera.instance.ChaseX(player.transform);
             ActionRenderHandler.Instance.Pending = true;
 
+            var scheduleId = RxProps.EventScheduleRowForDungeon.Value.Id;
             Game.Game.instance.ActionManager
                 .EventDungeonBattle(
-                    RxProps.EventScheduleRowForDungeon.Value.Id,
+                    scheduleId,
                     eventDungeonRow.Id,
                     eventDungeonStageId,
                     player)
                 .Subscribe();
             var props = new Value
             {
+                ["EventScheduleID"] = scheduleId,
                 ["EventDungeonStageID"] = eventDungeonStageId,
             };
             Analyzer.Instance.Track("Unity/Click Guided Quest Enter Event Dungeon", props);
