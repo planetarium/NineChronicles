@@ -36,6 +36,54 @@ namespace Lib9c.Tests.Extensions
                 eventDungeonId.ToEventScheduleId());
 
         [Theory]
+        [InlineData(0, 0, 0, 0L)]
+        [InlineData(0, 0, 1, 0L)]
+        [InlineData(0, 0, 10, 0L)]
+        [InlineData(int.MaxValue, 0, 0, int.MaxValue)]
+        [InlineData(int.MaxValue, 0, 1, int.MaxValue)]
+        [InlineData(int.MaxValue, 0, 10, int.MaxValue)]
+        [InlineData(0, int.MaxValue, 0, 0)]
+        [InlineData(0, int.MaxValue, 1, int.MaxValue)]
+        [InlineData(0, int.MaxValue, 10, int.MaxValue * 10L)]
+        [InlineData(int.MaxValue, int.MaxValue, 0, int.MaxValue)]
+        [InlineData(int.MaxValue, int.MaxValue, 1, int.MaxValue * 2L)]
+        [InlineData(int.MaxValue, int.MaxValue, 10, int.MaxValue * 11L)]
+        public void GetDungeonTicketCost(
+            int dungeonTicketPrice,
+            int dungeonTicketAdditionalPrice,
+            int numberOfTicketPurchases,
+            long expectedCost)
+        {
+            var scheduleRow = new EventScheduleSheet.Row();
+            scheduleRow.Set(new[]
+            {
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                dungeonTicketPrice.ToString(),
+                dungeonTicketAdditionalPrice.ToString(),
+                "0",
+                "0",
+            });
+            var cost = scheduleRow.GetDungeonTicketCost(numberOfTicketPurchases);
+            Assert.Equal(expectedCost, cost);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(int.MinValue)]
+        public void GetDungeonTicketCost_Throw_ArgumentException(
+            int numberOfTicketPurchases) =>
+            Assert.Throws<ArgumentException>(() =>
+                GetDungeonTicketCost(
+                    default,
+                    default,
+                    numberOfTicketPurchases,
+                    default));
+
+        [Theory]
         [InlineData(1001, 1, 1, 1, 1)]
         [InlineData(1001, 1, 10, 1, 1)]
         [InlineData(1001, 1, 11, 1, 2)]
@@ -51,6 +99,8 @@ namespace Lib9c.Tests.Extensions
             scheduleRow.Set(new[]
             {
                 scheduleId.ToString(),
+                "0",
+                "0",
                 "0",
                 "0",
                 "0",
