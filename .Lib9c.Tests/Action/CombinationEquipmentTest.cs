@@ -280,6 +280,7 @@
                 recipeId = recipeId,
                 subRecipeId = subRecipeId,
                 payByCrystal = payByCrystal,
+                useHammerPoint = false,
             };
 
             if (exc is null)
@@ -440,7 +441,8 @@
                 slotIndex = 0,
                 recipeId = recipeId,
                 subRecipeId = subRecipeId,
-                payByCrystal = doSuperCraft,
+                payByCrystal = false,
+                useHammerPoint = doSuperCraft,
             };
             if (exc is null)
             {
