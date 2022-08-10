@@ -80,7 +80,14 @@ namespace Nekoyume.Action
             var arenaSheetState = states.GetState(arenaSheetAddress);
             if (arenaSheetState != null)
             {
-                throw new ActionObsoletedException(nameof(HackAndSlash13));
+                // exception handling for v100240.
+                if (context.BlockIndex > 4374125 && context.BlockIndex < 4374158)
+                {
+                }
+                else
+                {
+                    throw new ActionObsoletedException(nameof(HackAndSlash13));
+                }
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
