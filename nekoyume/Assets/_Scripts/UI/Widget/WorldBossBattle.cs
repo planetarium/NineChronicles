@@ -17,6 +17,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private ComboText comboText;
 
+        [SerializeField]
+        private RaidProgressBar progressBar;
+
         protected override void Awake()
         {
             base.Awake();
@@ -30,12 +33,24 @@ namespace Nekoyume.UI
             comboText.comboMax = AttackCountHelper.GetCountMax(player.Level);
             comboText.Close();
             playerStatus.SetData(player);
+            progressBar.Show();
             base.Show(ignoreShowAnimation);
+        }
+
+        public void UpdateScore(int score)
+        {
+            progressBar.UpdateScore(score);
+        }
+
+        public void OnWaveCompleted()
+        {
+            progressBar.CompleteWave();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             bossStatus.Close(ignoreCloseAnimation);
+            progressBar.Close();
             base.Close(ignoreCloseAnimation);
         }
 

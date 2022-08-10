@@ -48,6 +48,18 @@ namespace Nekoyume.Game.Character
             _worldBossBattle.UpdateStatus(_currentHp, _characterModel.HP, _characterModel.Buffs);
         }
 
+        protected override IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
+        {
+            var dmg = info.Effect;
+            if (_currentHp - dmg < 0)
+            {
+                var exceeded = dmg - _currentHp;
+                dmg -= exceeded;
+            }
+            Game.instance.RaidStage.AddScore(dmg);
+            yield return base.CoProcessDamage(info, isConsiderElementalType);
+        }
+
         public override IEnumerator CoSpecialAttack(IReadOnlyList<Skill.SkillInfo> skillInfos)
         {
             if (skillInfos is null || skillInfos.Count == 0)

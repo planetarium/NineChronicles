@@ -571,7 +571,7 @@ namespace Nekoyume.Game.Character
             VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 
-        private IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
+        protected virtual IEnumerator CoProcessDamage(Skill.SkillInfo info, bool isConsiderElementalType)
         {
             var dmg = info.Effect;
 

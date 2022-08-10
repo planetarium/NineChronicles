@@ -38,6 +38,7 @@ namespace Nekoyume.Game
         private Coroutine _battleCoroutine;
         private int _waveTurn;
         private bool _isPlaying;
+        private int _currentScore;
 
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
@@ -149,6 +150,7 @@ namespace Nekoyume.Game
             Widget.Find<LoadingScreen>().Close();
             Game.instance.IsInWorld = true;
             _waveTurn = 1;
+            _currentScore = 0;
 
             yield return StartCoroutine(container.CoPlayAppearCutscene());
             _boss.Animator.Idle();
@@ -344,14 +346,18 @@ namespace Nekoyume.Game
             Character.RaidCharacter raidCharacter =
                 character.Id == _player.Id ? _player : _boss;
             raidCharacter.Set(character);
-            yield return raidCharacter.TargetAction;
+            yield return _player.CurrentAction;
+            yield return _boss.CurrentAction;
 
             if (raidCharacter is Character.RaidPlayer player)
             {
                 yield return StartCoroutine(player.CoDie());
             }
-            else if (raidCharacter is Character.RaidBoss)
+            else if (raidCharacter is Character.RaidBoss boss)
             {
+                Widget.Find<WorldBossBattle>().OnWaveCompleted();
+                yield return new WaitUntil(() => boss.Animator.IsIdle());
+
                 if (waveIndex < 4)
                 {
                     yield return StartCoroutine(container.CoPlayRunAwayCutscene(waveIndex));
@@ -363,6 +369,12 @@ namespace Nekoyume.Game
                     yield return StartCoroutine(container.CoPlayFallDownCutscene());
                 }
             }
+        }
+
+        public void AddScore(int score)
+        {
+            _currentScore += score;
+            Widget.Find<WorldBossBattle>().UpdateScore(_currentScore);
         }
 
         private void CreateContainer(int id)
