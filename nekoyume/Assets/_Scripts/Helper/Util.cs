@@ -35,30 +35,34 @@ namespace Nekoyume.Helper
             {
                 sb.Append($"{timeSpan.Days}d");
             }
-
-            if (timeSpan.Hours > 0)
-            {
-                if (timeSpan.Days > 0)
-                {
-                    sb.Append(" ");
-                }
-
-                sb.Append($"{timeSpan.Hours}h");
-            }
-
-            if (timeSpan.Minutes > 0)
+            else
             {
                 if (timeSpan.Hours > 0)
                 {
-                    sb.Append(" ");
+                    if (timeSpan.Days > 0)
+                    {
+                        sb.Append(" ");
+                    }
+
+                    sb.Append($"{timeSpan.Hours}h");
                 }
+                else
+                {
+                    if (timeSpan.Minutes > 0)
+                    {
+                        if (timeSpan.Hours > 0)
+                        {
+                            sb.Append(" ");
+                        }
 
-                sb.Append($"{timeSpan.Minutes}m");
-            }
+                        sb.Append($"{timeSpan.Minutes}m");
+                    }
 
-            if (sb.Length == 0)
-            {
-                sb.Append("1m");
+                    if (sb.Length == 0)
+                    {
+                        sb.Append("1m");
+                    }
+                }
             }
 
             return sb.ToString();
