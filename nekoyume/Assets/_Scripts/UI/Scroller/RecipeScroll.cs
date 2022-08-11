@@ -47,6 +47,9 @@ namespace Nekoyume.UI.Scroller
         }
 
         [SerializeField]
+        private GameObject viewport;
+
+        [SerializeField]
         private List<EquipmentCategoryToggle> equipmentCategoryToggles;
 
         [SerializeField]
