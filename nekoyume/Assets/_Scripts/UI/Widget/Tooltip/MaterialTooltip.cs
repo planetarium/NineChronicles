@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Amazon.CloudWatchLogs.Model.Internal.MarshallTransformations;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -92,11 +93,11 @@ namespace Nekoyume.UI
                 target);
         }
 
-        private static List<T> GetStageByOrder<T>(
-            IOrderedEnumerable<T> rows,
-            int id) where T : StageSheet.Row
+        private static List<StageSheet.Row> GetStageByOrder(
+            IEnumerable<StageSheet.Row> rows,
+            int id)
         {
-            var result = new List<T>();
+            var result = new List<StageSheet.Row>();
             var rowList = rows.Where(s =>
             {
                 if (States.Instance.CurrentAvatarState.worldInformation
@@ -150,6 +151,64 @@ namespace Nekoyume.UI
             return result;
         }
 
+        private static List<EventDungeonStageSheet.Row> GetEventStageByOrder(
+            IEnumerable<EventDungeonStageSheet.Row> rows,
+            int id)
+        {
+            var result = new List<EventDungeonStageSheet.Row>();
+            var rowList = rows.Where(s =>
+            {
+                if (RxProps.EventDungeonInfo.Value is not null)
+                {
+                    return s.Id <= RxProps.EventDungeonInfo.Value?.ClearedStageId;
+                }
+
+                return true;
+            }).ToList();
+
+            if (rowList.Any())
+            {
+                rowList = rowList.OrderByDescending(sheet => sheet.Key).ToList();
+                var row = rowList.FirstOrDefault();
+                if (row != null)
+                {
+                    result.Add(row);
+                    rowList.Remove(row);
+                }
+
+                var secondRow = rowList
+                    .OrderByDescending(r =>
+                        r.Rewards.Find(reward => reward.ItemId == id).Ratio)
+                    .ThenByDescending(sheet => sheet.Key)
+                    .FirstOrDefault();
+                if (secondRow != null)
+                {
+                    result.Add(secondRow);
+                }
+            }
+
+            rowList = rows.ToList();
+            var rowCount = rowList.Count;
+            for (int i = rowCount - 1; i >= 0; i--)
+            {
+                if (result.Count >= 2)
+                {
+                    break;
+                }
+
+                if (TableSheets.Instance.EventDungeonSheet.TryGetRowByEventDungeonStageId(
+                        rowList[i].Id, out _))
+                {
+                    if (!result.Contains(rowList[i]))
+                    {
+                        result.Add(rowList[i]);
+                    }
+                }
+            }
+
+            return result;
+        }
+
         private void SetAcquisitionPlaceButtons(ItemBase itemBase)
         {
             acquisitionPlaceButtons.ForEach(button => button.gameObject.SetActive(false));
@@ -162,7 +221,8 @@ namespace Nekoyume.UI
                 case ItemSubType.NormalMaterial:
                     var stageRowList = TableSheets.Instance.StageSheet
                         .GetStagesContainsReward(itemBase.Id)
-                        .OrderByDescending(s => s.Key);
+                        .OrderByDescending(s => s.Key)
+                        .ToList();
                     var stages = GetStageByOrder(stageRowList, itemBase.Id);
                     // Acquisition place is stage...
                     if (stages.Any())
@@ -186,11 +246,25 @@ namespace Nekoyume.UI
                     break;
                 case ItemSubType.FoodMaterial:
                     var eventDungeonRows = TableSheets.Instance.EventDungeonStageSheet.GetStagesContainsReward(itemBase.Id)
-                        .OrderByDescending(s => s.Key);
-                    var eventStages = GetStageByOrder(eventDungeonRows, itemBase.Id);
+                        .OrderByDescending(s => s.Key)
+                        .ToList();
+                    var eventStages = GetEventStageByOrder(eventDungeonRows, itemBase.Id);
                     if (eventStages.Any())
                     {
-                        // use ToEventScheduleId
+                        acquisitionPlaceList.AddRange(eventStages.Select(stage =>
+                        {
+                            if (TableSheets.Instance.EventDungeonSheet.TryGetRowByEventDungeonStageId(stage.Id,
+                                    out var row))
+                            {
+                                return MakeAcquisitionPlaceModelByType(
+                                    AcquisitionPlaceButton.PlaceType.EventStage,
+                                    itemBase,
+                                    row.Id,
+                                    stage);
+                            }
+
+                            return null;
+                        }));
                     }
                     else
                     {
@@ -279,6 +353,33 @@ namespace Nekoyume.UI
         {
             return type switch
             {
+                AcquisitionPlaceButton.PlaceType.EventStage => stageRow is null
+                    ? throw new Exception($"{nameof(stageRow)} is null")
+                    : new AcquisitionPlaceButton.Model(
+                        AcquisitionPlaceButton.PlaceType.EventStage,
+                        () =>
+                        {
+                            CloseWithOtherWidgets();
+                            Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+
+                            var worldMap = Find<WorldMap>();
+                            worldMap.SetWorldInformation(States.Instance.CurrentAvatarState.worldInformation);
+                            worldMap.ShowEventDungeonStage(RxProps.EventDungeonRow, false);
+
+                            Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
+                            Find<HeaderMenuStatic>().Show(true);
+                            Find<BattlePreparation>().Show(
+                                StageType.EventDungeon,
+                                worldMap.SharedViewModel.SelectedWorldId.Value,
+                                stageRow.Id,
+                                $"{RxProps.EventDungeonRow?.GetLocalizedName()} {stageRow.Id}",
+                                true);
+                            Find<HeaderMenuStatic>()
+                                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
+                        },
+                        $"{RxProps.EventDungeonRow.GetLocalizedName()} {stageRow.Id}",
+                        itemBase,
+                        stageRow),
                 AcquisitionPlaceButton.PlaceType.Stage => stageRow is null
                     ? throw new Exception($"{nameof(stageRow)} is null")
                     : new AcquisitionPlaceButton.Model(
