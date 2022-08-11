@@ -55,7 +55,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<WorldBoss>().Show();
+            Find<WorldBoss>().ShowAsync().Forget();
             base.Close(ignoreCloseAnimation);
         }
     }
