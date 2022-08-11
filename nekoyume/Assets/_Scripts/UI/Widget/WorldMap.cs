@@ -303,7 +303,7 @@ namespace Nekoyume.UI
             Find<HeaderMenuStatic>().Show();
         }
 
-        private void ShowEventDungeonStage(
+        public void ShowEventDungeonStage(
             EventDungeonSheet.Row eventDungeonRow,
             bool showWorld,
             bool callByShow = false)
@@ -317,6 +317,7 @@ namespace Nekoyume.UI
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             }
 
+            Show(true);
             var openedStageId = RxProps.EventDungeonInfo?.Value is null
                 ? RxProps.EventDungeonRow.StageBegin
                 : math.min(
