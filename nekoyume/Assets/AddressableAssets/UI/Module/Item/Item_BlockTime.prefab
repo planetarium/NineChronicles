@@ -273,13 +273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a094161211d3f934cbab67e86077499c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeBlockType: 0
-  gauge:
-    Block: {fileID: 7640735023613914226}
-    Time: {fileID: 0}
-  top:
-    Block: {fileID: 6827555725119335388}
-    Time: {fileID: 0}
+  content: {fileID: 7640735023613914226}
 --- !u!1 &7973504000882923426
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,7 +493,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 9,000,000(15d)
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: e48df4a96fa819444bc15127b9efe530, type: 2}

@@ -163,7 +163,7 @@ namespace Nekoyume.UI.Module.Lobby
             var range = end - begin;
             var progress = current - begin;
             timeImage.fillAmount = 1f - (float)progress / range;
-            timeBlock.SetTimeBlock(Util.GetBlockToTime(end - current), $"{current}/{end}");
+            timeBlock.SetTimeBlock(Util.GetBlockToTime(end - current), $"{current:#,0}/{end:#,0}");
         }
     }
 }
