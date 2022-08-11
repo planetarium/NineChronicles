@@ -245,26 +245,40 @@ namespace Nekoyume.UI
 
                     break;
                 case ItemSubType.FoodMaterial:
-                    var eventDungeonRows = TableSheets.Instance.EventDungeonStageSheet.GetStagesContainsReward(itemBase.Id)
+                    var eventDungeonRows = TableSheets
+                        .Instance
+                        .EventDungeonStageSheet
+                        .GetStagesContainsReward(itemBase.Id)
                         .OrderByDescending(s => s.Key)
                         .ToList();
-                    var eventStages = GetEventStageByOrder(eventDungeonRows, itemBase.Id);
-                    if (eventStages.Any())
+                    if (eventDungeonRows.Any())
                     {
-                        acquisitionPlaceList.AddRange(eventStages.Select(stage =>
+                        var scheduleId = eventDungeonRows.First().Id.ToEventScheduleId();
+                        var scheduleRow = TableSheets.Instance.EventScheduleSheet[scheduleId];
+                        var blockIndex = Game.Game.instance.Agent.BlockIndex;
+                        if (scheduleRow.StartBlockIndex >= blockIndex &&
+                            blockIndex <= scheduleRow.DungeonEndBlockIndex)
                         {
-                            if (TableSheets.Instance.EventDungeonSheet.TryGetRowByEventDungeonStageId(stage.Id,
-                                    out var row))
+                            var eventStages = GetEventStageByOrder(eventDungeonRows, itemBase.Id);
+                            if (eventStages.Any())
                             {
-                                return MakeAcquisitionPlaceModelByType(
-                                    AcquisitionPlaceButton.PlaceType.EventStage,
-                                    itemBase,
-                                    row.Id,
-                                    stage);
-                            }
+                                acquisitionPlaceList.AddRange(eventStages.Select(stage =>
+                                {
+                                    if (TableSheets.Instance.EventDungeonSheet
+                                        .TryGetRowByEventDungeonStageId(stage.Id,
+                                            out var row))
+                                    {
+                                        return MakeAcquisitionPlaceModelByType(
+                                            AcquisitionPlaceButton.PlaceType.EventStage,
+                                            itemBase,
+                                            row.Id,
+                                            stage);
+                                    }
 
-                            return null;
-                        }));
+                                    return null;
+                                }));
+                            }
+                        }
                     }
                     else
                     {
