@@ -269,13 +269,10 @@ namespace Nekoyume.UI.Scroller
                     value))
                 .AddTo(_disposablesAtShow);
             RxProps.EventScheduleRowForRecipe
-                .Subscribe(value =>
-                {
-                    UpdateEventScheduleEntireTime(value);
-                    UpdateEventScheduleRemainingTime(
-                        value,
-                        Game.Game.instance.Agent.BlockIndex);
-                })
+                .Subscribe(UpdateEventScheduleEntireTime)
+                .AddTo(_disposablesAtShow);
+            RxProps.EventRecipeRemainingTimeText
+                .SubscribeTo(eventScheduleTabRemainingTimeText)
                 .AddTo(_disposablesAtShow);
 
             openAllRecipeArea.SetActive(false);
