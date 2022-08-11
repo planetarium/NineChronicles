@@ -6706,6 +6706,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4443314743506514206, guid: e6d7b535158669e49bc77f0431126854,
+        type: 3}
+      propertyPath: m_Hue
+      value: 0.398
+      objectReference: {fileID: 0}
     - target: {fileID: 4918103398479508567, guid: e6d7b535158669e49bc77f0431126854,
         type: 3}
       propertyPath: m_Enabled

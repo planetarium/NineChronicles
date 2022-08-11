@@ -148,7 +148,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void Show(WorldInformation worldInformation)
+        public void Show(WorldInformation worldInformation, bool blockWorldUnlockPopup = false)
         {
             SubscribeAtShow();
 
@@ -159,7 +159,11 @@ namespace Nekoyume.UI
             status.Close(true);
             Show(true);
             HelpTooltip.HelpMe(100002, true);
-            ShowManyWorldUnlockPopup(worldInformation);
+
+            if (!blockWorldUnlockPopup)
+            {
+                ShowManyWorldUnlockPopup(worldInformation);
+            }
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)

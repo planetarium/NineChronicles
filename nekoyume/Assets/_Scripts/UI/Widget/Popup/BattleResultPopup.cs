@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
 using mixpanel;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -177,10 +177,7 @@ namespace Nekoyume.UI
                 }
             }).AddTo(gameObject);
 
-            stagePreparationButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                OnClickStage();
-            }).AddTo(gameObject);
+            stagePreparationButton.OnClickAsObservable().Subscribe(_ => { OnClickStage(); }).AddTo(gameObject);
 
             nextButton.OnClickAsObservable()
                 .Subscribe(_ => StartCoroutine(OnClickNext()))
@@ -317,7 +314,7 @@ namespace Nekoyume.UI
             var stageText = StageInformation.GetStageIdString(
                 SharedModel.StageType,
                 SharedModel.StageID,
-                 true);
+                true);
             worldStageId.text = $"{SharedModel.WorldName}" +
                                 $" {stageText}";
             actionPoint.SetActionPoint(model.ActionPoint);
@@ -372,6 +369,7 @@ namespace Nekoyume.UI
                     {
                         UpdateViewAsDefeat(SharedModel.State);
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -523,9 +521,9 @@ namespace Nekoyume.UI
             {
                 case NextState.GoToMain:
                     SubmitWidget = closeButton.onClick.Invoke;
-                    fullFormat = SharedModel.ActionPointNotEnough ?
-                        L10nManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT") :
-                        L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
+                    fullFormat = SharedModel.ActionPointNotEnough
+                        ? L10nManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT")
+                        : L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
                     break;
                 case NextState.RepeatStage:
                     SubmitWidget = repeatButton.onClick.Invoke;
@@ -556,7 +554,7 @@ namespace Nekoyume.UI
 
             yield return new WaitUntil(() => CanClose);
 
-            var floatTime = (float) limitSeconds;
+            var floatTime = (float)limitSeconds;
             var floatTimeMinusOne = limitSeconds - 1f;
             while (limitSeconds > 0)
             {
@@ -744,6 +742,7 @@ namespace Nekoyume.UI
         {
             StartCoroutine(CoGoToNextMimisbrunnrStageClose(log));
         }
+
         private IEnumerator CoGoToNextMimisbrunnrStageClose(BattleLog log)
         {
             if (Find<Menu>().IsActive())
@@ -807,37 +806,51 @@ namespace Nekoyume.UI
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
-                if (SharedModel.WorldID > 10000)
+                var stageNumber = 0;
+                switch (SharedModel.StageType)
                 {
-                    var viewModel = new WorldMap.ViewModel
-                    {
-                        WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
-                    };
-                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.WorldID);
-                    viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.StageID);
-                    Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SharedModel.WorldID,
-                        out var worldRow);
+                    case StageType.HackAndSlash:
+                        Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
+                        stageNumber = SharedModel.StageID;
+                        break;
 
-                    Find<StageInformation>().Show(viewModel, worldRow, StageType.Mimisbrunnr);
+                    case StageType.Mimisbrunnr:
+                        var viewModel = new WorldMap.ViewModel
+                        {
+                            WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
+                        };
+                        viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.WorldID);
+                        viewModel.SelectedStageId.SetValueAndForceNotify(SharedModel.StageID);
+                        Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SharedModel.WorldID,
+                            out var worldRow);
 
-                    Find<BattlePreparation>().Show(
-                        StageType.Mimisbrunnr,
-                        GameConfig.MimisbrunnrWorldId,
-                        SharedModel.StageID,
-                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID % 10000000}",
-                        true);
+                        Find<StageInformation>().Show(viewModel, worldRow, StageType.Mimisbrunnr);
+                        stageNumber = SharedModel.StageID % 10000000;
+                        break;
+
+                    case StageType.EventDungeon:
+                        if (RxProps.EventDungeonRow is null)
+                        {
+                            NotificationSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                                NotificationCell.NotificationType.Information);
+                            break;
+                        }
+
+                        var worldMap = Find<WorldMap>();
+                        worldMap.Show(States.Instance.CurrentAvatarState.worldInformation, true);
+                        worldMap.ShowEventDungeonStage(RxProps.EventDungeonRow, false);
+                        stageNumber = SharedModel.StageID.ToEventDungeonStageNumber();
+                        break;
                 }
-                else
-                {
-                    Find<WorldMap>().Show(SharedModel.WorldID, SharedModel.StageID, false);
 
-                    Find<BattlePreparation>().Show(
-                        StageType.HackAndSlash,
-                        SharedModel.WorldID,
-                        SharedModel.StageID,
-                        $"{SharedModel.WorldName.ToUpper()} {SharedModel.StageID}",
-                        true);
-                }
+                Find<BattlePreparation>().Show(
+                    SharedModel.StageType,
+                    SharedModel.WorldID,
+                    SharedModel.StageID,
+                    $"{SharedModel.WorldName.ToUpper()} {stageNumber}",
+                    true);
 
                 worldMapLoading.Close(true);
             });
