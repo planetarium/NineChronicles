@@ -38,20 +38,15 @@ namespace Nekoyume.UI
             public List<int> UnlockedWorldIds;
         }
 
-        [SerializeField]
-        private GameObject worldMapRoot = null;
+        [SerializeField] private GameObject worldMapRoot = null;
 
-        [SerializeField]
-        private Button closeButton;
+        [SerializeField] private Button closeButton;
 
-        [SerializeField]
-        private WorldButton[] _worldButtons;
+        [SerializeField] private WorldButton[] _worldButtons;
 
-        [SerializeField]
-        private WorldButton _eventDungeonButton;
+        [SerializeField] private WorldButton _eventDungeonButton;
 
-        [SerializeField]
-        private TextMeshProUGUI _eventDungeonTicketsText;
+        [SerializeField] private TextMeshProUGUI _eventDungeonTicketsText;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
 
@@ -145,7 +140,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void Show(WorldInformation worldInformation)
+        public void Show(WorldInformation worldInformation, bool isEventDungeon = false)
         {
             SubscribeAtShow();
 
@@ -157,6 +152,20 @@ namespace Nekoyume.UI
             Show(true);
             HelpTooltip.HelpMe(100002, true);
             ShowManyWorldUnlockPopup(worldInformation);
+
+            if (isEventDungeon)
+            {
+                if (RxProps.EventDungeonRow is null)
+                {
+                    NotificationSystem.Push(
+                        MailType.System,
+                        L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                        NotificationCell.NotificationType.Information);
+                    return;
+                }
+
+                ShowEventDungeonStage(RxProps.EventDungeonRow, false);
+            }
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
