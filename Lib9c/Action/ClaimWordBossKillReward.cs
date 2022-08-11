@@ -13,6 +13,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionType("claim_world_boss_kill_reward")]
     public class ClaimWordBossKillReward : GameAction
     {
         public Address AvatarAddress;
