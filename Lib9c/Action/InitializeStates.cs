@@ -35,7 +35,7 @@ namespace Nekoyume.Action
         public Dictionary GameConfig { get; set; } = Dictionary.Empty;
         public Dictionary RedeemCode { get; set; } = Dictionary.Empty;
 
-        public Dictionary AdminAddressState { get; set; } = Dictionary.Empty;
+        public Dictionary AdminAddressState { get; set; }
 
         public Dictionary ActivatedAccounts { get; set; } = Dictionary.Empty;
 
@@ -61,11 +61,11 @@ namespace Nekoyume.Action
             Dictionary<string, string> tableSheets,
             GameConfigState gameConfigState,
             RedeemCodeState redeemCodeState,
-            AdminState adminAddressState,
             ActivatedAccountsState activatedAccountsState,
             GoldCurrencyState goldCurrencyState,
             GoldDistribution[] goldDistributions,
             PendingActivationState[] pendingActivationStates,
+            AdminState adminAddressState = null,
             AuthorizedMinersState authorizedMinersState = null,
             CreditsState creditsState = null)
         {
@@ -149,10 +149,14 @@ namespace Nekoyume.Action
                 .SetState(ShopState.Address, Shop)
                 .SetState(GameConfigState.Address, GameConfig)
                 .SetState(RedeemCodeState.Address, RedeemCode)
-                .SetState(AdminState.Address, AdminAddress)
                 .SetState(ActivatedAccountsState.Address, ActivatedAccounts)
                 .SetState(GoldCurrencyState.Address, GoldCurrency)
                 .SetState(Addresses.GoldDistribution, GoldDistributions);
+
+            if (AdminAddressState != null)
+            {
+                states = states.SetState(AdminState.Address, AdminAddressState);
+            }
 
             if (!(AuthorizedMiners is null))
             {
@@ -195,11 +199,15 @@ namespace Nekoyume.Action
 #pragma warning restore LAA1002
                 .Add("game_config_state", GameConfig)
                 .Add("redeem_code_state", RedeemCode)
-                .Add("admin_address_state", AdminAddress)
                 .Add("activated_accounts_state", ActivatedAccounts)
                 .Add("gold_currency_state", GoldCurrency)
                 .Add("gold_distributions", GoldDistributions)
                 .Add("pending_activation_states", PendingActivations);
+
+                if (AdminAddressState != null)
+                {
+                    rv = rv.Add("admin_address_state", AdminAddressState);
+                }
 
                 if (!(AuthorizedMiners is null))
                 {
@@ -226,11 +234,15 @@ namespace Nekoyume.Action
                 );
             GameConfig = (Dictionary) plainValue["game_config_state"];
             RedeemCode = (Dictionary) plainValue["redeem_code_state"];
-            AdminAddressState = (Dictionary)plainValue["admin_address_state"];
             ActivatedAccounts = (Dictionary)plainValue["activated_accounts_state"];
             GoldCurrency = (Dictionary)plainValue["gold_currency_state"];
             GoldDistributions = (List)plainValue["gold_distributions"];
             PendingActivations = (List)plainValue["pending_activation_states"];
+
+            if (plainValue.TryGetValue("admin_address_state", out var adminAddressState))
+            {
+                AdminAddressState = (Dictionary)adminAddressState;
+            }
 
             if (plainValue.TryGetValue("authorized_miners_state", out IValue authorizedMiners))
             {
