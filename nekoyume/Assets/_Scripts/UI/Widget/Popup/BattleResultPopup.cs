@@ -790,10 +790,7 @@ namespace Nekoyume.UI
                 CloseWithOtherWidgets();
                 Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
 
-                Debug.LogError(
-                    $"StageType: {SharedModel.StageType} WorldId: {SharedModel.WorldID} StageId: {SharedModel.StageID}");
                 var stageNumber = 0;
-
                 switch (SharedModel.StageType)
                 {
                     case StageType.HackAndSlash:

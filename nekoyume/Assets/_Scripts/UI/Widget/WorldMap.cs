@@ -151,9 +151,12 @@ namespace Nekoyume.UI
             status.Close(true);
             Show(true);
             HelpTooltip.HelpMe(100002, true);
-            ShowManyWorldUnlockPopup(worldInformation);
 
-            if (isEventDungeon)
+            if (!isEventDungeon)
+            {
+                ShowManyWorldUnlockPopup(worldInformation);
+            }
+            else
             {
                 if (RxProps.EventDungeonRow is null)
                 {
