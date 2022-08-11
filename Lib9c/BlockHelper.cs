@@ -23,7 +23,7 @@ namespace Nekoyume
             IDictionary<string, string> tableSheets,
             GoldDistribution[] goldDistributions,
             PendingActivationState[] pendingActivationStates,
-            AdminState adminState,
+            AdminState adminState = null,
             AuthorizedMinersState authorizedMinersState = null,
             IImmutableSet<Address> activatedAccounts = null,
             bool isActivateAdminAddress = false,
@@ -57,7 +57,7 @@ namespace Nekoyume
                 redeemCodeState: new RedeemCodeState(redeemCodeListSheet),
                 adminAddressState: adminState,
                 activatedAccountsState: new ActivatedAccountsState(
-                    isActivateAdminAddress
+                    isActivateAdminAddress && adminState != null
                     ? activatedAccounts.Add(adminState.AdminAddress)
                     : activatedAccounts),
                 goldCurrencyState: new GoldCurrencyState(ncg),
