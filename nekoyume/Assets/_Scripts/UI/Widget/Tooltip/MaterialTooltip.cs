@@ -151,7 +151,7 @@ namespace Nekoyume.UI
             return result;
         }
 
-        private static List<EventDungeonStageSheet.Row> GetEventStageByOrder(
+        private static List<EventDungeonStageSheet.Row> GetEventDungeonStageByOrder(
             IEnumerable<EventDungeonStageSheet.Row> rows,
             int id)
         {
@@ -245,38 +245,25 @@ namespace Nekoyume.UI
 
                     break;
                 case ItemSubType.FoodMaterial:
-                    var eventDungeonRows = TableSheets
-                        .Instance
-                        .EventDungeonStageSheet
+                    var eventDungeonRows = RxProps
+                        .EventDungeonStageRows
                         .GetStagesContainsReward(itemBase.Id)
                         .OrderByDescending(s => s.Key)
                         .ToList();
                     if (eventDungeonRows.Any())
                     {
-                        var scheduleId = eventDungeonRows.First().Id.ToEventScheduleId();
-                        var scheduleRow = TableSheets.Instance.EventScheduleSheet[scheduleId];
-                        var blockIndex = Game.Game.instance.Agent.BlockIndex;
-                        if (scheduleRow.StartBlockIndex >= blockIndex &&
-                            blockIndex <= scheduleRow.DungeonEndBlockIndex)
+                        var scheduleRow = RxProps.EventScheduleRowForDungeon.Value;
+                        if (scheduleRow is not null)
                         {
-                            var eventStages = GetEventStageByOrder(eventDungeonRows, itemBase.Id);
+                            var eventStages = GetEventDungeonStageByOrder(eventDungeonRows, itemBase.Id);
                             if (eventStages.Any())
                             {
                                 acquisitionPlaceList.AddRange(eventStages.Select(stage =>
-                                {
-                                    if (TableSheets.Instance.EventDungeonSheet
-                                        .TryGetRowByEventDungeonStageId(stage.Id,
-                                            out var row))
-                                    {
-                                        return MakeAcquisitionPlaceModelByType(
-                                            AcquisitionPlaceButton.PlaceType.EventStage,
-                                            itemBase,
-                                            row.Id,
-                                            stage);
-                                    }
-
-                                    return null;
-                                }));
+                                    MakeAcquisitionPlaceModelByType(
+                                        AcquisitionPlaceButton.PlaceType.EventDungeonStage,
+                                        itemBase,
+                                        RxProps.EventDungeonRow.Id,
+                                        stage)));
                             }
                         }
                     }
@@ -367,10 +354,10 @@ namespace Nekoyume.UI
         {
             return type switch
             {
-                AcquisitionPlaceButton.PlaceType.EventStage => stageRow is null
+                AcquisitionPlaceButton.PlaceType.EventDungeonStage => stageRow is null
                     ? throw new Exception($"{nameof(stageRow)} is null")
                     : new AcquisitionPlaceButton.Model(
-                        AcquisitionPlaceButton.PlaceType.EventStage,
+                        AcquisitionPlaceButton.PlaceType.EventDungeonStage,
                         () =>
                         {
                             CloseWithOtherWidgets();

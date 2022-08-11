@@ -52,18 +52,5 @@ namespace Nekoyume
                 .Select(s => s.Value)
                 .ToList();
         }
-
-        public static List<EventDungeonStageSheet.Row> GetStagesContainsReward(this EventDungeonStageSheet sheet, int itemId)
-        {
-            if (States.Instance.CurrentAvatarState.worldInformation == null)
-            {
-                return null;
-            }
-
-            return sheet
-                .Where(s => s.Value.Rewards.Any(reward => reward.ItemId == itemId))
-                .Select(s => s.Value)
-                .ToList();
-        }
     }
 }

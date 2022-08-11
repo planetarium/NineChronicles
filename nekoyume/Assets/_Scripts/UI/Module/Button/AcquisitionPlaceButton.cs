@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Module
             Arena = 4,
             Quest = 5,
             Staking = 7,
-            EventStage = 8,
+            EventDungeonStage = 8,
         }
 
         public class Model
@@ -107,7 +107,7 @@ namespace Nekoyume.UI.Module
                 case PlaceType.Arena:
                 case PlaceType.Quest:
                 case PlaceType.Staking:
-                case PlaceType.EventStage:
+                case PlaceType.EventDungeonStage:
                     if (_iconDictionary.TryGetValue(
                         string.Format(IconNameFormat, $"00{(int)model.Type}"),
                         out var sprite))
@@ -129,7 +129,7 @@ namespace Nekoyume.UI.Module
         {
             switch (type)
             {
-                case PlaceType.EventStage:
+                case PlaceType.EventDungeonStage:
                     bool canTryStage;
                     if (RxProps.EventDungeonInfo.Value is not null)
                     {
@@ -227,7 +227,7 @@ namespace Nekoyume.UI.Module
             return type switch
             {
                 PlaceType.Stage => !Game.Game.instance.IsInWorld,
-                PlaceType.EventStage => !Game.Game.instance.IsInWorld,
+                PlaceType.EventDungeonStage => !Game.Game.instance.IsInWorld,
                 PlaceType.Shop => !Game.Game.instance.IsInWorld,
                 PlaceType.Arena => !Game.Game.instance.IsInWorld,
                 PlaceType.Quest => !Widget.Find<BattleResultPopup>().IsActive() &&
