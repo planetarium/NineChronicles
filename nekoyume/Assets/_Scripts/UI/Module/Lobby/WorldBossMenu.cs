@@ -115,6 +115,8 @@ namespace Nekoyume.UI.Module.Lobby
                 case WorldBossStatus.OffSeason:
                     if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var nextRow))
                     {
+                        ticketContainer.SetActive(false);
+                        timeContainer.SetActive(false);
                         return;
                     }
 

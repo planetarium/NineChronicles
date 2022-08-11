@@ -211,6 +211,8 @@ namespace Nekoyume.UI
         {
             if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out var nextRow))
             {
+                Close();
+                Game.Event.OnRoomEnter.Invoke(true);
                 return;
             }
 

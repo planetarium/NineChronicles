@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Lobby;
+using Nekoyume.UI.Module.WorldBoss;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -399,10 +401,25 @@ namespace Nekoyume.UI
                 return;
             }
 
+            AudioController.PlayClick();
+
+            var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var curStatus = WorldBossFrontHelper.GetStatus(currentBlockIndex);
+            if (curStatus == WorldBossStatus.OffSeason)
+            {
+                if (!WorldBossFrontHelper.TryGetNextRow(currentBlockIndex, out _))
+                {
+                    OneLineSystem.Push(
+                        MailType.System,
+                        "There is no world boss schedule.",
+                        NotificationCell.NotificationType.Alert);
+                    return;
+                }
+            }
+
             Close(true);
             Find<WorldBoss>().ShowAsync().Forget();
             Analyzer.Instance.Track("Unity/Enter world boss page");
-            AudioController.PlayClick();
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
