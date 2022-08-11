@@ -783,14 +783,6 @@ PlayableDirector:
     value: {fileID: 1005777360980935762}
   - key: {fileID: -8150698350735233901, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
     value: {fileID: 1005777360980935762}
-  - key: {fileID: 78569745691425256, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-    value: {fileID: 1794125584092958649}
-  - key: {fileID: 7499388260407046812, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-    value: {fileID: 3102741343385154541}
-  - key: {fileID: -5451183497333429323, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-    value: {fileID: 1292220910054991738}
-  - key: {fileID: 9183671771033094777, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-    value: {fileID: 6063278470799193287}
   m_ExposedReferences:
     m_References: []
 --- !u!114 &4940065230274820996
@@ -812,10 +804,10 @@ MonoBehaviour:
   appearCutscene: {fileID: 11400000, guid: df5d23711e506f04aa0b1dafe7f66f1c, type: 2}
   skillCutscene: {fileID: 11400000, guid: 89602c37addce934b9787b4e9b0da066, type: 2}
   runAwayCutscenes:
-  - {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-  - {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-  - {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
-  - {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
+  - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
+  - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
+  - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
+  - {fileID: 11400000, guid: 644d45699be4e6945991f8ab2e1c184f, type: 2}
   fallDownCutscene: {fileID: 11400000, guid: 9a344bfb59796e8458291034d729bb9e, type: 2}
 --- !u!114 &1292220910054991738
 MonoBehaviour:

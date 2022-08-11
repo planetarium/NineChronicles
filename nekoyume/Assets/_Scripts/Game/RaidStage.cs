@@ -37,6 +37,7 @@ namespace Nekoyume.Game
         private const float SkillDelay = 0.1f;
         private Coroutine _battleCoroutine;
         private int _waveTurn;
+        private int _wave;
         private bool _isPlaying;
         private int _currentScore;
 
@@ -152,6 +153,7 @@ namespace Nekoyume.Game
             Widget.Find<LoadingScreen>().Close();
             Game.instance.IsInWorld = true;
             _waveTurn = 1;
+            _wave = 0;
             _currentScore = 0;
 
             yield return StartCoroutine(container.CoPlayAppearCutscene());
@@ -348,7 +350,6 @@ namespace Nekoyume.Game
 
         public IEnumerator CoDead(CharacterBase character)
         {
-            var waveIndex = 0;
             Character.RaidCharacter raidCharacter =
                 character.Id == _player.Id ? _player : _boss;
             raidCharacter.Set(character);
@@ -363,9 +364,9 @@ namespace Nekoyume.Game
                 Widget.Find<WorldBossBattle>().OnWaveCompleted();
                 yield return new WaitUntil(() => boss.Animator.IsIdle());
 
-                if (waveIndex < 4)
+                if (_wave < 4)
                 {
-                    yield return StartCoroutine(container.CoPlayRunAwayCutscene(waveIndex));
+                    yield return StartCoroutine(container.CoPlayRunAwayCutscene(_wave));
                     yield return StartCoroutine(container.CoPlayAppearCutscene());
                     _boss.Animator.Idle();
                 }
@@ -373,6 +374,8 @@ namespace Nekoyume.Game
                 {
                     yield return StartCoroutine(container.CoPlayFallDownCutscene());
                 }
+
+                ++_wave;
             }
         }
 
