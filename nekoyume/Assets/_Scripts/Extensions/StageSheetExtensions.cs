@@ -2,6 +2,7 @@
 using System.Linq;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.TableData.Event;
 
 namespace Nekoyume
 {
