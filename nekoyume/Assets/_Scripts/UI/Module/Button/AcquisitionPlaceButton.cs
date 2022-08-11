@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -129,8 +130,16 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case PlaceType.EventStage:
-                    var canTryStage = model.StageRow.Id <=
-                                      RxProps.EventDungeonInfo.Value?.ClearedStageId + 1;
+                    bool canTryStage;
+                    if (RxProps.EventDungeonInfo.Value is not null)
+                    {
+                        canTryStage = model.StageRow.Id <=
+                                      RxProps.EventDungeonInfo.Value.ClearedStageId + 1;
+                    }
+                    else
+                    {
+                        canTryStage = model.StageRow.Id.ToEventDungeonStageNumber() <= 1;
+                    }
                     disableObject.SetActive(!canTryStage);
                     enableObject.SetActive(canTryStage);
 

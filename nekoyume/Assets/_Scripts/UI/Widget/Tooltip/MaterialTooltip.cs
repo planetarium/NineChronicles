@@ -160,10 +160,10 @@ namespace Nekoyume.UI
             {
                 if (RxProps.EventDungeonInfo.Value is not null)
                 {
-                    return s.Id <= RxProps.EventDungeonInfo.Value?.ClearedStageId;
+                    return s.Id <= RxProps.EventDungeonInfo.Value.ClearedStageId;
                 }
 
-                return true;
+                return s.Id.ToEventDungeonStageNumber() <= 1;
             }).ToList();
 
             if (rowList.Any())
