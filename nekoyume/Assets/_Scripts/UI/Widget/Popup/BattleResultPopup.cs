@@ -828,7 +828,18 @@ namespace Nekoyume.UI
                         break;
 
                     case StageType.EventDungeon:
-                        Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation, true);
+                        if (RxProps.EventDungeonRow is null)
+                        {
+                            NotificationSystem.Push(
+                                MailType.System,
+                                L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
+                                NotificationCell.NotificationType.Information);
+                            break;
+                        }
+
+                        var worldMap = Find<WorldMap>();
+                        worldMap.Show(States.Instance.CurrentAvatarState.worldInformation, true);
+                        worldMap.ShowEventDungeonStage(RxProps.EventDungeonRow, false);
                         stageNumber = SharedModel.StageID.ToEventDungeonStageNumber();
                         break;
                 }

@@ -145,7 +145,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void Show(WorldInformation worldInformation, bool isEventDungeon = false)
+        public void Show(WorldInformation worldInformation, bool blockWorldUnlockPopup = false)
         {
             SubscribeAtShow();
 
@@ -157,22 +157,9 @@ namespace Nekoyume.UI
             Show(true);
             HelpTooltip.HelpMe(100002, true);
 
-            if (!isEventDungeon)
+            if (!blockWorldUnlockPopup)
             {
                 ShowManyWorldUnlockPopup(worldInformation);
-            }
-            else
-            {
-                if (RxProps.EventDungeonRow is null)
-                {
-                    NotificationSystem.Push(
-                        MailType.System,
-                        L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
-                        NotificationCell.NotificationType.Information);
-                    return;
-                }
-
-                ShowEventDungeonStage(RxProps.EventDungeonRow, false);
             }
         }
 
