@@ -29,27 +29,27 @@ namespace Nekoyume.Action
     [ActionType("initialize_states")]
     public class InitializeStates : GameAction
     {
-        public Bencodex.Types.Dictionary Ranking { get; set; } = Dictionary.Empty;
-        public Bencodex.Types.Dictionary Shop { get; set; } = Dictionary.Empty;
+        public Dictionary Ranking { get; set; } = Dictionary.Empty;
+        public Dictionary Shop { get; set; } = Dictionary.Empty;
         public Dictionary<string, string> TableSheets { get; set; }
-        public Bencodex.Types.Dictionary GameConfig { get; set; } = Dictionary.Empty;
-        public Bencodex.Types.Dictionary RedeemCode { get; set; } = Dictionary.Empty;
+        public Dictionary GameConfig { get; set; } = Dictionary.Empty;
+        public Dictionary RedeemCode { get; set; } = Dictionary.Empty;
 
-        public Bencodex.Types.Dictionary AdminAddress { get; set; } = Dictionary.Empty;
+        public Dictionary AdminAddressState { get; set; } = Dictionary.Empty;
 
-        public Bencodex.Types.Dictionary ActivatedAccounts { get; set; } = Dictionary.Empty;
+        public Dictionary ActivatedAccounts { get; set; } = Dictionary.Empty;
 
-        public Bencodex.Types.Dictionary GoldCurrency { get; set; } = Dictionary.Empty;
+        public Dictionary GoldCurrency { get; set; } = Dictionary.Empty;
 
-        public Bencodex.Types.List GoldDistributions { get; set; } = List.Empty;
+        public List GoldDistributions { get; set; } = List.Empty;
 
-        public Bencodex.Types.List PendingActivations { get; set; } = List.Empty;
-
-        // This property can contain null:
-        public Bencodex.Types.Dictionary AuthorizedMiners { get; set; } = null;
+        public List PendingActivations { get; set; } = List.Empty;
 
         // This property can contain null:
-        public Bencodex.Types.Dictionary Credits { get; set; } = null;
+        public Dictionary AuthorizedMiners { get; set; }
+
+        // This property can contain null:
+        public Dictionary Credits { get; set; }
 
         public InitializeStates()
         {
@@ -69,27 +69,25 @@ namespace Nekoyume.Action
             AuthorizedMinersState authorizedMinersState = null,
             CreditsState creditsState = null)
         {
-            Ranking = (Bencodex.Types.Dictionary)rankingState.Serialize();
-            Shop = (Bencodex.Types.Dictionary)shopState.Serialize();
+            Ranking = (Dictionary)rankingState.Serialize();
+            Shop = (Dictionary)shopState.Serialize();
             TableSheets = tableSheets;
-            GameConfig = (Bencodex.Types.Dictionary)gameConfigState.Serialize();
-            RedeemCode = (Bencodex.Types.Dictionary)redeemCodeState.Serialize();
-            AdminAddress = (Bencodex.Types.Dictionary)adminAddressState.Serialize();
-            ActivatedAccounts = (Bencodex.Types.Dictionary)activatedAccountsState.Serialize();
-            GoldCurrency = (Bencodex.Types.Dictionary)goldCurrencyState.Serialize();
-            GoldDistributions = new Bencodex.Types.List(
-                goldDistributions.Select(d => d.Serialize()).Cast<Bencodex.Types.IValue>()
-            );
-            PendingActivations = new Bencodex.Types.List(pendingActivationStates.Select(p => p.Serialize()));
+            GameConfig = (Dictionary)gameConfigState.Serialize();
+            RedeemCode = (Dictionary)redeemCodeState.Serialize();
+            AdminAddressState = (Dictionary)adminAddressState?.Serialize();
+            ActivatedAccounts = (Dictionary)activatedAccountsState.Serialize();
+            GoldCurrency = (Dictionary)goldCurrencyState.Serialize();
+            GoldDistributions = new List(goldDistributions.Select(d => d.Serialize()));
+            PendingActivations = new List(pendingActivationStates.Select(p => p.Serialize()));
 
             if (!(authorizedMinersState is null))
             {
-                AuthorizedMiners = (Bencodex.Types.Dictionary)authorizedMinersState.Serialize();
+                AuthorizedMiners = (Dictionary)authorizedMinersState.Serialize();
             }
 
             if (!(creditsState is null))
             {
-                Credits = (Bencodex.Types.Dictionary)creditsState.Serialize();
+                Credits = (Dictionary)creditsState.Serialize();
             }
         }
 
@@ -122,10 +120,11 @@ namespace Nekoyume.Action
                 foreach (var rawPending in PendingActivations)
                 {
                     states = states.SetState(
-                        new PendingActivationState((Bencodex.Types.Dictionary)rawPending).address,
+                        new PendingActivationState((Dictionary)rawPending).address,
                         MarkChanged
                     );
                 }
+
                 states = states.SetState(AuthorizedMinersState.Address, MarkChanged);
                 states = states.SetState(CreditsState.Address, MarkChanged);
                 return states;
@@ -166,7 +165,7 @@ namespace Nekoyume.Action
             foreach (var rawPending in PendingActivations)
             {
                 states = states.SetState(
-                    new PendingActivationState((Bencodex.Types.Dictionary)rawPending).address,
+                    new PendingActivationState((Dictionary)rawPending).address,
                     rawPending
                 );
             }
@@ -181,18 +180,18 @@ namespace Nekoyume.Action
             return states;
         }
 
-        protected override IImmutableDictionary<string, Bencodex.Types.IValue> PlainValueInternal
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
             get
             {
-                var rv = ImmutableDictionary<string, Bencodex.Types.IValue>.Empty
+                var rv = ImmutableDictionary<string, IValue>.Empty
                 .Add("ranking_state", Ranking)
                 .Add("shop_state", Shop)
                 .Add("table_sheets",
 #pragma warning disable LAA1002
-                    new Bencodex.Types.Dictionary(TableSheets.Select(pair =>
-                        new KeyValuePair<Bencodex.Types.IKey, Bencodex.Types.IValue>(
-                            (Bencodex.Types.Text)pair.Key, (Bencodex.Types.Text)pair.Value))))
+                    new Dictionary(TableSheets.Select(pair =>
+                        new KeyValuePair<IKey, IValue>(
+                            (Text)pair.Key, (Text)pair.Value))))
 #pragma warning restore LAA1002
                 .Add("game_config_state", GameConfig)
                 .Add("redeem_code_state", RedeemCode)
@@ -216,31 +215,31 @@ namespace Nekoyume.Action
             }
         }
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, Bencodex.Types.IValue> plainValue)
+        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            Ranking = (Bencodex.Types.Dictionary) plainValue["ranking_state"];
-            Shop = (Bencodex.Types.Dictionary) plainValue["shop_state"];
-            TableSheets = ((Bencodex.Types.Dictionary) plainValue["table_sheets"])
+            Ranking = (Dictionary) plainValue["ranking_state"];
+            Shop = (Dictionary) plainValue["shop_state"];
+            TableSheets = ((Dictionary) plainValue["table_sheets"])
                 .ToDictionary(
-                pair => (string)(Bencodex.Types.Text) pair.Key,
-                pair => (string)(Bencodex.Types.Text) pair.Value
+                pair => (string)(Text) pair.Key,
+                pair => (string)(Text) pair.Value
                 );
-            GameConfig = (Bencodex.Types.Dictionary) plainValue["game_config_state"];
-            RedeemCode = (Bencodex.Types.Dictionary) plainValue["redeem_code_state"];
-            AdminAddress = (Bencodex.Types.Dictionary)plainValue["admin_address_state"];
-            ActivatedAccounts = (Bencodex.Types.Dictionary)plainValue["activated_accounts_state"];
-            GoldCurrency = (Bencodex.Types.Dictionary)plainValue["gold_currency_state"];
-            GoldDistributions = (Bencodex.Types.List)plainValue["gold_distributions"];
-            PendingActivations = (Bencodex.Types.List)plainValue["pending_activation_states"];
+            GameConfig = (Dictionary) plainValue["game_config_state"];
+            RedeemCode = (Dictionary) plainValue["redeem_code_state"];
+            AdminAddressState = (Dictionary)plainValue["admin_address_state"];
+            ActivatedAccounts = (Dictionary)plainValue["activated_accounts_state"];
+            GoldCurrency = (Dictionary)plainValue["gold_currency_state"];
+            GoldDistributions = (List)plainValue["gold_distributions"];
+            PendingActivations = (List)plainValue["pending_activation_states"];
 
-            if (plainValue.TryGetValue("authorized_miners_state", out Bencodex.Types.IValue authorizedMiners))
+            if (plainValue.TryGetValue("authorized_miners_state", out IValue authorizedMiners))
             {
-                AuthorizedMiners = (Bencodex.Types.Dictionary)authorizedMiners;
+                AuthorizedMiners = (Dictionary)authorizedMiners;
             }
 
-            if (plainValue.TryGetValue("credits_state", out Bencodex.Types.IValue credits))
+            if (plainValue.TryGetValue("credits_state", out IValue credits))
             {
-                Credits = (Bencodex.Types.Dictionary)credits;
+                Credits = (Dictionary)credits;
             }
         }
     }
