@@ -288,8 +288,7 @@ namespace Nekoyume.UI.Scroller
             {
                 Show(new List<RecipeRow.Model>(), true);
                 emptyObjectText.text = L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS");
-                // FIXME: Set the viewport to serialized field.
-                transform.Find("Viewport").gameObject.SetActive(false);
+                viewport.SetActive(false);
                 emptyObject.SetActive(true);
                 eventScheduleTab.SetActive(false);
                 return;
@@ -297,8 +296,7 @@ namespace Nekoyume.UI.Scroller
 
             var items = Craft.SharedModel.EventConsumableRecipeMap
                 .Values.ToList();
-            // FIXME: Set the viewport to serialized field.
-            transform.Find("Viewport").gameObject.SetActive(true);
+            viewport.SetActive(true);
             emptyObject.SetActive(false);
             eventScheduleTab.SetActive(true);
             Show(items, true);

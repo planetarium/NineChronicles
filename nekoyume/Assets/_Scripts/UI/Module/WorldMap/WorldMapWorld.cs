@@ -252,7 +252,7 @@ namespace Nekoyume.UI.Module
         {
             foreach (var stage in pages
                          .SelectMany(page => page.Stages)
-                         .Where(stage => !(stage.SharedViewModel is null)))
+                         .Where(stage => stage.SharedViewModel is not null))
             {
                 var stageId = stage.SharedViewModel.stageId;
                 var stageState = WorldMapStage.State.Normal;
