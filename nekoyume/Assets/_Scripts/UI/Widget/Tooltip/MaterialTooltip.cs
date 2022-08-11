@@ -196,13 +196,9 @@ namespace Nekoyume.UI
                     break;
                 }
 
-                if (TableSheets.Instance.EventDungeonSheet.TryGetRowByEventDungeonStageId(
-                        rowList[i].Id, out _))
+                if (!result.Contains(rowList[i]))
                 {
-                    if (!result.Contains(rowList[i]))
-                    {
-                        result.Add(rowList[i]);
-                    }
+                    result.Add(rowList[i]);
                 }
             }
 
