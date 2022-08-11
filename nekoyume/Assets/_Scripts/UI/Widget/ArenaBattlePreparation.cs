@@ -533,6 +533,8 @@ namespace Nekoyume.UI
 
         private void OnClickBattle()
         {
+            AudioController.PlayClick();
+
             if (Game.Game.instance.IsInWorld)
             {
                 return;

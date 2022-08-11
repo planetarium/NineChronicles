@@ -340,49 +340,41 @@ namespace Nekoyume.UI
 
         private void GoToPreparation()
         {
+            int stageNumber;
+            HeaderMenuStatic.AssetVisibleState headerMenuState;
             switch (_stageType)
             {
                 case StageType.HackAndSlash:
                 {
-                    var stageNumber = _sharedViewModel.SelectedStageId.Value;
-                    Find<BattlePreparation>().Show(
-                        StageType.HackAndSlash,
-                        _sharedViewModel.SelectedWorldId.Value,
-                        _sharedViewModel.SelectedStageId.Value,
-                        $"{closeButtonText.text} {stageNumber}",
-                        true);
-                    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-                    Find<HeaderMenuStatic>().Show(true);
+                    stageNumber = _sharedViewModel.SelectedStageId.Value;
+                    headerMenuState = HeaderMenuStatic.AssetVisibleState.Battle;
                     break;
                 }
                 case StageType.Mimisbrunnr:
                 {
-                    var stageNumber = _sharedViewModel.SelectedStageId.Value % 10000000;
-                    Find<BattlePreparation>().Show(
-                        StageType.Mimisbrunnr,
-                        GameConfig.MimisbrunnrWorldId,
-                        _sharedViewModel.SelectedStageId.Value,
-                        $"{closeButtonText.text} {stageNumber}",
-                        true);
-                    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.Battle);
-                    Find<HeaderMenuStatic>().Show(true);
+                    stageNumber = _sharedViewModel.SelectedStageId.Value % 10000000;
+                    headerMenuState = HeaderMenuStatic.AssetVisibleState.Battle;
                     break;
                 }
                 case StageType.EventDungeon:
                 {
-                    var stageNumber = _sharedViewModel.SelectedStageId.Value
+                    stageNumber = _sharedViewModel.SelectedStageId.Value
                         .ToEventDungeonStageNumber();
-                    Find<BattlePreparation>().Show(
-                        StageType.EventDungeon,
-                        _sharedViewModel.SelectedWorldId.Value,
-                        _sharedViewModel.SelectedStageId.Value,
-                        $"{closeButtonText.text} {stageNumber}",
-                        true);
-                    Find<HeaderMenuStatic>().UpdateAssets(HeaderMenuStatic.AssetVisibleState.EventDungeon);
-                    Find<HeaderMenuStatic>().Show(true);
+                    headerMenuState = HeaderMenuStatic.AssetVisibleState.EventDungeon;
                     break;
                 }
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+
+            Find<BattlePreparation>().Show(
+                _stageType,
+                _sharedViewModel.SelectedWorldId.Value,
+                _sharedViewModel.SelectedStageId.Value,
+                $"{closeButtonText.text} {stageNumber}",
+                true);
+            Find<HeaderMenuStatic>().UpdateAssets(headerMenuState);
+            Find<HeaderMenuStatic>().Show(true);
         }
 
         public static string GetStageIdString(

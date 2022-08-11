@@ -191,9 +191,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (RxProps.EventDungeonInfo.Value.GetRemainingTicketsConsiderReset(
-                    RxProps.EventScheduleRowForDungeon.Value,
-                    Game.Game.instance.Agent.BlockIndex) == 0)
+            if (RxProps.EventDungeonTicketProgress.Value.currentTickets == 0)
             {
                 NotificationSystem.Push(
                     MailType.System,

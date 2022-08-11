@@ -192,7 +192,8 @@ namespace Nekoyume.UI
 
             CloseWidget = () => Close(true);
 
-            startButton.OnSubmitSubject.Where(_ => !Game.Game.instance.IsInWorld)
+            startButton.OnSubmitSubject
+                .Where(_ => !Game.Game.instance.IsInWorld)
                 .ThrottleFirst(TimeSpan.FromSeconds(1f))
                 .Subscribe(_ => OnClickBattle(repeatToggle.isOn))
                 .AddTo(gameObject);
