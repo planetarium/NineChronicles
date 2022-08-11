@@ -10,9 +10,9 @@ namespace Nekoyume
         private TextMeshProUGUI content;
 
 
-        public void SetTimeBlock(string time, string block)
+        public void SetTimeBlock(string block, string time)
         {
-            content.text = $"{time}({block})";
+            content.text = $"{block}({time})";
         }
     }
 }
