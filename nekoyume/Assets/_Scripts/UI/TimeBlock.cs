@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 
@@ -8,7 +7,6 @@ namespace Nekoyume
     {
         [SerializeField]
         private TextMeshProUGUI content;
-
 
         public void SetTimeBlock(string block, string time)
         {

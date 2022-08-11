@@ -14251,6 +14251,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7303739469820526107}
     m_Modifications:
+    - target: {fileID: 2164754573768558350, guid: 9ab7ce75c1dc79447bd3e481f83e31a4,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2164754573768558350, guid: 9ab7ce75c1dc79447bd3e481f83e31a4,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2164754573768558350, guid: 9ab7ce75c1dc79447bd3e481f83e31a4,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2164754573768558350, guid: 9ab7ce75c1dc79447bd3e481f83e31a4,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6270392773920163578, guid: 9ab7ce75c1dc79447bd3e481f83e31a4,
         type: 3}
       propertyPath: m_Pivot.x
@@ -14360,6 +14380,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Item_BlockTime
+      objectReference: {fileID: 0}
+    - target: {fileID: 8890736725965190339, guid: 9ab7ce75c1dc79447bd3e481f83e31a4,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8890736725965190339, guid: 9ab7ce75c1dc79447bd3e481f83e31a4,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ab7ce75c1dc79447bd3e481f83e31a4, type: 3}
