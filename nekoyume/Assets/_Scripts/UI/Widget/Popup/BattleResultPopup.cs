@@ -88,35 +88,50 @@ namespace Nekoyume.UI
         private const int Timer = 10;
         private static readonly Vector3 VfxBattleWinOffset = new(-0.05f, 1.2f, 10f);
 
-        [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField]
+        private CanvasGroup canvasGroup;
 
-        [SerializeField] private GameObject victoryImageContainer;
+        [SerializeField]
+        private GameObject victoryImageContainer;
 
-        [SerializeField] private GameObject defeatImageContainer;
+        [SerializeField]
+        private GameObject defeatImageContainer;
 
-        [SerializeField] private TextMeshProUGUI worldStageId;
+        [SerializeField]
+        private TextMeshProUGUI worldStageId;
 
-        [SerializeField] private GameObject topArea;
+        [SerializeField]
+        private GameObject topArea;
 
-        [SerializeField] private DefeatTextArea defeatTextArea;
+        [SerializeField]
+        private DefeatTextArea defeatTextArea;
 
-        [SerializeField] private RewardsArea rewardsArea;
+        [SerializeField]
+        private RewardsArea rewardsArea;
 
-        [SerializeField] private TextMeshProUGUI bottomText;
+        [SerializeField]
+        private TextMeshProUGUI bottomText;
 
-        [SerializeField] private Button closeButton;
+        [SerializeField]
+        private Button closeButton;
 
-        [SerializeField] private Button stagePreparationButton;
+        [SerializeField]
+        private Button stagePreparationButton;
 
-        [SerializeField] private Button nextButton;
+        [SerializeField]
+        private Button nextButton;
 
-        [SerializeField] private Button repeatButton;
+        [SerializeField]
+        private Button repeatButton;
 
-        [SerializeField] private StageProgressBar stageProgressBar;
+        [SerializeField]
+        private StageProgressBar stageProgressBar;
 
-        [SerializeField] private GameObject[] victoryResultTexts;
+        [SerializeField]
+        private GameObject[] victoryResultTexts;
 
-        [SerializeField] private ActionPoint actionPoint;
+        [SerializeField]
+        private ActionPoint actionPoint;
 
         private BattleWin01VFX _battleWin01VFX;
 

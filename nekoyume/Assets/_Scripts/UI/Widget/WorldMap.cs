@@ -38,15 +38,20 @@ namespace Nekoyume.UI
             public List<int> UnlockedWorldIds;
         }
 
-        [SerializeField] private GameObject worldMapRoot = null;
+        [SerializeField]
+        private GameObject worldMapRoot = null;
 
-        [SerializeField] private Button closeButton;
+        [SerializeField]
+        private Button closeButton;
 
-        [SerializeField] private WorldButton[] _worldButtons;
+        [SerializeField]
+        private WorldButton[] _worldButtons;
 
-        [SerializeField] private WorldButton _eventDungeonButton;
+        [SerializeField]
+        private WorldButton _eventDungeonButton;
 
-        [SerializeField] private TextMeshProUGUI _eventDungeonTicketsText;
+        [SerializeField]
+        private TextMeshProUGUI _eventDungeonTicketsText;
 
         private readonly List<IDisposable> _disposablesAtShow = new();
 
