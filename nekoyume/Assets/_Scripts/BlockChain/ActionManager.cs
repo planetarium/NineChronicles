@@ -287,8 +287,8 @@ namespace Nekoyume.BlockChain
             List<Consumable> foods,
             bool buyTicketIfNeeded)
         {
-            // FIXME: This is a temporary.
-            var numberOfTicketPurchases = RxProps.EventDungeonInfo.Value.NumberOfTicketPurchases;
+            var numberOfTicketPurchases =
+                RxProps.EventDungeonInfo.Value?.NumberOfTicketPurchases ?? 0;
             Analyzer.Instance.Track("Unity/EventDungeonBattle", new Value
             {
                 ["EventScheduleId"] = eventScheduleId,
@@ -298,7 +298,8 @@ namespace Nekoyume.BlockChain
                     RxProps.EventDungeonTicketProgress.Value.currentTickets -
                     Action.EventDungeonBattle.PlayCount,
                 ["NumberOfTicketPurchases"] = numberOfTicketPurchases,
-                ["TicketCost"] = buyTicketIfNeeded
+                ["BuyTicketIfNeeded"] = buyTicketIfNeeded,
+                ["TicketCostIfNeeded"] = buyTicketIfNeeded
                     ? TableSheets.Instance.EventScheduleSheet.TryGetValue(
                         eventScheduleId,
                         out var scheduleRow)

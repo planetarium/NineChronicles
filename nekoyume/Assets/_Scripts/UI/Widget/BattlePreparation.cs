@@ -737,14 +737,56 @@ namespace Nekoyume.UI
                             MailType.System,
                             L10nManager.Localize("UI_EVENT_NOT_IN_PROGRESS"),
                             NotificationCell.NotificationType.Information);
+
                         return;
                     }
 
-                    StartCoroutine(CoBattleStart(
-                        _stageType,
-                        CostType.EventDungeonTicket,
-                        repeat));
-                    break;
+                    if (RxProps.EventDungeonTicketProgress.Value.currentTickets >=
+                        _requiredCost)
+                    {
+                        StartCoroutine(CoBattleStart(
+                            _stageType,
+                            CostType.EventDungeonTicket,
+                            repeat));
+                        break;
+                    }
+
+                    var ncgHas = States.Instance.GoldBalanceState.Gold;
+                    var ncgCost = RxProps.EventScheduleRowForDungeon.Value
+                        .GetDungeonTicketCost(
+                            RxProps.EventDungeonInfo.Value.NumberOfTicketPurchases) *
+                                  States.Instance.GoldBalanceState.Gold.Currency;
+                    if (ncgHas >= ncgCost)
+                    {
+                        // FIXME: `UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA` key
+                        //        is temporary.
+                        var notEnoughTicketMsg = L10nManager.Localize(
+                            "UI_CONFIRM_PAYMENT_CURRENCY_FORMAT_FOR_BATTLE_ARENA",
+                            ncgCost.ToString());
+                        Find<PaymentPopup>().ShowAttract(
+                            CostType.EventDungeonTicket,
+                            _requiredCost.ToString(),
+                            notEnoughTicketMsg,
+                            L10nManager.Localize("UI_YES"),
+                            () => StartCoroutine(
+                                CoBattleStart(
+                                    StageType.EventDungeon,
+                                    CostType.NCG,
+                                    false,
+                                    true)));
+
+                        return;
+                    }
+
+                    var notEnoughNCGMsg =
+                        L10nManager.Localize("UI_NOT_ENOUGH_NCG_WITH_SUPPLIER_INFO");
+                    Find<PaymentPopup>().ShowAttract(
+                        CostType.NCG,
+                        ncgCost.GetQuantityString(),
+                        notEnoughNCGMsg,
+                        L10nManager.Localize("UI_GO_TO_MARKET"),
+                        GoToMarket);
+                    return;
                 }
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -754,7 +796,11 @@ namespace Nekoyume.UI
             coverToBlockClick.SetActive(true);
         }
 
-        private IEnumerator CoBattleStart(StageType stageType, CostType costType, bool repeat)
+        private IEnumerator CoBattleStart(
+            StageType stageType,
+            CostType costType,
+            bool repeat,
+            bool buyTicketIfNeeded = false)
         {
             var game = Game.Game.instance;
             game.IsInWorld = true;
@@ -784,7 +830,10 @@ namespace Nekoyume.UI
                 middleXGap);
             yield return new WaitWhile(() => itemMoveAnimation.IsPlaying);
 
-            SendBattleAction(stageType, repeat);
+            SendBattleAction(
+                stageType,
+                repeat,
+                buyTicketIfNeeded: buyTicketIfNeeded);
         }
 
         private void ShowBoosterPopup()
@@ -873,7 +922,11 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SendBattleAction(StageType stageType, bool repeat, int playCount = 1)
+        private void SendBattleAction(
+            StageType stageType,
+            bool repeat,
+            int playCount = 1,
+            bool buyTicketIfNeeded = false)
         {
             Find<WorldMap>().Close(true);
             Find<StageInformation>().Close(true);
@@ -972,7 +1025,7 @@ namespace Nekoyume.UI
                             equipments,
                             costumes,
                             consumables,
-                            false)
+                            buyTicketIfNeeded)
                         .Subscribe();
                     break;
                 }
@@ -986,6 +1039,16 @@ namespace Nekoyume.UI
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);
+        }
+
+        private void GoToMarket()
+        {
+            Close(true);
+            Find<WorldMap>().Close(true);
+            Find<StageInformation>().Close(true);
+            Find<ShopBuy>().Show();
+            Find<HeaderMenuStatic>()
+                .UpdateAssets(HeaderMenuStatic.AssetVisibleState.Shop);
         }
 
         private static void ShowRefillConfirmPopup(Material material)
