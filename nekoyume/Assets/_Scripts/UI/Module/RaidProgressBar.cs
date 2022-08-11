@@ -124,7 +124,6 @@ namespace Nekoyume.UI.Module
             while (current < value - smoothenFinishThreshold)
             {
                 current = Mathf.Lerp(current, value, Time.deltaTime * speed);
-                vfxOffset.anchoredPosition = new Vector2(current * _xLength, vfxOffset.anchoredPosition.y);
                 slider.value = current;
                 yield return null;
             }
@@ -148,7 +147,8 @@ namespace Nekoyume.UI.Module
 
         private void UpdateSliderValue(float value)
         {
-            vfxOffset.anchoredPosition = new Vector2(value * _xLength, vfxOffset.anchoredPosition.y);
+            var vfxValue = (float) Mathf.Clamp(_currentStar.Value + 1, 0, MaxWave) / MaxWave;
+            vfxOffset.anchoredPosition = new Vector2(vfxValue * _xLength, vfxOffset.anchoredPosition.y);
             slider.value = value;
             _smoothenCoroutine = null;
         }
@@ -187,7 +187,7 @@ namespace Nekoyume.UI.Module
             {
                 vfx.Stop();
             }
-            stageProgressBarVFX.Stop();
+            SetStarProgress(0);
         }
     }
 }
